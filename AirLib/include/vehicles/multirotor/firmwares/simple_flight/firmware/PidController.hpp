@@ -59,7 +59,7 @@ public:
         config_ = config;
 
         if (renabled) {
-            last_goal_ = goal_;
+            last_error_ = goal_ - measured_;
             integrator->set(output_);
         }
     }
@@ -77,7 +77,7 @@ public:
         measured_ = T();
         last_time_ = clock_ == nullptr ? 0 : clock_->millis();
         integrator->reset();
-        last_goal_ = goal_;
+        last_error_ = goal_ - measured_;
         min_dt_ = config_.time_scale * config_.time_scale;
     }
 
@@ -99,11 +99,9 @@ public:
         if (dt > min_dt_) {
             integrator->update(dt, error, last_time_);
 
-            //To eliminate "derivative kick", we assume goal was approximately
-            //constant between successive calls. dE = dGoal - dInput = -dInput
-            float error_der = - (goal_ - last_goal_) / dt;
+            float error_der = dt > 0 ? (error - last_error_) / dt : 0;
             dterm = error_der * config_.kd;
-            last_goal_ = goal_;
+            last_error_ = error;
         }
 
         output_ = config_.output_bias + pterm + integrator->getOutput() + dterm;
@@ -127,7 +125,7 @@ private:
     uint64_t last_time_;
     const IBoardClock* clock_;
 
-    float last_goal_;
+    float last_error_;
     float min_dt_;
     const PidConfig<T> config_;
 

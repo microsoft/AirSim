@@ -208,6 +208,54 @@ std::string MavLinkAuthKey::toJSon() {
  return ss.str();
 }
 
+int MavLinkLinkNodeStatus::pack(char* buffer) const {
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->timestamp), 0);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->tx_rate), 8);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->rx_rate), 12);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->messages_sent), 16);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->messages_received), 20);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->messages_lost), 24);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->rx_parse_err), 28);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->tx_overflows), 30);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->rx_overflows), 32);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->tx_buf), 34);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->rx_buf), 35);
+    return 36;
+}
+
+int MavLinkLinkNodeStatus::unpack(const char* buffer) {
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->timestamp), 0);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->tx_rate), 8);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->rx_rate), 12);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->messages_sent), 16);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->messages_received), 20);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->messages_lost), 24);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->rx_parse_err), 28);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->tx_overflows), 30);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->rx_overflows), 32);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->tx_buf), 34);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->rx_buf), 35);
+ return 36;
+}
+
+std::string MavLinkLinkNodeStatus::toJSon() {
+    std::ostringstream ss;
+    ss << "{ \"name\": \"LINK_NODE_STATUS\", \"id\": 8, \"timestamp\":" << timestamp << ", \"msg\": {";
+    ss << "\"timestamp\":"  << this->timestamp;
+    ss << ", \"tx_rate\":"  << this->tx_rate;
+    ss << ", \"rx_rate\":"  << this->rx_rate;
+    ss << ", \"messages_sent\":"  << this->messages_sent;
+    ss << ", \"messages_received\":"  << this->messages_received;
+    ss << ", \"messages_lost\":"  << this->messages_lost;
+    ss << ", \"rx_parse_err\":"  << this->rx_parse_err;
+    ss << ", \"tx_overflows\":"  << this->tx_overflows;
+    ss << ", \"rx_overflows\":"  << this->rx_overflows;
+    ss << ", \"tx_buf\":"  << static_cast<unsigned int>(this->tx_buf);
+    ss << ", \"rx_buf\":"  << static_cast<unsigned int>(this->rx_buf);
+    ss << "} },";
+ return ss.str();
+}
+
 int MavLinkSetMode::pack(char* buffer) const {
     pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->custom_mode), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 4);
@@ -351,7 +399,12 @@ int MavLinkGpsRawInt::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->cog), 26);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->fix_type), 28);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->satellites_visible), 29);
-    return 30;
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->alt_ellipsoid), 30);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->h_acc), 34);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->v_acc), 38);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->vel_acc), 42);
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->hdg_acc), 46);
+    return 50;
 }
 
 int MavLinkGpsRawInt::unpack(const char* buffer) {
@@ -365,7 +418,12 @@ int MavLinkGpsRawInt::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->cog), 26);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->fix_type), 28);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->satellites_visible), 29);
- return 30;
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->alt_ellipsoid), 30);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->h_acc), 34);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->v_acc), 38);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->vel_acc), 42);
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->hdg_acc), 46);
+ return 50;
 }
 
 std::string MavLinkGpsRawInt::toJSon() {
@@ -381,6 +439,11 @@ std::string MavLinkGpsRawInt::toJSon() {
     ss << ", \"cog\":"  << this->cog;
     ss << ", \"fix_type\":"  << static_cast<unsigned int>(this->fix_type);
     ss << ", \"satellites_visible\":"  << static_cast<unsigned int>(this->satellites_visible);
+    ss << ", \"alt_ellipsoid\":"  << this->alt_ellipsoid;
+    ss << ", \"h_acc\":"  << this->h_acc;
+    ss << ", \"v_acc\":"  << this->v_acc;
+    ss << ", \"vel_acc\":"  << this->vel_acc;
+    ss << ", \"hdg_acc\":"  << this->hdg_acc;
     ss << "} },";
  return ss.str();
 }
@@ -429,7 +492,8 @@ int MavLinkScaledImu::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->xmag), 16);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->ymag), 18);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->zmag), 20);
-    return 22;
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 22);
+    return 24;
 }
 
 int MavLinkScaledImu::unpack(const char* buffer) {
@@ -443,7 +507,8 @@ int MavLinkScaledImu::unpack(const char* buffer) {
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->xmag), 16);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->ymag), 18);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->zmag), 20);
- return 22;
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 22);
+ return 24;
 }
 
 std::string MavLinkScaledImu::toJSon() {
@@ -459,6 +524,7 @@ std::string MavLinkScaledImu::toJSon() {
     ss << ", \"xmag\":"  << this->xmag;
     ss << ", \"ymag\":"  << this->ymag;
     ss << ", \"zmag\":"  << this->zmag;
+    ss << ", \"temperature\":"  << this->temperature;
     ss << "} },";
  return ss.str();
 }
@@ -474,7 +540,9 @@ int MavLinkRawImu::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->xmag), 20);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->ymag), 22);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->zmag), 24);
-    return 26;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 26);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 27);
+    return 29;
 }
 
 int MavLinkRawImu::unpack(const char* buffer) {
@@ -488,7 +556,9 @@ int MavLinkRawImu::unpack(const char* buffer) {
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->xmag), 20);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->ymag), 22);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->zmag), 24);
- return 26;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 26);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 27);
+ return 29;
 }
 
 std::string MavLinkRawImu::toJSon() {
@@ -504,6 +574,8 @@ std::string MavLinkRawImu::toJSon() {
     ss << ", \"xmag\":"  << this->xmag;
     ss << ", \"ymag\":"  << this->ymag;
     ss << ", \"zmag\":"  << this->zmag;
+    ss << ", \"id\":"  << static_cast<unsigned int>(this->id);
+    ss << ", \"temperature\":"  << this->temperature;
     ss << "} },";
  return ss.str();
 }
@@ -610,7 +682,8 @@ int MavLinkAttitudeQuaternion::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->rollspeed), 20);
     pack_float(buffer, reinterpret_cast<const float*>(&this->pitchspeed), 24);
     pack_float(buffer, reinterpret_cast<const float*>(&this->yawspeed), 28);
-    return 32;
+    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->repr_offset_q[0]), 32);
+    return 48;
 }
 
 int MavLinkAttitudeQuaternion::unpack(const char* buffer) {
@@ -622,7 +695,8 @@ int MavLinkAttitudeQuaternion::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->rollspeed), 20);
     unpack_float(buffer, reinterpret_cast<float*>(&this->pitchspeed), 24);
     unpack_float(buffer, reinterpret_cast<float*>(&this->yawspeed), 28);
- return 32;
+    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->repr_offset_q[0]), 32);
+ return 48;
 }
 
 std::string MavLinkAttitudeQuaternion::toJSon() {
@@ -636,6 +710,7 @@ std::string MavLinkAttitudeQuaternion::toJSon() {
     ss << ", \"rollspeed\":"  << float_tostring(this->rollspeed);
     ss << ", \"pitchspeed\":"  << float_tostring(this->pitchspeed);
     ss << ", \"yawspeed\":"  << float_tostring(this->yawspeed);
+    ss << ", \"repr_offset_q\":"  << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->repr_offset_q[0])) << "]";
     ss << "} },";
  return ss.str();
 }
@@ -824,15 +899,15 @@ int MavLinkServoOutputRaw::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo6_raw), 14);
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo7_raw), 16);
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo8_raw), 18);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo9_raw), 20);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo10_raw), 22);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo11_raw), 24);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo12_raw), 26);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo13_raw), 28);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo14_raw), 30);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo15_raw), 32);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo16_raw), 34);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->port), 36);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->port), 20);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo9_raw), 21);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo10_raw), 23);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo11_raw), 25);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo12_raw), 27);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo13_raw), 29);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo14_raw), 31);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo15_raw), 33);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->servo16_raw), 35);
     return 37;
 }
 
@@ -846,15 +921,15 @@ int MavLinkServoOutputRaw::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo6_raw), 14);
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo7_raw), 16);
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo8_raw), 18);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo9_raw), 20);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo10_raw), 22);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo11_raw), 24);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo12_raw), 26);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo13_raw), 28);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo14_raw), 30);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo15_raw), 32);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo16_raw), 34);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->port), 36);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->port), 20);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo9_raw), 21);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo10_raw), 23);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo11_raw), 25);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo12_raw), 27);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo13_raw), 29);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo14_raw), 31);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo15_raw), 33);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->servo16_raw), 35);
  return 37;
 }
 
@@ -870,6 +945,7 @@ std::string MavLinkServoOutputRaw::toJSon() {
     ss << ", \"servo6_raw\":"  << this->servo6_raw;
     ss << ", \"servo7_raw\":"  << this->servo7_raw;
     ss << ", \"servo8_raw\":"  << this->servo8_raw;
+    ss << ", \"port\":"  << static_cast<unsigned int>(this->port);
     ss << ", \"servo9_raw\":"  << this->servo9_raw;
     ss << ", \"servo10_raw\":"  << this->servo10_raw;
     ss << ", \"servo11_raw\":"  << this->servo11_raw;
@@ -878,7 +954,6 @@ std::string MavLinkServoOutputRaw::toJSon() {
     ss << ", \"servo14_raw\":"  << this->servo14_raw;
     ss << ", \"servo15_raw\":"  << this->servo15_raw;
     ss << ", \"servo16_raw\":"  << this->servo16_raw;
-    ss << ", \"port\":"  << static_cast<unsigned int>(this->port);
     ss << "} },";
  return ss.str();
 }
@@ -888,7 +963,8 @@ int MavLinkMissionRequestPartialList::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->end_index), 2);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 4);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 5);
-    return 6;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 6);
+    return 7;
 }
 
 int MavLinkMissionRequestPartialList::unpack(const char* buffer) {
@@ -896,7 +972,8 @@ int MavLinkMissionRequestPartialList::unpack(const char* buffer) {
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->end_index), 2);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 4);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 5);
- return 6;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 6);
+ return 7;
 }
 
 std::string MavLinkMissionRequestPartialList::toJSon() {
@@ -906,6 +983,7 @@ std::string MavLinkMissionRequestPartialList::toJSon() {
     ss << ", \"end_index\":"  << this->end_index;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -915,7 +993,8 @@ int MavLinkMissionWritePartialList::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->end_index), 2);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 4);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 5);
-    return 6;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 6);
+    return 7;
 }
 
 int MavLinkMissionWritePartialList::unpack(const char* buffer) {
@@ -923,7 +1002,8 @@ int MavLinkMissionWritePartialList::unpack(const char* buffer) {
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->end_index), 2);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 4);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 5);
- return 6;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 6);
+ return 7;
 }
 
 std::string MavLinkMissionWritePartialList::toJSon() {
@@ -933,6 +1013,7 @@ std::string MavLinkMissionWritePartialList::toJSon() {
     ss << ", \"end_index\":"  << this->end_index;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -952,7 +1033,8 @@ int MavLinkMissionItem::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->frame), 34);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->current), 35);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->autocontinue), 36);
-    return 37;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 37);
+    return 38;
 }
 
 int MavLinkMissionItem::unpack(const char* buffer) {
@@ -970,7 +1052,8 @@ int MavLinkMissionItem::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->frame), 34);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->current), 35);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->autocontinue), 36);
- return 37;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 37);
+ return 38;
 }
 
 std::string MavLinkMissionItem::toJSon() {
@@ -990,6 +1073,7 @@ std::string MavLinkMissionItem::toJSon() {
     ss << ", \"frame\":"  << static_cast<unsigned int>(this->frame);
     ss << ", \"current\":"  << static_cast<unsigned int>(this->current);
     ss << ", \"autocontinue\":"  << static_cast<unsigned int>(this->autocontinue);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -998,14 +1082,16 @@ int MavLinkMissionRequest::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->seq), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 2);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 3);
-    return 4;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 4);
+    return 5;
 }
 
 int MavLinkMissionRequest::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->seq), 0);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 2);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 3);
- return 4;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 4);
+ return 5;
 }
 
 std::string MavLinkMissionRequest::toJSon() {
@@ -1014,6 +1100,7 @@ std::string MavLinkMissionRequest::toJSon() {
     ss << "\"seq\":"  << this->seq;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -1063,13 +1150,15 @@ std::string MavLinkMissionCurrent::toJSon() {
 int MavLinkMissionRequestList::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 1);
-    return 2;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 2);
+    return 3;
 }
 
 int MavLinkMissionRequestList::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 0);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 1);
- return 2;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 2);
+ return 3;
 }
 
 std::string MavLinkMissionRequestList::toJSon() {
@@ -1077,6 +1166,7 @@ std::string MavLinkMissionRequestList::toJSon() {
     ss << "{ \"name\": \"MISSION_REQUEST_LIST\", \"id\": 43, \"timestamp\":" << timestamp << ", \"msg\": {";
     ss << "\"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -1085,14 +1175,16 @@ int MavLinkMissionCount::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->count), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 2);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 3);
-    return 4;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 4);
+    return 5;
 }
 
 int MavLinkMissionCount::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->count), 0);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 2);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 3);
- return 4;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 4);
+ return 5;
 }
 
 std::string MavLinkMissionCount::toJSon() {
@@ -1101,6 +1193,7 @@ std::string MavLinkMissionCount::toJSon() {
     ss << "\"count\":"  << this->count;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -1108,13 +1201,15 @@ std::string MavLinkMissionCount::toJSon() {
 int MavLinkMissionClearAll::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 1);
-    return 2;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 2);
+    return 3;
 }
 
 int MavLinkMissionClearAll::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 0);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 1);
- return 2;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 2);
+ return 3;
 }
 
 std::string MavLinkMissionClearAll::toJSon() {
@@ -1122,6 +1217,7 @@ std::string MavLinkMissionClearAll::toJSon() {
     ss << "{ \"name\": \"MISSION_CLEAR_ALL\", \"id\": 45, \"timestamp\":" << timestamp << ", \"msg\": {";
     ss << "\"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -1148,14 +1244,16 @@ int MavLinkMissionAck::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 1);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 2);
-    return 3;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 3);
+    return 4;
 }
 
 int MavLinkMissionAck::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 0);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 1);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 2);
- return 3;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 3);
+ return 4;
 }
 
 std::string MavLinkMissionAck::toJSon() {
@@ -1164,6 +1262,7 @@ std::string MavLinkMissionAck::toJSon() {
     ss << "\"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
     ss << ", \"type\":"  << static_cast<unsigned int>(this->type);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -1173,7 +1272,8 @@ int MavLinkSetGpsGlobalOrigin::pack(char* buffer) const {
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 4);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 8);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 12);
-    return 13;
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 13);
+    return 21;
 }
 
 int MavLinkSetGpsGlobalOrigin::unpack(const char* buffer) {
@@ -1181,7 +1281,8 @@ int MavLinkSetGpsGlobalOrigin::unpack(const char* buffer) {
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 4);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 8);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 12);
- return 13;
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 13);
+ return 21;
 }
 
 std::string MavLinkSetGpsGlobalOrigin::toJSon() {
@@ -1191,6 +1292,7 @@ std::string MavLinkSetGpsGlobalOrigin::toJSon() {
     ss << ", \"longitude\":"  << this->longitude;
     ss << ", \"altitude\":"  << this->altitude;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
+    ss << ", \"time_usec\":"  << this->time_usec;
     ss << "} },";
  return ss.str();
 }
@@ -1199,14 +1301,16 @@ int MavLinkGpsGlobalOrigin::pack(char* buffer) const {
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 0);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 4);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->altitude), 8);
-    return 12;
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 12);
+    return 20;
 }
 
 int MavLinkGpsGlobalOrigin::unpack(const char* buffer) {
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 0);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 4);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->altitude), 8);
- return 12;
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 12);
+ return 20;
 }
 
 std::string MavLinkGpsGlobalOrigin::toJSon() {
@@ -1215,6 +1319,7 @@ std::string MavLinkGpsGlobalOrigin::toJSon() {
     ss << "\"latitude\":"  << this->latitude;
     ss << ", \"longitude\":"  << this->longitude;
     ss << ", \"altitude\":"  << this->altitude;
+    ss << ", \"time_usec\":"  << this->time_usec;
     ss << "} },";
  return ss.str();
 }
@@ -1265,14 +1370,16 @@ int MavLinkMissionRequestInt::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->seq), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 2);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 3);
-    return 4;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 4);
+    return 5;
 }
 
 int MavLinkMissionRequestInt::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->seq), 0);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 2);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 3);
- return 4;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 4);
+ return 5;
 }
 
 std::string MavLinkMissionRequestInt::toJSon() {
@@ -1281,6 +1388,37 @@ std::string MavLinkMissionRequestInt::toJSon() {
     ss << "\"seq\":"  << this->seq;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
+    ss << "} },";
+ return ss.str();
+}
+
+int MavLinkMissionChanged::pack(char* buffer) const {
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->start_index), 0);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->end_index), 2);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->origin_sysid), 4);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->origin_compid), 5);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 6);
+    return 7;
+}
+
+int MavLinkMissionChanged::unpack(const char* buffer) {
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->start_index), 0);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->end_index), 2);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->origin_sysid), 4);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->origin_compid), 5);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 6);
+ return 7;
+}
+
+std::string MavLinkMissionChanged::toJSon() {
+    std::ostringstream ss;
+    ss << "{ \"name\": \"MISSION_CHANGED\", \"id\": 52, \"timestamp\":" << timestamp << ", \"msg\": {";
+    ss << "\"start_index\":"  << this->start_index;
+    ss << ", \"end_index\":"  << this->end_index;
+    ss << ", \"origin_sysid\":"  << static_cast<unsigned int>(this->origin_sysid);
+    ss << ", \"origin_compid\":"  << static_cast<unsigned int>(this->origin_compid);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -1707,7 +1845,17 @@ int MavLinkRcChannelsOverride::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan8_raw), 14);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 16);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 17);
-    return 18;
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan9_raw), 18);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan10_raw), 20);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan11_raw), 22);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan12_raw), 24);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan13_raw), 26);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan14_raw), 28);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan15_raw), 30);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan16_raw), 32);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan17_raw), 34);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->chan18_raw), 36);
+    return 38;
 }
 
 int MavLinkRcChannelsOverride::unpack(const char* buffer) {
@@ -1721,7 +1869,17 @@ int MavLinkRcChannelsOverride::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan8_raw), 14);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 16);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 17);
- return 18;
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan9_raw), 18);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan10_raw), 20);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan11_raw), 22);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan12_raw), 24);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan13_raw), 26);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan14_raw), 28);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan15_raw), 30);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan16_raw), 32);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan17_raw), 34);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->chan18_raw), 36);
+ return 38;
 }
 
 std::string MavLinkRcChannelsOverride::toJSon() {
@@ -1737,6 +1895,16 @@ std::string MavLinkRcChannelsOverride::toJSon() {
     ss << ", \"chan8_raw\":"  << this->chan8_raw;
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
     ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"chan9_raw\":"  << this->chan9_raw;
+    ss << ", \"chan10_raw\":"  << this->chan10_raw;
+    ss << ", \"chan11_raw\":"  << this->chan11_raw;
+    ss << ", \"chan12_raw\":"  << this->chan12_raw;
+    ss << ", \"chan13_raw\":"  << this->chan13_raw;
+    ss << ", \"chan14_raw\":"  << this->chan14_raw;
+    ss << ", \"chan15_raw\":"  << this->chan15_raw;
+    ss << ", \"chan16_raw\":"  << this->chan16_raw;
+    ss << ", \"chan17_raw\":"  << this->chan17_raw;
+    ss << ", \"chan18_raw\":"  << this->chan18_raw;
     ss << "} },";
  return ss.str();
 }
@@ -1756,7 +1924,8 @@ int MavLinkMissionItemInt::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->frame), 34);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->current), 35);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->autocontinue), 36);
-    return 37;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->mission_type), 37);
+    return 38;
 }
 
 int MavLinkMissionItemInt::unpack(const char* buffer) {
@@ -1774,7 +1943,8 @@ int MavLinkMissionItemInt::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->frame), 34);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->current), 35);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->autocontinue), 36);
- return 37;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->mission_type), 37);
+ return 38;
 }
 
 std::string MavLinkMissionItemInt::toJSon() {
@@ -1794,6 +1964,7 @@ std::string MavLinkMissionItemInt::toJSon() {
     ss << ", \"frame\":"  << static_cast<unsigned int>(this->frame);
     ss << ", \"current\":"  << static_cast<unsigned int>(this->current);
     ss << ", \"autocontinue\":"  << static_cast<unsigned int>(this->autocontinue);
+    ss << ", \"mission_type\":"  << static_cast<unsigned int>(this->mission_type);
     ss << "} },";
  return ss.str();
 }
@@ -1936,13 +2107,21 @@ std::string MavLinkCommandLong::toJSon() {
 int MavLinkCommandAck::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->command), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->result), 2);
-    return 3;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->progress), 3);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->result_param2), 4);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 8);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 9);
+    return 10;
 }
 
 int MavLinkCommandAck::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->command), 0);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->result), 2);
- return 3;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->progress), 3);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->result_param2), 4);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 8);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 9);
+ return 10;
 }
 
 std::string MavLinkCommandAck::toJSon() {
@@ -1950,6 +2129,10 @@ std::string MavLinkCommandAck::toJSon() {
     ss << "{ \"name\": \"COMMAND_ACK\", \"id\": 77, \"timestamp\":" << timestamp << ", \"msg\": {";
     ss << "\"command\":"  << this->command;
     ss << ", \"result\":"  << static_cast<unsigned int>(this->result);
+    ss << ", \"progress\":"  << static_cast<unsigned int>(this->progress);
+    ss << ", \"result_param2\":"  << this->result_param2;
+    ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
+    ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
     ss << "} },";
  return ss.str();
 }
@@ -2548,7 +2731,9 @@ int MavLinkOpticalFlow::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->flow_y), 22);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->sensor_id), 24);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->quality), 25);
-    return 26;
+    pack_float(buffer, reinterpret_cast<const float*>(&this->flow_rate_x), 26);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->flow_rate_y), 30);
+    return 34;
 }
 
 int MavLinkOpticalFlow::unpack(const char* buffer) {
@@ -2560,7 +2745,9 @@ int MavLinkOpticalFlow::unpack(const char* buffer) {
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->flow_y), 22);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->sensor_id), 24);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->quality), 25);
- return 26;
+    unpack_float(buffer, reinterpret_cast<float*>(&this->flow_rate_x), 26);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->flow_rate_y), 30);
+ return 34;
 }
 
 std::string MavLinkOpticalFlow::toJSon() {
@@ -2574,6 +2761,8 @@ std::string MavLinkOpticalFlow::toJSon() {
     ss << ", \"flow_y\":"  << this->flow_y;
     ss << ", \"sensor_id\":"  << static_cast<unsigned int>(this->sensor_id);
     ss << ", \"quality\":"  << static_cast<unsigned int>(this->quality);
+    ss << ", \"flow_rate_x\":"  << float_tostring(this->flow_rate_x);
+    ss << ", \"flow_rate_y\":"  << float_tostring(this->flow_rate_y);
     ss << "} },";
  return ss.str();
 }
@@ -2586,7 +2775,9 @@ int MavLinkGlobalVisionPositionEstimate::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->roll), 20);
     pack_float(buffer, reinterpret_cast<const float*>(&this->pitch), 24);
     pack_float(buffer, reinterpret_cast<const float*>(&this->yaw), 28);
-    return 32;
+    pack_float_array(21, buffer, reinterpret_cast<const float*>(&this->covariance[0]), 32);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->reset_counter), 116);
+    return 117;
 }
 
 int MavLinkGlobalVisionPositionEstimate::unpack(const char* buffer) {
@@ -2597,7 +2788,9 @@ int MavLinkGlobalVisionPositionEstimate::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->roll), 20);
     unpack_float(buffer, reinterpret_cast<float*>(&this->pitch), 24);
     unpack_float(buffer, reinterpret_cast<float*>(&this->yaw), 28);
- return 32;
+    unpack_float_array(21, buffer, reinterpret_cast<float*>(&this->covariance[0]), 32);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->reset_counter), 116);
+ return 117;
 }
 
 std::string MavLinkGlobalVisionPositionEstimate::toJSon() {
@@ -2610,6 +2803,8 @@ std::string MavLinkGlobalVisionPositionEstimate::toJSon() {
     ss << ", \"roll\":"  << float_tostring(this->roll);
     ss << ", \"pitch\":"  << float_tostring(this->pitch);
     ss << ", \"yaw\":"  << float_tostring(this->yaw);
+    ss << ", \"covariance\":"  << "[" << float_array_tostring(21, reinterpret_cast<float*>(&this->covariance[0])) << "]";
+    ss << ", \"reset_counter\":"  << static_cast<unsigned int>(this->reset_counter);
     ss << "} },";
  return ss.str();
 }
@@ -2622,7 +2817,9 @@ int MavLinkVisionPositionEstimate::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->roll), 20);
     pack_float(buffer, reinterpret_cast<const float*>(&this->pitch), 24);
     pack_float(buffer, reinterpret_cast<const float*>(&this->yaw), 28);
-    return 32;
+    pack_float_array(21, buffer, reinterpret_cast<const float*>(&this->covariance[0]), 32);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->reset_counter), 116);
+    return 117;
 }
 
 int MavLinkVisionPositionEstimate::unpack(const char* buffer) {
@@ -2633,7 +2830,9 @@ int MavLinkVisionPositionEstimate::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->roll), 20);
     unpack_float(buffer, reinterpret_cast<float*>(&this->pitch), 24);
     unpack_float(buffer, reinterpret_cast<float*>(&this->yaw), 28);
- return 32;
+    unpack_float_array(21, buffer, reinterpret_cast<float*>(&this->covariance[0]), 32);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->reset_counter), 116);
+ return 117;
 }
 
 std::string MavLinkVisionPositionEstimate::toJSon() {
@@ -2646,6 +2845,8 @@ std::string MavLinkVisionPositionEstimate::toJSon() {
     ss << ", \"roll\":"  << float_tostring(this->roll);
     ss << ", \"pitch\":"  << float_tostring(this->pitch);
     ss << ", \"yaw\":"  << float_tostring(this->yaw);
+    ss << ", \"covariance\":"  << "[" << float_array_tostring(21, reinterpret_cast<float*>(&this->covariance[0])) << "]";
+    ss << ", \"reset_counter\":"  << static_cast<unsigned int>(this->reset_counter);
     ss << "} },";
  return ss.str();
 }
@@ -2655,7 +2856,9 @@ int MavLinkVisionSpeedEstimate::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->x), 8);
     pack_float(buffer, reinterpret_cast<const float*>(&this->y), 12);
     pack_float(buffer, reinterpret_cast<const float*>(&this->z), 16);
-    return 20;
+    pack_float_array(9, buffer, reinterpret_cast<const float*>(&this->covariance[0]), 20);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->reset_counter), 56);
+    return 57;
 }
 
 int MavLinkVisionSpeedEstimate::unpack(const char* buffer) {
@@ -2663,7 +2866,9 @@ int MavLinkVisionSpeedEstimate::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->x), 8);
     unpack_float(buffer, reinterpret_cast<float*>(&this->y), 12);
     unpack_float(buffer, reinterpret_cast<float*>(&this->z), 16);
- return 20;
+    unpack_float_array(9, buffer, reinterpret_cast<float*>(&this->covariance[0]), 20);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->reset_counter), 56);
+ return 57;
 }
 
 std::string MavLinkVisionSpeedEstimate::toJSon() {
@@ -2673,6 +2878,8 @@ std::string MavLinkVisionSpeedEstimate::toJSon() {
     ss << ", \"x\":"  << float_tostring(this->x);
     ss << ", \"y\":"  << float_tostring(this->y);
     ss << ", \"z\":"  << float_tostring(this->z);
+    ss << ", \"covariance\":"  << "[" << float_array_tostring(9, reinterpret_cast<float*>(&this->covariance[0])) << "]";
+    ss << ", \"reset_counter\":"  << static_cast<unsigned int>(this->reset_counter);
     ss << "} },";
  return ss.str();
 }
@@ -2685,7 +2892,8 @@ int MavLinkViconPositionEstimate::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->roll), 20);
     pack_float(buffer, reinterpret_cast<const float*>(&this->pitch), 24);
     pack_float(buffer, reinterpret_cast<const float*>(&this->yaw), 28);
-    return 32;
+    pack_float_array(21, buffer, reinterpret_cast<const float*>(&this->covariance[0]), 32);
+    return 116;
 }
 
 int MavLinkViconPositionEstimate::unpack(const char* buffer) {
@@ -2696,7 +2904,8 @@ int MavLinkViconPositionEstimate::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->roll), 20);
     unpack_float(buffer, reinterpret_cast<float*>(&this->pitch), 24);
     unpack_float(buffer, reinterpret_cast<float*>(&this->yaw), 28);
- return 32;
+    unpack_float_array(21, buffer, reinterpret_cast<float*>(&this->covariance[0]), 32);
+ return 116;
 }
 
 std::string MavLinkViconPositionEstimate::toJSon() {
@@ -2709,6 +2918,7 @@ std::string MavLinkViconPositionEstimate::toJSon() {
     ss << ", \"roll\":"  << float_tostring(this->roll);
     ss << ", \"pitch\":"  << float_tostring(this->pitch);
     ss << ", \"yaw\":"  << float_tostring(this->yaw);
+    ss << ", \"covariance\":"  << "[" << float_array_tostring(21, reinterpret_cast<float*>(&this->covariance[0])) << "]";
     ss << "} },";
  return ss.str();
 }
@@ -2729,7 +2939,8 @@ int MavLinkHighresImu::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->pressure_alt), 52);
     pack_float(buffer, reinterpret_cast<const float*>(&this->temperature), 56);
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->fields_updated), 60);
-    return 62;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 62);
+    return 63;
 }
 
 int MavLinkHighresImu::unpack(const char* buffer) {
@@ -2748,7 +2959,8 @@ int MavLinkHighresImu::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->pressure_alt), 52);
     unpack_float(buffer, reinterpret_cast<float*>(&this->temperature), 56);
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->fields_updated), 60);
- return 62;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 62);
+ return 63;
 }
 
 std::string MavLinkHighresImu::toJSon() {
@@ -2769,6 +2981,7 @@ std::string MavLinkHighresImu::toJSon() {
     ss << ", \"pressure_alt\":"  << float_tostring(this->pressure_alt);
     ss << ", \"temperature\":"  << float_tostring(this->temperature);
     ss << ", \"fields_updated\":"  << this->fields_updated;
+    ss << ", \"id\":"  << static_cast<unsigned int>(this->id);
     ss << "} },";
  return ss.str();
 }
@@ -3246,7 +3459,8 @@ int MavLinkScaledImu2::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->xmag), 16);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->ymag), 18);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->zmag), 20);
-    return 22;
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 22);
+    return 24;
 }
 
 int MavLinkScaledImu2::unpack(const char* buffer) {
@@ -3260,7 +3474,8 @@ int MavLinkScaledImu2::unpack(const char* buffer) {
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->xmag), 16);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->ymag), 18);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->zmag), 20);
- return 22;
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 22);
+ return 24;
 }
 
 std::string MavLinkScaledImu2::toJSon() {
@@ -3276,6 +3491,7 @@ std::string MavLinkScaledImu2::toJSon() {
     ss << ", \"xmag\":"  << this->xmag;
     ss << ", \"ymag\":"  << this->ymag;
     ss << ", \"zmag\":"  << this->zmag;
+    ss << ", \"temperature\":"  << this->temperature;
     ss << "} },";
  return ss.str();
 }
@@ -3690,7 +3906,8 @@ int MavLinkScaledImu3::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->xmag), 16);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->ymag), 18);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->zmag), 20);
-    return 22;
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 22);
+    return 24;
 }
 
 int MavLinkScaledImu3::unpack(const char* buffer) {
@@ -3704,7 +3921,8 @@ int MavLinkScaledImu3::unpack(const char* buffer) {
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->xmag), 16);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->ymag), 18);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->zmag), 20);
- return 22;
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 22);
+ return 24;
 }
 
 std::string MavLinkScaledImu3::toJSon() {
@@ -3720,6 +3938,7 @@ std::string MavLinkScaledImu3::toJSon() {
     ss << ", \"xmag\":"  << this->xmag;
     ss << ", \"ymag\":"  << this->ymag;
     ss << ", \"zmag\":"  << this->zmag;
+    ss << ", \"temperature\":"  << this->temperature;
     ss << "} },";
  return ss.str();
 }
@@ -3790,7 +4009,10 @@ int MavLinkDistanceSensor::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 11);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->orientation), 12);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->covariance), 13);
-    return 14;
+    pack_float(buffer, reinterpret_cast<const float*>(&this->horizontal_fov), 14);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->vertical_fov), 18);
+    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->quaternion[0]), 22);
+    return 38;
 }
 
 int MavLinkDistanceSensor::unpack(const char* buffer) {
@@ -3802,7 +4024,10 @@ int MavLinkDistanceSensor::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 11);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->orientation), 12);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->covariance), 13);
- return 14;
+    unpack_float(buffer, reinterpret_cast<float*>(&this->horizontal_fov), 14);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->vertical_fov), 18);
+    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->quaternion[0]), 22);
+ return 38;
 }
 
 std::string MavLinkDistanceSensor::toJSon() {
@@ -3816,6 +4041,9 @@ std::string MavLinkDistanceSensor::toJSon() {
     ss << ", \"id\":"  << static_cast<unsigned int>(this->id);
     ss << ", \"orientation\":"  << static_cast<unsigned int>(this->orientation);
     ss << ", \"covariance\":"  << static_cast<unsigned int>(this->covariance);
+    ss << ", \"horizontal_fov\":"  << float_tostring(this->horizontal_fov);
+    ss << ", \"vertical_fov\":"  << float_tostring(this->vertical_fov);
+    ss << ", \"quaternion\":"  << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->quaternion[0])) << "]";
     ss << "} },";
  return ss.str();
 }
@@ -3967,7 +4195,8 @@ int MavLinkAttPosMocap::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->x), 24);
     pack_float(buffer, reinterpret_cast<const float*>(&this->y), 28);
     pack_float(buffer, reinterpret_cast<const float*>(&this->z), 32);
-    return 36;
+    pack_float_array(21, buffer, reinterpret_cast<const float*>(&this->covariance[0]), 36);
+    return 120;
 }
 
 int MavLinkAttPosMocap::unpack(const char* buffer) {
@@ -3976,7 +4205,8 @@ int MavLinkAttPosMocap::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->x), 24);
     unpack_float(buffer, reinterpret_cast<float*>(&this->y), 28);
     unpack_float(buffer, reinterpret_cast<float*>(&this->z), 32);
- return 36;
+    unpack_float_array(21, buffer, reinterpret_cast<float*>(&this->covariance[0]), 36);
+ return 120;
 }
 
 std::string MavLinkAttPosMocap::toJSon() {
@@ -3987,6 +4217,7 @@ std::string MavLinkAttPosMocap::toJSon() {
     ss << ", \"x\":"  << float_tostring(this->x);
     ss << ", \"y\":"  << float_tostring(this->y);
     ss << ", \"z\":"  << float_tostring(this->z);
+    ss << ", \"covariance\":"  << "[" << float_array_tostring(21, reinterpret_cast<float*>(&this->covariance[0])) << "]";
     ss << "} },";
  return ss.str();
 }
@@ -4262,7 +4493,9 @@ int MavLinkBatteryStatus::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->battery_function), 33);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 34);
     pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->battery_remaining), 35);
-    return 36;
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->time_remaining), 36);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->charge_state), 40);
+    return 41;
 }
 
 int MavLinkBatteryStatus::unpack(const char* buffer) {
@@ -4275,7 +4508,9 @@ int MavLinkBatteryStatus::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->battery_function), 33);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 34);
     unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->battery_remaining), 35);
- return 36;
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->time_remaining), 36);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->charge_state), 40);
+ return 41;
 }
 
 std::string MavLinkBatteryStatus::toJSon() {
@@ -4290,6 +4525,8 @@ std::string MavLinkBatteryStatus::toJSon() {
     ss << ", \"battery_function\":"  << static_cast<unsigned int>(this->battery_function);
     ss << ", \"type\":"  << static_cast<unsigned int>(this->type);
     ss << ", \"battery_remaining\":"  << static_cast<int>(this->battery_remaining);
+    ss << ", \"time_remaining\":"  << this->time_remaining;
+    ss << ", \"charge_state\":"  << static_cast<unsigned int>(this->charge_state);
     ss << "} },";
  return ss.str();
 }
@@ -4306,7 +4543,8 @@ int MavLinkAutopilotVersion::pack(char* buffer) const {
     pack_uint8_t_array(8, buffer, reinterpret_cast<const uint8_t*>(&this->flight_custom_version[0]), 36);
     pack_uint8_t_array(8, buffer, reinterpret_cast<const uint8_t*>(&this->middleware_custom_version[0]), 44);
     pack_uint8_t_array(8, buffer, reinterpret_cast<const uint8_t*>(&this->os_custom_version[0]), 52);
-    return 60;
+    pack_uint8_t_array(18, buffer, reinterpret_cast<const uint8_t*>(&this->uid2[0]), 60);
+    return 78;
 }
 
 int MavLinkAutopilotVersion::unpack(const char* buffer) {
@@ -4321,7 +4559,8 @@ int MavLinkAutopilotVersion::unpack(const char* buffer) {
     unpack_uint8_t_array(8, buffer, reinterpret_cast<uint8_t*>(&this->flight_custom_version[0]), 36);
     unpack_uint8_t_array(8, buffer, reinterpret_cast<uint8_t*>(&this->middleware_custom_version[0]), 44);
     unpack_uint8_t_array(8, buffer, reinterpret_cast<uint8_t*>(&this->os_custom_version[0]), 52);
- return 60;
+    unpack_uint8_t_array(18, buffer, reinterpret_cast<uint8_t*>(&this->uid2[0]), 60);
+ return 78;
 }
 
 std::string MavLinkAutopilotVersion::toJSon() {
@@ -4338,6 +4577,7 @@ std::string MavLinkAutopilotVersion::toJSon() {
     ss << ", \"flight_custom_version\":"  << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->flight_custom_version[0])) << "]";
     ss << ", \"middleware_custom_version\":"  << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->middleware_custom_version[0])) << "]";
     ss << ", \"os_custom_version\":"  << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->os_custom_version[0])) << "]";
+    ss << ", \"uid2\":"  << "[" << uint8_t_array_tostring(18, reinterpret_cast<uint8_t*>(&this->uid2[0])) << "]";
     ss << "} },";
  return ss.str();
 }
@@ -4351,7 +4591,13 @@ int MavLinkLandingTarget::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->size_y), 24);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_num), 28);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->frame), 29);
-    return 30;
+    pack_float(buffer, reinterpret_cast<const float*>(&this->x), 30);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->y), 34);
+    pack_float(buffer, reinterpret_cast<const float*>(&this->z), 38);
+    pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->q[0]), 42);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 58);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->position_valid), 59);
+    return 60;
 }
 
 int MavLinkLandingTarget::unpack(const char* buffer) {
@@ -4363,7 +4609,13 @@ int MavLinkLandingTarget::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->size_y), 24);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_num), 28);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->frame), 29);
- return 30;
+    unpack_float(buffer, reinterpret_cast<float*>(&this->x), 30);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->y), 34);
+    unpack_float(buffer, reinterpret_cast<float*>(&this->z), 38);
+    unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->q[0]), 42);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 58);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->position_valid), 59);
+ return 60;
 }
 
 std::string MavLinkLandingTarget::toJSon() {
@@ -4377,6 +4629,42 @@ std::string MavLinkLandingTarget::toJSon() {
     ss << ", \"size_y\":"  << float_tostring(this->size_y);
     ss << ", \"target_num\":"  << static_cast<unsigned int>(this->target_num);
     ss << ", \"frame\":"  << static_cast<unsigned int>(this->frame);
+    ss << ", \"x\":"  << float_tostring(this->x);
+    ss << ", \"y\":"  << float_tostring(this->y);
+    ss << ", \"z\":"  << float_tostring(this->z);
+    ss << ", \"q\":"  << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->q[0])) << "]";
+    ss << ", \"type\":"  << static_cast<unsigned int>(this->type);
+    ss << ", \"position_valid\":"  << static_cast<unsigned int>(this->position_valid);
+    ss << "} },";
+ return ss.str();
+}
+
+int MavLinkFenceStatus::pack(char* buffer) const {
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->breach_time), 0);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->breach_count), 4);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->breach_status), 6);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->breach_type), 7);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->breach_mitigation), 8);
+    return 9;
+}
+
+int MavLinkFenceStatus::unpack(const char* buffer) {
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->breach_time), 0);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->breach_count), 4);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->breach_status), 6);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->breach_type), 7);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->breach_mitigation), 8);
+ return 9;
+}
+
+std::string MavLinkFenceStatus::toJSon() {
+    std::ostringstream ss;
+    ss << "{ \"name\": \"FENCE_STATUS\", \"id\": 162, \"timestamp\":" << timestamp << ", \"msg\": {";
+    ss << "\"breach_time\":"  << this->breach_time;
+    ss << ", \"breach_count\":"  << this->breach_count;
+    ss << ", \"breach_status\":"  << static_cast<unsigned int>(this->breach_status);
+    ss << ", \"breach_type\":"  << static_cast<unsigned int>(this->breach_type);
+    ss << ", \"breach_mitigation\":"  << static_cast<unsigned int>(this->breach_mitigation);
     ss << "} },";
  return ss.str();
 }
@@ -4487,7 +4775,8 @@ int MavLinkGpsInput::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->gps_id), 60);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->fix_type), 61);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->satellites_visible), 62);
-    return 63;
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->yaw), 63);
+    return 65;
 }
 
 int MavLinkGpsInput::unpack(const char* buffer) {
@@ -4509,7 +4798,8 @@ int MavLinkGpsInput::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->gps_id), 60);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->fix_type), 61);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->satellites_visible), 62);
- return 63;
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->yaw), 63);
+ return 65;
 }
 
 std::string MavLinkGpsInput::toJSon() {
@@ -4533,6 +4823,7 @@ std::string MavLinkGpsInput::toJSon() {
     ss << ", \"gps_id\":"  << static_cast<unsigned int>(this->gps_id);
     ss << ", \"fix_type\":"  << static_cast<unsigned int>(this->fix_type);
     ss << ", \"satellites_visible\":"  << static_cast<unsigned int>(this->satellites_visible);
+    ss << ", \"yaw\":"  << this->yaw;
     ss << "} },";
  return ss.str();
 }
@@ -4562,83 +4853,71 @@ std::string MavLinkGpsRtcmData::toJSon() {
 }
 
 int MavLinkHighLatency::pack(char* buffer) const {
-    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 0);
-    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->custom_mode), 8);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 12);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 16);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->roll), 20);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->pitch), 22);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->heading), 24);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->roll_sp), 26);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->pitch_sp), 28);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->heading_sp), 30);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->altitude_home), 32);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->altitude_amsl), 34);
-    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->altitude_sp), 36);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->wp_distance), 38);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->base_mode), 40);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->landed_state), 41);
-    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->throttle), 42);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->airspeed), 43);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->airspeed_sp), 44);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->groundspeed), 45);
-    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->climb_rate), 46);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->gps_nsat), 47);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->gps_fix_type), 48);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->battery_remaining), 49);
-    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->temperature), 50);
-    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->temperature_air), 51);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->failsafe), 52);
-    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->wp_num), 53);
-    return 54;
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->custom_mode), 0);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 4);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 8);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->roll), 12);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->pitch), 14);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->heading), 16);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->heading_sp), 18);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->altitude_amsl), 20);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->altitude_sp), 22);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->wp_distance), 24);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->base_mode), 26);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->landed_state), 27);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->throttle), 28);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->airspeed), 29);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->airspeed_sp), 30);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->groundspeed), 31);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->climb_rate), 32);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->gps_nsat), 33);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->gps_fix_type), 34);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->battery_remaining), 35);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->temperature), 36);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->temperature_air), 37);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->failsafe), 38);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->wp_num), 39);
+    return 40;
 }
 
 int MavLinkHighLatency::unpack(const char* buffer) {
-    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 0);
-    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->custom_mode), 8);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 12);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 16);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->roll), 20);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->pitch), 22);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->heading), 24);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->roll_sp), 26);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->pitch_sp), 28);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->heading_sp), 30);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->altitude_home), 32);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->altitude_amsl), 34);
-    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->altitude_sp), 36);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->wp_distance), 38);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->base_mode), 40);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->landed_state), 41);
-    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->throttle), 42);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->airspeed), 43);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->airspeed_sp), 44);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->groundspeed), 45);
-    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->climb_rate), 46);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->gps_nsat), 47);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->gps_fix_type), 48);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->battery_remaining), 49);
-    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->temperature), 50);
-    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->temperature_air), 51);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->failsafe), 52);
-    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->wp_num), 53);
- return 54;
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->custom_mode), 0);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 4);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 8);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->roll), 12);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->pitch), 14);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->heading), 16);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->heading_sp), 18);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->altitude_amsl), 20);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->altitude_sp), 22);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->wp_distance), 24);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->base_mode), 26);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->landed_state), 27);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->throttle), 28);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->airspeed), 29);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->airspeed_sp), 30);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->groundspeed), 31);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->climb_rate), 32);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->gps_nsat), 33);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->gps_fix_type), 34);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->battery_remaining), 35);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->temperature), 36);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->temperature_air), 37);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->failsafe), 38);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->wp_num), 39);
+ return 40;
 }
 
 std::string MavLinkHighLatency::toJSon() {
     std::ostringstream ss;
     ss << "{ \"name\": \"HIGH_LATENCY\", \"id\": 234, \"timestamp\":" << timestamp << ", \"msg\": {";
-    ss << "\"time_usec\":"  << this->time_usec;
-    ss << ", \"custom_mode\":"  << this->custom_mode;
+    ss << "\"custom_mode\":"  << this->custom_mode;
     ss << ", \"latitude\":"  << this->latitude;
     ss << ", \"longitude\":"  << this->longitude;
     ss << ", \"roll\":"  << this->roll;
     ss << ", \"pitch\":"  << this->pitch;
     ss << ", \"heading\":"  << this->heading;
-    ss << ", \"roll_sp\":"  << this->roll_sp;
-    ss << ", \"pitch_sp\":"  << this->pitch_sp;
     ss << ", \"heading_sp\":"  << this->heading_sp;
-    ss << ", \"altitude_home\":"  << this->altitude_home;
     ss << ", \"altitude_amsl\":"  << this->altitude_amsl;
     ss << ", \"altitude_sp\":"  << this->altitude_sp;
     ss << ", \"wp_distance\":"  << this->wp_distance;
@@ -4656,6 +4935,102 @@ std::string MavLinkHighLatency::toJSon() {
     ss << ", \"temperature_air\":"  << static_cast<int>(this->temperature_air);
     ss << ", \"failsafe\":"  << static_cast<unsigned int>(this->failsafe);
     ss << ", \"wp_num\":"  << static_cast<unsigned int>(this->wp_num);
+    ss << "} },";
+ return ss.str();
+}
+
+int MavLinkHighLatency2::pack(char* buffer) const {
+    pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->timestamp), 0);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->latitude), 4);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->longitude), 8);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->custom_mode), 12);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->altitude), 14);
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->target_altitude), 16);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->target_distance), 18);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->wp_num), 20);
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->failure_flags), 22);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->type), 24);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->autopilot), 25);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->heading), 26);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_heading), 27);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->throttle), 28);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->airspeed), 29);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->airspeed_sp), 30);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->groundspeed), 31);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->windspeed), 32);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->wind_heading), 33);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->eph), 34);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->epv), 35);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->temperature_air), 36);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->climb_rate), 37);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->battery), 38);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->custom0), 39);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->custom1), 40);
+    pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->custom2), 41);
+    return 42;
+}
+
+int MavLinkHighLatency2::unpack(const char* buffer) {
+    unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->timestamp), 0);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->latitude), 4);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->longitude), 8);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->custom_mode), 12);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->altitude), 14);
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->target_altitude), 16);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->target_distance), 18);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->wp_num), 20);
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->failure_flags), 22);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->type), 24);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->autopilot), 25);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->heading), 26);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_heading), 27);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->throttle), 28);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->airspeed), 29);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->airspeed_sp), 30);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->groundspeed), 31);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->windspeed), 32);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->wind_heading), 33);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->eph), 34);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->epv), 35);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->temperature_air), 36);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->climb_rate), 37);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->battery), 38);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->custom0), 39);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->custom1), 40);
+    unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->custom2), 41);
+ return 42;
+}
+
+std::string MavLinkHighLatency2::toJSon() {
+    std::ostringstream ss;
+    ss << "{ \"name\": \"HIGH_LATENCY2\", \"id\": 235, \"timestamp\":" << timestamp << ", \"msg\": {";
+    ss << "\"timestamp\":"  << this->timestamp;
+    ss << ", \"latitude\":"  << this->latitude;
+    ss << ", \"longitude\":"  << this->longitude;
+    ss << ", \"custom_mode\":"  << this->custom_mode;
+    ss << ", \"altitude\":"  << this->altitude;
+    ss << ", \"target_altitude\":"  << this->target_altitude;
+    ss << ", \"target_distance\":"  << this->target_distance;
+    ss << ", \"wp_num\":"  << this->wp_num;
+    ss << ", \"failure_flags\":"  << this->failure_flags;
+    ss << ", \"type\":"  << static_cast<unsigned int>(this->type);
+    ss << ", \"autopilot\":"  << static_cast<unsigned int>(this->autopilot);
+    ss << ", \"heading\":"  << static_cast<unsigned int>(this->heading);
+    ss << ", \"target_heading\":"  << static_cast<unsigned int>(this->target_heading);
+    ss << ", \"throttle\":"  << static_cast<unsigned int>(this->throttle);
+    ss << ", \"airspeed\":"  << static_cast<unsigned int>(this->airspeed);
+    ss << ", \"airspeed_sp\":"  << static_cast<unsigned int>(this->airspeed_sp);
+    ss << ", \"groundspeed\":"  << static_cast<unsigned int>(this->groundspeed);
+    ss << ", \"windspeed\":"  << static_cast<unsigned int>(this->windspeed);
+    ss << ", \"wind_heading\":"  << static_cast<unsigned int>(this->wind_heading);
+    ss << ", \"eph\":"  << static_cast<unsigned int>(this->eph);
+    ss << ", \"epv\":"  << static_cast<unsigned int>(this->epv);
+    ss << ", \"temperature_air\":"  << static_cast<int>(this->temperature_air);
+    ss << ", \"climb_rate\":"  << static_cast<int>(this->climb_rate);
+    ss << ", \"battery\":"  << static_cast<int>(this->battery);
+    ss << ", \"custom0\":"  << static_cast<int>(this->custom0);
+    ss << ", \"custom1\":"  << static_cast<int>(this->custom1);
+    ss << ", \"custom2\":"  << static_cast<int>(this->custom2);
     ss << "} },";
  return ss.str();
 }
@@ -4707,7 +5082,8 @@ int MavLinkHomePosition::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->approach_x), 40);
     pack_float(buffer, reinterpret_cast<const float*>(&this->approach_y), 44);
     pack_float(buffer, reinterpret_cast<const float*>(&this->approach_z), 48);
-    return 52;
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 52);
+    return 60;
 }
 
 int MavLinkHomePosition::unpack(const char* buffer) {
@@ -4721,7 +5097,8 @@ int MavLinkHomePosition::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->approach_x), 40);
     unpack_float(buffer, reinterpret_cast<float*>(&this->approach_y), 44);
     unpack_float(buffer, reinterpret_cast<float*>(&this->approach_z), 48);
- return 52;
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 52);
+ return 60;
 }
 
 std::string MavLinkHomePosition::toJSon() {
@@ -4737,6 +5114,7 @@ std::string MavLinkHomePosition::toJSon() {
     ss << ", \"approach_x\":"  << float_tostring(this->approach_x);
     ss << ", \"approach_y\":"  << float_tostring(this->approach_y);
     ss << ", \"approach_z\":"  << float_tostring(this->approach_z);
+    ss << ", \"time_usec\":"  << this->time_usec;
     ss << "} },";
  return ss.str();
 }
@@ -4753,7 +5131,8 @@ int MavLinkSetHomePosition::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->approach_y), 44);
     pack_float(buffer, reinterpret_cast<const float*>(&this->approach_z), 48);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 52);
-    return 53;
+    pack_uint64_t(buffer, reinterpret_cast<const uint64_t*>(&this->time_usec), 53);
+    return 61;
 }
 
 int MavLinkSetHomePosition::unpack(const char* buffer) {
@@ -4768,7 +5147,8 @@ int MavLinkSetHomePosition::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->approach_y), 44);
     unpack_float(buffer, reinterpret_cast<float*>(&this->approach_z), 48);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 52);
- return 53;
+    unpack_uint64_t(buffer, reinterpret_cast<uint64_t*>(&this->time_usec), 53);
+ return 61;
 }
 
 std::string MavLinkSetHomePosition::toJSon() {
@@ -4785,6 +5165,7 @@ std::string MavLinkSetHomePosition::toJSon() {
     ss << ", \"approach_y\":"  << float_tostring(this->approach_y);
     ss << ", \"approach_z\":"  << float_tostring(this->approach_z);
     ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
+    ss << ", \"time_usec\":"  << this->time_usec;
     ss << "} },";
  return ss.str();
 }
@@ -5101,71 +5482,41 @@ std::string MavLinkDebug::toJSon() {
  return ss.str();
 }
 
-int MavLinkProtocolVersion::pack(char* buffer) const {
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->version), 0);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->min_version), 2);
-    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->max_version), 4);
-    pack_uint8_t_array(8, buffer, reinterpret_cast<const uint8_t*>(&this->spec_version_hash[0]), 6);
-    pack_uint8_t_array(8, buffer, reinterpret_cast<const uint8_t*>(&this->library_version_hash[0]), 14);
-    return 22;
-}
-int MavLinkProtocolVersion::unpack(const char* buffer) {
-
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->version), 0);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->min_version), 2);
-    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->max_version), 4);
-    unpack_uint8_t_array(8, buffer, reinterpret_cast<uint8_t*>(&this->spec_version_hash[0]), 6);
-    unpack_uint8_t_array(8, buffer, reinterpret_cast<uint8_t*>(&this->library_version_hash[0]), 14);
-    return 22;
-}
-
-std::string MavLinkProtocolVersion::toJSon() {
-    std::ostringstream ss;
-    ss << "{ \"name\": \"DEBUG\", \"id\": 300, \"timestamp\":" << timestamp << ", \"msg\": {";
-    ss << "\"version\":" << this->version;
-    ss << ", \"min_version\":" << this->min_version;
-    ss << ", \"max_version\":" << this->max_version;
-    ss << ", \"spec_version_hash\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->spec_version_hash[0])) << "]";
-    ss << ", \"library_version_hash\":" << "[" << uint8_t_array_tostring(8, reinterpret_cast<uint8_t*>(&this->library_version_hash[0])) << "]";
-    ss << "} },";
-    return ss.str();
-}
-
 void MavCmdNavWaypoint::pack() {
-    param1 = HoldTimeDecimal;
-    param2 = AcceptanceRadiusMeters;
-    param3 = p0ToPass;
-    param4 = DesiredYawAngle;
+    param1 = Hold;
+    param2 = AcceptRadius;
+    param3 = PassRadius;
+    param4 = Yaw;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavWaypoint::unpack() {
-    HoldTimeDecimal = param1;
-    AcceptanceRadiusMeters = param2;
-    p0ToPass = param3;
-    DesiredYawAngle = param4;
+    Hold = param1;
+    AcceptRadius = param2;
+    PassRadius = param3;
+    Yaw = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdNavLoiterUnlim::pack() {
-    param3 = RadiusAroundMission;
-    param4 = DesiredYawAngle;
+    param3 = Radius;
+    param4 = Yaw;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavLoiterUnlim::unpack() {
-    RadiusAroundMission = param3;
-    DesiredYawAngle = param4;
+    Radius = param3;
+    Yaw = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdNavLoiterTurns::pack() {
     param1 = Turns;
-    param3 = RadiusAroundMission;
+    param3 = Radius;
     param4 = ExitXtrackLocation;
     param5 = Latitude;
     param6 = Longitude;
@@ -5173,23 +5524,23 @@ void MavCmdNavLoiterTurns::pack() {
 }
 void MavCmdNavLoiterTurns::unpack() {
     Turns = param1;
-    RadiusAroundMission = param3;
+    Radius = param3;
     ExitXtrackLocation = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdNavLoiterTime::pack() {
-    param1 = Seconds;
-    param3 = RadiusAroundMission;
+    param1 = Time;
+    param3 = Radius;
     param4 = ExitXtrackLocation;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavLoiterTime::unpack() {
-    Seconds = param1;
-    RadiusAroundMission = param3;
+    Time = param1;
+    Radius = param3;
     ExitXtrackLocation = param4;
     Latitude = param5;
     Longitude = param6;
@@ -5201,240 +5552,274 @@ void MavCmdNavReturnToLaunch::unpack() {
 }
 void MavCmdNavLand::pack() {
     param1 = AbortAlt;
-    param4 = DesiredYawAngle;
+    param2 = LandMode;
+    param4 = YawAngle;
     param5 = Latitude;
     param6 = Longitude;
-    param7 = Altitude;
+    param7 = LandingAltitude;
 }
 void MavCmdNavLand::unpack() {
     AbortAlt = param1;
-    DesiredYawAngle = param4;
+    LandMode = param2;
+    YawAngle = param4;
     Latitude = param5;
     Longitude = param6;
-    Altitude = param7;
+    LandingAltitude = param7;
 }
 void MavCmdNavTakeoff::pack() {
-    param1 = MinimumPitch;
-    param4 = YawAngle;
+    param1 = Pitch;
+    param4 = Yaw;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavTakeoff::unpack() {
-    MinimumPitch = param1;
-    YawAngle = param4;
+    Pitch = param1;
+    Yaw = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdNavLandLocal::pack() {
-    param1 = LandingTargetNumber;
-    param2 = MaximumAcceptedOffset;
-    param3 = LandingDescendRate;
-    param4 = DesiredYawAngle;
-    param5 = Y;
-    param6 = X;
-    param7 = Z;
+    param1 = Target;
+    param2 = Offset;
+    param3 = DescendRate;
+    param4 = Yaw;
+    param5 = YPosition;
+    param6 = XPosition;
+    param7 = ZPosition;
 }
 void MavCmdNavLandLocal::unpack() {
-    LandingTargetNumber = param1;
-    MaximumAcceptedOffset = param2;
-    LandingDescendRate = param3;
-    DesiredYawAngle = param4;
-    Y = param5;
-    X = param6;
-    Z = param7;
+    Target = param1;
+    Offset = param2;
+    DescendRate = param3;
+    Yaw = param4;
+    YPosition = param5;
+    XPosition = param6;
+    ZPosition = param7;
 }
 void MavCmdNavTakeoffLocal::pack() {
-    param1 = MinimumPitch;
-    param3 = TakeoffAscendRate;
-    param4 = YawAngle;
-    param5 = Y;
-    param6 = X;
-    param7 = Z;
+    param1 = Pitch;
+    param3 = AscendRate;
+    param4 = Yaw;
+    param5 = YPosition;
+    param6 = XPosition;
+    param7 = ZPosition;
 }
 void MavCmdNavTakeoffLocal::unpack() {
-    MinimumPitch = param1;
-    TakeoffAscendRate = param3;
-    YawAngle = param4;
-    Y = param5;
-    X = param6;
-    Z = param7;
+    Pitch = param1;
+    AscendRate = param3;
+    Yaw = param4;
+    YPosition = param5;
+    XPosition = param6;
+    ZPosition = param7;
 }
 void MavCmdNavFollow::pack() {
-    param1 = FollowingLogicTo;
-    param2 = GroundSpeedOf;
-    param3 = RadiusAroundMission;
-    param4 = DesiredYawAngle;
+    param1 = Following;
+    param2 = GroundSpeed;
+    param3 = Radius;
+    param4 = Yaw;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavFollow::unpack() {
-    FollowingLogicTo = param1;
-    GroundSpeedOf = param2;
-    RadiusAroundMission = param3;
-    DesiredYawAngle = param4;
+    Following = param1;
+    GroundSpeed = param2;
+    Radius = param3;
+    Yaw = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdNavContinueAndChangeAlt::pack() {
-    param1 = ClimbOrDescend;
-    param7 = DesiredAltitudeMeters;
+    param1 = Action;
+    param7 = Altitude;
 }
 void MavCmdNavContinueAndChangeAlt::unpack() {
-    ClimbOrDescend = param1;
-    DesiredAltitudeMeters = param7;
+    Action = param1;
+    Altitude = param7;
 }
 void MavCmdNavLoiterToAlt::pack() {
     param1 = HeadingRequired;
-    param2 = RadiusMeters;
-    param4 = ExitXtrackLocation;
+    param2 = Radius;
+    param4 = XtrackLocation;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavLoiterToAlt::unpack() {
     HeadingRequired = param1;
-    RadiusMeters = param2;
-    ExitXtrackLocation = param4;
+    Radius = param2;
+    XtrackLocation = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdDoFollow::pack() {
     param1 = SystemId;
-    param4 = AltitudeFlag;
+    param4 = AltitudeMode;
     param5 = Altitude;
-    param7 = TtlSecondsWhich;
+    param7 = TimeToLand;
 }
 void MavCmdDoFollow::unpack() {
     SystemId = param1;
-    AltitudeFlag = param4;
+    AltitudeMode = param4;
     Altitude = param5;
-    TtlSecondsWhich = param7;
+    TimeToLand = param7;
 }
 void MavCmdDoFollowReposition::pack() {
-    param1 = CameraQ1;
-    param2 = CameraQ2;
-    param3 = CameraQ3;
-    param4 = CameraQ4;
-    param5 = AltitudeOffsetTarget;
-    param6 = XOffsetTarget;
-    param7 = YOffsetTarget;
+    param1 = CameraQp1;
+    param2 = CameraQp2;
+    param3 = CameraQp3;
+    param4 = CameraQp4;
+    param5 = AltitudeOffset;
+    param6 = XOffset;
+    param7 = YOffset;
 }
 void MavCmdDoFollowReposition::unpack() {
-    CameraQ1 = param1;
-    CameraQ2 = param2;
-    CameraQ3 = param3;
-    CameraQ4 = param4;
-    AltitudeOffsetTarget = param5;
-    XOffsetTarget = param6;
-    YOffsetTarget = param7;
+    CameraQp1 = param1;
+    CameraQp2 = param2;
+    CameraQp3 = param3;
+    CameraQp4 = param4;
+    AltitudeOffset = param5;
+    XOffset = param6;
+    YOffset = param7;
+}
+void MavCmdDoOrbit::pack() {
+    param1 = Radius;
+    param2 = Velocity;
+    param3 = YawBehavior;
+    param5 = CenterPointLatitude;
+    param6 = CenterPointLongitude;
+    param7 = CenterPointAltitude;
+}
+void MavCmdDoOrbit::unpack() {
+    Radius = param1;
+    Velocity = param2;
+    YawBehavior = param3;
+    CenterPointLatitude = param5;
+    CenterPointLongitude = param6;
+    CenterPointAltitude = param7;
 }
 void MavCmdNavRoi::pack() {
-    param1 = RegionOfIntereset;
-    param2 = MissionIndexTarget;
+    param1 = RoiMode;
+    param2 = WpIndex;
     param3 = RoiIndex;
-    param5 = XLocationOf;
+    param5 = X;
     param6 = Y;
     param7 = Z;
 }
 void MavCmdNavRoi::unpack() {
-    RegionOfIntereset = param1;
-    MissionIndexTarget = param2;
+    RoiMode = param1;
+    WpIndex = param2;
     RoiIndex = param3;
-    XLocationOf = param5;
+    X = param5;
     Y = param6;
     Z = param7;
 }
 void MavCmdNavPathplanning::pack() {
-    param1 = p0;
-    param2 = p02;
-    param4 = YawAngleAt;
-    param5 = LatitudexOfGoal;
-    param6 = LongitudeyOfGoal;
-    param7 = AltitudezOfGoal;
+    param1 = LocalCtrl;
+    param2 = GlobalCtrl;
+    param4 = Yaw;
+    param5 = LatitudepxOfGoal;
+    param6 = LongitudepyOfGoal;
+    param7 = AltitudepzOfGoal;
 }
 void MavCmdNavPathplanning::unpack() {
-    p0 = param1;
-    p02 = param2;
-    YawAngleAt = param4;
-    LatitudexOfGoal = param5;
-    LongitudeyOfGoal = param6;
-    AltitudezOfGoal = param7;
+    LocalCtrl = param1;
+    GlobalCtrl = param2;
+    Yaw = param4;
+    LatitudepxOfGoal = param5;
+    LongitudepyOfGoal = param6;
+    AltitudepzOfGoal = param7;
 }
 void MavCmdNavSplineWaypoint::pack() {
-    param1 = HoldTimeDecimal;
-    param5 = LatitudexOfGoal;
-    param6 = LongitudeyOfGoal;
-    param7 = AltitudezOfGoal;
+    param1 = Hold;
+    param5 = LatitudepxOfGoal;
+    param6 = LongitudepyOfGoal;
+    param7 = AltitudepzOfGoal;
 }
 void MavCmdNavSplineWaypoint::unpack() {
-    HoldTimeDecimal = param1;
-    LatitudexOfGoal = param5;
-    LongitudeyOfGoal = param6;
-    AltitudezOfGoal = param7;
+    Hold = param1;
+    LatitudepxOfGoal = param5;
+    LongitudepyOfGoal = param6;
+    AltitudepzOfGoal = param7;
 }
 void MavCmdNavVtolTakeoff::pack() {
-    param4 = YawAngleDegrees;
+    param2 = TransitionHeading;
+    param4 = YawAngle;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavVtolTakeoff::unpack() {
-    YawAngleDegrees = param4;
+    TransitionHeading = param2;
+    YawAngle = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdNavVtolLand::pack() {
-    param4 = YawAngleDegrees;
+    param3 = Altitude;
+    param4 = Yaw;
     param5 = Latitude;
     param6 = Longitude;
-    param7 = Altitude;
+    param7 = Altitude2;
 }
 void MavCmdNavVtolLand::unpack() {
-    YawAngleDegrees = param4;
+    Altitude = param3;
+    Yaw = param4;
     Latitude = param5;
     Longitude = param6;
-    Altitude = param7;
+    Altitude2 = param7;
 }
 void MavCmdNavGuidedEnable::pack() {
-    param1 = OnOff;
+    param1 = Enable;
 }
 void MavCmdNavGuidedEnable::unpack() {
-    OnOff = param1;
+    Enable = param1;
 }
 void MavCmdNavDelay::pack() {
-    param1 = DelaySeconds;
+    param1 = Delay;
     param2 = Hour;
     param3 = Minute;
     param4 = Second;
 }
 void MavCmdNavDelay::unpack() {
-    DelaySeconds = param1;
+    Delay = param1;
     Hour = param2;
     Minute = param3;
     Second = param4;
+}
+void MavCmdNavPayloadPlace::pack() {
+    param1 = MaxDescent;
+    param5 = Latitude;
+    param6 = Longitude;
+    param7 = Altitude;
+}
+void MavCmdNavPayloadPlace::unpack() {
+    MaxDescent = param1;
+    Latitude = param5;
+    Longitude = param6;
+    Altitude = param7;
 }
 void MavCmdNavLast::pack() {
 }
 void MavCmdNavLast::unpack() {
 }
 void MavCmdConditionDelay::pack() {
-    param1 = DelaySeconds;
+    param1 = Delay;
 }
 void MavCmdConditionDelay::unpack() {
-    DelaySeconds = param1;
+    Delay = param1;
 }
 void MavCmdConditionChangeAlt::pack() {
-    param1 = DescentAscend;
+    param1 = Rate;
     param7 = FinishAltitude;
 }
 void MavCmdConditionChangeAlt::unpack() {
-    DescentAscend = param1;
+    Rate = param1;
     FinishAltitude = param7;
 }
 void MavCmdConditionDistance::pack() {
@@ -5444,16 +5829,16 @@ void MavCmdConditionDistance::unpack() {
     Distance = param1;
 }
 void MavCmdConditionYaw::pack() {
-    param1 = TargetAngle;
-    param2 = SpeedDuringYaw;
+    param1 = Angle;
+    param2 = AngularSpeed;
     param3 = Direction;
-    param4 = RelativeOffsetOr;
+    param4 = Relative;
 }
 void MavCmdConditionYaw::unpack() {
-    TargetAngle = param1;
-    SpeedDuringYaw = param2;
+    Angle = param1;
+    AngularSpeed = param2;
     Direction = param3;
-    RelativeOffsetOr = param4;
+    Relative = param4;
 }
 void MavCmdConditionLast::pack() {
 }
@@ -5462,32 +5847,32 @@ void MavCmdConditionLast::unpack() {
 void MavCmdDoSetMode::pack() {
     param1 = Mode;
     param2 = CustomMode;
-    param3 = CustomSubMode;
+    param3 = CustomSubmode;
 }
 void MavCmdDoSetMode::unpack() {
     Mode = param1;
     CustomMode = param2;
-    CustomSubMode = param3;
+    CustomSubmode = param3;
 }
 void MavCmdDoJump::pack() {
-    param1 = SequenceNumber;
-    param2 = RepeatCount;
+    param1 = Number;
+    param2 = Repeat;
 }
 void MavCmdDoJump::unpack() {
-    SequenceNumber = param1;
-    RepeatCount = param2;
+    Number = param1;
+    Repeat = param2;
 }
 void MavCmdDoChangeSpeed::pack() {
     param1 = SpeedType;
     param2 = Speed;
     param3 = Throttle;
-    param4 = AbsoluteOrRelative;
+    param4 = Relative;
 }
 void MavCmdDoChangeSpeed::unpack() {
     SpeedType = param1;
     Speed = param2;
     Throttle = param3;
-    AbsoluteOrRelative = param4;
+    Relative = param4;
 }
 void MavCmdDoSetHome::pack() {
     param1 = UseCurrent;
@@ -5502,64 +5887,64 @@ void MavCmdDoSetHome::unpack() {
     Altitude = param7;
 }
 void MavCmdDoSetParameter::pack() {
-    param1 = ParameterNumber;
-    param2 = ParameterValue;
+    param1 = Number;
+    param2 = Value;
 }
 void MavCmdDoSetParameter::unpack() {
-    ParameterNumber = param1;
-    ParameterValue = param2;
+    Number = param1;
+    Value = param2;
 }
 void MavCmdDoSetRelay::pack() {
-    param1 = RelayNumber;
+    param1 = Instance;
     param2 = Setting;
 }
 void MavCmdDoSetRelay::unpack() {
-    RelayNumber = param1;
+    Instance = param1;
     Setting = param2;
 }
 void MavCmdDoRepeatRelay::pack() {
-    param1 = RelayNumber;
-    param2 = CycleCount;
-    param3 = CycleTime;
+    param1 = Instance;
+    param2 = Count;
+    param3 = Time;
 }
 void MavCmdDoRepeatRelay::unpack() {
-    RelayNumber = param1;
-    CycleCount = param2;
-    CycleTime = param3;
+    Instance = param1;
+    Count = param2;
+    Time = param3;
 }
 void MavCmdDoSetServo::pack() {
-    param1 = ServoNumber;
+    param1 = Instance;
     param2 = Pwm;
 }
 void MavCmdDoSetServo::unpack() {
-    ServoNumber = param1;
+    Instance = param1;
     Pwm = param2;
 }
 void MavCmdDoRepeatServo::pack() {
-    param1 = ServoNumber;
+    param1 = Instance;
     param2 = Pwm;
-    param3 = CycleCount;
-    param4 = CycleTime;
+    param3 = Count;
+    param4 = Time;
 }
 void MavCmdDoRepeatServo::unpack() {
-    ServoNumber = param1;
+    Instance = param1;
     Pwm = param2;
-    CycleCount = param3;
-    CycleTime = param4;
+    Count = param3;
+    Time = param4;
 }
 void MavCmdDoFlighttermination::pack() {
-    param1 = FlightTerminationActivated;
+    param1 = Terminate;
 }
 void MavCmdDoFlighttermination::unpack() {
-    FlightTerminationActivated = param1;
+    Terminate = param1;
 }
 void MavCmdDoChangeAltitude::pack() {
-    param1 = AltitudeMeters;
-    param2 = MavFrameOf;
+    param1 = Altitude;
+    param2 = Frame;
 }
 void MavCmdDoChangeAltitude::unpack() {
-    AltitudeMeters = param1;
-    MavFrameOf = param2;
+    Altitude = param1;
+    Frame = param2;
 }
 void MavCmdDoLandStart::pack() {
     param5 = Latitude;
@@ -5570,12 +5955,12 @@ void MavCmdDoLandStart::unpack() {
     Longitude = param6;
 }
 void MavCmdDoRallyLand::pack() {
-    param1 = BreakAltitude;
-    param2 = LandingSpeed;
+    param1 = Altitude;
+    param2 = Speed;
 }
 void MavCmdDoRallyLand::unpack() {
-    BreakAltitude = param1;
-    LandingSpeed = param2;
+    Altitude = param1;
+    Speed = param2;
 }
 void MavCmdDoGoAround::pack() {
     param1 = Altitude;
@@ -5584,130 +5969,166 @@ void MavCmdDoGoAround::unpack() {
     Altitude = param1;
 }
 void MavCmdDoReposition::pack() {
-    param1 = GroundSpeed;
-    param2 = BitmaskOfOption;
-    param4 = YawHeading;
+    param1 = Speed;
+    param2 = Bitmask;
+    param4 = Yaw;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdDoReposition::unpack() {
-    GroundSpeed = param1;
-    BitmaskOfOption = param2;
-    YawHeading = param4;
+    Speed = param1;
+    Bitmask = param2;
+    Yaw = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdDoPauseContinue::pack() {
-    param1 = p0;
+    param1 = Continue;
 }
 void MavCmdDoPauseContinue::unpack() {
-    p0 = param1;
+    Continue = param1;
 }
 void MavCmdDoSetReverse::pack() {
-    param1 = Direction;
+    param1 = Reverse;
 }
 void MavCmdDoSetReverse::unpack() {
-    Direction = param1;
+    Reverse = param1;
+}
+void MavCmdDoSetRoiLocation::pack() {
+    param5 = Latitude;
+    param6 = Longitude;
+    param7 = Altitude;
+}
+void MavCmdDoSetRoiLocation::unpack() {
+    Latitude = param5;
+    Longitude = param6;
+    Altitude = param7;
+}
+void MavCmdDoSetRoiWpnextOffset::pack() {
+    param5 = PitchOffset;
+    param6 = RollOffset;
+    param7 = YawOffset;
+}
+void MavCmdDoSetRoiWpnextOffset::unpack() {
+    PitchOffset = param5;
+    RollOffset = param6;
+    YawOffset = param7;
+}
+void MavCmdDoSetRoiNone::pack() {
+}
+void MavCmdDoSetRoiNone::unpack() {
 }
 void MavCmdDoControlVideo::pack() {
-    param1 = CameraId;
+    param1 = Id;
     param2 = Transmission;
-    param3 = TransmissionMode;
+    param3 = Interval;
     param4 = Recording;
 }
 void MavCmdDoControlVideo::unpack() {
-    CameraId = param1;
+    Id = param1;
     Transmission = param2;
-    TransmissionMode = param3;
+    Interval = param3;
     Recording = param4;
 }
 void MavCmdDoSetRoi::pack() {
-    param1 = RegionOfIntereset;
-    param2 = MissionIndexTarget;
+    param1 = RoiMode;
+    param2 = WpIndex;
     param3 = RoiIndex;
-    param5 = XLocationOf;
-    param6 = Y;
-    param7 = Z;
+    param5 = MavRoiWpnext;
+    param6 = MavRoiWpnext2;
+    param7 = MavRoiWpnext3;
 }
 void MavCmdDoSetRoi::unpack() {
-    RegionOfIntereset = param1;
-    MissionIndexTarget = param2;
+    RoiMode = param1;
+    WpIndex = param2;
     RoiIndex = param3;
-    XLocationOf = param5;
-    Y = param6;
-    Z = param7;
+    MavRoiWpnext = param5;
+    MavRoiWpnext2 = param6;
+    MavRoiWpnext3 = param7;
 }
 void MavCmdDoDigicamConfigure::pack() {
-    param1 = Modes;
+    param1 = Mode;
     param2 = ShutterSpeed;
     param3 = Aperture;
-    param4 = IsoNumberE;
-    param5 = ExposureTypeEnumerator;
+    param4 = Iso;
+    param5 = Exposure;
     param6 = CommandIdentity;
-    param7 = MainEngineCut;
+    param7 = EngineCutpoff;
 }
 void MavCmdDoDigicamConfigure::unpack() {
-    Modes = param1;
+    Mode = param1;
     ShutterSpeed = param2;
     Aperture = param3;
-    IsoNumberE = param4;
-    ExposureTypeEnumerator = param5;
+    Iso = param4;
+    Exposure = param5;
     CommandIdentity = param6;
-    MainEngineCut = param7;
+    EngineCutpoff = param7;
 }
 void MavCmdDoDigicamControl::pack() {
-    param1 = SessionControlE;
-    param2 = ZoomsAbsolutePosition;
-    param3 = ZoomingStepValue;
-    param4 = FocusLocking;
-    param5 = ShootingCommand;
+    param1 = SessionControl;
+    param2 = ZoomAbsolute;
+    param3 = ZoomRelative;
+    param4 = Focus;
+    param5 = ShootCommand;
     param6 = CommandIdentity;
+    param7 = ShotId;
 }
 void MavCmdDoDigicamControl::unpack() {
-    SessionControlE = param1;
-    ZoomsAbsolutePosition = param2;
-    ZoomingStepValue = param3;
-    FocusLocking = param4;
-    ShootingCommand = param5;
+    SessionControl = param1;
+    ZoomAbsolute = param2;
+    ZoomRelative = param3;
+    Focus = param4;
+    ShootCommand = param5;
     CommandIdentity = param6;
+    ShotId = param7;
 }
 void MavCmdDoMountConfigure::pack() {
-    param1 = MountOperationMode;
+    param1 = Mode;
     param2 = StabilizeRoll;
     param3 = StabilizePitch;
     param4 = StabilizeYaw;
+    param5 = RollInput;
+    param6 = PitchInput;
+    param7 = YawInput;
 }
 void MavCmdDoMountConfigure::unpack() {
-    MountOperationMode = param1;
+    Mode = param1;
     StabilizeRoll = param2;
     StabilizePitch = param3;
     StabilizeYaw = param4;
+    RollInput = param5;
+    PitchInput = param6;
+    YawInput = param7;
 }
 void MavCmdDoMountControl::pack() {
-    param1 = Pitch;
-    param2 = Roll;
-    param3 = Yaw;
-    param4 = Wip;
-    param5 = Wip2;
-    param6 = Wip3;
-    param7 = MavMountModeEnumValue;
+    param1 = PitchDependingMount;
+    param2 = RollDependingMount;
+    param3 = YawDependingMount;
+    param4 = Altitude;
+    param5 = Latitude;
+    param6 = Longitude;
+    param7 = Mode;
 }
 void MavCmdDoMountControl::unpack() {
-    Pitch = param1;
-    Roll = param2;
-    Yaw = param3;
-    Wip = param4;
-    Wip2 = param5;
-    Wip3 = param6;
-    MavMountModeEnumValue = param7;
+    PitchDependingMount = param1;
+    RollDependingMount = param2;
+    YawDependingMount = param3;
+    Altitude = param4;
+    Latitude = param5;
+    Longitude = param6;
+    Mode = param7;
 }
 void MavCmdDoSetCamTriggDist::pack() {
-    param1 = CameraTriggerDistance;
+    param1 = Distance;
+    param2 = Shutter;
+    param3 = Trigger;
 }
 void MavCmdDoSetCamTriggDist::unpack() {
-    CameraTriggerDistance = param1;
+    Distance = param1;
+    Shutter = param2;
+    Trigger = param3;
 }
 void MavCmdDoFenceEnable::pack() {
     param1 = Enable;
@@ -5722,16 +6143,20 @@ void MavCmdDoParachute::unpack() {
     Action = param1;
 }
 void MavCmdDoMotorTest::pack() {
-    param1 = MotorSequenceNumber;
+    param1 = Instance;
     param2 = ThrottleType;
     param3 = Throttle;
     param4 = Timeout;
+    param5 = MotorCount;
+    param6 = TestOrder;
 }
 void MavCmdDoMotorTest::unpack() {
-    MotorSequenceNumber = param1;
+    Instance = param1;
     ThrottleType = param2;
     Throttle = param3;
     Timeout = param4;
+    MotorCount = param5;
+    TestOrder = param6;
 }
 void MavCmdDoInvertedFlight::pack() {
     param1 = Inverted;
@@ -5739,25 +6164,35 @@ void MavCmdDoInvertedFlight::pack() {
 void MavCmdDoInvertedFlight::unpack() {
     Inverted = param1;
 }
-void MavCmdDoSetPositionYawThrust::pack() {
-    param1 = YawAngleTo;
-    param2 = Thrust;
+void MavCmdNavSetYawSpeed::pack() {
+    param1 = Yaw;
+    param2 = Speed;
+    param3 = Angle;
 }
-void MavCmdDoSetPositionYawThrust::unpack() {
-    YawAngleTo = param1;
-    Thrust = param2;
+void MavCmdNavSetYawSpeed::unpack() {
+    Yaw = param1;
+    Speed = param2;
+    Angle = param3;
+}
+void MavCmdDoSetCamTriggInterval::pack() {
+    param1 = TriggerCycle;
+    param2 = ShutterIntegration;
+}
+void MavCmdDoSetCamTriggInterval::unpack() {
+    TriggerCycle = param1;
+    ShutterIntegration = param2;
 }
 void MavCmdDoMountControlQuat::pack() {
-    param1 = Q1;
-    param2 = Q2;
-    param3 = Q3;
-    param4 = Q4;
+    param1 = Qp1;
+    param2 = Qp2;
+    param3 = Qp3;
+    param4 = Qp4;
 }
 void MavCmdDoMountControlQuat::unpack() {
-    Q1 = param1;
-    Q2 = param2;
-    Q3 = param3;
-    Q4 = param4;
+    Qp1 = param1;
+    Qp2 = param2;
+    Qp3 = param3;
+    Qp4 = param4;
 }
 void MavCmdDoGuidedMaster::pack() {
     param1 = SystemId;
@@ -5769,111 +6204,119 @@ void MavCmdDoGuidedMaster::unpack() {
 }
 void MavCmdDoGuidedLimits::pack() {
     param1 = Timeout;
-    param2 = AbsoluteAltitudeMin;
-    param3 = AbsoluteAltitudeMax;
-    param4 = HorizontalMoveLimit;
+    param2 = MinAltitude;
+    param3 = MaxAltitude;
+    param4 = HorizpMoveLimit;
 }
 void MavCmdDoGuidedLimits::unpack() {
     Timeout = param1;
-    AbsoluteAltitudeMin = param2;
-    AbsoluteAltitudeMax = param3;
-    HorizontalMoveLimit = param4;
+    MinAltitude = param2;
+    MaxAltitude = param3;
+    HorizpMoveLimit = param4;
 }
 void MavCmdDoEngineControl::pack() {
-    param1 = p0;
-    param2 = p02;
+    param1 = StartEngine;
+    param2 = ColdStart;
     param3 = HeightDelay;
 }
 void MavCmdDoEngineControl::unpack() {
-    p0 = param1;
-    p02 = param2;
+    StartEngine = param1;
+    ColdStart = param2;
     HeightDelay = param3;
+}
+void MavCmdDoSetMissionCurrent::pack() {
+    param1 = Number;
+}
+void MavCmdDoSetMissionCurrent::unpack() {
+    Number = param1;
 }
 void MavCmdDoLast::pack() {
 }
 void MavCmdDoLast::unpack() {
 }
 void MavCmdPreflightCalibration::pack() {
-    param1 = GyroCalibration;
-    param2 = MagnetometerCalibration;
+    param1 = GyroTemperature;
+    param2 = Magnetometer;
     param3 = GroundPressure;
-    param4 = RadioCalibration;
-    param5 = AccelerometerCalibration;
-    param6 = CompassmotorInterferenceCalibration;
+    param4 = RemoteControl;
+    param5 = Accelerometer;
+    param6 = CompmotOrAirspeed;
+    param7 = EscOrBaro;
 }
 void MavCmdPreflightCalibration::unpack() {
-    GyroCalibration = param1;
-    MagnetometerCalibration = param2;
+    GyroTemperature = param1;
+    Magnetometer = param2;
     GroundPressure = param3;
-    RadioCalibration = param4;
-    AccelerometerCalibration = param5;
-    CompassmotorInterferenceCalibration = param6;
+    RemoteControl = param4;
+    Accelerometer = param5;
+    CompmotOrAirspeed = param6;
+    EscOrBaro = param7;
 }
 void MavCmdPreflightSetSensorOffsets::pack() {
-    param1 = SensorToAdjust;
-    param2 = XAxisOffset;
-    param3 = YAxisOffset;
-    param4 = ZAxisOffset;
-    param5 = GenericDimension4;
-    param6 = GenericDimension5;
-    param7 = GenericDimension6;
+    param1 = SensorType;
+    param2 = XOffset;
+    param3 = YOffset;
+    param4 = ZOffset;
+    param5 = P4thDimension;
+    param6 = P5thDimension;
+    param7 = P6thDimension;
 }
 void MavCmdPreflightSetSensorOffsets::unpack() {
-    SensorToAdjust = param1;
-    XAxisOffset = param2;
-    YAxisOffset = param3;
-    ZAxisOffset = param4;
-    GenericDimension4 = param5;
-    GenericDimension5 = param6;
-    GenericDimension6 = param7;
+    SensorType = param1;
+    XOffset = param2;
+    YOffset = param3;
+    ZOffset = param4;
+    P4thDimension = param5;
+    P5thDimension = param6;
+    P6thDimension = param7;
 }
 void MavCmdPreflightUavcan::pack() {
-    param1 = p1;
+    param1 = ActuatorId;
 }
 void MavCmdPreflightUavcan::unpack() {
-    p1 = param1;
+    ActuatorId = param1;
 }
 void MavCmdPreflightStorage::pack() {
     param1 = ParameterStorage;
     param2 = MissionStorage;
-    param3 = OnboardLogging;
+    param3 = LoggingRate;
 }
 void MavCmdPreflightStorage::unpack() {
     ParameterStorage = param1;
     MissionStorage = param2;
-    OnboardLogging = param3;
+    LoggingRate = param3;
 }
 void MavCmdPreflightRebootShutdown::pack() {
-    param1 = p0;
-    param2 = p02;
+    param1 = Autopilot;
+    param2 = Companion;
     param3 = Wip;
     param4 = Wip2;
     param7 = Wip3;
 }
 void MavCmdPreflightRebootShutdown::unpack() {
-    p0 = param1;
-    p02 = param2;
+    Autopilot = param1;
+    Companion = param2;
     Wip = param3;
     Wip2 = param4;
     Wip3 = param7;
 }
 void MavCmdOverrideGoto::pack() {
-    param1 = MavGotoDoHold;
-    param2 = MavGotoHoldAtCurrentPosition;
-    param3 = MavFrameCoordinateFrame;
-    param4 = DesiredYawAngle;
-    param5 = LatitudeX;
-    param6 = LongitudeY;
-    param7 = AltitudeZ;
+    param1 = Continue;
+    param2 = Position;
+    param3 = Frame;
+    param4 = Yaw;
+    param5 = LatitudePX;
+    param6 = LongitudePY;
+    param7 = AltitudePZ;
 }
 void MavCmdOverrideGoto::unpack() {
-    MavGotoDoHold = param1;
-    MavGotoHoldAtCurrentPosition = param2;
-    MavFrameCoordinateFrame = param3;
-    DesiredYawAngle = param4;
-    LatitudeX = param5;
-    LongitudeY = param6;
-    AltitudeZ = param7;
+    Continue = param1;
+    Position = param2;
+    Frame = param3;
+    Yaw = param4;
+    LatitudePX = param5;
+    LongitudePY = param6;
+    AltitudePZ = param7;
 }
 void MavCmdMissionStart::pack() {
     param1 = FirstItem;
@@ -5884,172 +6327,226 @@ void MavCmdMissionStart::unpack() {
     LastItem = param2;
 }
 void MavCmdComponentArmDisarm::pack() {
-    param1 = p1ToArm;
+    param1 = Arm;
+    param2 = Force;
 }
 void MavCmdComponentArmDisarm::unpack() {
-    p1ToArm = param1;
+    Arm = param1;
+    Force = param2;
+}
+void MavCmdIlluminatorOnOff::pack() {
+    param1 = Enable;
+}
+void MavCmdIlluminatorOnOff::unpack() {
+    Enable = param1;
 }
 void MavCmdGetHomePosition::pack() {
 }
 void MavCmdGetHomePosition::unpack() {
 }
 void MavCmdStartRxPair::pack() {
-    param1 = p0;
-    param2 = p02;
+    param1 = Spektrum;
+    param2 = RcType;
 }
 void MavCmdStartRxPair::unpack() {
-    p0 = param1;
-    p02 = param2;
+    Spektrum = param1;
+    RcType = param2;
 }
 void MavCmdGetMessageInterval::pack() {
-    param1 = TheMavlinkMessage;
+    param1 = MessageId;
 }
 void MavCmdGetMessageInterval::unpack() {
-    TheMavlinkMessage = param1;
+    MessageId = param1;
 }
 void MavCmdSetMessageInterval::pack() {
-    param1 = TheMavlinkMessage;
-    param2 = TheIntervalBetween;
+    param1 = MessageId;
+    param2 = Interval;
+    param3 = ResponseTarget;
 }
 void MavCmdSetMessageInterval::unpack() {
-    TheMavlinkMessage = param1;
-    TheIntervalBetween = param2;
+    MessageId = param1;
+    Interval = param2;
+    ResponseTarget = param3;
+}
+void MavCmdRequestMessage::pack() {
+    param1 = MessageId;
+    param2 = IndexId;
+    param3 = TheUseOf;
+    param4 = TheUseOf2;
+    param5 = TheUseOf3;
+    param6 = TheUseOf4;
+    param7 = ResponseTarget;
+}
+void MavCmdRequestMessage::unpack() {
+    MessageId = param1;
+    IndexId = param2;
+    TheUseOf = param3;
+    TheUseOf2 = param4;
+    TheUseOf3 = param5;
+    TheUseOf4 = param6;
+    ResponseTarget = param7;
+}
+void MavCmdRequestProtocolVersion::pack() {
+    param1 = Protocol;
+}
+void MavCmdRequestProtocolVersion::unpack() {
+    Protocol = param1;
 }
 void MavCmdRequestAutopilotCapabilities::pack() {
-    param1 = p1;
+    param1 = Version;
 }
 void MavCmdRequestAutopilotCapabilities::unpack() {
-    p1 = param1;
+    Version = param1;
 }
 void MavCmdRequestCameraInformation::pack() {
-    param1 = p1;
-    param2 = CameraId;
+    param1 = Capabilities;
 }
 void MavCmdRequestCameraInformation::unpack() {
-    p1 = param1;
-    CameraId = param2;
+    Capabilities = param1;
 }
 void MavCmdRequestCameraSettings::pack() {
-    param1 = p1;
-    param2 = CameraId;
+    param1 = Settings;
 }
 void MavCmdRequestCameraSettings::unpack() {
-    p1 = param1;
-    CameraId = param2;
-}
-void MavCmdSetCameraSettings1::pack() {
-    param1 = CameraId;
-    param2 = Aperture;
-    param3 = ApertureLocked;
-    param4 = ShutterSpeedS;
-    param5 = ShutterSpeedLocked;
-    param6 = IsoSensitivity;
-    param7 = IsoSensitivityLocked;
-}
-void MavCmdSetCameraSettings1::unpack() {
-    CameraId = param1;
-    Aperture = param2;
-    ApertureLocked = param3;
-    ShutterSpeedS = param4;
-    ShutterSpeedLocked = param5;
-    IsoSensitivity = param6;
-    IsoSensitivityLocked = param7;
-}
-void MavCmdSetCameraSettings2::pack() {
-    param1 = CameraId;
-    param2 = WhiteBalanceLocked;
-    param3 = WhiteBalance;
-    param4 = ReservedForCamera;
-    param5 = ReservedForColor;
-    param6 = ReservedForImage;
-}
-void MavCmdSetCameraSettings2::unpack() {
-    CameraId = param1;
-    WhiteBalanceLocked = param2;
-    WhiteBalance = param3;
-    ReservedForCamera = param4;
-    ReservedForColor = param5;
-    ReservedForImage = param6;
+    Settings = param1;
 }
 void MavCmdRequestStorageInformation::pack() {
-    param1 = p1;
-    param2 = StorageId;
+    param1 = StorageId;
+    param2 = Information;
 }
 void MavCmdRequestStorageInformation::unpack() {
-    p1 = param1;
-    StorageId = param2;
+    StorageId = param1;
+    Information = param2;
 }
 void MavCmdStorageFormat::pack() {
-    param1 = p1;
-    param2 = StorageId;
+    param1 = StorageId;
+    param2 = Format;
 }
 void MavCmdStorageFormat::unpack() {
-    p1 = param1;
-    StorageId = param2;
+    StorageId = param1;
+    Format = param2;
 }
 void MavCmdRequestCameraCaptureStatus::pack() {
-    param1 = p1;
-    param2 = CameraId;
+    param1 = CaptureStatus;
 }
 void MavCmdRequestCameraCaptureStatus::unpack() {
-    p1 = param1;
-    CameraId = param2;
+    CaptureStatus = param1;
 }
 void MavCmdRequestFlightInformation::pack() {
-    param1 = p1;
+    param1 = FlightInformation;
 }
 void MavCmdRequestFlightInformation::unpack() {
-    p1 = param1;
+    FlightInformation = param1;
+}
+void MavCmdResetCameraSettings::pack() {
+    param1 = Reset;
+}
+void MavCmdResetCameraSettings::unpack() {
+    Reset = param1;
+}
+void MavCmdSetCameraMode::pack() {
+    param2 = CameraMode;
+}
+void MavCmdSetCameraMode::unpack() {
+    CameraMode = param2;
+}
+void MavCmdSetCameraZoom::pack() {
+    param1 = ZoomType;
+    param2 = ZoomValue;
+}
+void MavCmdSetCameraZoom::unpack() {
+    ZoomType = param1;
+    ZoomValue = param2;
+}
+void MavCmdSetCameraFocus::pack() {
+    param1 = FocusType;
+    param2 = FocusValue;
+}
+void MavCmdSetCameraFocus::unpack() {
+    FocusType = param1;
+    FocusValue = param2;
+}
+void MavCmdJumpTag::pack() {
+    param1 = Tag;
+}
+void MavCmdJumpTag::unpack() {
+    Tag = param1;
+}
+void MavCmdDoJumpTag::pack() {
+    param1 = Tag;
+    param2 = Repeat;
+}
+void MavCmdDoJumpTag::unpack() {
+    Tag = param1;
+    Repeat = param2;
 }
 void MavCmdImageStartCapture::pack() {
-    param1 = DurationBetweenTwo;
-    param2 = NumberOfImages;
-    param3 = ResolutionMegapixels;
-    param4 = Wip;
-    param5 = Wip2;
-    param6 = Wip3;
+    param2 = Interval;
+    param3 = CaptureCount;
+    param4 = SequenceNumber;
 }
 void MavCmdImageStartCapture::unpack() {
-    DurationBetweenTwo = param1;
-    NumberOfImages = param2;
-    ResolutionMegapixels = param3;
-    Wip = param4;
-    Wip2 = param5;
-    Wip3 = param6;
+    Interval = param2;
+    CaptureCount = param3;
+    SequenceNumber = param4;
 }
 void MavCmdImageStopCapture::pack() {
-    param1 = CameraId;
 }
 void MavCmdImageStopCapture::unpack() {
-    CameraId = param1;
+}
+void MavCmdRequestCameraImageCapture::pack() {
+    param1 = Number;
+}
+void MavCmdRequestCameraImageCapture::unpack() {
+    Number = param1;
 }
 void MavCmdDoTriggerControl::pack() {
-    param1 = TriggerEnabledisable;
-    param2 = ShutterIntegrationTime;
+    param1 = Enable;
+    param2 = Reset;
+    param3 = Pause;
 }
 void MavCmdDoTriggerControl::unpack() {
-    TriggerEnabledisable = param1;
-    ShutterIntegrationTime = param2;
+    Enable = param1;
+    Reset = param2;
+    Pause = param3;
 }
 void MavCmdVideoStartCapture::pack() {
-    param1 = CameraId;
-    param2 = FramesPerSecond;
-    param3 = ResolutionMegapixels;
-    param4 = Wip;
-    param5 = Wip2;
+    param1 = StreamId;
+    param2 = StatusFrequency;
 }
 void MavCmdVideoStartCapture::unpack() {
-    CameraId = param1;
-    FramesPerSecond = param2;
-    ResolutionMegapixels = param3;
-    Wip = param4;
-    Wip2 = param5;
+    StreamId = param1;
+    StatusFrequency = param2;
 }
 void MavCmdVideoStopCapture::pack() {
-    param1 = Wip;
+    param1 = StreamId;
 }
 void MavCmdVideoStopCapture::unpack() {
-    Wip = param1;
+    StreamId = param1;
+}
+void MavCmdVideoStartStreaming::pack() {
+    param1 = StreamId;
+}
+void MavCmdVideoStartStreaming::unpack() {
+    StreamId = param1;
+}
+void MavCmdVideoStopStreaming::pack() {
+    param1 = StreamId;
+}
+void MavCmdVideoStopStreaming::unpack() {
+    StreamId = param1;
+}
+void MavCmdRequestVideoStreamInformation::pack() {
+    param1 = StreamId;
+}
+void MavCmdRequestVideoStreamInformation::unpack() {
+    StreamId = param1;
+}
+void MavCmdRequestVideoStreamStatus::pack() {
+    param1 = StreamId;
+}
+void MavCmdRequestVideoStreamStatus::unpack() {
+    StreamId = param1;
 }
 void MavCmdLoggingStart::pack() {
     param1 = Format;
@@ -6069,30 +6566,42 @@ void MavCmdAirframeConfiguration::unpack() {
     LandingGearId = param1;
     LandingGearPosition = param2;
 }
+void MavCmdControlHighLatency::pack() {
+    param1 = Enable;
+}
+void MavCmdControlHighLatency::unpack() {
+    Enable = param1;
+}
 void MavCmdPanoramaCreate::pack() {
-    param1 = ViewingAngleHorizontal;
-    param2 = ViewingAngleVertical;
-    param3 = SpeedOfHorizontal;
-    param4 = SpeedOfVertical;
+    param1 = HorizontalAngle;
+    param2 = VerticalAngle;
+    param3 = HorizontalSpeed;
+    param4 = VerticalSpeed;
 }
 void MavCmdPanoramaCreate::unpack() {
-    ViewingAngleHorizontal = param1;
-    ViewingAngleVertical = param2;
-    SpeedOfHorizontal = param3;
-    SpeedOfVertical = param4;
+    HorizontalAngle = param1;
+    VerticalAngle = param2;
+    HorizontalSpeed = param3;
+    VerticalSpeed = param4;
 }
 void MavCmdDoVtolTransition::pack() {
-    param1 = TheTargetVtol;
+    param1 = State;
 }
 void MavCmdDoVtolTransition::unpack() {
-    TheTargetVtol = param1;
+    State = param1;
+}
+void MavCmdArmAuthorizationRequest::pack() {
+    param1 = SystemId;
+}
+void MavCmdArmAuthorizationRequest::unpack() {
+    SystemId = param1;
 }
 void MavCmdSetGuidedSubmodeStandard::pack() {
 }
 void MavCmdSetGuidedSubmodeStandard::unpack() {
 }
 void MavCmdSetGuidedSubmodeCircle::pack() {
-    param1 = RadiusOfDesired;
+    param1 = Radius;
     param2 = UserDefined;
     param3 = UserDefined2;
     param4 = UserDefined3;
@@ -6100,27 +6609,105 @@ void MavCmdSetGuidedSubmodeCircle::pack() {
     param6 = UnscaledTargetLongitude;
 }
 void MavCmdSetGuidedSubmodeCircle::unpack() {
-    RadiusOfDesired = param1;
+    Radius = param1;
     UserDefined = param2;
     UserDefined2 = param3;
     UserDefined3 = param4;
     UnscaledTargetLatitude = param5;
     UnscaledTargetLongitude = param6;
 }
+void MavCmdConditionGate::pack() {
+    param1 = Geometry;
+    param2 = Altitude;
+    param5 = Latitude;
+    param6 = Longitude;
+    param7 = Altitude2;
+}
+void MavCmdConditionGate::unpack() {
+    Geometry = param1;
+    Altitude = param2;
+    Latitude = param5;
+    Longitude = param6;
+    Altitude2 = param7;
+}
+void MavCmdNavFenceReturnPoint::pack() {
+    param5 = Latitude;
+    param6 = Longitude;
+    param7 = Altitude;
+}
+void MavCmdNavFenceReturnPoint::unpack() {
+    Latitude = param5;
+    Longitude = param6;
+    Altitude = param7;
+}
+void MavCmdNavFencePolygonVertexInclusion::pack() {
+    param1 = VertexCount;
+    param5 = Latitude;
+    param6 = Longitude;
+}
+void MavCmdNavFencePolygonVertexInclusion::unpack() {
+    VertexCount = param1;
+    Latitude = param5;
+    Longitude = param6;
+}
+void MavCmdNavFencePolygonVertexExclusion::pack() {
+    param1 = VertexCount;
+    param5 = Latitude;
+    param6 = Longitude;
+}
+void MavCmdNavFencePolygonVertexExclusion::unpack() {
+    VertexCount = param1;
+    Latitude = param5;
+    Longitude = param6;
+}
+void MavCmdNavFenceCircleInclusion::pack() {
+    param1 = Radius;
+    param5 = Latitude;
+    param6 = Longitude;
+}
+void MavCmdNavFenceCircleInclusion::unpack() {
+    Radius = param1;
+    Latitude = param5;
+    Longitude = param6;
+}
+void MavCmdNavFenceCircleExclusion::pack() {
+    param1 = Radius;
+    param5 = Latitude;
+    param6 = Longitude;
+}
+void MavCmdNavFenceCircleExclusion::unpack() {
+    Radius = param1;
+    Latitude = param5;
+    Longitude = param6;
+}
+void MavCmdNavRallyPoint::pack() {
+    param5 = Latitude;
+    param6 = Longitude;
+    param7 = Altitude;
+}
+void MavCmdNavRallyPoint::unpack() {
+    Latitude = param5;
+    Longitude = param6;
+    Altitude = param7;
+}
+void MavCmdUavcanGetNodeInfo::pack() {
+}
+void MavCmdUavcanGetNodeInfo::unpack() {
+}
 void MavCmdPayloadPrepareDeploy::pack() {
     param1 = OperationMode;
-    param2 = DesiredApproachVector;
-    param3 = DesiredGroundSpeed;
-    param4 = MinimumAltitudeClearance;
+    param2 = ApproachVector;
+    param3 = GroundSpeed;
+    param4 = AltitudeClearance;
     param5 = LatitudeUnscaledFor;
     param6 = LongitudeUnscaledFor;
     param7 = Altitude;
 }
 void MavCmdPayloadPrepareDeploy::unpack() {
     OperationMode = param1;
-    DesiredApproachVector = param2;
-    DesiredGroundSpeed = param3;
-    MinimumAltitudeClearance = param4;
+    ApproachVector = param2;
+    GroundSpeed = param3;
+    AltitudeClearance = param4;
     LatitudeUnscaledFor = param5;
     LongitudeUnscaledFor = param6;
     Altitude = param7;
@@ -6425,6 +7012,9 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
     case MavLinkMessageIds::MAVLINK_MSG_ID_AUTH_KEY:
         result = new MavLinkAuthKey();
         break;
+    case MavLinkMessageIds::MAVLINK_MSG_ID_LINK_NODE_STATUS:
+        result = new MavLinkLinkNodeStatus();
+        break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_SET_MODE:
         result = new MavLinkSetMode();
         break;
@@ -6523,6 +7113,9 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_MISSION_REQUEST_INT:
         result = new MavLinkMissionRequestInt();
+        break;
+    case MavLinkMessageIds::MAVLINK_MSG_ID_MISSION_CHANGED:
+        result = new MavLinkMissionChanged();
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_SAFETY_SET_ALLOWED_AREA:
         result = new MavLinkSafetySetAllowedArea();
@@ -6755,6 +7348,9 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
     case MavLinkMessageIds::MAVLINK_MSG_ID_LANDING_TARGET:
         result = new MavLinkLandingTarget();
         break;
+    case MavLinkMessageIds::MAVLINK_MSG_ID_FENCE_STATUS:
+        result = new MavLinkFenceStatus();
+        break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_ESTIMATOR_STATUS:
         result = new MavLinkEstimatorStatus();
         break;
@@ -6769,6 +7365,9 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_HIGH_LATENCY:
         result = new MavLinkHighLatency();
+        break;
+    case MavLinkMessageIds::MAVLINK_MSG_ID_HIGH_LATENCY2:
+        result = new MavLinkHighLatency2();
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_VIBRATION:
         result = new MavLinkVibration();
@@ -6811,9 +7410,6 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_DEBUG:
         result = new MavLinkDebug();
-        break;
-    case MavLinkMessageIds::MAVLINK_MSG_ID_PROTOCOL_VERSION:
-        result = new MavLinkProtocolVersion();
         break;
     default:
         break;

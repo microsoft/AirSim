@@ -213,7 +213,7 @@
     <ClInclude Include="include\common\common_utils\MinWinDefines.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\MultiRotor.hpp">
+    <ClInclude Include="include\vehicles\multirotor\MultiRotorPhysicsBody.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\multirotor\MultiRotorParams.hpp">
@@ -222,7 +222,7 @@
     <ClInclude Include="include\vehicles\multirotor\MultiRotorParamsFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\Rotor.hpp">
+    <ClInclude Include="include\vehicles\multirotor\RotorActuator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\multirotor\RotorParams.hpp">
@@ -451,6 +451,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\ArduCopterSoloParams.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\common_utils\SmoothingFilter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

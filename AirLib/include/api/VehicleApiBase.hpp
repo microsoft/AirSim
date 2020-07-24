@@ -46,9 +46,15 @@ public:
     {
         //if derived class supports async task then override this method
     }
+
     virtual bool isReady(std::string& message) const
     {
         unused(message);
+        return true;
+    }
+
+    virtual bool canArm() const
+    {
         return true;
     }
 
@@ -89,6 +95,7 @@ public:
         static const RCData invalid_rc_data {};
         return invalid_rc_data;
     }
+
     //set external RC data to vehicle (if unsupported then returns false)
     virtual bool setRCData(const RCData& rc_data)
     {
@@ -208,7 +215,7 @@ public:
     }
 
     // Distance Sensor API
-    virtual DistanceBase::Output getDistanceSensorData(const std::string& distance_sensor_name) const
+    virtual DistanceSensorData getDistanceSensorData(const std::string& distance_sensor_name) const
     {
         const DistanceBase* distance_sensor = nullptr;
 

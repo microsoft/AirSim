@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="airsim",
-    version="1.2.3",
+    version="1.2.8",
     author="Shital Shah",
     author_email="shitals@microsoft.com",
     description="Open source simulator based on Unreal Engine for autonomous vehicles from Microsoft AI & Research",
@@ -20,6 +20,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ),
     install_requires=[
-          'msgpack-rpc-python', 'numpy'
+          'msgpack-rpc-python', 'numpy', 'opencv-contrib-python'
     ]
 )

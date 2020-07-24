@@ -1,0 +1,157 @@
+# What's new
+
+Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
+
+### April 2020
+
+* [Fix issues with PX4 latest master branch](https://github.com/microsoft/AirSim/pull/2634)
+* [Fix Lidar DrawDebugPoints causing crash](https://github.com/microsoft/AirSim/pull/2614)
+* [Add docstrings for Python API](https://github.com/microsoft/AirSim/pull/2565)
+* [Add missing noise, weather texture materials](https://github.com/microsoft/AirSim/pull/2625)
+* [Update AirSim.uplugin version to 1.3.1](https://github.com/microsoft/AirSim/pull/2584)
+* [Camera Roll angle control using Q,E keys in CV mode, manual camera](https://github.com/microsoft/AirSim/pull/2610)
+* [Remove broken GCC build](https://github.com/microsoft/AirSim/pull/2572)
+* New API - [`simSetTraceLine()`](https://github.com/microsoft/AirSim/pull/2506)
+* [ROS package compilation fixes and updates](https://github.com/microsoft/AirSim/pull/2571)
+* Latest release `v1.3.1` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-linux)
+* APIs added and fixed - [`simSetCameraFov`](https://github.com/microsoft/AirSim/pull/2534), [`rotateToYaw`](https://github.com/microsoft/AirSim/pull/2516)
+* [airsim](https://pypi.org/project/airsim/) Python package update to `1.2.8`
+* [NoDisplay ViewMode render state fix](https://github.com/microsoft/AirSim/pull/2518)
+
+### March 2020
+
+* Latest release `v1.3.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.3.0-Windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.3.0-linux)
+* Upgraded to Unreal Engine 4.24, Visual Studio 2019, Clang 8, C++ 17 standard
+* Mac OSX Catalina support
+* Updated [airsim](https://pypi.org/project/airsim/) Python package, with lots of new APIs
+* [Removed legacy API wrappers](https://github.com/microsoft/AirSim/pull/2494)
+* [Support for latest PX4 stable release](px4_setup.md)
+* Support for [ArduPilot](https://ardupilot.org/ardupilot/) - [Copter, Rover vehicles](https://ardupilot.org/dev/docs/sitl-with-airsim.html)
+* [Updated Unity support](Unity.md)
+* [Removed simChar* APIs](https://github.com/microsoft/AirSim/pull/2493)
+* [Plotting APIs for Debugging](https://github.com/microsoft/AirSim/pull/2304)
+* [Low-level Multirotor APIs](https://github.com/microsoft/AirSim/pull/2297)
+* [Updated Eigen version to 3.3.7](https://github.com/microsoft/AirSim/pull/2325)
+* [Distance Sensor API fix](https://github.com/microsoft/AirSim/pull/2403)
+* Add [`simSwapTextures`](retexturing.md) API
+* Fix [`simContinueForTime`](https://github.com/microsoft/AirSim/pull/2299), [`simPause`](https://github.com/microsoft/AirSim/pull/2292) APIs
+* [Lidar Sensor Trace Casting fix](https://github.com/microsoft/AirSim/pull/2143)
+* [Fix rare `reset()` bug which causes Unreal crash](https://github.com/microsoft/AirSim/pull/2146)
+* [Lidar sensor improvements, add `simGetLidarSegmentation` API](https://github.com/microsoft/AirSim/pull/2011)
+* [Add RpcLibPort in settings](https://github.com/microsoft/AirSim/pull/2185)
+* [Recording thread deadlock fix](https://github.com/microsoft/AirSim/pull/1695)
+* [Prevent environment crash when Sun is not present](https://github.com/microsoft/AirSim/pull/2147)
+* [Africa Tracking feautre, add `simListSceneObjects()` API, fix camera projection matrix](https://github.com/microsoft/AirSim/pull/1959)
+* ROS wrapper for multirotors is available. See [airsim_ros_pkgs](airsim_ros_pkgs.md) for the ROS API, and [airsim_tutorial_pkgs](airsim_tutorial_pkgs.md) for tutorials.
+* [Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor](sensors.md)
+* Added support for [docker in ubuntu](docker_ubuntu.md)
+
+### November, 2018
+* Added Weather Effects and [APIs](apis.md#weather-apis)
+* Added [Time of Day API](apis.md#time-of-day-api)
+* An experimental integration of [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity) is now available. Learn more in [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation). 
+* [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
+* Highly efficient [NoDisplay view mode](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md#viewmode) to turn off main screen rendering so you can capture images at high rate
+* [Enable/disable sensors](https://github.com/Microsoft/AirSim/pull/1479) via settings
+* [Lidar Sensor](lidar.md)
+* [Support for Flysky FS-SM100 RC](https://github.com/Microsoft/AirSim/commit/474214364676b6631c01b3ed79d00c83ba5bccf5) USB adapter
+* Case Study: [Formula Student Technion Driverless](https://github.com/Microsoft/AirSim/wiki/technion)
+* [Multi-Vehicle Capability](multi_vehicle.md)
+* [Custom speed units](https://github.com/Microsoft/AirSim/pull/1181)
+* [ROS publisher](https://github.com/Microsoft/AirSim/pull/1135)
+* [simSetObjectPose API](https://github.com/Microsoft/AirSim/pull/1161)
+* [Character Control APIs](https://github.com/Microsoft/AirSim/blob/master/PythonClient/airsim/client.py#L137) (works on TalkingHeads binaries in release)
+* [Arducopter Solo Support](https://github.com/Microsoft/AirSim/pull/1387)
+* [Linux install without sudo access](https://github.com/Microsoft/AirSim/pull/1434)
+* [Kinect like ROS publisher](https://github.com/Microsoft/AirSim/pull/1298)
+
+
+### June, 2018
+* Development workflow doc
+* Better Python 2 compatibility
+* OSX setup fixes
+* Almost complete rewrite of our APIs with new threading model, merging old APIs and creating few newer ones
+
+### April, 2018
+* Upgraded to Unreal Engine 4.18 and Visual Studio 2017
+* API framework refactoring to support world-level APIs
+* Latest PX4 firmware now supported
+* CarState with more information
+* ThrustMaster wheel support
+* pause and continueForTime APIs for drone as well as car
+* Allow drone simulation run at higher clock rate without any degradation
+* Forward-only mode fully functional for drone (do orbits while looking at center)
+* Better PID tuning to reduce wobble for drones
+* Ability to set arbitrary vehicle blueprint for drone as well as car
+* gimbal stabilization via settings
+* Ability to segment skinned and skeletal meshes by their name
+* moveByAngleThrottle API
+* Car physics tuning for better maneuverability
+* Configure additional cameras via settings
+* Time of day with geographically computed sun position
+* Better car steering via keyboard
+* Added MeshNamingMethod in segmentation setting 
+* gimbal API
+* getCameraParameters API
+* Ability turn off main rendering to save GPU resources
+* Projection mode for capture settings
+* getRCData, setRCData APIs
+* Ability to turn off segmentation using negative IDs
+* OSX build improvements
+* Segmentation working for very large environments with initial IDs
+* Better and extensible hash calculation for segmentation IDs
+* Extensible PID controller for custom integration methods
+* Sensor architecture now enables renderer specific features like ray casting
+* Laser altimeter sensor
+
+
+### Jan 2018
+* Config system rewrite, enable flexible config we are targeting in future
+* Multi-Vehicle support Phase 1, core infrastructure changes
+* MacOS support
+* Infrared view
+* 5 types of noise and interference for cameras
+* WYSIWIG capture settings for cameras, preview recording settings in main view
+* Azure support Phase 1, enable configurability of instances for headless mode
+* Full kinematics APIs, ability to get pose, linear and angular velocities + accelerations via APIs
+* Record multiple images from multiple cameras
+* New segmentation APIs, ability to set configure object IDs, search via regex
+* New object pose APIs, ability to get pose of objects (like animals) in environment
+* Camera infrastructure enhancements, ability to add new image types like IR with just few lines
+* Clock speed APIs for drone as well as car, simulation can be run with speed factor of 0 < x < infinity
+* Support for Logitech G920 wheel
+* Physics tuning of the car, Car doesn’t roll over, responds to steering with better curve, releasing gas paddle behavior more realistic
+* Debugging APIs
+* Stress tested to 24+ hours of continuous runs
+* Support for Landscape and sky segmentation
+* Manual navigation with accelerated controls in CV mode, user can explore environment much more easily
+* Collison APIs
+* Recording enhancements, log several new data points including ground truth, multiple images, controls state
+* Planner and Perspective Depth views
+* Disparity view
+* New Image APIs supports float, png or numpy formats
+* 6 config settings for image capture, ability to set auto-exposure, motion blur, gamma etc
+* Full multi-camera support through out including sub-windows, recording, APIs etc
+* Command line script to build all environments in one shot
+* Remove submodules, use rpclib as download
+
+### Nov 2017
+* We now have the [car model](using_car.md).
+* No need to build the code. Just download [binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
+* The [reinforcement learning example](reinforcement_learning.md) with AirSim
+* New built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
+* AirSim now also generates [depth as well as disparity images](image_apis.md) that is in camera plan. 
+* We also have official Linux build now!
+
+## Sep 2017
+- We have added [car model](using_car.md)!
+
+## Aug 2017
+- [simple_flight](simple_flight.md) is now default flight controller for drones. If you want to use PX4, you will need to modify settings.json as per [PX4 setup doc](px4_setup.md).
+- Linux build is official and currently uses Unreal 4.17 due to various bug fixes required
+- ImageType enum has breaking changes with several new additions and clarifying existing ones
+- SubWindows are now configurable from settings.json
+- PythonClient is now complete and has parity with C++ APIs. Some of these would have breaking changes.
+
+## Feb 2017
+- First release!

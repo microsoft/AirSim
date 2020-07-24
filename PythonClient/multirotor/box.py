@@ -1,4 +1,4 @@
-import setup_path 
+import setup_path
 import airsim
 
 import sys
@@ -11,7 +11,6 @@ client.armDisarm(True)
 client.takeoffAsync().join()
 
 print("Flying a small square box using moveByVelocityZ")
-print("Try pressing 't' in the AirSim view to see a pink trace of the flight")
 
 # AirSim uses NED coordinates so negative axis is up.
 # z of -7 is 7 meters above the original launch point.
@@ -46,3 +45,4 @@ print("moving by velocity vx=" + str(vx) + ", vy=" + str(vy) + ", yaw=0")
 client.moveByVelocityZAsync(vx, vy,z,duration, airsim.DrivetrainType.MaxDegreeOfFreedom, airsim.YawMode(False, 0)).join()
 time.sleep(delay)
 client.hoverAsync().join()
+client.landAsync().join()

@@ -125,7 +125,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   # clang is the compiler used for developing mainly, so
   # this is where I set the highest warning level
   list(APPEND RPCLIB_BUILD_FLAGS
-    -Wall -pedantic -Weverything -Wno-c++98-compat
+    -Wall -Wextra -Wno-unused-function -Wno-c++98-compat -Wno-unknown-warning-option
     -Wno-c++98-compat-pedantic -Wno-padded -Wno-missing-prototypes
     -Wno-undef -pthread)
 
@@ -268,14 +268,14 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   # clang is the compiler used for developing mainly, so
   # this is where I set the highest warning level
   list(APPEND RPCLIB_BUILD_FLAGS
-    -Wall -pedantic -Weverything -Wno-c++98-compat
+    -Wall -Wextra -Wno-unused-function -Wno-c++98-compat -Wno-unknown-warning-option
     -Wno-c++98-compat-pedantic -Wno-padded -Wno-missing-prototypes
     -Wno-undef -pthread)
 
     set(UNUSED_LAMBDA_CAPTURE_WARN_SUPPORTED)
     check_warning_flag("unused-lambda-capture" UNUSED_LAMBDA_CAPTURE_WARN_SUPPORTED)
     if(${UNUSED_LAMBDA_CAPTURE_WARN_SUPPORTED})
-      list(APPEND RPCLIB_BUILD_FLAGS -Wno-no-unused-lambda-capture)
+      list(APPEND RPCLIB_BUILD_FLAGS -Wno-unused-lambda-capture)
     endif()
 
     check_warning_flag("zero-as-null-pointer-constant" ZERO_AS_NULL_POINTER_CONSTANT_WARN_SUPPORTED)

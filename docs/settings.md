@@ -1,10 +1,18 @@
 # AirSim Settings
 
 ## Where are Settings Stored?
-Windows: `Documents\AirSim`
-Linux: `~/Documents/AirSim`
+AirSim is searching for the settings definition in 4 different ways in the following order. The first match will be used:
 
-The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first startup AirSim would create `settings.json` file with no settings. To avoid problems, always use ASCII format to save json file.
+1. Looking at the (absolute) path specified by the `--settings` command line argument.  
+For example, in Windows: `AirSim.exe --settings 'C:\path\to\settings.json'`   
+In Linux `./Blocks.sh --settings '/home/$USER/path/to/settings.json'`
+1. Looking for a json document passed as a command line argument by the `--settings` argument.  
+For example, in Windows: `AirSim.exe --settings '{"foo" : "bar"}'`   
+In Linux `./Blocks.sh --settings '{"foo" : "bar"}'`
+1. Looking in the folder of the executable for a file called `settings.json`.
+2. Looking in the users home folder for a file called `settings.json`. The AirSim subfolder is located at `Documents\AirSim` on Windows and `~/Documents/AirSim` on Linux systems.
+
+The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first startup AirSim would create `settings.json` file with no settings at the users home folder. To avoid problems, always use ASCII format to save json file.
 
 ## How to Chose Between Car and Multirotor?
 The default is to use multirotor. To use car simple set `"SimMode": "Car"` like this:
@@ -71,15 +79,15 @@ Below are complete list of settings available along with their default values. I
         "RandSize": 500.0,
         "RandDensity": 2,
 
-        "HorzWaveContrib":0.03,			
+        "HorzWaveContrib":0.03,
         "HorzWaveStrength": 0.08,
         "HorzWaveVertSize": 1.0,
         "HorzWaveScreenSize": 1.0,
-        
+
         "HorzNoiseLinesContrib": 1.0,
         "HorzNoiseLinesDensityY": 0.01,
         "HorzNoiseLinesDensityXY": 0.5,
-        
+
         "HorzDistortionContrib": 1.0,
         "HorzDistortionStrength": 0.002
       }
@@ -89,7 +97,7 @@ Below are complete list of settings available along with their default values. I
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN
     }
     "X": NaN, "Y": NaN, "Z": NaN,
-    "Pitch": NaN, "Roll": NaN, "Yaw": NaN    
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
   },
   "OriginGeopoint": {
     "Latitude": 47.641468,
@@ -106,7 +114,7 @@ Below are complete list of settings available along with their default values. I
   "SubWindows": [
     {"WindowID": 0, "CameraName": "0", "ImageType": 3, "Visible": false},
     {"WindowID": 1, "CameraName": "0", "ImageType": 5, "Visible": false},
-    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "Visible": false}    
+    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "Visible": false}
   ],
   "SegmentationSettings": {
     "InitMethod": "",
@@ -132,7 +140,7 @@ Below are complete list of settings available along with their default values. I
         "RemoteControlID": 0,
         "AllowAPIWhenDisconnected": false
       },
-      "Cameras": {   
+      "Cameras": {
         //same elements as CameraDefaults above, key as name
       },
       "X": NaN, "Y": NaN, "Z": NaN,
@@ -148,29 +156,29 @@ Below are complete list of settings available along with their default values. I
       "RC": {
         "RemoteControlID": -1
       },
-      "Cameras": {   
+      "Cameras": {
         "MyCamera1": {
           //same elements as elements inside CameraDefaults above
         },
         "MyCamera2": {
           //same elements as elements inside CameraDefaults above
-        },        
+        },
       },
       "X": NaN, "Y": NaN, "Z": NaN,
-      "Pitch": NaN, "Roll": NaN, "Yaw": NaN      
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN
     }
   }
 }
 ```
 
 ## SimMode
-SimMode determines which simulation mode will be used. Below are currently supported values: 
+SimMode determines which simulation mode will be used. Below are currently supported values:
 - `""`: prompt user to select vehicle type multirotor or car
 - `"Multirotor"`: Use multirotor simulation
 - `"Car"`: Use car simulation
 - `"ComputerVision"`: Use only camera, no vehicle or physics
 
-## ViewMode 
+## ViewMode
 The ViewMode determines which camera to use as default and how camera will follow the vehicle. For multirotors, the default ViewMode is `"FlyWithMe"` while for cars the default ViewMode is `"SpringArmChase"`.
 
 * `FlyWithMe`: Chase the vehicle from behind with 6 degrees of freedom
@@ -212,7 +220,7 @@ The `InitMethod` determines how object IDs are initialized at startup to generat
 
  If `OverrideExisting` is false then initialization does not alter non-zero object IDs already assigned otherwise it does.
 
- If `MeshNamingMethod` is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If its "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
+ If `MeshNamingMethod` is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If it is "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
 
 ## Camera Settings
 The `CameraDefaults` element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in `Cameras` element inside `Vehicles` as described later.
@@ -225,7 +233,7 @@ For example, `CaptureSettings` element is json array so you can add settings for
 ### CaptureSettings
 The `CaptureSettings` determines how different image types such as scene, depth, disparity, surface normals and segmentation views are rendered. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Similarly we set MotionBlurAmount to 0 by default to avoid artifacts in ground truth images. The `ProjectionMode` decides the projection used by the capture camera and can take value "perspective" (default) or "orthographic". If projection mode is "orthographic" then `OrthoWidth` determines width of projected area captured in meters.
 
-For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/). 
+For explanation of other settings, please see [this article](https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/).
 
 ### NoiseSettings
 The `NoiseSettings` allows to add noise to the specified image type with a goal of simulating camera sensor noise, interference and other artifacts. By default no noise is added, i.e., `Enabled: false`. If you set `Enabled: true` then following different types of noise and interference artifacts are enabled, each can be further tuned using setting. The noise effects are implemented as shader created as post processing material in Unreal Engine called [CameraSensorNoise](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/CameraSensorNoise.uasset).
@@ -313,6 +321,8 @@ The defaults for PX4 is to enable hardware-in-loop setup. There are various othe
     "PX4": {
       "VehicleType": "PX4Multirotor",
 
+      "ControlIp": "127.0.0.1",
+      "ControlPort": 14580,
       "LogViewerHostIp": "127.0.0.1",
       "LogViewerPort": 14388,
       "OffboardCompID": 1,
@@ -323,11 +333,11 @@ The defaults for PX4 is to enable hardware-in-loop setup. There are various othe
       "SerialPort": "*",
       "SimCompID": 42,
       "SimSysID": 142,
-      "SitlIp": "127.0.0.1",
-      "SitlPort": 14556,
+      "TcpPort": 4560,
       "UdpIp": "127.0.0.1",
       "UdpPort": 14560,
       "UseSerial": true,
+      "UseTcp": false,
       "VehicleCompID": 1,
       "VehicleSysID": 135,
       "Model": "Generic",
@@ -336,15 +346,21 @@ The defaults for PX4 is to enable hardware-in-loop setup. There are various othe
 }
 ```
 
-These settings define the MavLink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for an optional external renderer (ExtRendererSysID, ExtRendererCompID)
-and the node that allows remote control of the drone from another app this is called the Air Control node (AirControlSysID, AirControlCompID).
+These settings define the MavLink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for the vehicle (VehicleSysID, VehicleCompID)
+and the node that allows remote control of the drone from another app this is called the offboard node (OffboardSysID, OffboardCompID).
 
 If you want the simulator to also talk to your ground control app (like QGroundControl) you can also set the UDP address for that in case you want to run
-that on a different machine (QgcHostIp,QgcPort).
+that on a different machine (QgcHostIp, QgcPort).  The default is local host so QGroundControl should "just work" if it is running on the same machine.
 
-You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP address for that (LogViewerHostIp,LogViewerPort).
+You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP address for that (LogViewerHostIp, LogViewerPort).
 
-And for each flying drone added to the simulator there is a named block of additional settings.  In the above you see the default name "PX4".   You can change this name from the Unreal Editor when you add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink". The MavLink node for this pawn can be remote over UDP or it can be connected to a local serial port.  If serial then set UseSerial to true, otherwise set UseSerial to false and set the appropriate bard rate.  The default of 115200 works with Pixhawk version 2 over USB.
+And for each flying drone added to the simulator there is a named block of additional settings.  In the above you see the default name "PX4".   You can change this name from the Unreal Editor when you add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink". The MavLink node for this pawn can be remote over UDP or it can be connected to a local serial port.  If serial then set UseSerial to true, otherwise set UseSerial to false.  For serial connections you also need to set the appropriate SerialBaudRate.  The default of 115200 works with Pixhawk version 2 over USB.
+
+When communicating with the PX4 drone over serial port both the HIL_* messages and vehicle control messages share the same serial port.
+When communicating over UDP or TCP PX4 requires two separate channels.  If UseTcp is false, then UdpIp, UdpPort are used to send HIL_* messages,
+otherwise the TcpPort is used.  TCP support in PX4 was added in 1.9.2 with the `lockstep` feature because the guarantee of message delivery that
+TCP provides is required for the proper functioning of lockstep.  AirSim becomes a TCP server in that case, and waits for a connection
+from the PX4 app.  The second channel for controlling the vehicle is defined by (ControlIp, ControlPort) and is always a UDP channel.
 
 ## Other Settings
 
@@ -352,7 +368,7 @@ And for each flying drone added to the simulator there is a named block of addit
 To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. Currently this setting applies only to car.
 
 ### PawnPaths
-This allows you to specify your own vehicle pawn blueprints, for example, you can replace the default car in AirSim with your own car. Your vehicle BP can reside in Content folder of your own Unreal project (i.e. outside of AirSim plugin folder). For example, if you have a car BP located in file `Content\MyCar\MySedanBP.uasset` in your project then you can set `"DefaultCar": {"PawnBP":"Class'/Game/MyCar/MySedanBP.MySedanBP_C'"}`. The `XYZ.XYZ_C` is a special notation required to specify class for BP `XYZ`. Please note that your BP must be derived from CarPawn class. By default this is not the case but you can re-parent the BP using the "Class Settings" button in toolbar in UE editor after you open the BP and then choosing "Car Pawn" for Parent Class settings in Class Options. It's also a good idea to disable "Auto Possess Player" and "Auto Possess AI" as well as set AI Controller Class to None in BP details. Please make sure your asset is included for cooking in packaging options if you are creating binary.
+This allows you to specify your own vehicle pawn blueprints, for example, you can replace the default car in AirSim with your own car. Your vehicle BP can reside in Content folder of your own Unreal project (i.e. outside of AirSim plugin folder). For example, if you have a car BP located in file `Content\MyCar\MySedanBP.uasset` in your project then you can set `"DefaultCar": {"PawnBP":"Class'/Game/MyCar/MySedanBP.MySedanBP_C'"}`. The `XYZ.XYZ_C` is a special notation required to specify class for BP `XYZ`. Please note that your BP must be derived from CarPawn class. By default this is not the case but you can re-parent the BP using the "Class Settings" button in toolbar in UE editor after you open the BP and then choosing "Car Pawn" for Parent Class settings in Class Options. It is also a good idea to disable "Auto Possess Player" and "Auto Possess AI" as well as set AI Controller Class to None in BP details. Please make sure your asset is included for cooking in packaging options if you are creating binary.
 
 ### PhysicsEngineName
 For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` only.
@@ -362,7 +378,7 @@ Now when connecting to remote machines you may need to pick a specific Ethernet 
 over Ethernet or over Wi-Fi, or some other special virtual adapter or a VPN.  Your PC may have multiple networks, and those networks might not
 be allowed to talk to each other, in which case the UDP messages from one network will not get through to the others.
 
-So the LocalHostIp allows you to configure how you are reaching those machines.  The default of 127.0.0.1 is not able to reach external machines, 
+So the LocalHostIp allows you to configure how you are reaching those machines.  The default of 127.0.0.1 is not able to reach external machines,
 this default is only used when everything you are talking to is contained on a single PC.
 
 ### SpeedUnitFactor

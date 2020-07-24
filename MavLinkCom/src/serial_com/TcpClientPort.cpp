@@ -23,14 +23,20 @@ using namespace mavlink_utils;
 
 typedef int socklen_t;
 static bool socket_initialized_ = false;
+inline int GetSocketError()
+{
+    return WSAGetLastError();
+}
 #else
 
 // posix
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <cerrno>
+#include <fcntl.h>
 #include <netdb.h>
 #include <errno.h>
 #include <unistd.h>
@@ -39,7 +45,7 @@ typedef int SOCKET;
 const int INVALID_SOCKET = -1;
 const int ERROR_ACCESS_DENIED = EACCES;
 
-inline int WSAGetLastError() {
+inline int GetSocketError() {
 	return errno;
 }
 const int SOCKET_ERROR = -1;
@@ -51,6 +57,7 @@ class TcpClientPort::TcpSocketImpl
 {
 	SocketInit init;
 	SOCKET sock = INVALID_SOCKET;
+    SOCKET accept_sock = INVALID_SOCKET;
 	sockaddr_in localaddr;
 	sockaddr_in remoteaddr;
 	bool closed_ = true;
@@ -80,7 +87,8 @@ public:
 		std::string serviceName = std::to_string(port);
 		int rc = getaddrinfo(ipAddress.c_str(), serviceName.c_str(), &hints, &result);
 		if (rc != 0) {
-			throw std::runtime_error(Utils::stringf("TcpClientPort getaddrinfo failed with error: %d\n", rc));
+            auto msg = Utils::stringf("TcpClientPort getaddrinfo failed with error: %d\n", rc);
+			throw std::runtime_error(msg);
 		}
 		for (struct addrinfo *ptr = result; ptr != NULL; ptr = ptr->ai_next)
 		{
@@ -98,7 +106,8 @@ public:
 
 		freeaddrinfo(result);
 		if (!found) {
-			throw std::runtime_error(Utils::stringf("TcpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port));
+            auto msg = Utils::stringf("TcpClientPort could not resolve ip address for '%s:%d'\n", ipAddress.c_str(), port);
+			throw std::runtime_error(msg);
 		}
 	}
 
@@ -114,14 +123,16 @@ public:
 		int rc = bind(sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
 		if (rc < 0)
 		{
-			int hr = WSAGetLastError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr));
+            int hr = GetSocketError();
+            auto msg = Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		rc = ::connect(sock, reinterpret_cast<sockaddr*>(&remoteaddr), addrlen);
 		if (rc != 0) {
-			int hr = WSAGetLastError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket connect failed with error: %d\n", hr));
+            int hr = GetSocketError();
+            auto msg = Utils::stringf("TcpClientPort socket connect failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		closed_ = false;
@@ -130,49 +141,118 @@ public:
 
 	void accept(const std::string& localHost, int localPort)
 	{
-		SOCKET local = socket(AF_INET, SOCK_STREAM, 0);
+        accept_sock = socket(AF_INET, SOCK_STREAM, 0);
 
 		resolveAddress(localHost, localPort, localaddr);
 
 		// bind socket to local address.
 		socklen_t addrlen = sizeof(sockaddr_in);
-		int rc = ::bind(local, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
+		int rc = ::bind(accept_sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
 		if (rc < 0)
 		{
-			int hr = WSAGetLastError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr));
+            int hr = GetSocketError();
+            auto msg = Utils::stringf("TcpClientPort socket bind failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		// start listening for incoming connection
-		rc = ::listen(local, 1);
+		rc = ::listen(accept_sock, 1);
 		if (rc < 0)
 		{
-			int hr = WSAGetLastError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket listen failed with error: %d\n", hr));
+            int hr = GetSocketError();
+            auto msg = Utils::stringf("TcpClientPort socket listen failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		// accept 1
-		sock = ::accept(local, reinterpret_cast<sockaddr*>(&remoteaddr), &addrlen);
+		sock = ::accept(accept_sock, reinterpret_cast<sockaddr*>(&remoteaddr), &addrlen);
 		if (sock == INVALID_SOCKET) {
-			int hr = WSAGetLastError();
-			throw std::runtime_error(Utils::stringf("TcpClientPort accept failed with error: %d\n", hr));
+            int hr = GetSocketError();
+            auto msg = Utils::stringf("TcpClientPort accept failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
+
+#ifdef _WIN32
+        // don't need to accept any more, so we can close this one.
+        ::closesocket(accept_sock);
+#else
+		int fd = static_cast<int>(accept_sock);
+		::close(fd);
+#endif
+        accept_sock = INVALID_SOCKET;
 
 		closed_ = false;
 	}
 
+    void setNonBlocking()
+    {
+#ifdef _WIN32
+        unsigned long mode = 1;
+        int rc = ioctlsocket(sock, FIONBIO, &mode);
+#else
+        int fd = static_cast<int>(sock);
+        int flags = fcntl(fd, F_GETFL, 0);
+        if (flags == -1) {
+            auto msg = Utils::stringf("fcntl failed with error: %d\n", errno);
+			throw std::runtime_error(msg);
+		}
+        flags |= O_NONBLOCK;
+        int rc = fcntl(fd, F_SETFL, flags);
+#endif
+        if (rc != 0) {
+            rc = GetSocketError();
+            auto msg = Utils::stringf("TcpClientPort setNonBlocking failed with error: %d\n", rc);
+            throw std::runtime_error(msg);
+        }
+    }
+
+    void setNoDelay()
+    {
+        int flags = 1;
+#ifdef _WIN32
+        int rc = ::setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&flags), sizeof(flags));
+#else
+        int fd = static_cast<int>(sock);
+        int rc = ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&flags), sizeof(flags));
+#endif
+
+        if (rc != 0)
+        {
+            rc = GetSocketError();
+            auto msg = Utils::stringf("TcpClientPort set TCP_NODELAY failed: %d\n", rc);
+            throw std::runtime_error(msg);
+        }
+    }
+
 	// write to the serial port
 	int write(const uint8_t* ptr, int count)
 	{
-		socklen_t addrlen = sizeof(sockaddr_in);
 		int hr = send(sock, reinterpret_cast<const char*>(ptr), count, 0);
 		if (hr == SOCKET_ERROR)
 		{
-			throw std::runtime_error(Utils::stringf("TcpClientPort socket send failed with error: %d\n", hr));
+            hr = checkerror();
+            auto msg = Utils::stringf("TcpClientPort socket send failed with error: %d\n", hr);
+			throw std::runtime_error(msg);
 		}
 
 		return hr;
 	}
+
+    int checkerror() {
+        int hr = GetSocketError();
+#ifdef _WIN32
+        if (hr == WSAECONNRESET)
+        {
+            close();
+        }
+#else
+        if (hr == ECONNREFUSED || hr == ENOTCONN)
+        {
+            close();
+        }
+#endif
+        return hr;
+    }
 
 	int read(uint8_t* result, int bytesToRead)
 	{
@@ -181,28 +261,31 @@ public:
 
 		while (!closed_)
 		{
-			socklen_t addrlen = sizeof(sockaddr_in);
 			int rc = recv(sock, reinterpret_cast<char*>(result), bytesToRead, 0);
 			if (rc < 0)
 			{
+                int hr = checkerror();
 #ifdef _WIN32
-				int hr = WSAGetLastError();
 				if (hr == WSAEMSGSIZE)
 				{
-					// message was too large for the buffer, no problem, return what we have.					
+					// message was too large for the buffer, no problem, return what we have.
 				}
-				else if (hr == WSAECONNRESET || hr == ERROR_IO_PENDING)
+                else if (hr == ERROR_IO_PENDING)
 				{
 					// try again - this can happen if server recreates the socket on their side.
 					continue;
 				}
+                else if (hr == WSAEINTR)
+                {
+                    // skip this, it is was interrupted, and if user is closing the port closed_ will be true.
+                    continue;
+                }
 				else
 #else
-				int hr = errno;
 				if (hr == EINTR)
 				{
-					// skip this, it is was interrupted.
-					continue;
+                    // try again - this can happen if server recreates the socket on their side.
+                    continue;
 				}
 				else
 #endif
@@ -213,7 +296,6 @@ public:
 
 			if (rc == 0)
 			{
-				//printf("Connection closed\n");
 				return -1;
 			}
 			else
@@ -227,16 +309,28 @@ public:
 
 	void close()
 	{
-		if (!closed_) {
-			closed_ = true;
-
+         closed_ = true;
+        if (sock != INVALID_SOCKET)
+        {
 #ifdef _WIN32
-			closesocket(sock);
+            closesocket(sock);
 #else
-			int fd = static_cast<int>(sock);
-			::close(fd);
+            int fd = static_cast<int>(sock);
+            ::close(fd);
 #endif
-		}
+            sock = INVALID_SOCKET;
+        }
+
+        if (accept_sock != INVALID_SOCKET)
+        {
+#ifdef _WIN32
+            closesocket(accept_sock);
+#else
+            int fd = static_cast<int>(accept_sock);
+            ::close(fd);
+#endif
+            accept_sock = INVALID_SOCKET;
+        }
 	}
 
 	std::string remoteAddress() {
@@ -305,4 +399,14 @@ int TcpClientPort::remotePort()
 int TcpClientPort::getRssi(const char* ifaceName)
 {
     return impl_->getRssi(ifaceName);
+}
+
+void TcpClientPort::setNoDelay()
+{
+    impl_->setNoDelay();
+}
+
+void TcpClientPort::setNonBlocking()
+{
+    impl_->setNonBlocking();
 }

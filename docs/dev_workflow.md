@@ -4,7 +4,7 @@ Below is the guide on how to perform different development activities while work
 
 ## Development Environment
 ### OS
-We highly recommend Windows 10 and Visual Studio 2017 as your development environment. The support for other OSes and IDE is unfortunately not as mature on the Unreal Engine side and you may risk severe loss of productivity trying to do workarounds and jumping through the hoops.
+We highly recommend Windows 10 and Visual Studio 2019 as your development environment. The support for other OSes and IDE is unfortunately not as mature on the Unreal Engine side and you may risk severe loss of productivity trying to do workarounds and jumping through the hoops.
 
 ### Hardware
 We recommend GPUs such as NVidia 1080 or NVidia Titan series with powerful desktop such as one with 64GB RAM, 6+ cores, SSDs and 2-3 displays (ideally 4K). We have found HP Z840 work quite well for our needs. The development experience on high-end laptops is generally sub-par compared to powerful desktops however they might be useful in a pinch. You generally want laptops with discrete NVidia GPU (at least M2000 or better) with 64GB RAM, SSDs and hopefully 4K display. We have found models such as Lenovo P50 work well for our needs. Laptops with only integrated graphics might not work well.
@@ -20,7 +20,7 @@ The first step is accomplished by build.cmd available in AirSim root. This comma
 Below are the steps we use to make changes in AirSim and test them out. The best way to do development in AirSim code is to use [Blocks project](unreal_blocks.md). This is the light weight project so compile time is relatively faster. Generally the workflow is,
 
 ```
-REM //Use x64 Native Tools Command Prompt for VS 2017
+REM //Use x64 Native Tools Command Prompt for VS 2019
 REM //Navigate to AirSim repo folder
 
 git pull                          
@@ -36,7 +36,7 @@ After you are done with you code changes, you might want to push your changes ba
 
 
 ```
-REM //Use x64 Native Tools Command Prompt for VS 2017
+REM //Use x64 Native Tools Command Prompt for VS 2019
 REM //run this from Unreal\Environments\Blocks 
 
 update_to_git.bat

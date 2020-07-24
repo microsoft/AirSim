@@ -18,6 +18,4 @@ AirSim is open source project and contributors like you keeps it going. It is im
 * Do not use "Please help" etc in the title. See above.
 * Do not copy and paste screen shot of error message. Copy and paste text.
 * Do not use "it doesn't work". Precisely state what is the error message or symptom.
-* Do not ask to write code for you. [Contribute](../CONTRIBUTING.md)!
-
-
+* Do not ask to write code for you. [Contribute](CONTRIBUTING.md)!

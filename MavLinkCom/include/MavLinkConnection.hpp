@@ -85,6 +85,12 @@ namespace mavlinkcom {
         // NIC to use, for example, wifi versus hard wired ethernet adapter.  For localhost pass 127.0.0.1.
         static std::shared_ptr<MavLinkConnection>  connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort);
 
+        // This method accepts one tcp connection from a remote host on a given port.
+        // You may need to open this port in your firewall.
+        // The  localAddr can also a specific local ip address if you need to specify which
+        // NIC to use, for example, wifi versus hard wired ethernet adapter.  For localhost pass 127.0.0.1.
+        void acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort);
+
         // instance methods
         std::string getName();
         int getTargetComponentId();
@@ -126,6 +132,10 @@ namespace mavlinkcom {
         // Compute crc checksums, and pack according to mavlink1 or mavlink2 (depending on what target node supports) and do optional 
         // message signing according to the target node we are communicating with, and return the message length.
         int prepareForSending(MavLinkMessage& msg);
+
+        // Returns true if we are on the publishing thread.  Certain blocing operations that wait for messages from mavlin vehicle are not
+        // allowed on this thread.
+        bool isPublishThread() const;
 
     protected:
         void startListening(const std::string& nodeName, std::shared_ptr<Port> connectedPort);

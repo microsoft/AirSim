@@ -137,7 +137,7 @@ public: //MultirotorApiBase implementation
         return true;
     }
 
-protected: 
+protected:
     virtual Kinematics::State getKinematicsEstimated() const override
     {
         return AirSimSimpleFlightCommon::toKinematicsState3r(firmware_->offboardApi().
@@ -185,7 +185,7 @@ protected:
 
     virtual float getTakeoffZ() const override
     {
-        // pick a number, 3 meters is probably safe 
+        // pick a number, 3 meters is probably safe
         // enough to get out of the backwash turbulence.  Negative due to NED coordinate system.
         return params_.takeoff.takeoff_z;
     }
@@ -195,22 +195,22 @@ protected:
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance traveled
     }
 
-    virtual void commandRollPitchThrottle(float pitch, float roll, float throttle, float yaw_rate) override
+    virtual void commandMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm) override
     {
-        //Utils::log(Utils::stringf("commandRollPitchThrottle %f, %f, %f, %f", pitch, roll, throttle, yaw_rate));
+        //Utils::log(Utils::stringf("commandMotorPWMs %f, %f, %f, %f", front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleRate, GoalModeType::Passthrough);
+        simple_flight::GoalMode mode(GoalModeType::Passthrough, GoalModeType::Passthrough, GoalModeType::Passthrough, GoalModeType::Passthrough);
 
-        simple_flight::Axis4r goal(roll, pitch, yaw_rate, throttle);
+        simple_flight::Axis4r goal(front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm);
 
         std::string message;
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
-    virtual void commandRollPitchZ(float pitch, float roll, float z, float yaw) override
+    virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) override
     {
-        //Utils::log(Utils::stringf("commandRollPitchZ %f, %f, %f, %f", pitch, roll, z, yaw));
+        //Utils::log(Utils::stringf("commandRollPitchYawZ %f, %f, %f, %f", pitch, roll, z, yaw));
 
         typedef simple_flight::GoalModeType GoalModeType;
         simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::PositionWorld);
@@ -221,13 +221,78 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
+    virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) override
+    {
+        //Utils::log(Utils::stringf("commandRollPitchYawThrottle %f, %f, %f, %f", roll, pitch, yaw, throttle));
+
+        typedef simple_flight::GoalModeType GoalModeType;
+        simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::Passthrough);
+
+        simple_flight::Axis4r goal(roll, pitch, yaw, throttle);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
+    }
+
+    virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) override
+    {
+        //Utils::log(Utils::stringf("commandRollPitchYawThrottle %f, %f, %f, %f", roll, pitch, yaw, throttle));
+
+        typedef simple_flight::GoalModeType GoalModeType;
+        simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleRate, GoalModeType::Passthrough);
+
+        simple_flight::Axis4r goal(roll, pitch, yaw_rate, throttle);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
+    }
+
+    virtual void commandRollPitchYawrateZ(float roll, float pitch, float yaw_rate, float z) override
+    {
+        //Utils::log(Utils::stringf("commandRollPitchYawThrottle %f, %f, %f, %f", roll, pitch, yaw_rate, throttle));
+
+        typedef simple_flight::GoalModeType GoalModeType;
+        simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleRate, GoalModeType::PositionWorld);
+
+        simple_flight::Axis4r goal(roll, pitch, yaw_rate, z);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
+    }
+
+    virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) override
+    {
+        //Utils::log(Utils::stringf("commandRollPitchYawThrottle %f, %f, %f, %f", roll, pitch, yaw_rate, throttle));
+
+        typedef simple_flight::GoalModeType GoalModeType;
+        simple_flight::GoalMode mode(GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::PositionWorld);
+
+        simple_flight::Axis4r goal(roll_rate, pitch_rate, yaw_rate, z);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
+    }
+
+    virtual void commandAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle) override
+    {
+        //Utils::log(Utils::stringf("commandRollPitchYawThrottle %f, %f, %f, %f", roll, pitch, yaw_rate, throttle));
+
+        typedef simple_flight::GoalModeType GoalModeType;
+        simple_flight::GoalMode mode(GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::AngleRate, GoalModeType::Passthrough);
+
+        simple_flight::Axis4r goal(roll_rate, pitch_rate, yaw_rate, throttle);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
+    }
+
     virtual void commandVelocity(float vx, float vy, float vz, const YawMode& yaw_mode) override
     {
         //Utils::log(Utils::stringf("commandVelocity %f, %f, %f, %f", vx, vy, vz, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
-            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld,
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel,
             GoalModeType::VelocityWorld);
 
         simple_flight::Axis4r goal(vy, vx, Utils::degreesToRadians(yaw_mode.yaw_or_rate), vz);
@@ -241,8 +306,8 @@ protected:
         //Utils::log(Utils::stringf("commandVelocityZ %f, %f, %f, %f", vx, vy, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld, 
-            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+        simple_flight::GoalMode mode(GoalModeType::VelocityWorld, GoalModeType::VelocityWorld,
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel,
             GoalModeType::PositionWorld);
 
         simple_flight::Axis4r goal(vy, vx, Utils::degreesToRadians(yaw_mode.yaw_or_rate), z);
@@ -251,13 +316,65 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
+    virtual void setControllerGains(uint8_t controller_type, const vector<float>& kp, const vector<float>& ki, const vector<float>& kd) override
+    {
+        simple_flight::GoalModeType controller_type_enum = static_cast<simple_flight::GoalModeType>(controller_type);
+
+        vector<float> kp_axis4(4);
+        vector<float> ki_axis4(4);
+        vector<float> kd_axis4(4);
+
+        switch(controller_type_enum) {
+            // roll gain, pitch gain, yaw gain, and no gains in throttle / z axis
+            case simple_flight::GoalModeType::AngleRate:
+                kp_axis4 = {kp[0], kp[1], kp[2], 1.0};
+                ki_axis4  ={ki[0], ki[1], ki[2], 0.0};
+                kd_axis4 = {kd[0], kd[1], kd[2], 0.0};
+                params_.angle_rate_pid.p.setValues(kp_axis4);
+                params_.angle_rate_pid.i.setValues(ki_axis4);
+                params_.angle_rate_pid.d.setValues(kd_axis4);
+                params_.gains_changed = true;
+                break;
+            case simple_flight::GoalModeType::AngleLevel:
+                kp_axis4 = {kp[0], kp[1], kp[2], 1.0};
+                ki_axis4 = {ki[0], ki[1], ki[2], 0.0};
+                kd_axis4 = {kd[0], kd[1], kd[2], 0.0};
+                params_.angle_level_pid.p.setValues(kp_axis4);
+                params_.angle_level_pid.i.setValues(ki_axis4);
+                params_.angle_level_pid.d.setValues(kd_axis4);
+                params_.gains_changed = true;
+                break;
+            case simple_flight::GoalModeType::VelocityWorld:
+                kp_axis4 = {kp[1], kp[0], 0.0, kp[2]};
+                ki_axis4 = {ki[1], ki[0], 0.0, ki[2]};
+                kd_axis4 = {kd[1], kd[0], 0.0, kd[2]};
+                params_.velocity_pid.p.setValues(kp_axis4);
+                params_.velocity_pid.i.setValues(ki_axis4);
+                params_.velocity_pid.d.setValues(kd_axis4);
+                params_.gains_changed = true;
+                break;
+            case simple_flight::GoalModeType::PositionWorld:
+                kp_axis4 = {kp[1], kp[0], 0.0, kp[2]};
+                ki_axis4 = {ki[1], ki[0], 0.0, ki[2]};
+                kd_axis4 = {kd[1], kd[0], 0.0, kd[2]};
+                params_.position_pid.p.setValues(kp_axis4);
+                params_.position_pid.i.setValues(ki_axis4);
+                params_.position_pid.d.setValues(kd_axis4);
+                params_.gains_changed = true;
+                break;
+            default:
+                Utils::log("Unimplemented controller type");
+                break;
+        }
+    }
+
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
         //Utils::log(Utils::stringf("commandPosition %f, %f, %f, %f", x, y, z, yaw_mode.yaw_or_rate));
 
         typedef simple_flight::GoalModeType GoalModeType;
-        simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld, 
-            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel, 
+        simple_flight::GoalMode mode(GoalModeType::PositionWorld, GoalModeType::PositionWorld,
+            yaw_mode.is_rate ? GoalModeType::AngleRate : GoalModeType::AngleLevel,
             GoalModeType::PositionWorld);
 
         simple_flight::Axis4r goal(y, x, Utils::degreesToRadians(yaw_mode.yaw_or_rate), z);
@@ -315,4 +432,4 @@ private:
 };
 
 }} //namespace
-#endif 
+#endif

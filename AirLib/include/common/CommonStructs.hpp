@@ -296,13 +296,32 @@ struct RCData {
 };
 
 struct LidarData {
-
     TTimePoint time_stamp = 0;
     vector<real_T> point_cloud;
     Pose pose;
 
     LidarData()
     {}
+};
+
+struct DistanceSensorData {
+    TTimePoint time_stamp;
+    real_T distance;        //meters
+    real_T min_distance;    //m
+    real_T max_distance;    //m
+    Pose relative_pose;
+
+    DistanceSensorData()
+    {}
+};
+
+struct MeshPositionVertexBuffersResponse {
+    Vector3r position;
+    Quaternionr orientation;
+
+    std::vector<float> vertices;
+    std::vector<uint32_t> indices;
+    std::string name;
 };
 
 }} //namespace

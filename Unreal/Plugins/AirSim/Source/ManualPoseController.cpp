@@ -10,8 +10,9 @@ void UManualPoseController::initializeForPlay()
     left_mapping_ = FInputAxisKeyMapping("inputManualArrowLeft", EKeys::Left); right_mapping_ = FInputAxisKeyMapping("inputManualArrowRight", EKeys::Right); 
     forward_mapping_= FInputAxisKeyMapping("inputManualForward", EKeys::Up); backward_mapping_ = FInputAxisKeyMapping("inputManualBackward", EKeys::Down);
     up_mapping_ = FInputAxisKeyMapping("inputManualArrowUp", EKeys::PageUp); down_mapping_ = FInputAxisKeyMapping("inputManualArrowDown", EKeys::PageDown); 
-    left_yaw_mapping_ = FInputAxisKeyMapping("inputManualLeftYaw", EKeys::A); up_pitch_mapping_ = FInputAxisKeyMapping("inputManualUpPitch", EKeys::W);
-    right_yaw_mapping_ = FInputAxisKeyMapping("inputManualRightYaw", EKeys::D); down_pitch_mapping_ = FInputAxisKeyMapping("inputManualDownPitch", EKeys::S);
+    left_yaw_mapping_ = FInputAxisKeyMapping("inputManualLeftYaw", EKeys::A); right_yaw_mapping_ = FInputAxisKeyMapping("inputManualRightYaw", EKeys::D); 
+    left_roll_mapping_ = FInputAxisKeyMapping("inputManualLefRoll", EKeys::Q); right_roll_mapping_ = FInputAxisKeyMapping("inputManualRightRoll", EKeys::E); 
+    up_pitch_mapping_ = FInputAxisKeyMapping("inputManualUpPitch", EKeys::W); down_pitch_mapping_ = FInputAxisKeyMapping("inputManualDownPitch", EKeys::S);
 
     input_positive_ = inpute_negative_ = last_velocity_ = FVector::ZeroVector;
 }
@@ -20,7 +21,7 @@ void UManualPoseController::clearBindings()
 {
     left_binding_ = right_binding_ = up_binding_ = down_binding_ = nullptr;
     forward_binding_ = backward_binding_ = left_yaw_binding_ = up_pitch_binding_ = nullptr;
-    right_yaw_binding_ = down_pitch_binding_ = nullptr;
+    right_yaw_binding_ = down_pitch_binding_ = left_roll_binding_ = right_roll_binding_ = nullptr;
 }
 
 void UManualPoseController::setActor(AActor* actor)
@@ -86,10 +87,14 @@ void UManualPoseController::removeInputBindings()
         UAirBlueprintLib::RemoveAxisBinding(down_mapping_, down_binding_, actor_);
     if (left_yaw_binding_)
         UAirBlueprintLib::RemoveAxisBinding(left_yaw_mapping_, left_yaw_binding_, actor_);
-    if (up_pitch_binding_)
-        UAirBlueprintLib::RemoveAxisBinding(up_pitch_mapping_, up_pitch_binding_, actor_);
     if (right_yaw_binding_)
         UAirBlueprintLib::RemoveAxisBinding(right_yaw_mapping_, right_yaw_binding_, actor_);
+    if (left_roll_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(left_roll_mapping_, left_roll_binding_, actor_);
+    if (right_roll_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(right_roll_mapping_, right_roll_binding_, actor_);
+    if (up_pitch_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(up_pitch_mapping_, up_pitch_binding_, actor_);
     if (down_pitch_binding_)
         UAirBlueprintLib::RemoveAxisBinding(down_pitch_mapping_, down_pitch_binding_, actor_);
 
@@ -107,8 +112,10 @@ void UManualPoseController::setupInputBindings()
     up_binding_ = & UAirBlueprintLib::BindAxisToKey(up_mapping_, actor_, this, &UManualPoseController::inputManualMoveUp);
     down_binding_ = & UAirBlueprintLib::BindAxisToKey(down_mapping_, actor_, this, &UManualPoseController::inputManualDown);
     left_yaw_binding_ = & UAirBlueprintLib::BindAxisToKey(left_yaw_mapping_, actor_, this, &UManualPoseController::inputManualLeftYaw);
-    up_pitch_binding_ = & UAirBlueprintLib::BindAxisToKey(up_pitch_mapping_, actor_, this, &UManualPoseController::inputManualUpPitch);
     right_yaw_binding_ = & UAirBlueprintLib::BindAxisToKey(right_yaw_mapping_, actor_, this, &UManualPoseController::inputManualRightYaw);
+    left_roll_binding_ = & UAirBlueprintLib::BindAxisToKey(left_roll_mapping_, actor_, this, &UManualPoseController::inputManualLeftRoll);
+    right_roll_binding_ = & UAirBlueprintLib::BindAxisToKey(right_roll_mapping_, actor_, this, &UManualPoseController::inputManualRightRoll);
+    up_pitch_binding_ = & UAirBlueprintLib::BindAxisToKey(up_pitch_mapping_, actor_, this, &UManualPoseController::inputManualUpPitch);    
     down_pitch_binding_ = & UAirBlueprintLib::BindAxisToKey(down_pitch_mapping_, actor_, this, &UManualPoseController::inputManualDownPitch);
 }
 
@@ -155,15 +162,25 @@ void UManualPoseController::inputManualLeftYaw(float val)
     if (!FMath::IsNearlyEqual(val, 0.f))
         delta_rotation_.Add(0, -val, 0);
 }
-void UManualPoseController::inputManualUpPitch(float val)
-{
-    if (!FMath::IsNearlyEqual(val, 0.f))
-        delta_rotation_.Add(val, 0, 0);
-}
 void UManualPoseController::inputManualRightYaw(float val)
 {
     if (!FMath::IsNearlyEqual(val, 0.f))
         delta_rotation_.Add(0, val, 0);
+}
+void UManualPoseController::inputManualLeftRoll(float val)
+{
+    if (!FMath::IsNearlyEqual(val, 0.f))
+        delta_rotation_.Add(0, 0, -val);
+}
+void UManualPoseController::inputManualRightRoll(float val)
+{
+    if (!FMath::IsNearlyEqual(val, 0.f))
+        delta_rotation_.Add(0, 0, val);
+}
+void UManualPoseController::inputManualUpPitch(float val)
+{
+    if (!FMath::IsNearlyEqual(val, 0.f))
+        delta_rotation_.Add(val, 0, 0);
 }
 void UManualPoseController::inputManualDownPitch(float val)
 {

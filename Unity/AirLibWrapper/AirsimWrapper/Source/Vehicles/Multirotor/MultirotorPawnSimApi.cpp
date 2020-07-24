@@ -25,10 +25,10 @@ void MultirotorPawnSimApi::initialize()
     vehicle_params_ = MultiRotorParamsFactory::createConfig(getVehicleSetting(), sensor_factory);
     vehicle_api_ = vehicle_params_->createMultirotorApi();
     //setup physics vehicle
-    phys_vehicle_ = std::unique_ptr<MultiRotor>(new MultiRotor(vehicle_params_.get(), vehicle_api_.get(),
+    multirotor_physics_body_ = std::unique_ptr<MultiRotor>(new MultiRotorPhysicsBody(vehicle_params_.get(), vehicle_api_.get(),
         getKinematics(), getEnvironment()));
-    rotor_count_ = phys_vehicle_->wrenchVertexCount();
-    rotor_info_.assign(rotor_count_, RotorInfo());
+    rotor_count_ = multirotor_physics_body_->wrenchVertexCount();
+    rotor_actuator_info_.assign(rotor_count_, RotorActuatorInfo());
 
     vehicle_api_->setSimulatedGroundTruth(getGroundTruthKinematics(), getGroundTruthEnvironment());
 
@@ -51,20 +51,20 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
 
 	//move collision info from rendering engine to vehicle
 	const CollisionInfo& collision_info = getCollisionInfo();
-	phys_vehicle_->setCollisionInfo(collision_info);
+	multirotor_physics_body_->setCollisionInfo(collision_info);
 
 	if (pending_pose_status_ == PendingPoseStatus::RenderStatePending)
-		phys_vehicle_->setPose(pending_phys_pose_);
+		multirotor_physics_body_->setPose(pending_phys_pose_);
 
-	last_phys_pose_ = phys_vehicle_->getPose();
+	last_phys_pose_ = multirotor_physics_body_->getPose();
 
-	collision_response = phys_vehicle_->getCollisionResponseInfo();
+	collision_response = multirotor_physics_body_->getCollisionResponseInfo();
 
 	//update rotor poses
 	for (unsigned int i = 0; i < rotor_count_; ++i)
 	{
-		const auto& rotor_output = phys_vehicle_->getRotorOutput(i);
-		RotorInfo* info = &rotor_info_[i];
+		const auto& rotor_output = multirotor_physics_body_->getRotorOutput(i);
+		RotorActuatorInfo* info = &rotor_actuator_info_[i];
 		info->rotor_speed = rotor_output.speed;
 		info->rotor_direction = static_cast<int>(rotor_output.turning_direction);
 		info->rotor_thrust = rotor_output.thrust;
@@ -124,9 +124,9 @@ void MultirotorPawnSimApi::updateRendering(float dt)
 		PrintLogMessage(e.what(), "LogDebugLevel::Failure, 30", getVehicleName().c_str(), ErrorLogSeverity::Error);
 	}
 
-	for (int i = 0; i < rotor_info_.size(); i++)
+	for (int i = 0; i < rotor_actuator_info_.size(); i++)
 	{
-		SetRotorSpeed(i, UnityUtilities::Convert_to_UnityRotorInfo(rotor_info_[i]), getVehicleName().c_str());
+		SetRotorSpeed(i, UnityUtilities::Convert_to_UnityRotorInfo(rotor_actuator_info_[i]), getVehicleName().c_str());
 	}
 }
 
@@ -143,7 +143,7 @@ void MultirotorPawnSimApi::resetImplementation()
 	PawnSimApi::resetImplementation();
 
 	vehicle_api_->reset();
-	phys_vehicle_->reset();
+	multirotor_physics_body_->reset();
 	vehicle_api_messages_.clear();
 }
 
@@ -154,7 +154,7 @@ void MultirotorPawnSimApi::update()
 	PawnSimApi::update();
 
 	//update forces on vertices
-	phys_vehicle_->update();
+	multirotor_physics_body_->update();
 
 	//update to controller must be done after kinematics have been updated by physics engine
 }
@@ -164,12 +164,12 @@ void MultirotorPawnSimApi::reportState(StateReporter& reporter)
 	//// report actual location in unreal coordinates so we can plug that into the UE editor to move the drone.
 	//AirSimPose pose = GetPose(getVehicleName().c_str());
 	//reporter.writeValue("unreal pos", Vector3r(pose.position.x, pose.position.y, pose.position.z));
-	phys_vehicle_->reportState(reporter);
+	multirotor_physics_body_->reportState(reporter);
 }
 
 MultirotorPawnSimApi::UpdatableObject* MultirotorPawnSimApi::getPhysicsBody()
 {
-	return phys_vehicle_->getPhysicsBody();
+	return multirotor_physics_body_->getPhysicsBody();
 }
 //*** End: UpdatableState implementation ***//
 

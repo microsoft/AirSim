@@ -124,7 +124,7 @@ float CStateStereo::GetLeftDisparity(float x, float y)
 	unsigned char c = confMap[off];
 	if (fabs(d) < ndisps && c >= confThreshold)
 	{
-		return  1.0f - (fabs(d)/float(ndisps));
+		return  1.0f - (float)(fabs(d)/ndisps);
 	}
 	else
 		return -1.0f;

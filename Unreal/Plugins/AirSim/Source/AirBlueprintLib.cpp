@@ -9,18 +9,21 @@
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
-#include "UObjectIterator.h"
+#include "Runtime/Engine/Classes/Engine/LevelStreamingDynamic.h"
+#include "UObject/UObjectIterator.h" 
 #include "Camera/CameraComponent.h"
-//#include "Runtime/Foliage/Public/FoliageType.h"
-#include "MessageDialog.h"
+#include "Runtime/Engine/Classes/GameFramework/PlayerStart.h"
+#include "Misc/MessageDialog.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/SkeletalMesh.h"
 #include "Slate/SceneViewport.h"
 #include "IImageWrapper.h"
-#include "ObjectThumbnail.h"
+#include "Misc/ObjectThumbnail.h"
 #include "Engine/Engine.h"
+#include "Engine/World.h"
 #include <exception>
 #include "common/common_utils/Utils.hpp"
+#include "Modules/ModuleManager.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -29,6 +32,7 @@ Methods -> CamelCase
 parameters -> camel_case
 */
 
+ULevelStreamingDynamic *UAirBlueprintLib::CURRENT_LEVEL = nullptr;
 bool UAirBlueprintLib::log_messages_hidden_ = false;
 msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method_ =
     msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName;
@@ -71,6 +75,45 @@ void UAirBlueprintLib::setSimulatePhysics(AActor* actor, bool simulate_physics)
         component->SetSimulatePhysics(simulate_physics);
     }
 }
+
+ULevelStreamingDynamic* UAirBlueprintLib::loadLevel(UObject* context, const FString& level_name)
+{
+    bool success{ false };
+    context->GetWorld()->SetNewWorldOrigin(FIntVector(0,0,0));
+    ULevelStreamingDynamic* new_level = UAirsimLevelStreaming::LoadAirsimLevelInstance(
+            context->GetWorld(), level_name, FVector(0, 0, 0), FRotator(0, 0, 0), success);
+    if (success)
+    {
+        if(CURRENT_LEVEL != nullptr && CURRENT_LEVEL->IsValidLowLevel())
+            CURRENT_LEVEL->SetShouldBeLoaded(false);
+        CURRENT_LEVEL = new_level;	
+    }
+    return CURRENT_LEVEL;
+}
+
+bool UAirBlueprintLib::spawnPlayer(UWorld* context)
+{
+    
+    bool success{ false };
+    TArray<AActor*> player_start_actors;
+    FindAllActor<APlayerStart>(context, player_start_actors);
+    if (player_start_actors.Num() > 1)
+    {
+        for (auto player_start : player_start_actors)
+        {
+            if (player_start->GetName() != FString("SuperStart"))
+            {
+                //context->GetWorld()->SetNewWorldOrigin(FIntVector(0, 0, 0));
+                auto location = player_start->GetActorLocation();
+                context->RequestNewWorldOrigin(FIntVector(location.X, location.Y, location.Z));
+                success = true;
+                break;
+            }
+        }
+    }
+    return success;
+}
+
 
 std::vector<UPrimitiveComponent*> UAirBlueprintLib::getPhysicsComponents(AActor* actor)
 {
@@ -323,14 +366,33 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
 
 int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)
 {
-    FString fmesh_name(mesh_name.c_str());
-    for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
-    {
-        // Access the subclass instance with the * or -> operators.
-        UMeshComponent *mesh = *comp;
-        if (mesh->GetName() == fmesh_name) {
+    // Takes a UStaticMeshComponent, USkinnedMeshComponent or ALandscapeProxy and returns their custom stencil ID if 
+    // their meshes's name or their owner's name (depending on the naming method in mesh_naming_method_) equals mesh_name
+    auto getCustomStencilForMesh = [&mesh_name](auto mesh) -> int {
+        const std::string component_mesh_name = common_utils::Utils::toLower(GetMeshName(mesh));
+        if (component_mesh_name.compare(mesh_name) == 0) {
             return mesh->CustomDepthStencilValue;
         }
+        return -1;
+    };
+
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
+    {
+        int id = getCustomStencilForMesh(*comp);
+        if(id != -1)
+            return id;
+    }
+    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp)
+    {
+        int id = getCustomStencilForMesh(*comp);
+        if (id != -1)
+            return id;
+    }
+    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
+    {
+        int id = getCustomStencilForMesh(*comp);
+        if (id != -1)
+            return id;
     }
 
     return -1;
@@ -352,6 +414,166 @@ std::vector<std::string> UAirBlueprintLib::ListMatchingActors(const UObject *con
     return results;
 }
 
+std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::GetStaticMeshComponents()
+{
+    std::vector<msr::airlib::MeshPositionVertexBuffersResponse> meshes;
+    int num_meshes = 0;
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
+    {
+        *comp;
+
+        std::string name = common_utils::Utils::toLower(GetMeshName(*comp));
+        //The skybox is ignored here as it is huge, and really is of no use to the end user typically. Also the associated meshes with the cameras
+        if (name == "" || common_utils::Utils::startsWith(name, "default_")
+            || common_utils::Utils::startsWith(name, "sky")
+            || common_utils::Utils::startsWith(name, "camera"))
+        {
+            continue;
+        }
+
+        //Various checks if there is even a valid mesh
+        if (!comp->GetStaticMesh()) continue;
+        if (!comp->GetStaticMesh()->RenderData) continue;
+        if (comp->GetStaticMesh()->RenderData->LODResources.Num() == 0) continue;
+
+        msr::airlib::MeshPositionVertexBuffersResponse mesh;
+        mesh.name = name;
+
+        FVector pos = comp->GetComponentLocation();
+        FQuat att = comp->GetComponentQuat();
+        mesh.position[0] = pos.X;
+        mesh.position[1] = pos.Y;
+        mesh.position[2] = pos.Z;
+        mesh.orientation.w() = att.W;
+        mesh.orientation.x() = att.X;
+        mesh.orientation.y() = att.Y;
+        mesh.orientation.z() = att.Z;
+
+        FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->RenderData->LODResources[0].VertexBuffers.PositionVertexBuffer;
+        if (vertex_buffer)
+        {
+            const int32 vertex_count = vertex_buffer->VertexBufferRHI->GetSize();
+            TArray<FVector> vertices;
+            vertices.SetNum(vertex_count);
+            FVector* data = vertices.GetData();
+
+            ENQUEUE_RENDER_COMMAND(GetVertexBuffer)(
+                [vertex_buffer, data](FRHICommandListImmediate& RHICmdList)
+                {
+                    FVector* indices = (FVector*)RHILockVertexBuffer(vertex_buffer->VertexBufferRHI, 0, vertex_buffer->VertexBufferRHI->GetSize(), RLM_ReadOnly);
+                    memcpy(data, indices, vertex_buffer->VertexBufferRHI->GetSize());
+                    RHIUnlockVertexBuffer(vertex_buffer->VertexBufferRHI);
+                });
+
+            FStaticMeshLODResources& lod = comp->GetStaticMesh()->RenderData->LODResources[0];
+            FRawStaticIndexBuffer* IndexBuffer = &lod.IndexBuffer;
+            int num_indices = IndexBuffer->IndexBufferRHI->GetSize() / IndexBuffer->IndexBufferRHI->GetStride();
+
+            if (IndexBuffer->IndexBufferRHI->GetStride() == 2) {
+                TArray<uint16_t> indices_vec;
+                indices_vec.SetNum(num_indices);
+
+                uint16_t* data_ptr = indices_vec.GetData();
+
+                ENQUEUE_RENDER_COMMAND(GetIndexBuffer)(
+                    [IndexBuffer, data_ptr](FRHICommandListImmediate& RHICmdList)
+                    {
+                        uint16_t* indices = (uint16_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
+                        memcpy(data_ptr, indices, IndexBuffer->IndexBufferRHI->GetSize());
+                        RHIUnlockIndexBuffer(IndexBuffer->IndexBufferRHI);
+                    });
+
+                //Need to force the render command to go through cause on the next iteration the buffer no longer exists
+                FlushRenderingCommands();
+
+                mesh.indices.resize(num_indices);
+                for (int idx = 0; idx < num_indices; ++idx) {
+                    mesh.indices[idx] = indices_vec[idx];
+                }
+            }
+
+            else { //stride ==4
+                TArray<uint32_t> indices_vec;
+                indices_vec.SetNum(num_indices);
+
+                uint32_t* data_ptr = indices_vec.GetData();
+
+                ENQUEUE_RENDER_COMMAND(GetIndexBuffer)(
+                    [IndexBuffer, data_ptr](FRHICommandListImmediate& RHICmdList)
+                    {
+                        uint32_t* indices = (uint32_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
+                        memcpy(data_ptr, indices, IndexBuffer->IndexBufferRHI->GetSize());
+                        RHIUnlockIndexBuffer(IndexBuffer->IndexBufferRHI);
+                    });
+
+                FlushRenderingCommands();
+
+                mesh.indices.resize(num_indices);
+                for (int idx = 0; idx < num_indices; ++idx) {
+                    mesh.indices[idx] = indices_vec[idx];
+                }
+            }
+
+            //Unreal stores more vertices than triangles. So here we find the highest referenced vertex and ignore any after that
+            auto result_iter = std::max_element(mesh.indices.begin(), mesh.indices.end());
+            auto max_triangle_index = std::distance(mesh.indices.begin(), result_iter);
+
+            mesh.vertices.resize(max_triangle_index * 3);
+            int aligned_index = 0;
+            FTransform transform = comp->GetComponentTransform();
+            for(int vertex_idx=0;vertex_idx<max_triangle_index;++vertex_idx){
+                FVector transformed_vec = pos + transform.TransformVector(vertices[vertex_idx]);
+                mesh.vertices[aligned_index++] = transformed_vec.X;
+                mesh.vertices[aligned_index++] = transformed_vec.Y;
+                mesh.vertices[aligned_index++] = transformed_vec.Z;
+            }
+        }
+
+        meshes.push_back(mesh);
+    }
+
+    return meshes;
+}
+
+
+TArray<FName> UAirBlueprintLib::ListWorldsInRegistry()
+{
+    FARFilter Filter;
+    Filter.ClassNames.Add(UWorld::StaticClass()->GetFName());
+    Filter.bRecursivePaths = true;
+    
+    TArray<FAssetData> AssetData;
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    AssetRegistryModule.Get().GetAssets(Filter, AssetData);
+    
+    TArray<FName> WorldNames;
+    for (auto asset : AssetData)
+        WorldNames.Add(asset.AssetName);
+    return WorldNames;
+}
+
+UObject* UAirBlueprintLib::GetMeshFromRegistry(const std::string& load_object)
+{
+    FARFilter Filter;
+    Filter.ClassNames.Add(UStaticMesh::StaticClass()->GetFName());
+    Filter.bRecursivePaths = true;
+
+    TArray<FAssetData> AssetData;
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    AssetRegistryModule.Get().GetAssets(Filter, AssetData);
+
+    UObject* LoadObject = NULL;
+    for (auto asset : AssetData)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Asset path: %s"), *asset.PackagePath.ToString());
+        if (asset.AssetName == FName(load_object.c_str()))
+        {
+            LoadObject = asset.GetAsset();
+            break;
+        }
+    }
+    return LoadObject;
+}
 
 bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collision_channel)
 {

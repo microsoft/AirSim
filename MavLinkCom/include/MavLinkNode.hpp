@@ -74,6 +74,9 @@ namespace mavlinkcom {
         // wait a given amount of time for a heart beat, and return the decoded message.
         AsyncResult<MavLinkHeartbeat> waitForHeartbeat();
 
+        // send a single heartbeat
+        void sendOneHeartbeat();
+
         // Get the local system and component id
         int getLocalSystemId();
         int getLocalComponentId();

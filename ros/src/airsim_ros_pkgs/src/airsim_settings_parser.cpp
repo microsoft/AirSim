@@ -51,6 +51,8 @@ bool AirSimSettingsParser::initializeSettings()
         std::cout << "simmode_name: " << simmode_name << std::endl; 
 
         AirSimSettings::singleton().load(std::bind(&AirSimSettingsParser::getSimMode, this));
+
+        return true;
     }
     else
     {

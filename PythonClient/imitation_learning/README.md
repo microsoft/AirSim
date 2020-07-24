@@ -6,7 +6,7 @@ The code in this section is based on the [Autonomous Driving Cookbook](https://g
 ## Prerequisites  
 * Operating system: Windows 10  
 * GPU: Nvidia GTX 1080 or higher (recommended)  
-* Software: Unreal Engine 4.18 and Visual Studio 2017 (see [upgrade instructions](../../docs/unreal_upgrade.md))  
+* Software: Unreal Engine 4.24 and Visual Studio 2019 (see [upgrade instructions](../../docs/unreal_upgrade.md))  
 * Development: CUDA 9.0 and python 3.5.  
 * Python libraries: Keras 2.1.2, TensorFlow 1.6.0.  
 * Note: Newer versions of keras or tensorflow are recommended but can cause syntax errors.  

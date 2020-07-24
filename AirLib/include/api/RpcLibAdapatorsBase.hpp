@@ -672,7 +672,7 @@ public:
         DistanceSensorData()
         {}
 
-        DistanceSensorData(const msr::airlib::DistanceBase::Output& s)
+        DistanceSensorData(const msr::airlib::DistanceSensorData& s)
         {
             time_stamp = s.time_stamp;
             distance = s.distance;
@@ -681,9 +681,9 @@ public:
             relative_pose = s.relative_pose;
         }
 
-        msr::airlib::DistanceBase::Output to() const
+        msr::airlib::DistanceSensorData to() const
         {
-            msr::airlib::DistanceBase::Output d;
+            msr::airlib::DistanceSensorData d;
 
             d.time_stamp = time_stamp;
             d.distance = distance;
@@ -694,6 +694,68 @@ public:
             return d;
         }
     };
+
+    struct MeshPositionVertexBuffersResponse {
+        Vector3r position;
+        Quaternionr orientation;
+
+        std::vector<float> vertices;
+        std::vector<uint32_t> indices;
+        std::string name;
+
+        MSGPACK_DEFINE_MAP(position, orientation, vertices, indices, name);
+
+        MeshPositionVertexBuffersResponse()
+        {}
+
+        MeshPositionVertexBuffersResponse(const msr::airlib::MeshPositionVertexBuffersResponse& s)
+        {
+            position = Vector3r(s.position);
+            orientation = Quaternionr(s.orientation);
+
+            vertices = s.vertices;
+            indices = s.indices;
+
+            if (vertices.size() == 0)
+                vertices.push_back(0);
+            if (indices.size() == 0)
+                indices.push_back(0);
+
+            name = s.name;
+        }
+
+        msr::airlib::MeshPositionVertexBuffersResponse to() const
+        {
+            msr::airlib::MeshPositionVertexBuffersResponse d;
+            d.position = position.to();
+            d.orientation = orientation.to();
+            d.vertices = vertices;
+            d.indices = indices;
+            d.name = name;
+
+            return d;
+        }
+
+        static std::vector<msr::airlib::MeshPositionVertexBuffersResponse> to(
+            const std::vector<MeshPositionVertexBuffersResponse>& response_adapter) {
+            std::vector<msr::airlib::MeshPositionVertexBuffersResponse> response;
+            for (const auto& item : response_adapter)
+                response.push_back(item.to());
+
+            return response;
+        }
+
+        static std::vector<MeshPositionVertexBuffersResponse> from(
+            const std::vector<msr::airlib::MeshPositionVertexBuffersResponse>& response) {
+            std::vector<MeshPositionVertexBuffersResponse> response_adapter;
+            for (const auto& item : response)
+                response_adapter.push_back(MeshPositionVertexBuffersResponse(item));
+
+            return response_adapter;
+        }
+    };
+
+
 };
 
 }} //namespace

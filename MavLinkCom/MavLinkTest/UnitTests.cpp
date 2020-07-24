@@ -287,7 +287,7 @@ void UnitTests::FtpTest() {
         const char* TestPattern = "This is line %d\n";
 
         for (int i = 0; i < 100; i++) {
-            std::string line = Utils::stringf(TestPattern, i);
+            std::string line = Utils::stringf("%s %i", TestPattern, i);
             stream << line;
         }
 
@@ -331,7 +331,7 @@ void UnitTests::FtpTest() {
         std::getline(istream, line);
         while (line.size() > 0) {
             line += '\n';
-            std::string expected = Utils::stringf(TestPattern, count);
+            std::string expected = Utils::stringf("%s %i", TestPattern, count);
             if (line != expected)
             {
                 throw std::runtime_error(Utils::stringf("ftp local file contains unexpected contents '%s' on line %d\n", line.c_str(), count));

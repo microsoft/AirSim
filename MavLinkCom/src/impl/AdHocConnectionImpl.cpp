@@ -176,6 +176,7 @@ void AdHocConnectionImpl::unsubscribe(int id)
 void AdHocConnectionImpl::readPackets()
 {
     //CurrentThread::setMaximumPriority();
+    CurrentThread::setThreadName("MavLinkThread");
     std::shared_ptr<Port> safePort = this->port;
     const int MAXBUFFER = 512;
     uint8_t* buffer = new uint8_t[MAXBUFFER];
@@ -275,6 +276,7 @@ void AdHocConnectionImpl::drainQueue()
 void AdHocConnectionImpl::publishPackets()
 {
     //CurrentThread::setMaximumPriority();
+    CurrentThread::setThreadName("MavLinkThread");
     while (!closed) {
 
         drainQueue();

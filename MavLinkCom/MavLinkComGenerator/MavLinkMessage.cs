@@ -46,6 +46,10 @@ namespace MavLinkComGenerator
 
         [XmlText]
         public string description { get; set; }
+
+        [XmlAttribute]
+        public string label { get; set; }
+
     }
 
     public class MavEnumEntry
@@ -96,6 +100,8 @@ namespace MavLinkComGenerator
 
         [XmlElement(ElementName ="field")]
         public List<MavField> fields { get; set; }
+
+        public int ExtensionPos { get; set; }
 
         public MavMessage() { }
     }

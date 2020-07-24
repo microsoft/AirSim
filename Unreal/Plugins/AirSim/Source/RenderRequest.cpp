@@ -1,7 +1,7 @@
 #include "RenderRequest.h"
 #include "TextureResource.h"
 #include "Engine/TextureRenderTarget2D.h"
-#include "TaskGraphInterfaces.h"
+#include "Async/TaskGraphInterfaces.h"
 #include "ImageUtils.h"
 
 #include "AirBlueprintLib.h"
@@ -74,13 +74,12 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
                 // The completion is called immeidately after GameThread sends the
                 // rendering commands to RenderThread. Hence, our ExecuteTask will
                 // execute *immediately* after RenderThread renders the scene!
-                ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER(
-                    SceneDrawCompletion,
-                    RenderRequest *, This, this,
-                    {
-                        This->ExecuteTask();
-                    }
-                );
+                RenderRequest* This = this;
+                ENQUEUE_RENDER_COMMAND(SceneDrawCompletion)(
+                [This](FRHICommandListImmediate& RHICmdList)
+                {
+                    This->ExecuteTask();
+                });
 
                 game_viewport_->bDisableWorldRendering = saved_DisableWorldRendering_;
 

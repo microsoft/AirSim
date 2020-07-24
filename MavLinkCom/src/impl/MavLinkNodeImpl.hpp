@@ -15,7 +15,7 @@ namespace mavlinkcom_impl {
     {
     public:
         MavLinkNodeImpl(int localSystemId, int localComponentId);
-        ~MavLinkNodeImpl();
+        virtual ~MavLinkNodeImpl();
 
         void connect(std::shared_ptr<MavLinkConnection> connection);
         void close();
@@ -69,6 +69,8 @@ namespace mavlinkcom_impl {
 
         AsyncResult<MavLinkHeartbeat>  waitForHeartbeat();
 
+        void sendOneHeartbeat();
+
         // Encode and send the given message to the connected node
         void sendMessage(MavLinkMessageBase& msg);
 
@@ -84,6 +86,7 @@ namespace mavlinkcom_impl {
     protected:
         // this is called for all messages received on the connection.
         virtual void handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message);
+        void assertNotPublishingThread();
     private:
         void sendHeartbeat();
         AsyncResult<MavLinkParameter> getParameterByIndex(int16_t index);

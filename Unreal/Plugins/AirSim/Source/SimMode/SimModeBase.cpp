@@ -3,7 +3,7 @@
 #include "Misc/MessageDialog.h"
 #include "Misc/EngineVersion.h"
 #include "Runtime/Launch/Resources/Version.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/OutputDeviceNull.h"
 #include "Engine/World.h"
@@ -16,6 +16,7 @@
 #include "SimJoyStick/SimJoyStick.h"
 #include "common/EarthCelestial.hpp"
 #include "sensors/lidar/LidarSimple.hpp"
+#include "sensors/distance/DistanceSimple.hpp"
 
 #include "Weather/WeatherLib.h"
 
@@ -26,9 +27,17 @@
 //it to AirLib and directly implement WorldSimApiBase interface
 #include "WorldSimApi.h"
 
+ASimModeBase *ASimModeBase::SIMMODE = nullptr;
+
+ASimModeBase* ASimModeBase::getSimMode()
+{
+    return SIMMODE;
+}
 
 ASimModeBase::ASimModeBase()
 {
+    SIMMODE = this;
+
     static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
@@ -47,6 +56,30 @@ ASimModeBase::ASimModeBase()
 
     static ConstructorHelpers::FClassFinder<AActor> sky_sphere_class(TEXT("Blueprint'/Engine/EngineSky/BP_Sky_Sphere'"));
     sky_sphere_class_ = sky_sphere_class.Succeeded() ? sky_sphere_class.Class : nullptr;
+
+    static ConstructorHelpers::FClassFinder<UUserWidget> loading_screen_class_find(TEXT("WidgetBlueprint'/AirSim/Blueprints/BP_LoadingScreenWidget'"));
+    if (loading_screen_class_find.Succeeded())
+    {
+        auto loading_screen_class = loading_screen_class_find.Class;
+        loading_screen_widget_ = CreateWidget<ULoadingScreenWidget>(this->GetWorld(), loading_screen_class);
+
+    }
+    else
+        loading_screen_widget_ = nullptr;
+
+}
+
+void ASimModeBase::toggleLoadingScreen(bool is_visible)
+{
+    if (loading_screen_widget_ == nullptr)
+        return;
+    else {
+
+        if (is_visible)
+            loading_screen_widget_->SetVisibility(ESlateVisibility::Visible);
+        else
+            loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);
+    }
 }
 
 void ASimModeBase::BeginPlay()
@@ -90,6 +123,9 @@ void ASimModeBase::BeginPlay()
         UWeatherLib::initWeather(World, spawned_actors_);
         //UWeatherLib::showWeatherMenu(World);
     }
+
+    loading_screen_widget_->AddToViewport();
+    loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);
 }
 
 const NedTransform& ASimModeBase::getGlobalNedTransform()
@@ -103,12 +139,13 @@ void ASimModeBase::checkVehicleReady()
         if (api) { //sim-only vehicles may have api as null
             std::string message;
             if (!api->isReady(message)) {
-                UAirBlueprintLib::LogMessage("Vehicle %s was not initialized: ", 
-                    "", LogDebugLevel::Failure); //TODO: add vehicle name in message
+                UAirBlueprintLib::LogMessage("Vehicle was not initialized", "", LogDebugLevel::Failure);
+                if (message.size() > 0) {
+                    UAirBlueprintLib::LogMessage(message.c_str(), "", LogDebugLevel::Failure);
+                }
                 UAirBlueprintLib::LogMessage("Tip: check connection info in settings.json", "", LogDebugLevel::Informational);
             }
         }
-
     }
 }
 
@@ -117,8 +154,7 @@ void ASimModeBase::setStencilIDs()
     UAirBlueprintLib::SetMeshNamingMethod(getSettings().segmentation_setting.mesh_naming_method);
 
     if (getSettings().segmentation_setting.init_method ==
-        AirSimSettings::SegmentationSetting::InitMethodType::CommonObjectsRandomIDs) {
-     
+            AirSimSettings::SegmentationSetting::InitMethodType::CommonObjectsRandomIDs) {     
         UAirBlueprintLib::InitializeMeshStencilIDs(!getSettings().segmentation_setting.override_existing);
     }
     //else don't init
@@ -268,6 +304,8 @@ void ASimModeBase::Tick(float DeltaSeconds)
     updateDebugReport(debug_reporter_);
 
     drawLidarDebugPoints();
+
+    drawDistanceSensorDebugPoints();
 
     Super::Tick(DeltaSeconds);
 }
@@ -503,8 +541,8 @@ void ASimModeBase::setupVehiclesAndCamera()
 
                 //compute initial pose
                 FVector spawn_position = uu_origin.GetLocation();
-                msr::airlib::Vector3r settings_position = vehicle_setting.position;
-                if (!msr::airlib::VectorMath::hasNan(settings_position))
+                Vector3r settings_position = vehicle_setting.position;
+                if (!VectorMath::hasNan(settings_position))
                     spawn_position = getGlobalNedTransform().fromGlobalNed(settings_position);
                 FRotator spawn_rotation = toFRotator(vehicle_setting.rotation, uu_origin.Rotator());
 
@@ -635,13 +673,12 @@ void ASimModeBase::drawLidarDebugPoints()
 
         msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
         if (api != nullptr) {
-            
-            msr::airlib::uint count_lidars = api->getSensors().size(msr::airlib::SensorBase::SensorType::Lidar);
+            msr::airlib::uint count_lidars = api->getSensors().size(SensorType::Lidar);
 
             for (msr::airlib::uint i = 0; i < count_lidars; i++) {
                 // TODO: Is it incorrect to assume LidarSimple here?
                 const msr::airlib::LidarSimple* lidar =
-                    static_cast<const msr::airlib::LidarSimple*>(api->getSensors().getByType(msr::airlib::SensorBase::SensorType::Lidar, i));
+                    static_cast<const msr::airlib::LidarSimple*>(api->getSensors().getByType(SensorType::Lidar, i));
                 if (lidar != nullptr && lidar->getParams().draw_debug_points) {
                     lidar_draw_debug_points_ = true;
 
@@ -651,7 +688,7 @@ void ASimModeBase::drawLidarDebugPoints()
                         return;
 
                     for (int j = 0; j < lidar_data.point_cloud.size(); j = j + 3) {
-                        msr::airlib::Vector3r point(lidar_data.point_cloud[j], lidar_data.point_cloud[j + 1], lidar_data.point_cloud[j + 2]);
+                        Vector3r point(lidar_data.point_cloud[j], lidar_data.point_cloud[j + 1], lidar_data.point_cloud[j + 2]);
 
                         FVector uu_point;
 
@@ -660,7 +697,7 @@ void ASimModeBase::drawLidarDebugPoints()
                         }
                         else if (lidar->getParams().data_frame == AirSimSettings::kSensorLocalFrame) {
 
-                            msr::airlib::Vector3r point_w = msr::airlib::VectorMath::transformToWorldFrame(point, lidar_data.pose, true);
+                            Vector3r point_w = VectorMath::transformToWorldFrame(point, lidar_data.pose, true);
                             uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point_w);
                         }
                         else
@@ -669,10 +706,10 @@ void ASimModeBase::drawLidarDebugPoints()
                         DrawDebugPoint(
                             this->GetWorld(),
                             uu_point,
-                            5,              //size
+                            5,              // size
                             FColor::Green,
-                            true,           //persistent (never goes away)
-                            0.1             //point leaves a trail on moving object
+                            false,          // persistent (never goes away)
+                            0.03            // LifeTime: point leaves a trail on moving object
                         );
                     }
                 }
@@ -681,4 +718,51 @@ void ASimModeBase::drawLidarDebugPoints()
     }
 
     lidar_checks_done_ = true;
+}
+
+// Draw debug-point on main viewport for Distance sensor hit
+void ASimModeBase::drawDistanceSensorDebugPoints()
+{
+    if (getApiProvider() == nullptr)
+        return;
+
+    for (auto& sim_api : getApiProvider()->getVehicleSimApis()) {
+        PawnSimApi* pawn_sim_api = static_cast<PawnSimApi*>(sim_api);
+        std::string vehicle_name = pawn_sim_api->getVehicleName();
+
+        msr::airlib::VehicleApiBase* api = getApiProvider()->getVehicleApi(vehicle_name);
+
+        if (api != nullptr) {
+            msr::airlib::uint count_distance_sensors = api->getSensors().size(SensorType::Distance);
+            Pose vehicle_pose = pawn_sim_api->getGroundTruthKinematics()->pose;
+
+            for (msr::airlib::uint i=0; i<count_distance_sensors; i++) {
+                const msr::airlib::DistanceSimple* distance_sensor = 
+                    static_cast<const msr::airlib::DistanceSimple*>(api->getSensors().getByType(SensorType::Distance, i));
+
+                if (distance_sensor != nullptr && distance_sensor->getParams().draw_debug_points) {
+                    msr::airlib::DistanceSensorData distance_sensor_data = distance_sensor->getOutput();
+
+                    // Find position of point hit
+                    // Similar to UnrealDistanceSensor.cpp#L19
+                    // order of Pose addition is important here because it also adds quaternions which is not commutative!
+                    Pose distance_sensor_pose = distance_sensor_data.relative_pose + vehicle_pose;
+                    Vector3r start = distance_sensor_pose.position;
+                    Vector3r point = start + VectorMath::rotateVector(VectorMath::front(), 
+                                                distance_sensor_pose.orientation, true) * distance_sensor_data.distance;
+
+                    FVector uu_point = pawn_sim_api->getNedTransform().fromLocalNed(point);
+
+                    DrawDebugPoint(
+                        this->GetWorld(),
+                        uu_point,
+                        10,              // size
+                        FColor::Green,
+                        false,          // persistent (never goes away)
+                        0.03            // LifeTime: point leaves a trail on moving object
+                    );
+                }
+            }
+        }
+    }
 }

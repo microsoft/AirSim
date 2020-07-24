@@ -18,14 +18,14 @@ class PositionController :
     public IGoal  //for internal child controller
 {
 public:
-    PositionController(const Params* params, const IBoardClock* clock = nullptr)
+    PositionController(Params* params, const IBoardClock* clock = nullptr)
         : params_(params), clock_(clock)
     {
     }
 
     virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
-        if (axis_ == 2)
+        if (axis == 2)
             throw std::invalid_argument("PositionController does not support yaw axis i.e. " + std::to_string(axis));
 
         axis_ = axis;
@@ -34,7 +34,7 @@ public:
 
         //initialize parent PID
         pid_.reset(new PidController<float>(clock_,
-            PidConfig<float>(params_->position_pid.p[axis], 0, 0)));
+            PidConfig<float>(params_->position_pid.p[axis], params_->position_pid.i[axis], params_->position_pid.d[axis])));
 
         //initialize child controller
         velocity_controller_.reset(new VelocityController(params_, clock_));
@@ -100,7 +100,7 @@ private:
 
     TReal output_;
 
-    const Params* params_;
+    Params* params_;
     const IBoardClock* clock_;
     std::unique_ptr<PidController<float>> pid_;
     std::unique_ptr<VelocityController> velocity_controller_;

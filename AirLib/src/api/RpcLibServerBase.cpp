@@ -30,6 +30,7 @@ STRICT_MODE_OFF
 
 #include "api/RpcLibAdapatorsBase.hpp"
 #include <functional>
+#include <thread>
 
 STRICT_MODE_ON
 
@@ -48,7 +49,26 @@ struct RpcLibServerBase::impl {
     ~impl() {
     }
 
+    void stop() {        
+        server.close_sessions();
+        if (!is_async_) {
+            // this deadlocks UI thread if async_run was called while there are pending rpc calls.
+            server.stop();
+        }
+    }
+
+    void run(bool block, std::size_t thread_count)
+    {
+        if (block) {
+            server.run();
+        } else {
+            is_async_ = true;
+            server.async_run(thread_count);   //4 threads
+        }
+    }
+
     rpc::server server;
+    bool is_async_ = false;
 };
 
 typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
@@ -63,9 +83,11 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         pimpl_.reset(new impl(server_address, port));
 
     pimpl_->server.bind("ping", [&]() -> bool { return true; });
+
     pimpl_->server.bind("getServerVersion", []() -> int {
         return 1;
     });
+
     pimpl_->server.bind("getMinRequiredClientVersion", []() -> int {
         return 1;
     });
@@ -73,9 +95,11 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("simPause", [&](bool is_paused) -> void { 
         getWorldSimApi()->pause(is_paused); 
     });
+
     pimpl_->server.bind("simIsPaused", [&]() -> bool { 
         return getWorldSimApi()->isPaused(); 
     });
+
     pimpl_->server.bind("simContinueForTime", [&](double seconds) -> void { 
         getWorldSimApi()->continueForTime(seconds); 
     });
@@ -89,6 +113,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("simEnableWeather", [&](bool enable) -> void {
         getWorldSimApi()->enableWeather(enable);
     });
+
     pimpl_->server.bind("simSetWeatherParameter", [&](WorldSimApiBase::WeatherParameter param, float val) -> void {
         getWorldSimApi()->setWeatherParameter(param, val);
     });
@@ -96,9 +121,11 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("enableApiControl", [&](bool is_enabled, const std::string& vehicle_name) -> void { 
         getVehicleApi(vehicle_name)->enableApiControl(is_enabled);
     });
+
     pimpl_->server.bind("isApiControlEnabled", [&](const std::string& vehicle_name) -> bool { 
         return getVehicleApi(vehicle_name)->isApiControlEnabled();
     });
+
     pimpl_->server.bind("armDisarm", [&](bool arm, const std::string& vehicle_name) -> bool { 
         return getVehicleApi(vehicle_name)->armDisarm(arm);
     });
@@ -108,6 +135,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
             const auto& response = getVehicleSimApi(vehicle_name)->getImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));
             return RpcLibAdapatorsBase::ImageResponse::from(response);
     });
+
     pimpl_->server.bind("simGetImage", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> vector<uint8_t> {
         auto result = getVehicleSimApi(vehicle_name)->getImage(camera_name, type);
         if (result.size() == 0) {
@@ -117,13 +145,23 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return result;
     });
 
+    pimpl_->server.bind("simGetMeshPositionVertexBuffers", [&]() ->vector<RpcLibAdapatorsBase::MeshPositionVertexBuffersResponse> {
+        const auto& response = getWorldSimApi()->getMeshPositionVertexBuffers();
+        return RpcLibAdapatorsBase::MeshPositionVertexBuffersResponse::from(response);
+    });
+
     pimpl_->server.
         bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision, const std::string& vehicle_name) -> void {
         getVehicleSimApi(vehicle_name)->setPose(pose.to(), ignore_collision);
     });
+
     pimpl_->server.bind("simGetVehiclePose", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::Pose {
         const auto& pose = getVehicleSimApi(vehicle_name)->getPose();
         return RpcLibAdapatorsBase::Pose(pose);
+    });
+
+    pimpl_->server.bind("simSetTraceLine", [&](const std::vector<float>& color_rgba, float thickness, const std::string& vehicle_name) -> void {
+        getVehicleSimApi(vehicle_name)->setTraceLine(color_rgba, thickness);
     });
 
     pimpl_->server.
@@ -153,7 +191,8 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
             sim_world_api->reset();
         else
             getVehicleApi("")->reset();
-            resetInProgress = false;
+
+        resetInProgress = false;
     });
 
     pimpl_->server.bind("simPrintLogMessage", [&](const std::string& message, const std::string& message_param, unsigned char severity) -> void {
@@ -200,9 +239,14 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
     });
 
-    pimpl_->server.bind("simSetCameraOrientation", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Quaternionr& orientation, 
+    pimpl_->server.bind("simSetCameraPose", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Pose& pose, 
         const std::string& vehicle_name) -> void {
-        getVehicleSimApi(vehicle_name)->setCameraOrientation(camera_name, orientation.to());
+        getVehicleSimApi(vehicle_name)->setCameraPose(camera_name, pose.to());
+    });
+
+    pimpl_->server.bind("simSetCameraFov", [&](const std::string& camera_name, float fov_degrees,
+        const std::string& vehicle_name) -> void {
+        getVehicleSimApi(vehicle_name)->setCameraFoV(camera_name, fov_degrees);
     });
 
     pimpl_->server.bind("simGetCollisionInfo", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::CollisionInfo {
@@ -214,12 +258,82 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->listSceneObjects(name_regex);
     });
 
+    pimpl_->server.bind("simLoadLevel", [&](const std::string& level_name) -> bool {
+        return getWorldSimApi()->loadLevel(level_name);
+    });
+
+    pimpl_->server.bind("simSpawnObject", [&](string& object_name, const string& load_component, const RpcLibAdapatorsBase::Pose& pose, const RpcLibAdapatorsBase::Vector3r& scale) -> string {
+        return getWorldSimApi()->spawnObject(object_name, load_component, pose.to(), scale.to());
+    });
+
+    pimpl_->server.bind("simDestroyObject", [&](const string& object_name) -> bool {
+        return getWorldSimApi()->destroyObject(object_name);
+    });
+
     pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Pose {
         const auto& pose = getWorldSimApi()->getObjectPose(object_name); 
         return RpcLibAdapatorsBase::Pose(pose);
     });
+
+    pimpl_->server.bind("simGetObjectScale", [&](const std::string& object_name) -> RpcLibAdapatorsBase::Vector3r {
+        const auto& scale = getWorldSimApi()->getObjectScale(object_name);
+        return RpcLibAdapatorsBase::Vector3r(scale);
+    });
+
     pimpl_->server.bind("simSetObjectPose", [&](const std::string& object_name, const RpcLibAdapatorsBase::Pose& pose, bool teleport) -> bool {
         return getWorldSimApi()->setObjectPose(object_name, pose.to(), teleport);
+    });
+
+    pimpl_->server.bind("simSetObjectScale", [&](const std::string& object_name, const RpcLibAdapatorsBase::Vector3r& scale) -> bool {
+        return getWorldSimApi()->setObjectScale(object_name, scale.to());
+    });
+
+    pimpl_->server.bind("simFlushPersistentMarkers", [&]() -> void {
+        getWorldSimApi()->simFlushPersistentMarkers();
+    });
+
+    pimpl_->server.bind("simPlotPoints", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotPoints(conv_points, color_rgba, size, duration, is_persistent);
+    });
+
+    pimpl_->server.bind("simPlotLineStrip", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotLineStrip(conv_points, color_rgba, thickness, duration, is_persistent);
+    });
+
+    pimpl_->server.bind("simPlotLineList", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points;
+        RpcLibAdapatorsBase::to(points, conv_points);
+        getWorldSimApi()->simPlotLineList(conv_points, color_rgba, thickness, duration, is_persistent);
+    });
+
+    pimpl_->server.bind("simPlotArrows", [&](const std::vector<RpcLibAdapatorsBase::Vector3r>& points_start, const std::vector<RpcLibAdapatorsBase::Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent) -> void {
+        vector<Vector3r> conv_points_start;
+        RpcLibAdapatorsBase::to(points_start, conv_points_start);
+        vector<Vector3r> conv_points_end;
+        RpcLibAdapatorsBase::to(points_end, conv_points_end);
+        getWorldSimApi()->simPlotArrows(conv_points_start, conv_points_end, color_rgba, thickness, arrow_size, duration, is_persistent);
+    });
+
+    pimpl_->server.bind("simPlotStrings", [&](const std::vector<std::string> strings, const std::vector<RpcLibAdapatorsBase::Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration) -> void {
+        vector<Vector3r> conv_positions;
+        RpcLibAdapatorsBase::to(positions, conv_positions);
+        getWorldSimApi()->simPlotStrings(strings, conv_positions, scale, color_rgba, duration);
+    });
+
+    pimpl_->server.bind("simPlotTransforms", [&](const std::vector<RpcLibAdapatorsBase::Pose>& poses, float scale, float thickness, float duration, bool is_persistent) -> void {
+        vector<Pose> conv_poses;
+        RpcLibAdapatorsBase::to(poses, conv_poses);
+        getWorldSimApi()->simPlotTransforms(conv_poses, scale, thickness, duration, is_persistent);
+    });
+
+    pimpl_->server.bind("simPlotTransformsWithNames", [&](const std::vector<RpcLibAdapatorsBase::Pose>& poses, const std::vector<std::string> names, float tf_scale, float tf_thickness, float text_scale, const vector<float>& text_color_rgba, float duration) -> void {
+        vector<Pose> conv_poses;
+        RpcLibAdapatorsBase::to(poses, conv_poses);
+        getWorldSimApi()->simPlotTransformsWithNames(conv_poses, names, tf_scale, tf_thickness, text_scale, text_color_rgba, duration);
     });
 
     pimpl_->server.bind("simGetGroundTruthKinematics", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::KinematicsState {
@@ -236,67 +350,20 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         getVehicleApi(vehicle_name)->cancelLastTask();
     });
 
-    //----------- APIs to control ACharacter in scene ----------/
-    pimpl_->server.bind("simCharSetFaceExpression", [&](const std::string& expression_name, float value, const std::string& character_name) -> void {
-        getWorldSimApi()->charSetFaceExpression(expression_name, value, character_name);
+    pimpl_->server.bind("simSwapTextures", [&](const std::string tag, int tex_id, int component_id, int material_id) -> std::vector<string> {
+        return *getWorldSimApi()->swapTextures(tag, tex_id, component_id, material_id);
     });
-    pimpl_->server.bind("simCharGetFaceExpression", [&](const std::string& expression_name, const std::string& character_name) -> float {
-        return getWorldSimApi()->charGetFaceExpression(expression_name, character_name);
-    });
-    pimpl_->server.bind("simCharGetAvailableFaceExpressions", [&]() -> std::vector<std::string> {
-        return getWorldSimApi()->charGetAvailableFaceExpressions();
-    });
-    pimpl_->server.bind("simCharSetSkinDarkness", [&](float value, const std::string& character_name) -> void {
-        getWorldSimApi()->charSetSkinDarkness(value, character_name);
-    });
-    pimpl_->server.bind("simCharGetSkinDarkness", [&](const std::string& character_name) -> float {
-        return getWorldSimApi()->charGetSkinDarkness(character_name);
-    });
-    pimpl_->server.bind("simCharSetSkinAgeing", [&](float value, const std::string& character_name) -> void {
-        getWorldSimApi()->charSetSkinAgeing(value, character_name);
-    });
-    pimpl_->server.bind("simCharGetSkinAgeing", [&](const std::string& character_name) -> float {
-        return getWorldSimApi()->charGetSkinAgeing(character_name);
-    });
-    pimpl_->server.bind("simCharSetHeadRotation", [&](const RpcLibAdapatorsBase::Quaternionr& q, const std::string& character_name) -> void {
-        getWorldSimApi()->charSetHeadRotation(q.to(), character_name);
-    });
-    pimpl_->server.bind("simCharGetHeadRotation", [&](const std::string& character_name) -> RpcLibAdapatorsBase::Quaternionr {
-        msr::airlib::Quaternionr q = getWorldSimApi()->charGetHeadRotation(character_name);
-        return RpcLibAdapatorsBase::Quaternionr(q);
-    });
-    pimpl_->server.bind("simCharSetBonePose", [&](const std::string& bone_name, const RpcLibAdapatorsBase::Pose& pose, const std::string& character_name) -> void {
-        getWorldSimApi()->charSetBonePose(bone_name, pose.to(), character_name);
-    });
-    pimpl_->server.bind("simCharGetBonePose", [&](const std::string& bone_name, const std::string& character_name) -> RpcLibAdapatorsBase::Pose {
-        msr::airlib::Pose pose = getWorldSimApi()->charGetBonePose(bone_name, character_name);
-        return RpcLibAdapatorsBase::Pose(pose);
-    });
-    pimpl_->server.bind("simCharResetBonePose", [&](const std::string& bone_name, const std::string& character_name) -> void {
-        getWorldSimApi()->charResetBonePose(bone_name, character_name);
-    });
-    pimpl_->server.bind("simCharSetFacePreset", [&](const std::string& preset_name, float value, const std::string& character_name) -> void {
-        getWorldSimApi()->charSetFacePreset(preset_name, value, character_name);
-    });
-    pimpl_->server.bind("simSetFacePresets", [&](const std::unordered_map<std::string, float>& presets, const std::string& character_name) -> void {
-        getWorldSimApi()->charSetFacePresets(presets, character_name);
-    });
-    pimpl_->server.bind("simSetBonePoses", [&](const std::unordered_map<std::string, RpcLibAdapatorsBase::Pose>& poses, const std::string& character_name) -> void {
-        std::unordered_map<std::string, msr::airlib::Pose> r;
-        for (const auto& p : poses)
-            r[p.first] = p.second.to();
 
-        getWorldSimApi()->charSetBonePoses(r, character_name);
+    pimpl_->server.bind("startRecording", [&]() -> void {
+        getWorldSimApi()->startRecording();
     });
-    pimpl_->server.bind("simGetBonePoses", [&](const std::vector<std::string>& bone_names, const std::string& character_name) 
-        -> std::unordered_map<std::string, RpcLibAdapatorsBase::Pose> {
 
-        std::unordered_map<std::string, msr::airlib::Pose> poses = getWorldSimApi()->charGetBonePoses(bone_names, character_name);
-        std::unordered_map<std::string, RpcLibAdapatorsBase::Pose> r;
-        for (const auto& p : poses)
-            r[p.first] = RpcLibAdapatorsBase::Pose(p.second);
+    pimpl_->server.bind("stopRecording", [&]() -> void {
+        getWorldSimApi()->stopRecording();
+    });
 
-        return r;
+    pimpl_->server.bind("isRecording", [&]() -> bool {
+        return getWorldSimApi()->isRecording();
     });
 
     //if we don't suppress then server will bomb out for exceptions raised by any method
@@ -311,15 +378,12 @@ RpcLibServerBase::~RpcLibServerBase()
 
 void RpcLibServerBase::start(bool block, std::size_t thread_count)
 {
-    if (block)
-        pimpl_->server.run();
-    else
-        pimpl_->server.async_run(thread_count);   //4 threads
+    pimpl_->run(block, thread_count);
 }
 
 void RpcLibServerBase::stop()
 {
-    pimpl_->server.stop();
+    pimpl_->stop();
 }
 
 void* RpcLibServerBase::getServer() const
