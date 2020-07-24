@@ -3,7 +3,7 @@ REM //---------- set up variable ----------
 setlocal
 set ROOT_DIR=%~dp0
 
-set cmake_minversion_minmaj="   3.   9"
+set cmake_minversion_minmaj="   3.   14"
 
 set "cmake_version=    .    "
 
@@ -38,12 +38,12 @@ exit /b 0
 :download_install
 set /p choice="Press any key to download and install cmake (make sure to add it in path in install options)"
 
-IF NOT EXIST %temp%\cmake-3.10.2-win64-x64.msi (
+IF NOT EXIST %temp%\cmake-3.14.7-win64-x64.msi (
 	@echo on
-	powershell -command "& { iwr https://cmake.org/files/v3.10/cmake-3.10.2-win64-x64.msi -OutFile %temp%\cmake-3.10.2-win64-x64.msi }"
+	powershell -command "& { iwr https://cmake.org/files/v3.14/cmake-3.14.7-win64-x64.msi -OutFile %temp%\cmake-3.14.7-win64-x64.msi }"
 	@echo off
 )
 
-msiexec.exe /i "%temp%\cmake-3.10.2-win64-x64.msi"
+msiexec.exe /i "%temp%\cmake-3.14.7-win64-x64.msi"
 
 exit /b 1

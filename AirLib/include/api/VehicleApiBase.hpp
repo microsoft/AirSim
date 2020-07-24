@@ -215,7 +215,7 @@ public:
     }
 
     // Distance Sensor API
-    virtual DistanceBase::Output getDistanceSensorData(const std::string& distance_sensor_name) const
+    virtual DistanceSensorData getDistanceSensorData(const std::string& distance_sensor_name) const
     {
         const DistanceBase* distance_sensor = nullptr;
 

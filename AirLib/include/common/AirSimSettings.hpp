@@ -196,6 +196,12 @@ public: //types
     };
 
     struct DistanceSetting : SensorSetting {
+        // shared defaults
+        real_T min_distance = 20.0f / 100; //m
+        real_T max_distance = 4000.0f / 100; //m
+        Vector3r position = VectorMath::nanVector();
+        Rotation rotation = Rotation::nanRotation();
+        bool draw_debug_points = false;
     };
 
     struct LidarSetting : SensorSetting {
@@ -1161,10 +1167,12 @@ private:
 
     static void initializeDistanceSetting(DistanceSetting& distance_setting, const Settings& settings_json)
     {
-        unused(distance_setting);
-        unused(settings_json);
+        distance_setting.min_distance = settings_json.getFloat("MinDistance", distance_setting.min_distance);
+        distance_setting.max_distance = settings_json.getFloat("MaxDistance", distance_setting.max_distance);
+        distance_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", distance_setting.draw_debug_points);
 
-        //TODO: set from json as needed
+        distance_setting.position = createVectorSetting(settings_json, distance_setting.position);
+        distance_setting.rotation = createRotationSetting(settings_json, distance_setting.rotation);
     }
 
     static void initializeLidarSetting(LidarSetting& lidar_setting, const Settings& settings_json)

@@ -116,15 +116,13 @@ public: //methods
             const uint count_distance_sensors = getSensors().size(SensorBase::SensorType::Distance);
             if (count_distance_sensors != 0) {
                 const auto& distance_output = getDistanceSensorData("");
-                float pitch, roll, yaw;
-                VectorMath::toEulerianAngle(distance_output.relative_pose.orientation, pitch, roll, yaw);
 
                 sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
                     distance_output.max_distance / 100, //m -> cm
                     distance_output.distance,
                     0, //sensor type: //TODO: allow changing in settings?
                     77, //sensor id, //TODO: should this be something real?
-                    pitch); //TODO: convert from radians to degrees?
+                    distance_output.relative_pose.orientation); //TODO: convert from radians to degrees?
             }
 
             const uint count_gps_sensors = getSensors().size(SensorBase::SensorType::Gps);
@@ -1379,7 +1377,7 @@ private: //methods
         last_sensor_message_ = hil_sensor;
     }
 
-    void sendDistanceSensor(float min_distance, float max_distance, float current_distance, float sensor_type, float sensor_id, float orientation)
+    void sendDistanceSensor(float min_distance, float max_distance, float current_distance, float sensor_type, float sensor_id, Quaternionr orientation)
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated distance sensor messages while not in simulation mode");
@@ -1392,7 +1390,14 @@ private: //methods
         distance_sensor.current_distance = static_cast<uint16_t>(current_distance);
         distance_sensor.type = static_cast<uint8_t>(sensor_type);
         distance_sensor.id = static_cast<uint8_t>(sensor_id);
-        distance_sensor.orientation = static_cast<uint8_t>(orientation);
+
+        // Use custom orientation
+        distance_sensor.orientation = 100;  // MAV_SENSOR_ROTATION_CUSTOM
+        distance_sensor.quaternion[0] = orientation.w();
+        distance_sensor.quaternion[1] = orientation.x();
+        distance_sensor.quaternion[2] = orientation.y();
+        distance_sensor.quaternion[3] = orientation.z();
+
         //TODO: use covariance parameter?
 
         if (hil_node_ != nullptr) {

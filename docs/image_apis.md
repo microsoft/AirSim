@@ -25,14 +25,13 @@ png_image = client.simGetImage("0", airsim.ImageType.Scene)
 
 int getOneImage() 
 {
-    using namespace std;
     using namespace msr::airlib;
     
-    //for car use CarRpcLibClient
-    msr::airlib::MultirotorRpcLibClient client;
+    // for car use CarRpcLibClient
+    MultirotorRpcLibClient client;
 
-    vector<uint8_t> png_image = client.simGetImage("0", VehicleCameraBase::ImageType::Scene);
-    //do something with images
+    std::vector<uint8_t> png_image = client.simGetImage("0", VehicleCameraBase::ImageType::Scene);
+    // do something with images
 }
 ```
 
@@ -94,19 +93,18 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 ```cpp
 int getStereoAndDepthImages() 
 {
-    using namespace std;
     using namespace msr::airlib;
     
     typedef VehicleCameraBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
     typedef VehicleCameraBase::ImageType ImageType;
 
-    //for car use
-    //msr::airlib::CarRpcLibClient client;
-    msr::airlib::MultirotorRpcLibClient client;
+    // for car use
+    // CarRpcLibClient client;
+    MultirotorRpcLibClient client;
 
-    //get right, left and depth images. First two as png, second as float16.
-    vector<ImageRequest> request = { 
+    // get right, left and depth images. First two as png, second as float16.
+    std::vector<ImageRequest> request = { 
         //png format
         ImageRequest("0", ImageType::Scene),
         //uncompressed RGB array bytes
@@ -115,8 +113,8 @@ int getStereoAndDepthImages()
         ImageRequest("1", ImageType::DepthPlanner, true) 
     };
 
-    const vector<ImageResponse>& response = client.simGetImages(request);
-    //do something with response which contains image data, pose, timestamp etc
+    const std::vector<ImageResponse>& response = client.simGetImages(request);
+    // do something with response which contains image data, pose, timestamp etc
 }
 ```
 
@@ -259,7 +257,7 @@ A complete ready-to-run example can be found in [segmentation.py](https://github
 An object's ID can be set to -1 to make it not show up on the segmentation image.
 
 #### How to Find Mesh Names?
-To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for he ground in Blocks environment in right panel in the editor:
+To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for the ground in Blocks environment in right panel in the editor:
 
 ![record screenshot](images/unreal_editor_blocks.png)
 

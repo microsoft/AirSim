@@ -366,14 +366,33 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
 
 int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)
 {
-    FString fmesh_name(mesh_name.c_str());
-    for (TObjectIterator<UMeshComponent> comp; comp; ++comp)
-    {
-        // Access the subclass instance with the * or -> operators.
-        UMeshComponent *mesh = *comp;
-        if (mesh->GetName() == fmesh_name) {
+    // Takes a UStaticMeshComponent, USkinnedMeshComponent or ALandscapeProxy and returns their custom stencil ID if 
+    // their meshes's name or their owner's name (depending on the naming method in mesh_naming_method_) equals mesh_name
+    auto getCustomStencilForMesh = [&mesh_name](auto mesh) -> int {
+        const std::string component_mesh_name = common_utils::Utils::toLower(GetMeshName(mesh));
+        if (component_mesh_name.compare(mesh_name) == 0) {
             return mesh->CustomDepthStencilValue;
         }
+        return -1;
+    };
+
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
+    {
+        int id = getCustomStencilForMesh(*comp);
+        if(id != -1)
+            return id;
+    }
+    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp)
+    {
+        int id = getCustomStencilForMesh(*comp);
+        if (id != -1)
+            return id;
+    }
+    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
+    {
+        int id = getCustomStencilForMesh(*comp);
+        if (id != -1)
+            return id;
     }
 
     return -1;
