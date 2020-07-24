@@ -43,7 +43,7 @@
 #include <mach-o/dyld.h>
 #endif
 
-using namespace common_utils;
+namespace common_utils {
 
 // File names are unicode (std::wstring), because users can create folders containing unicode characters on both
 // Windows, OSX and Linux.
@@ -93,8 +93,6 @@ std::string FileSystem::getUserDocumentsFolder() {
     return ensureFolder(path);
 }
 
-#endif
-
 std::string FileSystem::getExecutableFolder() {
     std::string path;
 #ifdef _WIN32
@@ -136,3 +134,7 @@ std::string FileSystem::getExecutableFolder() {
 
     return ensureFolder(path);
 }
+
+} // namespace common_utils
+
+#endif
