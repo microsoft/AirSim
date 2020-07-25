@@ -68,6 +68,9 @@ macro(CommonSetup)
 
         set(BUILD_PLATFORM "x64")
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+        if (CMAKE_BUILD_TYPE MATCHES Release)
+            set(CMAKE_CXX_FLAGS "-O3 ${CMAKE_CXX_FLAGS}")
+        endif ()
 
     ELSE()
         #windows cmake build is experimental

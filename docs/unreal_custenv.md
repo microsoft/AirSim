@@ -23,34 +23,34 @@ There is no `Epic Games Launcher` for Linux which means that if you need to crea
 
 6. Edit the `LandscapeMountains.uproject` so that it looks like this
 
-    ```
-    {
-    	"FileVersion": 3,
-    	"EngineAssociation": "4.24",
-    	"Category": "Samples",
-    	"Description": "",
-    	"Modules": [
-    		{
-    			"Name": "LandscapeMountains",
-    			"Type": "Runtime",
-    			"LoadingPhase": "Default",
-    			"AdditionalDependencies": [
-    				"AirSim"
-    			]
-    		}
-    	],
-    	"TargetPlatforms": [
-    		"MacNoEditor",
-    		"WindowsNoEditor"
-    	],
-    	"Plugins": [
-    		{
-    			"Name": "AirSim",
-    			"Enabled": true
-    		}
-    	]
-    }
-    ```
+```json
+{
+	"FileVersion": 3,
+	"EngineAssociation": "4.24",
+	"Category": "Samples",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "LandscapeMountains",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AirSim"
+			]
+		}
+	],
+	"TargetPlatforms": [
+		"MacNoEditor",
+		"WindowsNoEditor"
+	],
+	"Plugins": [
+		{
+			"Name": "AirSim",
+			"Enabled": true
+		}
+	]
+}
+```
 
 7. Close Visual Studio and the  `Unreal Editor` and right click the LandscapeMountains.uproject in Windows Explorer and select `Generate Visual Studio Project Files`.  This step detects all plugins and source files in your Unreal project and generates `.sln` file for Visual Studio.
 
@@ -108,14 +108,14 @@ In this case, create a new blank C++ project with no Starter Content and add you
 #### I already have my own Unreal project. How do I use AirSim with it?
 Copy the `Unreal\Plugins` folder from the build you did in the above section into the root of your Unreal project's folder. In your Unreal project's .uproject file, add the key `AdditionalDependencies` to the "Modules" object
 as we showed in the `LandscapeMountains.uproject` above.
-```
+```json
 "AdditionalDependencies": [
     "AirSim"
 ]
 ```
 
 and the `Plugins` section to the top level object:
-```
+```json
 "Plugins": [
     {
         "Name": "AirSim",

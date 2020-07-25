@@ -48,11 +48,12 @@ git clone https://github.com/Microsoft/AirSim.git
 cd AirSim
 ```
 
-  By default AirSim recommends using clang 8 to build the binaries as those will be compatible with UE 4.24.  The setup script will install the right version of cmake, llvm, and eigen.
+  By default AirSim uses clang 8 to build for compatibility with UE 4.24. The setup script will install the right version of cmake, llvm, and eigen.
 
 ```bash
 ./setup.sh
 ./build.sh
+# use ./build.sh --debug to build in debug mode
 ```
 
 ### Build Unreal Environment
