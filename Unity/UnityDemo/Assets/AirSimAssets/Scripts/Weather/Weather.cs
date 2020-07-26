@@ -8,10 +8,16 @@ namespace AirSimUnity
     /// </summary>
     public class Weather : MonoBehaviour
     {
+        public enum WeatherParamScalar {
+            Snow,
+            Count
+        }
+
         [Tooltip("WeatherFX prefab that will be spawned as a child of each vehicle.")]
         [SerializeField] private WeatherFX WeatherFXPrefab;
 
         private bool isEnabled;
+        private float[] weatherParamScalars = new float[(int)WeatherParamScalar.Count];
         private List<WeatherFX> weatherFXInstances = new List<WeatherFX>();
 
         public bool IsWeatherEnabled
@@ -26,6 +32,8 @@ namespace AirSimUnity
                 }
             }
         }
+
+        public WeatherParamScalarCollection ParamScalars { get; private set; } = new WeatherParamScalarCollection();
 
         /// <summary>
         /// Removes all weatherFX from the list that have been destroyed (references set to null by Unity).

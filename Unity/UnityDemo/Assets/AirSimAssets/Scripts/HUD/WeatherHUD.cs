@@ -1,4 +1,5 @@
-﻿using UnityEditor.VersionControl;
+﻿using System;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,18 +7,21 @@ namespace AirSimUnity {
     /// <summary>
     /// HUD class that manage weather-related UI elements.
     /// </summary>
-    public class WeatherHUDScript : MonoBehaviour {
+    public class WeatherHUD : MonoBehaviour {
         [SerializeField] private RectTransform rootPanel;
         [SerializeField] private Toggle weatherEnabledToggle;
+        [SerializeField] private WeatherHUDSlider snowSlider;
 
         private void Start() {
             rootPanel.gameObject.SetActive(false);
-            weatherEnabledToggle.onValueChanged.AddListener(OnWeatherEnabledChanged);
+            weatherEnabledToggle.onValueChanged.AddListener(OnWeatherEnabledToggleChanged);
+            snowSlider.OnValueChanged.AddListener(OnSnowSliderChanged);
         }
 
         private void OnValidate() {
             Debug.Assert(rootPanel != null);
             Debug.Assert(weatherEnabledToggle != null);
+            Debug.Assert(snowSlider != null);
         }
 
         private void Update() {
@@ -30,10 +34,15 @@ namespace AirSimUnity {
 
             Weather weather = AirSimGlobal.Instance.Weather;
             weatherEnabledToggle.isOn = weather.IsWeatherEnabled;
+            snowSlider.Value = weather.ParamScalars[WeatherParamScalarCollection.WeatherParamScalar.Snow];
         }
 
-        public void OnWeatherEnabledChanged(bool isEnabled) {
+        public void OnWeatherEnabledToggleChanged(bool isEnabled) {
             AirSimGlobal.Instance.Weather.IsWeatherEnabled = isEnabled;
+        }
+
+        private void OnSnowSliderChanged(float value) {
+            AirSimGlobal.Instance.Weather.ParamScalars[WeatherParamScalarCollection.WeatherParamScalar.Snow] = value;
         }
     }
 }

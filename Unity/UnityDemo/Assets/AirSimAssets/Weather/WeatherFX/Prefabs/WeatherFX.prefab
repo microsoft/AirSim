@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ef6019d2a42db14cadb432a6c6cc7d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  snowParticleSystem: {fileID: 7137805003512388501}
 --- !u!1001 &8301748675695978906
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -126,6 +127,12 @@ PrefabInstance:
 --- !u!4 &5661139042435920074 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4442198055719098704, guid: 56587ec32694e684a97ecabef25d589d,
+    type: 3}
+  m_PrefabInstance: {fileID: 8301748675695978906}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &7137805003512388501 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1169581006881108495, guid: 56587ec32694e684a97ecabef25d589d,
     type: 3}
   m_PrefabInstance: {fileID: 8301748675695978906}
   m_PrefabAsset: {fileID: 0}
