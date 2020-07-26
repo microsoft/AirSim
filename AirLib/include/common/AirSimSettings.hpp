@@ -35,6 +35,10 @@ public: //types
     static constexpr char const * kVehicleInertialFrame = "VehicleInertialFrame";
     static constexpr char const * kSensorLocalFrame = "SensorLocalFrame";
 
+    static constexpr char const * kSimModeTypeMultirotor = "Multirotor";
+    static constexpr char const * kSimModeTypeCar = "Car";
+    static constexpr char const * kSimModeTypeComputerVision = "ComputerVision";
+
     struct SubwindowSetting {
         int window_index;
         ImageType image_type;
@@ -339,6 +343,8 @@ private: //fields
     float settings_version_actual;
     float settings_version_minimum = 1.2f;
 
+    bool vehicles_specfied = false;         // Whether "Vehicles" element was specified, used for Recording settings
+
 public: //fields
     std::string simmode_name = "";
     std::string level_name = "";
@@ -404,7 +410,7 @@ public: //methods
         loadPawnPaths(settings_json, pawn_paths);
         loadOtherSettings(settings_json);
         loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults);
-        loadVehicleSettings(simmode_name, settings_json, vehicles);
+        loadVehicleSettings(simmode_name, settings_json, vehicles, vehicles_specfied);
 
         //this should be done last because it depends on vehicles (and/or their type) we have
         loadRecordingSetting(settings_json);
@@ -524,7 +530,7 @@ private:
 
         physics_engine_name = settings_json.getString("PhysicsEngineName", "");
         if (physics_engine_name == "") {
-            if (simmode_name == "Multirotor")
+            if (simmode_name == kSimModeTypeMultirotor)
                 physics_engine_name = "FastPhysicsEngine";
             else
                 physics_engine_name = "PhysX"; //this value is only informational for now
@@ -541,9 +547,9 @@ private:
         std::string view_mode_string = settings_json.getString("ViewMode", "");
 
         if (view_mode_string == "") {
-            if (simmode_name == "Multirotor")
+            if (simmode_name == kSimModeTypeMultirotor)
                 view_mode_string = "FlyWithMe";
-            else if (simmode_name == "ComputerVision")
+            else if (simmode_name == kSimModeTypeComputerVision)
                 view_mode_string = "Fpv";
             else
                 view_mode_string = "SpringArmChase";
@@ -574,9 +580,33 @@ private:
         Settings rc_json;
         if (settings_json.getChild("RC", rc_json)) {
             rc_setting.remote_control_id = rc_json.getInt("RemoteControlID",
-                simmode_name == "Multirotor" ? 0 : -1);
+                simmode_name == kSimModeTypeMultirotor ? 0 : -1);
             rc_setting.allow_api_when_disconnected = rc_json.getBool("AllowAPIWhenDisconnected",
                 rc_setting.allow_api_when_disconnected);
+        }
+    }
+
+    // Get name of the default vehicle to be used for Recording
+    static std::string getDefaultVehicleName(const std::string& simmode_name, const bool vehicles_specfied, 
+        const std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
+    {
+        // If "Vehicles" were specified, then we use the first vehicle in the map as the default
+        // This doesn't guarantee that the first vehicle specified in the settings is used, it uses the lexicographically first one
+        // Should be okay, since if using multi-vehicle, and want a specific vehicle then "VehicleName" field should be used
+        if (vehicles_specfied)
+            return vehicles.begin()->first;
+        else {
+            // Vehicles were not specified, therefore `vehicles` map has 3 vehicles, 1 for each SimMode
+            // These are set in initializeVehicleSettings()
+            if (simmode_name == kSimModeTypeMultirotor)
+                return "SimpleFlight";
+            else if (simmode_name == kSimModeTypeCar)
+                return "PhysXCar";
+            else if (simmode_name == kSimModeTypeComputerVision)
+                return "ComputerVision";
+            else
+                throw std::invalid_argument(Utils::stringf(
+                    "Unknown SimMode: %s, failed to set default vehicle for Recording", simmode_name.c_str()).c_str());
         }
     }
 
@@ -611,16 +641,19 @@ private:
             if (recording_json.getChild("Cameras", req_cameras_settings)) {
                 // If 'Cameras' field is present, clear defaults
                 recording_setting.requests.clear();
+                // Get name of the default vehicle to be used if "VehicleName" isn't specified
+                std::string default_vehicle_name = getDefaultVehicleName(simmode_name, vehicles_specfied, vehicles);
 
                 for (size_t child_index = 0; child_index < req_cameras_settings.size(); ++child_index) {
                     Settings req_camera_settings;
+
                     if (req_cameras_settings.getChild(child_index, req_camera_settings)) {
                         std::string camera_name = getCameraName(req_camera_settings);
                         ImageType image_type = Utils::toEnum<ImageType>(
                                                 req_camera_settings.getInt("ImageType", 0));
                         bool compress = req_camera_settings.getBool("Compress", true);
                         bool pixels_as_float = req_camera_settings.getBool("PixelsAsFloat", false);
-                        std::string vehicle_name = req_camera_settings.getString("VehicleName", "");
+                        std::string vehicle_name = req_camera_settings.getString("VehicleName", default_vehicle_name);
 
                         recording_setting.requests[vehicle_name].push_back(ImageCaptureBase::ImageRequest(
                             camera_name, image_type, pixels_as_float, compress));
@@ -815,9 +848,10 @@ private:
     }
 
     static void loadVehicleSettings(const std::string& simmode_name, const Settings& settings_json,
-        std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
+        std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles, bool& vehicles_specfied)
     {
         initializeVehicleSettings(vehicles);
+        vehicles_specfied = false;
 
         msr::airlib::Settings vehicles_child;
         if (settings_json.getChild("Vehicles", vehicles_child)) {
@@ -825,8 +859,10 @@ private:
             vehicles_child.getChildNames(keys);
 
             //remove default vehicles, if values are specified in settings
-            if (keys.size())
+            if (keys.size()) {
                 vehicles.clear();
+                vehicles_specfied = true;
+            }
 
             for (const auto& key : keys) {
                 msr::airlib::Settings child;
@@ -1117,7 +1153,7 @@ private:
         }
 
         if (std::isnan(camera_director.follow_distance)) {
-            if (simmode_name == "Car")
+            if (simmode_name == kSimModeTypeCar)
                 camera_director.follow_distance = -8;
             else
                 camera_director.follow_distance = -3;
@@ -1127,7 +1163,7 @@ private:
         if (std::isnan(camera_director.position.y()))
             camera_director.position.y() = 0;
         if (std::isnan(camera_director.position.z())) {
-            if (simmode_name == "Car")
+            if (simmode_name == kSimModeTypeCar)
                 camera_director.position.z() = -4;
             else
                 camera_director.position.z() = -2;
@@ -1143,7 +1179,7 @@ private:
             clock_type = "ScalableClock";
 
             //override if multirotor simmode with simple_flight
-            if (simmode_name == "Multirotor") {
+            if (simmode_name == kSimModeTypeMultirotor) {
                 //TODO: this won't work if simple_flight and PX4 is combined together!
 
                 //for multirotors we select steppable fixed interval clock unless we have
@@ -1313,13 +1349,13 @@ private:
     static void createDefaultSensorSettings(const std::string& simmode_name,
         std::map<std::string, std::unique_ptr<SensorSetting>>& sensors)
     {
-        if (simmode_name == "Multirotor") {
+        if (simmode_name == kSimModeTypeMultirotor) {
             sensors["imu"] = createSensorSetting(SensorBase::SensorType::Imu, "imu", true);
             sensors["magnetometer"] = createSensorSetting(SensorBase::SensorType::Magnetometer, "magnetometer", true);
             sensors["gps"] = createSensorSetting(SensorBase::SensorType::Gps, "gps", true);
             sensors["barometer"] = createSensorSetting(SensorBase::SensorType::Barometer, "barometer", true);
         }
-        else if (simmode_name == "Car") {
+        else if (simmode_name == kSimModeTypeCar) {
             sensors["gps"] = createSensorSetting(SensorBase::SensorType::Gps, "gps", true);
         }
         else {
