@@ -14,16 +14,14 @@ namespace AirSimUnity
         private bool isEnabled;
         private List<WeatherFX> weatherFXInstances = new List<WeatherFX>();
 
-        public bool IsEnabled
+        public bool IsWeatherEnabled
         {
             get { return isEnabled; }
 
-            set
-            {
+            set {
                 isEnabled = value;
                 RemoveNullWeatherFXInstances();
-                foreach (WeatherFX weatherFX in weatherFXInstances)
-                {
+                foreach (WeatherFX weatherFX in weatherFXInstances) {
                     weatherFX.gameObject.SetActive(value);
                 }
             }
@@ -32,8 +30,7 @@ namespace AirSimUnity
         /// <summary>
         /// Removes all weatherFX from the list that have been destroyed (references set to null by Unity).
         /// </summary>
-        private void RemoveNullWeatherFXInstances()
-        {
+        private void RemoveNullWeatherFXInstances() {
             weatherFXInstances.RemoveAll(delegate (WeatherFX weatherFX) { return weatherFX == null; });
         }
 

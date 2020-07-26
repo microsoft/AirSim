@@ -50,11 +50,6 @@ namespace AirSimUnity {
             {
                 Application.Quit();
             }
-
-            if (Input.GetKeyDown(KeyCode.F10)) {
-                AirSimGlobal.Instance.Weather.IsEnabled = !AirSimGlobal.Instance.Weather.IsEnabled;
-                Debug.Log($"Weather Enabled: {AirSimGlobal.Instance.Weather.IsEnabled}");
-            }
         }
 
 
