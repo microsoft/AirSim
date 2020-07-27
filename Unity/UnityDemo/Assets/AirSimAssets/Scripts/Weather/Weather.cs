@@ -46,6 +46,12 @@ namespace AirSimUnity
             if (WeatherFXPrefab != null) {
                 WeatherFX weatherFX = Instantiate(WeatherFXPrefab, vehicle.transform);
                 weatherFX.gameObject.SetActive(isEnabled);
+
+                // Apply weather effect at absolute world scale regardless of the parent vehicle's scale.
+                // Note that this won't work if the parent is unevenly stretched along different axes.
+                Vector3 worldScale = weatherFX.transform.lossyScale;
+                weatherFX.transform.localScale = Vector3.Scale(weatherFX.transform.localScale, new Vector3(1.0f / worldScale.x, 1.0f / worldScale.y, 1.0f / worldScale.z));
+
                 weatherFXInstances.Add(weatherFX);
             }
         }
