@@ -42,29 +42,32 @@ void RenderRequest::RenderThreadScreenshotTask(RenderRequest::RenderResult &resu
     EPixelFormat pixelFormat = fast_cap_texture->GetFormat();
     uint32 width = fast_cap_texture->GetSizeX();
     uint32 height = fast_cap_texture->GetSizeY();
+
+    result.width = width;
+    result.height = height;
+    result.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
+
     uint32 stride;
     auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
     
-    result.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
     result.stride = stride;
-    result.width = width;
-    result.height = height;
+    size_t size = height * stride;
 
-     UE_LOG(LogTemp, Warning, TEXT("stats: H: %d,  W: %d,  S: %d,  px_format: %d"),
+    UE_LOG(LogTemp, Warning, TEXT("stats: H: %d,  W: %d,  S: %d,  px_format: %d"),
                                     height, width, stride, pixelFormat);
 
     if (src) {
         switch (pixelFormat) {
         case PF_B8G8R8A8:
             result.pixels_as_float = false;
-            result.pixels = buffer_pool_->GetBufferExactSize(height*stride);
-            FMemory::BigBlockMemcpy(latest_result_.pixels->data(), src, height * stride);
+            result.pixels = buffer_pool_->GetBufferExactSize(size);
+            FMemory::BigBlockMemcpy(result.pixels->data(), src, size);
             break;
 
         case PF_FloatRGBA:
             result.pixels_as_float = true;
-            result.pixels_float = buffer_pool_float_->GetBufferExactSize(height*stride);
-            FMemory::BigBlockMemcpy(latest_result_.pixels_float->data(), src, height * stride);
+            result.pixels_float = buffer_pool_float_->GetBufferExactSize(size);
+            FMemory::BigBlockMemcpy(result.pixels_float->data(), src, size);
             break;
 
         default:
