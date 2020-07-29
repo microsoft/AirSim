@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#include "common/common_utils/BufferPool.h"
+#include "BufferPool.h"
 
 template <typename T>
 typename BufferPool<T>::BufferPtr BufferPool<T>::GetBufferExactSize(size_t size)

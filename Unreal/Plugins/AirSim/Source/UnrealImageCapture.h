@@ -4,7 +4,7 @@
 #include "PIPCamera.h"
 #include "common/ImageCaptureBase.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
-#include "common/common_utils/BufferPool.h"
+#include "BufferPool.h"
 
 class UnrealImageCapture : public msr::airlib::ImageCaptureBase
 {
