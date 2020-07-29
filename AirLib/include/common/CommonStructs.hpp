@@ -304,6 +304,17 @@ struct LidarData {
     {}
 };
 
+struct DistanceSensorData {
+    TTimePoint time_stamp;
+    real_T distance;        //meters
+    real_T min_distance;    //m
+    real_T max_distance;    //m
+    Pose relative_pose;
+
+    DistanceSensorData()
+    {}
+};
+
 struct MeshPositionVertexBuffersResponse {
     Vector3r position;
     Quaternionr orientation;

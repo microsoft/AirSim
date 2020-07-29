@@ -1,10 +1,18 @@
 # AirSim Settings
 
 ## Where are Settings Stored?
-Windows: `Documents\AirSim`
-Linux: `~/Documents/AirSim`
+AirSim is searching for the settings definition in 4 different ways in the following order. The first match will be used:
 
-The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first startup AirSim would create `settings.json` file with no settings. To avoid problems, always use ASCII format to save json file.
+1. Looking at the (absolute) path specified by the `--settings` command line argument.  
+For example, in Windows: `AirSim.exe --settings 'C:\path\to\settings.json'`   
+In Linux `./Blocks.sh --settings '/home/$USER/path/to/settings.json'`
+1. Looking for a json document passed as a command line argument by the `--settings` argument.  
+For example, in Windows: `AirSim.exe --settings '{"foo" : "bar"}'`   
+In Linux `./Blocks.sh --settings '{"foo" : "bar"}'`
+1. Looking in the folder of the executable for a file called `settings.json`.
+2. Looking in the users home folder for a file called `settings.json`. The AirSim subfolder is located at `Documents\AirSim` on Windows and `~/Documents/AirSim` on Linux systems.
+
+The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first startup AirSim would create `settings.json` file with no settings at the users home folder. To avoid problems, always use ASCII format to save json file.
 
 ## How to Chose Between Car and Multirotor?
 The default is to use multirotor. To use car simple set `"SimMode": "Car"` like this:
@@ -212,7 +220,7 @@ The `InitMethod` determines how object IDs are initialized at startup to generat
 
  If `OverrideExisting` is false then initialization does not alter non-zero object IDs already assigned otherwise it does.
 
- If `MeshNamingMethod` is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If its "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
+ If `MeshNamingMethod` is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If it is "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
 
 ## Camera Settings
 The `CameraDefaults` element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in `Cameras` element inside `Vehicles` as described later.
@@ -360,7 +368,7 @@ from the PX4 app.  The second channel for controlling the vehicle is defined by 
 To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. Currently this setting applies only to car.
 
 ### PawnPaths
-This allows you to specify your own vehicle pawn blueprints, for example, you can replace the default car in AirSim with your own car. Your vehicle BP can reside in Content folder of your own Unreal project (i.e. outside of AirSim plugin folder). For example, if you have a car BP located in file `Content\MyCar\MySedanBP.uasset` in your project then you can set `"DefaultCar": {"PawnBP":"Class'/Game/MyCar/MySedanBP.MySedanBP_C'"}`. The `XYZ.XYZ_C` is a special notation required to specify class for BP `XYZ`. Please note that your BP must be derived from CarPawn class. By default this is not the case but you can re-parent the BP using the "Class Settings" button in toolbar in UE editor after you open the BP and then choosing "Car Pawn" for Parent Class settings in Class Options. It's also a good idea to disable "Auto Possess Player" and "Auto Possess AI" as well as set AI Controller Class to None in BP details. Please make sure your asset is included for cooking in packaging options if you are creating binary.
+This allows you to specify your own vehicle pawn blueprints, for example, you can replace the default car in AirSim with your own car. Your vehicle BP can reside in Content folder of your own Unreal project (i.e. outside of AirSim plugin folder). For example, if you have a car BP located in file `Content\MyCar\MySedanBP.uasset` in your project then you can set `"DefaultCar": {"PawnBP":"Class'/Game/MyCar/MySedanBP.MySedanBP_C'"}`. The `XYZ.XYZ_C` is a special notation required to specify class for BP `XYZ`. Please note that your BP must be derived from CarPawn class. By default this is not the case but you can re-parent the BP using the "Class Settings" button in toolbar in UE editor after you open the BP and then choosing "Car Pawn" for Parent Class settings in Class Options. It is also a good idea to disable "Auto Possess Player" and "Auto Possess AI" as well as set AI Controller Class to None in BP details. Please make sure your asset is included for cooking in packaging options if you are creating binary.
 
 ### PhysicsEngineName
 For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` only.

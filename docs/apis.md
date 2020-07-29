@@ -179,6 +179,20 @@ Please note that `Roadwetness`, `RoadSnow` and `RoadLeaf` effects requires addin
 
 Please see [example code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/weather.py) for more details.
 
+### Recording APIs
+
+Recording APIs can be used to start recording data through APIs. Data to be recorded can be specified using [settings](settings.md#recording). To start recording, use -
+
+```
+client.startRecording()
+```
+
+Similarly, to stop recording, use `client.stopRecording()`. To check whether Recording is running, call `client.isRecording()`, returns a `bool`.
+
+This API works alongwith toggling Recording using R button, therefore if it's enabled using R key, `isRecording()` will return `True`, and recording can be stopped via API using `stopRecording()`. Similarly, recording started using API will be stopped if R key is pressed in Viewport. LogMessage will also appear in the top-left of the viewport if recording is started or stopped using API.
+
+Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired.
+
 ### Lidar APIs
 AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in [settings.json](settings.md).
 

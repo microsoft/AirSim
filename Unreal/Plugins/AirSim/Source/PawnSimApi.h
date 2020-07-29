@@ -77,7 +77,7 @@ public: //implementation of VehicleSimApiBase
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
-    virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) override;
+    virtual void setCameraPose(const std::string& camera_name, const Pose& pose) override;
     virtual void setCameraFoV(const std::string& camera_name, float fov_degrees) override;
     virtual CollisionInfo getCollisionInfo() const override;
     virtual int getRemoteControlID() const override;

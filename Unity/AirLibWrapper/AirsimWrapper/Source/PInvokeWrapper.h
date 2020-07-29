@@ -25,7 +25,7 @@ extern bool(*SetEnableApi)(bool enableApi, const char* vehicleName);
 extern bool(*SetCarApiControls)(msr::airlib::CarApiBase::CarControls controls, const char* vehicleName);
 extern AirSimCarState(*GetCarState)(const char* vehicleName);
 extern AirSimCameraInfo(*GetCameraInfo)(const char* cameraName, const char* vehicleName);
-extern bool(*SetCameraOrientation)(const char* cameraName, AirSimQuaternion orientation, const char* vehicleName);
+extern bool(*SetCameraPose)(const char* cameraName, AirSimPose pose, const char* vehicleName);
 extern bool(*SetCameraFoV)(const char* cameraName, const float fov_degrees, const char* vehicleName);
 extern bool(*SetSegmentationObjectId)(const char* meshName, int objectId, bool isNameRegex);
 extern int(*GetSegmentationObjectId)(const char* meshName);
@@ -49,7 +49,7 @@ extern "C" EXPORT void InitVehicleManager(
 	bool(*setCarApiControls)(msr::airlib::CarApiBase::CarControls controls, const char* vehicleName),
 	AirSimCarState(*getCarState)(const char* vehicleName),
 	AirSimCameraInfo(*getCameraInfo)(const char* cameraName, const char* vehicleName),
-	bool(*setCameraOrientation)(const char* cameraName, AirSimQuaternion orientation, const char* vehicleName),
+	bool(*setCameraPose)(const char* cameraName, AirSimPose pose, const char* vehicleName),
 	bool(*setCameraFoV)(const char* cameraName, const float fov_degrees, const char* vehicleName),
 	bool(*setSegmentationObjectId)(const char* meshName, int objectId, bool isNameRegex),
 	int(*getSegmentationObjectId)(const char* meshName),

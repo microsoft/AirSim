@@ -430,8 +430,6 @@ void MavLinkConnectionImpl::readPackets()
             }
             else if (frame_state == MAVLINK_FRAMING_OK)
             {
-                int msgId = msg.msgid;
-
                 // pick up the sysid/compid of the remote node we are connected to.
                 if (other_system_id == -1) {
                     other_system_id = msg.sysid;

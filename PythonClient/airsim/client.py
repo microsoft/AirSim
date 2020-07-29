@@ -417,17 +417,17 @@ class VehicleClient:
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name))
 
-    def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
+    def simSetCameraPose(self, camera_name, pose, vehicle_name = ''):
         """
-        - Control the orientation of a selected camera
+        - Control the pose of a selected camera
 
         Args:
             camera_name (str): Name of the camera to be controlled
-            orientation (Quaternionr): Quaternion representing the desired orientation of the camera
+            pose (Pose): Pose representing the desired position and orientation of the camera
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
-        self.client.call('simSetCameraOrientation', str(camera_name), orientation, vehicle_name)
+        self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name)
 
     def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = ''):
         """
@@ -674,6 +674,30 @@ class VehicleClient:
                   True if the task completed without cancellation or timeout
         """
         return self.client.call('waitOnLastTask', timeout_sec)
+
+    # Recording APIs
+    def startRecording(self):
+        """
+        Start Recording
+
+        Recording will be done according to the settings
+        """
+        self.client.call('startRecording')
+
+    def stopRecording(self):
+        """
+        Stop Recording
+        """
+        self.client.call('stopRecording')
+
+    def isRecording(self):
+        """
+        Whether Recording is running or not
+
+        Returns:
+            bool: True if Recording, else False
+        """
+        return self.client.call('isRecording')
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):

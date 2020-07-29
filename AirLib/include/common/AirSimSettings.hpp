@@ -25,8 +25,8 @@ private:
 public: //types
     static constexpr int kSubwindowCount = 3; //must be >= 3 for now
     static constexpr char const * kVehicleTypePX4 = "px4multirotor";
-	static constexpr char const * kVehicleTypeArduCopterSolo = "arducoptersolo";
-	static constexpr char const * kVehicleTypeSimpleFlight = "simpleflight";
+    static constexpr char const * kVehicleTypeArduCopterSolo = "arducoptersolo";
+    static constexpr char const * kVehicleTypeSimpleFlight = "simpleflight";
     static constexpr char const * kVehicleTypeArduCopter = "arducopter";
     static constexpr char const * kVehicleTypePhysXCar = "physxcar";
     static constexpr char const * kVehicleTypeArduRover = "ardurover";
@@ -196,6 +196,12 @@ public: //types
     };
 
     struct DistanceSetting : SensorSetting {
+        // shared defaults
+        real_T min_distance = 20.0f / 100; //m
+        real_T max_distance = 4000.0f / 100; //m
+        Vector3r position = VectorMath::nanVector();
+        Rotation rotation = Rotation::nanRotation();
+        bool draw_debug_points = false;
     };
 
     struct LidarSetting : SensorSetting {
@@ -294,9 +300,9 @@ public: //types
         std::map<std::string, float> params;
     };
 
-	struct MavLinkVehicleSetting : public VehicleSetting {
-		MavLinkConnectionInfo connection_info;
-	};
+    struct MavLinkVehicleSetting : public VehicleSetting {
+        MavLinkConnectionInfo connection_info;
+    };
 
     struct SegmentationSetting {
         enum class InitMethodType {
@@ -327,6 +333,7 @@ private: //fields
 
 public: //fields
     std::string simmode_name = "";
+    std::string level_name = "";
 
     std::vector<SubwindowSetting> subwindow_settings;
     RecordingSetting recording_setting;
@@ -340,7 +347,7 @@ public: //fields
     int initial_view_mode = 2; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
     bool enable_rpc = true;
     std::string api_server_address = "";
-	int api_port = RpcLibPort;
+    int api_port = RpcLibPort;
     std::string physics_engine_name = "";
 
     std::string clock_type = "";
@@ -352,8 +359,8 @@ public: //fields
     std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
     CameraSetting camera_defaults;
     CameraDirectorSetting camera_director;
-	float speed_unit_factor =  1.0f;
-	std::string speed_unit_label = "m\\s";
+    float speed_unit_factor =  1.0f;
+    std::string speed_unit_label = "m\\s";
     std::map<std::string, std::unique_ptr<SensorSetting>> sensor_defaults;
 
 public: //methods
@@ -379,6 +386,7 @@ public: //methods
         checkSettingsVersion(settings_json);
 
         loadCoreSimModeSettings(settings_json, simmode_getter);
+        loadLevelSettings(settings_json);
         loadDefaultCameraSetting(settings_json, camera_defaults);
         loadCameraDirectorSetting(settings_json, camera_director, simmode_name);
         loadSubWindowsSettings(settings_json, subwindow_settings);
@@ -514,6 +522,11 @@ private:
                 physics_engine_name = "PhysX"; //this value is only informational for now
         }
     }
+    
+    void loadLevelSettings(const Settings& settings_json)
+    {
+        level_name = settings_json.getString("Default Environment", "");
+    }
 
     void loadViewModeSettings(const Settings& settings_json)
     {
@@ -626,7 +639,7 @@ private:
     {
         //these settings_json are expected in same section, not in another child
         std::unique_ptr<VehicleSetting> vehicle_setting_p = std::unique_ptr<VehicleSetting>(new MavLinkVehicleSetting());
-		MavLinkVehicleSetting* vehicle_setting = static_cast<MavLinkVehicleSetting*>(vehicle_setting_p.get());
+        MavLinkVehicleSetting* vehicle_setting = static_cast<MavLinkVehicleSetting*>(vehicle_setting_p.get());
 
         //TODO: we should be selecting remote if available else keyboard
         //currently keyboard is not supported so use rc as default
@@ -1021,7 +1034,7 @@ private:
         //because for docker container default is 0.0.0.0 and people get really confused why things
         //don't work
         api_server_address = settings_json.getString("LocalHostIp", "");
-		api_port = settings_json.getInt("ApiServerPort", RpcLibPort);
+        api_port = settings_json.getInt("ApiServerPort", RpcLibPort);
         is_record_ui_visible = settings_json.getBool("RecordUIVisible", true);
         engine_sound = settings_json.getBool("EngineSound", false);
         enable_rpc = settings_json.getBool("EnableRpc", enable_rpc);
@@ -1154,10 +1167,12 @@ private:
 
     static void initializeDistanceSetting(DistanceSetting& distance_setting, const Settings& settings_json)
     {
-        unused(distance_setting);
-        unused(settings_json);
+        distance_setting.min_distance = settings_json.getFloat("MinDistance", distance_setting.min_distance);
+        distance_setting.max_distance = settings_json.getFloat("MaxDistance", distance_setting.max_distance);
+        distance_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", distance_setting.draw_debug_points);
 
-        //TODO: set from json as needed
+        distance_setting.position = createVectorSetting(settings_json, distance_setting.position);
+        distance_setting.rotation = createRotationSetting(settings_json, distance_setting.rotation);
     }
 
     static void initializeLidarSetting(LidarSetting& lidar_setting, const Settings& settings_json)
