@@ -73,6 +73,8 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
             actor->Destroy();
             result = actor->IsPendingKill();
         }
+
+        GEngine->ForceGarbageCollection(true);
     }, true);
     return result;
 }
@@ -81,7 +83,7 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
 {
     // Create struct for Location and Rotation of actor in Unreal
     FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
-    bool found_object;
+    bool found_object = false, spawned_object = false;
     UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &scale]() {
             // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
             FString asset_name = FString(load_object.c_str());
@@ -89,6 +91,7 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
             
             if (LoadAsset)
             {
+                found_object  = true;
                 UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(LoadAsset->GetAsset());
                 std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_->GetWorld(), ".*"+object_name+".*");
                 if (matching_names.size() > 0)
@@ -107,12 +110,11 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
                 }
                 FActorSpawnParameters new_actor_spawn_params;
                 new_actor_spawn_params.Name = FName(object_name.c_str());
-                this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
-                found_object  = true;
-            }
-            else
-            {
-                found_object = false;
+                new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
+                AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
+
+                if (NewActor)
+                    spawned_object = true;
             }
     }, true);
 
@@ -121,20 +123,30 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
         throw std::invalid_argument(
             "There were no objects with name " + load_object + " found in the Registry");
     }
+    if (!spawned_object)
+    {
+        throw std::invalid_argument(
+            "Engine could not spawn " + load_object + " because of a stale reference of same name");
+    }
     return object_name;
 }
 
-void WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
+AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
 {
-    AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params); // new
-    UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
-    ObjectComponent->SetStaticMesh(static_mesh);
-    ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
-    ObjectComponent->SetWorldScale3D(FVector(scale[0], scale[1], scale[2]));
-    ObjectComponent->SetHiddenInGame(false, true);
-    ObjectComponent->RegisterComponent();
-    NewActor->SetRootComponent(ObjectComponent);
-    NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+    AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params); 
+
+    if (NewActor)
+    {
+        UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
+        ObjectComponent->SetStaticMesh(static_mesh);
+        ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
+        ObjectComponent->SetWorldScale3D(FVector(scale[0], scale[1], scale[2]));
+        ObjectComponent->SetHiddenInGame(false, true);
+        ObjectComponent->RegisterComponent();
+        NewActor->SetRootComponent(ObjectComponent);
+        NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+    }
+    return NewActor;
 }
 
 bool WorldSimApi::isPaused() const
