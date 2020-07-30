@@ -248,6 +248,8 @@ void UAirBlueprintLib::GenerateAssetRegistryMap(const AActor* context, TMap<FStr
             FString asset_name = asset.AssetName.ToString();
             asset_map->Add(asset_name, *asset);
         }
+
+        LogMessageString("Asset database ready", "!", LogDebugLevel::Informational); 
     }, true);
 }
 
