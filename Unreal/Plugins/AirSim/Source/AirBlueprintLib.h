@@ -85,6 +85,7 @@ public:
     UFUNCTION(BlueprintPure, Category = "AirSim|LevelAPI")
     static TArray<FName> ListWorldsInRegistry();
     static UObject* GetMeshFromRegistry(const std::string& load_object);
+    static void GenerateAssetRegistryMap(TMap<FString, FAssetData*> *asset_map);
 
     static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end,
         const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);

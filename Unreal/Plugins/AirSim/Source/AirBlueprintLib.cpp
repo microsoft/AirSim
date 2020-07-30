@@ -230,6 +230,27 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
     //GEngine->AddOnScreenDebugMessage(key + 10, 60.0f, color, FString::FromInt(key));
 }
 
+void UAirBlueprintLib::GenerateAssetRegistryMap(const AActor* context, TMap<FString, FAssetData*> *asset_map)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([asset_map]() {
+        FARFilter Filter;
+        Filter.ClassNames.Add(UStaticMesh::StaticClass()->GetFName());
+        Filter.bRecursivePaths = true;
+
+        auto world = simmode_->GetWorld();
+        TArray<FAssetData> AssetData;
+        FAssetRegistryModule &AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+        AssetRegistryModule.Get().GetAssets(Filter, AssetData);
+
+        UObject *LoadObject = NULL;
+        for (auto asset : AssetData)
+        {
+            FString asset_name = asset.AssetName.ToString();
+            asset_map->Add(asset_name, *asset);
+        }
+    }, true);
+}
+
 void UAirBlueprintLib::setUnrealClockSpeed(const AActor* context, float clock_speed)
 {
     UAirBlueprintLib::RunCommandOnGameThread([context, clock_speed]() {

@@ -84,9 +84,12 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
     bool found_object;
     UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &scale]() {
             // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
-            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(UAirBlueprintLib::GetMeshFromRegistry(load_object));
-            if (LoadObject)
+            FString asset_name = FString(load_object.c_str());
+            FAssetData *LoadAsset = simmode_->asset_map.Find(asset_name);
+            
+            if (LoadAsset)
             {
+                UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(LoadAsset->GetAsset());
                 std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_->GetWorld(), ".*"+object_name+".*");
                 if (matching_names.size() > 0)
                 {
