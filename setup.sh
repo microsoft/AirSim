@@ -124,7 +124,7 @@ if [ ! -d "external/rpclib/rpclib-2.2.1" ]; then
     echo "Downloading rpclib..."
     echo "*********************************************************************************************"
 
-    wget  https://github.com/rpclib/rpclib/archive/v2.2.1.zip
+    wget https://github.com/madratman/rpclib/archive/v2.2.1.zip
 
     # remove previous versions
     rm -rf "external/rpclib"
