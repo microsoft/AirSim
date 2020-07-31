@@ -89,6 +89,7 @@ public:
     }
 
     TMap<FString, FAssetData> asset_map;
+    TMap<FString, AActor*> scene_object_map;
 
 protected: //must overrides
     typedef msr::airlib::AirSimSettings AirSimSettings;

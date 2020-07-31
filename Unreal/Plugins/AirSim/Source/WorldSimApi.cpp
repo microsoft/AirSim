@@ -73,6 +73,8 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
             actor->Destroy();
             result = actor->IsPendingKill();
         }
+        if (result)
+            simmode_->scene_object_map.Remove(FString(object_name.c_str()));
 
         GEngine->ForceGarbageCollection(true);
     }, true);
@@ -85,7 +87,6 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
     FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
     bool found_object = false, spawned_object = false;
     UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &spawned_object, &scale]() {
-            // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
             FString asset_name = FString(load_object.c_str());
             FAssetData *LoadAsset = simmode_->asset_map.Find(asset_name);
             
@@ -114,7 +115,10 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
                 AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
 
                 if (NewActor)
+                {
                     spawned_object = true;
+                    simmode_->scene_object_map.Add(FString(object_name.c_str()), NewActor);
+                }
             }
     }, true);
 
@@ -215,7 +219,8 @@ WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) con
 {
     Pose result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         result = actor ? simmode_->getGlobalNedTransform().toGlobalNed(FTransform(actor->GetActorRotation(), actor->GetActorLocation()))
             : Pose::nanPose();
     }, true);
@@ -227,7 +232,8 @@ WorldSimApi::Vector3r WorldSimApi::getObjectScale(const std::string& object_name
 {
     Vector3r result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         result = actor ? Vector3r(actor->GetActorScale().X, actor->GetActorScale().Y, actor->GetActorScale().Z)
             : Vector3r::Zero();
     }, true);
@@ -239,7 +245,8 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
     bool result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &pose, teleport, &result]() {
         FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         if (actor) {
             if (teleport) 
                 result = actor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
@@ -256,7 +263,8 @@ bool WorldSimApi::setObjectScale(const std::string& object_name, const Vector3r&
 {
     bool result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &scale, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         if (actor) {
             actor->SetActorScale3D(FVector(scale[0], scale[1], scale[2]));
             result = true;

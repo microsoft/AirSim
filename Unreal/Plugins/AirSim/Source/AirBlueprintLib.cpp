@@ -241,6 +241,8 @@ void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FSt
 
         auto world = context->GetWorld();
         TArray<FAssetData> AssetData;
+
+        // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
         FAssetRegistryModule &AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
         AssetRegistryModule.Get().GetAssets(Filter, AssetData);
 
@@ -254,6 +256,19 @@ void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FSt
         LogMessageString("Asset database ready", "!", LogDebugLevel::Informational); 
     }, true);
 }
+
+
+void UAirBlueprintLib::GenerateActorMap(const UObject* context, TMap<FString, AActor*>& scene_object_map) {
+    auto world = context->GetWorld();
+    for (TActorIterator<AActor> actorIterator(world); actorIterator; ++actorIterator) 
+    {
+        AActor* actor = *actorIterator;
+        FString name = *actor->GetName();
+
+        scene_object_map.Add(name, actor);
+    }
+}
+
 
 void UAirBlueprintLib::setUnrealClockSpeed(const AActor* context, float clock_speed)
 {
