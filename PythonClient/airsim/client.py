@@ -383,7 +383,7 @@ class VehicleClient:
         """
         return self.client.call('simListSceneObjects', name_regex)
 
-    def simSpawnObject(self, object_name, asset_name, pose, scale):
+    def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
         """Spawned selected object in the world
         
         Args:
@@ -395,7 +395,7 @@ class VehicleClient:
         Returns:
             str: Name of spawned object, in case it had to be modified
         """
-        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale)
+        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale, physics_enabled)
 
     def simDestroyObject(self, object_name):
         """Removes selected object from the world
