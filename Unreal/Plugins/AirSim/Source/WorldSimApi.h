@@ -20,7 +20,7 @@ public:
 
     virtual bool loadLevel(const std::string& level_name) override;
     
-    virtual std::string spawnObject(std::string& object_name, const std::string& load_name, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale) override;
+    virtual std::string spawnObject(std::string& object_name, const std::string& load_name, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled) override;
     virtual bool destroyObject(const std::string& object_name) override;
 
     virtual bool isPaused() const override;
@@ -64,7 +64,7 @@ public:
     virtual bool isRecording() const override;
 
 private:
-    void createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);
+    AActor* createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);
     void spawnPlayer();
 
 private:
