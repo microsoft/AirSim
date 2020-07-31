@@ -88,8 +88,7 @@ public:
         return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
     }
 
-    UPROPERTY()
-        TMap<FString, FAssetData*> asset_map;
+    TMap<FString, FAssetData> asset_map;
 
 protected: //must overrides
     typedef msr::airlib::AirSimSettings AirSimSettings;

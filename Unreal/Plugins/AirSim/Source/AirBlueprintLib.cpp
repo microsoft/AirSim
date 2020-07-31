@@ -24,6 +24,8 @@
 #include <exception>
 #include "common/common_utils/Utils.hpp"
 #include "Modules/ModuleManager.h"
+#include "ARFilter.h"
+#include "AssetRegistryModule.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -230,14 +232,14 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
     //GEngine->AddOnScreenDebugMessage(key + 10, 60.0f, color, FString::FromInt(key));
 }
 
-void UAirBlueprintLib::GenerateAssetRegistryMap(const AActor* context, TMap<FString, FAssetData*> *asset_map)
+void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FString, FAssetData>& asset_map)
 {
-    UAirBlueprintLib::RunCommandOnGameThread([asset_map]() {
+    UAirBlueprintLib::RunCommandOnGameThread([context, &asset_map]() {
         FARFilter Filter;
         Filter.ClassNames.Add(UStaticMesh::StaticClass()->GetFName());
         Filter.bRecursivePaths = true;
 
-        auto world = simmode_->GetWorld();
+        auto world = context->GetWorld();
         TArray<FAssetData> AssetData;
         FAssetRegistryModule &AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
         AssetRegistryModule.Get().GetAssets(Filter, AssetData);
@@ -246,7 +248,7 @@ void UAirBlueprintLib::GenerateAssetRegistryMap(const AActor* context, TMap<FStr
         for (auto asset : AssetData)
         {
             FString asset_name = asset.AssetName.ToString();
-            asset_map->Add(asset_name, *asset);
+            asset_map.Add(asset_name, asset);
         }
 
         LogMessageString("Asset database ready", "!", LogDebugLevel::Informational); 

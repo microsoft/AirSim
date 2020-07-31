@@ -96,7 +96,7 @@ void ASimModeBase::BeginPlay()
     global_ned_transform_.reset(new NedTransform(player_start_transform, 
         UAirBlueprintLib::GetWorldToMetersScale(this)));
 
-    UAirBlueprintLib::GenerateAssetMap(asset_map);
+    UAirBlueprintLib::GenerateAssetRegistryMap(this, asset_map);
 
     world_sim_api_.reset(new WorldSimApi(this));
     api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
