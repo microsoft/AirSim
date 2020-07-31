@@ -5,6 +5,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 #include "DrawDebugHelpers.h"
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 #include <cstdlib>
 #include <ctime>
 
