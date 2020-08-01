@@ -173,4 +173,9 @@ bool WorldSimApi::isRecording() const
     return false;
 }
 
+void WorldSimApi::setWind(const Vector3r& wind) const
+{
+    simmode_->setWind(wind);
+};
+
 #pragma endregion
