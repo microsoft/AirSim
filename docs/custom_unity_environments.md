@@ -16,6 +16,7 @@ ProjectSettings
 Main Camera
 Directional Light
 AirSimHUD
+AirSimGlobal
 Car
 ```
 7. After removing `CarDemo` from the Hierarchy panel, save your modified scene as `CarDemo`.
