@@ -77,12 +77,12 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
     return result;
 }
 
-std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale)
+std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled)
 {
     // Create struct for Location and Rotation of actor in Unreal
     FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
     bool found_object;
-    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &scale]() {
+    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &scale, &physics_enabled]() {
             // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
             UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(UAirBlueprintLib::GetMeshFromRegistry(load_object));
             if (LoadObject)
@@ -104,8 +104,10 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
                 }
                 FActorSpawnParameters new_actor_spawn_params;
                 new_actor_spawn_params.Name = FName(object_name.c_str());
-                this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
+                AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
                 found_object  = true;
+
+                UAirBlueprintLib::setSimulatePhysics(NewActor, physics_enabled);
             }
             else
             {
@@ -121,7 +123,7 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
     return object_name;
 }
 
-void WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
+AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
 {
     AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params); // new
     UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
@@ -132,6 +134,8 @@ void WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, cons
     ObjectComponent->RegisterComponent();
     NewActor->SetRootComponent(ObjectComponent);
     NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+
+    return NewActor;
 }
 
 bool WorldSimApi::isPaused() const
