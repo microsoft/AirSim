@@ -186,7 +186,34 @@ private:
 
         std::ostringstream oss;
 
-        const uint count_lidars = getSensors().size(SensorBase::SensorType::Lidar);
+        // Send Distance Sensors data if present
+        const uint count_distance_sensors = sensors_->size(SensorBase::SensorType::Distance);
+        if (count_distance_sensors != 0) {
+            // Start JSON element
+            oss << ","
+                    "\"rng\": {"
+                    "\"distances\": [";
+
+            // Add the first sensor separately since otherwise there's an extra ","
+            // Which leads to AP counting an extra sensor, and if there are 10 sensors (AP supports upto 10), last one will get ignored
+            auto distance_output = getDistanceSensorData("");
+            oss << distance_output.distance;
+
+            // Add remaining sensors in the array
+            for (uint i=1; i<count_distance_sensors; ++i) {
+                const auto* distance_sensor = static_cast<const DistanceBase*>(sensors_->getByType(SensorBase::SensorType::Distance, i));
+                if (distance_sensor != nullptr) {
+                    distance_output = distance_sensor->getOutput();
+                    // AP uses meters so no need to convert here
+                    oss << "," << distance_output.distance;
+                }
+            }
+
+            // Close JSON array & element
+            oss << "]}";
+        }
+
+        const uint count_lidars = sensors_->size(SensorBase::SensorType::Lidar);
         // TODO: Add bool value in settings to check whether to send lidar data or not
         // Since it's possible that we don't want to send the lidar data to Ardupilot but still have the lidar (maybe as a ROS topic)
         if (count_lidars != 0) {
