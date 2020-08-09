@@ -29,8 +29,9 @@ namespace AirSimUnity {
                 rootPanel.gameObject.SetActive(!rootPanel.gameObject.activeSelf);
             }
 
-            if (!rootPanel.gameObject.activeSelf)
+            if (!rootPanel.gameObject.activeSelf) {
                 return;
+            }
 
             Weather weather = AirSimGlobal.Instance.Weather;
             weatherEnabledToggle.isOn = weather.IsWeatherEnabled;
