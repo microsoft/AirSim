@@ -71,7 +71,12 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
                 // capture CameraPose for this frame
                 query_camera_pose_cb_();
 
-                // The completion is called immeidately after GameThread sends the
+                game_viewport_->bDisableWorldRendering = saved_DisableWorldRendering_;
+
+                assert(end_draw_handle_.IsValid());
+                game_viewport_->OnEndDraw().Remove(end_draw_handle_);
+
+                // The completion is called immediately after GameThread sends the
                 // rendering commands to RenderThread. Hence, our ExecuteTask will
                 // execute *immediately* after RenderThread renders the scene!
                 RenderRequest* This = this;
@@ -80,11 +85,6 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
                 {
                     This->ExecuteTask();
                 });
-
-                game_viewport_->bDisableWorldRendering = saved_DisableWorldRendering_;
-
-                assert(end_draw_handle_.IsValid());
-                game_viewport_->OnEndDraw().Remove(end_draw_handle_);
             });
 
             // while we're still on GameThread, enqueue request for capture the scene!
