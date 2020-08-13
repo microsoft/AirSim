@@ -386,6 +386,13 @@ void RpcLibClientBase::simSetCameraPose(const std::string& camera_name, const Po
     pimpl_->client.call("simSetCameraPose", camera_name, RpcLibAdapatorsBase::Pose(pose), vehicle_name);
 }
 
+void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name)
+{
+    std::cout << "`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code." << std::endl;
+    Pose pose{Vector3r::Zero(), orientation};
+    RpcLibClientBase::simSetCameraPose(camera_name, pose, vehicle_name);
+}
+
 void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name)
 {
     pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name);
