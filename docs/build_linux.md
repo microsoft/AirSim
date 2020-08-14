@@ -51,8 +51,6 @@ cd AirSim
 
 ```bash
 ./setup.sh
-./build.sh
-# use ./build.sh --debug to build in debug mode
 ```
 
 ### Build Unreal Environment
