@@ -140,17 +140,22 @@ void CarPawnSimApi::updateCarControls()
         current_controls_ = keyboard_controls_;
     }
 
+    bool api_enabled = vehicle_api_->isApiControlEnabled();
+
     //if API-client control is not active then we route keyboard/joystick control to car
-    if (!vehicle_api_->isApiControlEnabled()) {
-        //all car controls from anywhere must be routed through API component
+    if (!api_enabled) {
+        // This is so that getCarControls API works correctly
         vehicle_api_->setCarControls(current_controls_);
-        pawn_api_->updateMovement(current_controls_);
     }
     else {
         PrintLogMessage("Control Mode: ", "API", getVehicleName().c_str(), ErrorLogSeverity::Information);
+        // API is enabled, so we use the controls set by API
         current_controls_ = vehicle_api_->getCarControls();
-        pawn_api_->updateMovement(current_controls_);
     }
+
+    // Update whether to use API controls or keyboard controls
+    pawn_api_->enableApi(api_enabled);
+    pawn_api_->updateMovement(current_controls_);
 }
 
 //*** Start: UpdatableState implementation ***//

@@ -13,6 +13,11 @@ void CarPawnApi::updateMovement(const msr::airlib::CarApiBase::CarControls& cont
     SetCarApiControls(controls, car_name_.c_str());
 }
 
+void CarPawnApi::enableApi(bool enable)
+{
+    SetEnableApi(enable, car_name_.c_str());
+}
+
 msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 {
     AirSimCarState carState = GetCarState(car_name_.c_str());

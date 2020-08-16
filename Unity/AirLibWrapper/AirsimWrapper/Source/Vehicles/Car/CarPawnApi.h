@@ -15,6 +15,7 @@ public:
 
     void updateMovement(const msr::airlib::CarApiBase::CarControls& controls);
     msr::airlib::CarApiBase::CarState getCarState() const;
+    void enableApi(bool enable);
 
     void reset();
     void update();
