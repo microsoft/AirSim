@@ -218,7 +218,17 @@ bool WorldSimApi::isRecording() const
 void WorldSimApi::setWind(const Vector3r& wind) const
 {
     simmode_->setWind(wind);
-};
+}
+
+std::vector<std::string> WorldSimApi::listVehicles() const
+{
+    auto vehicle_names = (simmode_->getApiProvider()->getVehicleSimApis()).keys();
+    // Remove '' from the list, representing default vehicle
+    auto position = std::find(vehicle_names.begin(), vehicle_names.end(), "");
+    if (position != vehicle_names.end())
+        vehicle_names.erase(position);
+    return vehicle_names;
+}
 
 bool WorldSimApi::addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const WorldSimApi::Pose& pose, const std::string& pawn_path)
 {
