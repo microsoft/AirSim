@@ -171,10 +171,8 @@ public:
     {
         return log_messages_hidden_;
     }
-    static void setLogMessagesHidden(bool is_hidden)
-    {
-        log_messages_hidden_ = is_hidden;
-    }
+    static void setLogMessagesVisibility(bool is_visible);
+
     static void SetMeshNamingMethod(msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType method)
     {
         mesh_naming_method_ = method;

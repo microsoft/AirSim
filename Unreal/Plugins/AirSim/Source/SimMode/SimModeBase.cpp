@@ -98,6 +98,9 @@ void ASimModeBase::BeginPlay()
 
     world_sim_api_.reset(new WorldSimApi(this));
     api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
+
+    UAirBlueprintLib::setLogMessagesVisibility(getSettings().log_messages_visible);
+
     setupPhysicsLoopPeriod();
 
     setupClockSpeed();
