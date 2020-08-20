@@ -6,6 +6,10 @@ jobs:
       os: linux
       dist: bionic
 
+    - name: Ubuntu 20.04
+      os: linux
+      dist: focal
+
     - name: Ubuntu 16.04
       os: linux
       dist: xenial
@@ -16,9 +20,13 @@ jobs:
         - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\16.0\Bin"
         - PATH_FIX="C:\Windows\System32"
 
-    - name: MacOS
+    - name: XCode 11.4.1
       os: osx
       osx_image: xcode11.4
+
+    - name: XCode 11.5
+      os: osx
+      osx_image: xcode11.5
 
 
 before_install:
