@@ -15,11 +15,12 @@ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main
 sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
 sudo apt update
-sudo apt install ros-$ROS_DISTRO-desktop-full
+sudo apt install -qq ros-$ROS_DISTRO-desktop-full
 
 echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
 
-sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential
+sudo apt install python3-pip python3-yaml python3-setuptools
+sudo pip3 install rosdep rosinstall rospkg catkin-pkg
 sudo rosdep init
 rosdep update
 
@@ -33,4 +34,4 @@ fi
 sudo apt-get install gcc-8 g++-8
 sudo apt-get install ros-$ROS_DISTRO-mavros*
 sudo apt-get install ros-$ROS_DISTRO-tf2-sensor-msgs
-sudo apt-get install python-catkin-tools
+sudo pip3 install catkin-tools
