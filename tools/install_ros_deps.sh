@@ -3,7 +3,9 @@
 set -x
 
 DISTRO="$(lsb_release -sc)"
-if [[ "$DISTRO" == "bionic" ]]; then
+if [[ "$DISTRO" == "focal" ]]; then
+    ROS_DISTRO="noetic"
+elif [[ "$DISTRO" == "bionic" ]]; then
     ROS_DISTRO="melodic"
 elif [[ "$DISTRO" == "xenial" ]]; then
     ROS_DISTRO="kinetic"
