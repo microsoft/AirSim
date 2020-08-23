@@ -310,80 +310,112 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
 //----------- Plotting APIs ----------/
 void WorldSimApi::simFlushPersistentMarkers()
 {
-    FlushPersistentDebugLines(simmode_->GetWorld());
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        FlushPersistentDebugLines(simmode_->GetWorld());
+    }, true);
 }
 
 void WorldSimApi::simPlotPoints(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent)
 {
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (const auto& point : points)
-    {
-        DrawDebugPoint(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(point), size, color.ToFColor(true), is_persistent, duration);
-    }
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &points, &color, size, duration, is_persistent]() {
+        for (const auto& point : points) {
+            DrawDebugPoint(simmode_->GetWorld(),
+                    simmode_->getGlobalNedTransform().fromGlobalNed(point),
+                    size, color, is_persistent, duration);
+        }
+    }, true);
 }
 
 // plot line for points 0-1, 1-2, 2-3
 void WorldSimApi::simPlotLineStrip(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
 {
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (size_t idx = 0; idx != points.size()-1; idx++)
-    {
-        DrawDebugLine(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(points[idx]), simmode_->getGlobalNedTransform().fromGlobalNed(points[idx+1]), color.ToFColor(true), is_persistent, duration, 0, thickness);
-    }
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &points, &color, thickness, duration, is_persistent]() {
+        for (size_t idx = 0; idx != points.size()-1; ++idx) {
+            DrawDebugLine(simmode_->GetWorld(), 
+                simmode_->getGlobalNedTransform().fromGlobalNed(points[idx]), 
+                simmode_->getGlobalNedTransform().fromGlobalNed(points[idx+1]), 
+                color, is_persistent, duration, 0, thickness);
+        }
+    }, true);
 }
 
 // plot line for points 0-1, 2-3, 4-5... must be even number of points
 void WorldSimApi::simPlotLineList(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
 {
-    if (points.size() % 2)
-    {
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
 
-    }
-
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (int idx = 0; idx < points.size(); idx += 2)
-    {
-        DrawDebugLine(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(points[idx]), simmode_->getGlobalNedTransform().fromGlobalNed(points[idx+1]), color.ToFColor(true), is_persistent, duration, 0, thickness);
-    }
+    UAirBlueprintLib::RunCommandOnGameThread([this, &points, &color, thickness, duration, is_persistent]() {
+        for (int idx = 0; idx < points.size()-1; idx += 2) {
+            DrawDebugLine(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(points[idx]),
+                simmode_->getGlobalNedTransform().fromGlobalNed(points[idx+1]),
+                color, is_persistent, duration, 0, thickness);
+        }
+    }, true);
 }
 
 void WorldSimApi::simPlotArrows(const std::vector<Vector3r>& points_start, const std::vector<Vector3r>& points_end, const std::vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
 {
     // assert points_start.size() == poinst_end.size()
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (int idx = 0; idx < points_start.size(); idx += 1)
-    {
-        DrawDebugDirectionalArrow(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(points_start[idx]), simmode_->getGlobalNedTransform().fromGlobalNed(points_end[idx]), arrow_size, color.ToFColor(true), is_persistent, duration, 0, thickness);
-    }
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &points_start, &points_end, &color, thickness, arrow_size, duration, is_persistent]() {
+        for (int idx = 0; idx < points_start.size(); ++idx) {
+            DrawDebugDirectionalArrow(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(points_start[idx]),
+                simmode_->getGlobalNedTransform().fromGlobalNed(points_end[idx]),
+                arrow_size, color, is_persistent, duration, 0, thickness);
+        }
+    }, true);
 }
 
 void WorldSimApi::simPlotStrings(const std::vector<std::string>& strings, const std::vector<Vector3r>& positions, float scale, const std::vector<float>& color_rgba, float duration)
 {
     // assert positions.size() == strings.size()
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (int idx = 0; idx < positions.size(); idx += 1)
-    {
-        DrawDebugString(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(positions[idx]), FString(strings[idx].c_str()), NULL, color.ToFColor(true), duration, false, scale);
-    }
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &strings, &positions, &color, scale, duration]() {
+        for (int idx = 0; idx < positions.size(); ++idx) {
+            DrawDebugString(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(positions[idx]),
+                FString(strings[idx].c_str()),
+                NULL, color, duration, false, scale);
+        }
+    }, true);
 }
 
 void WorldSimApi::simPlotTransforms(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
 {
-    for (const auto& pose : poses)
-    {
-        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(pose.position), simmode_->getGlobalNedTransform().fromNed(pose.orientation).Rotator(), scale, is_persistent, duration, 0, thickness);
-    }
+    UAirBlueprintLib::RunCommandOnGameThread([this, &poses, scale, thickness, duration, is_persistent]() {
+        for (const auto& pose : poses) {
+            DrawDebugCoordinateSystem(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(pose.position),
+                simmode_->getGlobalNedTransform().fromNed(pose.orientation).Rotator(),
+                scale, is_persistent, duration, 0, thickness);
+        }
+    }, true);
 }
 
 void WorldSimApi::simPlotTransformsWithNames(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const std::vector<float>& text_color_rgba, float duration)
 {
     // assert poses.size() == names.size()
-    FLinearColor color {text_color_rgba[0], text_color_rgba[1], text_color_rgba[2], text_color_rgba[3]};
-    for (int idx = 0; idx < poses.size(); idx += 1)
-    {
-        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx].position), simmode_->getGlobalNedTransform().fromNed(poses[idx].orientation).Rotator(), tf_scale, false, duration, 0, tf_thickness);
-        DrawDebugString(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(), FString(names[idx].c_str()), NULL, color.ToFColor(true), duration, false, text_scale);
-    }
+    FColor color = FLinearColor{text_color_rgba[0], text_color_rgba[1], text_color_rgba[2], text_color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &poses, &names, &color, tf_scale, tf_thickness, text_scale, duration]() {
+        for (int idx = 0; idx < poses.size(); ++idx) {
+            DrawDebugCoordinateSystem(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx].position),
+                simmode_->getGlobalNedTransform().fromNed(poses[idx].orientation).Rotator(),
+                tf_scale, false, duration, 0, tf_thickness);
+            DrawDebugString(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(),
+                FString(names[idx].c_str()), NULL, color, duration, false, text_scale);
+        }
+    }, true);
 }
 
 std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> WorldSimApi::getMeshPositionVertexBuffers() const
