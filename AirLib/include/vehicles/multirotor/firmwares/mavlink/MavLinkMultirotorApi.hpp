@@ -1031,13 +1031,24 @@ private: //methods
                 connection_info_.control_port, connection_info_.local_host_ip.c_str(), connection_info_.control_ip_address.c_str()));
 
             // if we try and connect the UDP port too quickly it doesn't work, bug in PX4 ?
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            for (int retries = 30; retries >= 0; retries--) {
+                try {
+                    auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
+                        connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
+                    mav_vehicle_->connect(gcsConnection);
+                }
+                catch (std::exception&) {
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+            }
 
-            auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
-                connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
-            mav_vehicle_->connect(gcsConnection);
-
-            addStatusMessage(std::string("Ground control connected over UDP."));
+            if (mav_vehicle_->getConnection() != nullptr) {
+                addStatusMessage(std::string("Ground control connected over UDP."));
+            }
+            else {
+                addStatusMessage(std::string("Timeout trying to connect ground control over UDP."));
+                return;
+            }
         }
 
         connectVehicle();
