@@ -1486,7 +1486,8 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         // msr::airlib::CameraInfo camera_info = airsim_client_.simGetCameraInfo(curr_img_response.camera_name);
 
         // update timestamp of saved cam info msgs
-        camera_info_msg_vec_[img_response_idx_internal].header.stamp = curr_ros_time;
+        // camera_info_msg_vec_[img_response_idx_internal].header.stamp = curr_ros_time;
+        camera_info_msg_vec_[img_response_idx_internal].header.stamp = airsim_timestamp_to_ros(curr_img_response.time_stamp);
         cam_info_pub_vec_[img_response_idx_internal].publish(camera_info_msg_vec_[img_response_idx_internal]);
 
         // DepthPlanner / DepthPerspective / DepthVis / DisparityNormalized
