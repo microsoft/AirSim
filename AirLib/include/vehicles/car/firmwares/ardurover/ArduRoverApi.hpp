@@ -122,8 +122,8 @@ public:
 protected:
     void closeConnections()
     {
-        if (udpSocket_ != nullptr)
-            udpSocket_->close();
+        if (udp_socket_ != nullptr)
+            udp_socket_->close();
     }
 
     void connect()
@@ -144,8 +144,8 @@ protected:
         Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port_, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
         Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
 
-        udpSocket_ = std::make_shared<mavlinkcom::UdpSocket>();
-        udpSocket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
+        udp_socket_ = std::make_unique<mavlinkcom::UdpSocket>();
+        udp_socket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
     }
 
 private:
@@ -153,7 +153,7 @@ private:
     {
         // Receive motor data
         RoverControlMessage pkt;
-        int recv_ret = udpSocket_->recv(&pkt, sizeof(pkt), 100);
+        int recv_ret = udp_socket_->recv(&pkt, sizeof(pkt), 100);
         while (recv_ret != sizeof(pkt)) {
             if (recv_ret <= 0) {
                 Utils::log(Utils::stringf("Error while receiving rotor control data - ErrorNo: %d", recv_ret), Utils::kLogLevelInfo);
@@ -161,7 +161,7 @@ private:
                 Utils::log(Utils::stringf("Received %d bytes instead of %zu bytes", recv_ret, sizeof(pkt)), Utils::kLogLevelInfo);
             }
 
-            recv_ret = udpSocket_->recv(&pkt, sizeof(pkt), 100);
+            recv_ret = udp_socket_->recv(&pkt, sizeof(pkt), 100);
         }
 
         last_controls_.throttle = pkt.throttle;
@@ -258,7 +258,7 @@ private:
                            "}"
                            "%s"
                            "}\n",
-                           static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E3),
+                           static_cast<uint64_t>(ClockFactory::get()->nowNanos() / 1.0E3),
                            imu_output.angular_velocity[0],
                            imu_output.angular_velocity[1],
                            imu_output.angular_velocity[2],
@@ -283,8 +283,8 @@ private:
         }
 
         // Send data
-        if (udpSocket_ != nullptr) {
-            udpSocket_->sendto(buf, strlen(buf), ip_, port_);
+        if (udp_socket_ != nullptr) {
+            udp_socket_->sendto(buf, strlen(buf), ip_, port_);
         }
     }
 
@@ -296,7 +296,7 @@ private:
 
     AirSimSettings::MavLinkConnectionInfo connection_info_;
 
-    std::shared_ptr<mavlinkcom::UdpSocket> udpSocket_;
+    std::unique_ptr<mavlinkcom::UdpSocket> udp_socket_;
 
     uint16_t port_;
     std::string ip_;
