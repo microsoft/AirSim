@@ -612,6 +612,7 @@ protected: //methods
     virtual void disconnect() {
         addStatusMessage("Disconnecting mavlink vehicle");
         connected_ = false;
+        connecting_ = false;
         if (connection_ != nullptr) {
             if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
                 setNormalMode();
@@ -625,7 +626,10 @@ protected: //methods
         }
 
         if (mav_vehicle_ != nullptr) {
-            mav_vehicle_->getConnection()->stopLoggingSendMessage();
+            auto c = mav_vehicle_->getConnection();
+            if (c != nullptr) {
+                c->stopLoggingSendMessage();
+            }
             mav_vehicle_->close();
             mav_vehicle_ = nullptr;
         }
@@ -652,6 +656,7 @@ protected: //methods
     void connect_thread()
     {
         addStatusMessage("Waiting for mavlink vehicle...");
+        connecting_ = true;
         createMavConnection(connection_info_);
         if (mav_vehicle_ != nullptr) {
             connectToLogViewer();
@@ -966,6 +971,7 @@ private: //methods
     {
         close();
 
+        connecting_ = true;
         got_first_heartbeat_ = false;
         is_hil_mode_set_ = false;
         is_armed_ = false;
@@ -1031,13 +1037,24 @@ private: //methods
                 connection_info_.control_port, connection_info_.local_host_ip.c_str(), connection_info_.control_ip_address.c_str()));
 
             // if we try and connect the UDP port too quickly it doesn't work, bug in PX4 ?
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            for (int retries = 60; retries >= 0 && connecting_; retries--) {
+                try {
+                    auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
+                        connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
+                    mav_vehicle_->connect(gcsConnection);
+                }
+                catch (std::exception&) {
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+            }
 
-            auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
-                connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
-            mav_vehicle_->connect(gcsConnection);
-
-            addStatusMessage(std::string("Ground control connected over UDP."));
+            if (mav_vehicle_->getConnection() != nullptr) {
+                addStatusMessage(std::string("Ground control connected over UDP."));
+            }
+            else {
+                addStatusMessage(std::string("Timeout trying to connect ground control over UDP."));
+                return;
+            }
         }
 
         connectVehicle();
@@ -1069,6 +1086,7 @@ private: //methods
     {
         close();
 
+        connecting_ = true;
         bool reported = false;
         std::string port_name_auto = port_name;
         while (port_name_auto == "" || port_name_auto == "*") {
@@ -1096,7 +1114,7 @@ private: //methods
         addStatusMessage(Utils::stringf("Connecting to PX4 over serial port: %s, baud rate %d ....", port_name_auto.c_str(), baud_rate));
         reported = false;
 
-        while (true) {
+        while (connecting_) {
             try {
                 connection_ = mavlinkcom::MavLinkConnection::connectSerial("hil", port_name_auto, baud_rate);
                 connection_->ignoreMessage(mavlinkcom::MavLinkAttPosMocap::kMessageId); //TODO: find better way to communicate debug pose instead of using fake Mo-cap messages
