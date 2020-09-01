@@ -34,11 +34,11 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 ## How to Get It
 
 ### Windows
-* [Download binaries](https://microsoft.github.io/AirSim/use_precompiled)
+* [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
 
 ### Linux
-* [Download binaries](https://microsoft.github.io/AirSim/use_precompiled)
+* [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 ### macOS

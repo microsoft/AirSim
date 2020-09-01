@@ -672,7 +672,7 @@ public:
         DistanceSensorData()
         {}
 
-        DistanceSensorData(const msr::airlib::DistanceBase::Output& s)
+        DistanceSensorData(const msr::airlib::DistanceSensorData& s)
         {
             time_stamp = s.time_stamp;
             distance = s.distance;
@@ -681,9 +681,9 @@ public:
             relative_pose = s.relative_pose;
         }
 
-        msr::airlib::DistanceBase::Output to() const
+        msr::airlib::DistanceSensorData to() const
         {
-            msr::airlib::DistanceBase::Output d;
+            msr::airlib::DistanceSensorData d;
 
             d.time_stamp = time_stamp;
             d.distance = distance;

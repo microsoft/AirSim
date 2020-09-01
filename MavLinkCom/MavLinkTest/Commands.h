@@ -691,7 +691,7 @@ public:
             proportionalGain = error * kProportional_;
         }
         if (kDerivative_ != 0) {
-            float derivative = (error - previous_error_) / dt;
+            float derivative = dt > 0 ? (error - previous_error_) / dt : 0;
             derivativeGain = derivative * kDerivative_;
         }
         if (kIntegral_ != 0) {

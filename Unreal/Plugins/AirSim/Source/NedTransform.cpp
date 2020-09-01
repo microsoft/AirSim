@@ -66,6 +66,14 @@ FVector NedTransform::fromLocalNed(const NedTransform::Vector3r& position) const
 {
     return NedTransform::toFVector(position, world_to_meters_, true) + local_ned_offset_;
 }
+FVector NedTransform::fromRelativeNed(const NedTransform::Vector3r& position) const
+{
+    return NedTransform::toFVector(position, world_to_meters_, true);
+}
+FTransform NedTransform::fromRelativeNed(const Pose& pose) const
+{
+    return FTransform(fromNed(pose.orientation), fromRelativeNed(pose.position));
+}
 FVector NedTransform::fromGlobalNed(const NedTransform::Vector3r& position) const
 {
     return NedTransform::toFVector(position, world_to_meters_, true) + global_transform_.GetLocation();

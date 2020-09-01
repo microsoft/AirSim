@@ -74,6 +74,10 @@ WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) con
 	return UnityUtilities::Convert_to_Pose(airSimPose);
 }
 
+msr::airlib::Vector3r WorldSimApi::getObjectScale(const std::string& object_name) const { return Vector3r(); }
+msr::airlib::Vector3r WorldSimApi::getObjectScaleInternal(const std::string& object_name) const { return Vector3r(); }
+bool WorldSimApi::setObjectScale(const std::string& object_name, const Vector3r& scale) { return false; }
+
 bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimApi::Pose& pose, bool teleport)
 {
 	AirSimUnity::AirSimPose airSimPose = UnityUtilities::Convert_to_AirSimPose(pose);
@@ -147,6 +151,26 @@ std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> WorldSimApi::getMesh
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getMeshPositionVertexBuffers is not supported on unity").c_str());
     return result;
+}
+
+// Recording APIs
+void WorldSimApi::startRecording()
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "startRecording is not supported on unity").c_str());
+}
+
+void WorldSimApi::stopRecording()
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "stopRecording is not supported on unity").c_str());
+}
+
+bool WorldSimApi::isRecording() const
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "isRecording is not supported on unity").c_str());
+    return false;
 }
 
 #pragma endregion

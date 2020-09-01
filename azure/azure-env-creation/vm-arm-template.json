@@ -1,0 +1,250 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VmName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the VM can be whatever you want, but can't be changed once the VM is created."
+            }
+        },
+        "AdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin user name for the VM."
+            },
+            "defaultValue": "AzureUser"
+        },
+        "AdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Admin user password for the VM."
+            }
+        },        
+        "VmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "Desired Size of the VM (NV-series installs NVIDIA GPU drivers in WDDM mode for graphical display by default)."
+            },
+            "defaultValue": "Standard_NV6",
+            "allowedValues": [
+                "Standard_NV6_Promo",
+                "Standard_NV6",
+                "Standard_NV12",
+                "Standard_NV24"                
+            ]
+        },  
+        "ScriptLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "Location of the setup script"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/microsoft/airsim/master/azure/azure-env-creation"
+        },
+        "ScriptFileName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the setup script"
+            },
+            "defaultValue": "configure-vm.ps1"
+        }
+
+    },
+    "variables": {
+        "NetworkInterfaceCardName": "[concat(parameters('VmName'),'-nic')]",
+        "PublicIPAddressName": "[concat(parameters('VmName'),'-ip')]",
+        "NetworkSecurityGroupName": "[concat(parameters('VmName'),'-nsg')]",
+        "VirtualNetworkName": "[concat(parameters('VmName'),'-vnet')]"        
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-12-01",
+            "name": "[variables('NetworkSecurityGroupName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "RDP",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 300,
+                            "direction": "Inbound"
+                        }
+                    },                    
+                    {
+                        "name": "SSH",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 320,
+                            "direction": "Inbound"
+                        }
+                    }                    
+
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2019-12-01",
+            "name": "[concat(variables('VirtualNetworkName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('VirtualNetworkName'))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.0.0.0/24"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-12-01",
+            "name": "[variables('VirtualNetworkName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/24"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-12-01",
+            "name": "[variables('PublicIPAddressName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-12-01",
+            "name": "[variables('NetworkInterfaceCardName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIPAddressName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NetworkSecurityGroupName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VirtualNetworkName'), 'default')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIPAddressName'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('VirtualNetworkName'), 'default')]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NetworkSecurityGroupName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "name": "[parameters('VmName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('NetworkInterfaceCardName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsDesktop",
+                        "offer": "Windows-10",
+                        "sku": "rs5-pro",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Windows",
+                        "name": "[concat(parameters('VmName'), '_OsDisk')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite"
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VmName')]",
+                    "adminUsername": "[parameters('AdminUsername')]",
+                    "adminPassword": "[parameters('AdminPassword')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NetworkInterfaceCardName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[concat(parameters('VmName'),'/GPUDrivers')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2019-07-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/', parameters('VmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.HpcCompute",
+                "type": "NvidiaGpuDriverWindows",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                }
+            }
+        },
+        {
+            "name": "[concat(parameters('VmName'),'/SetupScript')]",
+            "apiVersion": "2019-07-01",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('VmName'), 'GPUDrivers')]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.10",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "[concat(parameters('ScriptLocation'), '/' , parameters('ScriptFileName'))]"
+                    ],
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy bypass -File ./', parameters('ScriptFileName'))]"
+                },
+                "protectedSettings": {
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
