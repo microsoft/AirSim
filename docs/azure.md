@@ -8,7 +8,7 @@ Click the blue button to start the Azure deployment (The template is pre-filled 
 
 <a href="https://aka.ms/AA8umgt" target="_blank">
     <img src="https://azuredeploy.net/deploybutton.png"/>
-</a>
+</a>  
 *Note: the VM deployment and configuration process may take 20+ minutes to complete*
 
 ### Regarding the deployment of the Azure VM
