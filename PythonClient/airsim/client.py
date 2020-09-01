@@ -480,6 +480,23 @@ class VehicleClient:
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name)
 
+    def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
+        """
+        .. note::
+
+            This API has been upgraded to `simSetCameraPose`
+
+        - Control the Orientation of a selected camera
+
+        Args:
+            camera_name (str): Name of the camera to be controlled
+            orientation (Quaternionr): Quaternion representing the desired orientation of the camera
+            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+        """
+        logging.warning("`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code.")
+        pose = Pose(orientation_val=orientation)
+        self.simSetCameraPose(camera_name, pose, vehicle_name)
+
     def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = ''):
         """
         - Control the field of view of a selected camera
