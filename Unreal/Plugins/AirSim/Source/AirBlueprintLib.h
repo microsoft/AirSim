@@ -86,6 +86,9 @@ public:
     static TArray<FName> ListWorldsInRegistry();
     static UObject* GetMeshFromRegistry(const std::string& load_object);
 
+    UFUNCTION(BlueprintCallable, Category = "AirSim")
+    static bool RunConsoleCommand(const AActor* context, const FString& command);
+
     static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end,
         const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
     static bool GetObstacle(const AActor* actor, const FVector& start, const FVector& end,
