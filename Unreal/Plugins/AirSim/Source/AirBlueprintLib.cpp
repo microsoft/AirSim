@@ -189,6 +189,15 @@ IImageWrapperModule* UAirBlueprintLib::getImageWrapperModule()
     return image_wrapper_module_;
 }
 
+void UAirBlueprintLib::setLogMessagesVisibility(bool is_visible)
+{
+    log_messages_hidden_ = !is_visible;
+
+    // if hidden, clear any existing messages
+    if (!is_visible && GEngine)
+        GEngine->ClearOnScreenDebugMessages();
+}
+
 void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)
 {
     if (log_messages_hidden_)
