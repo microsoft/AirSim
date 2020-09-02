@@ -286,15 +286,15 @@
                 <h1 id="airsim-development-environment-on-azure">AirSim Development Environment on Azure<a class="headerlink" href="#airsim-development-environment-on-azure" title="Permanent link">#</a></h1>
 <p>This document explains how to automate the creation of a development environment on Azure and code and debug a Python application connected to AirSim using Visual Studio Code</p>
 <h2 id="automatically-deploy-your-azure-vm">Automatically Deploy Your Azure VM<a class="headerlink" href="#automatically-deploy-your-azure-vm" title="Permanent link">#</a></h2>
-<p>Use <a href="https://github.com/microsoft/AirSim/blob/master/azure/azure-env-creation/vm-arm-template.json">this</a> template to create, deploy and configure an Azure VM to work with AirSim </p>
-<p><em>Note: the VM deployment and configuration process may take 20+ minutes to complete</em></p>
+<p>Click the blue button to start the Azure deployment (The template is pre-filled with the recommended virtual machine size for the use cases of the following two tutorials)</p>
 <p><a href="https://aka.ms/AA8umgt" target="_blank">
     <img src="https://azuredeploy.net/deploybutton.png"/>
-</a></p>
+</a><br />
+<em>Note: the VM deployment and configuration process may take 20+ minutes to complete</em></p>
 <h3 id="regarding-the-deployment-of-the-azure-vm">Regarding the deployment of the Azure VM<a class="headerlink" href="#regarding-the-deployment-of-the-azure-vm" title="Permanent link">#</a></h3>
 <ul>
 <li>
-<p>When using an Azure Trial account, the default vCPU quota may not be enough to allocate the required VM to run AirSim. If that's the case, you will see an error when trying to create the VM and will have to make a support request to increase the default quota.</p>
+<p>When using an Azure Trial account, the default vCPU quota is not enough to allocate the required VM to run AirSim. If that's the case, you will see an error when trying to create the VM and will have to submit a request for Quota increase. <strong>Be sure to understand how and how much you are going to be charged for the use of the VM</strong></p>
 </li>
 <li>
 <p>To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the <a href="https://portal.azure.com">Azure Portal</a> or use the following command from the Azure CLI:</p>
