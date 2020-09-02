@@ -343,6 +343,32 @@ class VehicleClient:
         """
         return self.client.call('simSetObjectPose', object_name, pose, teleport)
 
+    def simGetObjectScale(self, object_name):
+        """
+        Gets scale of an object in the world
+
+        Args:
+            object_name (str): Object to get the scale of
+
+        Returns:
+            airsim.Vector3r: Scale
+        """
+        scale = self.client.call('simGetObjectScale', object_name)
+        return Vector3r.from_msgpack(scale)
+
+    def simSetObjectScale(self, object_name, scale_vector):
+        """
+        Sets scale of an object in the world
+
+        Args:
+            object_name (str): Object to set the scale of
+            scale_vector (airsim.Vector3r): Desired scale of object
+
+        Returns:
+            bool: True if scale change was successful
+        """
+        return self.client.call('simSetObjectScale', object_name, scale_vector)
+
     def simListSceneObjects(self, name_regex = '.*'):
         """
         Lists the objects present in the environment
@@ -356,6 +382,31 @@ class VehicleClient:
             list[str]: List containing all the names
         """
         return self.client.call('simListSceneObjects', name_regex)
+
+    def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
+        """Spawned selected object in the world
+        
+        Args:
+            object_name (str): Desired name of new object
+            asset_name (str): Name of asset(mesh) in the project database
+            pose (airsim.Pose): Desired pose of object
+            scale (airsim.Vector3r): Desired scale of object
+        
+        Returns:
+            str: Name of spawned object, in case it had to be modified
+        """
+        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale, physics_enabled)
+
+    def simDestroyObject(self, object_name):
+        """Removes selected object from the world
+        
+        Args:
+            object_name (str): Name of object to be removed
+        
+        Returns:
+            bool: True if object is queued up for removal
+        """
+        return self.client.call('simDestroyObject', object_name)
 
     def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
         """
@@ -428,6 +479,23 @@ class VehicleClient:
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name)
+
+    def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
+        """
+        .. note::
+
+            This API has been upgraded to `simSetCameraPose`
+
+        - Control the Orientation of a selected camera
+
+        Args:
+            camera_name (str): Name of the camera to be controlled
+            orientation (Quaternionr): Quaternion representing the desired orientation of the camera
+            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+        """
+        logging.warning("`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code.")
+        pose = Pose(orientation_val=orientation)
+        self.simSetCameraPose(camera_name, pose, vehicle_name)
 
     def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = ''):
         """

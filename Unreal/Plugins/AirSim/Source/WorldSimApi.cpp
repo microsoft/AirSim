@@ -82,10 +82,11 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
     return result;
 }
 
-std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale)
+std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled)
 {
     // Create struct for Location and Rotation of actor in Unreal
     FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
+
     bool found_object = false, spawned_object = false;
     UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &spawned_object, &scale]() {
             FString asset_name = FString(load_object.c_str());
@@ -120,6 +121,12 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
                     spawned_object = true;
                     simmode_->scene_object_map.Add(FString(object_name.c_str()), NewActor);
                 }
+
+                UAirBlueprintLib::setSimulatePhysics(NewActor, physics_enabled);
+            }
+            else
+            {
+                found_object = false;
             }
     }, true);
 

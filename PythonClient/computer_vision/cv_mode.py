@@ -49,4 +49,4 @@ for x in range(3): # do few times
     time.sleep(3)
 
 # currently reset() doesn't work in CV mode. Below is the workaround
-client.simSetPose(airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0, 0, 0)), True)
+client.simSetVehiclePose(airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0, 0, 0)), True)
