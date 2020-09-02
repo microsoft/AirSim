@@ -14,7 +14,7 @@ Verify installation by `gcc-8 --version`
     * Install [ROS melodic](https://wiki.ros.org/melodic/Installation/Ubuntu)
     * Install tf2 sensor and mavros packages: `sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-mavros*`
 
-- Install [catkin_tools](https://catkin-tools.readthedocs.io/en/latest/installing.html)  
+- Install [catkin_tools](https://catkin-tools.readthedocs.io/en/latest/installing.html)
     `sudo apt-get install python-catkin-tools` or
     `pip install catkin_tools`
 
