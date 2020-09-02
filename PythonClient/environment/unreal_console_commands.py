@@ -1,17 +1,29 @@
 import airsim
+import time
 
-def EstablishClientConnection():
-  c = airsim.client.MultirotorClient()
-  c.confirmConnection()
-  return c
+def RunConsoleCmd(client, cmd):
+    client.simRunConsoleCommand(cmd)
+    print(f"Running Unreal Console cmd '{cmd}' and sleeping for 1 second")
+    time.sleep(1.0)
 
-def TogglePerformanceInfo(client):
-  client.simRunConsoleCommand('stat fps')
-  client.simRunConsoleCommand('stat unit')
-  client.simRunConsoleCommand('stat unitGraph')
-  client.simRunConsoleCommand('show COLLISION')
-  client.simRunConsoleCommand('stat game')
+def RunCmdList(client):
+    RunConsoleCmd(client, 'stat fps')
+    RunConsoleCmd(client, 'stat unit')
+    RunConsoleCmd(client, 'stat unitGraph')
+    RunConsoleCmd(client, 'show COLLISION')
+    RunConsoleCmd(client, 'show CollisionVisibility')
+    RunConsoleCmd(client, 'stat game')
+    RunConsoleCmd(client, 'show COLLISION')
+    RunConsoleCmd(client, 'show CollisionVisibility')
+    RunConsoleCmd(client, 'stat game')
+    RunConsoleCmd(client, 'stat unitGraph')
+    RunConsoleCmd(client, 'stat unit')
+    RunConsoleCmd(client, 'stat fps')
+
+def main():
+    client = airsim.client.MultirotorClient()
+    client.confirmConnection()
+    RunCmdList(client)
 
 if __name__ == "__main__":
-  client = EstablishClientConnection()
-  TogglePerformanceInfo(client)
+    main()
