@@ -88,7 +88,7 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
     FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
 
     bool found_object = false, spawned_object = false;
-    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &spawned_object, &scale]() {
+    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &spawned_object, &scale, &physics_enabled]() {
             FString asset_name = FString(load_object.c_str());
             FAssetData *LoadAsset = simmode_->asset_map.Find(asset_name);
             
