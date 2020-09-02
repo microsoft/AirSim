@@ -86,6 +86,8 @@ void APIPCamera::BeginPlay()
 
 msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::ImageType image_type) const
 {
+    msr::airlib::ProjectionMatrix mat;
+
     //TODO: avoid the need to override const cast here
     const_cast<APIPCamera*>(this)->setCameraTypeEnabled(image_type, true);
     const USceneCaptureComponent2D* capture = const_cast<APIPCamera*>(this)->getCaptureComponent(image_type, false);
@@ -161,18 +163,17 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
         FMatrix projMatTransposeInAirSim = coordinateChangeTranspose * proj_mat_transpose;
 
         //Copy the result to an airlib::ProjectionMatrix while taking transpose.
-        msr::airlib::ProjectionMatrix mat;
         for (auto row = 0; row < 4; ++row)
             for (auto col = 0; col < 4; ++col)
                 mat.matrix[col][row] = projMatTransposeInAirSim.M[row][col];
-
-        return mat;
     }
-    else {
-        msr::airlib::ProjectionMatrix mat;
+    else
         mat.setTo(Utils::nan<float>());
-        return mat;
-    }
+
+    // Disable camera after our work is done
+    const_cast<APIPCamera*>(this)->setCameraTypeEnabled(image_type, false);
+
+    return mat;
 }
 
 void APIPCamera::Tick(float DeltaTime)
