@@ -89,6 +89,9 @@ public:
     static void GenerateAssetRegistryMap(const UObject* context, TMap<FString, FAssetData>& asset_map);
     static void GenerateActorMap(const UObject* context, TMap<FString, AActor*>& scene_object_map);
 
+    UFUNCTION(BlueprintCallable, Category = "AirSim")
+    static bool RunConsoleCommand(const AActor* context, const FString& command);
+
     static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end,
         const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
     static bool GetObstacle(const AActor* actor, const FVector& start, const FVector& end,

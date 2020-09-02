@@ -624,6 +624,14 @@ UObject* UAirBlueprintLib::GetMeshFromRegistry(const std::string& load_object)
     return LoadObject;
 }
 
+bool UAirBlueprintLib::RunConsoleCommand(const AActor* context, const FString& command)
+{
+    auto* playerController = UGameplayStatics::GetPlayerController(context->GetWorld(), 0);;
+    if (playerController != nullptr)
+        playerController->ConsoleCommand(command, true);
+    return playerController != nullptr;
+}
+
 bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collision_channel)
 {
     FCollisionQueryParams trace_params;

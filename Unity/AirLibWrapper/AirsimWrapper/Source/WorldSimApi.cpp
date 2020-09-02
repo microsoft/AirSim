@@ -84,6 +84,13 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
 	return SetPose(airSimPose, false, object_name.c_str());
 }
 
+bool WorldSimApi::runConsoleCommand(const std::string& command)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "simrunConsoleCommand is not supported on unity").c_str());
+    return false;
+}
+
 void WorldSimApi::enableWeather(bool enable)
 {
     unused(enable);

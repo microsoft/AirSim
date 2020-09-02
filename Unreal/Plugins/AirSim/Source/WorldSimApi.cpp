@@ -223,6 +223,16 @@ std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_r
     return result;
 }
 
+bool WorldSimApi::runConsoleCommand(const std::string& command)
+{
+    bool succeeded = false;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &command, &succeeded]() {
+        FString fStringCommand(command.c_str());
+        succeeded = UAirBlueprintLib::RunConsoleCommand(simmode_, fStringCommand);
+    }, true);
+    return succeeded;
+}
+
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
     Pose result;

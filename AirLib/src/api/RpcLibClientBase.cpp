@@ -412,6 +412,11 @@ void RpcLibClientBase::cancelLastTask(const std::string& vehicle_name)
     pimpl_->client.call("cancelLastTask", vehicle_name);
 }
 
+bool RpcLibClientBase::simRunConsoleCommand(const std::string& command)
+{
+    return pimpl_->client.call("simRunConsoleCommand", command).as<bool>();
+}
+
 //return value of last task. It should be true if task completed without
 //cancellation or timeout
 RpcLibClientBase* RpcLibClientBase::waitOnLastTask(bool* task_result, float timeout_sec)
