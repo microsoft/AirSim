@@ -3,11 +3,15 @@
 ## Install Unreal Engine
 
 1. [Download](https://www.unrealengine.com/download) the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.
-2. Run the Epic Games Launcher, open the `Library` tab on the left pane.
-Click on the `Add Versions` which should show the option to download **Unreal 4.24** as shown below. If you have multiple versions of Unreal installed then **make sure 4.24 is set to `current`** by clicking down arrow next to the Launch button for the version.
+2. Run the Epic Games Launcher, open the `Unreal Engine` tab on the left pane.
+Click on the `Install` button on the top right, which should show the option to download **Unreal Engine >= 4.24**. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then **make sure the version you are using is set to `current`** by clicking down arrow next to the Launch button for the version.
 
-   **Note**: AirSim also works with UE >= 4.22, however, we recommend you update to 4.24.
+   **Note**: AirSim also works with UE >= 4.22, however, we recommend you update to >= 4.24.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
+
+![Unreal Engine Tab UI Screenshot](images/ue_install.png)
+
+![Unreal Engine Install Location UI Screenshot](images/ue_install_location.png)
 
 ## Build AirSim
 * Install Visual Studio 2019.
