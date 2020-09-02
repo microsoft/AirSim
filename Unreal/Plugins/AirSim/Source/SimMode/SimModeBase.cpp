@@ -96,6 +96,8 @@ void ASimModeBase::BeginPlay()
     global_ned_transform_.reset(new NedTransform(player_start_transform, 
         UAirBlueprintLib::GetWorldToMetersScale(this)));
 
+    UAirBlueprintLib::GenerateAssetRegistryMap(this, asset_map);
+
     world_sim_api_.reset(new WorldSimApi(this));
     api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
 
@@ -126,6 +128,7 @@ void ASimModeBase::BeginPlay()
         UWeatherLib::initWeather(World, spawned_actors_);
         //UWeatherLib::showWeatherMenu(World);
     }
+    UAirBlueprintLib::GenerateActorMap(this, scene_object_map);
 
     loading_screen_widget_->AddToViewport();
     loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);

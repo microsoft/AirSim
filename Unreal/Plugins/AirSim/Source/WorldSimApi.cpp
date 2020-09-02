@@ -5,6 +5,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 #include "DrawDebugHelpers.h"
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 #include <cstdlib>
 #include <ctime>
 
@@ -73,6 +74,10 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
             actor->Destroy();
             result = actor->IsPendingKill();
         }
+        if (result)
+            simmode_->scene_object_map.Remove(FString(object_name.c_str()));
+
+        GEngine->ForceGarbageCollection(true);
     }, true);
     return result;
 }
@@ -81,12 +86,16 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
 {
     // Create struct for Location and Rotation of actor in Unreal
     FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
-    bool found_object;
-    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &scale, &physics_enabled]() {
-            // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
-            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(UAirBlueprintLib::GetMeshFromRegistry(load_object));
-            if (LoadObject)
+
+    bool found_object = false, spawned_object = false;
+    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &spawned_object, &scale, &physics_enabled]() {
+            FString asset_name = FString(load_object.c_str());
+            FAssetData *LoadAsset = simmode_->asset_map.Find(asset_name);
+            
+            if (LoadAsset)
             {
+                found_object  = true;
+                UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(LoadAsset->GetAsset());
                 std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_->GetWorld(), ".*"+object_name+".*");
                 if (matching_names.size() > 0)
                 {
@@ -104,8 +113,14 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
                 }
                 FActorSpawnParameters new_actor_spawn_params;
                 new_actor_spawn_params.Name = FName(object_name.c_str());
+                new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
                 AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
-                found_object  = true;
+
+                if (NewActor)
+                {
+                    spawned_object = true;
+                    simmode_->scene_object_map.Add(FString(object_name.c_str()), NewActor);
+                }
 
                 UAirBlueprintLib::setSimulatePhysics(NewActor, physics_enabled);
             }
@@ -120,21 +135,29 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
         throw std::invalid_argument(
             "There were no objects with name " + load_object + " found in the Registry");
     }
+    if (!spawned_object)
+    {
+        throw std::invalid_argument(
+            "Engine could not spawn " + load_object + " because of a stale reference of same name");
+    }
     return object_name;
 }
 
 AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
 {
-    AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params); // new
-    UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
-    ObjectComponent->SetStaticMesh(static_mesh);
-    ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
-    ObjectComponent->SetWorldScale3D(FVector(scale[0], scale[1], scale[2]));
-    ObjectComponent->SetHiddenInGame(false, true);
-    ObjectComponent->RegisterComponent();
-    NewActor->SetRootComponent(ObjectComponent);
-    NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+    AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params); 
 
+    if (NewActor)
+    {
+        UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
+        ObjectComponent->SetStaticMesh(static_mesh);
+        ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
+        ObjectComponent->SetWorldScale3D(FVector(scale[0], scale[1], scale[2]));
+        ObjectComponent->SetHiddenInGame(false, true);
+        ObjectComponent->RegisterComponent();
+        NewActor->SetRootComponent(ObjectComponent);
+        NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+    }
     return NewActor;
 }
 
@@ -204,7 +227,8 @@ WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) con
 {
     Pose result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         result = actor ? simmode_->getGlobalNedTransform().toGlobalNed(FTransform(actor->GetActorRotation(), actor->GetActorLocation()))
             : Pose::nanPose();
     }, true);
@@ -216,7 +240,8 @@ WorldSimApi::Vector3r WorldSimApi::getObjectScale(const std::string& object_name
 {
     Vector3r result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         result = actor ? Vector3r(actor->GetActorScale().X, actor->GetActorScale().Y, actor->GetActorScale().Z)
             : Vector3r::Zero();
     }, true);
@@ -228,7 +253,8 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
     bool result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &pose, teleport, &result]() {
         FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         if (actor) {
             if (teleport) 
                 result = actor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
@@ -245,7 +271,8 @@ bool WorldSimApi::setObjectScale(const std::string& object_name, const Vector3r&
 {
     bool result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &scale, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         if (actor) {
             actor->SetActorScale3D(FVector(scale[0], scale[1], scale[2]));
             result = true;

@@ -24,6 +24,8 @@
 #include <exception>
 #include "common/common_utils/Utils.hpp"
 #include "Modules/ModuleManager.h"
+#include "ARFilter.h"
+#include "AssetRegistryModule.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -238,6 +240,44 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
     }
     //GEngine->AddOnScreenDebugMessage(key + 10, 60.0f, color, FString::FromInt(key));
 }
+
+void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FString, FAssetData>& asset_map)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([context, &asset_map]() {
+        FARFilter Filter;
+        Filter.ClassNames.Add(UStaticMesh::StaticClass()->GetFName());
+        Filter.bRecursivePaths = true;
+
+        auto world = context->GetWorld();
+        TArray<FAssetData> AssetData;
+
+        // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
+        FAssetRegistryModule &AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+        AssetRegistryModule.Get().GetAssets(Filter, AssetData);
+
+        UObject *LoadObject = NULL;
+        for (auto asset : AssetData)
+        {
+            FString asset_name = asset.AssetName.ToString();
+            asset_map.Add(asset_name, asset);
+        }
+
+        LogMessageString("Asset database ready", "!", LogDebugLevel::Informational); 
+    }, true);
+}
+
+
+void UAirBlueprintLib::GenerateActorMap(const UObject* context, TMap<FString, AActor*>& scene_object_map) {
+    auto world = context->GetWorld();
+    for (TActorIterator<AActor> actorIterator(world); actorIterator; ++actorIterator) 
+    {
+        AActor* actor = *actorIterator;
+        FString name = *actor->GetName();
+
+        scene_object_map.Add(name, actor);
+    }
+}
+
 
 void UAirBlueprintLib::setUnrealClockSpeed(const AActor* context, float clock_speed)
 {

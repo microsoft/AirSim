@@ -69,6 +69,7 @@ public:
         return nullptr;
     }
 
+
     template<typename T>
     static void FindAllActor(const UObject* context, TArray<AActor*>& foundActors)
     {
@@ -85,6 +86,8 @@ public:
     UFUNCTION(BlueprintPure, Category = "AirSim|LevelAPI")
     static TArray<FName> ListWorldsInRegistry();
     static UObject* GetMeshFromRegistry(const std::string& load_object);
+    static void GenerateAssetRegistryMap(const UObject* context, TMap<FString, FAssetData>& asset_map);
+    static void GenerateActorMap(const UObject* context, TMap<FString, AActor*>& scene_object_map);
 
     static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end,
         const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
