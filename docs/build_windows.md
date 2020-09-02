@@ -9,9 +9,9 @@ Click on the `Install` button on the top right, which should show the option to 
    **Note**: AirSim also works with UE >= 4.22, however, we recommend you update to >= 4.24.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
-![Unreal Engine Tab UI Screenshot](../images/unrealinstallwindows.png)
+![Unreal Engine Tab UI Screenshot](images/ue_install.png)
 
-![Unreal Engine Install Location UI Screenshot](../images/unrealinstallwindows2.png)
+![Unreal Engine Install Location UI Screenshot](images/ue_install_location.png)
 
 ## Build AirSim
 * Install Visual Studio 2019.
