@@ -254,7 +254,10 @@ class VehicleClient:
         """
         responses_raw = self.client.call('simGetImages', requests, vehicle_name)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
-
+	
+    #Allows the client to execute a command in Unreal's native console, via an API.
+    #Affords access to the countless built-in commands such as "stat unit", "stat fps", "open [map]", adjust any config settings, etc. etc.
+    #Allows the user to create bespoke APIs very easily, by adding a custom event to the level blueprint, and then calling the console command "ce MyEventName [args]". No recompilation of AirSim needed!
     def simRunConsoleCommand(self, command):
 	    return self.client.call('simRunConsoleCommand', command)
 
