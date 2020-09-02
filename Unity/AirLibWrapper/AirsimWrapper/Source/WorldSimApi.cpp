@@ -87,7 +87,7 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
 bool WorldSimApi::runConsoleCommand(const std::string& command)
 {
     throw std::invalid_argument(common_utils::Utils::stringf(
-        "simListSceneObject is not supported on unity").c_str());
+        "simrunConsoleCommand is not supported on unity").c_str());
     return false;
 }
 
