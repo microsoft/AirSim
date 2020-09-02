@@ -781,6 +781,15 @@ class VehicleClient:
         """
         return self.client.call('isRecording')
 
+    def simSetWind(self, wind):
+        """
+        Set simulated wind, in World frame, NED direction, m/s
+
+        Args:
+            wind (Vector3r): Wind, in World frame, NED direction, in m/s 
+        """
+        self.client.call('simSetWind', wind)
+
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):

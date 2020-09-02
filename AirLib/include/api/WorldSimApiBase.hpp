@@ -71,6 +71,8 @@ public:
     virtual void startRecording() = 0;
     virtual void stopRecording() = 0;
     virtual bool isRecording() const = 0;
+
+    virtual void setWind(const Vector3r& wind) const = 0;
 };
 
 

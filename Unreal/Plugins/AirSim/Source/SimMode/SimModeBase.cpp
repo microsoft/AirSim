@@ -269,6 +269,13 @@ void ASimModeBase::continueForTime(double seconds)
     throw std::domain_error("continueForTime is not implemented by SimMode");
 }
 
+void ASimModeBase::setWind(const msr::airlib::Vector3r& wind) const
+{
+    // should be overridden by derived class
+    unused(wind);
+    throw std::domain_error("setWind not implemented by SimMode");
+}
+
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() const
 {
     //this will be the case when compilation with RPCLIB is disabled or simmode doesn't support APIs

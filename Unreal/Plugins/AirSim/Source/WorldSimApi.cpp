@@ -479,3 +479,9 @@ bool WorldSimApi::isRecording() const
 {
     return simmode_->isRecording();
 }
+
+
+void WorldSimApi::setWind(const Vector3r& wind) const
+{
+    simmode_->setWind(wind);
+}

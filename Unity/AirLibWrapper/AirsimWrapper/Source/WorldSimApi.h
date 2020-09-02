@@ -61,6 +61,8 @@ public:
     virtual void stopRecording() override;
     virtual bool isRecording() const override;
 
+    virtual void setWind(const Vector3r& wind) const override;
+
 private:
 	SimModeBase * simmode_;
 	std::string vehicle_name_;

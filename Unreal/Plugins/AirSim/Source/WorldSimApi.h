@@ -64,6 +64,8 @@ public:
     virtual void stopRecording() override;
     virtual bool isRecording() const override;
 
+    virtual void setWind(const Vector3r& wind) const override;
+
 private:
     AActor* createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);
     void spawnPlayer();

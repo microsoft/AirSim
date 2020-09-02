@@ -362,6 +362,7 @@ public: //fields
     float speed_unit_factor =  1.0f;
     std::string speed_unit_label = "m\\s";
     std::map<std::string, std::unique_ptr<SensorSetting>> sensor_defaults;
+    Vector3r wind = Vector3r::Zero();
 
 public: //methods
     static AirSimSettings& singleton()
@@ -1062,6 +1063,14 @@ private:
                 tod_setting.is_start_datetime_dst = tod_settings_json.getBool("StartDateTimeDst", tod_setting.is_start_datetime_dst);
                 tod_setting.update_interval_secs = tod_settings_json.getFloat("UpdateIntervalSecs", tod_setting.update_interval_secs);
                 tod_setting.move_sun = tod_settings_json.getBool("MoveSun", tod_setting.move_sun);
+            }
+        }
+
+        {
+            // Wind Settings
+            Settings child_json;
+            if (settings_json.getChild("Wind", child_json)) {
+                wind = createVectorSetting(child_json, wind);
             }
         }
     }

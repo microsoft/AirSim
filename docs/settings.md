@@ -45,6 +45,7 @@ Below are complete list of settings available along with their default values. I
   "PhysicsEngineName": "",
   "SpeedUnitFactor": 1.0,
   "SpeedUnitLabel": "m/s",
+  "Wind": { "X": 0, "Y": 0, "Z": 0 },
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
@@ -221,6 +222,10 @@ The `InitMethod` determines how object IDs are initialized at startup to generat
  If `OverrideExisting` is false then initialization does not alter non-zero object IDs already assigned otherwise it does.
 
  If `MeshNamingMethod` is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If it is "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
+
+## Wind Settings
+
+This setting specifies the wind speed in World frame, in NED direction. Values are in m/s. By default, speed is 0, i.e. no wind.
 
 ## Camera Settings
 The `CameraDefaults` element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in `Cameras` element inside `Vehicles` as described later.
