@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -133,31 +135,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -266,18 +280,17 @@
                 <h1 id="airlib-on-a-real-drone">AirLib on a Real Drone<a class="headerlink" href="#airlib-on-a-real-drone" title="Permanent link">#</a></h1>
 <p>The AirLib library can be compiled and deployed on the companion computer on a real drone. For our testing, we mounted a Gigabyte Brix BXi7-5500 ultra compact PC on the drone connected to the Pixhawk flight controller over USB. The Gigabyte PC is running Ubuntu, so we are able to SSH into it over Wi-Fi: </p>
 <p><img alt="Flamewheel" src="../images/Flamewheel.png" /></p>
-<p>Once connected you can run MavLinkTest with this command line:</p>
-<pre><code>MavLinkTest -serial:/dev/ttyACM0,115200 -logdir:. 
-</code></pre>
-
-<p>And this will produce a log file of the flight which can then be used for <a href="../playback/">playback in the simulator</a>.</p>
+<p>Once connected you can run MavLinkTest with this command line:
+<div class="highlight"><pre><span></span><code>MavLinkTest -serial:/dev/ttyACM0,115200 -logdir:. 
+</code></pre></div>
+And this will produce a log file of the flight which can then be used for <a href="../playback/">playback in the simulator</a>.</p>
 <p>You can also add <code>-proxy:192.168.1.100:14550</code> to connect MavLinkTest to a remote computer where you can run QGroundControl or our 
 <a href="../log_viewer/">PX4 Log Viewer</a> which is another handy way to see what is going on with your drone.</p>
 <p>MavLinkTest then has some simple commands for testing your drone, here's a simple example of some commands:</p>
-<pre><code>arm
+<div class="highlight"><pre><span></span><code>arm
 takeoff 5
 orbit 10 2
-</code></pre>
+</code></pre></div>
 
 <p>This will arm the drone, takeoff of 5 meters, then do an orbit pattern radius 10 meters, at 2 m/s.
 Type '?' to find all available commands.</p>
@@ -285,15 +298,14 @@ Type '?' to find all available commands.</p>
 <p>When you land the drone you can stop MavLinkTest and copy the *.mavlink log file that was generated.</p>
 <h1 id="droneserver-and-droneshell">DroneServer and DroneShell<a class="headerlink" href="#droneserver-and-droneshell" title="Permanent link">#</a></h1>
 <p>Once you are happy that the MavLinkTest is working, you can also run DroneServer and DroneShell as follows. First, run MavLinkTest with a local proxy to send everything to DroneServer:</p>
-<pre><code>MavLinkTest -serial:/dev/ttyACM0,115200 -logdir:. -proxy:127.0.0.1:14560
-</code></pre>
-
-<p>Change ~/Documents/AirSim/settings.json to say "serial":false, because we want DroneServer to look for this UDP connection.</p>
-<pre><code>DroneServer 0
-</code></pre>
+<p><div class="highlight"><pre><span></span><code>MavLinkTest -serial:/dev/ttyACM0,115200 -logdir:. -proxy:127.0.0.1:14560
+</code></pre></div>
+Change ~/Documents/AirSim/settings.json to say "serial":false, because we want DroneServer to look for this UDP connection.</p>
+<div class="highlight"><pre><span></span><code>DroneServer 0
+</code></pre></div>
 
 <p>Lastly, you can now connect DroneShell to this instance of DroneServer and use the DroneShell commands to fly your drone:</p>
-<pre><code>DroneShell
+<div class="highlight"><pre><span></span><code>DroneShell
 ==||=&gt;
         Welcome to DroneShell 1.0.
         Type ? for help.
@@ -304,7 +316,7 @@ Waiting for drone to report a valid GPS location...
 ==||=&gt; arm
 ==||=&gt; takeoff
 ==||=&gt; circlebypath -radius 10 -velocity 2
-</code></pre>
+</code></pre></div>
 
 <h2 id="px4-specific-tools">PX4 Specific Tools<a class="headerlink" href="#px4-specific-tools" title="Permanent link">#</a></h2>
 <p>You can run the MavlinkCom library and MavLinkTest app to test the connection

@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -133,31 +135,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -310,7 +324,7 @@
 <li>Open .uproject file and look for the line <code>"EngineAssociation"</code> and make sure it reads like <code>"EngineAssociation": "4.24"</code>.</li>
 <li>Delete <code>Plugins/AirSim</code> folder in your Unreal project's folder.</li>
 <li>Go to your AirSim repo folder and copy <code>Unreal\Plugins</code> folder to your Unreal project's folder.</li>
-<li>Copy <em>.bat (or </em>.sh for Linux) from <code>Unreal\Environments\Blocks</code> to your project's folder.</li>
+<li>Copy *.bat (or *.sh for Linux) from <code>Unreal\Environments\Blocks</code> to your project's folder.</li>
 <li>Run <code>clean.bat</code> (or <code>clean.sh</code> for Linux) followed by <code>GenerateProjectFiles.bat</code> (only for Windows).</li>
 </ol>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
@@ -318,7 +332,7 @@
 <h4 id="option-1-just-recreate-project">Option 1: Just Recreate Project<a class="headerlink" href="#option-1-just-recreate-project" title="Permanent link">#</a></h4>
 <p>If your project doesn't have any code or assets other than environment you downloaded then you can also simply <a href="../unreal_custenv/">recreate the project in Unreal 4.24 Editor</a> and then copy Plugins folder from <code>AirSim/Unreal/Plugins</code>.</p>
 <h4 id="option-2-modify-few-files">Option 2: Modify Few Files<a class="headerlink" href="#option-2-modify-few-files" title="Permanent link">#</a></h4>
-<p>Unreal versions newer than Unreal 4.15 has breaking changes. So you need to modify your <em>.Build.cs and </em>.Target.cs which you can find in the <code>Source</code> folder of your Unreal project. So what are those changes? Below is the gist of it but you should really refer to <a href="https://forums.unrealengine.com/showthread.php?145757-C-4-16-Transition-Guide">Unreal's official 4.16 transition post</a>.</p>
+<p>Unreal versions newer than Unreal 4.15 has breaking changes. So you need to modify your *.Build.cs and *.Target.cs which you can find in the <code>Source</code> folder of your Unreal project. So what are those changes? Below is the gist of it but you should really refer to <a href="https://forums.unrealengine.com/showthread.php?145757-C-4-16-Transition-Guide">Unreal's official 4.16 transition post</a>.</p>
 <h5 id="in-your-projects-targetcs">In your project's *.Target.cs<a class="headerlink" href="#in-your-projects-targetcs" title="Permanent link">#</a></h5>
 <ol>
 <li>

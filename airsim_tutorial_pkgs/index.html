@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -147,31 +149,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -280,57 +294,61 @@
 See <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/README.md">airsim_ros_pkgs</a> for the ROS API.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
 <p>Make sure that the <a href="../airsim_ros_pkgs/">airsim_ros_pkgs Setup</a> has been completed and the prerequisites installed.</p>
-<pre><code class="shell">$ cd PATH_TO/AirSim/ros
+<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> PATH_TO/AirSim/ros
 $ catkin build airsim_tutorial_pkgs
-</code></pre>
+</code></pre></div>
 
 <p>If your default GCC isn't 8 or greater (check using <code>gcc --version</code>), then compilation will fail. In that case, use <code>gcc-8</code> explicitly as follows-</p>
-<pre><code class="shell">catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
-</code></pre>
+<div class="highlight"><pre><span></span><code>catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER<span class="o">=</span>gcc-8 -DCMAKE_CXX_COMPILER<span class="o">=</span>g++-8
+</code></pre></div>
 
 <p>Note: For running examples, and also whenever a new terminal is opened, sourcing the <code>setup.bash</code> file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the <code>source PATH_TO/AirSim/ros/devel/setup.bash</code> to your <code>~/.profile</code> or <code>~/.bashrc</code> to avoid the need to run the command every time a new terminal is opened</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
 <h3 id="single-drone-with-monocular-and-depth-cameras-and-lidar">Single drone with monocular and depth cameras, and lidar<a class="headerlink" href="#single-drone-with-monocular-and-depth-cameras-and-lidar" title="Permanent link">#</a></h3>
 <ul>
 <li>Settings.json - <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/front_stereo_and_center_mono.json">front_stereo_and_center_mono.json</a>
- ```shell
- $ source PATH_TO/AirSim/ros/devel/setup.bash
- $ roscd airsim_tutorial_pkgs
- $ cp settings/front_stereo_and_center_mono.json ~/Documents/AirSim/settings.json</li>
+ <div class="highlight"><pre><span></span><code>$ <span class="nb">source</span> PATH_TO/AirSim/ros/devel/setup.bash
+$ roscd airsim_tutorial_pkgs
+$ cp settings/front_stereo_and_center_mono.json ~/Documents/AirSim/settings.json
+
+<span class="c1">## Start your unreal package or binary here</span>
+
+$ roslaunch airsim_ros_pkgs airsim_node.launch<span class="p">;</span>
+
+<span class="c1"># in a new pane / terminal</span>
+$ <span class="nb">source</span> PATH_TO/AirSim/ros/devel/setup.bash
+$ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch
+</code></pre></div>
+ The above would start rviz with tf's, registered RGBD cloud using <a href="https://wiki.ros.org/depth_image_proc">depth_image_proc</a> using the <a href="https://github.com/microsoft/AirSim/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch"><code>depth_to_pointcloud</code> launch file</a>, and the lidar point cloud. </li>
 </ul>
-<p>## Start your unreal package or binary here</p>
-<p>$ roslaunch airsim_ros_pkgs airsim_node.launch;</p>
-<p># in a new pane / terminal
- $ source PATH_TO/AirSim/ros/devel/setup.bash
- $ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch
- <code>``
- The above would start rviz with tf's, registered RGBD cloud using [depth_image_proc](https://wiki.ros.org/depth_image_proc) using the [</code>depth_to_pointcloud` launch file](https://github.com/microsoft/AirSim/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch), and the lidar point cloud. </p>
 <h3 id="two-drones-with-cameras-lidar-imu-each">Two drones, with cameras, lidar, IMU each<a class="headerlink" href="#two-drones-with-cameras-lidar-imu-each" title="Permanent link">#</a></h3>
 <ul>
 <li>Settings.json - <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/two_drones_camera_lidar_imu.json">two_drones_camera_lidar_imu.json</a> </li>
 </ul>
-<p>```shell
- $ source PATH_TO/AirSim/ros/devel/setup.bash
- $ roscd airsim_tutorial_pkgs
- $ cp settings/two_drones_camera_lidar_imu.json ~/Documents/AirSim/settings.json</p>
-<p>## Start your unreal package or binary here</p>
-<p>$ roslaunch airsim_ros_pkgs airsim_node.launch;
- $ roslaunch airsim_ros_pkgs rviz.launch
- <code>``
-You can view the tfs in rviz. And do a</code>rostopic list<code>and</code>rosservice list` to inspect the services avaiable.    </p>
+<p><div class="highlight"><pre><span></span><code>$ <span class="nb">source</span> PATH_TO/AirSim/ros/devel/setup.bash
+$ roscd airsim_tutorial_pkgs
+$ cp settings/two_drones_camera_lidar_imu.json ~/Documents/AirSim/settings.json
+
+<span class="c1">## Start your unreal package or binary here</span>
+
+$ roslaunch airsim_ros_pkgs airsim_node.launch<span class="p">;</span>
+$ roslaunch airsim_ros_pkgs rviz.launch
+</code></pre></div>
+You can view the tfs in rviz. And do a <code>rostopic list</code> and <code>rosservice list</code> to inspect the services avaiable.    </p>
 <h3 id="twenty-five-drones-in-a-square-pattern">Twenty-five drones in a square pattern<a class="headerlink" href="#twenty-five-drones-in-a-square-pattern" title="Permanent link">#</a></h3>
 <ul>
 <li>Settings.json - <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/twenty_five_drones.json">twenty_five_drones.json</a> </li>
 </ul>
-<p>```shell
- $ source PATH_TO/AirSim/ros/devel/setup.bash
- $ roscd airsim_tutorial_pkgs
- $ cp settings/twenty_five_drones.json ~/Documents/AirSim/settings.json</p>
-<p>## Start your unreal package or binary here</p>
-<p>$ roslaunch airsim_ros_pkgs airsim_node.launch;
- $ roslaunch airsim_ros_pkgs rviz.launch
- <code>``
-You can view the tfs in rviz. And do a</code>rostopic list<code>and</code>rosservice list` to inspect the services avaiable.    </p>
+<p><div class="highlight"><pre><span></span><code>$ <span class="nb">source</span> PATH_TO/AirSim/ros/devel/setup.bash
+$ roscd airsim_tutorial_pkgs
+$ cp settings/twenty_five_drones.json ~/Documents/AirSim/settings.json
+
+<span class="c1">## Start your unreal package or binary here</span>
+
+$ roslaunch airsim_ros_pkgs airsim_node.launch<span class="p">;</span>
+$ roslaunch airsim_ros_pkgs rviz.launch
+</code></pre></div>
+You can view the tfs in rviz. And do a <code>rostopic list</code> and <code>rosservice list</code> to inspect the services avaiable.    </p>
               
             </div>
           </div>

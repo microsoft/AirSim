@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -149,31 +151,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -282,43 +296,43 @@
 <h2 id="creating-multiple-vehicles">Creating Multiple Vehicles<a class="headerlink" href="#creating-multiple-vehicles" title="Permanent link">#</a></h2>
 <p>It's as easy as specifying them in <a href="../settings/">settings.json</a>. The <code>Vehicles</code> element allows you to specify list of vehicles you want to create along with their initial positions and orientations. The positions are specified in NED coordinates in SI units with origin set at Player Start component in Unreal environment. The orientation is specified as Yaw, Pitch and Roll in degrees.</p>
 <h3 id="creating-multiple-cars">Creating Multiple Cars<a class="headerlink" href="#creating-multiple-cars" title="Permanent link">#</a></h3>
-<pre><code class="json">{
-    &quot;SettingsVersion&quot;: 1.2,
-    &quot;SimMode&quot;: &quot;Car&quot;,
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="nt">&quot;SettingsVersion&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
+    <span class="nt">&quot;SimMode&quot;</span><span class="p">:</span> <span class="s2">&quot;Car&quot;</span><span class="p">,</span>
 
-    &quot;Vehicles&quot;: {
-        &quot;Car1&quot;: {
-          &quot;VehicleType&quot;: &quot;PhysXCar&quot;,
-          &quot;X&quot;: 4, &quot;Y&quot;: 0, &quot;Z&quot;: -2
-        },
-        &quot;Car2&quot;: {
-          &quot;VehicleType&quot;: &quot;PhysXCar&quot;,
-          &quot;X&quot;: -4, &quot;Y&quot;: 0, &quot;Z&quot;: -2,
-      &quot;Yaw&quot;: 90
-        }
-  }
-}
-</code></pre>
+    <span class="nt">&quot;Vehicles&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Car1&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;PhysXCar&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-2</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Car2&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;PhysXCar&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">-4</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-2</span><span class="p">,</span>
+      <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="mi">90</span>
+        <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h3 id="creating-multiple-drones">Creating Multiple Drones<a class="headerlink" href="#creating-multiple-drones" title="Permanent link">#</a></h3>
-<pre><code class="json">{
-    &quot;SettingsVersion&quot;: 1.2,
-    &quot;SimMode&quot;: &quot;Multirotor&quot;,
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="nt">&quot;SettingsVersion&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
+    <span class="nt">&quot;SimMode&quot;</span><span class="p">:</span> <span class="s2">&quot;Multirotor&quot;</span><span class="p">,</span>
 
-    &quot;Vehicles&quot;: {
-        &quot;Drone1&quot;: {
-          &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
-          &quot;X&quot;: 4, &quot;Y&quot;: 0, &quot;Z&quot;: -2,
-      &quot;Yaw&quot;: -180
-        },
-        &quot;Drone2&quot;: {
-          &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
-          &quot;X&quot;: 8, &quot;Y&quot;: 0, &quot;Z&quot;: -2
-        }
+    <span class="nt">&quot;Vehicles&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;Drone1&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleFlight&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-2</span><span class="p">,</span>
+      <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="mi">-180</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;Drone2&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleFlight&quot;</span><span class="p">,</span>
+          <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-2</span>
+        <span class="p">}</span>
 
-    }
-}
-</code></pre>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="using-apis-for-multiple-vehicles">Using APIs for Multiple Vehicles<a class="headerlink" href="#using-apis-for-multiple-vehicles" title="Permanent link">#</a></h2>
 <p>The new APIs since AirSim 1.2 allows you to specify <code>vehicle_name</code>. This name corresponds to keys in json settings (for example, Car1 or Drone2 above). </p>

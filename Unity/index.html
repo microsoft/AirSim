@@ -143,6 +143,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -191,31 +193,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -355,8 +369,8 @@
 </ul>
 <h2 id="linux">Linux<a class="headerlink" href="#linux" title="Permanent link">#</a></h2>
 <h4 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">#</a></h4>
-<pre><code>sudo apt-get install libboost-all-dev
-</code></pre>
+<div class="highlight"><pre><span></span><code>sudo apt-get install libboost-all-dev
+</code></pre></div>
 
 <h4 id="download-and-install-unity-for-linux">Download and Install Unity for Linux<a class="headerlink" href="#download-and-install-unity-for-linux" title="Permanent link">#</a></h4>
 <p><span style="color:red">Warning:</span> Unity Editor for Linux is still in Beta. Expect some rough edges.</p>
@@ -367,16 +381,16 @@
 <li>Note: If you are using Unity for the first time, check out <a href="https://docs.unity3d.com/Manual/GettingStarted.html">the Getting started guide</a>. The <a href="https://docs.unity3d.com/Manual/UnityManual.html">Unity User Manual</a> has additional tips, resources, and FAQs.</li>
 </ul>
 <h4 id="build-airsim_1">Build Airsim<a class="headerlink" href="#build-airsim_1" title="Permanent link">#</a></h4>
-<pre><code>git clone https://github.com/Microsoft/AirSim.git;
+<div class="highlight"><pre><span></span><code>git clone https://github.com/Microsoft/AirSim.git;
 cd AirSim;
 ./setup.sh;
 ./build.sh
-</code></pre>
+</code></pre></div>
 
 <h4 id="generate-airsimwrapper-shared-library">Generate AirsimWrapper Shared Library<a class="headerlink" href="#generate-airsimwrapper-shared-library" title="Permanent link">#</a></h4>
-<pre><code>cd AirSim/Unity
+<div class="highlight"><pre><span></span><code>cd AirSim/Unity
 ./build.sh
-</code></pre>
+</code></pre></div>
 
 <p>This will generate the necessary shared library and copy it to the UnityDemo Plugins folder.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">#</a></h2>
@@ -427,23 +441,20 @@ Once this component is successfully installed, you are ready to build Unity Proj
 <h4 id="copy-the-airsimwrapper-library-to-the-project-plugins-folder">Copy The AirsimWrapper Library to the Project Plugins folder<a class="headerlink" href="#copy-the-airsimwrapper-library-to-the-project-plugins-folder" title="Permanent link">#</a></h4>
 <ul>
 <li>On your linux machine, navigate to your AirSim repository, and run the following commands in a terminal window:
-    <code>cp Unity/linux-build/libAirsimWrapper.so path/to/your/project/{project_name}_Data/Plugins/{os_version}</code>
+    <div class="highlight"><pre><span></span><code>cp Unity/linux-build/libAirsimWrapper.so path/to/your/project/{project_name}_Data/Plugins/{os_version}
+</code></pre></div>
 This will generate the necessary shared library to allow Airsim to communicate with Unity and copy it to the plugins folder of your project binary.</li>
 </ul>
 <h4 id="run-the-project-binary">Run the Project Binary<a class="headerlink" href="#run-the-project-binary" title="Permanent link">#</a></h4>
 <ul>
 <li>Open a terminal and navigate to your project directory</li>
-<li>Set your project binary as an executable file:</li>
+<li>Set your project binary as an executable file:
+<div class="highlight"><pre><span></span><code>chmod +x &quot;{project_name}.{configuration}&quot;
+</code></pre></div></li>
+<li>Run the binary file
+<div class="highlight"><pre><span></span><code>./{project_name}.{configuration}
+</code></pre></div></li>
 </ul>
-<pre><code>chmod +x &quot;{project_name}.{configuration}&quot;
-</code></pre>
-
-<ul>
-<li>Run the binary file</li>
-</ul>
-<pre><code>./{project_name}.{configuration}
-</code></pre>
-
 <h3 id="using-airsim-api">Using Airsim API<a class="headerlink" href="#using-airsim-api" title="Permanent link">#</a></h3>
 <ul>
 <li>For quickstart with the Python APIs for the car or the drone, simply run the <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/hello_car.py"><code>hello_car.py</code></a> or the <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> script accordingly. </li>

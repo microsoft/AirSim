@@ -97,6 +97,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -145,31 +147,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -289,8 +303,13 @@ Click on the <code>Install</code> button on the top right, which should show the
 <li>Install Visual Studio 2019.
 <strong>Make sure</strong> to select <strong>Desktop Development with C++</strong> and <strong>Windows 10 SDK 10.0.18362</strong> (should be selected by default) while installing VS 2019.</li>
 <li>Start <code>Developer Command Prompt for VS 2019</code>.</li>
-<li>Clone the repo: <code>git clone https://github.com/Microsoft/AirSim.git</code>, and go the AirSim directory by <code>cd AirSim</code>.</li>
-<li>Run <code>build.cmd</code> from the command line. This will create ready to use plugin bits in the <code>Unreal\Plugins</code> folder that can be dropped into any Unreal project.</li>
+<li>
+<p>Clone the repo: <code>git clone https://github.com/Microsoft/AirSim.git</code>, and go the AirSim directory by <code>cd AirSim</code>.</p>
+<p><strong>Note:</strong> It's generally not a good idea to install AirSim in C drive. This can cause scripts to fail, and requires running VS in Admin mode. Instead clone in a different drive such as D or E.</p>
+</li>
+<li>
+<p>Run <code>build.cmd</code> from the command line. This will create ready to use plugin bits in the <code>Unreal\Plugins</code> folder that can be dropped into any Unreal project.</p>
+</li>
 </ul>
 <h2 id="build-unreal-project">Build Unreal Project<a class="headerlink" href="#build-unreal-project" title="Permanent link">#</a></h2>
 <p>Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see <a href="../unreal_proj/">setting up Unreal Environment</a>.</p>
@@ -311,26 +330,30 @@ Click on the <code>Install</code> button on the top right, which should show the
 <h3 id="how-to-force-unreal-to-use-visual-studio-2019">How to force Unreal to use Visual Studio 2019?<a class="headerlink" href="#how-to-force-unreal-to-use-visual-studio-2019" title="Permanent link">#</a></h3>
 <p>If the default <code>update_from_git.bat</code> file results in VS 2017 project, then you may need to run the <code>C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\DotNET\UnrealBuildTool.exe</code> tool manually, with the command line options <code>-projectfiles -project=&lt;your.uproject&gt;  -game -rocket -progress -2019</code>.</p>
 <p>If you are upgrading from 4.18 to 4.24 you may also need to add <code>BuildSettingsVersion.V2</code> to your <code>*.Target.cs</code> and <code>*Editor.Target.cs</code> build files, like this:</p>
-<pre><code class="c#">    public AirSimNHTestTarget(TargetInfo Target) : base(Target)
-    {
-        Type = TargetType.Game;
-        DefaultBuildSettings = BuildSettingsVersion.V2;
-        ExtraModuleNames.AddRange(new string[] { &quot;AirSimNHTest&quot; });
-    }
-</code></pre>
+<div class="highlight"><pre><span></span><code>    <span class="k">public</span> <span class="nf">AirSimNHTestTarget</span><span class="p">(</span><span class="n">TargetInfo</span> <span class="n">Target</span><span class="p">)</span> <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">Target</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Type</span> <span class="p">=</span> <span class="n">TargetType</span><span class="p">.</span><span class="n">Game</span><span class="p">;</span>
+        <span class="n">DefaultBuildSettings</span> <span class="p">=</span> <span class="n">BuildSettingsVersion</span><span class="p">.</span><span class="n">V2</span><span class="p">;</span>
+        <span class="n">ExtraModuleNames</span><span class="p">.</span><span class="n">AddRange</span><span class="p">(</span><span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&quot;AirSimNHTest&quot;</span> <span class="p">});</span>
+    <span class="p">}</span>
+</code></pre></div>
 
 <p>You may also need to edit this file:</p>
-<pre><code>&quot;%APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
-</code></pre>
+<div class="highlight"><pre><span></span><code>&quot;%APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+</code></pre></div>
 
 <p>And add this Compiler version setting:</p>
-<pre><code class="xml">&lt;Configuration xmlns=&quot;https://www.unrealengine.com/BuildConfiguration&quot;&gt;
-  &lt;WindowsPlatform&gt;
-    &lt;Compiler&gt;VisualStudio2019&lt;/Compiler&gt;
-  &lt;/WindowsPlatform&gt;
-&lt;/Configuration&gt;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;Configuration</span> <span class="na">xmlns=</span><span class="s">&quot;https://www.unrealengine.com/BuildConfiguration&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;WindowsPlatform&gt;</span>
+    <span class="nt">&lt;Compiler&gt;</span>VisualStudio2019<span class="nt">&lt;/Compiler&gt;</span>
+  <span class="nt">&lt;/WindowsPlatform&gt;</span>
+<span class="nt">&lt;/Configuration&gt;</span>
+</code></pre></div>
 
+<h3 id="im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually">I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code><a class="headerlink" href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually" title="Permanent link">#</a></h3>
+<p>This will occur when there are compilation errors. Logs are stored in <code>&lt;My-Project&gt;\Saved\Logs</code> which can be used to figure out the problem.</p>
+<p>A common problem could be Visual Studio version conflict, AirSim uses VS 2019 while UE is using VS 2017, this can be found by searching for <code>2017</code> in the Log file. In that case, see the answer above.</p>
+<p>If you have modified the AirSim plugin files, then you can right-click the <code>.uproject</code> file, select <code>Generate Visual Studio solution file</code> and then open the <code>.sln</code> file in VS to fix the errors and build again.</p>
 <h3 id="i-get-error-c100-an-internal-error-has-occurred-in-the-compiler-when-running-buildcmd">I get <code>error C100 : An internal error has occurred in the compiler</code> when running build.cmd<a class="headerlink" href="#i-get-error-c100-an-internal-error-has-occurred-in-the-compiler-when-running-buildcmd" title="Permanent link">#</a></h3>
 <p>We have noticed this happening with VS version <code>15.9.0</code> and have checked-in a workaround in AirSim code. If you have this VS version, please make sure to pull the latest AirSim code.</p>
 <h4 id="i-get-error-corecrth-no-such-file-or-directory-or-windows-sdk-version-81-not-found">I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"<a class="headerlink" href="#i-get-error-corecrth-no-such-file-or-directory-or-windows-sdk-version-81-not-found" title="Permanent link">#</a></h4>
@@ -340,14 +363,18 @@ Click on the <code>Install</code> button on the top right, which should show the
 <h3 id="i-made-changes-in-visual-studio-but-there-is-no-effect">I made changes in Visual Studio but there is no effect<a class="headerlink" href="#i-made-changes-in-visual-studio-but-there-is-no-effect" title="Permanent link">#</a></h3>
 <p>Sometimes the Unreal + VS build system doesn't recompile if you make changes to only header files. To ensure a recompile, make some Unreal based cpp file "dirty" like AirSimGameMode.cpp.</p>
 <h3 id="unreal-still-uses-vs2015-or-im-getting-some-link-error">Unreal still uses VS2015 or I'm getting some link error<a class="headerlink" href="#unreal-still-uses-vs2015-or-im-getting-some-link-error" title="Permanent link">#</a></h3>
-<p>Running several versions of VS can lead to issues when compiling UE projects. One problem that may arise is that UE will try to compile with an older version of VS which may or may not work. There are two settings in Unreal, one for for the engine and one for the project, to adjust the version of VS to be used.
-1. Edit -&gt; Editor preferences -&gt; General -&gt; Source code
-2. Edit -&gt; Project Settings -&gt; Platforms -&gt; Windows -&gt; Toolchain -&gt;CompilerVersion</p>
+<p>Running several versions of VS can lead to issues when compiling UE projects. One problem that may arise is that UE will try to compile with an older version of VS which may or may not work. There are two settings in Unreal, one for for the engine and one for the project, to adjust the version of VS to be used.</p>
+<ol>
+<li>Edit -&gt; Editor preferences -&gt; General -&gt; Source code -&gt; Source Code Editor</li>
+<li>Edit -&gt; Project Settings -&gt; Platforms -&gt; Windows -&gt; Toolchain -&gt;CompilerVersion</li>
+</ol>
 <p>In some cases, these settings will still not lead to the desired result and errors such as the following might be produced: LINK : fatal error LNK1181: cannot open input file 'ws2_32.lib'</p>
-<p>To resolve such issues the following procedure can be applied:
-1. Uninstall all old versions of VS using the <a href="https://github.com/Microsoft/VisualStudioUninstaller/releases">VisualStudioUninstaller</a>
-2. Repair/Install VS 2019
-3. Restart machine and install Epic launcher and desired version of the engine</p>
+<p>To resolve such issues the following procedure can be applied:</p>
+<ol>
+<li>Uninstall all old versions of VS using the <a href="https://github.com/Microsoft/VisualStudioUninstaller/releases">VisualStudioUninstaller</a></li>
+<li>Repair/Install VS 2019</li>
+<li>Restart machine and install Epic launcher and desired version of the engine</li>
+</ol>
               
             </div>
           </div>

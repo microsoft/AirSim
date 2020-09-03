@@ -111,6 +111,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -159,31 +161,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -291,18 +305,18 @@
 <p>This page contains the complete instructions start to finish for setting up Unreal environment with AirSim. The Unreal Marketplace has <a href="https://www.unrealengine.com/marketplace/content-cat/assets/environments">several environment</a> available that you can start using in just few minutes. It is also possible to use environments available on websites such as <a href="https://www.turbosquid.com/">turbosquid.com</a> or <a href="https://www.cgtrader.com/">cgitrader.com</a> with bit more effort (here's <a href="https://www.youtube.com/watch?v=y09VbdQWvQY&amp;feature">tutorial video</a>). In addition there also several <a href="https://github.com/Microsoft/AirSim/issues/424">free environments</a> available.</p>
 <p>Below we will use a freely downloadable environment from Unreal Marketplace called Landscape Mountain but the steps are same for any other environments. You can also view these steps performed in <a href="https://youtu.be/1oY8Qu5maQQ">Unreal AirSim Setup Video</a>.</p>
 <h2 id="note-for-linux-users">Note for Linux Users<a class="headerlink" href="#note-for-linux-users" title="Permanent link">#</a></h2>
-<p>There is no <code>Epic Games Launcher</code> for Linux which means that if you need to create custom environment, you will need Windows machine to do that. Once you have Unreal project folder, just copy it over to your Linux machine. </p>
+<p>There is no <code>Epic Games Launcher</code> for Linux which means that if you need to create custom environment, you will need Windows machine to do that. Once you have Unreal project folder, just copy it over to your Linux machine.</p>
 <h2 id="step-by-step-instructions">Step by Step Instructions<a class="headerlink" href="#step-by-step-instructions" title="Permanent link">#</a></h2>
 <ol>
 <li>Make sure AirSim is built and Unreal 4.24 is installed as described in <a href="../build_windows/">build instructions</a>.</li>
-<li>In <code>Epic Games Launcher</code> click the Learn tab then scroll down and find <code>Landscape Mountains</code>. Click the <code>Create Project</code> and download this content (~2GB download).</li>
-</ol>
+<li>
+<p>In <code>Epic Games Launcher</code> click the Learn tab then scroll down and find <code>Landscape Mountains</code>. Click the <code>Create Project</code> and download this content (~2GB download).</p>
 <p><img alt="current version" src="../images/landscape_mountains.png" /></p>
-<ol>
-<li>Open <code>LandscapeMountains.uproject</code>, it should launch the Unreal Editor.</li>
-</ol>
+</li>
+<li>
+<p>Open <code>LandscapeMountains.uproject</code>, it should launch the Unreal Editor.</p>
 <p><img alt="unreal editor" src="../images/unreal_editor.png" /></p>
-<ol>
+</li>
 <li>
 <p>From the <code>File menu</code> select <code>New C++ class</code>, leave default <code>None</code> on the type of class, click <code>Next</code>, leave default name <code>MyClass</code>, and click <code>Create Class</code>. We need to do this because Unreal requires at least one source file in project. It should trigger compile and open up Visual Studio solution <code>LandscapeMountains.sln</code>.</p>
 </li>
@@ -313,52 +327,52 @@
 <p>Edit the <code>LandscapeMountains.uproject</code> so that it looks like this</p>
 </li>
 </ol>
-<pre><code class="json">{
-    &quot;FileVersion&quot;: 3,
-    &quot;EngineAssociation&quot;: &quot;4.24&quot;,
-    &quot;Category&quot;: &quot;Samples&quot;,
-    &quot;Description&quot;: &quot;&quot;,
-    &quot;Modules&quot;: [
-        {
-            &quot;Name&quot;: &quot;LandscapeMountains&quot;,
-            &quot;Type&quot;: &quot;Runtime&quot;,
-            &quot;LoadingPhase&quot;: &quot;Default&quot;,
-            &quot;AdditionalDependencies&quot;: [
-                &quot;AirSim&quot;
-            ]
-        }
-    ],
-    &quot;TargetPlatforms&quot;: [
-        &quot;MacNoEditor&quot;,
-        &quot;WindowsNoEditor&quot;
-    ],
-    &quot;Plugins&quot;: [
-        {
-            &quot;Name&quot;: &quot;AirSim&quot;,
-            &quot;Enabled&quot;: true
-        }
-    ]
-}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="nt">&quot;FileVersion&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&quot;EngineAssociation&quot;</span><span class="p">:</span> <span class="s2">&quot;4.24&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Category&quot;</span><span class="p">:</span> <span class="s2">&quot;Samples&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;Modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;LandscapeMountains&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;Runtime&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;LoadingPhase&quot;</span><span class="p">:</span> <span class="s2">&quot;Default&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;AdditionalDependencies&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;AirSim&quot;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;TargetPlatforms&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;MacNoEditor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;WindowsNoEditor&quot;</span>
+    <span class="p">],</span>
+    <span class="nt">&quot;Plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;AirSim&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;Enabled&quot;</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <ol>
-<li>Close Visual Studio and the  <code>Unreal Editor</code> and right click the LandscapeMountains.uproject in Windows Explorer and select <code>Generate Visual Studio Project Files</code>.  This step detects all plugins and source files in your Unreal project and generates <code>.sln</code> file for Visual Studio.</li>
-</ol>
+<li>
+<p>Close Visual Studio and the  <code>Unreal Editor</code> and right click the LandscapeMountains.uproject in Windows Explorer and select <code>Generate Visual Studio Project Files</code>.  This step detects all plugins and source files in your Unreal project and generates <code>.sln</code> file for Visual Studio.</p>
 <p><img alt="regen" src="../images/regen_sln.png" /></p>
 <p>Tip: If the <code>Generate Visual Studio Project Files</code> option is missing you may need to reboot your machine for the Unreal Shell extensions to take effect.  If it is still missing then open the LandscapeMountains.uproject in the Unreal Editor and select <code>Refresh Visual Studio Project</code> from the <code>File</code> menu.</p>
-<ol>
-<li>Reopen <code>LandscapeMountains.sln</code> in Visual Studio, and make sure "DebugGame Editor" and "Win64" build configuration is the active build configuration.</li>
-</ol>
+</li>
+<li>
+<p>Reopen <code>LandscapeMountains.sln</code> in Visual Studio, and make sure "DebugGame Editor" and "Win64" build configuration is the active build configuration.</p>
 <p><img alt="build config" src="../images/vsbuild_config.png" /></p>
-<ol>
-<li>Press <code>F5</code> to <code>run</code>. This will start the Unreal Editor. The Unreal Editor allows you to edit the environment, assets and other game related settings. First thing you want to do in your environment is set up <code>PlayerStart</code> object. In Landscape Mountains environment, <code>PlayerStart</code> object already exist and you can find it in the <code>World Outliner</code>. Make sure its location is setup as shown. This is where AirSim plugin will create and place the vehicle. If its too high up then vehicle will fall down as soon as you press play giving potentially random behavior</li>
-</ol>
+</li>
+<li>
+<p>Press <code>F5</code> to <code>run</code>. This will start the Unreal Editor. The Unreal Editor allows you to edit the environment, assets and other game related settings. First thing you want to do in your environment is set up <code>PlayerStart</code> object. In Landscape Mountains environment, <code>PlayerStart</code> object already exist and you can find it in the <code>World Outliner</code>. Make sure its location is setup as shown. This is where AirSim plugin will create and place the vehicle. If its too high up then vehicle will fall down as soon as you press play giving potentially random behavior</p>
 <p><img alt="lm_player_start_pos.png" src="../images/lm_player_start_pos.png" /></p>
-<ol>
-<li>In <code>Window/World Settings</code> as shown below, set the <code>GameMode Override</code> to <code>AirSimGameMode</code>:</li>
-</ol>
+</li>
+<li>
+<p>In <code>Window/World Settings</code> as shown below, set the <code>GameMode Override</code> to <code>AirSimGameMode</code>:</p>
 <p><img alt="sim_game_mode.png" src="../images/sim_game_mode.png" /></p>
-<ol>
+</li>
 <li>
 <p>Go to 'Edit-&gt;Editor Preferences' in Unreal Editor, in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked. If you don't do this then UE will be slowed down dramatically when UE window loses focus.</p>
 </li>
@@ -379,7 +393,7 @@
 </ol>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
 <h4 id="what-are-other-cool-environments">What are other cool environments?<a class="headerlink" href="#what-are-other-cool-environments" title="Permanent link">#</a></h4>
-<p><a href="https://www.unrealengine.com/marketplace">Unreal Marketplace</a> has dozens of prebuilt extra-ordinarily detailed <a href="https://www.unrealengine.com/marketplace/content-cat/assets/environments">environments</a> ranging from Moon to Mars and everything in between. The one we have used for testing is called <a href="https://www.unrealengine.com/marketplace/modular-neighborhood-pack">Modular Neighborhood Pack</a> 
+<p><a href="https://www.unrealengine.com/marketplace">Unreal Marketplace</a> has dozens of prebuilt extra-ordinarily detailed <a href="https://www.unrealengine.com/marketplace/content-cat/assets/environments">environments</a> ranging from Moon to Mars and everything in between. The one we have used for testing is called <a href="https://www.unrealengine.com/marketplace/modular-neighborhood-pack">Modular Neighborhood Pack</a>
 but you can use any environment. Another free environment is <a href="https://www.unrealengine.com/marketplace/infinity-blade-plain-lands">Infinity Blade series</a>. Alternatively, if you look under the Learn tab in Epic Game Launcher, you will find many free samples that you can use. One of our favorites is "A Boy and His Kite" which is a 100 square miles of highly detailed environment (caution: you will need <em>very</em> beefy PC to run it!).</p>
 <h4 id="when-i-press-play-button-some-kind-of-video-starts-instead-of-my-vehicle">When I press Play button some kind of video starts instead of my vehicle.<a class="headerlink" href="#when-i-press-play-button-some-kind-of-video-starts-instead-of-my-vehicle" title="Permanent link">#</a></h4>
 <p>If the environment comes with MatineeActor, delete it to avoid any startup demo sequences. There might be other ways to remove it as well, for example, click on Blueprints button, then Level Blueprint and then look at Begin Play event in Event Graph. You might want to disconnect any connections that may be starting "matinee".</p>
@@ -391,20 +405,19 @@ but you can use any environment. Another free environment is <a href="https://ww
 <p>In this case, create a new blank C++ project with no Starter Content and add your environment in to it.</p>
 <h4 id="i-already-have-my-own-unreal-project-how-do-i-use-airsim-with-it">I already have my own Unreal project. How do I use AirSim with it?<a class="headerlink" href="#i-already-have-my-own-unreal-project-how-do-i-use-airsim-with-it" title="Permanent link">#</a></h4>
 <p>Copy the <code>Unreal\Plugins</code> folder from the build you did in the above section into the root of your Unreal project's folder. In your Unreal project's .uproject file, add the key <code>AdditionalDependencies</code> to the "Modules" object
-as we showed in the <code>LandscapeMountains.uproject</code> above.</p>
-<pre><code class="json">&quot;AdditionalDependencies&quot;: [
-    &quot;AirSim&quot;
-]
-</code></pre>
-
-<p>and the <code>Plugins</code> section to the top level object:</p>
-<pre><code class="json">&quot;Plugins&quot;: [
-    {
-        &quot;Name&quot;: &quot;AirSim&quot;,
-        &quot;Enabled&quot;: true
-    }
-]      
-</code></pre>
+as we showed in the <code>LandscapeMountains.uproject</code> above.
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;AdditionalDependencies&quot;</span><span class="err">:</span> <span class="p">[</span>
+    <span class="s2">&quot;AirSim&quot;</span>
+<span class="p">]</span>
+</code></pre></div></p>
+<p>and the <code>Plugins</code> section to the top level object:
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;Plugins&quot;</span><span class="err">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nt">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;AirSim&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;Enabled&quot;</span><span class="p">:</span> <span class="kc">true</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div></p>
               
             </div>
           </div>

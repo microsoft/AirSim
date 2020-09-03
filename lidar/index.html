@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -149,31 +151,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -283,14 +297,11 @@
 Please see <a href="../sensors/">general sensors</a> for information on configruation of general/shared sensor settings.</p>
 <h2 id="enabling-lidar-on-a-vehicle">Enabling lidar on a vehicle<a class="headerlink" href="#enabling-lidar-on-a-vehicle" title="Permanent link">#</a></h2>
 <ul>
-<li>By default, lidars are not enabled. To enable lidar, set the SensorType and Enabled attributes in settings json.</li>
-</ul>
-<pre><code>        &quot;Lidar1&quot;: { 
+<li>By default, lidars are not enabled. To enable lidar, set the SensorType and Enabled attributes in settings json.
+<div class="highlight"><pre><span></span><code>        &quot;Lidar1&quot;: { 
              &quot;SensorType&quot;: 6,
              &quot;Enabled&quot; : true,
-</code></pre>
-
-<ul>
+</code></pre></div></li>
 <li>Multiple lidars can be enabled on a vehicle.</li>
 </ul>
 <h2 id="lidar-configuration">Lidar configuration<a class="headerlink" href="#lidar-configuration" title="Permanent link">#</a></h2>
@@ -349,8 +360,8 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
 </tr>
 </tbody>
 </table>
-<p>e.g.,</p>
-<pre><code>{
+<p>e.g.,
+<div class="highlight"><pre><span></span><code>{
     &quot;SeeDocsAt&quot;: &quot;https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md&quot;,
     &quot;SettingsVersion&quot;: 1.2,
 
@@ -393,17 +404,15 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
         }
     }
 }
-</code></pre>
-
+</code></pre></div></p>
 <h2 id="server-side-visualization-for-debugging">Server side visualization for debugging<a class="headerlink" href="#server-side-visualization-for-debugging" title="Permanent link">#</a></h2>
 <p>Be default, the lidar points are not drawn on the viewport. To enable the drawing of hit laser points on the viewport, please enable setting 'DrawDebugPoints' via settings json.
-e.g.,</p>
-<pre><code>        &quot;Lidar1&quot;: { 
+e.g.,
+<div class="highlight"><pre><span></span><code>        &quot;Lidar1&quot;: { 
              ...
              &quot;DrawDebugPoints&quot;: true
         },
-</code></pre>
-
+</code></pre></div></p>
 <h2 id="client-api">Client API<a class="headerlink" href="#client-api" title="Permanent link">#</a></h2>
 <p>Use <code>getLidarData()</code> API to retrieve the Lidar data. 
 * The API returns a Point-Cloud as a flat array of floats along with the timestamp of the capture and lidar pose.

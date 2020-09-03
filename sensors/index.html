@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -173,31 +175,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -334,67 +348,67 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 <p>Behind the scenes, <code>createDefaultSensorSettings</code> method in <a href="https://github.com/Microsoft/AirSim/blob/master/AirLib/include/common/AirSimSettings.hpp">AirSimSettings.hpp</a> sets up the above sensors with their default parameters, depending on the sim mode specified in the <code>settings.json</code> file.</p>
 <h2 id="configuring-the-default-sensor-list">Configuring the default sensor list<a class="headerlink" href="#configuring-the-default-sensor-list" title="Permanent link">#</a></h2>
 <p>The default sensor list can be configured in settings json:</p>
-<pre><code class="json">&quot;DefaultSensors&quot;: {
-    &quot;Barometer&quot;: {
-         &quot;SensorType&quot;: 1,
-         &quot;Enabled&quot; : true
-    },
-    &quot;Imu&quot;: {
-         &quot;SensorType&quot;: 2,
-         &quot;Enabled&quot; : true
-    },
-    &quot;Gps&quot;: {
-         &quot;SensorType&quot;: 3,
-         &quot;Enabled&quot; : true
-    },
-    &quot;Magnetometer&quot;: {
-         &quot;SensorType&quot;: 4,
-         &quot;Enabled&quot; : true
-    },
-    &quot;Distance&quot;: {
-         &quot;SensorType&quot;: 5,
-         &quot;Enabled&quot; : true
-    },
-    &quot;Lidar2&quot;: {
-         &quot;SensorType&quot;: 6,
-         &quot;Enabled&quot; : true,
-         &quot;NumberOfChannels&quot;: 4,
-         &quot;PointsPerSecond&quot;: 10000
-    }
-},
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;DefaultSensors&quot;</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&quot;Barometer&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+         <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Imu&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+         <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Gps&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+         <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Magnetometer&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+         <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Distance&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+         <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;Lidar2&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+         <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+         <span class="nt">&quot;NumberOfChannels&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+         <span class="nt">&quot;PointsPerSecond&quot;</span><span class="p">:</span> <span class="mi">10000</span>
+    <span class="p">}</span>
+<span class="p">}</span><span class="err">,</span>
+</code></pre></div>
 
 <h2 id="configuring-vehicle-specific-sensor-list">Configuring vehicle-specific sensor list<a class="headerlink" href="#configuring-vehicle-specific-sensor-list" title="Permanent link">#</a></h2>
 <p>If a vehicle provides its sensor list, it <strong>must</strong> provide the whole list. Selective add/remove/update of the default sensor list is <strong>NOT</strong> supported.
 A vehicle specific sensor list can be specified in the vehicle settings part of the json.
 e.g.,</p>
-<pre><code class="json">&quot;Vehicles&quot;: {
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;Vehicles&quot;</span><span class="err">:</span> <span class="p">{</span>
 
-    &quot;Drone1&quot;: {
-        &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
-        &quot;AutoCreate&quot;: true,
-        ...
-        &quot;Sensors&quot;: {
-            &quot;MyLidar1&quot;: {
-                &quot;SensorType&quot;: 6,
-                &quot;Enabled&quot; : true,
-                &quot;NumberOfChannels&quot;: 16,
-                &quot;PointsPerSecond&quot;: 10000,
-                &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
-                &quot;DrawDebugPoints&quot;: true
-            },
-            &quot;MyLidar2&quot;: {
-                &quot;SensorType&quot;: 6,
-                &quot;Enabled&quot; : true,
-                &quot;NumberOfChannels&quot;: 4,
-                &quot;PointsPerSecond&quot;: 10000,
-                &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
-                &quot;DrawDebugPoints&quot;: true
-            }
-        }
-    }
-}
-</code></pre>
+    <span class="nt">&quot;Drone1&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleFlight&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;AutoCreate&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="err">...</span>
+        <span class="nt">&quot;Sensors&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;MyLidar1&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+                <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="nt">&quot;NumberOfChannels&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+                <span class="nt">&quot;PointsPerSecond&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+                <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
+                <span class="nt">&quot;DrawDebugPoints&quot;</span><span class="p">:</span> <span class="kc">true</span>
+            <span class="p">},</span>
+            <span class="nt">&quot;MyLidar2&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+                <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="nt">&quot;NumberOfChannels&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                <span class="nt">&quot;PointsPerSecond&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+                <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-1</span><span class="p">,</span>
+                <span class="nt">&quot;DrawDebugPoints&quot;</span><span class="p">:</span> <span class="kc">true</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h3 id="sensor-specific-settings">Sensor specific settings<a class="headerlink" href="#sensor-specific-settings" title="Permanent link">#</a></h3>
 <p>Each sensor-type has its own set of settings as well.
@@ -429,61 +443,55 @@ Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.
 </tbody>
 </table>
 <p>For example, to make the sensor point towards the ground (for altitude measurement similar to barometer), the orientation can be modified as follows -</p>
-<pre><code class="json">&quot;Distance&quot;: {
-    &quot;SensorType&quot;: 5,
-    &quot;Enabled&quot; : true,
-    &quot;Yaw&quot;: 0, &quot;Pitch&quot;: -90, &quot;Roll&quot;: 0
-}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;Distance&quot;</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Pitch&quot;</span><span class="p">:</span> <span class="mi">-90</span><span class="p">,</span> <span class="nt">&quot;Roll&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p><strong>Note:</strong> For Cars, the sensor is placed 1 meter above the vehicle center by default. This is required since otherwise the sensor gives strange data due it being inside the vehicle. This doesn't affect the sensor values say when measuring the distance between 2 cars. See <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/distance_sensor_multi.py"><code>PythonClient/car/distance_sensor_multi.py</code></a> for an example usage.</p>
 <h5 id="server-side-visualization-for-debugging">Server side visualization for debugging<a class="headerlink" href="#server-side-visualization-for-debugging" title="Permanent link">#</a></h5>
 <p>Be default, the points hit by distance sensor are not drawn on the viewport. To enable the drawing of hit points on the viewport, please enable setting <code>DrawDebugPoints</code> via settings json. E.g. -</p>
-<pre><code class="json">&quot;Distance&quot;: {
-    &quot;SensorType&quot;: 5,
-    &quot;Enabled&quot; : true,
-    ...
-    &quot;DrawDebugPoints&quot;: true
-}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;Distance&quot;</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&quot;SensorType&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="nt">&quot;Enabled&quot;</span> <span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="err">...</span>
+    <span class="nt">&quot;DrawDebugPoints&quot;</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="sensor-apis">Sensor APIs<a class="headerlink" href="#sensor-apis" title="Permanent link">#</a></h2>
 <p>Jump straight to <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> or <a href="https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp"><code>hello_drone.cpp</code></a> for example usage, or see follow below for the full API.</p>
 <h5 id="barometer">Barometer<a class="headerlink" href="#barometer" title="Permanent link">#</a></h5>
-<pre><code class="cpp">msr::airlib::BarometerBase::Output getBarometerData(const std::string&amp; barometer_name, const std::string&amp; vehicle_name);
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="o">::</span><span class="n">BarometerBase</span><span class="o">::</span><span class="n">Output</span> <span class="n">getBarometerData</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">barometer_name</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">vehicle_name</span><span class="p">);</span>
+</code></pre></div>
 
-<pre><code class="python">barometer_data = client.getBarometerData(barometer_name = &quot;&quot;, vehicle_name = &quot;&quot;)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">barometer_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">getBarometerData</span><span class="p">(</span><span class="n">barometer_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 <h5 id="imu">IMU<a class="headerlink" href="#imu" title="Permanent link">#</a></h5>
-<pre><code class="cpp">msr::airlib::ImuBase::Output getImuData(const std::string&amp; imu_name = &quot;&quot;, const std::string&amp; vehicle_name = &quot;&quot;);
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="o">::</span><span class="n">ImuBase</span><span class="o">::</span><span class="n">Output</span> <span class="n">getImuData</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">imu_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+</code></pre></div>
 
-<pre><code class="python">imu_data = client.getImuData(imu_name = &quot;&quot;, vehicle_name = &quot;&quot;)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">imu_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">getImuData</span><span class="p">(</span><span class="n">imu_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 <h5 id="gps">GPS<a class="headerlink" href="#gps" title="Permanent link">#</a></h5>
-<pre><code class="cpp">msr::airlib::GpsBase::Output getGpsData(const std::string&amp; gps_name = &quot;&quot;, const std::string&amp; vehicle_name = &quot;&quot;);
-</code></pre>
-
-<pre><code class="python">gps_data = client.getGpsData(gps_name = &quot;&quot;, vehicle_name = &quot;&quot;)
-</code></pre>
-
+<p><div class="highlight"><pre><span></span><code><span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="o">::</span><span class="n">GpsBase</span><span class="o">::</span><span class="n">Output</span> <span class="n">getGpsData</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">gps_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">gps_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">getGpsData</span><span class="p">(</span><span class="n">gps_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</code></pre></div></p>
 <h5 id="magnetometer">Magnetometer<a class="headerlink" href="#magnetometer" title="Permanent link">#</a></h5>
-<pre><code class="cpp">msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string&amp; magnetometer_name = &quot;&quot;, const std::string&amp; vehicle_name = &quot;&quot;);
-</code></pre>
-
-<pre><code class="python">magnetometer_data = client.getMagnetometerData(magnetometer_name = &quot;&quot;, vehicle_name = &quot;&quot;)
-</code></pre>
-
+<p><div class="highlight"><pre><span></span><code><span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="o">::</span><span class="n">MagnetometerBase</span><span class="o">::</span><span class="n">Output</span> <span class="n">getMagnetometerData</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">magnetometer_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">magnetometer_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">getMagnetometerData</span><span class="p">(</span><span class="n">magnetometer_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</code></pre></div></p>
 <h5 id="distance-sensor_1">Distance sensor<a class="headerlink" href="#distance-sensor_1" title="Permanent link">#</a></h5>
-<pre><code class="cpp">msr::airlib::DistanceSensorData getDistanceSensorData(const std::string&amp; distance_sensor_name = &quot;&quot;, const std::string&amp; vehicle_name = &quot;&quot;);
-</code></pre>
-
-<pre><code class="python">distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = &quot;&quot;, vehicle_name = &quot;&quot;)
-</code></pre>
-
+<p><div class="highlight"><pre><span></span><code><span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="o">::</span><span class="n">DistanceSensorData</span> <span class="n">getDistanceSensorData</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">distance_sensor_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">distance_sensor_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">getDistanceSensorData</span><span class="p">(</span><span class="n">distance_sensor_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</code></pre></div></p>
 <h5 id="lidar">Lidar<a class="headerlink" href="#lidar" title="Permanent link">#</a></h5>
 <p>See the <a href="../lidar/">lidar page</a> for Lidar API.</p>
               

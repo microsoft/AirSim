@@ -173,6 +173,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -221,31 +223,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -354,66 +368,66 @@
 <h2 id="getting-a-single-image">Getting a Single Image<a class="headerlink" href="#getting-a-single-image" title="Permanent link">#</a></h2>
 <p>Here's a sample code to get a single image from camera named "0". The returned value is bytes of png format image. To get uncompressed and other format as well as available cameras please see next sections.</p>
 <h3 id="python">Python<a class="headerlink" href="#python" title="Permanent link">#</a></h3>
-<pre><code class="python">import airsim #pip install airsim
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">airsim</span> <span class="c1">#pip install airsim</span>
 
-# for car use CarClient() 
-client = airsim.MultirotorClient()
+<span class="c1"># for car use CarClient() </span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">airsim</span><span class="o">.</span><span class="n">MultirotorClient</span><span class="p">()</span>
 
-png_image = client.simGetImage(&quot;0&quot;, airsim.ImageType.Scene)
-# do something with image
-</code></pre>
+<span class="n">png_image</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">simGetImage</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">Scene</span><span class="p">)</span>
+<span class="c1"># do something with image</span>
+</code></pre></div>
 
 <h3 id="c">C++<a class="headerlink" href="#c" title="Permanent link">#</a></h3>
-<pre><code class="cpp">#include &quot;vehicles/multirotor/api/MultirotorRpcLibClient.hpp&quot;
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span> <span class="cpf">&quot;vehicles/multirotor/api/MultirotorRpcLibClient.hpp&quot;</span><span class="cp"></span>
 
-int getOneImage() 
-{
-    using namespace msr::airlib;
+<span class="kt">int</span> <span class="nf">getOneImage</span><span class="p">()</span> 
+<span class="p">{</span>
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="p">;</span>
 
-    // for car use CarRpcLibClient
-    MultirotorRpcLibClient client;
+    <span class="c1">// for car use CarRpcLibClient</span>
+    <span class="n">MultirotorRpcLibClient</span> <span class="n">client</span><span class="p">;</span>
 
-    std::vector&lt;uint8_t&gt; png_image = client.simGetImage(&quot;0&quot;, VehicleCameraBase::ImageType::Scene);
-    // do something with images
-}
-</code></pre>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">png_image</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="n">simGetImage</span><span class="p">(</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="n">VehicleCameraBase</span><span class="o">::</span><span class="n">ImageType</span><span class="o">::</span><span class="n">Scene</span><span class="p">);</span>
+    <span class="c1">// do something with images</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="getting-images-with-more-flexibility">Getting Images with More Flexibility<a class="headerlink" href="#getting-images-with-more-flexibility" title="Permanent link">#</a></h2>
 <p>The <code>simGetImages</code> API which is slightly more complex to use than <code>simGetImage</code> API, for example, you can get left camera view, right camera view and depth image from left camera in a single API call. The <code>simGetImages</code> API also allows you to get uncompressed images as well as floating point single channel images (instead of 3 channel (RGB), each 8 bit).</p>
 <h3 id="python_1">Python<a class="headerlink" href="#python_1" title="Permanent link">#</a></h3>
-<pre><code class="python">import airsim #pip install airsim
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">airsim</span> <span class="c1">#pip install airsim</span>
 
-# for car use CarClient() 
-client = airsim.MultirotorClient()
+<span class="c1"># for car use CarClient() </span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">airsim</span><span class="o">.</span><span class="n">MultirotorClient</span><span class="p">()</span>
 
-responses = client.simGetImages([
-    # png format
-    airsim.ImageRequest(0, airsim.ImageType.Scene), 
-    # uncompressed RGB array bytes
-    airsim.ImageRequest(1, airsim.ImageType.Scene, False, False),
-    # floating point uncompressed image
-    airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
+<span class="n">responses</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">simGetImages</span><span class="p">([</span>
+    <span class="c1"># png format</span>
+    <span class="n">airsim</span><span class="o">.</span><span class="n">ImageRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">Scene</span><span class="p">),</span> 
+    <span class="c1"># uncompressed RGB array bytes</span>
+    <span class="n">airsim</span><span class="o">.</span><span class="n">ImageRequest</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">Scene</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="c1"># floating point uncompressed image</span>
+    <span class="n">airsim</span><span class="o">.</span><span class="n">ImageRequest</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">DepthPlanner</span><span class="p">,</span> <span class="kc">True</span><span class="p">)])</span>
 
- # do something with response which contains image data, pose, timestamp etc
-</code></pre>
+ <span class="c1"># do something with response which contains image data, pose, timestamp etc</span>
+</code></pre></div>
 
 <h4 id="using-airsim-images-with-numpy">Using AirSim Images with NumPy<a class="headerlink" href="#using-airsim-images-with-numpy" title="Permanent link">#</a></h4>
 <p>If you plan to use numpy for image manipulation, you should get uncompressed RGB image and then convert to numpy like this:</p>
-<pre><code class="python">responses = client.simGetImages([airsim.ImageRequest(&quot;0&quot;, airsim.ImageType.Scene, False, False)])
-response = responses[0]
+<div class="highlight"><pre><span></span><code><span class="n">responses</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">simGetImages</span><span class="p">([</span><span class="n">airsim</span><span class="o">.</span><span class="n">ImageRequest</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">Scene</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)])</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">responses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-# get numpy array
-img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
+<span class="c1"># get numpy array</span>
+<span class="n">img1d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_data_uint8</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span> 
 
-# reshape array to 4 channel image array H X W X 4
-img_rgb = img1d.reshape(response.height, response.width, 3)
+<span class="c1"># reshape array to 4 channel image array H X W X 4</span>
+<span class="n">img_rgb</span> <span class="o">=</span> <span class="n">img1d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-# original image is fliped vertically
-img_rgb = np.flipud(img_rgb)
+<span class="c1"># original image is fliped vertically</span>
+<span class="n">img_rgb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">img_rgb</span><span class="p">)</span>
 
-# write to png 
-airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) 
-</code></pre>
+<span class="c1"># write to png </span>
+<span class="n">airsim</span><span class="o">.</span><span class="n">write_png</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">),</span> <span class="n">img_rgb</span><span class="p">)</span> 
+</code></pre></div>
 
 <h4 id="quick-tips">Quick Tips<a class="headerlink" href="#quick-tips" title="Permanent link">#</a></h4>
 <ul>
@@ -422,37 +436,38 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 </li>
 <li>
 <p>The API <code>simGetImages</code> can accept request for multiple image types from any cameras in single call. You can specify if image is png compressed, RGB uncompressed or float array. For png compressed images, you get <code>binary string literal</code>. For float array you get Python list of float64. You can convert this float array to NumPy 2D array using
-    <code>airsim.list_to_2d_float_array(response.image_data_float, response.width, response.height)</code>
+    <div class="highlight"><pre><span></span><code>airsim.list_to_2d_float_array(response.image_data_float, response.width, response.height)
+</code></pre></div>
     You can also save float array to .pfm file (Portable Float Map format) using <code>airsim.write_pfm()</code> function.</p>
 </li>
 </ul>
 <h3 id="c_1">C++<a class="headerlink" href="#c_1" title="Permanent link">#</a></h3>
-<pre><code class="cpp">int getStereoAndDepthImages() 
-{
-    using namespace msr::airlib;
+<div class="highlight"><pre><span></span><code><span class="kt">int</span> <span class="nf">getStereoAndDepthImages</span><span class="p">()</span> 
+<span class="p">{</span>
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="p">;</span>
 
-    typedef VehicleCameraBase::ImageRequest ImageRequest;
-    typedef VehicleCameraBase::ImageResponse ImageResponse;
-    typedef VehicleCameraBase::ImageType ImageType;
+    <span class="k">typedef</span> <span class="n">VehicleCameraBase</span><span class="o">::</span><span class="n">ImageRequest</span> <span class="n">ImageRequest</span><span class="p">;</span>
+    <span class="k">typedef</span> <span class="n">VehicleCameraBase</span><span class="o">::</span><span class="n">ImageResponse</span> <span class="n">ImageResponse</span><span class="p">;</span>
+    <span class="k">typedef</span> <span class="n">VehicleCameraBase</span><span class="o">::</span><span class="n">ImageType</span> <span class="n">ImageType</span><span class="p">;</span>
 
-    // for car use
-    // CarRpcLibClient client;
-    MultirotorRpcLibClient client;
+    <span class="c1">// for car use</span>
+    <span class="c1">// CarRpcLibClient client;</span>
+    <span class="n">MultirotorRpcLibClient</span> <span class="n">client</span><span class="p">;</span>
 
-    // get right, left and depth images. First two as png, second as float16.
-    std::vector&lt;ImageRequest&gt; request = { 
-        //png format
-        ImageRequest(&quot;0&quot;, ImageType::Scene),
-        //uncompressed RGB array bytes
-        ImageRequest(&quot;1&quot;, ImageType::Scene, false, false),       
-        //floating point uncompressed image  
-        ImageRequest(&quot;1&quot;, ImageType::DepthPlanner, true) 
-    };
+    <span class="c1">// get right, left and depth images. First two as png, second as float16.</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ImageRequest</span><span class="o">&gt;</span> <span class="n">request</span> <span class="o">=</span> <span class="p">{</span> 
+        <span class="c1">//png format</span>
+        <span class="n">ImageRequest</span><span class="p">(</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="n">ImageType</span><span class="o">::</span><span class="n">Scene</span><span class="p">),</span>
+        <span class="c1">//uncompressed RGB array bytes</span>
+        <span class="n">ImageRequest</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">,</span> <span class="n">ImageType</span><span class="o">::</span><span class="n">Scene</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span> <span class="nb">false</span><span class="p">),</span>       
+        <span class="c1">//floating point uncompressed image  </span>
+        <span class="n">ImageRequest</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">,</span> <span class="n">ImageType</span><span class="o">::</span><span class="n">DepthPlanner</span><span class="p">,</span> <span class="nb">true</span><span class="p">)</span> 
+    <span class="p">};</span>
 
-    const std::vector&lt;ImageResponse&gt;&amp; response = client.simGetImages(request);
-    // do something with response which contains image data, pose, timestamp etc
-}
-</code></pre>
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ImageResponse</span><span class="o">&gt;&amp;</span> <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="n">simGetImages</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+    <span class="c1">// do something with response which contains image data, pose, timestamp etc</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="ready-to-run-complete-examples">Ready to Run Complete Examples<a class="headerlink" href="#ready-to-run-complete-examples" title="Permanent link">#</a></h2>
 <h3 id="python_2">Python<a class="headerlink" href="#python_2" title="Permanent link">#</a></h3>
@@ -472,11 +487,11 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 <h2 id="computer-vision-mode_1">"Computer Vision" Mode<a class="headerlink" href="#computer-vision-mode_1" title="Permanent link">#</a></h2>
 <p>You can use AirSim in so-called "Computer Vision" mode. In this mode, physics engine is disabled and there is no vehicle, just cameras. You can move around using keyboard (use F1 to see help on keys). You can press Record button to continuously generate images. Or you can call APIs to move cameras around and take images.</p>
 <p>To active this mode, edit <a href="../settings/">settings.json</a> that you can find in your <code>Documents\AirSim</code> folder (or <code>~/Documents/AirSim</code> on Linux) and make sure following values exist at root level:</p>
-<pre><code class="json">{
-  &quot;SettingsVersion&quot;: 1.2,
-  &quot;SimMode&quot;: &quot;ComputerVision&quot;
-}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;SettingsVersion&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
+  <span class="nt">&quot;SimMode&quot;</span><span class="p">:</span> <span class="s2">&quot;ComputerVision&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">Here's the Python code example</a> to move camera around and capture images.</p>
 <p>This mode was inspired from <a href="http://unrealcv.org/">UnrealCV project</a>.</p>
@@ -484,45 +499,44 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
 <p>To move around the environment using APIs you can use <code>simSetVehiclePose</code> API. This API takes position and orientation and sets that on the invisible vehicle where the front-center camera is located. All rest of the cameras move along keeping the relative position. If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values. The <code>simGetVehiclePose</code> allows to retrieve the current pose. You can also use <code>simGetGroundTruthKinematics</code> to get the quantities kinematics quantities for the movement. Many other non-vehicle specific APIs are also available such as segmentation APIs, collision APIs and camera APIs.</p>
 <h2 id="camera-apis">Camera APIs<a class="headerlink" href="#camera-apis" title="Permanent link">#</a></h2>
 <p>The <code>simGetCameraInfo</code> returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">example usage</a>.</p>
-<p>The <code>simSetCameraPose</code> sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy <code>airsim.to_quaternion()</code> function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:</p>
-<pre><code>camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #RPY in radians
+<p>The <code>simSetCameraPose</code> sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy <code>airsim.to_quaternion()</code> function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:
+<div class="highlight"><pre><span></span><code>camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #RPY in radians
 client.simSetCameraPose(0, camera_pose);
-</code></pre>
-
+</code></pre></div></p>
 <h3 id="gimbal">Gimbal<a class="headerlink" href="#gimbal" title="Permanent link">#</a></h3>
 <p>You can set stabilization for pitch, roll or yaw for any camera <a href="../settings/#gimbal">using settings</a>.</p>
 <p>Please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">example usage</a>.</p>
 <h2 id="changing-resolution-and-camera-parameters">Changing Resolution and Camera Parameters<a class="headerlink" href="#changing-resolution-and-camera-parameters" title="Permanent link">#</a></h2>
 <p>To change resolution, FOV etc, you can use <a href="../settings/">settings.json</a>. For example, below addition in settings.json sets parameters for scene capture and uses "Computer Vision" mode described above. If you omit any setting then below default values will be used. For more information see <a href="../settings/">settings doc</a>. If you are using stereo camera, currently the distance between left and right is fixed at 25 cm.</p>
-<pre><code class="json">{
-  &quot;SettingsVersion&quot;: 1.2,
-  &quot;CameraDefaults&quot;: {
-      &quot;CaptureSettings&quot;: [
-        {
-          &quot;ImageType&quot;: 0,
-          &quot;Width&quot;: 256,
-          &quot;Height&quot;: 144,
-          &quot;FOV_Degrees&quot;: 90,
-          &quot;AutoExposureSpeed&quot;: 100,
-          &quot;MotionBlurAmount&quot;: 0
-        }
-    ]
-  },
-  &quot;SimMode&quot;: &quot;ComputerVision&quot;
-}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;SettingsVersion&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
+  <span class="nt">&quot;CameraDefaults&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;CaptureSettings&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="nt">&quot;ImageType&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="nt">&quot;Width&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+          <span class="nt">&quot;Height&quot;</span><span class="p">:</span> <span class="mi">144</span><span class="p">,</span>
+          <span class="nt">&quot;FOV_Degrees&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
+          <span class="nt">&quot;AutoExposureSpeed&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+          <span class="nt">&quot;MotionBlurAmount&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;SimMode&quot;</span><span class="p">:</span> <span class="s2">&quot;ComputerVision&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <h2 id="what-does-pixel-values-mean-in-different-image-types">What Does Pixel Values Mean in Different Image Types?<a class="headerlink" href="#what-does-pixel-values-mean-in-different-image-types" title="Permanent link">#</a></h2>
 <h3 id="available-imagetype-values">Available ImageType Values<a class="headerlink" href="#available-imagetype-values" title="Permanent link">#</a></h3>
-<pre><code class="cpp">  Scene = 0, 
-  DepthPlanner = 1, 
-  DepthPerspective = 2,
-  DepthVis = 3, 
-  DisparityNormalized = 4,
-  Segmentation = 5,
-  SurfaceNormals = 6,
-  Infrared = 7
-</code></pre>
+<div class="highlight"><pre><span></span><code>  <span class="n">Scene</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> 
+  <span class="n">DepthPlanner</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+  <span class="n">DepthPerspective</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="n">DepthVis</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> 
+  <span class="n">DisparityNormalized</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+  <span class="n">Segmentation</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+  <span class="n">SurfaceNormals</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+  <span class="n">Infrared</span> <span class="o">=</span> <span class="mi">7</span>
+</code></pre></div>
 
 <h3 id="depthplanner-and-depthperspective">DepthPlanner and DepthPerspective<a class="headerlink" href="#depthplanner-and-depthperspective" title="Permanent link">#</a></h3>
 <p>You normally want to retrieve the depth image as float (i.e. set <code>pixels_as_float = true</code>) and specify <code>ImageType = DepthPlanner</code> or <code>ImageType = DepthPerspective</code> in <code>ImageRequest</code>. For <code>ImageType = DepthPlanner</code>, you get depth in camera plan, i.e., all points that are in plan parallel to camera have same depth. For <code>ImageType = DepthPerspective</code>, you get depth from camera using a projection ray that hits that pixel. Depending on your use case, planner depth or perspective depth may be the ground truth image that you want. For example, you may be able to feed perspective depth to ROS package such as <code>depth_image_proc</code> to generate a point cloud. Or planner depth may be more compatible with estimated depth image generated by stereo algorithms such as SGM.</p>
@@ -533,27 +547,26 @@ client.simSetCameraPose(0, camera_pose);
 <h3 id="segmentation">Segmentation<a class="headerlink" href="#segmentation" title="Permanent link">#</a></h3>
 <p>When you specify <code>ImageType = Segmentation</code> in <code>ImageRequest</code>, you get an image that gives you ground truth segmentation of the scene. At the startup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is then mapped to a specific color in <a href="https://github.com/Microsoft/AirSim/tree/master/Unreal//Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png">the pallet</a>. The RGB values for each object ID can be found in <a href="../seg_rgbs.txt">this file</a>.</p>
 <p>You can assign a specific value (limited to the range 0-255) to a specific mesh using APIs. For example, below Python code sets the object ID for the mesh called "Ground" to 20 in Blocks environment and hence changes its color in Segmentation view:</p>
-<pre><code class="python">success = client.simSetSegmentationObjectID(&quot;Ground&quot;, 20);
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">success</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">simSetSegmentationObjectID</span><span class="p">(</span><span class="s2">&quot;Ground&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+</code></pre></div>
 
 <p>The return value is a boolean type that lets you know if the mesh was found.</p>
 <p>Notice that typical Unreal environments, like Blocks, usually have many other meshes that comprises of same object, for example, "Ground_2", "Ground_3" and so on. As it is tedious to set object ID for all of these meshes, AirSim also supports regular expressions. For example, the code below sets all meshes which have names starting with "ground" (ignoring case) to 21 with just one line:</p>
-<pre><code class="python">success = client.simSetSegmentationObjectID(&quot;ground[\w]*&quot;, 21, True);
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">success</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">simSetSegmentationObjectID</span><span class="p">(</span><span class="s2">&quot;ground[\w]*&quot;</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="kc">True</span><span class="p">);</span>
+</code></pre></div>
 
 <p>The return value is true if at least one mesh was found using regular expression matching.</p>
-<p>It is recommended that you request uncompressed image using this API to ensure you get precise RGB values for segmentation image:</p>
-<pre><code class="python">responses = client.simGetImages([ImageRequest(0, AirSimImageType.Segmentation, False, False)])
-img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
-img_rgb = img1d.reshape(response.height, response.width, 3) #reshape array to 3 channel image array H X W X 3
-img_rgb = np.flipud(img_rgb) #original image is fliped vertically
+<p>It is recommended that you request uncompressed image using this API to ensure you get precise RGB values for segmentation image:
+<div class="highlight"><pre><span></span><code><span class="n">responses</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">simGetImages</span><span class="p">([</span><span class="n">ImageRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">AirSimImageType</span><span class="o">.</span><span class="n">Segmentation</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)])</span>
+<span class="n">img1d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_data_uint8</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span> <span class="c1">#get numpy array</span>
+<span class="n">img_rgb</span> <span class="o">=</span> <span class="n">img1d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="c1">#reshape array to 3 channel image array H X W X 3</span>
+<span class="n">img_rgb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">img_rgb</span><span class="p">)</span> <span class="c1">#original image is fliped vertically</span>
 
-#find unique colors
-print(np.unique(img_rgb[:,:,0], return_counts=True)) #red
-print(np.unique(img_rgb[:,:,1], return_counts=True)) #green
-print(np.unique(img_rgb[:,:,2], return_counts=True)) #blue  
-</code></pre>
-
+<span class="c1">#find unique colors</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">img_rgb</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="c1">#red</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">img_rgb</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="c1">#green</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">img_rgb</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="c1">#blue  </span>
+</code></pre></div></p>
 <p>A complete ready-to-run example can be found in <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/segmentation.py">segmentation.py</a>.</p>
 <h4 id="unsetting-object-id">Unsetting object ID<a class="headerlink" href="#unsetting-object-id" title="Permanent link">#</a></h4>
 <p>An object's ID can be set to -1 to make it not show up on the segmentation image.</p>

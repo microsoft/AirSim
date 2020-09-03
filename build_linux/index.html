@@ -117,6 +117,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -165,31 +167,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -310,13 +324,13 @@
 <p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal &gt;= 4.22 at present. We recommend using 4.24.</p>
 </li>
 </ul>
-<pre><code class="bash"># go to the folder where you clone GitHub projects
-git clone -b 4.24 https://github.com/EpicGames/UnrealEngine.git
-cd UnrealEngine
+<div class="highlight"><pre><span></span><code><span class="c1"># go to the folder where you clone GitHub projects</span>
+git clone -b <span class="m">4</span>.24 https://github.com/EpicGames/UnrealEngine.git
+<span class="nb">cd</span> UnrealEngine
 ./Setup.sh
 ./GenerateProjectFiles.sh
 make
-</code></pre>
+</code></pre></div>
 
 <h4 id="macos-download-unreal-engine">macOS - Download Unreal Engine<a class="headerlink" href="#macos-download-unreal-engine" title="Permanent link">#</a></h4>
 <ol>
@@ -330,16 +344,16 @@ Click on the <code>Add Versions</code> which should show the option to download 
 <ul>
 <li>Clone AirSim and build it:</li>
 </ul>
-<pre><code class="bash"># go to the folder where you clone GitHub projects
+<div class="highlight"><pre><span></span><code><span class="c1"># go to the folder where you clone GitHub projects</span>
 git clone https://github.com/Microsoft/AirSim.git
-cd AirSim
-</code></pre>
+<span class="nb">cd</span> AirSim
+</code></pre></div>
 
 <p>By default AirSim uses clang 8 to build for compatibility with UE 4.24. The setup script will install the right version of cmake, llvm, and eigen.</p>
-<pre><code class="bash">./setup.sh
+<div class="highlight"><pre><span></span><code>./setup.sh
 ./build.sh
-# use ./build.sh --debug to build in debug mode
-</code></pre>
+<span class="c1"># use ./build.sh --debug to build in debug mode</span>
+</code></pre></div>
 
 <h3 id="build-unreal-environment">Build Unreal Environment<a class="headerlink" href="#build-unreal-environment" title="Permanent link">#</a></h3>
 <p>Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see <a href="../unreal_proj/">setting up Unreal Environment</a> if you'd like to setup your own environment.</p>
@@ -351,76 +365,84 @@ cd AirSim
 <li>When Unreal Engine prompts for opening or creating project, select Browse and choose <code>AirSim/Unreal/Environments/Blocks</code> (or your <a href="../unreal_custenv/">custom</a> Unreal project).</li>
 <li>Alternatively, the project file can be passed as a commandline argument. For Blocks: <code>./Engine/Binaries/Linux/UE4Editor &lt;AirSim_path&gt;/Unreal/Environments/Blocks/Blocks.uproject</code></li>
 <li>If you get prompts to convert project, look for More Options or Convert-In-Place option. If you get prompted to build, choose Yes. If you get prompted to disable AirSim plugin, choose No.</li>
-<li>After Unreal Editor loads, press Play button. </li>
+<li>After Unreal Editor loads, press Play button.</li>
 </ul>
 <h3 id="mac">Mac<a class="headerlink" href="#mac" title="Permanent link">#</a></h3>
 <ul>
 <li>Browse to <code>AirSim/Unreal/Environments/Blocks</code>.</li>
 <li>Run <code>./GenerateProjectFiles.sh &lt;UE_PATH&gt;</code> from the terminal, where <code>UE_PATH</code> is the path to the Unreal installation folder. (By default, this is <code>/Users/Shared/Epic\ Games/UE_4.24/</code>) The script creates an XCode workspace by the name Blocks.xcworkspace.</li>
-<li>Open the XCode workspace, and press the Build and run button in the top left. </li>
-<li>After Unreal Editor loads, press Play button. </li>
+<li>Open the XCode workspace, and press the Build and run button in the top left.</li>
+<li>After Unreal Editor loads, press Play button.</li>
 </ul>
 <p>See <a href="../apis/">Using APIs</a> and <a href="../settings/">settings.json</a> for various options available for AirSim usage.
-Tip: go to 'Edit-&gt;Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked. </p>
+Tip: go to 'Edit-&gt;Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.</p>
 <h3 id="optional-setup-remote-control-multirotor-only">[Optional] Setup Remote Control (Multirotor Only)<a class="headerlink" href="#optional-setup-remote-control-multirotor-only" title="Permanent link">#</a></h3>
 <p>A remote control is required if you want to fly manually. See the <a href="../remote_control/">remote control setup</a> for more details.</p>
 <p>Alternatively, you can use <a href="../apis/">APIs</a> for programmatic control or use the so-called <a href="../image_apis/">Computer Vision mode</a> to move around using the keyboard.</p>
 <h2 id="faqs">FAQs<a class="headerlink" href="#faqs" title="Permanent link">#</a></h2>
 <ul>
-<li>I'm getting error "<MyProject> could not be compiled. Try rebuilding from source manually".</li>
-<li>This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
-   <code>fatal error: file  '/usr/include/linux/version.h''/usr/include/linux/version.h'  has  been  modified  since  the  precompiled  header</code></li>
-<li>If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's <a href="https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html">relevant thread</a> on Unreal Engine forums.</li>
+<li>I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code>.<ul>
+<li>This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?</li>
+</ul>
+</li>
+</ul>
+<p><code>fatal error: file '/usr/include/linux/version.h''/usr/include/linux/version.h' has been modified since the precompiled header</code></p>
+<ul>
+<li>
+<p>If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's <a href="https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html">relevant thread</a> on Unreal Engine forums.</p>
+</li>
 <li>
 <p>If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.</p>
 </li>
 <li>
 <p>Unreal crashed! How do I know what went wrong?</p>
-</li>
-<li>
-<p>Go to the <code>MyUnrealProject/Saved/Crashes</code> folder and search for the file <code>MyProject.log</code> within its subdirectories. At the end of this file you will see the stack trace and messages.
-   You can also take a look at the <code>Diagnostics.txt</code> file.</p>
+<ul>
+<li>Go to the <code>MyUnrealProject/Saved/Crashes</code> folder and search for the file <code>MyProject.log</code> within its subdirectories. At the end of this file you will see the stack trace and messages.
+You can also take a look at the <code>Diagnostics.txt</code> file.</li>
+</ul>
 </li>
 <li>
 <p>How do I use an IDE on Linux?</p>
-</li>
-<li>
-<p>You can use Qt Creator or CodeLite. Instructions for Qt Creator are available <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnIDE/index.html">here</a>.</p>
+<ul>
+<li>You can use Qt Creator or CodeLite. Instructions for Qt Creator are available <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnIDE/index.html">here</a>.</li>
+</ul>
 </li>
 <li>
 <p>Can I cross compile for Linux from a Windows machine?</p>
-</li>
-<li>
-<p>Yes, you can, but we haven't tested it. You can find the instructions <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html">here</a>.</p>
+<ul>
+<li>Yes, you can, but we haven't tested it. You can find the instructions <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html">here</a>.</li>
+</ul>
 </li>
 <li>
 <p>What compiler and stdlib does AirSim use?</p>
-</li>
-<li>
-<p>We use the same compiler that Unreal Engine uses, <strong>Clang 8</strong>, and stdlib, <strong>libc++</strong>. AirSim's <code>setup.sh</code> will automatically download them.</p>
+<ul>
+<li>We use the same compiler that Unreal Engine uses, <strong>Clang 8</strong>, and stdlib, <strong>libc++</strong>. AirSim's <code>setup.sh</code> will automatically download them.</li>
+</ul>
 </li>
 <li>
 <p>What version of CMake does the AirSim build use?</p>
-</li>
-<li>
-<p>3.10.0 or higher. This is <em>not</em> the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using <code>cmake --version</code>. If you have an older version, follow <a href="../cmake_linux/">these instructions</a> or see the <a href="https://cmake.org/install/">CMake website</a>.</p>
+<ul>
+<li>3.10.0 or higher. This is <em>not</em> the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using <code>cmake --version</code>. If you have an older version, follow <a href="../cmake_linux/">these instructions</a> or see the <a href="https://cmake.org/install/">CMake website</a>.</li>
+</ul>
 </li>
 <li>
 <p>Can I compile AirSim in BashOnWindows?</p>
-</li>
-<li>
-<p>Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.
-   See the <a href="https://msdn.microsoft.com/en-us/commandline/wsl/install_guide">BashOnWindows install guide</a>.
-   Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.
-   Also, don't invoke <code>bash</code> from <code>Visual Studio Command Prompt</code>, otherwise CMake might find VC++ and try and use that!</p>
+<ul>
+<li>Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.
+See the <a href="https://msdn.microsoft.com/en-us/commandline/wsl/install_guide">BashOnWindows install guide</a>.
+Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.
+Also, don't invoke <code>bash</code> from <code>Visual Studio Command Prompt</code>, otherwise CMake might find VC++ and try and use that!</li>
+</ul>
 </li>
 <li>
 <p>Where can I find more info on running Unreal on Linux?</p>
-</li>
+<ul>
 <li>Start here: <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/index.html">Unreal on Linux</a></li>
 <li><a href="https://wiki.unrealengine.com/Building_On_Linux#Clang">Building Unreal on Linux</a></li>
 <li><a href="https://wiki.unrealengine.com/Linux_Support">Unreal Linux Support</a></li>
 <li><a href="https://wiki.unrealengine.com/Compiling_For_Linux">Unreal Cross Compilation</a></li>
+</ul>
+</li>
 </ul>
               
             </div>

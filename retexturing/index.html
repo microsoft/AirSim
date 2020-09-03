@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -141,31 +143,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -288,33 +302,33 @@ Use the same technique to add descriptive tags to groups of actors, which will b
 <p><img alt="Subset Editing" src="../images/tex_swap_subset.png" /></p>
 <h2 id="how-to-swap-textures-from-the-api">How to Swap Textures from the API<a class="headerlink" href="#how-to-swap-textures-from-the-api" title="Permanent link">#</a></h2>
 <p>The following API is available in C++ and python. (C++ shown)</p>
-<pre><code class="C++">std::vector&lt;std::string&gt; simSwapTextures(const std::string&amp; tags, int tex_id);
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">simSwapTextures</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">tags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tex_id</span><span class="p">);</span>
+</code></pre></div>
 
 <p>The string of "," or ", " delimited tags identifies on which actors to perform the swap.
 The tex_id indexes the array of textures assigned to each actor undergoing a swap.
 The function will return the list of objects which matched the provided tags and had the texture swap perfomed.
 If tex_id is out-of-bounds for some object's texture set, it will be taken modulo the number of textures that were available.</p>
 <p>Demo (Python):</p>
-<pre><code class="Python">import airsim
-import time
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">airsim</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
-c = airsim.client.MultirotorClient()
-print(c.simSwapTextures(&quot;furniture&quot;, 0))
-time.sleep(2)
-print(c.simSwapTextures(&quot;chair&quot;, 1))
-time.sleep(2)
-print(c.simSwapTextures(&quot;table&quot;, 1))
-time.sleep(2)
-print(c.simSwapTextures(&quot;chair, right&quot;, 0))
-</code></pre>
+<span class="n">c</span> <span class="o">=</span> <span class="n">airsim</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">MultirotorClient</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">simSwapTextures</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">simSwapTextures</span><span class="p">(</span><span class="s2">&quot;chair&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">simSwapTextures</span><span class="p">(</span><span class="s2">&quot;table&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">simSwapTextures</span><span class="p">(</span><span class="s2">&quot;chair, right&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</code></pre></div>
 
 <p>Results:</p>
-<pre><code class="bash">['RetexturableChair', 'RetexturableChair2', 'RetexturableTable']
-['RetexturableChair', 'RetexturableChair2']
-['RetexturableTable']
-['RetexturableChair2']
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="s1">&#39;RetexturableChair&#39;</span>, <span class="s1">&#39;RetexturableChair2&#39;</span>, <span class="s1">&#39;RetexturableTable&#39;</span><span class="o">]</span>
+<span class="o">[</span><span class="s1">&#39;RetexturableChair&#39;</span>, <span class="s1">&#39;RetexturableChair2&#39;</span><span class="o">]</span>
+<span class="o">[</span><span class="s1">&#39;RetexturableTable&#39;</span><span class="o">]</span>
+<span class="o">[</span><span class="s1">&#39;RetexturableChair2&#39;</span><span class="o">]</span>
+</code></pre></div>
 
 <p><img alt="Demo" src="../images/tex_swap_demo.gif" /></p>
 <p>Note that in this example, different textures were chosen on each actor for the same index value.</p>

@@ -85,6 +85,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
@@ -133,31 +135,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -295,28 +309,26 @@
 </tbody>
 </table>
 <p>So with these we can compute a square path box using this code:</p>
-<pre><code class="python">        path = []
-        distance = 0
-        while x &lt; self.boxsize:
-            distance += self.boxsize
-            path.append(Vector3r(x, self.boxsize, z))
-            x += self.stripewidth
-            distance += self.stripewidth
-            path.append(Vector3r(x, self.boxsize, z))
-            distance += self.boxsize
-            path.append(Vector3r(x, -self.boxsize, z))
-            x += self.stripewidth
-            distance += self.stripewidth
-            path.append(Vector3r(x, -self.boxsize, z))
-            distance += self.boxsize
-</code></pre>
-
-<p>Assuming we start in the corner of the box, increment x by the stripe width, then fly the full y-dimension of <code>-boxsize</code> to <code>+boxsize</code>, so in this case, <code>boxsize</code> is half the size of the actual box we will be covering.</p>
-<p>Once we have this list of Vector3r objects, we can fly this path very simply with the following call:</p>
-<pre><code class="python">result = self.client.moveOnPath(path, self.velocity, trip_time, DrivetrainType.ForwardOnly,
-                                YawMode(False,0), lookahead, 1)
-</code></pre>
-
+<p><div class="highlight"><pre><span></span><code>        <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Vector3r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stripewidth</span>
+            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stripewidth</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Vector3r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Vector3r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stripewidth</span>
+            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stripewidth</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Vector3r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span>
+</code></pre></div>
+Assuming we start in the corner of the box, increment x by the stripe width, then fly the full y-dimension of <code>-boxsize</code> to <code>+boxsize</code>, so in this case, <code>boxsize</code> is half the size of the actual box we will be covering.</p>
+<p>Once we have this list of Vector3r objects, we can fly this path very simply with the following call:
+<div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">moveOnPath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span> <span class="n">trip_time</span><span class="p">,</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">ForwardOnly</span><span class="p">,</span>
+                                <span class="n">YawMode</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">lookahead</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div></p>
 <p>We can compute an appropriate <code>trip_time</code> timeout by dividing the distance of the path and the speed we are flying.</p>
 <p>The <code>lookahead</code> needed here for smooth path interpolation can be computed from the velocity using <code>self.velocity + (self.velocity/2)</code>.  The more lookahead, the smoother the turns.  This is why you see in the screenshot that the ends of each swimland are smooth turns rather than a square box pattern.  This can result in a smoother video from your camera also.</p>
 <p>That's it, pretty simple, eh?</p>

@@ -133,6 +133,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="apis_cpp/">C++ APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/">API Reference Docs</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="dev_workflow/">Development Workflow</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="settings/">Settings</a>
@@ -181,31 +183,43 @@
                     <li class="toctree-l1"><a class="reference internal" href="hello_drone/">Hello Drone</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">MavLink and PX4</span></p>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="px4_setup/">PX4 Setup for AirSim</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="px4_sitl/">PX4 in SITL</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
-                    </li>
-                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="px4_build/">Building PX4</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="px4_logging/">PX4/MavLink Logging</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="log_viewer/">MavLink LogViewer</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="mavlinkcom/">MavLinkCom</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="mavlinkcom_mocap/">MavLink MoCap</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Upgrading</span></p>
@@ -310,7 +324,7 @@
             <div class="section">
               
                 <h1 id="welcome-to-airsim">Welcome to AirSim<a class="headerlink" href="#welcome-to-airsim" title="Permanent link">#</a></h1>
-<p>AirSim is a simulator for drones, cars and more, built on <a href="https://www.unrealengine.com/">Unreal Engine</a> (we now also have an experimental <a href="https://unity3d.com/">Unity</a> release). It is open-source, cross platform, and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.</p>
+<p>AirSim is a simulator for drones, cars and more, built on <a href="https://www.unrealengine.com/">Unreal Engine</a> (we now also have an experimental <a href="https://unity3d.com/">Unity</a> release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 &amp; ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.</p>
 <p>Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.</p>
 <p><strong>Check out the quick 1.5 minute demo</strong></p>
 <p>Drones in AirSim</p>
@@ -377,14 +391,14 @@
 <li><a href="https://youtu.be/1oY8Qu5maQQ">Video - Setting up AirSim with Pixhawk Tutorial</a> by Chris Lovett</li>
 <li><a href="https://youtu.be/HNWdYrtw3f0">Video - Using AirSim with Pixhawk Tutorial</a> by Chris Lovett</li>
 <li><a href="https://www.youtube.com/watch?v=y09VbdQWvQY">Video - Using off-the-self environments with AirSim</a> by Jim Piavis</li>
-<li><a href="https://microsoft.github.io/AirSim/docs/reinforcement_learning">Reinforcement Learning with AirSim</a> by Ashish Kapoor</li>
+<li><a href="https://microsoft.github.io/AirSim/reinforcement_learning">Reinforcement Learning with AirSim</a> by Ashish Kapoor</li>
 <li><a href="https://aka.ms/AutonomousDrivingCookbook">The Autonomous Driving Cookbook</a> by Microsoft Deep Learning and Robotics Garage Chapter</li>
 <li><a href="https://github.com/simondlevy/AirSimTensorFlow">Using TensorFlow for simple collision avoidance</a> by Simon Levy and WLU team</li>
 </ul>
 <h2 id="participate">Participate<a class="headerlink" href="#participate" title="Permanent link">#</a></h2>
 <h3 id="paper">Paper<a class="headerlink" href="#paper" title="Permanent link">#</a></h3>
-<p>More technical details are available in <a href="https://arxiv.org/abs/1705.05065">AirSim paper (FSR 2017 Conference)</a>. Please cite this as:</p>
-<pre><code>@inproceedings{airsim2017fsr,
+<p>More technical details are available in <a href="https://arxiv.org/abs/1705.05065">AirSim paper (FSR 2017 Conference)</a>. Please cite this as:
+<div class="highlight"><pre><span></span><code>@inproceedings{airsim2017fsr,
   author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
   title = {AirSim: High-Fidelity Visual and Physical Simulation for Autonomous Vehicles},
   year = {2017},
@@ -392,8 +406,7 @@
   eprint = {arXiv:1705.05065},
   url = {https://arxiv.org/abs/1705.05065}
 }
-</code></pre>
-
+</code></pre></div></p>
 <h3 id="contribute">Contribute<a class="headerlink" href="#contribute" title="Permanent link">#</a></h3>
 <p>Please take a look at <a href="https://github.com/microsoft/airsim/issues">open issues</a> if you are looking for areas to contribute to.</p>
 <ul>
