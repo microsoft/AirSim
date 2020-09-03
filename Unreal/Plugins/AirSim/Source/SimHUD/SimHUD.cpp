@@ -319,16 +319,16 @@ void ASimHUD::initializeSubWindows()
     if (!simmode_)
         return;
 
-    auto vehicle_sim_api = simmode_->getVehicleSimApi();
+    auto default_vehicle_sim_api = simmode_->getVehicleSimApi();
 
-    if (vehicle_sim_api) {
-        auto camera_count = vehicle_sim_api->getCameraCount();
+    if (default_vehicle_sim_api) {
+        auto camera_count = default_vehicle_sim_api->getCameraCount();
 
         //setup defaults
         if (camera_count > 0) {
-            subwindow_cameras_[0] = vehicle_sim_api->getCamera("");
-            subwindow_cameras_[1] = vehicle_sim_api->getCamera(""); //camera_count > 3 ? 3 : 0
-            subwindow_cameras_[2] = vehicle_sim_api->getCamera(""); //camera_count > 4 ? 4 : 0
+            subwindow_cameras_[0] = default_vehicle_sim_api->getCamera("");
+            subwindow_cameras_[1] = default_vehicle_sim_api->getCamera(""); //camera_count > 3 ? 3 : 0
+            subwindow_cameras_[2] = default_vehicle_sim_api->getCamera(""); //camera_count > 4 ? 4 : 0
         }
         else
             subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
