@@ -2,8 +2,25 @@
 
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
+### Sep 2020
+
+* [Add Vehicle option for Subwindow settings](https://github.com/microsoft/AirSim/pull/2841)
+* [Disable cameras after fetching images, projection matrix](https://github.com/microsoft/AirSim/pull/2881)
+* [Add Wind simulation](https://github.com/microsoft/AirSim/pull/2867)
+* [New `simRunConsoleCommand` API](https://github.com/microsoft/AirSim/pull/2996)
+* [UE4: Fixes and improvements to World APIs](https://github.com/microsoft/AirSim/pull/2898)
+* [UE4: Fix random crash with Plotting APIs](https://github.com/microsoft/AirSim/pull/2963)
+* [Add backwards-compatibility layer for `simSetCameraPose`](https://github.com/microsoft/AirSim/pull/2932)
+* [Disable LogMessages if set to false](https://github.com/microsoft/AirSim/pull/2946)
+* [ROS: Removed double inclusion of `static_transforms.launch`](https://github.com/microsoft/AirSim/pull/2939)
+* [Add retry loop when connecting PX4 SITL control channel](https://github.com/microsoft/AirSim/pull/2986)
+* [Allow for enabling physics when spawning a new object](https://github.com/microsoft/AirSim/pull/2902)
+
 ### July 2020
 
+* [Add Python APIs for new Object functions](https://github.com/microsoft/AirSim/pull/2897)
+* [UE4: Fix Broken List Level Option](https://github.com/microsoft/AirSim/pull/2877)
+* [Linux build improvements](https://github.com/microsoft/AirSim/pull/2522)
 * [Allow passing the settings.json file location via `--settings` argument](https://github.com/microsoft/AirSim/pull/2668)
 * [Distance Sensor Upgrades and fixes](https://github.com/microsoft/AirSim/pull/2807)
 * [Update to min CMake version required for VS 2019](https://github.com/microsoft/AirSim/pull/2766)
