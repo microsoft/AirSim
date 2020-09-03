@@ -113,9 +113,9 @@ Below are complete list of settings available along with their default values. I
     "UpdateIntervalSecs": 60
   },
   "SubWindows": [
-    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "Visible": false},
-    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "Visible": false},
-    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "Visible": false}
+    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "", "Visible": false},
+    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "", "Visible": false},
+    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "", "Visible": false}
   ],
   "SegmentationSettings": {
     "InitMethod": "",
@@ -198,14 +198,27 @@ Also see [Time of Day API](apis.md#time-of-day-api).
 This setting specifies the latitude, longitude and altitude of the Player Start component placed in the Unreal environment. The vehicle's home point is computed using this transformation. Note that all coordinates exposed via APIs are using NED system in SI units which means each vehicle starts at (0, 0, 0) in NED system. Time of Day settings are computed for geographical coordinates specified in `OriginGeopoint`.
 
 ## SubWindows
-This setting determines what is shown in each of 3 subwindows which are visible when you press 0 key. The WindowsID can be 0 to 2, CameraName is any [available camera](image_apis.md#available_cameras) on the vehicle. ImageType integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). For example, for car vehicles below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
-```
+This setting determines what is shown in each of 3 subwindows which are visible when you press 0,1,2 keys. The `WindowID` can be 0 to 2, `CameraName` is any [available camera](image_apis.md#available_cameras) on the vehicle. `ImageType` integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). `VehicleName` string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.
+
+For example, for a single car vehicle, below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
+```json
   "SubWindows": [
     {"WindowID": 0, "ImageType": 0, "CameraName": "3", "Visible": true},
     {"WindowID": 1, "ImageType": 3, "CameraName": "0", "Visible": true},
     {"WindowID": 2, "ImageType": 6, "CameraName": "4", "Visible": true}
   ]
 ```
+
+In case of multiple vehicles, different vehicles can be specified as follows-
+
+```json
+    "SubWindows": [
+        {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "Car1", "Visible": false},
+        {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "Car2", "Visible": false},
+        {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "Car1", "Visible": false}
+    ]
+```
+
 ## Recording
 The recording feature allows you to record data such as position, orientation, velocity along with the captured image at specified intervals. You can start recording by pressing red Record button on lower right or the R key. The data is stored in the `Documents\AirSim` folder, in a time stamped subfolder for each recording session, as tab separated file.
 
