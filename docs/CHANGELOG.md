@@ -2,6 +2,31 @@
 
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
+### July 2020
+
+* [Allow passing the settings.json file location via `--settings` argument](https://github.com/microsoft/AirSim/pull/2668)
+* [Distance Sensor Upgrades and fixes](https://github.com/microsoft/AirSim/pull/2807)
+* [Update to min CMake version required for VS 2019](https://github.com/microsoft/AirSim/pull/2766)
+* [Fix: Non-linear bias corrupts SurfaceNormals, Segmentation image](https://github.com/microsoft/AirSim/pull/2845)
+* [Fix: `simGetSegmentationObjectID` will always return -1](https://github.com/microsoft/AirSim/pull/2855)
+* [Initial implementation of simLoadLevel, simGet/SetObjectScale, simSpawn|DestroyObject APIs](https://github.com/microsoft/AirSim/pull/2651)
+* [Upgrade `setCameraOrientation` API to `setCameraPose`](https://github.com/microsoft/AirSim/pull/2710)
+* [ROS: All sensors and car support](https://github.com/microsoft/AirSim/pull/2743)
+* [Get rid of potential div-0 errors so we can set dt = 0 for pausing](https://github.com/microsoft/AirSim/pull/2705)
+* [ROS: Add mavros_msgs to build dependencies](https://github.com/microsoft/AirSim/pull/2642)
+* [Move Wiki pages to docs](https://github.com/microsoft/AirSim/pull/2803)
+* [Add Recording APIs](https://github.com/microsoft/AirSim/pull/2834)
+* [Update Dockerfiles and documentation to Ubuntu 18.04](https://github.com/microsoft/AirSim/pull/2865)
+* [Azure development environment and documentation](https://github.com/microsoft/AirSim/pull/2816)
+* [ROS: Add airsim_node to install list](https://github.com/microsoft/AirSim/pull/2706)
+
+### May 2020
+
+* [Fix more issues with PX4 master](https://github.com/microsoft/AirSim/pull/2649)
+* [Reduce warnings level in Unity build](https://github.com/microsoft/AirSim/pull/2672)
+* [Support for Unreal Engine 4.25](https://github.com/microsoft/AirSim/pull/2669)
+* [Unity crash fix, upgrade to 2019.3.12, Linux build improvements](https://github.com/microsoft/AirSim/pull/2328)
+
 ### April 2020
 
 * [Fix issues with PX4 latest master branch](https://github.com/microsoft/AirSim/pull/2634)

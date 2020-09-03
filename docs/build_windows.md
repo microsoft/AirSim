@@ -18,6 +18,9 @@ Click on the `Install` button on the top right, which should show the option to 
 **Make sure** to select **Desktop Development with C++** and **Windows 10 SDK 10.0.18362** (should be selected by default) while installing VS 2019.
 * Start `Developer Command Prompt for VS 2019`.
 * Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`.
+
+    **Note:** It's generally not a good idea to install AirSim in C drive. This can cause scripts to fail, and requires running VS in Admin mode. Instead clone in a different drive such as D or E.
+
 * Run `build.cmd` from the command line. This will create ready to use plugin bits in the `Unreal\Plugins` folder that can be dropped into any Unreal project.
 
 ## Build Unreal Project
@@ -76,6 +79,13 @@ And add this Compiler version setting:
 </Configuration>
 ```
 
+### I'm getting error `<MyProject> could not be compiled. Try rebuilding from source manually`
+
+This will occur when there are compilation errors. Logs are stored in `<My-Project>\Saved\Logs` which can be used to figure out the problem.
+
+A common problem could be Visual Studio version conflict, AirSim uses VS 2019 while UE is using VS 2017, this can be found by searching for `2017` in the Log file. In that case, see the answer above.
+
+If you have modified the AirSim plugin files, then you can right-click the `.uproject` file, select `Generate Visual Studio solution file` and then open the `.sln` file in VS to fix the errors and build again.
 
 ### I get `error C100 : An internal error has occurred in the compiler` when running build.cmd
 We have noticed this happening with VS version `15.9.0` and have checked-in a workaround in AirSim code. If you have this VS version, please make sure to pull the latest AirSim code.
@@ -92,12 +102,14 @@ Sometimes the Unreal + VS build system doesn't recompile if you make changes to 
 
 ### Unreal still uses VS2015 or I'm getting some link error
 Running several versions of VS can lead to issues when compiling UE projects. One problem that may arise is that UE will try to compile with an older version of VS which may or may not work. There are two settings in Unreal, one for for the engine and one for the project, to adjust the version of VS to be used.
-1. Edit -> Editor preferences -> General -> Source code
+
+1. Edit -> Editor preferences -> General -> Source code -> Source Code Editor
 2. Edit -> Project Settings -> Platforms -> Windows -> Toolchain ->CompilerVersion
 
 In some cases, these settings will still not lead to the desired result and errors such as the following might be produced: LINK : fatal error LNK1181: cannot open input file 'ws2_32.lib'
 
 To resolve such issues the following procedure can be applied:
+
 1. Uninstall all old versions of VS using the [VisualStudioUninstaller](https://github.com/Microsoft/VisualStudioUninstaller/releases)
 2. Repair/Install VS 2019
 3. Restart machine and install Epic launcher and desired version of the engine

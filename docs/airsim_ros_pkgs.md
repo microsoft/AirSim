@@ -3,9 +3,8 @@
 A ROS wrapper over the AirSim C++ client library. 
 
 ##  Setup 
-- Install gcc >= 8.0.0
-`sudo apt-get install gcc-8 g++-8`
-Verify version by `gcc --version`
+- Install gcc >= 8.0.0: `sudo apt-get install gcc-8 g++-8`  
+Verify installation by `gcc-8 --version`
 
 - Ubuntu 16.04
     * Install [ROS kinetic](https://wiki.ros.org/kinetic/Installation/Ubuntu)
@@ -69,18 +68,19 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
 
 - `/tf` [tf2_msgs/TFMessage](https://docs.ros.org/api/tf2_msgs/html/msg/TFMessage.html)
 
-- `/airsim_node/VEHICLE_NAME/altimeter/SENSOR_NAME` [airsim_ros_pkgs::Altimeter] This the current altimeter reading for altitude, pressure, and QNH (https://en.wikipedia.org/wiki/QNH)
+- `/airsim_node/VEHICLE_NAME/altimeter/SENSOR_NAME` [airsim_ros_pkgs/Altimeter](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/msg/Altimeter.msg)  
+This the current altimeter reading for altitude, pressure, and [QNH](https://en.wikipedia.org/wiki/QNH)
   
-- `/airsim_node/VEHICLE_NAME/imu/SENSOR_NAME` [sensor_msgs::Imu] (http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html)
-  IMU sensor data
+- `/airsim_node/VEHICLE_NAME/imu/SENSOR_NAME` [sensor_msgs::Imu](http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html)  
+IMU sensor data
 
-- `/airsim_node/VEHICLE_NAME/magnetometer/SENSOR_NAME` [sensor_msgs::MagneticField] (http://docs.ros.org/api/sensor_msgs/html/msg/MagneticField.html)
+- `/airsim_node/VEHICLE_NAME/magnetometer/SENSOR_NAME` [sensor_msgs::MagneticField](http://docs.ros.org/api/sensor_msgs/html/msg/MagneticField.html)  
   Meausrement of magnetic field vector/compass
 
-- `/airsim_node/VEHICLE_NAME/distance/SENSOR_NAME` [sensor_msgs::Range] (http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)
+- `/airsim_node/VEHICLE_NAME/distance/SENSOR_NAME` [sensor_msgs::Range](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)  
   Meausrement of distance from an active ranger, such as infrared or IR
 
-- `/airsim_node/VEHICLE_NAME/lidar/SENSOR_NAME` [sensor_msgs::PointCloud2] (http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html)
+- `/airsim_node/VEHICLE_NAME/lidar/SENSOR_NAME` [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html)  
   LIDAR pointcloud
 
 #### Subscribers: 
@@ -96,8 +96,8 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
 - `/gimbal_angle_quat_cmd` [airsim_ros_pkgs/GimbalAngleQuatCmd](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GimbalAngleQuatCmd.msg)   
   Gimbal set point in quaternion.    
 
-- `/airsim_node/VEHICLE_NAME/car_cmd` [airsim_ros_pkgs/CarControls]
-  Throttle, brake, steering and gear selections for control. Both automatic and manual transmission control possible, see the car_joy.py script for use.
+- `/airsim_node/VEHICLE_NAME/car_cmd` [airsim_ros_pkgs/CarControls](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/msg/CarControls.msg)  
+Throttle, brake, steering and gear selections for control. Both automatic and manual transmission control possible, see the [`car_joy.py`](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/scripts/car_joy) script for use.
 
 #### Services:
 - `/airsim_node/VEHICLE_NAME/land` [airsim_ros_pkgs/Takeoff](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
@@ -172,7 +172,7 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
   Target gps position + yaw.   
   In **absolute** altitude. 
 
-- `/airsim_node/VEHICLE_NAME/local_position_goal` [Request: [srv/SetLocalPosition](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/SetLocalPosition.srv)   
+- `/airsim_node/VEHICLE_NAME/local_position_goal` [Request: [srv/SetLocalPosition](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/SetLocalPosition.srv)]   
   Target local position + yaw in global NED frame.   
 
 #### Subscribers:
@@ -200,15 +200,15 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
 ### Misc
 #### Windows Subsytem for Linux on Windows 10
 - WSL setup:
-  * Get [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-  * Get [Ubuntu 16.04](https://www.microsoft.com/en-us/p/ubuntu-1604-lts/9pjn388hp8c9?activetab=pivot:overviewtab) or [Ubuntu 18.04](https://www.microsoft.com/en-us/p/ubuntu-1804-lts/9n9tngvndl3q?activetab=pivot%3Aoverviewtab)  
-  * Go to Ubuntu 16 / 18 instructions!
+    * Get [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+    * Get [Ubuntu 16.04](https://www.microsoft.com/en-us/p/ubuntu-1604-lts/9pjn388hp8c9?activetab=pivot:overviewtab) or [Ubuntu 18.04](https://www.microsoft.com/en-us/p/ubuntu-1804-lts/9n9tngvndl3q?activetab=pivot%3Aoverviewtab)  
+    * Go to Ubuntu 16 / 18 instructions!
 
 
 - Setup for X apps (like RViz, rqt_image_view, terminator) in Windows + WSL
-  * Install [Xming X Server](https://sourceforge.net/projects/xming/). 
-  * Find and run `XLaunch` from the Windows start menu.   
-  Select `Multiple Windows` in first popup, `Start no client` in second popup, **only** `Clipboard` in third popup. Do **not** select `Native Opengl`.  
-  * Open Ubuntu 16.04 / 18.04 session by typing `Ubuntu 16.04`  / `Ubuntu 18.04` in Windows start menu.  
-  * Recommended: Install [terminator](http://www.ubuntugeek.com/terminator-multiple-gnome-terminals-in-one-window.html) : `$ sudo apt-get install terminator.` 
+    * Install [Xming X Server](https://sourceforge.net/projects/xming/). 
+    * Find and run `XLaunch` from the Windows start menu.   
+    Select `Multiple Windows` in first popup, `Start no client` in second popup, **only** `Clipboard` in third popup. Do **not** select `Native Opengl`.  
+    * Open Ubuntu 16.04 / 18.04 session by typing `Ubuntu 16.04`  / `Ubuntu 18.04` in Windows start menu.  
+    * Recommended: Install [terminator](http://www.ubuntugeek.com/terminator-multiple-gnome-terminals-in-one-window.html) : `$ sudo apt-get install terminator.` 
     - You can open terminator in a new window by entering `$ DISPLAY=:0 terminator -u`. 
