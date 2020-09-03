@@ -113,7 +113,7 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
                 }
                 FActorSpawnParameters new_actor_spawn_params;
                 new_actor_spawn_params.Name = FName(object_name.c_str());
-                new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
+                //new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
                 AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
 
                 if (NewActor)
