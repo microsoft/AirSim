@@ -193,6 +193,20 @@ This API works alongwith toggling Recording using R button, therefore if it's en
 
 Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired.
 
+### Wind API
+
+Wind can be changed during simulation using `simSetWind()`. Wind is specified in World frame, NED direction and m/s values
+
+E.g. To set 20m/s wind in North (forward) direction -
+
+```python
+# Set wind to (20,0,0) in NED (forward direction)
+wind = airsim.Vector3r(20, 0, 0)
+client.simSetWind(wind)
+```
+
+Also see example script in [set_wind.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/set_wind.py)
+
 ### Lidar APIs
 AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in [settings.json](settings.md).
 

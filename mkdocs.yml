@@ -6,6 +6,7 @@ site_description: 'Open source simulator based on Unreal Engine for autonomous v
 markdown_extensions:
     - toc:
         permalink: "#"
+    - pymdownx.extra:
 
 remote_branch: gh-pages
 
@@ -16,7 +17,7 @@ theme:
 
 extra:
   highlightjs: true
-  version: 1.2.1
+  version: 1.3.1
   feature:
       tabs: true
   palette:
@@ -46,6 +47,7 @@ nav:
     - "Core APIs": 'apis.md'
     - "Image APIs": 'image_apis.md'
     - "C++ APIs": 'apis_cpp.md'
+    - "API Reference Docs": 'api_docs/html/index.html'
     - "Development Workflow": 'dev_workflow.md'
     - "Settings": 'settings.md'
     - "Camera Views": 'camera_views.md'
@@ -69,19 +71,23 @@ nav:
     - "Flight Controller": 'flight_controller.md'
     - "Simple Flight": 'simple_flight.md'
     - "Hello Drone": 'hello_drone.md'
-  - "MavLink and PX4":
-    - "PX4 Setup for AirSim": 'px4_setup.md'
-    - "PX4 in SITL": 'px4_sitl.md'
-    - "AirSim with Pixhawk": 'https://youtu.be/1oY8Qu5maQQ'
-    - "PX4 Setup with AirSim": 'https://youtu.be/HNWdYrtw3f0'
-    - "Debugging Attitude Estimation": 'https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be'
-    - "Intercepting MavLink Messages": 'https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages'
-    - "Rapid Descent on PX4 Drones": 'https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones'
-    - "Building PX4": "px4_build.md"
-    - "PX4/MavLink Logging": 'px4_logging.md'
-    - "MavLink LogViewer": "log_viewer.md"
-    - "MavLinkCom": 'mavlinkcom.md'
-    - "MavLink MoCap": 'mavlinkcom_mocap.md'
+  - "External Flight Controllers":
+    - "MavLink and PX4":
+      - "PX4 Setup for AirSim": 'px4_setup.md'
+      - "PX4 in SITL": 'px4_sitl.md'
+      - "AirSim with Pixhawk": 'https://youtu.be/1oY8Qu5maQQ'
+      - "PX4 Setup with AirSim": 'https://youtu.be/HNWdYrtw3f0'
+      - "Debugging Attitude Estimation": 'https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be'
+      - "Intercepting MavLink Messages": 'https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages'
+      - "Rapid Descent on PX4 Drones": 'https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones'
+      - "Building PX4": "px4_build.md"
+      - "PX4/MavLink Logging": 'px4_logging.md'
+      - "MavLink LogViewer": "log_viewer.md"
+      - "MavLinkCom": 'mavlinkcom.md'
+      - "MavLink MoCap": 'mavlinkcom_mocap.md'
+    - "ArduPilot":
+      - "ArduPilot SITL Setup": "https://ardupilot.org/dev/docs/building-the-code.html"
+      - "AirSim & ArduPilot": "https://ardupilot.org/dev/docs/sitl-with-airsim.html"
   - "Upgrading":
     - "Upgrading Unreal": 'unreal_upgrade.md'
     - "Upgrading APIs": 'upgrade_apis.md'

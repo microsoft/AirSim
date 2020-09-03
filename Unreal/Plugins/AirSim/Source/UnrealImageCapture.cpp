@@ -112,6 +112,10 @@ void UnrealImageCapture::getSceneCaptureImage(const std::vector<msr::airlib::Ima
         response.width = render_results[i]->width;
         response.height = render_results[i]->height;
         response.image_type = request.image_type;
+
+        // Disable camera after fetching images
+        APIPCamera* camera = cameras_->at(request.camera_name);
+        camera->setCameraTypeEnabled(request.image_type, false);
     }
 
 }

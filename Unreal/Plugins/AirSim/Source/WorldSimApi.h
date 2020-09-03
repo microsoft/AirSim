@@ -44,6 +44,7 @@ public:
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;
     virtual Pose getObjectPose(const std::string& object_name) const override;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
+    virtual bool runConsoleCommand(const std::string& command) override;
     virtual Vector3r getObjectScale(const std::string& object_name) const override;
     virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) override;
 
@@ -62,6 +63,8 @@ public:
     virtual void startRecording() override;
     virtual void stopRecording() override;
     virtual bool isRecording() const override;
+
+    virtual void setWind(const Vector3r& wind) const override;
 
 private:
     AActor* createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);

@@ -69,6 +69,7 @@ public:
         return nullptr;
     }
 
+
     template<typename T>
     static void FindAllActor(const UObject* context, TArray<AActor*>& foundActors)
     {
@@ -85,6 +86,11 @@ public:
     UFUNCTION(BlueprintPure, Category = "AirSim|LevelAPI")
     static TArray<FName> ListWorldsInRegistry();
     static UObject* GetMeshFromRegistry(const std::string& load_object);
+    static void GenerateAssetRegistryMap(const UObject* context, TMap<FString, FAssetData>& asset_map);
+    static void GenerateActorMap(const UObject* context, TMap<FString, AActor*>& scene_object_map);
+
+    UFUNCTION(BlueprintCallable, Category = "AirSim")
+    static bool RunConsoleCommand(const AActor* context, const FString& command);
 
     static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end,
         const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
@@ -171,10 +177,8 @@ public:
     {
         return log_messages_hidden_;
     }
-    static void setLogMessagesHidden(bool is_hidden)
-    {
-        log_messages_hidden_ = is_hidden;
-    }
+    static void setLogMessagesVisibility(bool is_visible);
+
     static void SetMeshNamingMethod(msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType method)
     {
         mesh_naming_method_ = method;

@@ -386,6 +386,13 @@ void RpcLibClientBase::simSetCameraPose(const std::string& camera_name, const Po
     pimpl_->client.call("simSetCameraPose", camera_name, RpcLibAdapatorsBase::Pose(pose), vehicle_name);
 }
 
+void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name)
+{
+    std::cout << "`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code." << std::endl;
+    Pose pose{Vector3r::Zero(), orientation};
+    RpcLibClientBase::simSetCameraPose(camera_name, pose, vehicle_name);
+}
+
 void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name)
 {
     pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name);
@@ -403,6 +410,11 @@ msr::airlib::Environment::State RpcLibClientBase::simGetGroundTruthEnvironment(c
 void RpcLibClientBase::cancelLastTask(const std::string& vehicle_name)
 {
     pimpl_->client.call("cancelLastTask", vehicle_name);
+}
+
+bool RpcLibClientBase::simRunConsoleCommand(const std::string& command)
+{
+    return pimpl_->client.call("simRunConsoleCommand", command).as<bool>();
 }
 
 //return value of last task. It should be true if task completed without
@@ -430,6 +442,12 @@ void RpcLibClientBase::stopRecording()
 bool RpcLibClientBase::isRecording()
 {
     return pimpl_->client.call("isRecording").as<bool>();
+}
+
+void RpcLibClientBase::simSetWind(const Vector3r& wind) const
+{
+    RpcLibAdapatorsBase::Vector3r conv_wind(wind);
+    pimpl_->client.call("simSetWind", conv_wind);
 }
 
 void* RpcLibClientBase::getClient()

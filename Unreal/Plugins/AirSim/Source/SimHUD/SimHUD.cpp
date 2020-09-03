@@ -319,33 +319,38 @@ void ASimHUD::initializeSubWindows()
     if (!simmode_)
         return;
 
-    auto vehicle_sim_api = simmode_->getVehicleSimApi();
+    auto default_vehicle_sim_api = simmode_->getVehicleSimApi();
 
-    if (vehicle_sim_api) {
-        auto camera_count = vehicle_sim_api->getCameraCount();
+    if (default_vehicle_sim_api) {
+        auto camera_count = default_vehicle_sim_api->getCameraCount();
 
         //setup defaults
         if (camera_count > 0) {
-            subwindow_cameras_[0] = vehicle_sim_api->getCamera("");
-            subwindow_cameras_[1] = vehicle_sim_api->getCamera(""); //camera_count > 3 ? 3 : 0
-            subwindow_cameras_[2] = vehicle_sim_api->getCamera(""); //camera_count > 4 ? 4 : 0
+            subwindow_cameras_[0] = default_vehicle_sim_api->getCamera("");
+            subwindow_cameras_[1] = default_vehicle_sim_api->getCamera(""); //camera_count > 3 ? 3 : 0
+            subwindow_cameras_[2] = default_vehicle_sim_api->getCamera(""); //camera_count > 4 ? 4 : 0
         }
         else
             subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
+    }
 
+    for (size_t window_index = 0; window_index < AirSimSettings::kSubwindowCount; ++window_index) {
 
-        for (size_t window_index = 0; window_index < AirSimSettings::kSubwindowCount; ++window_index) {
+        const auto& subwindow_setting = AirSimSettings::singleton().subwindow_settings.at(window_index);
+        auto vehicle_sim_api = simmode_->getVehicleSimApi(subwindow_setting.vehicle_name);
 
-            const auto& subwindow_setting = AirSimSettings::singleton().subwindow_settings.at(window_index);
-
+        if (vehicle_sim_api) {
             if (vehicle_sim_api->getCamera(subwindow_setting.camera_name) != nullptr)
                 subwindow_cameras_[subwindow_setting.window_index] = vehicle_sim_api->getCamera(subwindow_setting.camera_name);
             else
                 UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid",
                     std::to_string(window_index), LogDebugLevel::Failure);
         }
-    }
+        else
+            UAirBlueprintLib::LogMessageString("Vehicle in <SubWindows> element in settings.json is invalid",
+                std::to_string(window_index), LogDebugLevel::Failure);
 
+    }
 
 }
 

@@ -7,6 +7,7 @@ Only macOS **Catalina (10.15)** is supported.
 We've two options - you can either build inside docker containers or your host machine.
 
 ## Docker
+
 Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md)
 
 ## Host machine
@@ -69,17 +70,17 @@ Once AirSim is setup:
 - When Unreal Engine prompts for opening or creating project, select Browse and choose `AirSim/Unreal/Environments/Blocks` (or your [custom](unreal_custenv.md) Unreal project).
 - Alternatively, the project file can be passed as a commandline argument. For Blocks: `./Engine/Binaries/Linux/UE4Editor <AirSim_path>/Unreal/Environments/Blocks/Blocks.uproject`
 - If you get prompts to convert project, look for More Options or Convert-In-Place option. If you get prompted to build, choose Yes. If you get prompted to disable AirSim plugin, choose No.
-- After Unreal Editor loads, press Play button. 
+- After Unreal Editor loads, press Play button.
 
 ### Mac
 
 - Browse to `AirSim/Unreal/Environments/Blocks`.
 - Run `./GenerateProjectFiles.sh <UE_PATH>` from the terminal, where `UE_PATH` is the path to the Unreal installation folder. (By default, this is `/Users/Shared/Epic\ Games/UE_4.24/`) The script creates an XCode workspace by the name Blocks.xcworkspace.
-- Open the XCode workspace, and press the Build and run button in the top left. 
-- After Unreal Editor loads, press Play button. 
+- Open the XCode workspace, and press the Build and run button in the top left.
+- After Unreal Editor loads, press Play button.
 
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available for AirSim usage.
-Tip: go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked. 
+Tip: go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
 
 ### [Optional] Setup Remote Control (Multirotor Only)
 
@@ -89,38 +90,39 @@ Alternatively, you can use [APIs](apis.md) for programmatic control or use the s
 
 ## FAQs
 
-- I'm getting error "<MyProject> could not be compiled. Try rebuilding from source manually".
-  * This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
-   ```
-   fatal error: file  '/usr/include/linux/version.h''/usr/include/linux/version.h'  has  been  modified  since  the  precompiled  header
-   ```
-  * If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's [relevant thread](https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html) on Unreal Engine forums.
-  * If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.
+- I'm getting error `<MyProject> could not be compiled. Try rebuilding from source manually`.
+    * This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
+
+`fatal error: file '/usr/include/linux/version.h''/usr/include/linux/version.h' has been modified since the precompiled header`
+
+* If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's [relevant thread](https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html) on Unreal Engine forums.
+
+* If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.
 
 - Unreal crashed! How do I know what went wrong?
-  * Go to the `MyUnrealProject/Saved/Crashes` folder and search for the file `MyProject.log` within its subdirectories. At the end of this file you will see the stack trace and messages.
-   You can also take a look at the `Diagnostics.txt` file.
+    * Go to the `MyUnrealProject/Saved/Crashes` folder and search for the file `MyProject.log` within its subdirectories. At the end of this file you will see the stack trace and messages.
+    You can also take a look at the `Diagnostics.txt` file.
 
 - How do I use an IDE on Linux?
-  * You can use Qt Creator or CodeLite. Instructions for Qt Creator are available [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnIDE/index.html).
+    * You can use Qt Creator or CodeLite. Instructions for Qt Creator are available [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnIDE/index.html).
 
 - Can I cross compile for Linux from a Windows machine?
-  * Yes, you can, but we haven't tested it. You can find the instructions [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html).
+    * Yes, you can, but we haven't tested it. You can find the instructions [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html).
 
 - What compiler and stdlib does AirSim use?
-  * We use the same compiler that Unreal Engine uses, **Clang 8**, and stdlib, **libc++**. AirSim's `setup.sh` will automatically download them.
+    * We use the same compiler that Unreal Engine uses, **Clang 8**, and stdlib, **libc++**. AirSim's `setup.sh` will automatically download them.
 
 - What version of CMake does the AirSim build use?
-  * 3.10.0 or higher. This is *not* the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using `cmake --version`. If you have an older version, follow [these instructions](cmake_linux.md) or see the [CMake website](https://cmake.org/install/).
+    * 3.10.0 or higher. This is *not* the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using `cmake --version`. If you have an older version, follow [these instructions](cmake_linux.md) or see the [CMake website](https://cmake.org/install/).
 
 - Can I compile AirSim in BashOnWindows?
-  * Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.
-   See the [BashOnWindows install guide](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).
-   Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.
-   Also, don't invoke `bash` from `Visual Studio Command Prompt`, otherwise CMake might find VC++ and try and use that!
+    * Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.
+    See the [BashOnWindows install guide](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide).
+    Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.
+    Also, don't invoke `bash` from `Visual Studio Command Prompt`, otherwise CMake might find VC++ and try and use that!
 
 - Where can I find more info on running Unreal on Linux?
-   * Start here: [Unreal on Linux](https://docs.unrealengine.com/latest/INT/Platforms/Linux/index.html)
-   * [Building Unreal on Linux](https://wiki.unrealengine.com/Building_On_Linux#Clang)
-   * [Unreal Linux Support](https://wiki.unrealengine.com/Linux_Support)
-   * [Unreal Cross Compilation](https://wiki.unrealengine.com/Compiling_For_Linux)
+    * Start here: [Unreal on Linux](https://docs.unrealengine.com/latest/INT/Platforms/Linux/index.html)
+    * [Building Unreal on Linux](https://wiki.unrealengine.com/Building_On_Linux#Clang)
+    * [Unreal Linux Support](https://wiki.unrealengine.com/Linux_Support)
+    * [Unreal Cross Compilation](https://wiki.unrealengine.com/Compiling_For_Linux)

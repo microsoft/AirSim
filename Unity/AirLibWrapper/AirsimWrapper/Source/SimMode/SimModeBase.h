@@ -46,6 +46,7 @@ public:
 	virtual bool isPaused() const;
 	virtual void pause(bool is_paused);
 	virtual void continueForTime(double seconds);
+    virtual void setWind(const msr::airlib::Vector3r& wind) const;
 	void startApiServer();
 	void stopApiServer();
 	bool isApiServerStarted();

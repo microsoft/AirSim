@@ -43,6 +43,8 @@ public:
 	virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
     virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) override;
 
+    virtual bool runConsoleCommand(const std::string& command) override;
+
     //----------- Plotting APIs ----------/
     virtual void simFlushPersistentMarkers() override;
     virtual void simPlotPoints(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent) override;
@@ -58,6 +60,8 @@ public:
     virtual void startRecording() override;
     virtual void stopRecording() override;
     virtual bool isRecording() const override;
+
+    virtual void setWind(const Vector3r& wind) const override;
 
 private:
 	SimModeBase * simmode_;

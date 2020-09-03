@@ -130,6 +130,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getVehicleApi(vehicle_name)->armDisarm(arm);
     });
 
+    pimpl_->server.bind("simRunConsoleCommand", [&](const std::string& command) -> bool {
+        return getWorldSimApi()->runConsoleCommand(command);
+    });
+
     pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapatorsBase::ImageRequest>& request_adapter, const std::string& vehicle_name) -> 
         vector<RpcLibAdapatorsBase::ImageResponse> {
             const auto& response = getVehicleSimApi(vehicle_name)->getImages(RpcLibAdapatorsBase::ImageRequest::to(request_adapter));
@@ -364,6 +368,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 
     pimpl_->server.bind("isRecording", [&]() -> bool {
         return getWorldSimApi()->isRecording();
+    });
+
+    pimpl_->server.bind("simSetWind", [&](const RpcLibAdapatorsBase::Vector3r& wind) -> void {
+        getWorldSimApi()->setWind(wind.to());
     });
 
     //if we don't suppress then server will bomb out for exceptions raised by any method

@@ -255,6 +255,20 @@ class VehicleClient:
         responses_raw = self.client.call('simGetImages', requests, vehicle_name)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
 
+    def simRunConsoleCommand(self, command):
+        """
+        Allows the client to execute a command in Unreal's native console, via an API.
+        Affords access to the countless built-in commands such as "stat unit", "stat fps", "open [map]", adjust any config settings, etc. etc.
+        Allows the user to create bespoke APIs very easily, by adding a custom event to the level blueprint, and then calling the console command "ce MyEventName [args]". No recompilation of AirSim needed!
+
+        Args:
+            command ([string]): Desired Unreal Engine Console command to run
+
+        Returns:
+            [bool]: Success
+        """
+        return self.client.call('simRunConsoleCommand', command)
+
     # gets the static meshes in the unreal scene
     def simGetMeshPositionVertexBuffers(self):
         """
@@ -479,6 +493,23 @@ class VehicleClient:
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name)
+
+    def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
+        """
+        .. note::
+
+            This API has been upgraded to `simSetCameraPose`
+
+        - Control the Orientation of a selected camera
+
+        Args:
+            camera_name (str): Name of the camera to be controlled
+            orientation (Quaternionr): Quaternion representing the desired orientation of the camera
+            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+        """
+        logging.warning("`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code.")
+        pose = Pose(orientation_val=orientation)
+        self.simSetCameraPose(camera_name, pose, vehicle_name)
 
     def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = ''):
         """
@@ -749,6 +780,15 @@ class VehicleClient:
             bool: True if Recording, else False
         """
         return self.client.call('isRecording')
+
+    def simSetWind(self, wind):
+        """
+        Set simulated wind, in World frame, NED direction, m/s
+
+        Args:
+            wind (Vector3r): Wind, in World frame, NED direction, in m/s 
+        """
+        self.client.call('simSetWind', wind)
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):

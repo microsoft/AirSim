@@ -45,6 +45,7 @@ Below are complete list of settings available along with their default values. I
   "PhysicsEngineName": "",
   "SpeedUnitFactor": 1.0,
   "SpeedUnitLabel": "m/s",
+  "Wind": { "X": 0, "Y": 0, "Z": 0 },
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
@@ -112,9 +113,9 @@ Below are complete list of settings available along with their default values. I
     "UpdateIntervalSecs": 60
   },
   "SubWindows": [
-    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "Visible": false},
-    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "Visible": false},
-    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "Visible": false}
+    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "", "Visible": false},
+    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "", "Visible": false},
+    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "", "Visible": false}
   ],
   "SegmentationSettings": {
     "InitMethod": "",
@@ -197,14 +198,27 @@ Also see [Time of Day API](apis.md#time-of-day-api).
 This setting specifies the latitude, longitude and altitude of the Player Start component placed in the Unreal environment. The vehicle's home point is computed using this transformation. Note that all coordinates exposed via APIs are using NED system in SI units which means each vehicle starts at (0, 0, 0) in NED system. Time of Day settings are computed for geographical coordinates specified in `OriginGeopoint`.
 
 ## SubWindows
-This setting determines what is shown in each of 3 subwindows which are visible when you press 0 key. The WindowsID can be 0 to 2, CameraName is any [available camera](image_apis.md#available_cameras) on the vehicle. ImageType integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). For example, for car vehicles below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
-```
+This setting determines what is shown in each of 3 subwindows which are visible when you press 0,1,2 keys. The `WindowID` can be 0 to 2, `CameraName` is any [available camera](image_apis.md#available_cameras) on the vehicle. `ImageType` integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). `VehicleName` string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.
+
+For example, for a single car vehicle, below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
+```json
   "SubWindows": [
     {"WindowID": 0, "ImageType": 0, "CameraName": "3", "Visible": true},
     {"WindowID": 1, "ImageType": 3, "CameraName": "0", "Visible": true},
     {"WindowID": 2, "ImageType": 6, "CameraName": "4", "Visible": true}
   ]
 ```
+
+In case of multiple vehicles, different vehicles can be specified as follows-
+
+```json
+    "SubWindows": [
+        {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "Car1", "Visible": false},
+        {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "Car2", "Visible": false},
+        {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "Car1", "Visible": false}
+    ]
+```
+
 ## Recording
 The recording feature allows you to record data such as position, orientation, velocity along with the captured image at specified intervals. You can start recording by pressing red Record button on lower right or the R key. The data is stored in the `Documents\AirSim` folder, in a time stamped subfolder for each recording session, as tab separated file.
 
@@ -221,6 +235,10 @@ The `InitMethod` determines how object IDs are initialized at startup to generat
  If `OverrideExisting` is false then initialization does not alter non-zero object IDs already assigned otherwise it does.
 
  If `MeshNamingMethod` is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If it is "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.
+
+## Wind Settings
+
+This setting specifies the wind speed in World frame, in NED direction. Values are in m/s. By default, speed is 0, i.e. no wind.
 
 ## Camera Settings
 The `CameraDefaults` element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in `Cameras` element inside `Vehicles` as described later.
@@ -274,13 +292,14 @@ The `Gimbal` element allows to freeze camera orientation for pitch, roll and/or 
 Each simulation mode will go through the list of vehicles specified in this setting and create the ones that has `"AutoCreate": true`. Each vehicle specified in this setting has key which becomes the name of the vehicle. If `"Vehicles"` element is missing then this list is populated with default car named "PhysXCar" and default multirotor named "SimpleFlight".
 
 ### Common Vehicle Setting
-- `VehicleType`: This could be either `PhysXCar`, `SimpleFlight`, `PX4Multirotor` or `ComputerVision`. There is no default value therefore this element must be specified.
+- `VehicleType`: This could be any one of the following - `PhysXCar`, `SimpleFlight`, `PX4Multirotor`, `ComputerVision`, `ArduCopter` & `ArduRover`. There is no default value therefore this element must be specified.
 - `PawnPath`: This allows to override the pawn blueprint to use for the vehicle. For example, you may create new pawn blueprint derived from ACarPawn for a warehouse robot in your own project outside the AirSim code and then specify its path here. See also [PawnPaths](#PawnPaths).
 - `DefaultVehicleState`: Possible value for multirotors is `Armed` or `Disarmed`.
 - `AutoCreate`: If true then this vehicle would be spawned (if supported by selected sim mode).
 - `RC`: This sub-element allows to specify which remote controller to use for vehicle using `RemoteControlID`. The value of -1 means use keyboard (not supported yet for multirotors). The value >= 0 specifies one of many remote controllers connected to the system. The list of available RCs can be seen in Game Controllers panel in Windows, for example.
 - `X, Y, Z, Yaw, Roll, Pitch`: These elements allows you to specify the initial position and orientation of the vehicle. Position is in NED coordinates in SI units with origin set to Player Start location in Unreal environment. The orientation is specified in degrees.
 - `IsFpvVehicle`: This setting allows to specify which vehicle camera will follow and the view that will be shown when ViewMode is set to Fpv. By default, AirSim selects the first vehicle in settings as FPV vehicle.
+- `Sensors`: This element specifies the sensors associated with the vehicle, see [Sensors page](sensors.md) for details.
 - `Cameras`: This element specifies camera settings for vehicle. The key in this element is name of the [available camera](image_apis.md#available_cameras) and the value is same as `CameraDefaults` as described above. For example, to change FOV for the front center camera to 120 degrees, you can use this for `Vehicles` setting:
 
 ```json
@@ -361,6 +380,10 @@ When communicating over UDP or TCP PX4 requires two separate channels.  If UseTc
 otherwise the TcpPort is used.  TCP support in PX4 was added in 1.9.2 with the `lockstep` feature because the guarantee of message delivery that
 TCP provides is required for the proper functioning of lockstep.  AirSim becomes a TCP server in that case, and waits for a connection
 from the PX4 app.  The second channel for controlling the vehicle is defined by (ControlIp, ControlPort) and is always a UDP channel.
+
+### Using ArduPilot
+
+[ArduPilot](https://ardupilot.org/) Copter & Rover vehicles are supported in latest AirSim master & releases `v1.3.0` and later. For settings and how to use, please see [ArduPilot SITL with AirSim](https://ardupilot.org/dev/docs/sitl-with-airsim.html)
 
 ## Other Settings
 

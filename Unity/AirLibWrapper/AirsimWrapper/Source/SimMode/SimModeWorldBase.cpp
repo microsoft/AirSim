@@ -94,6 +94,11 @@ void SimModeWorldBase::continueForTime(double seconds)
 	physics_world_->continueForTime(seconds);
 }
 
+void SimModeWorldBase::setWind(const msr::airlib::Vector3r& wind) const
+{
+    physics_engine_->setWind(wind);
+}
+
 void SimModeWorldBase::updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter)
 {
 	unused(debug_reporter);
