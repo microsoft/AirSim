@@ -254,7 +254,7 @@ class VehicleClient:
         """
         responses_raw = self.client.call('simGetImages', requests, vehicle_name)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
-	
+
     def simRunConsoleCommand(self, command):
         """
         Allows the client to execute a command in Unreal's native console, via an API.
@@ -267,7 +267,7 @@ class VehicleClient:
         Returns:
             [bool]: Success
         """
-	    return self.client.call('simRunConsoleCommand', command)
+        return self.client.call('simRunConsoleCommand', command)
 
     # gets the static meshes in the unreal scene
     def simGetMeshPositionVertexBuffers(self):
