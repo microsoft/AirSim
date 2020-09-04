@@ -88,7 +88,7 @@ public:
             if (response.size() == 0)
                 throw std::length_error("No images received!");
 
-            const Pose next_pose = getNextPose(response.at(0).image_data_float, goal_pose.position, 
+            const Pose next_pose = getNextPose(*response.at(0).image_data_float, goal_pose.position, 
                 current_pose, params_.control_loop_period);
 
             if (VectorMath::hasNan(next_pose))

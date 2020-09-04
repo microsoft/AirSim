@@ -191,8 +191,8 @@ private:
             //Initialize data containers
             std::vector<uint8_t> left_img(h*w*3);
             std::vector<uint8_t> right_img(h*w*3);
-            std::vector<float> gt_depth_data = result->response.at(2).image_data_float;
-            std::vector<float> gt_disparity_data = result->response.at(3).image_data_float;
+            std::vector<float> gt_depth_data = *result->response.at(2).image_data_float;
+            std::vector<float> gt_disparity_data = *result->response.at(3).image_data_float;
             std::vector<float> sgm_depth_data(h*w);
             std::vector<float> sgm_disparity_data(h*w);
             std::vector<uint8_t> sgm_confidence_data(h*w);
