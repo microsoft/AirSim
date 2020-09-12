@@ -19,8 +19,11 @@ RenderRequest::~RenderRequest()
 
 void RenderRequest::FastScreenshot()
 {
+    std::unique_lock<std::mutex> lck(mtx_);
+    fast_cap_done_ = false;
+    lck.unlock();
+
     UAirBlueprintLib::RunCommandOnGameThread([this]() {
-        fast_cap_done_ = false;
         fast_rt_resource_ = fast_param_.render_component->TextureTarget->GameThread_GetRenderTargetResource();
         fast_param_.render_component->CaptureScene();
         ENQUEUE_RENDER_COMMAND(SceneDrawCompletion)([this](FRHICommandListImmediate& RHICmdList)
@@ -29,11 +32,10 @@ void RenderRequest::FastScreenshot()
         });
     }, false);
 
-    //Try to wait just long enough for the render thread to finish the capture.
-    //Start with a long wait, then check for completion more frequently.
-    //TODO: Optimize these numbers.
-    for (int best_guess_cap_time_microseconds = 500; !fast_cap_done_; best_guess_cap_time_microseconds = 200)
-        std::this_thread::sleep_for(std::chrono::microseconds(best_guess_cap_time_microseconds));
+    // Wait just long enough for the render thread to finish the capture.
+    lck.lock();
+    while (!fast_cap_done_)
+        cv_.wait(lck);
 }
 
 void RenderRequest::RenderThreadScreenshotTask(RenderRequest::RenderResult &result)
@@ -48,7 +50,7 @@ void RenderRequest::RenderThreadScreenshotTask(RenderRequest::RenderResult &resu
     result.time_stamp = msr::airlib::ClockFactory::get()->nowNanos();
 
     uint32 stride;
-    auto *src = (const unsigned char*)RHILockTexture2D(fast_cap_texture, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
+    auto *src = (const uint8_t*)RHILockTexture2D(fast_cap_texture, 0, RLM_ReadOnly, stride, false); // needs to be on render thread
     
     result.stride = stride;
     size_t size = height * stride;
@@ -78,5 +80,7 @@ void RenderRequest::RenderThreadScreenshotTask(RenderRequest::RenderResult &resu
     
     RHIUnlockTexture2D(fast_cap_texture, 0, false);
 
+    std::unique_lock<std::mutex> lck(mtx_);
     fast_cap_done_ = true;
+    cv_.notify_all();
 }

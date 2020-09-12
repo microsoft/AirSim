@@ -42,7 +42,10 @@ public:
     RenderResult latest_result_{};
 
 private:
-    volatile bool fast_cap_done_ = false;
+    std::mutex mtx_;
+    std::condition_variable cv_;
+    bool fast_cap_done_ = false;
+
     FTextureRenderTargetResource* fast_rt_resource_;
 
     std::shared_ptr<msr::airlib::WorkerThreadSignal> wait_signal_;
