@@ -86,6 +86,13 @@ void SimModeBase::setTimeOfDay(bool is_enabled, const std::string& start_datetim
         //throw std::domain_error("setTimeOfDay is not implemented by SimMode");
 }
 
+void SimModeBase::setWind(const msr::airlib::Vector3r& wind) const
+{
+    // should be overridden by derived class
+    unused(wind);
+    throw std::domain_error("setWind is not implemented by SimMode");
+}
+
 std::unique_ptr<msr::airlib::ApiServerBase> SimModeBase::createApiServer() const
 {
 	//this will be the case when compilation with RPCLIB is disabled or simmode doesn't support APIs

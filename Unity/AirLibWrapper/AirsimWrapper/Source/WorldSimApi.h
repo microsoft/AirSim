@@ -16,7 +16,7 @@ public:
 
     // ------ Level setting apis ----- //
     virtual bool loadLevel(const std::string& level_name) { return false; };
-    virtual std::string spawnObject(std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale) { return ""; };
+    virtual std::string spawnObject(std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled) { return ""; };
     virtual bool destroyObject(const std::string& object_name) { return false; };
 
 	virtual bool isPaused() const override;
@@ -43,6 +43,8 @@ public:
 	virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
     virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) override;
 
+    virtual bool runConsoleCommand(const std::string& command) override;
+
     //----------- Plotting APIs ----------/
     virtual void simFlushPersistentMarkers() override;
     virtual void simPlotPoints(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent) override;
@@ -58,6 +60,8 @@ public:
     virtual void startRecording() override;
     virtual void stopRecording() override;
     virtual bool isRecording() const override;
+
+    virtual void setWind(const Vector3r& wind) const override;
 
 private:
 	SimModeBase * simmode_;

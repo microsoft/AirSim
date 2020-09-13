@@ -96,8 +96,13 @@ void ASimModeBase::BeginPlay()
     global_ned_transform_.reset(new NedTransform(player_start_transform, 
         UAirBlueprintLib::GetWorldToMetersScale(this)));
 
+    UAirBlueprintLib::GenerateAssetRegistryMap(this, asset_map);
+
     world_sim_api_.reset(new WorldSimApi(this));
     api_provider_.reset(new msr::airlib::ApiProvider(world_sim_api_.get()));
+
+    UAirBlueprintLib::setLogMessagesVisibility(getSettings().log_messages_visible);
+
     setupPhysicsLoopPeriod();
 
     setupClockSpeed();
@@ -123,6 +128,7 @@ void ASimModeBase::BeginPlay()
         UWeatherLib::initWeather(World, spawned_actors_);
         //UWeatherLib::showWeatherMenu(World);
     }
+    UAirBlueprintLib::GenerateActorMap(this, scene_object_map);
 
     loading_screen_widget_->AddToViewport();
     loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);
@@ -261,6 +267,13 @@ void ASimModeBase::continueForTime(double seconds)
     //should be overridden by derived class
     unused(seconds);
     throw std::domain_error("continueForTime is not implemented by SimMode");
+}
+
+void ASimModeBase::setWind(const msr::airlib::Vector3r& wind) const
+{
+    // should be overridden by derived class
+    unused(wind);
+    throw std::domain_error("setWind not implemented by SimMode");
 }
 
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() const

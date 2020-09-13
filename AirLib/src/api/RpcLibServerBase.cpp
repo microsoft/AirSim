@@ -130,6 +130,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getVehicleApi(vehicle_name)->armDisarm(arm);
     });
 
+    pimpl_->server.bind("simRunConsoleCommand", [&](const std::string& command) -> bool {
+        return getWorldSimApi()->runConsoleCommand(command);
+    });
+
     pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdapatorsBase::ImageRequest>& request_adapter, const std::string& vehicle_name) ->
     vector<RpcLibAdapatorsBase::ImageResponse> {
         std::vector<ImageCaptureBase::ImageResponse> responses;
@@ -271,8 +275,8 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->loadLevel(level_name);
     });
 
-    pimpl_->server.bind("simSpawnObject", [&](string& object_name, const string& load_component, const RpcLibAdapatorsBase::Pose& pose, const RpcLibAdapatorsBase::Vector3r& scale) -> string {
-        return getWorldSimApi()->spawnObject(object_name, load_component, pose.to(), scale.to());
+    pimpl_->server.bind("simSpawnObject", [&](string& object_name, const string& load_component, const RpcLibAdapatorsBase::Pose& pose, const RpcLibAdapatorsBase::Vector3r& scale, bool physics_enabled) -> string {
+        return getWorldSimApi()->spawnObject(object_name, load_component, pose.to(), scale.to(), physics_enabled);
     });
 
     pimpl_->server.bind("simDestroyObject", [&](const string& object_name) -> bool {
@@ -373,6 +377,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 
     pimpl_->server.bind("isRecording", [&]() -> bool {
         return getWorldSimApi()->isRecording();
+    });
+
+    pimpl_->server.bind("simSetWind", [&](const RpcLibAdapatorsBase::Vector3r& wind) -> void {
+        getWorldSimApi()->setWind(wind.to());
     });
 
     //if we don't suppress then server will bomb out for exceptions raised by any method

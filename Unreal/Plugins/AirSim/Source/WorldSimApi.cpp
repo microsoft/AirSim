@@ -4,6 +4,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 #include "DrawDebugHelpers.h"
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 #include <cstdlib>
 #include <ctime>
 
@@ -72,20 +73,28 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
             actor->Destroy();
             result = actor->IsPendingKill();
         }
+        if (result)
+            simmode_->scene_object_map.Remove(FString(object_name.c_str()));
+
+        GEngine->ForceGarbageCollection(true);
     }, true);
     return result;
 }
 
-std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale)
+std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled)
 {
     // Create struct for Location and Rotation of actor in Unreal
     FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
-    bool found_object;
-    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &scale]() {
-            // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
-            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(UAirBlueprintLib::GetMeshFromRegistry(load_object));
-            if (LoadObject)
+
+    bool found_object = false, spawned_object = false;
+    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &spawned_object, &scale, &physics_enabled]() {
+            FString asset_name = FString(load_object.c_str());
+            FAssetData *LoadAsset = simmode_->asset_map.Find(asset_name);
+            
+            if (LoadAsset)
             {
+                found_object  = true;
+                UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(LoadAsset->GetAsset());
                 std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_->GetWorld(), ".*"+object_name+".*");
                 if (matching_names.size() > 0)
                 {
@@ -103,8 +112,16 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
                 }
                 FActorSpawnParameters new_actor_spawn_params;
                 new_actor_spawn_params.Name = FName(object_name.c_str());
-                this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
-                found_object  = true;
+                //new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
+                AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
+
+                if (NewActor)
+                {
+                    spawned_object = true;
+                    simmode_->scene_object_map.Add(FString(object_name.c_str()), NewActor);
+                }
+
+                UAirBlueprintLib::setSimulatePhysics(NewActor, physics_enabled);
             }
             else
             {
@@ -117,20 +134,30 @@ std::string WorldSimApi::spawnObject(std::string& object_name, const std::string
         throw std::invalid_argument(
             "There were no objects with name " + load_object + " found in the Registry");
     }
+    if (!spawned_object)
+    {
+        throw std::invalid_argument(
+            "Engine could not spawn " + load_object + " because of a stale reference of same name");
+    }
     return object_name;
 }
 
-void WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
+AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
 {
-    AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params); // new
-    UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
-    ObjectComponent->SetStaticMesh(static_mesh);
-    ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
-    ObjectComponent->SetWorldScale3D(FVector(scale[0], scale[1], scale[2]));
-    ObjectComponent->SetHiddenInGame(false, true);
-    ObjectComponent->RegisterComponent();
-    NewActor->SetRootComponent(ObjectComponent);
-    NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+    AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params); 
+
+    if (NewActor)
+    {
+        UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
+        ObjectComponent->SetStaticMesh(static_mesh);
+        ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
+        ObjectComponent->SetWorldScale3D(FVector(scale[0], scale[1], scale[2]));
+        ObjectComponent->SetHiddenInGame(false, true);
+        ObjectComponent->RegisterComponent();
+        NewActor->SetRootComponent(ObjectComponent);
+        NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+    }
+    return NewActor;
 }
 
 bool WorldSimApi::isPaused() const
@@ -195,11 +222,22 @@ std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_r
     return result;
 }
 
+bool WorldSimApi::runConsoleCommand(const std::string& command)
+{
+    bool succeeded = false;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &command, &succeeded]() {
+        FString fStringCommand(command.c_str());
+        succeeded = UAirBlueprintLib::RunConsoleCommand(simmode_, fStringCommand);
+    }, true);
+    return succeeded;
+}
+
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
     Pose result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         result = actor ? simmode_->getGlobalNedTransform().toGlobalNed(FTransform(actor->GetActorRotation(), actor->GetActorLocation()))
             : Pose::nanPose();
     }, true);
@@ -211,7 +249,8 @@ WorldSimApi::Vector3r WorldSimApi::getObjectScale(const std::string& object_name
 {
     Vector3r result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         result = actor ? Vector3r(actor->GetActorScale().X, actor->GetActorScale().Y, actor->GetActorScale().Z)
             : Vector3r::Zero();
     }, true);
@@ -223,7 +262,8 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
     bool result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &pose, teleport, &result]() {
         FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         if (actor) {
             if (teleport) 
                 result = actor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
@@ -240,7 +280,8 @@ bool WorldSimApi::setObjectScale(const std::string& object_name, const Vector3r&
 {
     bool result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &scale, &result]() {
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        // AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
         if (actor) {
             actor->SetActorScale3D(FVector(scale[0], scale[1], scale[2]));
             result = true;
@@ -305,80 +346,112 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
 //----------- Plotting APIs ----------/
 void WorldSimApi::simFlushPersistentMarkers()
 {
-    FlushPersistentDebugLines(simmode_->GetWorld());
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        FlushPersistentDebugLines(simmode_->GetWorld());
+    }, true);
 }
 
 void WorldSimApi::simPlotPoints(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent)
 {
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (const auto& point : points)
-    {
-        DrawDebugPoint(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(point), size, color.ToFColor(true), is_persistent, duration);
-    }
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &points, &color, size, duration, is_persistent]() {
+        for (const auto& point : points) {
+            DrawDebugPoint(simmode_->GetWorld(),
+                    simmode_->getGlobalNedTransform().fromGlobalNed(point),
+                    size, color, is_persistent, duration);
+        }
+    }, true);
 }
 
 // plot line for points 0-1, 1-2, 2-3
 void WorldSimApi::simPlotLineStrip(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
 {
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (size_t idx = 0; idx != points.size()-1; idx++)
-    {
-        DrawDebugLine(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(points[idx]), simmode_->getGlobalNedTransform().fromGlobalNed(points[idx+1]), color.ToFColor(true), is_persistent, duration, 0, thickness);
-    }
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &points, &color, thickness, duration, is_persistent]() {
+        for (size_t idx = 0; idx != points.size()-1; ++idx) {
+            DrawDebugLine(simmode_->GetWorld(), 
+                simmode_->getGlobalNedTransform().fromGlobalNed(points[idx]), 
+                simmode_->getGlobalNedTransform().fromGlobalNed(points[idx+1]), 
+                color, is_persistent, duration, 0, thickness);
+        }
+    }, true);
 }
 
 // plot line for points 0-1, 2-3, 4-5... must be even number of points
 void WorldSimApi::simPlotLineList(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
 {
-    if (points.size() % 2)
-    {
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
 
-    }
-
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (int idx = 0; idx < points.size(); idx += 2)
-    {
-        DrawDebugLine(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(points[idx]), simmode_->getGlobalNedTransform().fromGlobalNed(points[idx+1]), color.ToFColor(true), is_persistent, duration, 0, thickness);
-    }
+    UAirBlueprintLib::RunCommandOnGameThread([this, &points, &color, thickness, duration, is_persistent]() {
+        for (int idx = 0; idx < points.size()-1; idx += 2) {
+            DrawDebugLine(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(points[idx]),
+                simmode_->getGlobalNedTransform().fromGlobalNed(points[idx+1]),
+                color, is_persistent, duration, 0, thickness);
+        }
+    }, true);
 }
 
 void WorldSimApi::simPlotArrows(const std::vector<Vector3r>& points_start, const std::vector<Vector3r>& points_end, const std::vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
 {
     // assert points_start.size() == poinst_end.size()
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (int idx = 0; idx < points_start.size(); idx += 1)
-    {
-        DrawDebugDirectionalArrow(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(points_start[idx]), simmode_->getGlobalNedTransform().fromGlobalNed(points_end[idx]), arrow_size, color.ToFColor(true), is_persistent, duration, 0, thickness);
-    }
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &points_start, &points_end, &color, thickness, arrow_size, duration, is_persistent]() {
+        for (int idx = 0; idx < points_start.size(); ++idx) {
+            DrawDebugDirectionalArrow(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(points_start[idx]),
+                simmode_->getGlobalNedTransform().fromGlobalNed(points_end[idx]),
+                arrow_size, color, is_persistent, duration, 0, thickness);
+        }
+    }, true);
 }
 
 void WorldSimApi::simPlotStrings(const std::vector<std::string>& strings, const std::vector<Vector3r>& positions, float scale, const std::vector<float>& color_rgba, float duration)
 {
     // assert positions.size() == strings.size()
-    FLinearColor color {color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]};
-    for (int idx = 0; idx < positions.size(); idx += 1)
-    {
-        DrawDebugString(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(positions[idx]), FString(strings[idx].c_str()), NULL, color.ToFColor(true), duration, false, scale);
-    }
+    FColor color = FLinearColor{color_rgba[0], color_rgba[1], color_rgba[2], color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &strings, &positions, &color, scale, duration]() {
+        for (int idx = 0; idx < positions.size(); ++idx) {
+            DrawDebugString(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(positions[idx]),
+                FString(strings[idx].c_str()),
+                NULL, color, duration, false, scale);
+        }
+    }, true);
 }
 
 void WorldSimApi::simPlotTransforms(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
 {
-    for (const auto& pose : poses)
-    {
-        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(pose.position), simmode_->getGlobalNedTransform().fromNed(pose.orientation).Rotator(), scale, is_persistent, duration, 0, thickness);
-    }
+    UAirBlueprintLib::RunCommandOnGameThread([this, &poses, scale, thickness, duration, is_persistent]() {
+        for (const auto& pose : poses) {
+            DrawDebugCoordinateSystem(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(pose.position),
+                simmode_->getGlobalNedTransform().fromNed(pose.orientation).Rotator(),
+                scale, is_persistent, duration, 0, thickness);
+        }
+    }, true);
 }
 
 void WorldSimApi::simPlotTransformsWithNames(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const std::vector<float>& text_color_rgba, float duration)
 {
     // assert poses.size() == names.size()
-    FLinearColor color {text_color_rgba[0], text_color_rgba[1], text_color_rgba[2], text_color_rgba[3]};
-    for (int idx = 0; idx < poses.size(); idx += 1)
-    {
-        DrawDebugCoordinateSystem(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx].position), simmode_->getGlobalNedTransform().fromNed(poses[idx].orientation).Rotator(), tf_scale, false, duration, 0, tf_thickness);
-        DrawDebugString(simmode_->GetWorld(), simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(), FString(names[idx].c_str()), NULL, color.ToFColor(true), duration, false, text_scale);
-    }
+    FColor color = FLinearColor{text_color_rgba[0], text_color_rgba[1], text_color_rgba[2], text_color_rgba[3]}.ToFColor(true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &poses, &names, &color, tf_scale, tf_thickness, text_scale, duration]() {
+        for (int idx = 0; idx < poses.size(); ++idx) {
+            DrawDebugCoordinateSystem(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx].position),
+                simmode_->getGlobalNedTransform().fromNed(poses[idx].orientation).Rotator(),
+                tf_scale, false, duration, 0, tf_thickness);
+            DrawDebugString(simmode_->GetWorld(),
+                simmode_->getGlobalNedTransform().fromGlobalNed(poses[idx]).GetLocation(),
+                FString(names[idx].c_str()), NULL, color, duration, false, text_scale);
+        }
+    }, true);
 }
 
 std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> WorldSimApi::getMeshPositionVertexBuffers() const
@@ -404,4 +477,10 @@ void WorldSimApi::stopRecording()
 bool WorldSimApi::isRecording() const
 {
     return simmode_->isRecording();
+}
+
+
+void WorldSimApi::setWind(const Vector3r& wind) const
+{
+    simmode_->setWind(wind);
 }

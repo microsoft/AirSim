@@ -24,6 +24,8 @@
 #include <exception>
 #include "common/common_utils/Utils.hpp"
 #include "Modules/ModuleManager.h"
+#include "ARFilter.h"
+#include "AssetRegistryModule.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -189,6 +191,15 @@ IImageWrapperModule* UAirBlueprintLib::getImageWrapperModule()
     return image_wrapper_module_;
 }
 
+void UAirBlueprintLib::setLogMessagesVisibility(bool is_visible)
+{
+    log_messages_hidden_ = !is_visible;
+
+    // if hidden, clear any existing messages
+    if (!is_visible && GEngine)
+        GEngine->ClearOnScreenDebugMessages();
+}
+
 void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)
 {
     if (log_messages_hidden_)
@@ -229,6 +240,44 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
     }
     //GEngine->AddOnScreenDebugMessage(key + 10, 60.0f, color, FString::FromInt(key));
 }
+
+void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FString, FAssetData>& asset_map)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([context, &asset_map]() {
+        FARFilter Filter;
+        Filter.ClassNames.Add(UStaticMesh::StaticClass()->GetFName());
+        Filter.bRecursivePaths = true;
+
+        auto world = context->GetWorld();
+        TArray<FAssetData> AssetData;
+
+        // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
+        FAssetRegistryModule &AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+        AssetRegistryModule.Get().GetAssets(Filter, AssetData);
+
+        UObject *LoadObject = NULL;
+        for (auto asset : AssetData)
+        {
+            FString asset_name = asset.AssetName.ToString();
+            asset_map.Add(asset_name, asset);
+        }
+
+        LogMessageString("Asset database ready", "!", LogDebugLevel::Informational); 
+    }, true);
+}
+
+
+void UAirBlueprintLib::GenerateActorMap(const UObject* context, TMap<FString, AActor*>& scene_object_map) {
+    auto world = context->GetWorld();
+    for (TActorIterator<AActor> actorIterator(world); actorIterator; ++actorIterator) 
+    {
+        AActor* actor = *actorIterator;
+        FString name = *actor->GetName();
+
+        scene_object_map.Add(name, actor);
+    }
+}
+
 
 void UAirBlueprintLib::setUnrealClockSpeed(const AActor* context, float clock_speed)
 {
@@ -573,6 +622,14 @@ UObject* UAirBlueprintLib::GetMeshFromRegistry(const std::string& load_object)
         }
     }
     return LoadObject;
+}
+
+bool UAirBlueprintLib::RunConsoleCommand(const AActor* context, const FString& command)
+{
+    auto* playerController = UGameplayStatics::GetPlayerController(context->GetWorld(), 0);;
+    if (playerController != nullptr)
+        playerController->ConsoleCommand(command, true);
+    return playerController != nullptr;
 }
 
 bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, const FVector& end, const AActor* ignore_actor, ECollisionChannel collision_channel)

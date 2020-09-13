@@ -40,9 +40,12 @@ public: //types
         ImageType image_type;
         bool visible;
         std::string camera_name;
+        std::string vehicle_name;
 
-        SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene, bool visible_val = false, const std::string& camera_name_val = "")
-            : window_index(window_index_val), image_type(image_type_val), visible(visible_val), camera_name(camera_name_val)
+        SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene, 
+                bool visible_val = false, const std::string& camera_name_val = "", const std::string& vehicle_name_val = "")
+            : window_index(window_index_val), image_type(image_type_val), 
+              visible(visible_val), camera_name(camera_name_val), vehicle_name(vehicle_name_val)
         {
         }
     };
@@ -362,6 +365,7 @@ public: //fields
     float speed_unit_factor =  1.0f;
     std::string speed_unit_label = "m\\s";
     std::map<std::string, std::unique_ptr<SensorSetting>> sensor_defaults;
+    Vector3r wind = Vector3r::Zero();
 
 public: //methods
     static AirSimSettings& singleton()
@@ -1015,6 +1019,7 @@ private:
                         json_settings_child.getInt("ImageType", 0));
                     subwindow_setting.visible = json_settings_child.getBool("Visible", false);
                     subwindow_setting.camera_name = getCameraName(json_settings_child);
+                    subwindow_setting.vehicle_name = json_settings_child.getString("VehicleName", "");
                 }
             }
         }
@@ -1023,9 +1028,9 @@ private:
     static void initializeSubwindowSettings(std::vector<SubwindowSetting>& subwindow_settings)
     {
         subwindow_settings.clear();
-        subwindow_settings.push_back(SubwindowSetting(0, ImageType::DepthVis, false, "")); //depth
-        subwindow_settings.push_back(SubwindowSetting(0, ImageType::Segmentation, false, "")); //seg
-        subwindow_settings.push_back(SubwindowSetting(0, ImageType::Scene, false, "")); //vis
+        subwindow_settings.push_back(SubwindowSetting(0, ImageType::DepthVis, false, "", "")); //depth
+        subwindow_settings.push_back(SubwindowSetting(1, ImageType::Segmentation, false, "", "")); //seg
+        subwindow_settings.push_back(SubwindowSetting(2, ImageType::Scene, false, "", "")); //vis
     }
 
     void loadOtherSettings(const Settings& settings_json)
@@ -1062,6 +1067,14 @@ private:
                 tod_setting.is_start_datetime_dst = tod_settings_json.getBool("StartDateTimeDst", tod_setting.is_start_datetime_dst);
                 tod_setting.update_interval_secs = tod_settings_json.getFloat("UpdateIntervalSecs", tod_setting.update_interval_secs);
                 tod_setting.move_sun = tod_settings_json.getBool("MoveSun", tod_setting.move_sun);
+            }
+        }
+
+        {
+            // Wind Settings
+            Settings child_json;
+            if (settings_json.getChild("Wind", child_json)) {
+                wind = createVectorSetting(child_json, wind);
             }
         }
     }
