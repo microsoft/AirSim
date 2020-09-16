@@ -69,4 +69,39 @@ public:
 
     void FastScreenshot();
     void RenderThreadScreenshotTask(RenderResult &result);
+
+private:
+    /**
+     * \brief Converts BGRA8 data to BGR8 data.
+     *
+     * \param[out] dst     The image data to write to
+     * \param[in]  src     The image data to convert
+     * \param[in]  width   The width of the input image
+     * \param[in]  height  The height of the input image
+     * \param[in]  stride  The stride (bytes per line) of the input image
+     */
+    static void bgra8ToBgr8(
+        uint8* dst,
+        const uint8* src,
+        uint32 width,
+        uint32 height,
+        uint32 stride);
+
+    /**
+     * \brief
+     *     Extracts the red component from RGBA16F (AKA PF_FloatRGBA), converts
+     *     it to float data, and then converts it from centimeters to meters
+     *
+     * \param[out] dst     The image data to write to
+     * \param[in]  src     The image data to convert
+     * \param[in]  width   The width of the input image
+     * \param[in]  height  The height of the input image
+     * \param[in]  stride  The stride (bytes per line) of the input image
+     */
+    static void rgba16fToDepthFloat(
+        float* dst,
+        const uint8* src,
+        uint32 width,
+        uint32 height,
+        uint32 stride);
 };
