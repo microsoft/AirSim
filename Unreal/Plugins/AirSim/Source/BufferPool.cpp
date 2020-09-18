@@ -7,7 +7,7 @@ template <typename T>
 typename BufferPool<T>::BufferPtr BufferPool<T>::GetBufferExactSize(size_t size)
 {
     if (CollectionsBySize.count(size) == 0)
-        CollectionsBySize.insert(std::pair<size_t, BufferCollection>(size, BufferCollection(size)));
+        CollectionsBySize.insert({size, BufferCollection(size)});
 
     return CollectionsBySize.at(size).DemandBuffer();
 }
@@ -49,7 +49,8 @@ template <typename T>
 typename BufferPool<T>::BufferPtr BufferPool<T>::BufferCollection::MakeBufferPtr(Buffer *underlyingBuffer)
 {
     if (underlyingBuffer == nullptr)
-        return std::unique_ptr<Buffer, Deleter>(new Buffer(Size), std::bind(&BufferPool::BufferCollection::ReturnToCollection, this, std::placeholders::_1));
+        // Create vector having (Req. size / Size of datatype) elements 
+        return std::unique_ptr<Buffer, Deleter>(new Buffer(Size/sizeof(T)), std::bind(&BufferPool::BufferCollection::ReturnToCollection, this, std::placeholders::_1));
     else
         return std::unique_ptr<Buffer, Deleter>(underlyingBuffer, std::bind(&BufferPool::BufferCollection::ReturnToCollection, this, std::placeholders::_1));
 }
