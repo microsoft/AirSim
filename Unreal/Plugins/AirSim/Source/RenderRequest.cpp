@@ -25,6 +25,7 @@ void RenderRequest::FastScreenshot()
 
     UAirBlueprintLib::RunCommandOnGameThread([this]() {
         fast_rt_resource_ = fast_param_.render_component->TextureTarget->GameThread_GetRenderTargetResource();
+        fast_param_.render_component->CaptureScene();
         ENQUEUE_RENDER_COMMAND(SceneDrawCompletion)([this](FRHICommandListImmediate& RHICmdList)
         {
             this->RenderThreadScreenshotTask(this->latest_result_);
