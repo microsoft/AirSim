@@ -140,6 +140,9 @@ void ASimModeBase::BeginPlay()
     setupVehiclesAndCamera();
     FRecordingThread::init();
 
+    if (getSettings().recording_setting.enabled)
+        startRecording();
+
     UWorld* World = GetWorld();
     if (World)
     {

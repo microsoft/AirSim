@@ -50,6 +50,7 @@ Below are complete list of settings available along with their default values. I
     "RecordOnMove": false,
     "RecordInterval": 0.05,
     "Folder": "",
+    "Enabled": false,
     "Cameras": [
         { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false,  "VehicleName": "", "Compress": true }
     ]
@@ -226,6 +227,7 @@ The recording feature allows you to record data such as position, orientation, v
 * `RecordInterval`: specifies minimal interval in seconds between capturing two images.
 * `RecordOnMove`: specifies that do not record frame if there was vehicle's position or orientation hasn't changed.
 * `Folder`: Parent folder where timestamped subfolder with recordings are created. Absolute path of the directory must be specified. If not used, then `Documents/AirSim` folder will be used. E.g. `"Folder": "/home/<user>/Documents"`
+* `Enabled`: Whether Recording should start from the beginning itself, setting to `true` will start recording automatically when the simulation starts. By default, it's set to `false`
 * `Cameras`: this element controls which cameras are used to capture images. By default scene image from camera 0 is recorded as compressed png format. This setting is json array so you can specify multiple cameras to capture images, each with potentially different [image types](settings.md#image-capture-settings). 
     * When `PixelsAsFloat` is true, image is saved as [pfm](pfm.md) file instead of png file.
     * `VehicleName` option allows you to specify separate cameras for individual vehicles. If the `Cameras` element isn't present, `Scene` image from the default camera of each vehicle will be recorded.

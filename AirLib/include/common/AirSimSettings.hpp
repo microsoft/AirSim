@@ -58,6 +58,7 @@ public: //types
         bool record_on_move = false;
         float record_interval = 0.05f;
         std::string folder = "";
+        bool enabled = false;
 
         std::map<std::string, std::vector<ImageCaptureBase::ImageRequest> > requests;
 
@@ -65,8 +66,9 @@ public: //types
         {
         }
 
-        RecordingSetting(bool record_on_move_val, float record_interval_val, std::string folder_val)
-            : record_on_move(record_on_move_val), record_interval(record_interval_val), folder(folder_val)
+        RecordingSetting(bool record_on_move_val, float record_interval_val, std::string folder_val, bool enabled_val)
+            : record_on_move(record_on_move_val), record_interval(record_interval_val), folder(folder_val),
+              enabled(enabled_val)
         {
         }
     };
@@ -636,6 +638,7 @@ private:
             recording_setting.record_on_move = recording_json.getBool("RecordOnMove", recording_setting.record_on_move);
             recording_setting.record_interval = recording_json.getFloat("RecordInterval", recording_setting.record_interval);
             recording_setting.folder = recording_json.getString("Folder", recording_setting.folder);
+            recording_setting.enabled = recording_json.getBool("Enabled", recording_setting.enabled);
 
             Settings req_cameras_settings;
             if (recording_json.getChild("Cameras", req_cameras_settings)) {
