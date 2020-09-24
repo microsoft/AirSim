@@ -110,7 +110,7 @@ public:
 
     msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
     msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
-
+    void simSetDistortionParam(std::string& scenecap_actor_name, std::string& param_name, float value);
 	std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
 
     // Recording APIs

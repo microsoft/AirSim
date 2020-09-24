@@ -292,6 +292,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->setObjectScale(object_name, scale.to());
     });
 
+    pimpl_->server.bind("simSetDistortionParam", [&](std::string& scenecap_actor_name, std::string& param_name, float value) {
+        getWorldSimApi()->setDistortionParam(scenecap_actor_name, param_name, value);
+    });
+
     pimpl_->server.bind("simFlushPersistentMarkers", [&]() -> void {
         getWorldSimApi()->simFlushPersistentMarkers();
     });
