@@ -10,6 +10,8 @@
 #include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
 
+#include "Materials/MaterialParameterCollectionInstance.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "PIPCamera.generated.h"
 
 

@@ -4,7 +4,6 @@
 #include "Camera/CameraComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Engine/World.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "ImageUtils.h"
 
 #include <string>
