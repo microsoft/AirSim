@@ -103,6 +103,7 @@ public:
     CollisionInfo simGetCollisionInfo(const std::string& vehicle_name = "") const;
 
     CameraInfo simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "") const;
+    void simSetDistortionParam(std::string& param_name, float value);
     void simSetCameraPose(const std::string& camera_name, const Pose& pose, const std::string& vehicle_name = "");
     void simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name = "");
     // This is a backwards-compatibility wrapper over simSetCameraPose, and can be removed in future major releases
@@ -110,7 +111,6 @@ public:
 
     msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
     msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
-    void simSetDistortionParam(std::string& scenecap_actor_name, std::string& param_name, float value);
 	std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
 
     // Recording APIs

@@ -67,6 +67,8 @@ ASimModeBase::ASimModeBase()
     else
         loading_screen_widget_ = nullptr;
 
+    distortion_param_collection_ = Cast<UMaterialParameterCollection>(StaticLoadObject(UMaterialParameterCollection::StaticClass(), NULL, TEXT("Material'/AirSim/HUDAssets/DistortionParams.DistortionParams'")));
+    
 }
 
 void ASimModeBase::toggleLoadingScreen(bool is_visible)

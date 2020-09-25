@@ -243,6 +243,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
     });
 
+    pimpl_->server.bind("simSetDistortionParam", [&](std::string& param_name, float value) {
+        getWorldSimApi()->setDistortionParam(param_name, value);
+    });
+
     pimpl_->server.bind("simSetCameraPose", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Pose& pose, 
         const std::string& vehicle_name) -> void {
         getVehicleSimApi(vehicle_name)->setCameraPose(camera_name, pose.to());
@@ -290,10 +294,6 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 
     pimpl_->server.bind("simSetObjectScale", [&](const std::string& object_name, const RpcLibAdapatorsBase::Vector3r& scale) -> bool {
         return getWorldSimApi()->setObjectScale(object_name, scale.to());
-    });
-
-    pimpl_->server.bind("simSetDistortionParam", [&](std::string& scenecap_actor_name, std::string& param_name, float value) {
-        getWorldSimApi()->setDistortionParam(scenecap_actor_name, param_name, value);
     });
 
     pimpl_->server.bind("simFlushPersistentMarkers", [&]() -> void {

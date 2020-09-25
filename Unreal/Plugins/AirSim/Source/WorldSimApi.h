@@ -47,7 +47,7 @@ public:
     virtual bool runConsoleCommand(const std::string& command) override;
     virtual Vector3r getObjectScale(const std::string& object_name) const override;
     virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) override;
-    virtual void setDistortionParam(std::string& scenecap_actor_name, std::string& param_name, float value) override;
+    virtual void setDistortionParam(std::string& param_name, float value) override;
 
     //----------- Plotting APIs ----------/
     virtual void simFlushPersistentMarkers() override;

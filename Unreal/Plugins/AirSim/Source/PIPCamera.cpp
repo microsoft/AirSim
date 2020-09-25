@@ -23,6 +23,15 @@ APIPCamera::APIPCamera()
         UAirBlueprintLib::LogMessageString("Cannot create noise material for the PIPCamera", 
             "", LogDebugLevel::Failure);
 
+    static ConstructorHelpers::FObjectFinder<UMaterial> dist_mat_finder(TEXT("Material'/AirSim/HUDAssets/CameraDistortion.CameraDistortion'"));
+    if (dist_mat_finder.Succeeded())
+    {
+        distortion_material_static_ = dist_mat_finder.Object;
+    }
+    else
+        UAirBlueprintLib::LogMessageString("Cannot create distortion material for the PIPCamera",
+            "", LogDebugLevel::Failure);
+
     PrimaryActorTick.bCanEverTick = true;
 
     image_type_to_pixel_format_map_.Add(0, EPixelFormat::PF_B8G8R8A8);
@@ -66,6 +75,7 @@ void APIPCamera::BeginPlay()
     Super::BeginPlay();
 
     noise_materials_.AddZeroed(imageTypeCount() + 1);
+    distortion_materials_.AddZeroed(imageTypeCount() + 1);
 
     //by default all image types are disabled
     camera_type_enabled_.assign(imageTypeCount(), false);
@@ -312,12 +322,12 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
                         false);
                     break;
             }
-
+            setDistortionMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings);
             setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
         }
         else { //camera component
             updateCameraSetting(camera_, capture_setting, ned_transform);
-
+            setDistortionMaterial(image_type, camera_, camera_->PostProcessSettings);
             setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
         }
     }
@@ -423,30 +433,36 @@ void APIPCamera::updateCameraPostProcessingSetting(FPostProcessSettings& obj, co
     }
 }
 
+void APIPCamera::setDistortionMaterial(int image_type, UObject* outer, FPostProcessSettings& obj)
+{
+    UMaterialInstanceDynamic* distortion_material = UMaterialInstanceDynamic::Create(distortion_material_static_, outer);
+    distortion_materials_[image_type + 1] = distortion_material;
+    obj.AddBlendable(distortion_material, 1.0f);
+}
+
 void APIPCamera::setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings)
 {
     if (!settings.Enabled)
         return;
 
-    UMaterialInstanceDynamic* noise_material_ = UMaterialInstanceDynamic::Create(noise_material_static_, outer);
-    noise_materials_[image_type + 1] = noise_material_;
+    UMaterialInstanceDynamic* noise_material = UMaterialInstanceDynamic::Create(noise_material_static_, outer);
+    noise_materials_[image_type + 1] = noise_material;
 
+    noise_material->SetScalarParameterValue("HorzWaveStrength", settings.HorzWaveStrength);
+    noise_material->SetScalarParameterValue("RandSpeed", settings.RandSpeed);
+    noise_material->SetScalarParameterValue("RandSize", settings.RandSize);
+    noise_material->SetScalarParameterValue("RandDensity", settings.RandDensity);
+    noise_material->SetScalarParameterValue("RandContrib", settings.RandContrib);
+    noise_material->SetScalarParameterValue("HorzWaveContrib", settings.HorzWaveContrib);
+    noise_material->SetScalarParameterValue("HorzWaveVertSize", settings.HorzWaveVertSize);
+    noise_material->SetScalarParameterValue("HorzWaveScreenSize", settings.HorzWaveScreenSize);
+    noise_material->SetScalarParameterValue("HorzNoiseLinesContrib", settings.HorzNoiseLinesContrib);
+    noise_material->SetScalarParameterValue("HorzNoiseLinesDensityY", settings.HorzNoiseLinesDensityY);
+    noise_material->SetScalarParameterValue("HorzNoiseLinesDensityXY", settings.HorzNoiseLinesDensityXY);
+    noise_material->SetScalarParameterValue("HorzDistortionStrength", settings.HorzDistortionStrength);
+    noise_material->SetScalarParameterValue("HorzDistortionContrib", settings.HorzDistortionContrib);
 
-    noise_material_->SetScalarParameterValue("HorzWaveStrength", settings.HorzWaveStrength);
-    noise_material_->SetScalarParameterValue("RandSpeed", settings.RandSpeed);
-    noise_material_->SetScalarParameterValue("RandSize", settings.RandSize);
-    noise_material_->SetScalarParameterValue("RandDensity", settings.RandDensity);
-    noise_material_->SetScalarParameterValue("RandContrib", settings.RandContrib);
-    noise_material_->SetScalarParameterValue("HorzWaveContrib", settings.HorzWaveContrib);
-    noise_material_->SetScalarParameterValue("HorzWaveVertSize", settings.HorzWaveVertSize);
-    noise_material_->SetScalarParameterValue("HorzWaveScreenSize", settings.HorzWaveScreenSize);
-    noise_material_->SetScalarParameterValue("HorzNoiseLinesContrib", settings.HorzNoiseLinesContrib);
-    noise_material_->SetScalarParameterValue("HorzNoiseLinesDensityY", settings.HorzNoiseLinesDensityY);
-    noise_material_->SetScalarParameterValue("HorzNoiseLinesDensityXY", settings.HorzNoiseLinesDensityXY);
-    noise_material_->SetScalarParameterValue("HorzDistortionStrength", settings.HorzDistortionStrength);
-    noise_material_->SetScalarParameterValue("HorzDistortionContrib", settings.HorzDistortionContrib);
-
-    obj.AddBlendable(noise_material_, 1.0f);
+    obj.AddBlendable(noise_material, 1.0f);
 }
 
 void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool is_enabled)

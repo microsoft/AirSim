@@ -16,6 +16,9 @@
 #include "common/StateReporterWrapper.hpp"
 #include "LoadingScreenWidget.h"
 
+#include "Materials/MaterialParameterCollectionInstance.h"
+#include "Materials/MaterialParameterCollection.h"
+
 #include "SimModeBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
@@ -47,6 +50,8 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Airsim | get stuff")
     virtual void reset();
+
+    UPROPERTY() UMaterialParameterCollection* distortion_param_collection_;
 
     // Sets default values for this actor's properties
     ASimModeBase();
@@ -124,7 +129,6 @@ protected: //Utility methods for derived classes
 
 protected:
     int record_tick_count;
-
     UPROPERTY() UClass* pip_camera_class;
     UPROPERTY() UParticleSystem* collision_display_template;
 

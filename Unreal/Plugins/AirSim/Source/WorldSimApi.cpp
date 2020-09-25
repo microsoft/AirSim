@@ -345,17 +345,11 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
     return swappedObjectNames;
 }
 
-void WorldSimApi::setDistortionParam(std::string& scenecap_actor_name, std::string& param_name, float value)
+void WorldSimApi::setDistortionParam(std::string& param_name, float value)
 {
-	UAirBlueprintLib::RunCommandOnGameThread([this, &scenecap_actor_name, &param_name, value]() {
-		ADistortableSceneCapture* actor = UAirBlueprintLib::FindActor<ADistortableSceneCapture>(simmode_, FString(scenecap_actor_name.c_str()));
-		if (!actor)
-			return;
-		auto *param_collection_asset = actor->ParamCollection;
-		if (!param_collection_asset)
-			return;
-		auto *param_collection = simmode_->GetWorld()->GetParameterCollectionInstance(param_collection_asset);
-		param_collection->SetScalarParameterValue(FName(param_name.c_str()), value);
+	UAirBlueprintLib::RunCommandOnGameThread([this, &param_name, value]() {
+        UMaterialParameterCollectionInstance* distortion_param_instance = simmode_->GetWorld()->GetParameterCollectionInstance(simmode_->distortion_param_collection_);
+        distortion_param_instance->SetScalarParameterValue(FName(param_name.c_str()), value);
 	}, true);
 }
 
