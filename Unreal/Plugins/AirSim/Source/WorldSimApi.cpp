@@ -6,7 +6,6 @@
 #include "Weather/WeatherLib.h"
 #include "DrawDebugHelpers.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
-#include "DistortableSceneCapture.h"
 #include <cstdlib>
 #include <ctime>
 
