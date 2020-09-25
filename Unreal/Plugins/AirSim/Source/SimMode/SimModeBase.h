@@ -15,10 +15,6 @@
 #include "PawnSimApi.h"
 #include "common/StateReporterWrapper.hpp"
 #include "LoadingScreenWidget.h"
-
-#include "Materials/MaterialParameterCollectionInstance.h"
-#include "Materials/MaterialParameterCollection.h"
-
 #include "SimModeBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
@@ -50,8 +46,6 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Airsim | get stuff")
     virtual void reset();
-
-    UPROPERTY() UMaterialParameterCollection* distortion_param_collection_;
 
     // Sets default values for this actor's properties
     ASimModeBase();

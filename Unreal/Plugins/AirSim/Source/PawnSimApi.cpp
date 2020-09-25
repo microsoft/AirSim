@@ -10,6 +10,7 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
+#include "Materials/MaterialParameterCollectionInstance.h"
 #include "DrawDebugHelpers.h"
 
 PawnSimApi::PawnSimApi(const Params& params)
@@ -423,6 +424,14 @@ void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, fov_degrees]() {
         APIPCamera* camera = getCamera(camera_name);
         camera->setCameraFoV(fov_degrees);
+    }, true);
+}
+
+void PawnSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, param_name, value]() {
+        APIPCamera* camera = getCamera(camera_name);
+        camera->distortion_param_instance_->SetScalarParameterValue(FName(param_name.c_str()), value);
     }, true);
 }
 

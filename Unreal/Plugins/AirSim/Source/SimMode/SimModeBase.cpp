@@ -65,10 +65,7 @@ ASimModeBase::ASimModeBase()
 
     }
     else
-        loading_screen_widget_ = nullptr;
-
-    distortion_param_collection_ = Cast<UMaterialParameterCollection>(StaticLoadObject(UMaterialParameterCollection::StaticClass(), NULL, TEXT("Material'/AirSim/HUDAssets/DistortionParams.DistortionParams'")));
-    
+        loading_screen_widget_ = nullptr;    
 }
 
 void ASimModeBase::toggleLoadingScreen(bool is_visible)
@@ -203,7 +200,7 @@ void ASimModeBase::initializeTimeOfDay()
         sky_sphere_ = sky_spheres[0];
         static const FName sun_prop_name(TEXT("Directional light actor"));
         auto* p = sky_sphere_class_->FindPropertyByName(sun_prop_name);
-        UObjectProperty* sun_prop = Cast<UObjectProperty>(p);
+        FObjectProperty* sun_prop = Cast<UObjectProperty>(p);
         UObject* sun_obj = sun_prop->GetObjectPropertyValue_InContainer(sky_sphere_);
         sun_ = Cast<ADirectionalLight>(sun_obj);
         if (sun_)

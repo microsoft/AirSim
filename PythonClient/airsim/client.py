@@ -496,6 +496,18 @@ class VehicleClient:
         for param_name, value in distortion_params.items():
             self.client.call('simSetDistortionParam', param_name, value, vehicle_name)
 
+    def simSetDistortionParam(self, camera_name, param_name, value, vehicle_name = ''):
+        """
+        Set single camera distortion parameter
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            param_name (str): Name of distortion parameter
+            value (float): Value of distortion parameter
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+        """
+        self.client.call('simSetDistortionParam', str(camera_name), param_name, value, vehicle_name)
+
     def simSetCameraPose(self, camera_name, pose, vehicle_name = ''):
         """
         - Control the pose of a selected camera

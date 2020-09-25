@@ -243,8 +243,8 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
     });
 
-    pimpl_->server.bind("simSetDistortionParam", [&](std::string& param_name, float value) {
-        getWorldSimApi()->setDistortionParam(param_name, value);
+    pimpl_->server.bind("simSetDistortionParam", [&](const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name) -> void {
+        getVehicleSimApi(vehicle_name)->setDistortionParam(camera_name, param_name, value);
     });
 
     pimpl_->server.bind("simSetCameraPose", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Pose& pose, 

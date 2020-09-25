@@ -345,14 +345,6 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
     return swappedObjectNames;
 }
 
-void WorldSimApi::setDistortionParam(std::string& param_name, float value)
-{
-	UAirBlueprintLib::RunCommandOnGameThread([this, &param_name, value]() {
-        UMaterialParameterCollectionInstance* distortion_param_instance = simmode_->GetWorld()->GetParameterCollectionInstance(simmode_->distortion_param_collection_);
-        distortion_param_instance->SetScalarParameterValue(FName(param_name.c_str()), value);
-	}, true);
-}
-
 //----------- Plotting APIs ----------/
 void WorldSimApi::simFlushPersistentMarkers()
 {

@@ -103,7 +103,7 @@ public:
     CollisionInfo simGetCollisionInfo(const std::string& vehicle_name = "") const;
 
     CameraInfo simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "") const;
-    void simSetDistortionParam(std::string& param_name, float value);
+    void simSetDistortionParam(const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name = "");
     void simSetCameraPose(const std::string& camera_name, const Pose& pose, const std::string& vehicle_name = "");
     void simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name = "");
     // This is a backwards-compatibility wrapper over simSetCameraPose, and can be removed in future major releases

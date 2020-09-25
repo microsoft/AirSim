@@ -51,6 +51,9 @@ public:
     UTextureRenderTarget2D* getRenderTarget(const ImageType type, bool if_active);
 
     msr::airlib::Pose getPose() const;
+
+    UPROPERTY() UMaterialParameterCollection* distortion_param_collection_;
+    UPROPERTY() UMaterialParameterCollectionInstance* distortion_param_instance_;
     
 private: //members
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
