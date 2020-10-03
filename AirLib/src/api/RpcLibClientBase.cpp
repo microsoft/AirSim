@@ -403,6 +403,10 @@ void RpcLibClientBase::simSetDistortionParam(const std::string& camera_name, con
     pimpl_->client.call("simSetDistortionParam", camera_name, param_name, value, vehicle_name);
 }
 
+std::vector<float> RpcLibClientBase::simGetDistortionParams(const std::string& camera_name, const std::string& vehicle_name)
+{
+    return pimpl_->client.call("simGetDistortionParams", camera_name, vehicle_name).as<std::vector<float>>();
+}
 
 msr::airlib::Kinematics::State RpcLibClientBase::simGetGroundTruthKinematics(const std::string& vehicle_name) const
 {

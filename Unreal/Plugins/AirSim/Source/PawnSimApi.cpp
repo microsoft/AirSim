@@ -435,6 +435,21 @@ void PawnSimApi::setDistortionParam(const std::string& camera_name, const std::s
     }, true);
 }
 
+std::vector<float> PawnSimApi::getDistortionParams(const std::string& camera_name)
+{
+    std::vector<float> param_values(5, 0.0);
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, &param_values]() {
+        APIPCamera* camera = getCamera(camera_name);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K1")), param_values[0]);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K2")), param_values[1]);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K3")), param_values[2]);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("P1")), param_values[3]);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("P2")), param_values[4]);
+    }, true);
+
+    return param_values;
+}
+
 //parameters in NED frame
 PawnSimApi::Pose PawnSimApi::getPose() const
 {

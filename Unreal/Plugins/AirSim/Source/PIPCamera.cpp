@@ -26,6 +26,7 @@ APIPCamera::APIPCamera()
     if (dist_mat_finder.Succeeded())
     {
         distortion_material_static_ = dist_mat_finder.Object;
+        distortion_param_collection_ = Cast<UMaterialParameterCollection>(StaticLoadObject(UMaterialParameterCollection::StaticClass(), NULL, TEXT("'/AirSim/HUDAssets/DistortionParams.DistortionParams'")));
     }
     else
         UAirBlueprintLib::LogMessageString("Cannot create distortion material for the PIPCamera",
@@ -41,6 +42,7 @@ APIPCamera::APIPCamera()
     image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
+
 }
 
 void APIPCamera::PostInitializeComponents()
@@ -91,6 +93,9 @@ void APIPCamera::BeginPlay()
     gimbal_stabilization_ = 0;
     gimbald_rotator_ = this->GetActorRotation();
     this->SetActorTickEnabled(false);
+
+    if (distortion_param_collection_)
+        distortion_param_instance_ = this->GetWorld()->GetParameterCollectionInstance(distortion_param_collection_);
 }
 
 msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::ImageType image_type) const
