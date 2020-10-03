@@ -32,6 +32,11 @@ if [[ "$DISTRO" == "xenial" ]]; then
 fi
 
 sudo apt-get install gcc-8 g++-8
-sudo apt-get install ros-$ROS_DISTRO-mavros*
-sudo apt-get install ros-$ROS_DISTRO-tf2-sensor-msgs
-sudo pip3 install catkin-tools
+sudo apt-get install ros-$ROS_DISTRO-mavros* ros-$ROS_DISTRO-tf2-sensor-msgs
+
+# TODO: Remove this if-block when new 0.7.0 release of catkin_tools is available
+if [[ "$DISTRO" == "focal" ]]; then
+    sudo pip3 install "git+https://github.com/catkin/catkin_tools.git#egg=catkin_tools"
+else
+    sudo pip3 install catkin-tools
+fi
