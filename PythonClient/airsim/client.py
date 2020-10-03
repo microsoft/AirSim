@@ -484,13 +484,14 @@ class VehicleClient:
 
     def simGetDistortionParams(self, camera_name, vehicle_name = ''):
         """
-        Set camera distortion parameters
+        Get camera distortion parameters
 
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
-            distortion_params (dict): Dictionary of distortion param names and corresponding values
-                                        {"K1": 0.0, "K2": 0.0, "K3": 0.0, "P1": 0.0, "P2": 0.0}
             vehicle_name (str, optional): Vehicle which the camera is associated with
+
+        Returns:
+            List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.
         """
     
         return self.client.call('simGetDistortionParams', str(camera_name), vehicle_name)
