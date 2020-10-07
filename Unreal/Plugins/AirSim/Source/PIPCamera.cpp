@@ -170,9 +170,6 @@ msr::airlib::ProjectionMatrix APIPCamera::getProjectionMatrix(const APIPCamera::
     else
         mat.setTo(Utils::nan<float>());
 
-    // Disable camera after our work is done
-    const_cast<APIPCamera*>(this)->setCameraTypeEnabled(image_type, false);
-
     return mat;
 }
 
