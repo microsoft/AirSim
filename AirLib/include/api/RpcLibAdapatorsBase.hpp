@@ -377,7 +377,7 @@ public:
             return request;
         }         
     };
-
+    
     struct ImageResponse {
         std::vector<uint8_t> image_data_uint8;
         std::vector<float> image_data_float;
@@ -401,9 +401,11 @@ public:
         ImageResponse(const msr::airlib::ImageCaptureBase::ImageResponse& s)
         {
             pixels_as_float = s.pixels_as_float;
-            
-            image_data_uint8 = s.image_data_uint8;
-            image_data_float = s.image_data_float;
+
+            if (!pixels_as_float)
+                image_data_uint8 = *(s.image_data_uint8);
+            else
+                image_data_float = *(s.image_data_float);
 
             //TODO: remove bug workaround for https://github.com/rpclib/rpclib/issues/152
             if (image_data_uint8.size() == 0)
@@ -428,10 +430,10 @@ public:
 
             d.pixels_as_float = pixels_as_float;
 
-            if (! pixels_as_float)
-                d.image_data_uint8 = image_data_uint8;
+            if (!pixels_as_float)
+                d.image_data_uint8->insert(d.image_data_uint8->begin(), image_data_uint8.front(), image_data_uint8.back());
             else
-                d.image_data_float = image_data_float;
+                d.image_data_float->insert(d.image_data_float->begin(), image_data_float.front(), image_data_float.back());
 
             d.camera_name = camera_name;
             d.camera_position = camera_position.to();

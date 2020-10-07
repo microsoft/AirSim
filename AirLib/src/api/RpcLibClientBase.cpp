@@ -232,6 +232,7 @@ vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<Im
 
     return RpcLibAdapatorsBase::ImageResponse::to(response_adaptor);
 }
+
 vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name)
 {
     vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_name, type, vehicle_name).as<vector<uint8_t>>();

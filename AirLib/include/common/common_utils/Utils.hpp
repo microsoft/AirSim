@@ -333,7 +333,7 @@ public:
                 }
                 it++;
                 start = it;
-                for (; it != end; it++) {					
+                for (; it != end; it++) {                   
                     if (*it == ch) {
                         break;
                     } 
@@ -585,20 +585,20 @@ public:
         return std::numeric_limits<TReal>::epsilon();
     }
 
-	//implements relative method - do not use for comparing with zero
-	//use this most of the time, tolerance needs to be meaningful in your context
-	template<typename TReal>
-	static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = epsilon<TReal>())
-	{
-		TReal diff = std::fabs(a - b);
-		if (diff <= tolerance)
-			return true;
+    //implements relative method - do not use for comparing with zero
+    //use this most of the time, tolerance needs to be meaningful in your context
+    template<typename TReal>
+    static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = epsilon<TReal>())
+    {
+        TReal diff = std::fabs(a - b);
+        if (diff <= tolerance)
+            return true;
 
-		if (diff < std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
-			return true;
+        if (diff < std::fmax(std::fabs(a), std::fabs(b)) * tolerance)
+            return true;
 
-		return false;
-	}
+        return false;
+    }
 
     //supply tolerance that is meaningful in your context
     //for example, default tolerance may not work if you are comparing double with float

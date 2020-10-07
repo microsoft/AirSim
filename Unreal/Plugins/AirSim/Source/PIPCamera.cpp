@@ -26,10 +26,10 @@ APIPCamera::APIPCamera()
     PrimaryActorTick.bCanEverTick = true;
 
     image_type_to_pixel_format_map_.Add(0, EPixelFormat::PF_B8G8R8A8);
-    image_type_to_pixel_format_map_.Add(1, EPixelFormat::PF_DepthStencil); // not used. init_auto_format is called in setupCameraFromSettings() 
-    image_type_to_pixel_format_map_.Add(2, EPixelFormat::PF_DepthStencil); // not used for same reason as above
-    image_type_to_pixel_format_map_.Add(3, EPixelFormat::PF_DepthStencil); // not used for same reason as above 
-    image_type_to_pixel_format_map_.Add(4, EPixelFormat::PF_DepthStencil); // not used for same reason as above 
+    image_type_to_pixel_format_map_.Add(1, EPixelFormat::PF_FloatRGBA); // not used. init_auto_format is called in setupCameraFromSettings()
+    image_type_to_pixel_format_map_.Add(2, EPixelFormat::PF_FloatRGBA); // not used for same reason as above
+    image_type_to_pixel_format_map_.Add(3, EPixelFormat::PF_FloatRGBA); // not used for same reason as above
+    image_type_to_pixel_format_map_.Add(4, EPixelFormat::PF_FloatRGBA); // not used for same reason as above
     image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
@@ -71,9 +71,7 @@ void APIPCamera::BeginPlay()
     camera_type_enabled_.assign(imageTypeCount(), false);
 
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
-        //use final color for all calculations
         captures_[image_type]->CaptureSource = ESceneCaptureSource::SCS_FinalColorLDR;
-
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
     }
 

@@ -88,7 +88,7 @@ public:
             if (response.size() == 0)
                 throw std::length_error("No images received!");
 
-            const Pose next_pose = getNextPose(response.at(0).image_data_float, goal_pose.position, 
+            const Pose next_pose = getNextPose(*response.at(0).image_data_float, goal_pose.position, 
                 current_pose, params_.control_loop_period);
 
             if (VectorMath::hasNan(next_pose))
@@ -157,8 +157,8 @@ public:
             if (response.at(1).height != params_.depth_height || response.at(1).width != params_.depth_height)
                 throw DepthNavException("Image Dimension mismatch. Please check right camera in the AirSim config file.");
             */
-            const std::vector<uint8_t>& left_image = response.at(0).image_data_uint8;
-            const std::vector<uint8_t>& right_image = response.at(1).image_data_uint8;
+            const std::vector<uint8_t> left_image(response.at(0).image_data_uint8->begin(), response.at(0).image_data_uint8->end());
+            const std::vector<uint8_t> right_image(response.at(1).image_data_uint8->begin(), response.at(1).image_data_uint8->end());
 
             //baseline * focal_length = depth * disparity
             float f = params_.depth_width / (2 * tan(params_.fov/2));
