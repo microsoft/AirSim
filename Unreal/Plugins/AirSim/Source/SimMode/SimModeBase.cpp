@@ -312,6 +312,13 @@ void ASimModeBase::setWind(const msr::airlib::Vector3r& wind) const
     throw std::domain_error("setWind not implemented by SimMode");
 }
 
+void ASimModeBase::setExtForce(const msr::airlib::Vector3r& ext_force) const
+{
+    // should be overridden by derived class
+    unused(ext_force);
+    throw std::domain_error("setExtForce not implemented by SimMode");
+}
+
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeBase::createApiServer() const
 {
     //this will be the case when compilation with RPCLIB is disabled or simmode doesn't support APIs
