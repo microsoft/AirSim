@@ -29,7 +29,7 @@ In SITL mode, please a log file is produced when drone is armed. The SITL termin
 INFO  [logger] Opened log file: rootfs/fs/microsd/log/2017-03-27/20_02_49.ulg
 ```
 
-## PX4 Log in SITL Mode
+## PX4 Log in HITL Mode
 
 If you are using Pixhawk hardware in HIL mode, then set parameter `SYS_LOGGER=1`
 using QGroundControl. PX4 will write log file on device which you can download at later date using QGroundControl.
