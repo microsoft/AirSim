@@ -1221,7 +1221,7 @@ public:
         
         for (int i = 0; i < iterations; i++) {
 
-            auto image = context->client.simGetImage(0, imageType);  
+            auto image = context->client.simGetImage("0", imageType);  
 
             if (image.size() == 0) {
                 std::cout << "error getting image, check sim for error messages" << endl;
