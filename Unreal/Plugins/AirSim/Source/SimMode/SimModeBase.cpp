@@ -541,10 +541,12 @@ void ASimModeBase::setupVehiclesAndCamera()
     {
         TArray<AActor*> pawns;
         getExistingVehiclePawns(pawns);
-
+        bool haveUEPawns = pawns.Num() > 0;
         APawn* fpv_pawn = nullptr;
-
-        if (pawns.Num() == 0) { //if there is no blueprints pawns
+        
+        if (haveUEPawns) {
+            fpv_pawn = static_cast<APawn*>(pawns[0]);
+        } else {
             //add vehicles from settings
             for (auto const& vehicle_setting_pair : getSettings().vehicles)
             {
