@@ -9,6 +9,7 @@
 #include "common/EarthUtils.hpp"
 #include "vehicles/car/api/CarRpcLibServer.hpp"
 
+extern CORE_API uint32 GFrameNumber;
 
 void ASimModeCar::BeginPlay()
 {
@@ -46,6 +47,13 @@ void ASimModeCar::continueForTime(double seconds)
     pause(false);
 }
 
+void ASimModeCar::continueForFrames(uint32_t frames)
+{
+    targetFrameNumber_ = GFrameNumber + frames;
+    frame_countdown_enabled_ = true;
+    pause(false);
+}
+
 void ASimModeCar::setupClockSpeed()
 {
     current_clockspeed_ = getSettings().clock_speed;
@@ -65,6 +73,15 @@ void ASimModeCar::Tick(float DeltaSeconds)
                 pause(true);
 
             pause_period_start_ = 0;
+        }
+    }
+
+    if(frame_countdown_enabled_){
+        if (targetFrameNumber_ <= GFrameNumber){
+            if (! isPaused())
+                pause(true);
+
+            frame_countdown_enabled_ = false;
         }
     }
 }

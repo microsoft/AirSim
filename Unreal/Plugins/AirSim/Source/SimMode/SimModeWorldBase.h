@@ -12,7 +12,7 @@
 #include "SimModeBase.h"
 #include "SimModeWorldBase.generated.h"
 
-
+extern CORE_API uint32 GFrameNumber;
 
 UCLASS()
 class AIRSIM_API ASimModeWorldBase : public ASimModeBase
@@ -30,6 +30,7 @@ public:
     virtual bool isPaused() const override;
     virtual void pause(bool is_paused) override;
     virtual void continueForTime(double seconds) override;
+    virtual void continueForFrames(uint32_t frames) override;
 
     virtual void setWind(const msr::airlib::Vector3r& wind) const override;
 
