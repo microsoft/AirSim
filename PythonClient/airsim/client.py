@@ -110,6 +110,15 @@ class VehicleClient:
             seconds (float): Time to run the simulation for
         """
         self.client.call('simContinueForTime', seconds)
+    
+    def simContinueForFrames(self, frames):
+        """
+        Continue the simulation for the specified number of frames
+
+        Args:
+            frames (float): Frames to run the simulation for
+        """
+        self.client.call('simContinueForFrames', frames)
 
     def getHomeGeoPoint(self, vehicle_name = ''):
         """
