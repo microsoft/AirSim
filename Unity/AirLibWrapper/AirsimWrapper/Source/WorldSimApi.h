@@ -11,7 +11,7 @@ public:
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::MeshPositionVertexBuffersResponse MeshPositionVertexBuffersResponse;
 
-	WorldSimApi(SimModeBase* simmode, std::string vehicle_name);
+	WorldSimApi(SimModeBase* simmode);
 	virtual ~WorldSimApi();
 
     // ------ Level setting apis ----- //
@@ -65,5 +65,4 @@ public:
 
 private:
 	SimModeBase * simmode_;
-	std::string vehicle_name_;
 };
