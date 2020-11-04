@@ -202,8 +202,7 @@ void SimModeBase::setupVehiclesAndCamera()
 {
 	//determine camera director camera default pose and spawn it
 	const auto& camera_director_setting = getSettings().camera_director;
-	for (auto const& vehicle_setting_pair : getSettings().vehicles)
-	{
+	for (auto const& vehicle_setting_pair : getSettings().vehicles) {
 		const auto& vehicle_setting = *vehicle_setting_pair.second;
 		const std::string& vehicle_name = vehicle_setting.vehicle_name;
 
@@ -218,9 +217,8 @@ void SimModeBase::setupVehiclesAndCamera()
 		getApiProvider()->insert_or_assign(vehicle_name, vehicle_Api, vehicle_sim_api_p);
 
 		if ((!getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
-		{
 			getApiProvider()->makeDefaultVehicle(vehicle_name);
-		}
+
 		vehicle_sim_apis_.push_back(std::move(vehicle_sim_api));
 	}
 }

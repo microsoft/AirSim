@@ -775,8 +775,7 @@ private:
         //NOTE: Do not set defaults for vehicle type here. If you do then make sure
         //to sync code in createVehicleSetting() as well.
 
-        if (simmode_name == "Multirotor")
-        {
+        if (simmode_name == "Multirotor") {
             //create simple flight as default multirotor
             auto simple_flight_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
             simple_flight_setting->vehicle_name = "SimpleFlight";
@@ -786,16 +785,14 @@ private:
             simple_flight_setting->rc.remote_control_id = 0;
             vehicles[simple_flight_setting->vehicle_name] = std::move(simple_flight_setting);
         }
-        else if (simmode_name == "Car")
-        {
+        else if (simmode_name == "Car") {
             //create default car vehicle
             auto physx_car_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
             physx_car_setting->vehicle_name = "PhysXCar";
             physx_car_setting->vehicle_type = kVehicleTypePhysXCar;
             vehicles[physx_car_setting->vehicle_name] = std::move(physx_car_setting);
         }
-        else
-        {
+        else {
             //create default computer vision vehicle
             auto cv_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
             cv_setting->vehicle_name = "ComputerVision";
