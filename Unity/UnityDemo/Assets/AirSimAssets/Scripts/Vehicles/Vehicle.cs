@@ -58,6 +58,7 @@ namespace AirSimUnity {
             InitializeVehicle();
 
             airsimInterface = VehicleCompanion.GetVehicleCompanion(vehicleName, this);
+            isServerStarted = true;
         }
 
         //Ensure to call this method as the first statement, from derived class `FixedUpdate()` method.
