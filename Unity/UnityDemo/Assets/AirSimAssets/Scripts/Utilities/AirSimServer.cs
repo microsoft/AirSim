@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace AirSimUnity
 {
-    public class AirSimManager : MonoBehaviour
+    public class AirSimServer : MonoBehaviour
     {
         private const string DRONE_MODE = "Multirotor";
 
@@ -23,7 +23,7 @@ namespace AirSimUnity
             {
 #if UNITY_EDITOR
                 EditorUtility.DisplayDialog("Problem in starting AirSim server!!!", "Please check logs for more information.", "Exit");
-                EditorApplication.Exit(1);
+                //EditorApplication.Exit(1);
 #else
                 Application.Quit();
 #endif

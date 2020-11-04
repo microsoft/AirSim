@@ -186,7 +186,7 @@ namespace AirSimUnity {
         }
 
         private static bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity) {
-            var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
+            var vehicle = Vehicles[0]; //we just let first vehicle print the message
             return vehicle.VehicleInterface.PrintLogMessage(message, messageParams, vehicleName, severity);
         }
 
