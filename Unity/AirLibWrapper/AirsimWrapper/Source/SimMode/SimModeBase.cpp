@@ -261,8 +261,7 @@ msr::airlib::VehicleApiBase* SimModeBase::getVehicleApi(const PawnSimApi::Params
 
 UnityTransform SimModeBase::GetVehicleStartTransform()
 {
-	//take first vehicle as default
-	const std::string& vehicle_name = getSettings().vehicles.begin()->first;
-	UnityTransform unityTransform = GetTransformFromUnity(vehicle_name.c_str());
+	//can we just take origin in Unity here?
+	UnityTransform unityTransform;
 	return unityTransform;
 }
