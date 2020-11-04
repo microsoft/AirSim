@@ -427,7 +427,7 @@ public: //methods
 
         // listen to the other mavlink connection also
         auto mavcon = mav_vehicle_->getConnection();
-        if (mavcon != connection_) {
+        if (mavcon != nullptr) {
             mavlinkcom::MavLinkTelemetry gcs;
             mavcon->getTelemetry(gcs);
 
@@ -878,7 +878,10 @@ private: //methods
                 logviewer_out_proxy_ = nullptr;
             }
             else if (mav_vehicle_ != nullptr) {
-                mav_vehicle_->getConnection()->startLoggingSendMessage(std::make_shared<MavLinkLogViewerLog>(logviewer_out_proxy_));
+                auto mavcon = mav_vehicle_->getConnection();
+                if (mavcon != nullptr) {
+                    mavcon->startLoggingSendMessage(std::make_shared<MavLinkLogViewerLog>(logviewer_out_proxy_));
+                }
             }
         }
         return logviewer_proxy_ != nullptr;
@@ -923,7 +926,7 @@ private: //methods
         connection_->join(connection);
 
         auto mavcon = mav_vehicle_->getConnection();
-        if (mavcon != connection_) {
+        if (mavcon != nullptr) {
             mavcon->join(connection);
         }
     }
@@ -1064,14 +1067,11 @@ private: //methods
     {
         // listen to this UDP mavlink connection also
         auto mavcon = mav_vehicle_->getConnection();
-        if (mavcon != connection_) {
+        if (mavcon != nullptr) {
             mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                 unused(connection);
                 processMavMessages(msg);
                 });
-        }
-        else {
-            mav_vehicle_->connect(connection_);
         }
 
         connected_ = true;
