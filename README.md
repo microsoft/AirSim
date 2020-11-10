@@ -33,6 +33,8 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
 ## How to Get It
 
+[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
+
 ### Windows
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
@@ -44,7 +46,7 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 ### macOS
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
-[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
+Some pre-compiled environment binaries may include multiple files (i.e. City.zip.001, City.zip.002). Make sure to download both files before starting the environment.
 
 ## How to Use It
 
