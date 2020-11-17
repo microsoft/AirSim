@@ -91,8 +91,19 @@ void ASimModeBase::BeginPlay()
 
     //get player start
     //this must be done from within actor otherwise we don't get player start
-    APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
-    FTransform player_start_transform = player_controller->GetViewTarget()->GetActorTransform();
+    TArray<AActor*> pawns;
+    getExistingVehiclePawns(pawns);
+    bool have_existing_pawns = pawns.Num() > 0;
+    APawn* fpv_pawn = nullptr;
+    FTransform player_start_transform;
+    if (have_existing_pawns) {
+        fpv_pawn = static_cast<APawn*>(pawns[0]);
+        player_start_transform = fpv_pawn->GetActorTransform();
+    }
+    else {
+        APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
+        player_start_transform = player_controller->GetViewTarget()->GetActorTransform();
+    }
     global_ned_transform_.reset(new NedTransform(player_start_transform, 
         UAirBlueprintLib::GetWorldToMetersScale(this)));
 
