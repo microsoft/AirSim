@@ -541,42 +541,45 @@ void ASimModeBase::setupVehiclesAndCamera()
     {
         TArray<AActor*> pawns;
         getExistingVehiclePawns(pawns);
-
+        bool haveUEPawns = pawns.Num() > 0;
         APawn* fpv_pawn = nullptr;
+        
+        if (haveUEPawns) {
+            fpv_pawn = static_cast<APawn*>(pawns[0]);
+        } else {
+            //add vehicles from settings
+            for (auto const& vehicle_setting_pair : getSettings().vehicles)
+            {
+                //if vehicle is of type for derived SimMode and auto creatable
+                const auto& vehicle_setting = *vehicle_setting_pair.second;
+                if (vehicle_setting.auto_create &&
+                    isVehicleTypeSupported(vehicle_setting.vehicle_type)) {
 
-        //add vehicles from settings
-        for (auto const& vehicle_setting_pair : getSettings().vehicles)
-        {
-            //if vehicle is of type for derived SimMode and auto creatable
-            const auto& vehicle_setting = *vehicle_setting_pair.second;
-            if (vehicle_setting.auto_create &&
-                isVehicleTypeSupported(vehicle_setting.vehicle_type)) {
+                    //compute initial pose
+                    FVector spawn_position = uu_origin.GetLocation();
+                    Vector3r settings_position = vehicle_setting.position;
+                    if (!VectorMath::hasNan(settings_position))
+                        spawn_position = getGlobalNedTransform().fromGlobalNed(settings_position);
+                    FRotator spawn_rotation = toFRotator(vehicle_setting.rotation, uu_origin.Rotator());
 
-                //compute initial pose
-                FVector spawn_position = uu_origin.GetLocation();
-                Vector3r settings_position = vehicle_setting.position;
-                if (!VectorMath::hasNan(settings_position))
-                    spawn_position = getGlobalNedTransform().fromGlobalNed(settings_position);
-                FRotator spawn_rotation = toFRotator(vehicle_setting.rotation, uu_origin.Rotator());
+                    //spawn vehicle pawn
+                    FActorSpawnParameters pawn_spawn_params;
+                    pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
+                    pawn_spawn_params.SpawnCollisionHandlingOverride =
+                        ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+                    auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
+                        getSettings().pawn_paths.at(getVehiclePawnPathName(vehicle_setting)).pawn_bp);
+                    APawn* spawned_pawn = static_cast<APawn*>(this->GetWorld()->SpawnActor(
+                        vehicle_bp_class, &spawn_position, &spawn_rotation, pawn_spawn_params));
 
-                //spawn vehicle pawn
-                FActorSpawnParameters pawn_spawn_params;
-                pawn_spawn_params.Name = FName(vehicle_setting.vehicle_name.c_str());
-                pawn_spawn_params.SpawnCollisionHandlingOverride =
-                    ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-                auto vehicle_bp_class = UAirBlueprintLib::LoadClass(
-                    getSettings().pawn_paths.at(getVehiclePawnPathName(vehicle_setting)).pawn_bp);
-                APawn* spawned_pawn = static_cast<APawn*>( this->GetWorld()->SpawnActor(
-                    vehicle_bp_class, &spawn_position, &spawn_rotation, pawn_spawn_params));
+                    spawned_actors_.Add(spawned_pawn);
+                    pawns.Add(spawned_pawn);
 
-                spawned_actors_.Add(spawned_pawn);
-                pawns.Add(spawned_pawn);
-
-                if (vehicle_setting.is_fpv_vehicle)
-                    fpv_pawn = spawned_pawn;
+                    if (vehicle_setting.is_fpv_vehicle)
+                        fpv_pawn = spawned_pawn;
+                }
             }
         }
-
         //create API objects for each pawn we have
         for (AActor* pawn : pawns)
         {

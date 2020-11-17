@@ -68,6 +68,8 @@ public:
     //use pointer here because of derived classes for VehicleSetting
     const AirSimSettings::VehicleSetting* getVehicleSetting() const
     {
+        if (getVehicleName().find("BP_FlyingPawn") == 0)
+            return AirSimSettings::singleton().getVehicleSetting("SimpleFlight");
         return AirSimSettings::singleton().getVehicleSetting(getVehicleName());
     }
 };
