@@ -106,7 +106,7 @@ void ASimModeBase::BeginPlay()
         APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
         player_start_transform = player_controller->GetViewTarget()->GetActorTransform();
     }
-    FVector player_loc = player_start_transform.GetLocation();
+    player_loc = player_start_transform.GetLocation();
     // Move the world origin to the player's location (this moves the coordinate system and adds
     // a corresponding offset to all positions to compensate for the shift)
     this->GetWorld()->SetNewWorldOrigin(FIntVector(player_loc) + this->GetWorld()->OriginLocation);
