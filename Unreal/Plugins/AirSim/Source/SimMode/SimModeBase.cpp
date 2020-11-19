@@ -95,7 +95,22 @@ void ASimModeBase::BeginPlay()
     getExistingVehiclePawns(pawns);
     bool have_existing_pawns = pawns.Num() > 0;
     APawn* fpv_pawn = nullptr;
+    // Grab player location
     FTransform player_start_transform;
+    FVector player_loc;
+    if (have_existing_pawns) {
+        fpv_pawn = static_cast<APawn*>(pawns[0]);
+        player_start_transform = fpv_pawn->GetActorTransform();
+    }
+    else {
+        APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
+        player_start_transform = player_controller->GetViewTarget()->GetActorTransform();
+    }
+    FVector player_loc = player_start_transform.GetLocation();
+    // Move the world origin to the player's location (this moves the coordinate system and adds
+    // a corresponding offset to all positions to compensate for the shift)
+    this->GetWorld()->SetNewWorldOrigin(FIntVector(player_loc) + this->GetWorld()->OriginLocation);
+    // Regrab the player's position after the offset has been added (which should be 0,0,0 now)
     if (have_existing_pawns) {
         fpv_pawn = static_cast<APawn*>(pawns[0]);
         player_start_transform = fpv_pawn->GetActorTransform();
