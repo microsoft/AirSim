@@ -530,11 +530,11 @@ AsyncResult<bool> MavLinkVehicleImpl::waitForAltitude(float z, float dz, float d
 AsyncResult<bool> MavLinkVehicleImpl::land(float yaw, float lat, float lon, float altitude)
 {
     MavCmdNavLand cmd{};
-    cmd.AbortAlt = 1;
+    cmd.AbortAlt = 0; // use system default.
     cmd.YawAngle = yaw;
     cmd.Latitude = lat;
     cmd.Longitude = lon;
-    cmd.LandingAltitude = altitude;
+    cmd.Altitude = altitude;
     return sendCommandAndWaitForAck(cmd);
 }
 

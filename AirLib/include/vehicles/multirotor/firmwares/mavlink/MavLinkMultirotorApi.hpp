@@ -935,7 +935,7 @@ private: //methods
             mavlinkcom::SerialPortInfo info = *iter;
             if ((
                 (info.vid == pixhawkVendorId) &&
-                (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId)
+                (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId || info.pid == pixhawkFMUV5ProductId)
                 ) ||
                 (
                     (info.displayName.find(L"PX4_") != std::string::npos)
@@ -1514,6 +1514,7 @@ private: //variables
     static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
     static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board
     static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 board
+    static const int pixhawkFMUV5ProductId = 50;     ///< Product ID for Pixhawk V5 board
     static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
     static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
     static const int messageReceivedTimeout = 10; ///< Seconds

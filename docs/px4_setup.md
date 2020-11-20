@@ -13,9 +13,11 @@ The following Pixhawk hardware has been tested with AirSim:
 2. [Pixhawk PX4 2.4.8](http://www.banggood.com/Pixhawk-PX4-2_4_8-Flight-Controller-32-Bit-ARM-PX4FMU-PX4IO-Combo-for-Multicopters-p-1040416.html)
 3. [PixFalcon](https://hobbyking.com/en_us/pixfalcon-micro-px4-autopilot.html?___store=en_us)
 4. [PixRacer](https://www.banggood.com/Pixracer-Autopilot-Xracer-V1_0-Flight-Controller-Mini-PX4-Built-in-Wifi-For-FPV-Racing-RC-Multirotor-p-1056428.html?utm_source=google&utm_medium=cpc_ods&utm_content=starr&utm_campaign=Smlrfpv-ds-FPVracer&gclid=CjwKEAjw9MrIBRCr2LPek5-h8U0SJAD3jfhtbEfqhX4Lu94kPe88Zrr62A5qVgx-wRDBuUulGzHELRoCRVTw_wcB)
-5. [Pixhawk 2.1](http://www.proficnc.com/) (using PX4 Flight Stack)
+5. [Pixhawk 2.1](http://www.proficnc.com/)
+6. [Pixhawk 4 mini from Holybro](https://shop.holybro.com/pixhawk4-mini_p1120.html)
+7. [Pixhawk 4 from Holybro](https://shop.holybro.com/pixhawk-4beta-launch_p1089.html)
 
-The 3DR Pixhawk Mini works out of the box, the others you may need to re-flash with the latest firmware.
+Version 1.11.2 of the PX4 firmware also works on the Pixhawk 4 devices.
 
 ## Setting up PX4 Hardware-in-Loop
 
@@ -31,18 +33,26 @@ See also [initial firmware setup video](https://dev.px4.io/starting-initial-conf
 7. Go to the Tuning section of QGroundControl and set appropriate values. For example, for Fly Sky's FS-TH9X remote control, the following settings give a more realistic feel: Hover Throttle = mid+1 mark, Roll and pitch sensitivity = mid-3 mark, Altitude and position control sensitivity = mid-2 mark.
 8. In [AirSim settings](settings.md) file, specify PX4 for your vehicle config like this:
 ```
-{
-  "SettingsVersion": 1.2,
-  "SimMode": "Multirotor",
-  "Vehicles": {
-    "PX4": {
-      "VehicleType": "PX4Multirotor"
+    {
+        "SettingsVersion": 1.2,
+        "SimMode": "Multirotor",
+        "Vehicles": {
+            "PX4": {
+                "VehicleType": "PX4Multirotor",
+                "UseSerial": true,
+                "Parameters": {
+                    "NAV_RCL_ACT": 0,
+                    "NAV_DLL_ACT": 0,
+                    "LPE_LAT": 47.641468,
+                    "LPE_LON": -122.140165,
+                    "COM_OBL_ACT": 1
+                }
+            }
+        }
     }
-  }
-}
 ```
 
-After above setup you should be able to use RC to fly in the AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.
+After above setup you should be able to use RC to fly with AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.  See [PX4 Basic Flying Guide](https://docs.px4.io/master/en/flying/basic_flying.html).
 
 You can also control the drone from [Python APIs](apis.md).
 

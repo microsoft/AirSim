@@ -280,6 +280,39 @@ std::string MavLinkSetMode::toJSon() {
  return ss.str();
 }
 
+int MavLinkParamAckTransaction::pack(char* buffer) const {
+    pack_float(buffer, reinterpret_cast<const float*>(&this->param_value), 0);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 4);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 5);
+    pack_char_array(16, buffer, reinterpret_cast<const char*>(&this->param_id[0]), 6);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->param_type), 22);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->param_result), 23);
+    return 24;
+}
+
+int MavLinkParamAckTransaction::unpack(const char* buffer) {
+    unpack_float(buffer, reinterpret_cast<float*>(&this->param_value), 0);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 4);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 5);
+    unpack_char_array(16, buffer, reinterpret_cast<char*>(&this->param_id[0]), 6);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->param_type), 22);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->param_result), 23);
+ return 24;
+}
+
+std::string MavLinkParamAckTransaction::toJSon() {
+    std::ostringstream ss;
+    ss << "{ \"name\": \"PARAM_ACK_TRANSACTION\", \"id\": 19, \"timestamp\":" << timestamp << ", \"msg\": {";
+    ss << "\"param_value\":"  << float_tostring(this->param_value);
+    ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
+    ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << ", \"param_id\":"  << "\"" << char_array_tostring(16, reinterpret_cast<char*>(&this->param_id[0])) << "\"";
+    ss << ", \"param_type\":"  << static_cast<unsigned int>(this->param_type);
+    ss << ", \"param_result\":"  << static_cast<unsigned int>(this->param_result);
+    ss << "} },";
+ return ss.str();
+}
+
 int MavLinkParamRequestRead::pack(char* buffer) const {
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->param_index), 0);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 2);
@@ -404,7 +437,8 @@ int MavLinkGpsRawInt::pack(char* buffer) const {
     pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->v_acc), 38);
     pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->vel_acc), 42);
     pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->hdg_acc), 46);
-    return 50;
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->yaw), 50);
+    return 52;
 }
 
 int MavLinkGpsRawInt::unpack(const char* buffer) {
@@ -423,7 +457,8 @@ int MavLinkGpsRawInt::unpack(const char* buffer) {
     unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->v_acc), 38);
     unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->vel_acc), 42);
     unpack_uint32_t(buffer, reinterpret_cast<uint32_t*>(&this->hdg_acc), 46);
- return 50;
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->yaw), 50);
+ return 52;
 }
 
 std::string MavLinkGpsRawInt::toJSon() {
@@ -444,6 +479,7 @@ std::string MavLinkGpsRawInt::toJSon() {
     ss << ", \"v_acc\":"  << this->v_acc;
     ss << ", \"vel_acc\":"  << this->vel_acc;
     ss << ", \"hdg_acc\":"  << this->hdg_acc;
+    ss << ", \"yaw\":"  << this->yaw;
     ss << "} },";
  return ss.str();
 }
@@ -615,7 +651,8 @@ int MavLinkScaledPressure::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->press_abs), 4);
     pack_float(buffer, reinterpret_cast<const float*>(&this->press_diff), 8);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 12);
-    return 14;
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature_press_diff), 14);
+    return 16;
 }
 
 int MavLinkScaledPressure::unpack(const char* buffer) {
@@ -623,7 +660,8 @@ int MavLinkScaledPressure::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->press_abs), 4);
     unpack_float(buffer, reinterpret_cast<float*>(&this->press_diff), 8);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 12);
- return 14;
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature_press_diff), 14);
+ return 16;
 }
 
 std::string MavLinkScaledPressure::toJSon() {
@@ -633,6 +671,7 @@ std::string MavLinkScaledPressure::toJSon() {
     ss << ", \"press_abs\":"  << float_tostring(this->press_abs);
     ss << ", \"press_diff\":"  << float_tostring(this->press_diff);
     ss << ", \"temperature\":"  << this->temperature;
+    ss << ", \"temperature_press_diff\":"  << this->temperature_press_diff;
     ss << "} },";
  return ss.str();
 }
@@ -2137,6 +2176,30 @@ std::string MavLinkCommandAck::toJSon() {
  return ss.str();
 }
 
+int MavLinkCommandCancel::pack(char* buffer) const {
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->command), 0);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_system), 2);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->target_component), 3);
+    return 4;
+}
+
+int MavLinkCommandCancel::unpack(const char* buffer) {
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->command), 0);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_system), 2);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->target_component), 3);
+ return 4;
+}
+
+std::string MavLinkCommandCancel::toJSon() {
+    std::ostringstream ss;
+    ss << "{ \"name\": \"COMMAND_CANCEL\", \"id\": 80, \"timestamp\":" << timestamp << ", \"msg\": {";
+    ss << "\"command\":"  << this->command;
+    ss << ", \"target_system\":"  << static_cast<unsigned int>(this->target_system);
+    ss << ", \"target_component\":"  << static_cast<unsigned int>(this->target_component);
+    ss << "} },";
+ return ss.str();
+}
+
 int MavLinkManualSetpoint::pack(char* buffer) const {
     pack_uint32_t(buffer, reinterpret_cast<const uint32_t*>(&this->time_boot_ms), 0);
     pack_float(buffer, reinterpret_cast<const float*>(&this->roll), 4);
@@ -3294,7 +3357,8 @@ int MavLinkHilGps::pack(char* buffer) const {
     pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->cog), 32);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->fix_type), 34);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->satellites_visible), 35);
-    return 36;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->id), 36);
+    return 37;
 }
 
 int MavLinkHilGps::unpack(const char* buffer) {
@@ -3311,7 +3375,8 @@ int MavLinkHilGps::unpack(const char* buffer) {
     unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->cog), 32);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->fix_type), 34);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->satellites_visible), 35);
- return 36;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->id), 36);
+ return 37;
 }
 
 std::string MavLinkHilGps::toJSon() {
@@ -3330,6 +3395,7 @@ std::string MavLinkHilGps::toJSon() {
     ss << ", \"cog\":"  << this->cog;
     ss << ", \"fix_type\":"  << static_cast<unsigned int>(this->fix_type);
     ss << ", \"satellites_visible\":"  << static_cast<unsigned int>(this->satellites_visible);
+    ss << ", \"id\":"  << static_cast<unsigned int>(this->id);
     ss << "} },";
  return ss.str();
 }
@@ -3692,7 +3758,8 @@ int MavLinkGps2Raw::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->fix_type), 32);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->satellites_visible), 33);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->dgps_numch), 34);
-    return 35;
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->yaw), 35);
+    return 37;
 }
 
 int MavLinkGps2Raw::unpack(const char* buffer) {
@@ -3708,7 +3775,8 @@ int MavLinkGps2Raw::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->fix_type), 32);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->satellites_visible), 33);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->dgps_numch), 34);
- return 35;
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->yaw), 35);
+ return 37;
 }
 
 std::string MavLinkGps2Raw::toJSon() {
@@ -3726,6 +3794,7 @@ std::string MavLinkGps2Raw::toJSon() {
     ss << ", \"fix_type\":"  << static_cast<unsigned int>(this->fix_type);
     ss << ", \"satellites_visible\":"  << static_cast<unsigned int>(this->satellites_visible);
     ss << ", \"dgps_numch\":"  << static_cast<unsigned int>(this->dgps_numch);
+    ss << ", \"yaw\":"  << this->yaw;
     ss << "} },";
  return ss.str();
 }
@@ -4012,7 +4081,8 @@ int MavLinkDistanceSensor::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->horizontal_fov), 14);
     pack_float(buffer, reinterpret_cast<const float*>(&this->vertical_fov), 18);
     pack_float_array(4, buffer, reinterpret_cast<const float*>(&this->quaternion[0]), 22);
-    return 38;
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->signal_quality), 38);
+    return 39;
 }
 
 int MavLinkDistanceSensor::unpack(const char* buffer) {
@@ -4027,7 +4097,8 @@ int MavLinkDistanceSensor::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->horizontal_fov), 14);
     unpack_float(buffer, reinterpret_cast<float*>(&this->vertical_fov), 18);
     unpack_float_array(4, buffer, reinterpret_cast<float*>(&this->quaternion[0]), 22);
- return 38;
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->signal_quality), 38);
+ return 39;
 }
 
 std::string MavLinkDistanceSensor::toJSon() {
@@ -4044,6 +4115,7 @@ std::string MavLinkDistanceSensor::toJSon() {
     ss << ", \"horizontal_fov\":"  << float_tostring(this->horizontal_fov);
     ss << ", \"vertical_fov\":"  << float_tostring(this->vertical_fov);
     ss << ", \"quaternion\":"  << "[" << float_array_tostring(4, reinterpret_cast<float*>(&this->quaternion[0])) << "]";
+    ss << ", \"signal_quality\":"  << static_cast<unsigned int>(this->signal_quality);
     ss << "} },";
  return ss.str();
 }
@@ -4167,7 +4239,8 @@ int MavLinkScaledPressure2::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->press_abs), 4);
     pack_float(buffer, reinterpret_cast<const float*>(&this->press_diff), 8);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 12);
-    return 14;
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature_press_diff), 14);
+    return 16;
 }
 
 int MavLinkScaledPressure2::unpack(const char* buffer) {
@@ -4175,7 +4248,8 @@ int MavLinkScaledPressure2::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->press_abs), 4);
     unpack_float(buffer, reinterpret_cast<float*>(&this->press_diff), 8);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 12);
- return 14;
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature_press_diff), 14);
+ return 16;
 }
 
 std::string MavLinkScaledPressure2::toJSon() {
@@ -4185,6 +4259,7 @@ std::string MavLinkScaledPressure2::toJSon() {
     ss << ", \"press_abs\":"  << float_tostring(this->press_abs);
     ss << ", \"press_diff\":"  << float_tostring(this->press_diff);
     ss << ", \"temperature\":"  << this->temperature;
+    ss << ", \"temperature_press_diff\":"  << this->temperature_press_diff;
     ss << "} },";
  return ss.str();
 }
@@ -4347,7 +4422,8 @@ int MavLinkScaledPressure3::pack(char* buffer) const {
     pack_float(buffer, reinterpret_cast<const float*>(&this->press_abs), 4);
     pack_float(buffer, reinterpret_cast<const float*>(&this->press_diff), 8);
     pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature), 12);
-    return 14;
+    pack_int16_t(buffer, reinterpret_cast<const int16_t*>(&this->temperature_press_diff), 14);
+    return 16;
 }
 
 int MavLinkScaledPressure3::unpack(const char* buffer) {
@@ -4355,7 +4431,8 @@ int MavLinkScaledPressure3::unpack(const char* buffer) {
     unpack_float(buffer, reinterpret_cast<float*>(&this->press_abs), 4);
     unpack_float(buffer, reinterpret_cast<float*>(&this->press_diff), 8);
     unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature), 12);
- return 14;
+    unpack_int16_t(buffer, reinterpret_cast<int16_t*>(&this->temperature_press_diff), 14);
+ return 16;
 }
 
 std::string MavLinkScaledPressure3::toJSon() {
@@ -4365,6 +4442,7 @@ std::string MavLinkScaledPressure3::toJSon() {
     ss << ", \"press_abs\":"  << float_tostring(this->press_abs);
     ss << ", \"press_diff\":"  << float_tostring(this->press_diff);
     ss << ", \"temperature\":"  << this->temperature;
+    ss << ", \"temperature_press_diff\":"  << this->temperature_press_diff;
     ss << "} },";
  return ss.str();
 }
@@ -4495,7 +4573,8 @@ int MavLinkBatteryStatus::pack(char* buffer) const {
     pack_int8_t(buffer, reinterpret_cast<const int8_t*>(&this->battery_remaining), 35);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->time_remaining), 36);
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->charge_state), 40);
-    return 41;
+    pack_uint16_t_array(4, buffer, reinterpret_cast<const uint16_t*>(&this->voltages_ext[0]), 41);
+    return 49;
 }
 
 int MavLinkBatteryStatus::unpack(const char* buffer) {
@@ -4510,7 +4589,8 @@ int MavLinkBatteryStatus::unpack(const char* buffer) {
     unpack_int8_t(buffer, reinterpret_cast<int8_t*>(&this->battery_remaining), 35);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->time_remaining), 36);
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->charge_state), 40);
- return 41;
+    unpack_uint16_t_array(4, buffer, reinterpret_cast<uint16_t*>(&this->voltages_ext[0]), 41);
+ return 49;
 }
 
 std::string MavLinkBatteryStatus::toJSon() {
@@ -4527,6 +4607,7 @@ std::string MavLinkBatteryStatus::toJSon() {
     ss << ", \"battery_remaining\":"  << static_cast<int>(this->battery_remaining);
     ss << ", \"time_remaining\":"  << this->time_remaining;
     ss << ", \"charge_state\":"  << static_cast<unsigned int>(this->charge_state);
+    ss << ", \"voltages_ext\":"  << "[" << uint16_t_array_tostring(4, reinterpret_cast<uint16_t*>(&this->voltages_ext[0])) << "]";
     ss << "} },";
  return ss.str();
 }
@@ -5440,13 +5521,17 @@ std::string MavLinkNamedValueInt::toJSon() {
 int MavLinkStatustext::pack(char* buffer) const {
     pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->severity), 0);
     pack_char_array(50, buffer, reinterpret_cast<const char*>(&this->text[0]), 1);
-    return 51;
+    pack_uint16_t(buffer, reinterpret_cast<const uint16_t*>(&this->id), 51);
+    pack_uint8_t(buffer, reinterpret_cast<const uint8_t*>(&this->chunk_seq), 53);
+    return 54;
 }
 
 int MavLinkStatustext::unpack(const char* buffer) {
     unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->severity), 0);
     unpack_char_array(50, buffer, reinterpret_cast<char*>(&this->text[0]), 1);
- return 51;
+    unpack_uint16_t(buffer, reinterpret_cast<uint16_t*>(&this->id), 51);
+    unpack_uint8_t(buffer, reinterpret_cast<uint8_t*>(&this->chunk_seq), 53);
+ return 54;
 }
 
 std::string MavLinkStatustext::toJSon() {
@@ -5454,6 +5539,8 @@ std::string MavLinkStatustext::toJSon() {
     ss << "{ \"name\": \"STATUSTEXT\", \"id\": 253, \"timestamp\":" << timestamp << ", \"msg\": {";
     ss << "\"severity\":"  << static_cast<unsigned int>(this->severity);
     ss << ", \"text\":"  << "\"" << char_array_tostring(50, reinterpret_cast<char*>(&this->text[0])) << "\"";
+    ss << ", \"id\":"  << this->id;
+    ss << ", \"chunk_seq\":"  << static_cast<unsigned int>(this->chunk_seq);
     ss << "} },";
  return ss.str();
 }
@@ -5516,32 +5603,36 @@ void MavCmdNavLoiterUnlim::unpack() {
 }
 void MavCmdNavLoiterTurns::pack() {
     param1 = Turns;
+    param2 = HeadingRequired;
     param3 = Radius;
-    param4 = ExitXtrackLocation;
+    param4 = XtrackLocation;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavLoiterTurns::unpack() {
     Turns = param1;
+    HeadingRequired = param2;
     Radius = param3;
-    ExitXtrackLocation = param4;
+    XtrackLocation = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdNavLoiterTime::pack() {
     param1 = Time;
+    param2 = HeadingRequired;
     param3 = Radius;
-    param4 = ExitXtrackLocation;
+    param4 = XtrackLocation;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdNavLoiterTime::unpack() {
     Time = param1;
+    HeadingRequired = param2;
     Radius = param3;
-    ExitXtrackLocation = param4;
+    XtrackLocation = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
@@ -5556,7 +5647,7 @@ void MavCmdNavLand::pack() {
     param4 = YawAngle;
     param5 = Latitude;
     param6 = Longitude;
-    param7 = LandingAltitude;
+    param7 = Altitude;
 }
 void MavCmdNavLand::unpack() {
     AbortAlt = param1;
@@ -5564,7 +5655,7 @@ void MavCmdNavLand::unpack() {
     YawAngle = param4;
     Latitude = param5;
     Longitude = param6;
-    LandingAltitude = param7;
+    Altitude = param7;
 }
 void MavCmdNavTakeoff::pack() {
     param1 = Pitch;
@@ -5690,17 +5781,17 @@ void MavCmdDoOrbit::pack() {
     param1 = Radius;
     param2 = Velocity;
     param3 = YawBehavior;
-    param5 = CenterPointLatitude;
-    param6 = CenterPointLongitude;
-    param7 = CenterPointAltitude;
+    param5 = Latitudepx;
+    param6 = Longitudepy;
+    param7 = Altitudepz;
 }
 void MavCmdDoOrbit::unpack() {
     Radius = param1;
     Velocity = param2;
     YawBehavior = param3;
-    CenterPointLatitude = param5;
-    CenterPointLongitude = param6;
-    CenterPointAltitude = param7;
+    Latitudepx = param5;
+    Longitudepy = param6;
+    Altitudepz = param7;
 }
 void MavCmdNavRoi::pack() {
     param1 = RoiMode;
@@ -5722,29 +5813,29 @@ void MavCmdNavPathplanning::pack() {
     param1 = LocalCtrl;
     param2 = GlobalCtrl;
     param4 = Yaw;
-    param5 = LatitudepxOfGoal;
-    param6 = LongitudepyOfGoal;
-    param7 = AltitudepzOfGoal;
+    param5 = Latitudepx;
+    param6 = Longitudepy;
+    param7 = Altitudepz;
 }
 void MavCmdNavPathplanning::unpack() {
     LocalCtrl = param1;
     GlobalCtrl = param2;
     Yaw = param4;
-    LatitudepxOfGoal = param5;
-    LongitudepyOfGoal = param6;
-    AltitudepzOfGoal = param7;
+    Latitudepx = param5;
+    Longitudepy = param6;
+    Altitudepz = param7;
 }
 void MavCmdNavSplineWaypoint::pack() {
     param1 = Hold;
-    param5 = LatitudepxOfGoal;
-    param6 = LongitudepyOfGoal;
-    param7 = AltitudepzOfGoal;
+    param5 = Latitudepx;
+    param6 = Longitudepy;
+    param7 = Altitudepz;
 }
 void MavCmdNavSplineWaypoint::unpack() {
     Hold = param1;
-    LatitudepxOfGoal = param5;
-    LongitudepyOfGoal = param6;
-    AltitudepzOfGoal = param7;
+    Latitudepx = param5;
+    Longitudepy = param6;
+    Altitudepz = param7;
 }
 void MavCmdNavVtolTakeoff::pack() {
     param2 = TransitionHeading;
@@ -5761,18 +5852,18 @@ void MavCmdNavVtolTakeoff::unpack() {
     Altitude = param7;
 }
 void MavCmdNavVtolLand::pack() {
-    param3 = Altitude;
+    param3 = ApproachAltitude;
     param4 = Yaw;
     param5 = Latitude;
     param6 = Longitude;
-    param7 = Altitude2;
+    param7 = GroundAltitude;
 }
 void MavCmdNavVtolLand::unpack() {
-    Altitude = param3;
+    ApproachAltitude = param3;
     Yaw = param4;
     Latitude = param5;
     Longitude = param6;
-    Altitude2 = param7;
+    GroundAltitude = param7;
 }
 void MavCmdNavGuidedEnable::pack() {
     param1 = Enable;
@@ -5816,11 +5907,11 @@ void MavCmdConditionDelay::unpack() {
 }
 void MavCmdConditionChangeAlt::pack() {
     param1 = Rate;
-    param7 = FinishAltitude;
+    param7 = Altitude;
 }
 void MavCmdConditionChangeAlt::unpack() {
     Rate = param1;
-    FinishAltitude = param7;
+    Altitude = param7;
 }
 void MavCmdConditionDistance::pack() {
     param1 = Distance;
@@ -5876,12 +5967,14 @@ void MavCmdDoChangeSpeed::unpack() {
 }
 void MavCmdDoSetHome::pack() {
     param1 = UseCurrent;
+    param4 = Yaw;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdDoSetHome::unpack() {
     UseCurrent = param1;
+    Yaw = param4;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
@@ -5946,6 +6039,24 @@ void MavCmdDoChangeAltitude::unpack() {
     Altitude = param1;
     Frame = param2;
 }
+void MavCmdDoSetActuator::pack() {
+    param1 = ActuatorP1;
+    param2 = ActuatorP2;
+    param3 = ActuatorP3;
+    param4 = ActuatorP4;
+    param5 = ActuatorP5;
+    param6 = ActuatorP6;
+    param7 = Index;
+}
+void MavCmdDoSetActuator::unpack() {
+    ActuatorP1 = param1;
+    ActuatorP2 = param2;
+    ActuatorP3 = param3;
+    ActuatorP4 = param4;
+    ActuatorP5 = param5;
+    ActuatorP6 = param6;
+    Index = param7;
+}
 void MavCmdDoLandStart::pack() {
     param5 = Latitude;
     param6 = Longitude;
@@ -5997,28 +6108,42 @@ void MavCmdDoSetReverse::unpack() {
     Reverse = param1;
 }
 void MavCmdDoSetRoiLocation::pack() {
+    param1 = GimbalDeviceId;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdDoSetRoiLocation::unpack() {
+    GimbalDeviceId = param1;
     Latitude = param5;
     Longitude = param6;
     Altitude = param7;
 }
 void MavCmdDoSetRoiWpnextOffset::pack() {
+    param1 = GimbalDeviceId;
     param5 = PitchOffset;
     param6 = RollOffset;
     param7 = YawOffset;
 }
 void MavCmdDoSetRoiWpnextOffset::unpack() {
+    GimbalDeviceId = param1;
     PitchOffset = param5;
     RollOffset = param6;
     YawOffset = param7;
 }
 void MavCmdDoSetRoiNone::pack() {
+    param1 = GimbalDeviceId;
 }
 void MavCmdDoSetRoiNone::unpack() {
+    GimbalDeviceId = param1;
+}
+void MavCmdDoSetRoiSysid::pack() {
+    param1 = SystemId;
+    param2 = GimbalDeviceId;
+}
+void MavCmdDoSetRoiSysid::unpack() {
+    SystemId = param1;
+    GimbalDeviceId = param2;
 }
 void MavCmdDoControlVideo::pack() {
     param1 = Id;
@@ -6089,32 +6214,32 @@ void MavCmdDoMountConfigure::pack() {
     param2 = StabilizeRoll;
     param3 = StabilizePitch;
     param4 = StabilizeYaw;
-    param5 = RollInput;
-    param6 = PitchInput;
-    param7 = YawInput;
+    param5 = RollInputMode;
+    param6 = PitchInputMode;
+    param7 = YawInputMode;
 }
 void MavCmdDoMountConfigure::unpack() {
     Mode = param1;
     StabilizeRoll = param2;
     StabilizePitch = param3;
     StabilizeYaw = param4;
-    RollInput = param5;
-    PitchInput = param6;
-    YawInput = param7;
+    RollInputMode = param5;
+    PitchInputMode = param6;
+    YawInputMode = param7;
 }
 void MavCmdDoMountControl::pack() {
-    param1 = PitchDependingMount;
-    param2 = RollDependingMount;
-    param3 = YawDependingMount;
+    param1 = Pitch;
+    param2 = Roll;
+    param3 = Yaw;
     param4 = Altitude;
     param5 = Latitude;
     param6 = Longitude;
     param7 = Mode;
 }
 void MavCmdDoMountControl::unpack() {
-    PitchDependingMount = param1;
-    RollDependingMount = param2;
-    YawDependingMount = param3;
+    Pitch = param1;
+    Roll = param2;
+    Yaw = param3;
     Altitude = param4;
     Latitude = param5;
     Longitude = param6;
@@ -6300,23 +6425,33 @@ void MavCmdPreflightRebootShutdown::unpack() {
     Wip2 = param4;
     Wip3 = param7;
 }
+void MavCmdDoUpgrade::pack() {
+    param1 = ComponentId;
+    param2 = Reboot;
+    param7 = Wip;
+}
+void MavCmdDoUpgrade::unpack() {
+    ComponentId = param1;
+    Reboot = param2;
+    Wip = param7;
+}
 void MavCmdOverrideGoto::pack() {
     param1 = Continue;
     param2 = Position;
     param3 = Frame;
     param4 = Yaw;
-    param5 = LatitudePX;
-    param6 = LongitudePY;
-    param7 = AltitudePZ;
+    param5 = Latitudepx;
+    param6 = Longitudepy;
+    param7 = Altitudepz;
 }
 void MavCmdOverrideGoto::unpack() {
     Continue = param1;
     Position = param2;
     Frame = param3;
     Yaw = param4;
-    LatitudePX = param5;
-    LongitudePY = param6;
-    AltitudePZ = param7;
+    Latitudepx = param5;
+    Longitudepy = param6;
+    Altitudepz = param7;
 }
 void MavCmdMissionStart::pack() {
     param1 = FirstItem;
@@ -6344,6 +6479,16 @@ void MavCmdGetHomePosition::pack() {
 }
 void MavCmdGetHomePosition::unpack() {
 }
+void MavCmdInjectFailure::pack() {
+    param1 = FailureUnit;
+    param2 = FailureType;
+    param3 = Instance;
+}
+void MavCmdInjectFailure::unpack() {
+    FailureUnit = param1;
+    FailureType = param2;
+    Instance = param3;
+}
 void MavCmdStartRxPair::pack() {
     param1 = Spektrum;
     param2 = RcType;
@@ -6370,20 +6515,20 @@ void MavCmdSetMessageInterval::unpack() {
 }
 void MavCmdRequestMessage::pack() {
     param1 = MessageId;
-    param2 = IndexId;
-    param3 = TheUseOf;
-    param4 = TheUseOf2;
-    param5 = TheUseOf3;
-    param6 = TheUseOf4;
+    param2 = ReqParamP1;
+    param3 = ReqParamP2;
+    param4 = ReqParamP3;
+    param5 = ReqParamP4;
+    param6 = ReqParamP5;
     param7 = ResponseTarget;
 }
 void MavCmdRequestMessage::unpack() {
     MessageId = param1;
-    IndexId = param2;
-    TheUseOf = param3;
-    TheUseOf2 = param4;
-    TheUseOf3 = param5;
-    TheUseOf4 = param6;
+    ReqParamP1 = param2;
+    ReqParamP2 = param3;
+    ReqParamP3 = param4;
+    ReqParamP4 = param5;
+    ReqParamP5 = param6;
     ResponseTarget = param7;
 }
 void MavCmdRequestProtocolVersion::pack() {
@@ -6421,10 +6566,12 @@ void MavCmdRequestStorageInformation::unpack() {
 void MavCmdStorageFormat::pack() {
     param1 = StorageId;
     param2 = Format;
+    param3 = ResetImageLog;
 }
 void MavCmdStorageFormat::unpack() {
     StorageId = param1;
     Format = param2;
+    ResetImageLog = param3;
 }
 void MavCmdRequestCameraCaptureStatus::pack() {
     param1 = CaptureStatus;
@@ -6480,6 +6627,22 @@ void MavCmdDoJumpTag::unpack() {
     Tag = param1;
     Repeat = param2;
 }
+void MavCmdDoGimbalManagerTiltpan::pack() {
+    param1 = TiltRate;
+    param2 = PanRate;
+    param3 = TiltAngle;
+    param4 = PanAngle;
+    param5 = GimbalManagerFlags;
+    param6 = GimbalDeviceId;
+}
+void MavCmdDoGimbalManagerTiltpan::unpack() {
+    TiltRate = param1;
+    PanRate = param2;
+    TiltAngle = param3;
+    PanAngle = param4;
+    GimbalManagerFlags = param5;
+    GimbalDeviceId = param6;
+}
 void MavCmdImageStartCapture::pack() {
     param2 = Interval;
     param3 = CaptureCount;
@@ -6509,6 +6672,32 @@ void MavCmdDoTriggerControl::unpack() {
     Enable = param1;
     Reset = param2;
     Pause = param3;
+}
+void MavCmdCameraTrackPoint::pack() {
+    param1 = PointX;
+    param2 = PointY;
+    param3 = Radius;
+}
+void MavCmdCameraTrackPoint::unpack() {
+    PointX = param1;
+    PointY = param2;
+    Radius = param3;
+}
+void MavCmdCameraTrackRectangle::pack() {
+    param1 = TopLeftCorner;
+    param2 = TopLeftCorner2;
+    param3 = BottomRightCorner;
+    param4 = BottomRightCorner2;
+}
+void MavCmdCameraTrackRectangle::unpack() {
+    TopLeftCorner = param1;
+    TopLeftCorner2 = param2;
+    BottomRightCorner = param3;
+    BottomRightCorner2 = param4;
+}
+void MavCmdCameraStopTracking::pack() {
+}
+void MavCmdCameraStopTracking::unpack() {
 }
 void MavCmdVideoStartCapture::pack() {
     param1 = StreamId;
@@ -6605,30 +6794,30 @@ void MavCmdSetGuidedSubmodeCircle::pack() {
     param2 = UserDefined;
     param3 = UserDefined2;
     param4 = UserDefined3;
-    param5 = UnscaledTargetLatitude;
-    param6 = UnscaledTargetLongitude;
+    param5 = Latitude;
+    param6 = Longitude;
 }
 void MavCmdSetGuidedSubmodeCircle::unpack() {
     Radius = param1;
     UserDefined = param2;
     UserDefined2 = param3;
     UserDefined3 = param4;
-    UnscaledTargetLatitude = param5;
-    UnscaledTargetLongitude = param6;
+    Latitude = param5;
+    Longitude = param6;
 }
 void MavCmdConditionGate::pack() {
     param1 = Geometry;
-    param2 = Altitude;
+    param2 = Usealtitude;
     param5 = Latitude;
     param6 = Longitude;
-    param7 = Altitude2;
+    param7 = Altitude;
 }
 void MavCmdConditionGate::unpack() {
     Geometry = param1;
-    Altitude = param2;
+    Usealtitude = param2;
     Latitude = param5;
     Longitude = param6;
-    Altitude2 = param7;
+    Altitude = param7;
 }
 void MavCmdNavFenceReturnPoint::pack() {
     param5 = Latitude;
@@ -6699,8 +6888,8 @@ void MavCmdPayloadPrepareDeploy::pack() {
     param2 = ApproachVector;
     param3 = GroundSpeed;
     param4 = AltitudeClearance;
-    param5 = LatitudeUnscaledFor;
-    param6 = LongitudeUnscaledFor;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdPayloadPrepareDeploy::unpack() {
@@ -6708,8 +6897,8 @@ void MavCmdPayloadPrepareDeploy::unpack() {
     ApproachVector = param2;
     GroundSpeed = param3;
     AltitudeClearance = param4;
-    LatitudeUnscaledFor = param5;
-    LongitudeUnscaledFor = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdPayloadControlDeploy::pack() {
@@ -6723,8 +6912,8 @@ void MavCmdWaypointUser1::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdWaypointUser1::unpack() {
@@ -6732,8 +6921,8 @@ void MavCmdWaypointUser1::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdWaypointUser2::pack() {
@@ -6741,8 +6930,8 @@ void MavCmdWaypointUser2::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdWaypointUser2::unpack() {
@@ -6750,8 +6939,8 @@ void MavCmdWaypointUser2::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdWaypointUser3::pack() {
@@ -6759,8 +6948,8 @@ void MavCmdWaypointUser3::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdWaypointUser3::unpack() {
@@ -6768,8 +6957,8 @@ void MavCmdWaypointUser3::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdWaypointUser4::pack() {
@@ -6777,8 +6966,8 @@ void MavCmdWaypointUser4::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdWaypointUser4::unpack() {
@@ -6786,8 +6975,8 @@ void MavCmdWaypointUser4::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdWaypointUser5::pack() {
@@ -6795,8 +6984,8 @@ void MavCmdWaypointUser5::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdWaypointUser5::unpack() {
@@ -6804,8 +6993,8 @@ void MavCmdWaypointUser5::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdSpatialUser1::pack() {
@@ -6813,8 +7002,8 @@ void MavCmdSpatialUser1::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdSpatialUser1::unpack() {
@@ -6822,8 +7011,8 @@ void MavCmdSpatialUser1::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdSpatialUser2::pack() {
@@ -6831,8 +7020,8 @@ void MavCmdSpatialUser2::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdSpatialUser2::unpack() {
@@ -6840,8 +7029,8 @@ void MavCmdSpatialUser2::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdSpatialUser3::pack() {
@@ -6849,8 +7038,8 @@ void MavCmdSpatialUser3::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdSpatialUser3::unpack() {
@@ -6858,8 +7047,8 @@ void MavCmdSpatialUser3::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdSpatialUser4::pack() {
@@ -6867,8 +7056,8 @@ void MavCmdSpatialUser4::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdSpatialUser4::unpack() {
@@ -6876,8 +7065,8 @@ void MavCmdSpatialUser4::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdSpatialUser5::pack() {
@@ -6885,8 +7074,8 @@ void MavCmdSpatialUser5::pack() {
     param2 = UserDefined2;
     param3 = UserDefined3;
     param4 = UserDefined4;
-    param5 = LatitudeUnscaled;
-    param6 = LongitudeUnscaled;
+    param5 = Latitude;
+    param6 = Longitude;
     param7 = Altitude;
 }
 void MavCmdSpatialUser5::unpack() {
@@ -6894,8 +7083,8 @@ void MavCmdSpatialUser5::unpack() {
     UserDefined2 = param2;
     UserDefined3 = param3;
     UserDefined4 = param4;
-    LatitudeUnscaled = param5;
-    LongitudeUnscaled = param6;
+    Latitude = param5;
+    Longitude = param6;
     Altitude = param7;
 }
 void MavCmdUser1::pack() {
@@ -7017,6 +7206,9 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_SET_MODE:
         result = new MavLinkSetMode();
+        break;
+    case MavLinkMessageIds::MAVLINK_MSG_ID_PARAM_ACK_TRANSACTION:
+        result = new MavLinkParamAckTransaction();
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_PARAM_REQUEST_READ:
         result = new MavLinkParamRequestRead();
@@ -7164,6 +7356,9 @@ MavLinkMessageBase* MavLinkMessageBase::lookup(const MavLinkMessage& msg) {
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_COMMAND_ACK:
         result = new MavLinkCommandAck();
+        break;
+    case MavLinkMessageIds::MAVLINK_MSG_ID_COMMAND_CANCEL:
+        result = new MavLinkCommandCancel();
         break;
     case MavLinkMessageIds::MAVLINK_MSG_ID_MANUAL_SETPOINT:
         result = new MavLinkManualSetpoint();
