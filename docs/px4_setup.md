@@ -14,8 +14,10 @@ The following Pixhawk hardware has been tested with AirSim:
 3. [PixFalcon](https://hobbyking.com/en_us/pixfalcon-micro-px4-autopilot.html?___store=en_us)
 4. [PixRacer](https://www.banggood.com/Pixracer-Autopilot-Xracer-V1_0-Flight-Controller-Mini-PX4-Built-in-Wifi-For-FPV-Racing-RC-Multirotor-p-1056428.html?utm_source=google&utm_medium=cpc_ods&utm_content=starr&utm_campaign=Smlrfpv-ds-FPVracer&gclid=CjwKEAjw9MrIBRCr2LPek5-h8U0SJAD3jfhtbEfqhX4Lu94kPe88Zrr62A5qVgx-wRDBuUulGzHELRoCRVTw_wcB)
 5. [Pixhawk 2.1](http://www.proficnc.com/) (using PX4 Flight Stack)
+6. [Pixhark 4 mini from Holybro](https://shop.holybro.com/pixhawk4-mini_p1120.html) (using PX4 1.9.2 firmware)
+7. [Pixhark 4 from Holybro](https://shop.holybro.com/pixhawk-4beta-launch_p1089.html) (using PX4 1.9.2 firmware)
 
-The 3DR Pixhawk Mini works out of the box, the others you may need to re-flash with the latest firmware.
+
 
 ## Setting up PX4 Hardware-in-Loop
 
