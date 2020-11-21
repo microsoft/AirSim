@@ -1402,7 +1402,7 @@ private: //methods
 
         mavlinkcom::MavLinkDistanceSensor distance_sensor;
 
-        distance_sensor.time_boot_ms = clock()->nowNanos() / 1000000;
+        distance_sensor.time_boot_ms = static_cast<uint32_t>(clock()->nowNanos() / 1000000);
         distance_sensor.min_distance = static_cast<uint16_t>(min_distance);
         distance_sensor.max_distance = static_cast<uint16_t>(max_distance);
         distance_sensor.current_distance = static_cast<uint16_t>(current_distance);
