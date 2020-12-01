@@ -1,7 +1,7 @@
 # Setting up PX4 Software-in-Loop
 
 The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux. If you are on Windows then you must
-use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) as the [Bash On Windows](https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html) toolchain no longer works for SITL.
+use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) (__version [0.8](https://github.com/PX4/PX4-windows-toolchain/releases/download/v0.8/PX4.Windows.Cygwin.Toolchain.0.8.msi) is recommended__) as the [Bash On Windows](https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html) toolchain no longer works for SITL.
 
 **Note** that every time you stop the unreal app you have to restart the `px4` app.
 
@@ -163,6 +163,10 @@ param set COM_OBL_ACT 1
 param set NAV_RCL_ACT 0
 param set NAV_DLL_ACT 0
 ```
+
+## Setting up multi-vehicle simulation
+
+You can simulate multiple drones in SITL mode using AirSim. However, this requires setting up multiple instances of the PX4 firmware simulator to be able to listen for each vehicle's connection on a separate TCP port (4560, 4561, etc). Please see [this dedicated page](px4_multi_vehicle.md) for instructions on setting up multiple instances of PX4 in SITL mode.
 
 ## Using VirtualBox Ubuntu
 
