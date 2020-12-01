@@ -74,12 +74,12 @@ bool MultirotorApiBase::goHome(float timeout_sec)
 
 bool MultirotorApiBase::moveByVelocityBodyFrame(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
 {
+    SingleTaskCall lock(this);
     float pitch, roll, yaw;
     VectorMath::toEulerianAngle(getKinematicsEstimated().pose.orientation, pitch, roll, yaw);
     float vx_new = (vx * (float)std::cos(yaw)) - (vy * (float)std::sin(yaw));
     float vy_new = (vx * (float)std::sin(yaw)) + (vy * (float)std::cos(yaw));
-    SingleTaskCall lock(this);
-
+    
     if (duration <= 0)
         return true;
     

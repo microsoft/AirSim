@@ -839,7 +839,7 @@ class MultirotorClient(VehicleClient, object):
         """
         Args:
             vx (float): desired velocity in the X axis of the vehicle's local NED frame.
-            vy (float): desired velocity in the y axis of the vehicle's local NED frame.
+            vy (float): desired velocity in the Y axis of the vehicle's local NED frame.
             vz (float): desired velocity in the Z axis of the vehicle's local NED frame.
             duration (float): Desired amount of time (seconds), to send this command for
             drivetrain (DrivetrainType, optional):
