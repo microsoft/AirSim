@@ -1,7 +1,7 @@
 # Setting up PX4 Software-in-Loop
 
 The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux. If you are on Windows then you must
-use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) (__version [0.8](https://github.com/PX4/PX4-windows-toolchain/releases/download/v0.8/PX4.Windows.Cygwin.Toolchain.0.8.msi) is recommended__) as the [Bash On Windows](https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html) toolchain no longer works for SITL.
+use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) as the [Bash On Windows](https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html) toolchain no longer works for SITL.
 
 **Note** that every time you stop the unreal app you have to restart the `px4` app.
 
@@ -16,6 +16,8 @@ use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cy
     cd Firmware
     git checkout v1.10.1 # recommended version 
     ```
+    **Note**: __Cygwin version [0.8](https://github.com/PX4/PX4-windows-toolchain/releases/download/v0.8/PX4.Windows.Cygwin.Toolchain.0.8.msi) is recommended for PX4 v1.10.1__
+
 3. Use following command to build and start PX4 firmware in SITL mode:
     ```
     make px4_sitl_default none_iris
