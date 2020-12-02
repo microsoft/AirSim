@@ -61,7 +61,7 @@ Specifically, the following messages tell you that AirSim is connected properly 
 5. You should also be able to use QGroundControl with SITL mode.  Make sure
 there is no Pixhawk hardware plugged in, otherwise QGroundControl will choose
 to use that instead.  Note that as we don't have a physical board, an RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to your PC. This makes your RC look like a joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.  You do not need to do this unless you plan to fly a drone manually in AirSim.  Autonomous flight using the Python
-API does not require RC, see `No Remote Control` below.
+API does not require RC, see [`No Remote Control`](px4_sitl.md#No-Remote-Control).
 
 # Starting SITL instances with PX4 console
 
@@ -70,15 +70,16 @@ Here is how you would do so:
 
 **Note** This script also assumes PX4 is built with `make px4_sitl_default none_iris` as shown [here](https://github.com/ahmed-elsaharti/AirSim/blob/docs-update/docs/px4_sitl.md#setting-up-px4-software-in-loop) before trying to run multiple PX4 instances.
 
-1. From your bash (or Cygwin) terminal go to the PX4 directory and get the scripts (make sure the scripts are in their subdirectory under the PX4 directory)
+1. From your bash (or Cygwin) terminal go to the PX4 directory and get the scripts (place them in a subdirectory called Scripts win the PX4 directory as shown)
     ```
     cd PX4
-    git clone https://github.com/ahmed-elsaharti/AirSim-multi-SITL.git
+    mkdir -p Scripts
+    wget https://raw.githubusercontent.com/microsoft/AirSim/main/PX4Scripts/sitl_kill.sh
+    wget https://raw.githubusercontent.com/microsoft/AirSim/main/PX4Scripts/run_airsim_sitl.sh
     ```
 
 2. Run the `sitl_kill.sh` script to kill all active PX4 SITL instances
     ```
-    cd AirSim-multi-SITL
     ./sitl_kill.sh
     ```
     
@@ -101,10 +102,10 @@ Here is how you would do so:
     INFO  [dataman] Unknown restart, data manager file './dataman' size is 11798680 bytes
     INFO  [simulator] Waiting for simulator to connect on TCP port 4560
     ```
-4. Open a new terminal and go to the AirSim-multi-SITL directory and start the next instance
+4. Open a new terminal and go to the Scripts directory and start the next instance
     ```
     cd PX4
-    cd AirSim-multi-SITL
+    cd Scripts
     ./run_airsim_sitl.sh 1  # ,2,3,4,..,etc
     ```
 
