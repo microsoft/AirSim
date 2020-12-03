@@ -16,3 +16,9 @@ jobs:
 
       - name: Build AirLib
         run: ./build.sh
+
+      - name: Unity Build
+        run: |
+          sudo apt-get install libboost-all-dev
+          cd Unity
+          ./build.sh

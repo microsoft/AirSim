@@ -14,6 +14,12 @@ jobs:
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.4.1
 
-      - name: Build
+      - name: Build AirLib
         shell: cmd
         run: build.cmd
+
+      - name: Unity build
+        shell: cmd
+        run: |
+          cd Unity
+          build.cmd
