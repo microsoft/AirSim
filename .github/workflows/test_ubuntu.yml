@@ -7,7 +7,6 @@ jobs:
   build:
     runs-on: ubuntu-18.04
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
 
@@ -22,3 +21,10 @@ jobs:
           sudo apt-get install libboost-all-dev
           cd Unity
           ./build.sh
+
+      - name: Build ROS Wrapper
+        run: |
+          ./tools/install_ros_deps.sh
+          source /opt/ros/*/setup.bash
+          cd ros
+          catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
