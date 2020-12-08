@@ -37,6 +37,7 @@ Below are complete list of settings available along with their default values. I
   "ClockType": "",
   "ClockSpeed": 1,
   "LocalHostIp": "127.0.0.1",
+  "ApiServerPort": 41451,
   "RecordUIVisible": true,
   "LogMessagesVisible": true,
   "ViewMode": "",
