@@ -220,6 +220,17 @@ void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
 	SetCameraFoV(camera_name.c_str(), fov_degrees, params_.vehicle_name.c_str());
 }
 
+void PawnSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value)
+{
+	// not implemented
+}
+
+std::vector<float> PawnSimApi::getDistortionParams(const std::string& camera_name)
+{
+	// not implemented
+}
+
+
 //parameters in NED frame
 PawnSimApi::Pose PawnSimApi::getPose() const
 {

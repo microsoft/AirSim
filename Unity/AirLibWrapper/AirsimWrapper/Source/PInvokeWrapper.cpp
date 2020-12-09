@@ -13,6 +13,8 @@ AirSimCarState(*GetCarState)(const char* vehicleName);
 AirSimCameraInfo(*GetCameraInfo)(const char* cameraName, const char* vehicleName);
 bool(*SetCameraPose)(const char* cameraName, AirSimPose pose, const char* vehicleName);
 bool(*SetCameraFoV)(const char* cameraName, const float fov_degrees, const char* vehicleName);
+bool(*SetCameraDistortionParam)(const char* cameraName, const char* paramName, const float value, const char* vehicleName);
+bool(*GetCameraDistortionParam)(const char* cameraName, const char* vehicleName);
 bool(*SetSegmentationObjectId)(const char* meshName, int objectId, bool isNameRegex);
 int(*GetSegmentationObjectId)(const char* meshName);
 bool(*PrintLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity);
@@ -35,6 +37,8 @@ void InitVehicleManager(
 	AirSimCameraInfo(*getCameraInfo)(const char* cameraName, const char* vehicleName),
 	bool(*setCameraPose)(const char* cameraName, AirSimPose pose, const char* vehicleName),
 	bool(*setCameraFoV)(const char* cameraName, const float fov_degrees, const char* vehicleName),
+	bool(*setDistortionParam)(const char* cameraName, const char* paramName, const float value, const char* vehicleName),
+	bool(*getDistortionParams)(const char* cameraName, const char* vehicleName),
 	bool(*setSegmentationObjectId)(const char* meshName, int objectId, bool isNameRegex),
 	int(*getSegmentationObjectId)(const char* meshName),
 	bool(*printLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity),
@@ -57,6 +61,8 @@ void InitVehicleManager(
 	GetCameraInfo = getCameraInfo;
 	SetCameraPose = setCameraPose;
 	SetCameraFoV = setCameraFoV;
+	SetCameraDistortionParam = setDistortionParam;
+	GetCameraDistortionParams = getDistortionParams;
 	SetSegmentationObjectId = setSegmentationObjectId;
 	GetSegmentationObjectId = getSegmentationObjectId;
 	PrintLogMessage = printLogMessage;
