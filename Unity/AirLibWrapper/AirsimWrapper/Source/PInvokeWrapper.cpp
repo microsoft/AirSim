@@ -14,7 +14,7 @@ AirSimCameraInfo(*GetCameraInfo)(const char* cameraName, const char* vehicleName
 bool(*SetCameraPose)(const char* cameraName, AirSimPose pose, const char* vehicleName);
 bool(*SetCameraFoV)(const char* cameraName, const float fov_degrees, const char* vehicleName);
 bool(*SetCameraDistortionParam)(const char* cameraName, const char* paramName, const float value, const char* vehicleName);
-bool(*GetCameraDistortionParam)(const char* cameraName, const char* vehicleName);
+bool(*GetCameraDistortionParams)(const char* cameraName, const char* vehicleName);
 bool(*SetSegmentationObjectId)(const char* meshName, int objectId, bool isNameRegex);
 int(*GetSegmentationObjectId)(const char* meshName);
 bool(*PrintLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity);

@@ -28,7 +28,7 @@ extern AirSimCameraInfo(*GetCameraInfo)(const char* cameraName, const char* vehi
 extern bool(*SetCameraPose)(const char* cameraName, AirSimPose pose, const char* vehicleName);
 extern bool(*SetCameraFoV)(const char* cameraName, const float fov_degrees, const char* vehicleName);
 extern bool(*SetCameraDistortionParam)(const char* cameraName, const char* paramName, const float value, const char* vehicleName);
-extern bool(*GetCameraDistortionParam)(const char* cameraName, const char* vehicleName);
+extern bool(*GetCameraDistortionParams)(const char* cameraName, const char* vehicleName);
 extern bool(*SetSegmentationObjectId)(const char* meshName, int objectId, bool isNameRegex);
 extern int(*GetSegmentationObjectId)(const char* meshName);
 extern bool(*PrintLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity);
