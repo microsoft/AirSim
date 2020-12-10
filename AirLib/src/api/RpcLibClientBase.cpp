@@ -406,6 +406,11 @@ msr::airlib::Environment::State RpcLibClientBase::simGetGroundTruthEnvironment(c
 {
     return pimpl_->client.call("simGetGroundTruthEnvironment", vehicle_name).as<RpcLibAdapatorsBase::EnvironmentState>().to();;
 }
+void RpcLibClientBase::simCreateVoxelGrid(const msr::airlib::Vector3r& position, const int& x, const int& y, const int& z, const float& res, const std::string& output_file)
+{
+    pimpl_->client.call("simCreateVoxelGrid", RpcLibAdapatorsBase::Vector3r(position), x, y, z, res, output_file);
+}
+
 
 void RpcLibClientBase::cancelLastTask(const std::string& vehicle_name)
 {
