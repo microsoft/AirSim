@@ -114,8 +114,6 @@ class EventSimulator:
         self.event_count = 0
         self.spikes = np.zeros((self.npix))
 
-    # One of the trick here for good performance is to avoid allocating
-    # memory here because we will be calling it very often
     def image_callback(self, new_image, new_time):
         if self.last_image is None:
             self.init(new_image, new_time)
@@ -125,7 +123,6 @@ class EventSimulator:
         assert new_image.shape == self.resolution
         new_image = new_image.reshape(-1)  # Free operation
 
-        # Copy is faster than reallocating memory
         np.copyto(self.current_image, new_image)
 
         delta_time = new_time - self.last_time
@@ -158,5 +155,3 @@ class EventSimulator:
         result.sort(order=["timestamp"], axis=0)
 
         return self.spikes, result
-
-        # TODO sort events or insert them into a heap
