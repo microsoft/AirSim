@@ -170,7 +170,7 @@ void WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
     voxel_grid_.resize(ncells_x * ncells_y * ncells_z);
 
     int ctr = 0;
-    float scale = 1 / res;
+    float scale = res;
     float scale_cm = scale * 100;
     FCollisionQueryParams params;
     params.bFindInitialOverlaps = true;
@@ -182,7 +182,7 @@ void WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
             for (float j = 0; j < ncells_y; j++) {
                 int idx = i + ncells_x * (k + ncells_z * j);
                 FVector position = FVector((i - ncells_x /2) * scale_cm, (j - ncells_y /2) * scale_cm, (k - ncells_z /2) * scale_cm) + position_in_UE_frame;
-                voxel_grid_[idx] = (unsigned int)simmode_->GetWorld()->OverlapBlockingTestByChannel(position, FQuat::Identity, ECollisionChannel::ECC_Pawn, FCollisionShape::MakeBox(FVector(res/50)), params);
+                voxel_grid_[idx] = (unsigned int)simmode_->GetWorld()->OverlapBlockingTestByChannel(position, FQuat::Identity, ECollisionChannel::ECC_Pawn, FCollisionShape::MakeBox(FVector(scale_cm /2)), params);
 
             }
         }
@@ -199,8 +199,8 @@ void WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
     // where each pair of bytes is of the format (run value, run length)
     *output << "#binvox 1\n";
     *output << "dim " << ncells_x << " " << ncells_z << " " << ncells_y << "\n";
-    *output << "translate " << int(-x_size/2) << " " << int(-y_size / 2) << " " << int(-z_size / 2) << "\n";
-    *output << "scale " << scale << "\n";
+    *output << "translate " << int(-x_size/2) << " " << int(-y_size / 2) << " " << 0 << "\n";
+    *output << "scale " << 1/x_size << "\n";
     *output << "data\n";
     bool run_value = voxel_grid_[0];
     unsigned int run_length = 0;
