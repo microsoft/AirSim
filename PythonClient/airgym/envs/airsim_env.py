@@ -2,11 +2,8 @@ import numpy as np
 import airsim
 
 import gym
-from gym import error, spaces, utils
+from gym import spaces
 from gym.utils import seeding
-from gym.spaces import Tuple, Box, Discrete, MultiDiscrete
-
-from collections import OrderedDict
 
 
 class AirSimEnv(gym.Env):
@@ -121,7 +118,7 @@ class AirSimDroneEnv(AirSimEnv):
         self.drone.armDisarm(True)
         self.drone.moveToPositionAsync(0, 0, -2, 2).join()
 
-    def _get_obs(self):
+    def get_observation(self):
         response = self.drone.simGetImages([self.image_request])
         image = np.reshape(
             np.fromstring(response[0].image_data_uint8, dtype=np.uint8),
@@ -137,7 +134,7 @@ class AirSimDroneEnv(AirSimEnv):
 
         return image
 
-    def _compute_reward(self):
+    def compute_reward(self):
         pos = self.state["position"]
         current_pos = airsim.Vector3r(pos[0], pos[1], pos[2])
         done = False
@@ -190,6 +187,135 @@ class AirSimDroneEnv(AirSimEnv):
                     float(action[2]),
                     float(action[3]),
                 )
+
+    def step(self, action):
+        self._do_action(action)
+        obs = self._get_obs()
+        reward, done = self._compute_reward()
+
+        return obs, reward, done, self.state
+
+    def reset(self):
+        self._setup_flight()
+        self._get_obs()
+
+    def actions_to_op(self, action):
+        return self.discrete_action_dict[action]
+
+
+class AirSimCarEnv(AirSimEnv):
+    def __init__(
+        self, ip_address, action_type, control_type, step_length, image_shape, goal
+    ):
+        super().__init__(image_shape)
+
+        self.step_length = step_length
+        self.action_type = action_type
+        self.control_type = control_type
+        self.image_shape = image_shape
+        self.goal = airsim.Vector3r(goal[0], goal[1], goal[2])
+        self.start_ts = 0
+
+        if self.action_type is "discrete":
+            self.action_space = spaces.Discrete(6)
+
+            if control_type is not "position" and not "velocity":
+                print(
+                    "Invalid control type for discrete actions. Defaulting to position"
+                )
+                self.control_type = "position"
+            else:
+                self.control_type = control_type
+
+        elif self.action_type is "continuous":
+            self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(4,))
+            if control_type is not "rate" and not "pwm":
+                print("Invalid control type for continuous actions. Defaulting to rate")
+                self.control_type = "rate"
+            else:
+                self.control_type = control_type
+        else:
+            print(
+                "Must choose an action type {'discrete','continuous'}. Defaulting to discrete."
+            )
+            self.action_space = spaces.Discrete(6)
+            self.control_type = "position"
+
+        self.state = {
+            "position": np.zeros(3),
+            "collision": False,
+            "prev_position": np.zeros(3),
+        }
+
+        self.car = airsim.CarClient(ip=ip_address)
+
+        self.image_request = airsim.ImageRequest(
+            "front_center", airsim.ImageType.Scene, False, False
+        )
+
+        self.self.car_controls = airsim.CarControls()
+
+    def __del__(self):
+        self.drone.reset()
+
+    def _setup_flight(self):
+        self.drone.reset()
+        self.drone.enableApiControl(True)
+        self.drone.armDisarm(True)
+        self.drone.moveToPositionAsync(0, 0, -2, 2).join()
+
+    def _get_obs(self):
+        response = self.drone.simGetImages([self.image_request])
+        image = np.reshape(
+            np.fromstring(response[0].image_data_uint8, dtype=np.uint8),
+            self.image_shape,
+        )
+        _drone_state = self.drone.getMultirotorState()
+        position = _drone_state.kinematics_estimated.position.to_numpy_array()
+        collision = self.drone.simGetCollisionInfo().has_collided
+
+        self.state["prev_position"] = self.state["position"]
+        self.state["position"] = position
+        self.state["collision"] = collision
+
+        return image
+
+    def _compute_reward(self):
+        pos = self.state["position"]
+        current_pos = airsim.Vector3r(pos[0], pos[1], pos[2])
+        done = False
+
+        if current_pos == self.goal:
+            done = True
+            reward = 100
+            return reward, done
+        elif self.state["collision"] == True:
+            done = True
+            reward = -100
+
+        dist = current_pos.distance_to(self.goal)
+        reward += abs(pos[1]) - abs(prev_pos[1])
+
+        return reward, done
+
+    def take_action(self, action):
+        self.car_controls.brake = 0
+        self.car_controls.throttle = 1
+        if action == 0:
+            self.car_controls.throttle = 0
+            self.car_controls.brake = 1
+        elif action == 1:
+            self.car_controls.steering = 0
+        elif action == 2:
+            self.car_controls.steering = 0.5
+        elif action == 3:
+            self.car_controls.steering = -0.5
+        elif action == 4:
+            self.car_controls.steering = 0.25
+        else:
+            self.car_controls.steering = -0.25
+
+        self.car.setCarControls(self.car_controls)
 
     def step(self, action):
         self._do_action(action)
