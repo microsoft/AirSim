@@ -801,7 +801,7 @@ class VehicleClient:
             of (str): Name of output file to save voxel grid as
 
         """
-        self.client.call('simCreateVoxelGrid', position, x, y, z, res, of)
+        return self.client.call('simCreateVoxelGrid', position, x, y, z, res, of)
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):

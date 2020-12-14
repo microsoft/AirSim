@@ -161,8 +161,9 @@ AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, c
     return NewActor;
 }
 
-void WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
+bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
 {
+    bool success = false;
     int ncells_x = x_size / res;
     int ncells_y = y_size / res;
     int ncells_z = z_size / res;
@@ -189,8 +190,8 @@ void WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
     std::ofstream output(output_file, std::ios::out | std::ios::binary);
     if (!output.good())
     {
-        std::cerr << "Error: Could not open output file " << &output << "!" << std::endl;
-        exit(1);
+        UE_LOG(LogTemp, Error, TEXT("Could not open output file for voxel grid!"));
+        return success;
     }
 
     // Write the binvox file using run-length encoding
@@ -230,6 +231,8 @@ void WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
         output << static_cast<char>(run_length);
     }
     output.close();
+    success = true;
+    return success;
 }
 
 bool WorldSimApi::isPaused() const
