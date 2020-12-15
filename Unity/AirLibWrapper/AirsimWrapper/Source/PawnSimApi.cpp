@@ -228,6 +228,8 @@ void PawnSimApi::setDistortionParam(const std::string& camera_name, const std::s
 std::vector<float> PawnSimApi::getDistortionParams(const std::string& camera_name)
 {
 	// not implemented
+	std::vector<float> params(5, 0.0);
+	return params;
 }
 
 
