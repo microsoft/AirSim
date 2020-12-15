@@ -1,44 +1,10 @@
-import numpy as np
+import setup_path
 import airsim
-
-import gym
-from gym import spaces
-from gym.utils import seeding
-
-
-class AirSimEnv(gym.Env):
-    metadata = {"render.modes": ["rgb_array"]}
-
-    def __init__(self, image_shape):
-        self.observation_space = spaces.Box(0, 255, shape=image_shape, dtype=np.uint8)
-        self._seed()
-
-        self.viewer = None
-        self.steps = 0
-        self.no_episode = 0
-        self.reward_sum = 0
-
-    def __del__(self):
-        raise NotImplementedError()
-
-    def _seed(self, seed=None):
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
-
-    def _compute_reward(self):
-        raise NotImplementedError()
-
-    def step(self, action):
-        raise NotImplementedError()
-
-    def _get_obs(self):
-        raise NotImplementedError()
-
-    def close(self):
-        raise NotImplementedError()
-
-    def render(self):
-        return self._get_obs()
+import numpy as np
+import math
+import time
+from argparse import ArgumentParser
+from airgym.envs.airsim_env import AirSimEnv
 
 
 class AirSimDroneEnv(AirSimEnv):
@@ -118,7 +84,7 @@ class AirSimDroneEnv(AirSimEnv):
         self.drone.armDisarm(True)
         self.drone.moveToPositionAsync(0, 0, -2, 2).join()
 
-    def get_observation(self):
+    def _get_obs(self):
         response = self.drone.simGetImages([self.image_request])
         image = np.reshape(
             np.fromstring(response[0].image_data_uint8, dtype=np.uint8),
@@ -133,24 +99,6 @@ class AirSimDroneEnv(AirSimEnv):
         self.state["collision"] = collision
 
         return image
-
-    def compute_reward(self):
-        pos = self.state["position"]
-        current_pos = airsim.Vector3r(pos[0], pos[1], pos[2])
-        done = False
-
-        if current_pos == self.goal:
-            done = True
-            reward = 100
-            return reward, done
-        elif self.state["collision"] == True:
-            done = True
-            reward = -100
-
-        dist = current_pos.distance_to(self.goal)
-        reward += abs(pos[1]) - abs(prev_pos[1])
-
-        return reward, done
 
     def _do_action(self, action):
         if self.action_type is "discrete":
@@ -188,88 +136,49 @@ class AirSimDroneEnv(AirSimEnv):
                     float(action[3]),
                 )
 
-    def step(self, action):
-        self._do_action(action)
-        obs = self._get_obs()
-        reward, done = self._compute_reward()
-
-        return obs, reward, done, self.state
-
-    def reset(self):
-        self._setup_flight()
-        self._get_obs()
-
-    def actions_to_op(self, action):
-        return self.discrete_action_dict[action]
-
-
-class AirSimCarEnv(AirSimEnv):
-    def __init__(self, ip_address, image_shape):
-        super().__init__(image_shape)
-
-        self.image_shape = image_shape
-        self.start_ts = 0
-
-        self.state = {
-            "position": np.zeros(3),
-            "collision": False,
-            "prev_position": np.zeros(3),
-        }
-
-        self.car = airsim.CarClient(ip=ip_address)
-
-        self.image_request = airsim.ImageRequest(
-            "front_center", airsim.ImageType.Scene, False, False
-        )
-
-        self.car_controls = airsim.CarControls()
-
-    def __del__(self):
-        self.drone.reset()
-
-    def _setup_car(self):
-        self.drone.reset()
-        self.drone.enableApiControl(True)
-        self.drone.armDisarm(True)
-        self.drone.moveToPositionAsync(0, 0, -2, 2).join()
-
-    def _get_obs(self):
-        response = self.drone.simGetImages([self.image_request])
-        image = np.reshape(
-            np.fromstring(response[0].image_data_uint8, dtype=np.uint8),
-            self.image_shape,
-        )
-        _drone_state = self.drone.getMultirotorState()
-        position = _drone_state.kinematics_estimated.position.to_numpy_array()
-        collision = self.drone.simGetCollisionInfo().has_collided
-
-        self.state["prev_position"] = self.state["position"]
-        self.state["position"] = position
-        self.state["collision"] = collision
-
-        return image
-
     def compute_reward(self):
-        NotImplemented()
+        thresh_dist = 7
+        beta = 1
 
-    def take_action(self, action):
-        self.car_controls.brake = 0
-        self.car_controls.throttle = 1
-        if action == 0:
-            self.car_controls.throttle = 0
-            self.car_controls.brake = 1
-        elif action == 1:
-            self.car_controls.steering = 0
-        elif action == 2:
-            self.car_controls.steering = 0.5
-        elif action == 3:
-            self.car_controls.steering = -0.5
-        elif action == 4:
-            self.car_controls.steering = 0.25
+        z = -10
+        pts = [
+            np.array([-0.55265, -31.9786, -19.0225]),
+            np.array([48.59735, -63.3286, -60.07256]),
+            np.array([193.5974, -55.0786, -46.32256]),
+            np.array([369.2474, 35.32137, -62.5725]),
+            np.array([541.3474, 143.6714, -32.07256]),
+        ]
+
+        quad_pt = np.array(list((quad_state.x_val, quad_state.y_val, quad_state.z_val)))
+
+        if collision_info.has_collided:
+            reward = -100
         else:
-            self.car_controls.steering = -0.25
+            dist = 10000000
+            for i in range(0, len(pts) - 1):
+                dist = min(
+                    dist,
+                    np.linalg.norm(np.cross((quad_pt - pts[i]), (quad_pt - pts[i + 1])))
+                    / np.linalg.norm(pts[i] - pts[i + 1]),
+                )
 
-        self.car.setCarControls(self.car_controls)
+            # print(dist)
+            if dist > thresh_dist:
+                reward = -10
+            else:
+                reward_dist = math.exp(-beta * dist) - 0.5
+                reward_speed = (
+                    np.linalg.norm([quad_vel.x_val, quad_vel.y_val, quad_vel.z_val])
+                    - 0.5
+                )
+                reward = reward_dist + reward_speed
+
+        done = 0
+        if reward <= -10:
+            done = 1
+        return done
+
+        return reward, done
 
     def step(self, action):
         self._do_action(action)
