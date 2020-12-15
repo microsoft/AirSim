@@ -8,41 +8,13 @@ from airgym.envs.airsim_env import AirSimEnv
 
 
 class AirSimDroneEnv(AirSimEnv):
-    def __init__(
-        self, ip_address, action_type, control_type, step_length, image_shape, goal
-    ):
+    def __init__(self, ip_address, image_shape):
         super().__init__(image_shape)
 
         self.step_length = step_length
         self.action_type = action_type
         self.control_type = control_type
         self.image_shape = image_shape
-        self.goal = airsim.Vector3r(goal[0], goal[1], goal[2])
-        self.start_ts = 0
-
-        if self.action_type is "discrete":
-            self.action_space = spaces.Discrete(6)
-            if control_type is not "position" and not "velocity":
-                print(
-                    "Invalid control type for discrete actions. Defaulting to position"
-                )
-                self.control_type = "position"
-            else:
-                self.control_type = control_type
-
-        elif self.action_type is "continuous":
-            self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(4,))
-            if control_type is not "rate" and not "pwm":
-                print("Invalid control type for continuous actions. Defaulting to rate")
-                self.control_type = "rate"
-            else:
-                self.control_type = control_type
-        else:
-            print(
-                "Must choose an action type {'discrete','continuous'}. Defaulting to discrete."
-            )
-            self.action_space = spaces.Discrete(6)
-            self.control_type = "position"
 
         self.state = {
             "position": np.zeros(3),
@@ -64,7 +36,10 @@ class AirSimDroneEnv(AirSimEnv):
         self.drone.reset()
         self.drone.enableApiControl(True)
         self.drone.armDisarm(True)
-        self.drone.moveToPositionAsync(0, 0, -2, 2).join()
+        self.drone.takeoffAsync().join()
+        self.drone.moveToPositionAsync(initX, initY, initZ, 5).join()
+        self.drone.moveByVelocityAsync(1, -0.67, -0.8, 5).join()
+        time.sleep(0.5)
 
     def _get_obs(self):
         response = self.drone.simGetImages([self.image_request])
@@ -72,51 +47,27 @@ class AirSimDroneEnv(AirSimEnv):
             np.fromstring(response[0].image_data_uint8, dtype=np.uint8),
             self.image_shape,
         )
-        _drone_state = self.drone.getMultirotorState()
-        position = _drone_state.kinematics_estimated.position.to_numpy_array()
-        collision = self.drone.simGetCollisionInfo().has_collided
+        self.drone_state = self.drone.getMultirotorState()
 
         self.state["prev_position"] = self.state["position"]
-        self.state["position"] = position
+        self.state["position"] = self.drone_state.kinematics_estimated.position
+        self.state["velocity"] = self.drone_state.kinematics_estimated.linear_velocity
+
+        collision = self.drone.simGetCollisionInfo().has_collided
         self.state["collision"] = collision
 
         return image
 
     def _do_action(self, action):
-        if self.action_type is "discrete":
-            command = self.action_to_command(action)
-            if self.control_type is "position":
-                pos = self.state["position"]
-                self.pose.position.x_val = float(pos[0] + action[0])
-                self.pose.position.y_val = float(pos[1] + action[1])
-                self.pose.position.z_val = float(pos[2] + action[2])
-                self.drone.simSetVehiclePose(self.pose, False)
-
-            elif self.control_type is "velocity":
-                self.drone.moveByVelocityZAsync(
-                    float(action[0]),
-                    float(action[1]),
-                    float(action[2]),
-                    self.step_length,
-                ).join()
-
-        elif self.action_type is "continuous":
-            if self.control_type is "rate":
-                self.drone.moveByRollPitchYawrateThrottleAsync(
-                    float(action[0]),
-                    float(action[1]),
-                    float(action[2]),
-                    float(action[3]),
-                    self.step_length,
-                ).join()
-
-            elif self.control_type == "pwm":
-                self.drone.moveByMotorPWMsAsync(
-                    float(action[0]),
-                    float(action[1]),
-                    float(action[2]),
-                    float(action[3]),
-                )
+        quad_offset = self.interpret_action(action)
+        quad_vel = self.drone.getMultirotorState().kinematics_estimated.linear_velocity
+        self.drone.moveByVelocityAsync(
+            quad_vel.x_val + quad_offset[0],
+            quad_vel.y_val + quad_offset[1],
+            quad_vel.z_val + quad_offset[2],
+            5,
+        ).join()
+        time.sleep(0.5)
 
     def compute_reward(self):
         thresh_dist = 7
@@ -131,7 +82,15 @@ class AirSimDroneEnv(AirSimEnv):
             np.array([541.3474, 143.6714, -32.07256]),
         ]
 
-        quad_pt = np.array(list((quad_state.x_val, quad_state.y_val, quad_state.z_val)))
+        quad_pt = np.array(
+            list(
+                (
+                    self.state["position"].x_val,
+                    self.state["position"].y_val,
+                    self.state["position"].z_val,
+                )
+            )
+        )
 
         if collision_info.has_collided:
             reward = -100
@@ -150,7 +109,13 @@ class AirSimDroneEnv(AirSimEnv):
             else:
                 reward_dist = math.exp(-beta * dist) - 0.5
                 reward_speed = (
-                    np.linalg.norm([quad_vel.x_val, quad_vel.y_val, quad_vel.z_val])
+                    np.linalg.norm(
+                        [
+                            self.state["velocity"].x_val,
+                            self.state["velocity"].y_val,
+                            self.state["velocity"].z_val,
+                        ]
+                    )
                     - 0.5
                 )
                 reward = reward_dist + reward_speed
@@ -172,3 +137,22 @@ class AirSimDroneEnv(AirSimEnv):
     def reset(self):
         self._setup_flight()
         self._get_obs()
+
+    def interpret_action(self, action):
+        scaling_factor = 0.25
+        if action == 0:
+            quad_offset = (0, 0, 0)
+        elif action == 1:
+            quad_offset = (scaling_factor, 0, 0)
+        elif action == 2:
+            quad_offset = (0, scaling_factor, 0)
+        elif action == 3:
+            quad_offset = (0, 0, scaling_factor)
+        elif action == 4:
+            quad_offset = (-scaling_factor, 0, 0)
+        elif action == 5:
+            quad_offset = (0, -scaling_factor, 0)
+        elif action == 6:
+            quad_offset = (0, 0, -scaling_factor)
+
+        return quad_offset
