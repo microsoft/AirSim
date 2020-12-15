@@ -35,7 +35,7 @@ def esim(
     n_pix_row,
 ):
     count = 0
-    maxSpikes = int(delta_time / (refractory_period_ns * 1e-3))
+    max_spikes = int(delta_time / (refractory_period_ns * 1e-3))
     for x in prange(x_end):
         itdt = np.log(current_image[x])
         it = np.log(previous_image[x])
@@ -46,34 +46,34 @@ def esim(
 
         pol = np.sign(deltaL)
 
-        crossUpdate = pol * TOL
-        crossings[x] = np.log(crossings[x]) + crossUpdate
+        cross_update = pol * TOL
+        crossings[x] = np.log(crossings[x]) + cross_update
 
         lb = crossings[x] - it
         ub = crossings[x] - itdt
 
-        posCheck = lb > 0 and (pol == 1) and ub < 0
-        negCheck = lb < 0 and (pol == -1) and ub > 0
+        pos_check = lb > 0 and (pol == 1) and ub < 0
+        neg_check = lb < 0 and (pol == -1) and ub > 0
 
-        spikeNums = (itdt - crossings[x]) / TOL
-        crossCheck = posCheck + negCheck
-        spikeNums = np.abs(int(spikeNums * crossCheck))
+        spike_nums = (itdt - crossings[x]) / TOL
+        cross_check = pos_check + neg_check
+        spike_nums = np.abs(int(spike_nums * cross_check))
 
-        crossings[x] = itdt - crossUpdate
-        if spikeNums > 0:
+        crossings[x] = itdt - cross_update
+        if spike_nums > 0:
             spikes[x] = pol
 
-        spikeNums = maxSpikes if spikeNums > maxSpikes else spikeNums
+        spike_nums = max_spikes if spike_nums > max_spikes else spike_nums
 
         current_time = last_time
-        for i in range(spikeNums):
+        for i in range(spike_nums):
             output_events[count].x = x // n_pix_row
             output_events[count].y = x % n_pix_row
             output_events[count].timestamp = np.round(current_time * 1e-6, 6)
             output_events[count].polarity = 1 if pol > 0 else -1
 
             count += 1
-            current_time += (delta_time) / spikeNums
+            current_time += (delta_time) / spike_nums
 
             if count == max_events_per_frame:
                 return count
