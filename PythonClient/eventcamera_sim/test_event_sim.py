@@ -3,8 +3,14 @@ import airsim
 import time
 import cv2
 import matplotlib.pyplot as plt
-
+import argparse
+import sys, signal
 from event_simulator import *
+
+parser = argparse.ArgumentParser(description="Simulate event data from AirSim")
+parser.add_argument("--debug", action="store_true")
+parser.add_argument("--height", type=int, default=144)
+parser.add_argument("--width", type=int, default=256)
 
 
 class AirSimEventGen:
@@ -44,11 +50,20 @@ class AirSimEventGen:
         return out
 
 
+def _stop_event_gen(signal, frame):
+    print("\nCtrl+C received. Stopping event sim...")
+    sys.exit(0)
+
+
 if __name__ == "__main__":
-    event_generator = AirSimEventGen(256, 144, debug=True)
+    args = parser.parse_args()
+
+    event_generator = AirSimEventGen(args.W, args.H, debug=args.debug)
     i = 0
     start_time = 0
     t_start = time.time()
+
+    signal.signal(signal.SIGINT, event_generator._stop_gen)
 
     while True:
         image_request = airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)
@@ -82,7 +97,7 @@ if __name__ == "__main__":
 
         if events is not None and events.shape[0] > 0:
             bytestream = events.tolist()
-            print(len(bytestream))
 
-            event_generator.visualize_events(event_img)
-
+            if event_generator.debug:
+                print(len(bytestream))
+                event_generator.visualize_events(event_img)
