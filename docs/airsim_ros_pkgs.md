@@ -253,7 +253,7 @@ From within Windows, the WSL distribution's files are located at (type in window
    `\\wsl$\Ubuntu-18.04`
    
 #### How to run Airsim on Windows and ROS wrapper on WSL
-You need to have the same setting.json content for the simulator and WSL (e.g., in each Documents\Airsim folder), and due to a bug, the drone needs to have the name "SimpleFlight" in the settings.  
+You need to have the same setting.json content for the simulator and WSL (e.g., in each Documents\Airsim folder).
 For WSL 1 execute:  
 `export WSL_HOST_IP=127.0.0.1`  
 and for WSL 2:  
