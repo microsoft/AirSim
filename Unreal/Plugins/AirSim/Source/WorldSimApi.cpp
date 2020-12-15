@@ -170,7 +170,6 @@ bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
     
     voxel_grid_.resize(ncells_x * ncells_y * ncells_z);
 
-    int ctr = 0;
     float scale_cm = res * 100;
     FCollisionQueryParams params;
     params.bFindInitialOverlaps = true;
@@ -190,7 +189,7 @@ bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
     std::ofstream output(output_file, std::ios::out | std::ios::binary);
     if (!output.good())
     {
-        UE_LOG(LogTemp, Error, TEXT("Could not open output file for voxel grid!"));
+        UE_LOG(LogTemp, Error, TEXT("Could not open output file to write voxel grid!"));
         return success;
     }
 
@@ -198,8 +197,8 @@ bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
     // where each pair of bytes is of the format (run value, run length)
     output << "#binvox 1\n";
     output << "dim " << ncells_x << " " << ncells_z << " " << ncells_y << "\n";
-    output << "translate " << int(-x_size/2) << " " << int(-y_size / 2) << " " << int(-z_size/2) << "\n";
-    output << "scale " << 1/x_size << "\n";
+    output << "translate " << -x_size * 0.5 << " " << -y_size * 0.5 << " " << -z_size * 0.5 << "\n";
+    output << "scale " << 1.0f/x_size << "\n";
     output << "data\n";
     bool run_value = voxel_grid_[0];
     unsigned int run_length = 0;
