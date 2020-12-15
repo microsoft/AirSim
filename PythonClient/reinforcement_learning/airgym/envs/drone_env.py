@@ -136,7 +136,7 @@ class AirSimDroneEnv(AirSimEnv):
 
     def reset(self):
         self._setup_flight()
-        self._get_obs()
+        return self._get_obs()
 
     def interpret_action(self, action):
         scaling_factor = 0.25

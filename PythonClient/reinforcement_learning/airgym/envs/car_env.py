@@ -3,7 +3,9 @@ import airsim
 import numpy as np
 import math
 import time
-from argparse import ArgumentParser
+
+import gym
+from gym import spaces
 from airgym.envs.airsim_env import AirSimEnv
 
 
@@ -24,7 +26,7 @@ class AirSimCarEnv(AirSimEnv):
         self.action_space = spaces.Discrete(6)
 
         self.image_request = airsim.ImageRequest(
-            "front_center", airsim.ImageType.Scene, False, False
+            "0", airsim.ImageType.DepthPerspective, True, False
         )
 
         self.car_controls = airsim.CarControls()
@@ -34,12 +36,18 @@ class AirSimCarEnv(AirSimEnv):
         self.state["prev_pose"] = None
         self.state["collision"] = None
 
+    def _setup_car(self):
+        self.car.reset()
+        self.car.enableApiControl(True)
+        self.car.armDisarm(True)
+        time.sleep(0.01)
+
     def __del__(self):
         self.car.reset()
 
     def _do_action(self, action):
         self.car_controls.brake = 0
-        self.car_controls.throttle = 1
+        self.car_controls.throttle = 5
         if action == 0:
             self.car_controls.throttle = 0
             self.car_controls.brake = 1
@@ -55,13 +63,24 @@ class AirSimCarEnv(AirSimEnv):
             self.car_controls.steering = -0.25
 
         self.car.setCarControls(self.car_controls)
+        time.sleep(0.5)
+
+    def transform_obs(self, responses):
+        img1d = np.array(responses[0].image_data_float, dtype=np.float)
+        img1d = 255 / np.maximum(np.ones(img1d.size), img1d)
+        img2d = np.reshape(img1d, (responses[0].height, responses[0].width))
+
+        from PIL import Image
+
+        image = Image.fromarray(img2d)
+        im_final = np.array(image.resize((84, 84)).convert("L"))
+
+        return im_final.reshape([84, 84, 1])
 
     def _get_obs(self):
-        response = self.drone.simGetImages([self.image_request])
-        image = np.reshape(
-            np.fromstring(response[0].image_data_uint8, dtype=np.uint8),
-            self.image_shape,
-        )
+        responses = self.car.simGetImages([self.image_request])
+        image = self.transform_obs(responses)
+
         self.car_state = self.car.getCarState()
         collision = self.car.simGetCollisionInfo().has_collided
 
@@ -114,7 +133,21 @@ class AirSimCarEnv(AirSimEnv):
         if reward < -1:
             done = 1
         if self.car_controls.brake == 0:
-            if self.car_state.speed <= 5:
+            if self.car_state.speed <= 1:
                 done = 1
+        if self.state["collision"]:
+            done = 1
 
         return reward, done
+
+    def step(self, action):
+        self._do_action(action)
+        obs = self._get_obs()
+        reward, done = self._compute_reward()
+
+        return obs, reward, done, self.state
+
+    def reset(self):
+        self._setup_car()
+        self._do_action(1)
+        return self._get_obs()
