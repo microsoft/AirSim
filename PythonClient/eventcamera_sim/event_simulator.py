@@ -70,7 +70,7 @@ def esim(
             output_events[count].x = x // n_pix_row
             output_events[count].y = x % n_pix_row
             output_events[count].timestamp = np.round(current_time * 1e-6, 6)
-            output_events[count].polarity = pol > 0
+            output_events[count].polarity = 1 if pol > 0 else -1
 
             count += 1
             current_time += (delta_time) / spikeNums

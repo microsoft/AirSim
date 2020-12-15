@@ -5,10 +5,13 @@ import cv2
 import matplotlib.pyplot as plt
 import argparse
 import sys, signal
+import pandas as pd
+import pickle
 from event_simulator import *
 
 parser = argparse.ArgumentParser(description="Simulate event data from AirSim")
-parser.add_argument("--debug", action="store_true")
+parser.add_argument("--debug", action="store_false")
+parser.add_argument("--save", action="store_false")
 parser.add_argument("--height", type=int, default=144)
 parser.add_argument("--width", type=int, default=256)
 
@@ -31,6 +34,9 @@ class AirSimEventGen:
         self.rgb_image_shape = [H, W, 3]
         self.debug = debug
 
+        self.event_file = open("events.pkl", "ab")
+        self.event_fmt = "%1.7f", "%d", "%d", "%d"
+
         if debug:
             self.fig, self.ax = plt.subplots(1, 1)
 
@@ -49,21 +55,21 @@ class AirSimEventGen:
 
         return out
 
-
-def _stop_event_gen(signal, frame):
-    print("\nCtrl+C received. Stopping event sim...")
-    sys.exit(0)
+    def _stop_event_gen(self, signal, frame):
+        print("\nCtrl+C received. Stopping event sim...")
+        self.event_file.close()
+        sys.exit(0)
 
 
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    event_generator = AirSimEventGen(args.W, args.H, debug=args.debug)
+    event_generator = AirSimEventGen(args.width, args.height, debug=args.debug)
     i = 0
     start_time = 0
     t_start = time.time()
 
-    signal.signal(signal.SIGINT, event_generator._stop_gen)
+    signal.signal(signal.SIGINT, event_generator._stop_event_gen)
 
     while True:
         image_request = airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)
@@ -90,14 +96,15 @@ if __name__ == "__main__":
 
         ts = time.time_ns()
         ts_delta = (ts - event_generator.start_ts) * 1e-3
-        start = time.time()
+        # start = time.time()
         event_img, events = event_generator.ev_sim.image_callback(img, ts_delta)
-        print(f"Time: {time.time() - start}")
-        bytestream = []
+        # print(f"event gen time: {time.time() - start}")
 
         if events is not None and events.shape[0] > 0:
-            bytestream = events.tolist()
+            if event_generator.save:
+                # Using pickle dump in a per-frame fashion to save time, instead of savetxt
+                # Optimizations possible
+                pickle.dump(events, event_generator.event_file)
 
             if event_generator.debug:
-                print(len(bytestream))
                 event_generator.visualize_events(event_img)
