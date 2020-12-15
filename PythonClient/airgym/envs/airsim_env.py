@@ -204,42 +204,11 @@ class AirSimDroneEnv(AirSimEnv):
 
 
 class AirSimCarEnv(AirSimEnv):
-    def __init__(
-        self, ip_address, action_type, control_type, step_length, image_shape, goal
-    ):
+    def __init__(self, ip_address, image_shape):
         super().__init__(image_shape)
 
-        self.step_length = step_length
-        self.action_type = action_type
-        self.control_type = control_type
         self.image_shape = image_shape
-        self.goal = airsim.Vector3r(goal[0], goal[1], goal[2])
         self.start_ts = 0
-
-        if self.action_type is "discrete":
-            self.action_space = spaces.Discrete(6)
-
-            if control_type is not "position" and not "velocity":
-                print(
-                    "Invalid control type for discrete actions. Defaulting to position"
-                )
-                self.control_type = "position"
-            else:
-                self.control_type = control_type
-
-        elif self.action_type is "continuous":
-            self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(4,))
-            if control_type is not "rate" and not "pwm":
-                print("Invalid control type for continuous actions. Defaulting to rate")
-                self.control_type = "rate"
-            else:
-                self.control_type = control_type
-        else:
-            print(
-                "Must choose an action type {'discrete','continuous'}. Defaulting to discrete."
-            )
-            self.action_space = spaces.Discrete(6)
-            self.control_type = "position"
 
         self.state = {
             "position": np.zeros(3),
@@ -253,12 +222,12 @@ class AirSimCarEnv(AirSimEnv):
             "front_center", airsim.ImageType.Scene, False, False
         )
 
-        self.self.car_controls = airsim.CarControls()
+        self.car_controls = airsim.CarControls()
 
     def __del__(self):
         self.drone.reset()
 
-    def _setup_flight(self):
+    def _setup_car(self):
         self.drone.reset()
         self.drone.enableApiControl(True)
         self.drone.armDisarm(True)
@@ -280,23 +249,8 @@ class AirSimCarEnv(AirSimEnv):
 
         return image
 
-    def _compute_reward(self):
-        pos = self.state["position"]
-        current_pos = airsim.Vector3r(pos[0], pos[1], pos[2])
-        done = False
-
-        if current_pos == self.goal:
-            done = True
-            reward = 100
-            return reward, done
-        elif self.state["collision"] == True:
-            done = True
-            reward = -100
-
-        dist = current_pos.distance_to(self.goal)
-        reward += abs(pos[1]) - abs(prev_pos[1])
-
-        return reward, done
+    def compute_reward(self):
+        NotImplemented()
 
     def take_action(self, action):
         self.car_controls.brake = 0
