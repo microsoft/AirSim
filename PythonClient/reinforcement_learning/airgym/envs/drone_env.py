@@ -22,7 +22,6 @@ class AirSimDroneEnv(AirSimEnv):
 
         if self.action_type is "discrete":
             self.action_space = spaces.Discrete(6)
-
             if control_type is not "position" and not "velocity":
                 print(
                     "Invalid control type for discrete actions. Defaulting to position"
@@ -57,23 +56,6 @@ class AirSimDroneEnv(AirSimEnv):
         self.image_request = airsim.ImageRequest(
             "front_center", airsim.ImageType.Scene, False, False
         )
-
-        # List of discrete actions
-        self.forward = [self.step_length, 0, 0]
-        self.backward = [-self.step_length, 0, 0]
-        self.left = [0, -self.step_length, 0]
-        self.right = [0, self.step_length, 0]
-        self.up = [0, 0, -self.step_length]
-        self.down = [0, 0, self.step_length]
-
-        self.discrete_action_dict = {
-            0: self.forward,
-            1: self.backward,
-            2: self.right,
-            3: self.left,
-            4: self.up,
-            5: self.down,
-        }
 
     def __del__(self):
         self.drone.reset()
@@ -190,6 +172,3 @@ class AirSimDroneEnv(AirSimEnv):
     def reset(self):
         self._setup_flight()
         self._get_obs()
-
-    def actions_to_op(self, action):
-        return self.discrete_action_dict[action]

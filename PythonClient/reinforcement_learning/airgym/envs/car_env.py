@@ -21,6 +21,7 @@ class AirSimCarEnv(AirSimEnv):
         }
 
         self.car = airsim.CarClient(ip=ip_address)
+        self.action_space = spaces.Discrete(6)
 
         self.image_request = airsim.ImageRequest(
             "front_center", airsim.ImageType.Scene, False, False
