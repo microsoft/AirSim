@@ -10,14 +10,14 @@ import pickle
 from event_simulator import *
 
 parser = argparse.ArgumentParser(description="Simulate event data from AirSim")
-parser.add_argument("--debug", action="store_false")
-parser.add_argument("--save", action="store_false")
+parser.add_argument("--debug", action="store_true")
+parser.add_argument("--save", action="store_true")
 parser.add_argument("--height", type=int, default=144)
 parser.add_argument("--width", type=int, default=256)
 
 
 class AirSimEventGen:
-    def __init__(self, W, H, debug=False):
+    def __init__(self, W, H, save=False, debug=False):
         self.ev_sim = EventSimulator(W, H)
         self.W = W
         self.H = H
@@ -33,6 +33,7 @@ class AirSimEventGen:
 
         self.rgb_image_shape = [H, W, 3]
         self.debug = debug
+        self.save = save
 
         self.event_file = open("events.pkl", "ab")
         self.event_fmt = "%1.7f", "%d", "%d", "%d"
@@ -64,7 +65,7 @@ class AirSimEventGen:
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    event_generator = AirSimEventGen(args.width, args.height, debug=args.debug)
+    event_generator = AirSimEventGen(args.width, args.height, save=args.save, debug=args.debug)
     i = 0
     start_time = 0
     t_start = time.time()
@@ -92,13 +93,14 @@ if __name__ == "__main__":
         )
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32)
+        # Add small number to avoid issues with log(I)
         img = cv2.add(img, 0.001)
 
         ts = time.time_ns()
         ts_delta = (ts - event_generator.start_ts) * 1e-3
-        # start = time.time()
+
+        # Event sim keeps track of previous image automatically
         event_img, events = event_generator.ev_sim.image_callback(img, ts_delta)
-        # print(f"event gen time: {time.time() - start}")
 
         if events is not None and events.shape[0] > 0:
             if event_generator.save:
