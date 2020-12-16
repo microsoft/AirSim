@@ -4,16 +4,16 @@ import numpy as np
 import math
 import time
 from argparse import ArgumentParser
+
+import gym
+from gym import spaces
 from airgym.envs.airsim_env import AirSimEnv
 
 
 class AirSimDroneEnv(AirSimEnv):
-    def __init__(self, ip_address, image_shape):
+    def __init__(self, ip_address, step_length, image_shape):
         super().__init__(image_shape)
-
         self.step_length = step_length
-        self.action_type = action_type
-        self.control_type = control_type
         self.image_shape = image_shape
 
         self.state = {
@@ -23,10 +23,11 @@ class AirSimDroneEnv(AirSimEnv):
         }
 
         self.drone = airsim.MultirotorClient(ip=ip_address)
+        self.action_space = spaces.Discrete(6)
         self._setup_flight()
 
         self.image_request = airsim.ImageRequest(
-            "front_center", airsim.ImageType.Scene, False, False
+            "0", airsim.ImageType.DepthPerspective, True, False
         )
 
     def __del__(self):
@@ -37,16 +38,27 @@ class AirSimDroneEnv(AirSimEnv):
         self.drone.enableApiControl(True)
         self.drone.armDisarm(True)
         self.drone.takeoffAsync().join()
-        self.drone.moveToPositionAsync(initX, initY, initZ, 5).join()
+
+        # Set home position and velocity
+        self.drone.moveToPositionAsync(-0.55265, -31.9786, -19.0225, 5).join()
         self.drone.moveByVelocityAsync(1, -0.67, -0.8, 5).join()
         time.sleep(0.5)
 
+    def transform_obs(self, responses):
+        img1d = np.array(responses[0].image_data_float, dtype=np.float)
+        img1d = 255 / np.maximum(np.ones(img1d.size), img1d)
+        img2d = np.reshape(img1d, (responses[0].height, responses[0].width))
+
+        from PIL import Image
+
+        image = Image.fromarray(img2d)
+        im_final = np.array(image.resize((84, 84)).convert("L"))
+
+        return im_final.reshape([84, 84, 1])
+
     def _get_obs(self):
-        response = self.drone.simGetImages([self.image_request])
-        image = np.reshape(
-            np.fromstring(response[0].image_data_uint8, dtype=np.uint8),
-            self.image_shape,
-        )
+        responses = self.drone.simGetImages([self.image_request])
+        image = self.transform_obs(responses)
         self.drone_state = self.drone.getMultirotorState()
 
         self.state["prev_position"] = self.state["position"]
@@ -69,7 +81,7 @@ class AirSimDroneEnv(AirSimEnv):
         ).join()
         time.sleep(0.5)
 
-    def compute_reward(self):
+    def _compute_reward(self):
         thresh_dist = 7
         beta = 1
 
@@ -92,7 +104,7 @@ class AirSimDroneEnv(AirSimEnv):
             )
         )
 
-        if collision_info.has_collided:
+        if self.state["collision"]:
             reward = -100
         else:
             dist = 10000000
@@ -123,7 +135,6 @@ class AirSimDroneEnv(AirSimEnv):
         done = 0
         if reward <= -10:
             done = 1
-        return done
 
         return reward, done
 
@@ -139,20 +150,19 @@ class AirSimDroneEnv(AirSimEnv):
         return self._get_obs()
 
     def interpret_action(self, action):
-        scaling_factor = 0.25
         if action == 0:
-            quad_offset = (0, 0, 0)
+            quad_offset = (self.step_length, 0, 0)
         elif action == 1:
-            quad_offset = (scaling_factor, 0, 0)
+            quad_offset = (0, self.step_length, 0)
         elif action == 2:
-            quad_offset = (0, scaling_factor, 0)
+            quad_offset = (0, 0, self.step_length)
         elif action == 3:
-            quad_offset = (0, 0, scaling_factor)
+            quad_offset = (-self.step_length, 0, 0)
         elif action == 4:
-            quad_offset = (-scaling_factor, 0, 0)
+            quad_offset = (0, -self.step_length, 0)
         elif action == 5:
-            quad_offset = (0, -scaling_factor, 0)
-        elif action == 6:
-            quad_offset = (0, 0, -scaling_factor)
+            quad_offset = (0, 0, -self.step_length)
+        else:
+            quad_offset = (0, 0, 0)
 
         return quad_offset

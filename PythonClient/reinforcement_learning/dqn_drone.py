@@ -17,12 +17,10 @@ env = DummyVecEnv(
     [
         lambda: Monitor(
             gym.make(
-                "airgym:airsim-drone-trackpowerlines-v0",
+                "airgym:airsim-drone-sample-v0",
                 ip_address="127.0.0.1",
-                action_type="discrete",
-                control_type="position",
                 step_length=0.25,
-                image_shape=(64, 64, 3),
+                image_shape=(84, 84, 1),
             )
         )
     ]
@@ -44,3 +42,25 @@ model = DQN(
     device="cuda",
     tensorboard_log="./tb_logs/",
 )
+
+
+callbacks = []
+eval_callback = EvalCallback(
+    env,
+    callback_on_new_best=None,
+    n_eval_episodes=5,
+    best_model_save_path=".",
+    log_path=".",
+    eval_freq=10000,
+)
+callbacks.append(eval_callback)
+
+kwargs = {}
+kwargs["callback"] = callbacks
+
+model.learn(
+    total_timesteps=5e5,
+    tb_log_name="dqn_airsim_drone_run_" + str(time.time()),
+    **kwargs
+)
+model.save("dqn_airsim_drone_policy")
