@@ -46,7 +46,7 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 ### macOS
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
-Some pre-compiled environment binaries may include multiple files (i.e. City.zip.001, City.zip.002). Make sure to download both files before starting the environment.
+For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 
 
 ## How to Use It
 
