@@ -790,7 +790,7 @@ class VehicleClient:
         """
         self.client.call('simSetWind', wind)
 
-    def createVoxelGrid(self, position, x, y, z, res, of):
+    def simCreateVoxelGrid(self, position, x, y, z, res, of):
         """
         Construct and save a binvox-formatted voxel grid of environment
 
