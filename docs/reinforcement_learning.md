@@ -1,8 +1,6 @@
 # Reinforcement Learning in AirSim
 
-We below describe how we can implement DQN in AirSim using an OpenAI gym wrapper around AirSim API, and using stable baselines. We recommend installing stable-baselines3 in order to run these examples.
-
-CNTK provides several demo examples of [deep RL](https://github.com/Microsoft/CNTK/tree/master/Examples/ReinforcementLearning). We will modify the DeepQNeuralNetwork.py to work with AirSim. We can utilize most of the classes and methods corresponding to the DQN algorithm. However, there are certain additions we need to make for AirSim.
+We below describe how we can implement DQN in AirSim using an OpenAI gym wrapper around AirSim API, and using stable baselines implementations of standard RL algorithms. We recommend installing stable-baselines3 in order to run these examples (please see https://github.com/DLR-RM/stable-baselines3)
 
 #### Disclaimer
 
@@ -10,11 +8,11 @@ This is still in active development. What we share below is a framework that can
 
 #### Gym wrapper
 
-In order to use AirSim as a gym environment, we extend and reimplement the base methods such as `step`, `_get_obs`, `_compute_reward` and `reset`. The sample environments for car and drone can be seen in `PythonClient/reinforcement_learning/*_env.py`
+In order to use AirSim as a gym environment, we extend and reimplement the base methods such as `step`, `_get_obs`, `_compute_reward` and `reset` specific to AirSim and the task of interest. The sample environments used in these examples for car and drone can be seen in `PythonClient/reinforcement_learning/*_env.py`
 
 ## RL with Car
 
-[Source code](https://github.com/Microsoft/AirSim/tree/master/PythonClient/reinforcement_learning/dqn_car.py)
+[Source code](https://github.com/Microsoft/AirSim/tree/master/PythonClient/reinforcement_learning)
 
 This example works with AirSimNeighborhood environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
@@ -129,7 +127,7 @@ Note that the simulation needs to be up and running before you execute `dqn_car.
 
 ## RL with Quadrotor
 
-[Source code](https://github.com/Microsoft/AirSim/tree/master/PythonClient/reinforcement_learning/dqn_drone.py)
+[Source code](https://github.com/Microsoft/AirSim/tree/master/PythonClient/reinforcement_learning)
 
 This example works with AirSimMountainLandscape environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
