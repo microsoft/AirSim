@@ -57,5 +57,7 @@ callbacks.append(eval_callback)
 kwargs = {}
 kwargs["callback"] = callbacks
 
-model.learn(total_timesteps=5e5, tb_log_name="dqn_run_" + str(time.time()), **kwargs)
-model.save("dqn_airsim_car")
+model.learn(
+    total_timesteps=5e5, tb_log_name="dqn_airsim_car_run_" + str(time.time()), **kwargs
+)
+model.save("dqn_airsim_car_policy")
