@@ -344,6 +344,9 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         const Environment::State& result = (*getVehicleSimApi(vehicle_name)->getGroundTruthEnvironment()).getState();
         return RpcLibAdapatorsBase::EnvironmentState(result);
     });
+    pimpl_->server.bind("simCreateVoxelGrid", [&](const RpcLibAdapatorsBase::Vector3r& position, const int& x, const int& y, const int& z, const float& res, const std::string& output_file) -> bool {
+        return getWorldSimApi()->createVoxelGrid(position.to(), x, y, z, res, output_file);
+    });
 
     pimpl_->server.bind("cancelLastTask", [&](const std::string& vehicle_name) -> void {
         getVehicleApi(vehicle_name)->cancelLastTask();
