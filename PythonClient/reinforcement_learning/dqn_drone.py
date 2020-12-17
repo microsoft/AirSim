@@ -52,7 +52,7 @@ eval_callback = EvalCallback(
     n_eval_episodes=5,
     best_model_save_path=".",
     log_path=".",
-    eval_freq=1,
+    eval_freq=10000,
 )
 callbacks.append(eval_callback)
 

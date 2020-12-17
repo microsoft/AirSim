@@ -27,7 +27,7 @@ class AirSimDroneEnv(AirSimEnv):
         self._setup_flight()
 
         self.image_request = airsim.ImageRequest(
-            "0", airsim.ImageType.DepthPerspective, True, False
+            3, airsim.ImageType.DepthPerspective, True, False
         )
 
     def __del__(self):
