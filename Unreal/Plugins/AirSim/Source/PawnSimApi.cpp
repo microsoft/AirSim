@@ -10,6 +10,7 @@
 #include "NedTransform.h"
 #include "common/EarthUtils.hpp"
 
+#include "Materials/MaterialParameterCollectionInstance.h"
 #include "DrawDebugHelpers.h"
 
 PawnSimApi::PawnSimApi(const Params& params)
@@ -424,6 +425,29 @@ void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
         APIPCamera* camera = getCamera(camera_name);
         camera->setCameraFoV(fov_degrees);
     }, true);
+}
+
+void PawnSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, param_name, value]() {
+        APIPCamera* camera = getCamera(camera_name);
+        camera->distortion_param_instance_->SetScalarParameterValue(FName(param_name.c_str()), value);
+    }, true);
+}
+
+std::vector<float> PawnSimApi::getDistortionParams(const std::string& camera_name)
+{
+    std::vector<float> param_values(5, 0.0);
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, &param_values]() {
+        APIPCamera* camera = getCamera(camera_name);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K1")), param_values[0]);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K2")), param_values[1]);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K3")), param_values[2]);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("P1")), param_values[3]);
+        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("P2")), param_values[4]);
+    }, true);
+
+    return param_values;
 }
 
 //parameters in NED frame

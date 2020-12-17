@@ -194,6 +194,11 @@ namespace AirSimUnity {
             return vehicle.VehicleInterface.SetCameraFoV(cameraName, fov_degrees);
         }
 
+        private static bool SetDistortionParam(string cameraName, string paramName, float value, string vehicleName) {
+            var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
+            return vehicle.VehicleInterface.SetDistortionParam(cameraName, fov_degrees);
+        }
+
         private static bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity) {
             var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
             return vehicle.VehicleInterface.PrintLogMessage(message, messageParams, vehicleName, severity);

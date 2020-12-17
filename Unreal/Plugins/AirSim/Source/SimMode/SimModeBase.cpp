@@ -65,8 +65,7 @@ ASimModeBase::ASimModeBase()
 
     }
     else
-        loading_screen_widget_ = nullptr;
-
+        loading_screen_widget_ = nullptr;    
 }
 
 void ASimModeBase::toggleLoadingScreen(bool is_visible)

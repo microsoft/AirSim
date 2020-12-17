@@ -63,7 +63,6 @@ public:
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) = 0;
     virtual bool runConsoleCommand(const std::string& command) = 0;
     virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) = 0;
-
 	virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) = 0;
     virtual vector<MeshPositionVertexBuffersResponse> getMeshPositionVertexBuffers() const = 0;
 

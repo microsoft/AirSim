@@ -398,6 +398,16 @@ void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, float fov
     pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name);
 }
 
+void RpcLibClientBase::simSetDistortionParam(const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name)
+{
+    pimpl_->client.call("simSetDistortionParam", camera_name, param_name, value, vehicle_name);
+}
+
+std::vector<float> RpcLibClientBase::simGetDistortionParams(const std::string& camera_name, const std::string& vehicle_name)
+{
+    return pimpl_->client.call("simGetDistortionParams", camera_name, vehicle_name).as<std::vector<float>>();
+}
+
 msr::airlib::Kinematics::State RpcLibClientBase::simGetGroundTruthKinematics(const std::string& vehicle_name) const
 {
     return pimpl_->client.call("simGetGroundTruthKinematics", vehicle_name).as<RpcLibAdapatorsBase::KinematicsState>().to();
