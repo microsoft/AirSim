@@ -3,7 +3,7 @@ However, the provided script does not let us view the PX4 console. If you want t
 
 # Setting up multiple instances of PX4 Software-in-Loop
 
-**Note** you have to build PX4 with `make px4_sitl_default none_iris` as shown [here](https://github.com/ahmed-elsaharti/AirSim/blob/docs-update/docs/px4_sitl.md#setting-up-px4-software-in-loop) before trying to run multiple PX4 instances.
+**Note** you have to build PX4 with `make px4_sitl_default none_iris` as shown [here](px4_sitl.md#setting-up-px4-software-in-loop) before trying to run multiple PX4 instances.
 
 1. From your bash (or Cygwin) terminal go to the PX4 Firmware directory and run the `sitl_multiple_run.sh` script while specifying the number of vehicles you need
     ```
@@ -67,10 +67,10 @@ API does not require RC, see [`No Remote Control`](px4_sitl.md#No-Remote-Control
 
 # Starting SITL instances with PX4 console
 
-If you want to start your SITL instances while being able to view the PX4 console, you will need to run the shell scripts found [here](https://github.com/ahmed-elsaharti/AirSim-multi-SITL) rather than `sitl_multiple_run.sh`.
+If you want to start your SITL instances while being able to view the PX4 console, you will need to run the shell scripts found [here](/PX4Scripts) rather than `sitl_multiple_run.sh`.
 Here is how you would do so:
 
-**Note** This script also assumes PX4 is built with `make px4_sitl_default none_iris` as shown [here](https://github.com/ahmed-elsaharti/AirSim/blob/docs-update/docs/px4_sitl.md#setting-up-px4-software-in-loop) before trying to run multiple PX4 instances.
+**Note** This script also assumes PX4 is built with `make px4_sitl_default none_iris` as shown [here](px4_sitl.md#setting-up-px4-software-in-loop) before trying to run multiple PX4 instances.
 
 1. From your bash (or Cygwin) terminal go to the PX4 directory and get the scripts (place them in a subdirectory called Scripts win the PX4 directory as shown)
     ```
@@ -79,7 +79,7 @@ Here is how you would do so:
     wget https://raw.githubusercontent.com/microsoft/AirSim/main/PX4Scripts/sitl_kill.sh
     wget https://raw.githubusercontent.com/microsoft/AirSim/main/PX4Scripts/run_airsim_sitl.sh
     ```
-
+    **Note** the shell scripts expect the `Scripts` and `Firmware` directories to be within the same parent directory
 2. Run the `sitl_kill.sh` script to kill all active PX4 SITL instances
     ```
     ./sitl_kill.sh
