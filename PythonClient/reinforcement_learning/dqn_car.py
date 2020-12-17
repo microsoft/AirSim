@@ -1,18 +1,15 @@
 import setup_path
 import gym
 import airgym
-
-import numpy as np
-import matplotlib.pyplot as plt
 import time
-import torch
 
-from stable_baselines3 import DQN, PPO
+from stable_baselines3 import DQN
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.vec_env import DummyVecEnv, VecTransposeImage
 from stable_baselines3.common.evaluation import evaluate_policy
-from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
+from stable_baselines3.common.callbacks import EvalCallback
 
+# Create a DummyVecEnv for main airsim gym env
 env = DummyVecEnv(
     [
         lambda: Monitor(
@@ -25,6 +22,10 @@ env = DummyVecEnv(
     ]
 )
 
+# Wrap env as VecTransposeImage to allow SB to handle frame observations
+env = VecTransposeImage(env)
+
+# Initialize RL algorithm type and parameters
 model = DQN(
     "CnnPolicy",
     env,
@@ -42,7 +43,7 @@ model = DQN(
     tensorboard_log="./tb_logs/",
 )
 
-
+# Create an evaluation callback with the same env, called every 10000 iterations
 callbacks = []
 eval_callback = EvalCallback(
     env,
@@ -57,7 +58,10 @@ callbacks.append(eval_callback)
 kwargs = {}
 kwargs["callback"] = callbacks
 
+# Train for a certain number of timesteps
 model.learn(
     total_timesteps=5e5, tb_log_name="dqn_airsim_car_run_" + str(time.time()), **kwargs
 )
+
+# Save policy weights
 model.save("dqn_airsim_car_policy")

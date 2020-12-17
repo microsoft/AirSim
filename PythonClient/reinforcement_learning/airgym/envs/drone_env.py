@@ -37,12 +37,10 @@ class AirSimDroneEnv(AirSimEnv):
         self.drone.reset()
         self.drone.enableApiControl(True)
         self.drone.armDisarm(True)
-        self.drone.takeoffAsync().join()
 
         # Set home position and velocity
-        self.drone.moveToPositionAsync(-0.55265, -31.9786, -19.0225, 5).join()
+        self.drone.moveToPositionAsync(-0.55265, -31.9786, -19.0225, 10).join()
         self.drone.moveByVelocityAsync(1, -0.67, -0.8, 5).join()
-        time.sleep(0.5)
 
     def transform_obs(self, responses):
         img1d = np.array(responses[0].image_data_float, dtype=np.float)
@@ -79,7 +77,6 @@ class AirSimDroneEnv(AirSimEnv):
             quad_vel.z_val + quad_offset[2],
             5,
         ).join()
-        time.sleep(0.5)
 
     def _compute_reward(self):
         thresh_dist = 7
@@ -115,7 +112,6 @@ class AirSimDroneEnv(AirSimEnv):
                     / np.linalg.norm(pts[i] - pts[i + 1]),
                 )
 
-            # print(dist)
             if dist > thresh_dist:
                 reward = -10
             else:
