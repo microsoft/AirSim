@@ -482,6 +482,46 @@ class VehicleClient:
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name))
 
+    def simGetDistortionParams(self, camera_name, vehicle_name = ''):
+        """
+        Get camera distortion parameters
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+
+        Returns:
+            List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.
+        """
+    
+        return self.client.call('simGetDistortionParams', str(camera_name), vehicle_name)
+
+    def simSetDistortionParams(self, camera_name, distortion_params, vehicle_name = ''):
+        """
+        Set camera distortion parameters
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            distortion_params (dict): Dictionary of distortion param names and corresponding values
+                                        {"K1": 0.0, "K2": 0.0, "K3": 0.0, "P1": 0.0, "P2": 0.0}
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+        """
+
+        for param_name, value in distortion_params.items():
+            self.client.call('simSetDistortionParam', str(camera_name), param_name, value, vehicle_name)
+
+    def simSetDistortionParam(self, camera_name, param_name, value, vehicle_name = ''):
+        """
+        Set single camera distortion parameter
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            param_name (str): Name of distortion parameter
+            value (float): Value of distortion parameter
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+        """
+        self.client.call('simSetDistortionParam', str(camera_name), param_name, value, vehicle_name)
+
     def simSetCameraPose(self, camera_name, pose, vehicle_name = ''):
         """
         - Control the pose of a selected camera
@@ -789,6 +829,19 @@ class VehicleClient:
             wind (Vector3r): Wind, in World frame, NED direction, in m/s 
         """
         self.client.call('simSetWind', wind)
+
+    def simCreateVoxelGrid(self, position, x, y, z, res, of):
+        """
+        Construct and save a binvox-formatted voxel grid of environment
+
+        Args:
+            position (Vector3r): Position around which voxel grid is centered in m
+            x, y, z (float): Size of each voxel grid dimension in m
+            res (float): Resolution of voxel grid in m
+            of (str): Name of output file to save voxel grid as
+
+        """
+        return self.client.call('simCreateVoxelGrid', position, x, y, z, res, of)
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):

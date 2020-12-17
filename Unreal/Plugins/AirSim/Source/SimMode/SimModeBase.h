@@ -15,7 +15,6 @@
 #include "PawnSimApi.h"
 #include "common/StateReporterWrapper.hpp"
 #include "LoadingScreenWidget.h"
-
 #include "SimModeBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
@@ -124,7 +123,6 @@ protected: //Utility methods for derived classes
 
 protected:
     int record_tick_count;
-
     UPROPERTY() UClass* pip_camera_class;
     UPROPERTY() UParticleSystem* collision_display_template;
 

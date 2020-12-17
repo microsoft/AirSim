@@ -10,6 +10,9 @@
 #include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
 
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "PIPCamera.generated.h"
 
 
@@ -51,6 +54,9 @@ public:
     UTextureRenderTarget2D* getRenderTarget(const ImageType type, bool if_active);
 
     msr::airlib::Pose getPose() const;
+
+    UPROPERTY() UMaterialParameterCollection* distortion_param_collection_;
+    UPROPERTY() UMaterialParameterCollectionInstance* distortion_param_instance_;
     
 private: //members
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
@@ -60,7 +66,9 @@ private: //members
     //TMap<int, UMaterialInstanceDynamic*> noise_materials_;
     //below is needed because TMap doesn't work with UPROPERTY, but we do have -ve index
     UPROPERTY() TArray<UMaterialInstanceDynamic*> noise_materials_;
+    UPROPERTY() TArray<UMaterialInstanceDynamic*> distortion_materials_;
     UPROPERTY() UMaterial* noise_material_static_;
+    UPROPERTY() UMaterial* distortion_material_static_;
 
     std::vector<bool> camera_type_enabled_;
     FRotator gimbald_rotator_;
@@ -79,6 +87,7 @@ private: //methods
         bool auto_format, const EPixelFormat& pixel_format, const CaptureSetting& setting, const NedTransform& ned_transform,
         bool force_linear_gamma);
     void setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings);
+    void setDistortionMaterial(int image_type, UObject* outer, FPostProcessSettings& obj);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
     static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
 };

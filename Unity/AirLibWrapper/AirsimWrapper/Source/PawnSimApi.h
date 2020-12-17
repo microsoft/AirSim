@@ -74,6 +74,8 @@ public:
 	virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
 	virtual void setCameraPose(const std::string& camera_name, const Pose& pose) override;
 	virtual void setCameraFoV(const std::string& camera_name, float fov_degrees) override;
+	virtual void setDistortionParam(const std::string& camera_name, const std::string& param_name, float value) override;
+	virtual std::vector<float> getDistortionParams(const std::string& camera_name) override;
 	virtual CollisionInfo getCollisionInfo() const override;
 	virtual int getRemoteControlID() const override;
 	virtual msr::airlib::RCData getRCData() const override;

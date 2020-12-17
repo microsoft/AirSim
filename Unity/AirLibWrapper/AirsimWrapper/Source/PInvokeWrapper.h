@@ -27,6 +27,8 @@ extern AirSimCarState(*GetCarState)(const char* vehicleName);
 extern AirSimCameraInfo(*GetCameraInfo)(const char* cameraName, const char* vehicleName);
 extern bool(*SetCameraPose)(const char* cameraName, AirSimPose pose, const char* vehicleName);
 extern bool(*SetCameraFoV)(const char* cameraName, const float fov_degrees, const char* vehicleName);
+extern bool(*SetCameraDistortionParam)(const char* cameraName, const char* paramName, const float value, const char* vehicleName);
+extern bool(*GetCameraDistortionParams)(const char* cameraName, const char* vehicleName);
 extern bool(*SetSegmentationObjectId)(const char* meshName, int objectId, bool isNameRegex);
 extern int(*GetSegmentationObjectId)(const char* meshName);
 extern bool(*PrintLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity);
@@ -51,6 +53,8 @@ extern "C" EXPORT void InitVehicleManager(
 	AirSimCameraInfo(*getCameraInfo)(const char* cameraName, const char* vehicleName),
 	bool(*setCameraPose)(const char* cameraName, AirSimPose pose, const char* vehicleName),
 	bool(*setCameraFoV)(const char* cameraName, const float fov_degrees, const char* vehicleName),
+	bool(*setDistortionParam)(const char* cameraName, const char* paramName, const float value, const char* vehicleName),
+	bool(*getDistortionParams)(const char* cameraName, const char* vehicleName),
 	bool(*setSegmentationObjectId)(const char* meshName, int objectId, bool isNameRegex),
 	int(*getSegmentationObjectId)(const char* meshName),
 	bool(*printLogMessage) (const char* message, const char* messageParam, const char* vehicleName, int severity),

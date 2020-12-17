@@ -33,6 +33,8 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
 ## How to Get It
 
+[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
+
 ### Windows
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
@@ -44,7 +46,7 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 ### macOS
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
-[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
+For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 
 
 ## How to Use It
 
@@ -125,7 +127,6 @@ Please take a look at [open issues](https://github.com/microsoft/airsim/issues) 
 * [More on AirSim design](https://microsoft.github.io/AirSim/design)
 * [More on code structure](https://microsoft.github.io/AirSim/code_structure)
 * [Contribution Guidelines](CONTRIBUTING.md)
-* [Trello Board](https://trello.com/b/1t2qCeaA/wishlist-by-community-for-community)
 
 ### Who is Using AirSim?
 
@@ -138,6 +139,11 @@ Join the AirSim group on [Facebook](https://www.facebook.com/groups/122583246753
 ## FAQ
 
 If you run into problems, check the [FAQ](https://microsoft.github.io/AirSim/faq) and feel free to post issues in the  [AirSim](https://github.com/Microsoft/AirSim/issues) repository.
+
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 
 ## License
 
