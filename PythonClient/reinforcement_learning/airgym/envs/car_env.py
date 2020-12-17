@@ -47,7 +47,7 @@ class AirSimCarEnv(AirSimEnv):
 
     def _do_action(self, action):
         self.car_controls.brake = 0
-        self.car_controls.throttle = 5
+        self.car_controls.throttle = 1
         if action == 0:
             self.car_controls.throttle = 0
             self.car_controls.brake = 1
@@ -63,7 +63,7 @@ class AirSimCarEnv(AirSimEnv):
             self.car_controls.steering = -0.25
 
         self.car.setCarControls(self.car_controls)
-        time.sleep(0.5)
+        time.sleep(1)
 
     def transform_obs(self, responses):
         img1d = np.array(responses[0].image_data_float, dtype=np.float)
