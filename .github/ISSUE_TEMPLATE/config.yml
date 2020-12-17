@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: User Support and General Questions
+  - name: General Questions
     url: https://github.com/microsoft/AirSim/discussions
     about: Please ask on https://github.com/microsoft/AirSim/discussions
