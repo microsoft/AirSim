@@ -1,2 +1,4 @@
-cd docs;
-make html;
+#!/bin/sh
+
+cd docs
+make html
