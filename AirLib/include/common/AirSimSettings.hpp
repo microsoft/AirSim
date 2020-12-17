@@ -345,8 +345,6 @@ private: //fields
     float settings_version_actual;
     float settings_version_minimum = 1.2f;
 
-    bool vehicles_specfied = false;         // Whether "Vehicles" element was specified, used for Recording settings
-
 public: //fields
     std::string simmode_name = "";
     std::string level_name = "";
@@ -391,7 +389,6 @@ public: //methods
     {
         initializeSubwindowSettings(subwindow_settings);
         initializePawnPaths(pawn_paths);
-        initializeVehicleSettings(vehicles);
     }
 
     //returns number of warnings
@@ -412,7 +409,7 @@ public: //methods
         loadPawnPaths(settings_json, pawn_paths);
         loadOtherSettings(settings_json);
         loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults);
-        loadVehicleSettings(simmode_name, settings_json, vehicles, vehicles_specfied);
+        loadVehicleSettings(simmode_name, settings_json, vehicles);
 
         //this should be done last because it depends on vehicles (and/or their type) we have
         loadRecordingSetting(settings_json);
@@ -588,30 +585,6 @@ private:
         }
     }
 
-    // Get name of the default vehicle to be used for Recording
-    static std::string getDefaultVehicleName(const std::string& simmode_name, const bool vehicles_specfied, 
-        const std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
-    {
-        // If "Vehicles" were specified, then we use the first vehicle in the map as the default
-        // This doesn't guarantee that the first vehicle specified in the settings is used, it uses the lexicographically first one
-        // Should be okay, since if using multi-vehicle, and want a specific vehicle then "VehicleName" field should be used
-        if (vehicles_specfied)
-            return vehicles.begin()->first;
-        else {
-            // Vehicles were not specified, therefore `vehicles` map has 3 vehicles, 1 for each SimMode
-            // These are set in initializeVehicleSettings()
-            if (simmode_name == kSimModeTypeMultirotor)
-                return "SimpleFlight";
-            else if (simmode_name == kSimModeTypeCar)
-                return "PhysXCar";
-            else if (simmode_name == kSimModeTypeComputerVision)
-                return "ComputerVision";
-            else
-                throw std::invalid_argument(Utils::stringf(
-                    "Unknown SimMode: %s, failed to set default vehicle for Recording", simmode_name.c_str()).c_str());
-        }
-    }
-
     static std::string getCameraName(const Settings& settings_json)
     {
         return settings_json.getString("CameraName",
@@ -645,7 +618,9 @@ private:
                 // If 'Cameras' field is present, clear defaults
                 recording_setting.requests.clear();
                 // Get name of the default vehicle to be used if "VehicleName" isn't specified
-                std::string default_vehicle_name = getDefaultVehicleName(simmode_name, vehicles_specfied, vehicles);
+                // Map contains a default vehicle if vehicles haven't been specified
+                std::string default_vehicle_name = vehicles.begin()->first;
+
 
                 for (size_t child_index = 0; child_index < req_cameras_settings.size(); ++child_index) {
                     Settings req_camera_settings;
@@ -821,40 +796,46 @@ private:
         return vehicle_setting;
     }
 
-    static void initializeVehicleSettings(std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
+    static void initializeVehicleSettings(const std::string &simmode_name, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
     {
         vehicles.clear();
 
         //NOTE: Do not set defaults for vehicle type here. If you do then make sure
         //to sync code in createVehicleSetting() as well.
-
-        //create simple flight as default multirotor
-        auto simple_flight_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
-        simple_flight_setting->vehicle_name = "SimpleFlight";
-        simple_flight_setting->vehicle_type = kVehicleTypeSimpleFlight;
-        //TODO: we should be selecting remote if available else keyboard
-        //currently keyboard is not supported so use rc as default
-        simple_flight_setting->rc.remote_control_id = 0;
-        vehicles[simple_flight_setting->vehicle_name] = std::move(simple_flight_setting);
-
-        //create default car vehicle
-        auto physx_car_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
-        physx_car_setting->vehicle_name = "PhysXCar";
-        physx_car_setting->vehicle_type = kVehicleTypePhysXCar;
-        vehicles[physx_car_setting->vehicle_name] = std::move(physx_car_setting);
-
-        //create default computer vision vehicle
-        auto cv_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
-        cv_setting->vehicle_name = "ComputerVision";
-        cv_setting->vehicle_type = kVehicleTypeComputerVision;
-        vehicles[cv_setting->vehicle_name] = std::move(cv_setting);
+        if (simmode_name == kSimModeTypeMultirotor) {
+            // create simple flight as default multirotor
+            auto simple_flight_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+            simple_flight_setting->vehicle_name = "SimpleFlight";
+            simple_flight_setting->vehicle_type = kVehicleTypeSimpleFlight;
+            // TODO: we should be selecting remote if available else keyboard
+            // currently keyboard is not supported so use rc as default
+            simple_flight_setting->rc.remote_control_id = 0;
+            vehicles[simple_flight_setting->vehicle_name] = std::move(simple_flight_setting);
+        }
+        else if (simmode_name == kSimModeTypeCar) {
+            // create PhysX as default car vehicle
+            auto physx_car_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+            physx_car_setting->vehicle_name = "PhysXCar";
+            physx_car_setting->vehicle_type = kVehicleTypePhysXCar;
+            vehicles[physx_car_setting->vehicle_name] = std::move(physx_car_setting);
+        }
+        else if (simmode_name == kSimModeTypeComputerVision) {
+            // create default computer vision vehicle
+            auto cv_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+            cv_setting->vehicle_name = "ComputerVision";
+            cv_setting->vehicle_type = kVehicleTypeComputerVision;
+            vehicles[cv_setting->vehicle_name] = std::move(cv_setting);
+        }
+        else {
+            throw std::invalid_argument(Utils::stringf(
+                    "Unknown SimMode: %s, failed to set default vehicle settings", simmode_name.c_str()).c_str());
+        }
     }
 
     static void loadVehicleSettings(const std::string& simmode_name, const Settings& settings_json,
-        std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles, bool& vehicles_specfied)
+        std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
     {
-        initializeVehicleSettings(vehicles);
-        vehicles_specfied = false;
+        initializeVehicleSettings(simmode_name, vehicles);
 
         msr::airlib::Settings vehicles_child;
         if (settings_json.getChild("Vehicles", vehicles_child)) {
@@ -862,10 +843,8 @@ private:
             vehicles_child.getChildNames(keys);
 
             //remove default vehicles, if values are specified in settings
-            if (keys.size()) {
+            if (keys.size())
                 vehicles.clear();
-                vehicles_specfied = true;
-            }
 
             for (const auto& key : keys) {
                 msr::airlib::Settings child;
