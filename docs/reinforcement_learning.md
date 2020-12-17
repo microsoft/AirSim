@@ -20,7 +20,7 @@ responses = client.simGetImages([ImageRequest(0, AirSimImageType.DepthPerspectiv
 current_state = transform_input(responses)
 ```
 
-We further define the six actions (breaking, straight with throttle, full-left with throttle, full-right with throttle, half-left with throttle, half-right with throttle) that an agent can execute. This is done via the function `interpret_action`:
+We further define the six actions (braking, straight with throttle, full-left with throttle, full-right with throttle, half-left with throttle, half-right with throttle) that an agent can execute. This is done via the function `interpret_action`:
 
 ```
 def interpret_action(action):
