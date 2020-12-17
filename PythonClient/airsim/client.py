@@ -796,10 +796,12 @@ class VehicleClient:
 
         Args:
             position (Vector3r): Position around which voxel grid is centered in m
-            x, y, z (float): Size of each voxel grid dimension in m
+            x, y, z (int): Size of each voxel grid dimension in m
             res (float): Resolution of voxel grid in m
             of (str): Name of output file to save voxel grid as
 
+        Returns:
+            bool: True if output written to file successfully, else False
         """
         return self.client.call('simCreateVoxelGrid', position, x, y, z, res, of)
 
