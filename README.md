@@ -1,4 +1,24 @@
 # Welcome to AirSim
+## New announcement
+We are pleased to announce the addition of two new members to the AirSim team. They are Jonathan Marino and David Zimmermann.
+
+Jonathan and David will help the community continue to grow through AirSim, support the current version, and clarify project scope.
+
+Ending 2020, we want to thank the AirSim community and especially those who help others by sharing their knowledge and experience, and those who have helped with exciting additions this year like these:
+
+- [Python wrapper for Open AI gym interfaces.](https://github.com/microsoft/AirSim/pull/3215)
+- [Python wrapper for Event camera simulation](https://github.com/microsoft/AirSim/pull/3202)
+- [Voxel grid construction](https://github.com/microsoft/AirSim/pull/3209)
+- [Programmable camera distortion](https://github.com/microsoft/AirSim/pull/3039)
+- [Wind simulation](https://github.com/microsoft/AirSim/pull/2867)
+- [Azure development environment with documentation](https://github.com/microsoft/AirSim/pull/2816)
+- ROS wrapper for [multirotor](https://github.com/microsoft/AirSim/blob/master/docs/airsim_ros_pkgs.md) and [car](https://github.com/microsoft/AirSim/pull/2743).
+- (See all the merged pull requests from this year [here](https://github.com/microsoft/AirSim/pulls?q=is%3Apr+merged%3A%3E%3D2020-01-01))
+
+Thank you all!
+The AirSim Team
+
+# Welcome to AirSim
 
 AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
 
