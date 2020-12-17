@@ -1,3 +1,5 @@
+# Setting up multi-vehicle PX4 simulation
+
 The [PX4 SITL stack](px4_sitl.md) comes with a `sitl_multiple_run.sh` shell script that runs multiple instances of the PX4 binary. This would allow the SITL stack to listen to connections from multiple AirSim vehicles on multiple TCP ports starting from 4560.
 However, the provided script does not let us view the PX4 console. If you want to run the instances manually while being able to view each instance's console (**Recommended**) see [this section](px4_multi_vehicle.md#Starting-SITL-instances-with-PX4-console) 
 
