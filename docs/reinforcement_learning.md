@@ -23,7 +23,7 @@ responses = client.simGetImages([ImageRequest(0, AirSimImageType.DepthPerspectiv
 current_state = transform_input(responses)
 ```
 
-We further define the six actions (breaking, straight with throttle, full-left with throttle, full-right with throttle, half-left with throttle, half-right with throttle) that an agent can execute. This is done via the function `interpret_action`:
+We further define the six actions (brake, straight with throttle, full-left with throttle, full-right with throttle, half-left with throttle, half-right with throttle) that an agent can execute. This is done via the function `interpret_action`:
 
 ```
 def interpret_action(action):
@@ -132,7 +132,7 @@ Note that the simulation needs to be up and running before you execute `dqn_car.
 This example works with AirSimMountainLandscape environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
 We can similarly apply RL for various autonomous flight scenarios with quadrotors. Below is an example on how RL could be used to train quadrotors to follow high tension power lines (e.g. application for energy infrastructure inspection).
-There are six discrete actions here that correspond to different directions in which the quadrotor can move in (six directions + one hovering action).
+There are seven discrete actions here that correspond to different directions in which the quadrotor can move in (six directions + one hovering action).
 
 ```
 def interpret_action(self, action):
@@ -179,16 +179,7 @@ def compute_reward(quad_state, quad_vel, collision_info):
             reward = reward_dist + reward_speed
 ```
 
-We consider an episode to terminate if it drifts too much away from the known power line coordinates.
-
-The reset function here flies the quadrotor to the initial starting point:
-
-```
-client.moveToZAsync(clearZ, 2).join()
-client.moveToPositionAsync(initX, initY, clearZ, 2).join()
-client.moveToPositionAsync(initZ, initY, initZ, 2).join()
-current_step +=1
-```
+We consider an episode to terminate if it drifts too much away from the known power line coordinates, and then reset the drone to its starting point.
 
 Once the gym-styled environment wrapper is defined as in `drone_env.py`, we then make use of stable-baselines3 to run a DQN training loop. The DQN training can be configured as follows, seen in `dqn_drone.py`.
 
