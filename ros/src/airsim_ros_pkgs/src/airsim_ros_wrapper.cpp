@@ -17,7 +17,7 @@ constexpr char AirsimROSWrapper::DMODEL_YML_NAME[];
 
 const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_string_map_ = {
     { 0, "Scene" },
-    { 1, "DepthPlanner" },
+    { 1, "DepthPlanar" },
     { 2, "DepthPerspective" },
     { 3, "DepthVis" },
     { 4, "DisparityNormalized" },
@@ -211,7 +211,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     {
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, false, false));
                     }
-                    // if {DepthPlanner, DepthPerspective,DepthVis, DisparityNormalized}, get float image
+                    // if {DepthPlanar, DepthPerspective,DepthVis, DisparityNormalized}, get float image
                     else
                     {
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
@@ -1489,7 +1489,7 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         camera_info_msg_vec_[img_response_idx_internal].header.stamp = curr_ros_time;
         cam_info_pub_vec_[img_response_idx_internal].publish(camera_info_msg_vec_[img_response_idx_internal]);
 
-        // DepthPlanner / DepthPerspective / DepthVis / DisparityNormalized
+        // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
         if (curr_img_response.pixels_as_float)
         {
             image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response, 

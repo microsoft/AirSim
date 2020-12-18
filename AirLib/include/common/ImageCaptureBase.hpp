@@ -15,7 +15,7 @@ class ImageCaptureBase
 public: //types
     enum class ImageType : int { //this indexes to array, -1 is special to indicate main camera
         Scene = 0, 
-        DepthPlanner, 
+        DepthPlanar, 
         DepthPerspective,
         DepthVis, 
         DisparityNormalized,
