@@ -3,7 +3,7 @@
 The [PX4 SITL stack](px4_sitl.md) comes with a `sitl_multiple_run.sh` shell script that runs multiple instances of the PX4 binary. This would allow the SITL stack to listen to connections from multiple AirSim vehicles on multiple TCP ports starting from 4560.
 However, the provided script does not let us view the PX4 console. If you want to run the instances manually while being able to view each instance's console (**Recommended**) see [this section](px4_multi_vehicle.md#starting-sitl-instances-with-px4-console) 
 
-# Setting up multiple instances of PX4 Software-in-Loop
+## Setting up multiple instances of PX4 Software-in-Loop
 
 **Note** you have to build PX4 with `make px4_sitl_default none_iris` as shown [here](px4_sitl.md#setting-up-px4-software-in-loop) before trying to run multiple PX4 instances.
 
@@ -67,7 +67,7 @@ there is no Pixhawk hardware plugged in, otherwise QGroundControl will choose
 to use that instead.  Note that as we don't have a physical board, an RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to your PC. This makes your RC look like a joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.  You do not need to do this unless you plan to fly a drone manually in AirSim.  Autonomous flight using the Python
 API does not require RC, see [`No Remote Control`](px4_sitl.md#No-Remote-Control).
 
-# Starting SITL instances with PX4 console
+## Starting SITL instances with PX4 console
 
 If you want to start your SITL instances while being able to view the PX4 console, you will need to run the shell scripts found [here](/PX4Scripts) rather than `sitl_multiple_run.sh`.
 Here is how you would do so:
