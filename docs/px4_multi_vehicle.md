@@ -1,7 +1,7 @@
 # Setting up multi-vehicle PX4 simulation
 
 The [PX4 SITL stack](px4_sitl.md) comes with a `sitl_multiple_run.sh` shell script that runs multiple instances of the PX4 binary. This would allow the SITL stack to listen to connections from multiple AirSim vehicles on multiple TCP ports starting from 4560.
-However, the provided script does not let us view the PX4 console. If you want to run the instances manually while being able to view each instance's console (**Recommended**) see [this section](px4_multi_vehicle.md#Starting-SITL-instances-with-PX4-console) 
+However, the provided script does not let us view the PX4 console. If you want to run the instances manually while being able to view each instance's console (**Recommended**) see [this section](px4_multi_vehicle.md#starting-sitl-instances-with-px4-console) 
 
 # Setting up multiple instances of PX4 Software-in-Loop
 
@@ -51,7 +51,7 @@ However, the provided script does not let us view the PX4 console. If you want t
     You can add more than two vehicles but you will need to make sure you adjust the TCP port for each (ie: vehicle 3's port would be `4562` and so on..) and adjust the spawn point.
 
 4. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP.
-If you are running the instances with the [PX4 console visible](px4_multi_vehicle.md#Starting-SITL-instances-with-PX4-console), you should see a bunch of messages from each SITL PX4 window.
+If you are running the instances with the [PX4 console visible](px4_multi_vehicle.md#Starting-sitl-instances-with-px4-console), you should see a bunch of messages from each SITL PX4 window.
 Specifically, the following messages tell you that AirSim is connected properly and GPS fusion is stable:
     ```
     INFO  [simulator] Simulator connected on UDP port 14560
