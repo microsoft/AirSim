@@ -298,10 +298,9 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
 <h2 id="enabling-lidar-on-a-vehicle">Enabling lidar on a vehicle<a class="headerlink" href="#enabling-lidar-on-a-vehicle" title="Permanent link">#</a></h2>
 <ul>
 <li>By default, lidars are not enabled. To enable lidar, set the SensorType and Enabled attributes in settings json.
-<div class="highlight"><pre><span></span><code>        &quot;Lidar1&quot;: { 
-             &quot;SensorType&quot;: 6,
-             &quot;Enabled&quot; : true,
-</code></pre></div></li>
+<pre class="highlight"><code>        "Lidar1": { 
+             "SensorType": 6,
+             "Enabled" : true,</code></pre></li>
 <li>Multiple lidars can be enabled on a vehicle.</li>
 </ul>
 <h2 id="lidar-configuration">Lidar configuration<a class="headerlink" href="#lidar-configuration" title="Permanent link">#</a></h2>
@@ -361,58 +360,56 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
 </tbody>
 </table>
 <p>e.g.,
-<div class="highlight"><pre><span></span><code>{
-    &quot;SeeDocsAt&quot;: &quot;https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md&quot;,
-    &quot;SettingsVersion&quot;: 1.2,
+<pre class="highlight"><code>{
+    "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md",
+    "SettingsVersion": 1.2,
 
-    &quot;SimMode&quot;: &quot;Multirotor&quot;,
+    "SimMode": "Multirotor",
 
-     &quot;Vehicles&quot;: {
-        &quot;Drone1&quot;: {
-            &quot;VehicleType&quot;: &quot;simpleflight&quot;,
-            &quot;AutoCreate&quot;: true,
-            &quot;Sensors&quot;: {
-                &quot;LidarSensor1&quot;: { 
-                    &quot;SensorType&quot;: 6,
-                    &quot;Enabled&quot; : true,
-                    &quot;NumberOfChannels&quot;: 16,
-                    &quot;RotationsPerSecond&quot;: 10,
-                    &quot;PointsPerSecond&quot;: 100000,
-                    &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
-                    &quot;Roll&quot;: 0, &quot;Pitch&quot;: 0, &quot;Yaw&quot; : 0,
-                    &quot;VerticalFOVUpper&quot;: -15,
-                    &quot;VerticalFOVLower&quot;: -25,
-                    &quot;HorizontalFOVStart&quot;: -20,
-                    &quot;HorizontalFOVEnd&quot;: 20,
-                    &quot;DrawDebugPoints&quot;: true,
-                    &quot;DataFrame&quot;: &quot;SensorLocalFrame&quot;
+     "Vehicles": {
+        "Drone1": {
+            "VehicleType": "simpleflight",
+            "AutoCreate": true,
+            "Sensors": {
+                "LidarSensor1": { 
+                    "SensorType": 6,
+                    "Enabled" : true,
+                    "NumberOfChannels": 16,
+                    "RotationsPerSecond": 10,
+                    "PointsPerSecond": 100000,
+                    "X": 0, "Y": 0, "Z": -1,
+                    "Roll": 0, "Pitch": 0, "Yaw" : 0,
+                    "VerticalFOVUpper": -15,
+                    "VerticalFOVLower": -25,
+                    "HorizontalFOVStart": -20,
+                    "HorizontalFOVEnd": 20,
+                    "DrawDebugPoints": true,
+                    "DataFrame": "SensorLocalFrame"
                 },
-                &quot;LidarSensor2&quot;: { 
-                   &quot;SensorType&quot;: 6,
-                    &quot;Enabled&quot; : true,
-                    &quot;NumberOfChannels&quot;: 4,
-                    &quot;RotationsPerSecond&quot;: 10,
-                    &quot;PointsPerSecond&quot;: 10000,
-                    &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: -1,
-                    &quot;Roll&quot;: 0, &quot;Pitch&quot;: 0, &quot;Yaw&quot; : 0,
-                    &quot;VerticalFOVUpper&quot;: -15,
-                    &quot;VerticalFOVLower&quot;: -25,
-                    &quot;DrawDebugPoints&quot;: true,
-                    &quot;DataFrame&quot;: &quot;SensorLocalFrame&quot;
+                "LidarSensor2": { 
+                   "SensorType": 6,
+                    "Enabled" : true,
+                    "NumberOfChannels": 4,
+                    "RotationsPerSecond": 10,
+                    "PointsPerSecond": 10000,
+                    "X": 0, "Y": 0, "Z": -1,
+                    "Roll": 0, "Pitch": 0, "Yaw" : 0,
+                    "VerticalFOVUpper": -15,
+                    "VerticalFOVLower": -25,
+                    "DrawDebugPoints": true,
+                    "DataFrame": "SensorLocalFrame"
                 }
             }
         }
     }
-}
-</code></pre></div></p>
+}</code></pre></p>
 <h2 id="server-side-visualization-for-debugging">Server side visualization for debugging<a class="headerlink" href="#server-side-visualization-for-debugging" title="Permanent link">#</a></h2>
 <p>Be default, the lidar points are not drawn on the viewport. To enable the drawing of hit laser points on the viewport, please enable setting 'DrawDebugPoints' via settings json.
 e.g.,
-<div class="highlight"><pre><span></span><code>        &quot;Lidar1&quot;: { 
+<pre class="highlight"><code>        "Lidar1": { 
              ...
-             &quot;DrawDebugPoints&quot;: true
-        },
-</code></pre></div></p>
+             "DrawDebugPoints": true
+        },</code></pre></p>
 <h2 id="client-api">Client API<a class="headerlink" href="#client-api" title="Permanent link">#</a></h2>
 <p>Use <code>getLidarData()</code> API to retrieve the Lidar data. 
 * The API returns a Point-Cloud as a flat array of floats along with the timestamp of the capture and lidar pose.

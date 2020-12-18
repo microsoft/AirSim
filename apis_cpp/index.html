@@ -301,70 +301,68 @@
 </ul>
 <h2 id="hello-car">Hello Car<a class="headerlink" href="#hello-car" title="Permanent link">#</a></h2>
 <p>Here's how to use AirSim APIs using C++ to control simulated car (see also <a href="../apis/#hello_car">Python example</a>):</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// ready to run example: https://github.com/Microsoft/AirSim/blob/master/HelloCar/main.cpp</span>
+<pre class="highlight"><code class="language-cpp">
+// ready to run example: https://github.com/Microsoft/AirSim/blob/master/HelloCar/main.cpp
 
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;vehicles/car/api/CarRpcLibClient.hpp&quot;</span><span class="cp"></span>
+#include &lt;iostream&gt;
+#include "vehicles/car/api/CarRpcLibClient.hpp"
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> 
-<span class="p">{</span>
-    <span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="o">::</span><span class="n">CarRpcLibClient</span> <span class="n">client</span><span class="p">;</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">enableApiControl</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span> <span class="c1">//this disables manual control</span>
-    <span class="n">CarControllerBase</span><span class="o">::</span><span class="n">CarControls</span> <span class="n">controls</span><span class="p">;</span>
+int main() 
+{
+    msr::airlib::CarRpcLibClient client;
+    client.enableApiControl(true); //this disables manual control
+    CarControllerBase::CarControls controls;
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press enter to drive forward&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-    <span class="n">controls</span><span class="p">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">setCarControls</span><span class="p">(</span><span class="n">controls</span><span class="p">);</span>
+    std::cout &lt;&lt; "Press enter to drive forward" &lt;&lt; std::endl; std::cin.get();
+    controls.throttle = 1;
+    client.setCarControls(controls);
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press Enter to activate handbrake&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-    <span class="n">controls</span><span class="p">.</span><span class="n">handbrake</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">setCarControls</span><span class="p">(</span><span class="n">controls</span><span class="p">);</span>
+    std::cout &lt;&lt; "Press Enter to activate handbrake" &lt;&lt; std::endl; std::cin.get();
+    controls.handbrake = true;
+    client.setCarControls(controls);
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press Enter to take turn and drive backward&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-    <span class="n">controls</span><span class="p">.</span><span class="n">handbrake</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-    <span class="n">controls</span><span class="p">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-    <span class="n">controls</span><span class="p">.</span><span class="n">steering</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">setCarControls</span><span class="p">(</span><span class="n">controls</span><span class="p">);</span>
+    std::cout &lt;&lt; "Press Enter to take turn and drive backward" &lt;&lt; std::endl; std::cin.get();
+    controls.handbrake = false;
+    controls.throttle = -1;
+    controls.steering = 1;
+    client.setCarControls(controls);
 
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press Enter to stop&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">setCarControls</span><span class="p">(</span><span class="n">CarControllerBase</span><span class="o">::</span><span class="n">CarControls</span><span class="p">());</span>
+    std::cout &lt;&lt; "Press Enter to stop" &lt;&lt; std::endl; std::cin.get();
+    client.setCarControls(CarControllerBase::CarControls());
 
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+    return 0;
+}</code></pre>
 <h2 id="hello-drone">Hello Drone<a class="headerlink" href="#hello-drone" title="Permanent link">#</a></h2>
 <p>Here's how to use AirSim APIs using C++ to control simulated quadrotor (see also <a href="../apis/#hello_drone">Python example</a>):</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// ready to run example: https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp</span>
+<pre class="highlight"><code class="language-cpp">
+// ready to run example: https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp
 
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;vehicles/multirotor/api/MultirotorRpcLibClient.hpp&quot;</span><span class="cp"></span>
+#include &lt;iostream&gt;
+#include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> 
-<span class="p">{</span>
-    <span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
-    <span class="n">msr</span><span class="o">::</span><span class="n">airlib</span><span class="o">::</span><span class="n">MultirotorRpcLibClient</span> <span class="n">client</span><span class="p">;</span>
+int main() 
+{
+    using namespace std;
+    msr::airlib::MultirotorRpcLibClient client;
 
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press Enter to enable API control&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> <span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">enableApiControl</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+    cout &lt;&lt; "Press Enter to enable API control" &lt;&lt; endl; cin.get();
+    client.enableApiControl(true);
 
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press Enter to arm the drone&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> <span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">armDisarm</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+    cout &lt;&lt; "Press Enter to arm the drone" &lt;&lt; endl; cin.get();
+    client.armDisarm(true);
 
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press Enter to takeoff&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> <span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">takeoffAsync</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">waitOnLastTask</span><span class="p">();</span>
+    cout &lt;&lt; "Press Enter to takeoff" &lt;&lt; endl; cin.get();
+    client.takeoffAsync(5)-&gt;waitOnLastTask();
 
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press Enter to move 5 meters in x direction with 1 m/s velocity&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> <span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>  
-    <span class="k">auto</span> <span class="n">position</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="n">getMultirotorState</span><span class="p">().</span><span class="n">getPosition</span><span class="p">();</span> <span class="c1">// from current location</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">moveToPositionAsync</span><span class="p">(</span><span class="n">position</span><span class="p">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="n">position</span><span class="p">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">position</span><span class="p">.</span><span class="n">z</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">waitOnLastTask</span><span class="p">();</span>
+    cout &lt;&lt; "Press Enter to move 5 meters in x direction with 1 m/s velocity" &lt;&lt; endl; cin.get();  
+    auto position = client.getMultirotorState().getPosition(); // from current location
+    client.moveToPositionAsync(position.x() + 5, position.y(), position.z(), 1)-&gt;waitOnLastTask();
 
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Press Enter to land&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span> <span class="n">cin</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-    <span class="n">client</span><span class="p">.</span><span class="n">landAsync</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">waitOnLastTask</span><span class="p">();</span>
+    cout &lt;&lt; "Press Enter to land" &lt;&lt; endl; cin.get();
+    client.landAsync()-&gt;waitOnLastTask();
 
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+    return 0;
+}</code></pre>
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">#</a></h2>
 <ul>
 <li><a href="../Examples">Examples</a> of how to use internal infrastructure in AirSim in your other projects</li>

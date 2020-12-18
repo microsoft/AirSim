@@ -279,17 +279,13 @@
               
                 <h1 id="installing-cmake-on-linux">Installing cmake on Linux<a class="headerlink" href="#installing-cmake-on-linux" title="Permanent link">#</a></h1>
 <p>If you don't have cmake version 3.10 (for example, 3.2.2 is the default on Ubuntu 14) you can run the following:</p>
-<div class="highlight"><pre><span></span><code>mkdir ~/cmake-3.10.2
+<pre class="highlight"><code>mkdir ~/cmake-3.10.2
 cd ~/cmake-3.10.2
-wget https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.sh
-</code></pre></div>
-
+wget https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.sh</code></pre>
 <p>Now you have to run this command by itself (it is interactive)
-<div class="highlight"><pre><span></span><code>sh cmake-3.10.2-Linux-x86_64.sh --prefix ~/cmake-3.10.2
-</code></pre></div></p>
+<pre class="highlight"><code>sh cmake-3.10.2-Linux-x86_64.sh --prefix ~/cmake-3.10.2</code></pre></p>
 <p>Answer 'n' to the question about creating another cmake-3.10.2-Linux-x86_64 folder and then 
-<div class="highlight"><pre><span></span><code>sudo update-alternatives --install /usr/bin/cmake cmake ~/cmake-3.10.2/bin/cmake 60
-</code></pre></div></p>
+<pre class="highlight"><code>sudo update-alternatives --install /usr/bin/cmake cmake ~/cmake-3.10.2/bin/cmake 60</code></pre></p>
 <p>Now type <code>cmake --version</code> to make sure your cmake version is 3.10.2.</p>
               
             </div>

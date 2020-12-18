@@ -309,26 +309,24 @@
 </tbody>
 </table>
 <p>So with these we can compute a square path box using this code:</p>
-<p><div class="highlight"><pre><span></span><code>        <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">distance</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">:</span>
-            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span>
-            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Vector3r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-            <span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stripewidth</span>
-            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stripewidth</span>
-            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Vector3r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span>
-            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Vector3r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-            <span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stripewidth</span>
-            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stripewidth</span>
-            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Vector3r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-            <span class="n">distance</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boxsize</span>
-</code></pre></div>
+<p><pre class="highlight"><code class="language-python">        path = []
+        distance = 0
+        while x &lt; self.boxsize:
+            distance += self.boxsize
+            path.append(Vector3r(x, self.boxsize, z))
+            x += self.stripewidth
+            distance += self.stripewidth
+            path.append(Vector3r(x, self.boxsize, z))
+            distance += self.boxsize
+            path.append(Vector3r(x, -self.boxsize, z))
+            x += self.stripewidth
+            distance += self.stripewidth
+            path.append(Vector3r(x, -self.boxsize, z))
+            distance += self.boxsize</code></pre>
 Assuming we start in the corner of the box, increment x by the stripe width, then fly the full y-dimension of <code>-boxsize</code> to <code>+boxsize</code>, so in this case, <code>boxsize</code> is half the size of the actual box we will be covering.</p>
 <p>Once we have this list of Vector3r objects, we can fly this path very simply with the following call:
-<div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">moveOnPath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span> <span class="n">trip_time</span><span class="p">,</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">ForwardOnly</span><span class="p">,</span>
-                                <span class="n">YawMode</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">lookahead</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-python">result = self.client.moveOnPath(path, self.velocity, trip_time, DrivetrainType.ForwardOnly,
+                                YawMode(False,0), lookahead, 1)</code></pre></p>
 <p>We can compute an appropriate <code>trip_time</code> timeout by dividing the distance of the path and the speed we are flying.</p>
 <p>The <code>lookahead</code> needed here for smooth path interpolation can be computed from the velocity using <code>self.velocity + (self.velocity/2)</code>.  The more lookahead, the smoother the turns.  This is why you see in the screenshot that the ends of each swimland are smooth turns rather than a square box pattern.  This can result in a smoother video from your camera also.</p>
 <p>That's it, pretty simple, eh?</p>

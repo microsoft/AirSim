@@ -312,8 +312,7 @@
 </li>
 <li>
 <p>To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the <a href="https://portal.azure.com">Azure Portal</a> or use the following command from the Azure CLI:
-<div class="highlight"><pre><span></span><code>az vm deallocate --resource-group MyResourceGroup --name MyVMName
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">az vm deallocate --resource-group MyResourceGroup --name MyVMName</code></pre></p>
 </li>
 </ul>
 <h2 id="code-and-debug-from-visual-studio-code-and-remote-ssh">Code and debug from Visual Studio Code and Remote SSH<a class="headerlink" href="#code-and-debug-from-visual-studio-code-and-remote-ssh" title="Permanent link">#</a></h2>
@@ -354,9 +353,7 @@ To be able to reach the VM from the local Python code, it is required to keep th
 <p>When using Azure Container Services to run this image, the only extra-requirement is to add GPU support to the Container Group where it will be deployed. </p>
 <p>It can use either public docker images from DockerHub or images deployed to a private Azure Container Registry</p>
 <h3 id="building-the-docker-image">Building the docker image<a class="headerlink" href="#building-the-docker-image" title="Permanent link">#</a></h3>
-<div class="highlight"><pre><span></span><code>docker build -t &lt;your-registry-url&gt;/&lt;your-image-name&gt; -f ./docker/Dockerfile .<span class="sb">`</span>
-</code></pre></div>
-
+<pre class="highlight"><code class="language-bash">docker build -t &lt;your-registry-url&gt;/&lt;your-image-name&gt; -f ./docker/Dockerfile .`</code></pre>
 <h2 id="using-a-different-airsim-binary">Using a different AirSim binary<a class="headerlink" href="#using-a-different-airsim-binary" title="Permanent link">#</a></h2>
 <p>To use a different AirSim binary, first check the official documentation on <a href="../build_windows/">How to Build AirSim on Windows</a> and <a href="../build_linux/">How to Build AirSim on Linux</a> if you also want to run it with Docker</p>
 <p>Once you have a zip file with the new AirSim environment (or prefer to use one from the <a href="https://github.com/microsoft/AirSim/releases">Official Releases</a>), you need to modify some of the scripts in the <code>azure</code> directory of the repository to point to the new environment:

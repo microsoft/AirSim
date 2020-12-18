@@ -363,19 +363,13 @@
 <h2 id="python-quickstart">Python Quickstart<a class="headerlink" href="#python-quickstart" title="Permanent link">#</a></h2>
 <p>If you want to use Python to call AirSim APIs, we recommend using Anaconda with Python 3.5 or later versions however some code may also work with Python 2.7 (<a href="../CONTRIBUTING/">help us</a> improve compatibility!).</p>
 <p>First install this package:</p>
-<div class="highlight"><pre><span></span><code>pip install msgpack-rpc-python
-</code></pre></div>
-
+<pre class="highlight"><code>pip install msgpack-rpc-python</code></pre>
 <p>You can either get AirSim binaries from <a href="https://github.com/Microsoft/AirSim/releases">releases</a> or compile from the source (<a href="../build_windows/">Windows</a>, <a href="../build_linux/">Linux</a>). Once you can run AirSim, choose Car as vehicle and then navigate to <code>PythonClient\car\</code> folder and run:</p>
-<div class="highlight"><pre><span></span><code>python hello_car.py
-</code></pre></div>
-
+<pre class="highlight"><code>python hello_car.py</code></pre>
 <p>If you are using Visual Studio 2019 then just open AirSim.sln, set PythonClient as startup project and choose <code>car\hello_car.py</code> as your startup script.</p>
 <h3 id="installing-airsim-package">Installing AirSim Package<a class="headerlink" href="#installing-airsim-package" title="Permanent link">#</a></h3>
 <p>You can also install <code>airsim</code> package simply by,</p>
-<div class="highlight"><pre><span></span><code>pip install airsim
-</code></pre></div>
-
+<pre class="highlight"><code>pip install airsim</code></pre>
 <p>You can find source code and samples for this package in <code>PythonClient</code> folder in your repo.</p>
 <p><strong>Notes</strong>
 1. You may notice a file <code>setup_path.py</code> in our example folders. This file has simple code to detect if <code>airsim</code> package is available in parent folder and in that case we use that instead of pip installed package so you always use latest code.
@@ -384,76 +378,73 @@
 <p>If you want to use C++ APIs and examples, please see <a href="../apis_cpp/">C++ APIs Guide</a>.</p>
 <h2 id="hello-car">Hello Car<a class="headerlink" href="#hello-car" title="Permanent link">#</a></h2>
 <p>Here's how to use AirSim APIs using Python to control simulated car (see also <a href="../apis_cpp/#hello_car">C++ example</a>):</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># ready to run example: PythonClient/car/hello_car.py</span>
-<span class="kn">import</span> <span class="nn">airsim</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<pre class="highlight"><code class="language-python"># ready to run example: PythonClient/car/hello_car.py
+import airsim
+import time
 
-<span class="c1"># connect to the AirSim simulator</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">airsim</span><span class="o">.</span><span class="n">CarClient</span><span class="p">()</span>
-<span class="n">client</span><span class="o">.</span><span class="n">confirmConnection</span><span class="p">()</span>
-<span class="n">client</span><span class="o">.</span><span class="n">enableApiControl</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">car_controls</span> <span class="o">=</span> <span class="n">airsim</span><span class="o">.</span><span class="n">CarControls</span><span class="p">()</span>
+# connect to the AirSim simulator
+client = airsim.CarClient()
+client.confirmConnection()
+client.enableApiControl(True)
+car_controls = airsim.CarControls()
 
-<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-    <span class="c1"># get state of the car</span>
-    <span class="n">car_state</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">getCarState</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Speed </span><span class="si">%d</span><span class="s2">, Gear </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">car_state</span><span class="o">.</span><span class="n">speed</span><span class="p">,</span> <span class="n">car_state</span><span class="o">.</span><span class="n">gear</span><span class="p">))</span>
+while True:
+    # get state of the car
+    car_state = client.getCarState()
+    print("Speed %d, Gear %d" % (car_state.speed, car_state.gear))
 
-    <span class="c1"># set the controls for car</span>
-    <span class="n">car_controls</span><span class="o">.</span><span class="n">throttle</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">car_controls</span><span class="o">.</span><span class="n">steering</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">setCarControls</span><span class="p">(</span><span class="n">car_controls</span><span class="p">)</span>
+    # set the controls for car
+    car_controls.throttle = 1
+    car_controls.steering = 1
+    client.setCarControls(car_controls)
 
-    <span class="c1"># let car drive a bit</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    # let car drive a bit
+    time.sleep(1)
 
-    <span class="c1"># get camera images from the car</span>
-    <span class="n">responses</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">simGetImages</span><span class="p">([</span>
-        <span class="n">airsim</span><span class="o">.</span><span class="n">ImageRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">DepthVis</span><span class="p">),</span>
-        <span class="n">airsim</span><span class="o">.</span><span class="n">ImageRequest</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">DepthPlanner</span><span class="p">,</span> <span class="kc">True</span><span class="p">)])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Retrieved images: </span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">))</span>
+    # get camera images from the car
+    responses = client.simGetImages([
+        airsim.ImageRequest(0, airsim.ImageType.DepthVis),
+        airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
+    print('Retrieved images: %d', len(responses))
 
-    <span class="c1"># do something with images</span>
-    <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">responses</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">pixels_as_float</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type </span><span class="si">%d</span><span class="s2">, size </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_data_float</span><span class="p">)))</span>
-            <span class="n">airsim</span><span class="o">.</span><span class="n">write_pfm</span><span class="p">(</span><span class="s1">&#39;py1.pfm&#39;</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">get_pfm_array</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type </span><span class="si">%d</span><span class="s2">, size </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_data_uint8</span><span class="p">)))</span>
-            <span class="n">airsim</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s1">&#39;py1.png&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">image_data_uint8</span><span class="p">)</span>
-</code></pre></div>
-
+    # do something with images
+    for response in responses:
+        if response.pixels_as_float:
+            print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
+            airsim.write_pfm('py1.pfm', airsim.get_pfm_array(response))
+        else:
+            print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
+            airsim.write_file('py1.png', response.image_data_uint8)
+</code></pre>
 <h2 id="hello-drone">Hello Drone<a class="headerlink" href="#hello-drone" title="Permanent link">#</a></h2>
 <p>Here's how to use AirSim APIs using Python to control simulated quadrotor (see also <a href="../apis_cpp/#hello_drone">C++ example</a>):</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># ready to run example: PythonClient/multirotor/hello_drone.py</span>
-<span class="kn">import</span> <span class="nn">airsim</span>
+<pre class="highlight"><code class="language-python"># ready to run example: PythonClient/multirotor/hello_drone.py
+import airsim
 
-<span class="c1"># connect to the AirSim simulator</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">airsim</span><span class="o">.</span><span class="n">MultirotorClient</span><span class="p">()</span>
-<span class="n">client</span><span class="o">.</span><span class="n">confirmConnection</span><span class="p">()</span>
-<span class="n">client</span><span class="o">.</span><span class="n">enableApiControl</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">client</span><span class="o">.</span><span class="n">armDisarm</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+# connect to the AirSim simulator
+client = airsim.MultirotorClient()
+client.confirmConnection()
+client.enableApiControl(True)
+client.armDisarm(True)
 
-<span class="c1"># Async methods returns Future. Call join() to wait for task to complete.</span>
-<span class="n">client</span><span class="o">.</span><span class="n">takeoffAsync</span><span class="p">()</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-<span class="n">client</span><span class="o">.</span><span class="n">moveToPositionAsync</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+# Async methods returns Future. Call join() to wait for task to complete.
+client.takeoffAsync().join()
+client.moveToPositionAsync(-10, 10, -10, 5).join()
 
-<span class="c1"># take images</span>
-<span class="n">responses</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">simGetImages</span><span class="p">([</span>
-    <span class="n">airsim</span><span class="o">.</span><span class="n">ImageRequest</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">DepthVis</span><span class="p">),</span>
-    <span class="n">airsim</span><span class="o">.</span><span class="n">ImageRequest</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">airsim</span><span class="o">.</span><span class="n">ImageType</span><span class="o">.</span><span class="n">DepthPlanner</span><span class="p">,</span> <span class="kc">True</span><span class="p">)])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Retrieved images: </span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">))</span>
+# take images
+responses = client.simGetImages([
+    airsim.ImageRequest("0", airsim.ImageType.DepthVis),
+    airsim.ImageRequest("1", airsim.ImageType.DepthPlanner, True)])
+print('Retrieved images: %d', len(responses))
 
-<span class="c1"># do something with the images</span>
-<span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">responses</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">pixels_as_float</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type </span><span class="si">%d</span><span class="s2">, size </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_data_float</span><span class="p">)))</span>
-        <span class="n">airsim</span><span class="o">.</span><span class="n">write_pfm</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s1">&#39;/temp/py1.pfm&#39;</span><span class="p">),</span> <span class="n">airsim</span><span class="o">.</span><span class="n">getPfmArray</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type </span><span class="si">%d</span><span class="s2">, size </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_data_uint8</span><span class="p">)))</span>
-        <span class="n">airsim</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s1">&#39;/temp/py1.png&#39;</span><span class="p">),</span> <span class="n">response</span><span class="o">.</span><span class="n">image_data_uint8</span><span class="p">)</span>
-</code></pre></div>
-
+# do something with the images
+for response in responses:
+    if response.pixels_as_float:
+        print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
+        airsim.write_pfm(os.path.normpath('/temp/py1.pfm'), airsim.getPfmArray(response))
+    else:
+        print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
+        airsim.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)</code></pre>
 <h2 id="common-apis">Common APIs<a class="headerlink" href="#common-apis" title="Permanent link">#</a></h2>
 <ul>
 <li><code>reset</code>: This resets the vehicle to its original starting state. Note that you must call <code>enableApiControl</code> and <code>armDisarm</code> again after the call to <code>reset</code>.</li>
@@ -475,21 +466,16 @@ For vision problems that can benefit from domain randomization, there is also an
 <h3 id="time-of-day-api">Time of Day API<a class="headerlink" href="#time-of-day-api" title="Permanent link">#</a></h3>
 <p>AirSim assumes there exist sky sphere of class <code>EngineSky/BP_Sky_Sphere</code> in your environment with <a href="https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L156">ADirectionalLight actor</a>. By default, the position of the sun in the scene doesn't move with time. You can use <a href="../settings/#timeofday">settings</a> to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene.</p>
 <p>You can also use following API call to set the sun position according to given date time:</p>
-<div class="highlight"><pre><span></span><code>simSetTimeOfDay(self, is_enabled, start_datetime = &quot;&quot;, is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True)
-</code></pre></div>
-
+<pre class="highlight"><code>simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True)</code></pre>
 <p>The <code>is_enabled</code> parameter must be <code>True</code> to enable time of day effect. If it is <code>False</code> then sun position is reset to its original in the environment.</p>
 <p>Other parameters are same as in <a href="../settings/#timeofday">settings</a>.</p>
 <h3 id="weather-apis">Weather APIs<a class="headerlink" href="#weather-apis" title="Permanent link">#</a></h3>
 <p>By default all weather effects are disabled. To enable weather effect, first call:</p>
-<div class="highlight"><pre><span></span><code>simEnableWeather(True)
-</code></pre></div>
-
+<pre class="highlight"><code>simEnableWeather(True)</code></pre>
 <p>Various weather effects can be enabled by using <code>simSetWeatherParameter</code> method which takes <code>WeatherParameter</code>, for example,</p>
-<p><div class="highlight"><pre><span></span><code>client.simSetWeatherParameter(airsim.WeatherParameter.Rain, 0.25);
-</code></pre></div>
+<p><pre class="highlight"><code>client.simSetWeatherParameter(airsim.WeatherParameter.Rain, 0.25);</code></pre>
 The second parameter value is from 0 to 1. The first parameter provides following options:</p>
-<div class="highlight"><pre><span></span><code>class WeatherParameter:
+<pre class="highlight"><code>class WeatherParameter:
     Rain = 0
     Roadwetness = 1
     Snow = 2
@@ -497,27 +483,21 @@ The second parameter value is from 0 to 1. The first parameter provides followin
     MapleLeaf = 4
     RoadLeaf = 5
     Dust = 6
-    Fog = 7
-</code></pre></div>
-
+    Fog = 7</code></pre>
 <p>Please note that <code>Roadwetness</code>, <code>RoadSnow</code> and <code>RoadLeaf</code> effects requires adding <a href="https://github.com/Microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Content/Weather/WeatherFX">materials</a> to your scene.</p>
 <p>Please see <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/weather.py">example code</a> for more details.</p>
 <h3 id="recording-apis">Recording APIs<a class="headerlink" href="#recording-apis" title="Permanent link">#</a></h3>
 <p>Recording APIs can be used to start recording data through APIs. Data to be recorded can be specified using <a href="../settings/#recording">settings</a>. To start recording, use -</p>
-<div class="highlight"><pre><span></span><code>client.startRecording()
-</code></pre></div>
-
+<pre class="highlight"><code>client.startRecording()</code></pre>
 <p>Similarly, to stop recording, use <code>client.stopRecording()</code>. To check whether Recording is running, call <code>client.isRecording()</code>, returns a <code>bool</code>.</p>
 <p>This API works alongwith toggling Recording using R button, therefore if it's enabled using R key, <code>isRecording()</code> will return <code>True</code>, and recording can be stopped via API using <code>stopRecording()</code>. Similarly, recording started using API will be stopped if R key is pressed in Viewport. LogMessage will also appear in the top-left of the viewport if recording is started or stopped using API.</p>
 <p>Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired.</p>
 <h3 id="wind-api">Wind API<a class="headerlink" href="#wind-api" title="Permanent link">#</a></h3>
 <p>Wind can be changed during simulation using <code>simSetWind()</code>. Wind is specified in World frame, NED direction and m/s values</p>
 <p>E.g. To set 20m/s wind in North (forward) direction -</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Set wind to (20,0,0) in NED (forward direction)</span>
-<span class="n">wind</span> <span class="o">=</span> <span class="n">airsim</span><span class="o">.</span><span class="n">Vector3r</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">client</span><span class="o">.</span><span class="n">simSetWind</span><span class="p">(</span><span class="n">wind</span><span class="p">)</span>
-</code></pre></div>
-
+<pre class="highlight"><code class="language-python"># Set wind to (20,0,0) in NED (forward direction)
+wind = airsim.Vector3r(20, 0, 0)
+client.simSetWind(wind)</code></pre>
 <p>Also see example script in <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/set_wind.py">set_wind.py</a></p>
 <h3 id="lidar-apis">Lidar APIs<a class="headerlink" href="#lidar-apis" title="Permanent link">#</a></h3>
 <p>AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in <a href="../settings/">settings.json</a>.</p>
@@ -540,14 +520,10 @@ The second parameter value is from 0 to 1. The first parameter provides followin
 <p>This API returns the state of the vehicle in one call. The state includes, collision, estimated kinematics (i.e. kinematics computed by fusing sensors), and timestamp (nano seconds since epoch). The kinematics here means 6 quantities: position, orientation, linear and angular velocity, linear and angular acceleration. Please note that simple_slight currently doesn't support state estimator which means estimated and ground truth kinematics values would be same for simple_flight. Estimated kinematics are however available for PX4 except for angular acceleration. All quantities are in NED coordinate system, SI units in world frame except for angular velocity and accelerations which are in body frame.</p>
 <h4 id="async-methods-duration-and-max_wait_seconds">Async methods, duration and max_wait_seconds<a class="headerlink" href="#async-methods-duration-and-max_wait_seconds" title="Permanent link">#</a></h4>
 <p>Many API methods has parameters named <code>duration</code> or <code>max_wait_seconds</code> and they have <em>Async</em> as suffix, for example, <code>takeoffAsync</code>. These methods will return immediately after starting the task in AirSim so that your client code can do something else while that task is being executed. If you want to wait for this task to complete then you can call <code>waitOnLastTask</code> like this:</p>
-<div class="highlight"><pre><span></span><code><span class="c1">//C++</span>
-<span class="n">client</span><span class="p">.</span><span class="n">takeoffAsync</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">waitOnLastTask</span><span class="p">();</span>
-</code></pre></div>
-
-<div class="highlight"><pre><span></span><code><span class="cp"># Python</span>
-<span class="n">client</span><span class="p">.</span><span class="n">takeoffAsync</span><span class="p">().</span><span class="n">join</span><span class="p">()</span>
-</code></pre></div>
-
+<pre class="highlight"><code class="language-cpp">//C++
+client.takeoffAsync()-&gt;waitOnLastTask();</code></pre>
+<pre class="highlight"><code class="language-cpp"># Python
+client.takeoffAsync().join()</code></pre>
 <p>If you start another command then it automatically cancels the previous task and starts new command. This allows to use pattern where your coded continuously does the sensing, computes a new trajectory to follow and issues that path to vehicle in AirSim. Each newly issued trajectory cancels the previous trajectory allowing your code to continuously do the update as new sensor data arrives.</p>
 <p>All <em>Async</em> method returns <code>concurrent.futures.Future</code> in Python (<code>std::future</code> in C++). Please note that these future classes currently do not allow to check status or cancel the task; they only allow to wait for task to complete. AirSim does provide API <code>cancelLastTask</code>, however.</p>
 <h4 id="drivetrain">drivetrain<a class="headerlink" href="#drivetrain" title="Permanent link">#</a></h4>
@@ -585,9 +561,8 @@ The second parameter value is from 0 to 1. The first parameter provides followin
 <p>We recommend <a href="https://www.anaconda.com/download/">Anaconda</a> to get Python tools and libraries. Our code is tested with Python 3.5.3 :: Anaconda 4.4.0. This is important because older version have been known to have <a href="https://stackoverflow.com/a/45934992/207661">problems</a>.</p>
 <h4 id="i-get-error-on-import-cv2">I get error on <code>import cv2</code><a class="headerlink" href="#i-get-error-on-import-cv2" title="Permanent link">#</a></h4>
 <p>You can install OpenCV using:
-<div class="highlight"><pre><span></span><code>conda install opencv
-pip install opencv-python
-</code></pre></div></p>
+<pre class="highlight"><code>conda install opencv
+pip install opencv-python</code></pre></p>
 <h4 id="typeerror-unsupported-operand-types-for-asyncioloop-and-float">TypeError: unsupported operand type(s) for *: 'AsyncIOLoop' and 'float'<a class="headerlink" href="#typeerror-unsupported-operand-types-for-asyncioloop-and-float" title="Permanent link">#</a></h4>
 <p>This error happens if you install Jupyter, which somehow breaks the msgpackrpc library.  Create a new python environment
 which the minimal required packages.</p>

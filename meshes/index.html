@@ -285,7 +285,7 @@
 <p>AirSim supports the ability to access the static meshes that make up the scene</p>
 <h2 id="mesh-structure">Mesh structure<a class="headerlink" href="#mesh-structure" title="Permanent link">#</a></h2>
 <p>Each mesh is represented with the below struct.
-<div class="highlight"><pre><span></span><code>struct MeshPositionVertexBuffersResponse {
+<pre class="highlight"><code>struct MeshPositionVertexBuffersResponse {
 
     Vector3r position;
     Quaternionr orientation;
@@ -293,8 +293,7 @@
     std::vector&lt;float&gt; vertices;
     std::vector&lt;uint32_t&gt; indices;
     std::string name;
-};
-</code></pre></div>
+};</code></pre>
 * The position and orientation are in the Unreal coordinate system.
 * The mesh itself is a triangular mesh represented by the vertices and the indices.
     * The triangular mesh type is typically called a <a href="https://en.wikipedia.org/wiki/Polygon_mesh#Face-vertex_meshes">Face-Vertex</a> Mesh. This means every triplet of indices hold the indexes of the vertices that make up the triangle/face.
@@ -307,9 +306,9 @@
  not changing during the duration of your program.</p>
 <p>Note that you will have to use a 3rdparty library or your own custom code to actually interact with the recieved meshes. Below I utilize the
 python bindings of <a href="https://github.com/libigl/libigl">libigl</a> to visualize the recieved meshes.</p>
-<div class="highlight"><pre><span></span><code>import airsim
+<pre class="highlight"><code>import airsim
 
-AIRSIM_HOST_IP=&#39;127.0.0.1&#39;
+AIRSIM_HOST_IP='127.0.0.1'
 
 client = airsim.VehicleClient(ip=AIRSIM_HOST_IP)
 client.confirmConnection()
@@ -321,7 +320,7 @@ meshes=client.simGetMeshPositionVertexBuffers()
 index=0
 for m in meshes:
     # Finds one of the cube meshes in the Blocks environment
-    if &#39;cube&#39; in m.name:
+    if 'cube' in m.name:
 
         # Code from here on relies on libigl. Libigl uses pybind11 to wrap C++ code. So here the built pyigl.so
         # library is in the same directory as this example code.
@@ -351,8 +350,7 @@ for m in meshes:
         viewer = igl.glfw.Viewer()
         viewer.data().set_mesh(v_eig,i_eig)
         viewer.launch()
-        break
-</code></pre></div>
+        break</code></pre>
               
             </div>
           </div>

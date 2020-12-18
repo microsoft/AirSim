@@ -321,40 +321,34 @@
 <p>Make sure you are <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html">registered with Epic Games</a>. This is required to get source code access for Unreal Engine.</p>
 </li>
 <li>
-<p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal &gt;= 4.22 at present. We recommend using 4.24.</p>
+<p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal &gt;= 4.25 at present. We recommend using 4.25.</p>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># go to the folder where you clone GitHub projects</span>
-git clone -b <span class="m">4</span>.24 https://github.com/EpicGames/UnrealEngine.git
-<span class="nb">cd</span> UnrealEngine
+<pre class="highlight"><code class="language-bash"># go to the folder where you clone GitHub projects
+git clone -b 4.25 https://github.com/EpicGames/UnrealEngine.git
+cd UnrealEngine
 ./Setup.sh
 ./GenerateProjectFiles.sh
-make
-</code></pre></div>
-
+make</code></pre>
 <h4 id="macos-download-unreal-engine">macOS - Download Unreal Engine<a class="headerlink" href="#macos-download-unreal-engine" title="Permanent link">#</a></h4>
 <ol>
 <li><a href="https://www.unrealengine.com/download">Download</a> the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.</li>
 <li>Run the Epic Games Launcher, open the <code>Library</code> tab on the left pane.
-Click on the <code>Add Versions</code> which should show the option to download <strong>Unreal 4.24</strong> as shown below. If you have multiple versions of Unreal installed then <strong>make sure 4.24 is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
+Click on the <code>Add Versions</code> which should show the option to download <strong>Unreal 4.25</strong> as shown below. If you have multiple versions of Unreal installed then <strong>make sure 4.25 is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
 </ol>
-<p><strong>Note</strong>: AirSim also works with UE &gt;= 4.22, however, we recommend you update to 4.24.
+<p><strong>Note</strong>: AirSim also works with UE &gt;= 4.25, however, we recommend 4.25.
    <strong>Note</strong>: If you have UE 4.16 or older projects, please see the <a href="../unreal_upgrade/">upgrade guide</a> to upgrade your projects.</p>
 <h3 id="build-airsim">Build AirSim<a class="headerlink" href="#build-airsim" title="Permanent link">#</a></h3>
 <ul>
 <li>Clone AirSim and build it:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># go to the folder where you clone GitHub projects</span>
+<pre class="highlight"><code class="language-bash"># go to the folder where you clone GitHub projects
 git clone https://github.com/Microsoft/AirSim.git
-<span class="nb">cd</span> AirSim
-</code></pre></div>
-
-<p>By default AirSim uses clang 8 to build for compatibility with UE 4.24. The setup script will install the right version of cmake, llvm, and eigen.</p>
-<div class="highlight"><pre><span></span><code>./setup.sh
+cd AirSim</code></pre>
+<p>By default AirSim uses clang 8 to build for compatibility with UE 4.25. The setup script will install the right version of cmake, llvm, and eigen.</p>
+<pre class="highlight"><code class="language-bash">./setup.sh
 ./build.sh
-<span class="c1"># use ./build.sh --debug to build in debug mode</span>
-</code></pre></div>
-
+# use ./build.sh --debug to build in debug mode</code></pre>
 <h3 id="build-unreal-environment">Build Unreal Environment<a class="headerlink" href="#build-unreal-environment" title="Permanent link">#</a></h3>
 <p>Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see <a href="../unreal_proj/">setting up Unreal Environment</a> if you'd like to setup your own environment.</p>
 <h2 id="how-to-use-airsim">How to Use AirSim<a class="headerlink" href="#how-to-use-airsim" title="Permanent link">#</a></h2>
@@ -370,7 +364,7 @@ git clone https://github.com/Microsoft/AirSim.git
 <h3 id="mac">Mac<a class="headerlink" href="#mac" title="Permanent link">#</a></h3>
 <ul>
 <li>Browse to <code>AirSim/Unreal/Environments/Blocks</code>.</li>
-<li>Run <code>./GenerateProjectFiles.sh &lt;UE_PATH&gt;</code> from the terminal, where <code>UE_PATH</code> is the path to the Unreal installation folder. (By default, this is <code>/Users/Shared/Epic\ Games/UE_4.24/</code>) The script creates an XCode workspace by the name Blocks.xcworkspace.</li>
+<li>Run <code>./GenerateProjectFiles.sh &lt;UE_PATH&gt;</code> from the terminal, where <code>UE_PATH</code> is the path to the Unreal installation folder. (By default, this is <code>/Users/Shared/Epic\ Games/UE_4.25/</code>) The script creates an XCode workspace by the name Blocks.xcworkspace.</li>
 <li>Open the XCode workspace, and press the Build and run button in the top left.</li>
 <li>After Unreal Editor loads, press Play button.</li>
 </ul>

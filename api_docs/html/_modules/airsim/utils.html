@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>airsim.utils &mdash; airsim 1.2.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> airsim
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">airsim</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>airsim.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for airsim.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> <span class="c1">#pip install numpy</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="string_to_uint8_array"><a class="viewcode-back" href="../../index.html#airsim.utils.string_to_uint8_array">[docs]</a><span class="k">def</span> <span class="nf">string_to_uint8_array</span><span class="p">(</span><span class="n">bstr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">bstr</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="string_to_float_array"><a class="viewcode-back" href="../../index.html#airsim.utils.string_to_float_array">[docs]</a><span class="k">def</span> <span class="nf">string_to_float_array</span><span class="p">(</span><span class="n">bstr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">bstr</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="list_to_2d_float_array"><a class="viewcode-back" href="../../index.html#airsim.utils.list_to_2d_float_array">[docs]</a><span class="k">def</span> <span class="nf">list_to_2d_float_array</span><span class="p">(</span><span class="n">flst</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">flst</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span></div>
+    
+<div class="viewcode-block" id="get_pfm_array"><a class="viewcode-back" href="../../index.html#airsim.utils.get_pfm_array">[docs]</a><span class="k">def</span> <span class="nf">get_pfm_array</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">list_to_2d_float_array</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">image_data_float</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="get_public_fields"><a class="viewcode-back" href="../../index.html#airsim.utils.get_public_fields">[docs]</a><span class="k">def</span> <span class="nf">get_public_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> 
+                            <span class="ow">or</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isbuiltin</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+                            <span class="ow">or</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+                            <span class="ow">or</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">attr</span><span class="p">))]</span></div>
+
+
+    
+<div class="viewcode-block" id="to_dict"><a class="viewcode-back" href="../../index.html#airsim.utils.to_dict">[docs]</a><span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">([</span><span class="n">attr</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)]</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">get_public_fields</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="to_str"><a class="viewcode-back" href="../../index.html#airsim.utils.to_str">[docs]</a><span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">to_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="write_file"><a class="viewcode-back" href="../../index.html#airsim.utils.write_file">[docs]</a><span class="k">def</span> <span class="nf">write_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">bstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write binary data to file.</span>
+<span class="sd">    Used for writing compressed PNG images</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">afile</span><span class="p">:</span>
+        <span class="n">afile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bstr</span><span class="p">)</span></div>
+
+<span class="c1"># helper method for converting getOrientation to roll/pitch/yaw</span>
+<span class="c1"># https:#en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles</span>
+    
+<div class="viewcode-block" id="to_eularian_angles"><a class="viewcode-back" href="../../index.html#airsim.utils.to_eularian_angles">[docs]</a><span class="k">def</span> <span class="nf">to_eularian_angles</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">z_val</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">y_val</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">x_val</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">w_val</span>
+    <span class="n">ysqr</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span>
+
+    <span class="c1"># roll (x-axis rotation)</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="o">+</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="o">+</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">ysqr</span><span class="p">)</span>
+    <span class="n">roll</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
+
+    <span class="c1"># pitch (y-axis rotation)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="o">+</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="n">z</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">t2</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">):</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">t2</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="n">pitch</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
+
+    <span class="c1"># yaw (z-axis rotation)</span>
+    <span class="n">t3</span> <span class="o">=</span> <span class="o">+</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="o">*</span><span class="n">z</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">t4</span> <span class="o">=</span> <span class="o">+</span><span class="mf">1.0</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">ysqr</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">yaw</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">t3</span><span class="p">,</span> <span class="n">t4</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">pitch</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">yaw</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="to_quaternion"><a class="viewcode-back" href="../../index.html#airsim.utils.to_quaternion">[docs]</a><span class="k">def</span> <span class="nf">to_quaternion</span><span class="p">(</span><span class="n">pitch</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">yaw</span><span class="p">):</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">yaw</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">yaw</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">roll</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">t3</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">roll</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">t4</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">pitch</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">t5</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">pitch</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">q</span> <span class="o">=</span> <span class="n">Quaternionr</span><span class="p">()</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">w_val</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">*</span> <span class="n">t2</span> <span class="o">*</span> <span class="n">t4</span> <span class="o">+</span> <span class="n">t1</span> <span class="o">*</span> <span class="n">t3</span> <span class="o">*</span> <span class="n">t5</span> <span class="c1">#w</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">x_val</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">*</span> <span class="n">t3</span> <span class="o">*</span> <span class="n">t4</span> <span class="o">-</span> <span class="n">t1</span> <span class="o">*</span> <span class="n">t2</span> <span class="o">*</span> <span class="n">t5</span> <span class="c1">#x</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">y_val</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">*</span> <span class="n">t2</span> <span class="o">*</span> <span class="n">t5</span> <span class="o">+</span> <span class="n">t1</span> <span class="o">*</span> <span class="n">t3</span> <span class="o">*</span> <span class="n">t4</span> <span class="c1">#y</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">z_val</span> <span class="o">=</span> <span class="n">t1</span> <span class="o">*</span> <span class="n">t2</span> <span class="o">*</span> <span class="n">t4</span> <span class="o">-</span> <span class="n">t0</span> <span class="o">*</span> <span class="n">t3</span> <span class="o">*</span> <span class="n">t5</span> <span class="c1">#z</span>
+    <span class="k">return</span> <span class="n">q</span></div>
+
+    
+<div class="viewcode-block" id="wait_key"><a class="viewcode-back" href="../../index.html#airsim.utils.wait_key">[docs]</a><span class="k">def</span> <span class="nf">wait_key</span><span class="p">(</span><span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Wait for a key press on the console and return it. &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">message</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">msvcrt</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">msvcrt</span><span class="o">.</span><span class="n">getch</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">termios</span>
+        <span class="n">fd</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
+
+        <span class="n">oldterm</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+        <span class="n">newattr</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+        <span class="n">newattr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">newattr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">termios</span><span class="o">.</span><span class="n">ICANON</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">termios</span><span class="o">.</span><span class="n">ECHO</span>
+        <span class="n">termios</span><span class="o">.</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">TCSANOW</span><span class="p">,</span> <span class="n">newattr</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">termios</span><span class="o">.</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="n">oldterm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+    
+<div class="viewcode-block" id="read_pfm"><a class="viewcode-back" href="../../index.html#airsim.utils.read_pfm">[docs]</a><span class="k">def</span> <span class="nf">read_pfm</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Read a pfm file &quot;&quot;&quot;</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+    <span class="n">color</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">endian</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">header</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">header</span> <span class="o">==</span> <span class="s1">&#39;PF&#39;</span><span class="p">:</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">header</span> <span class="o">==</span> <span class="s1">&#39;Pf&#39;</span><span class="p">:</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Not a PFM file.&#39;</span><span class="p">)</span>
+
+    <span class="n">temp_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">(),</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+    <span class="n">dim_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(\d+)\s(\d+)\s$&#39;</span><span class="p">,</span> <span class="n">temp_str</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dim_match</span><span class="p">:</span>
+        <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">dim_match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Malformed PFM header.&#39;</span><span class="p">)</span>
+
+    <span class="n">scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># little-endian</span>
+        <span class="n">endian</span> <span class="o">=</span> <span class="s1">&#39;&lt;&#39;</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="o">-</span><span class="n">scale</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">endian</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span> <span class="c1"># big-endian</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">endian</span> <span class="o">+</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">color</span> <span class="k">else</span> <span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="c1"># DEY: I don&#39;t know why this was there.</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">scale</span></div>
+
+    
+<div class="viewcode-block" id="write_pfm"><a class="viewcode-back" href="../../index.html#airsim.utils.write_pfm">[docs]</a><span class="k">def</span> <span class="nf">write_pfm</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Write a pfm file &quot;&quot;&quot;</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+
+    <span class="n">color</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;float32&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Image dtype must be float32.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span> <span class="c1"># color image</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c1"># grayscale</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Image must have H x W x 3, H x W x 1 or H x W dimensions.&#39;</span><span class="p">)</span>
+
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;PF</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>  <span class="k">if</span> <span class="n">color</span> <span class="k">else</span> <span class="s1">&#39;Pf</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+    <span class="n">temp_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> </span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp_str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+
+    <span class="n">endian</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">byteorder</span>
+
+    <span class="k">if</span> <span class="n">endian</span> <span class="o">==</span> <span class="s1">&#39;&lt;&#39;</span> <span class="ow">or</span> <span class="n">endian</span> <span class="o">==</span> <span class="s1">&#39;=&#39;</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;little&#39;</span><span class="p">:</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="o">-</span><span class="n">scale</span>
+
+    <span class="n">temp_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">scale</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">temp_str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+
+    <span class="n">image</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="write_png"><a class="viewcode-back" href="../../index.html#airsim.utils.write_png">[docs]</a><span class="k">def</span> <span class="nf">write_png</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; image must be numpy array H X W X channels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">cv2</span>      <span class="c1"># pip install opencv-python</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing PNG file </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> failed&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Shital Shah, Ratnesh Madaan, Sai Vemprala, Nicholas Gyde
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

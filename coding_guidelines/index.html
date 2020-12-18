@@ -358,21 +358,19 @@ thousands of others. Unfortunately most of these can't even agree on something a
 </table>
 <h2 id="header-files">Header Files<a class="headerlink" href="#header-files" title="Permanent link">#</a></h2>
 <p>Use a namespace qualified #ifdef to protect against multiple inclusion:</p>
-<div class="highlight"><pre><span></span><code>#ifndef msr_airsim_MyHeader_hpp
+<pre class="highlight"><code>#ifndef msr_airsim_MyHeader_hpp
 #define msr_airsim_MyHeader_hpp
 
 //--your code
 
-#endif
-</code></pre></div>
-
+#endif</code></pre>
 <p>The reason we don't use #pragma once is because it's not supported if same header file exists at multiple places (which might be possible under ROS build system!).</p>
 <h2 id="bracketing">Bracketing<a class="headerlink" href="#bracketing" title="Permanent link">#</a></h2>
 <p>Inside function or method body place curly bracket on same line. 
 Outside that the Namespace, Class and methods levels use separate line.
 This is called <a href="https://en.wikipedia.org/wiki/Indent_style#K.26R_style">K&amp;R style</a> and its variants are widely used in C++ vs other styles which are more popular in other languages. 
 Notice that curlies are not required if you have single statement, but complex statements are easier to keep correct with the braces.</p>
-<div class="highlight"><pre><span></span><code>int main(int argc, char* argv[])
+<pre class="highlight"><code>int main(int argc, char* argv[])
 {
      while (x == y) {
         f0();
@@ -385,9 +383,7 @@ Notice that curlies are not required if you have single statement, but complex s
         if (x &gt; 100)
             break;
     }
-}
-</code></pre></div>
-
+}</code></pre>
 <h2 id="const-and-references">Const and References<a class="headerlink" href="#const-and-references" title="Permanent link">#</a></h2>
 <p>Religiously review all non-scalar parameters you declare to be candidate for const and references. If you are coming from languages such as C#/Java/Python,
 the most often mistake you would make is to pass parameters by value instead of <code>const T&amp;;</code> Especially most of the strings, vectors and maps you want to 

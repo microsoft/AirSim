@@ -292,9 +292,9 @@
 <ol>
 <li><a href="https://www.unrealengine.com/download">Download</a> the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.</li>
 <li>Run the Epic Games Launcher, open the <code>Unreal Engine</code> tab on the left pane.
-Click on the <code>Install</code> button on the top right, which should show the option to download <strong>Unreal Engine &gt;= 4.24</strong>. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then <strong>make sure the version you are using is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
+Click on the <code>Install</code> button on the top right, which should show the option to download <strong>Unreal Engine &gt;= 4.25</strong>. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then <strong>make sure the version you are using is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
 </ol>
-<p><strong>Note</strong>: AirSim also works with UE &gt;= 4.22, however, we recommend you update to &gt;= 4.24.
+<p><strong>Note</strong>: AirSim also works with UE &gt;= 4.25, however, we recommend 4.25.
    <strong>Note</strong>: If you have UE 4.16 or older projects, please see the <a href="../unreal_upgrade/">upgrade guide</a> to upgrade your projects.</p>
 <p><img alt="Unreal Engine Tab UI Screenshot" src="../images/ue_install.png" /></p>
 <p><img alt="Unreal Engine Install Location UI Screenshot" src="../images/ue_install_location.png" /></p>
@@ -328,28 +328,22 @@ Click on the <code>Install</code> button on the top right, which should show the
 <p><a href="https://unity3d.com/">Unity</a> is another great game engine platform and we have an <strong>experimental</strong> integration of <a href="https://microsoft.github.com/AirSim/Unity">AirSim with Unity</a>. Please note that this is work in progress and all features may not work yet.</p>
 <h1 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h1>
 <h3 id="how-to-force-unreal-to-use-visual-studio-2019">How to force Unreal to use Visual Studio 2019?<a class="headerlink" href="#how-to-force-unreal-to-use-visual-studio-2019" title="Permanent link">#</a></h3>
-<p>If the default <code>update_from_git.bat</code> file results in VS 2017 project, then you may need to run the <code>C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\DotNET\UnrealBuildTool.exe</code> tool manually, with the command line options <code>-projectfiles -project=&lt;your.uproject&gt;  -game -rocket -progress -2019</code>.</p>
-<p>If you are upgrading from 4.18 to 4.24 you may also need to add <code>BuildSettingsVersion.V2</code> to your <code>*.Target.cs</code> and <code>*Editor.Target.cs</code> build files, like this:</p>
-<div class="highlight"><pre><span></span><code>    <span class="k">public</span> <span class="nf">AirSimNHTestTarget</span><span class="p">(</span><span class="n">TargetInfo</span> <span class="n">Target</span><span class="p">)</span> <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">Target</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">Type</span> <span class="p">=</span> <span class="n">TargetType</span><span class="p">.</span><span class="n">Game</span><span class="p">;</span>
-        <span class="n">DefaultBuildSettings</span> <span class="p">=</span> <span class="n">BuildSettingsVersion</span><span class="p">.</span><span class="n">V2</span><span class="p">;</span>
-        <span class="n">ExtraModuleNames</span><span class="p">.</span><span class="n">AddRange</span><span class="p">(</span><span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">&quot;AirSimNHTest&quot;</span> <span class="p">});</span>
-    <span class="p">}</span>
-</code></pre></div>
-
+<p>If the default <code>update_from_git.bat</code> file results in VS 2017 project, then you may need to run the <code>C:\Program Files\Epic Games\UE_4.25\Engine\Binaries\DotNET\UnrealBuildTool.exe</code> tool manually, with the command line options <code>-projectfiles -project=&lt;your.uproject&gt;  -game -rocket -progress -2019</code>.</p>
+<p>If you are upgrading from 4.18 to 4.25 you may also need to add <code>BuildSettingsVersion.V2</code> to your <code>*.Target.cs</code> and <code>*Editor.Target.cs</code> build files, like this:</p>
+<pre class="highlight"><code class="language-c#">    public AirSimNHTestTarget(TargetInfo Target) : base(Target)
+    {
+        Type = TargetType.Game;
+        DefaultBuildSettings = BuildSettingsVersion.V2;
+        ExtraModuleNames.AddRange(new string[] { "AirSimNHTest" });
+    }</code></pre>
 <p>You may also need to edit this file:</p>
-<div class="highlight"><pre><span></span><code>&quot;%APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
-</code></pre></div>
-
+<pre class="highlight"><code>"%APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml</code></pre>
 <p>And add this Compiler version setting:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;Configuration</span> <span class="na">xmlns=</span><span class="s">&quot;https://www.unrealengine.com/BuildConfiguration&quot;</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;WindowsPlatform&gt;</span>
-    <span class="nt">&lt;Compiler&gt;</span>VisualStudio2019<span class="nt">&lt;/Compiler&gt;</span>
-  <span class="nt">&lt;/WindowsPlatform&gt;</span>
-<span class="nt">&lt;/Configuration&gt;</span>
-</code></pre></div>
-
+<pre class="highlight"><code class="language-xml">&lt;Configuration xmlns="https://www.unrealengine.com/BuildConfiguration"&gt;
+  &lt;WindowsPlatform&gt;
+    &lt;Compiler&gt;VisualStudio2019&lt;/Compiler&gt;
+  &lt;/WindowsPlatform&gt;
+&lt;/Configuration&gt;</code></pre>
 <h3 id="im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually">I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code><a class="headerlink" href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually" title="Permanent link">#</a></h3>
 <p>This will occur when there are compilation errors. Logs are stored in <code>&lt;My-Project&gt;\Saved\Logs</code> which can be used to figure out the problem.</p>
 <p>A common problem could be Visual Studio version conflict, AirSim uses VS 2019 while UE is using VS 2017, this can be found by searching for <code>2017</code> in the Log file. In that case, see the answer above.</p>

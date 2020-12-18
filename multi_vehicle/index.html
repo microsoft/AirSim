@@ -296,44 +296,40 @@
 <h2 id="creating-multiple-vehicles">Creating Multiple Vehicles<a class="headerlink" href="#creating-multiple-vehicles" title="Permanent link">#</a></h2>
 <p>It's as easy as specifying them in <a href="../settings/">settings.json</a>. The <code>Vehicles</code> element allows you to specify list of vehicles you want to create along with their initial positions and orientations. The positions are specified in NED coordinates in SI units with origin set at Player Start component in Unreal environment. The orientation is specified as Yaw, Pitch and Roll in degrees.</p>
 <h3 id="creating-multiple-cars">Creating Multiple Cars<a class="headerlink" href="#creating-multiple-cars" title="Permanent link">#</a></h3>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;SettingsVersion&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
-    <span class="nt">&quot;SimMode&quot;</span><span class="p">:</span> <span class="s2">&quot;Car&quot;</span><span class="p">,</span>
+<pre class="highlight"><code class="language-json">{
+    "SettingsVersion": 1.2,
+    "SimMode": "Car",
 
-    <span class="nt">&quot;Vehicles&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;Car1&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;PhysXCar&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-2</span>
-        <span class="p">},</span>
-        <span class="nt">&quot;Car2&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;PhysXCar&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">-4</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-2</span><span class="p">,</span>
-      <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="mi">90</span>
-        <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-
+    "Vehicles": {
+        "Car1": {
+          "VehicleType": "PhysXCar",
+          "X": 4, "Y": 0, "Z": -2
+        },
+        "Car2": {
+          "VehicleType": "PhysXCar",
+          "X": -4, "Y": 0, "Z": -2,
+      "Yaw": 90
+        }
+  }
+}</code></pre>
 <h3 id="creating-multiple-drones">Creating Multiple Drones<a class="headerlink" href="#creating-multiple-drones" title="Permanent link">#</a></h3>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;SettingsVersion&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
-    <span class="nt">&quot;SimMode&quot;</span><span class="p">:</span> <span class="s2">&quot;Multirotor&quot;</span><span class="p">,</span>
+<pre class="highlight"><code class="language-json">{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
 
-    <span class="nt">&quot;Vehicles&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;Drone1&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleFlight&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-2</span><span class="p">,</span>
-      <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="mi">-180</span>
-        <span class="p">},</span>
-        <span class="nt">&quot;Drone2&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleFlight&quot;</span><span class="p">,</span>
-          <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">-2</span>
-        <span class="p">}</span>
+    "Vehicles": {
+        "Drone1": {
+          "VehicleType": "SimpleFlight",
+          "X": 4, "Y": 0, "Z": -2,
+      "Yaw": -180
+        },
+        "Drone2": {
+          "VehicleType": "SimpleFlight",
+          "X": 8, "Y": 0, "Z": -2
+        }
 
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-
+    }
+}</code></pre>
 <h2 id="using-apis-for-multiple-vehicles">Using APIs for Multiple Vehicles<a class="headerlink" href="#using-apis-for-multiple-vehicles" title="Permanent link">#</a></h2>
 <p>The new APIs since AirSim 1.2 allows you to specify <code>vehicle_name</code>. This name corresponds to keys in json settings (for example, Car1 or Drone2 above). </p>
 <p><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/multi_agent_car.py">Example code for cars</a></p>

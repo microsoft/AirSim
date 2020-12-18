@@ -295,14 +295,14 @@ Verify installation by <code>gcc-8 --version</code></p>
 <p>Ubuntu 16.04</p>
 <ul>
 <li>Install <a href="https://wiki.ros.org/kinetic/Installation/Ubuntu">ROS kinetic</a></li>
-<li>Install tf2 sensor and mavros packages: <code>sudo apt-get install ros-kinetic-tf2-sensor-msgs ros-kinetic-mavros*</code></li>
+<li>Install tf2 sensor and mavros packages: <code>sudo apt-get install ros-kinetic-tf2-sensor-msgs ros-kinetic-tf2-geometry-msgs ros-kinetic-mavros*</code></li>
 </ul>
 </li>
 <li>
 <p>Ubuntu 18.04</p>
 <ul>
 <li>Install <a href="https://wiki.ros.org/melodic/Installation/Ubuntu">ROS melodic</a></li>
-<li>Install tf2 sensor and mavros packages: <code>sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-mavros*</code></li>
+<li>Install tf2 sensor and mavros packages: <code>sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-tf2-geometry-msgs ros-melodic-mavros*</code></li>
 </ul>
 </li>
 <li>
@@ -314,27 +314,21 @@ Verify installation by <code>gcc-8 --version</code></p>
 <h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">#</a></h2>
 <ul>
 <li>Build AirSim 
-<div class="highlight"><pre><span></span><code>git clone https://github.com/Microsoft/AirSim.git;
+<pre class="highlight"><code>git clone https://github.com/Microsoft/AirSim.git;
 cd AirSim;
 ./setup.sh;
-./build.sh;
-</code></pre></div></li>
+./build.sh;</code></pre></li>
 <li>Build ROS package</li>
 </ul>
-<div class="highlight"><pre><span></span><code>cd ros;
-catkin build; # or catkin_make
-</code></pre></div>
-
+<pre class="highlight"><code>cd ros;
+catkin build; # or catkin_make</code></pre>
 <p>If your default GCC isn't 8 or greater (check using <code>gcc --version</code>), then compilation will fail. In that case, use <code>gcc-8</code> explicitly as follows-</p>
-<div class="highlight"><pre><span></span><code>catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
-</code></pre></div>
-
+<pre class="highlight"><code>catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8</code></pre>
 <h2 id="running">Running<a class="headerlink" href="#running" title="Permanent link">#</a></h2>
-<div class="highlight"><pre><span></span><code>source devel/setup.bash;
+<p><pre class="highlight"><code>source devel/setup.bash;
 roslaunch airsim_ros_pkgs airsim_node.launch;
-roslaunch airsim_ros_pkgs rviz.launch;
-</code></pre></div>
-
+roslaunch airsim_ros_pkgs rviz.launch;</code></pre>
+   <strong>Note</strong>: If you get an error running <code>roslaunch airsim_ros_pkgs airsim_node.launch</code>, run <code>catkin clean</code> and try again</p>
 <h1 id="using-airsim-ros-wrapper">Using AirSim ROS wrapper<a class="headerlink" href="#using-airsim-ros-wrapper" title="Permanent link">#</a></h1>
 <p>The ROS wrapper is composed of two ROS nodes - the first is a wrapper over AirSim's multirotor C++ client library, and the second is a simple PD position controller.  <br />
 Let's look at the ROS API for both nodes: </p>
@@ -543,28 +537,51 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
 </li>
 </ul>
 <h3 id="misc">Misc<a class="headerlink" href="#misc" title="Permanent link">#</a></h3>
-<h4 id="windows-subsytem-for-linux-on-windows-10">Windows Subsytem for Linux on Windows 10<a class="headerlink" href="#windows-subsytem-for-linux-on-windows-10" title="Permanent link">#</a></h4>
-<ul>
+<h4 id="setting-up-the-build-environment-on-windows10-using-wsl1-or-wsl2">Setting up the Build Environment on Windows10 using WSL1 or WSL2<a class="headerlink" href="#setting-up-the-build-environment-on-windows10-using-wsl1-or-wsl2" title="Permanent link">#</a></h4>
+<p>These setup instructions describe how to setup "Bash on Ubuntu on Windows" (aka "Windows Subsystem for Linux").</p>
+<p>It involves enabling the built-in Windows Linux environment (WSL) in Windows10, installing a compatible Linux OS image, and finally installing the build environment as if it were a normal Linux system.</p>
+<p>Upon completion, you will be able to build and run the ros wrapper as in a native linux machine.</p>
+<h5 id="wsl1-vs-wsl2">WSL1 vs WSL2<a class="headerlink" href="#wsl1-vs-wsl2" title="Permanent link">#</a></h5>
+<p>WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 and is therefore much preferred  for building the code in terms of speed. </p>
+<p>Once installed, you can switch between WSL1 or WSL2 versions as you prefer.</p>
+<h5 id="wsl-setup-steps">WSL Setup steps<a class="headerlink" href="#wsl-setup-steps" title="Permanent link">#</a></h5>
+<ol>
 <li>
-<p>WSL setup:</p>
-<ul>
-<li>Get <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows Subsystem for Linux</a></li>
-<li>Get <a href="https://www.microsoft.com/en-us/p/ubuntu-1604-lts/9pjn388hp8c9?activetab=pivot:overviewtab">Ubuntu 16.04</a> or <a href="https://www.microsoft.com/en-us/p/ubuntu-1804-lts/9n9tngvndl3q?activetab=pivot%3Aoverviewtab">Ubuntu 18.04</a>  </li>
-<li>Go to Ubuntu 16 / 18 instructions!</li>
-</ul>
+<p>Follow the instructions <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">here</a>. Check that the ROS version you want to use is supported by the Ubuntu version you want to install.</p>
 </li>
 <li>
-<p>Setup for X apps (like RViz, rqt_image_view, terminator) in Windows + WSL</p>
-<ul>
-<li>Install <a href="https://sourceforge.net/projects/xming/">Xming X Server</a>. </li>
-<li>Find and run <code>XLaunch</code> from the Windows start menu. <br />
-Select <code>Multiple Windows</code> in first popup, <code>Start no client</code> in second popup, <strong>only</strong> <code>Clipboard</code> in third popup. Do <strong>not</strong> select <code>Native Opengl</code>.  </li>
-<li>Open Ubuntu 16.04 / 18.04 session by typing <code>Ubuntu 16.04</code>  / <code>Ubuntu 18.04</code> in Windows start menu.  </li>
-<li>Recommended: Install <a href="http://www.ubuntugeek.com/terminator-multiple-gnome-terminals-in-one-window.html">terminator</a> : <code>$ sudo apt-get install terminator.</code> </li>
-<li>You can open terminator in a new window by entering <code>$ DISPLAY=:0 terminator -u</code>. </li>
-</ul>
+<p>Congratulations, you now have a working Ubuntu subsystem under Windows, you can now go to <a href="#setup">Ubuntu 16 / 18 instructions</a> and then <a href="#how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl">How to run Airsim on Windows and ROS wrapper on WSL</a>!</p>
+<p><strong>Note</strong>:</p>
+<p>You can run XWindows applications (including SITL) by installing <a href="https://sourceforge.net/projects/vcxsrv/">VcXsrv</a>  on Windows. 
+To use it find and run <code>XLaunch</code> from the Windows start menu.  <br />
+Select <code>Multiple Windows</code> in first popup, <code>Start no client</code> in second popup, <strong>only</strong> <code>Clipboard</code> in third popup. Do <strong>not</strong> select <code>Native Opengl</code> (and if you are not able to connect select <code>Disable access control</code>).<br />
+You will need to set the DISPLAY variable to point to your display: in WSL it is 127.0.0.1:0, in WSL2 it will be the ip address of the PC's network port and can be set by using the code below. Also in WSL2 you may have to disable the firewall for public networks, or create an exception in order for VcXsrv to communicate with WSL2:</p>
+<p><code>export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0</code></p>
+<p><strong>tip</strong>: If you add this line to your ~/.bashrc file you won't need to run this command again<br />
+<strong>tip</strong>: For code editing you can install VSCode inside WSL.<br />
+<strong>Note</strong>: Windows 10 includes "Windows Defender" virus scanner. It will slow down WSL quite a bit. Disabling it greatly improves disk performance but increases your risk to viruses so disable at your own risk. Here is one of many resources/videos that show you how to disable it: https://www.youtube.com/watch?v=FmjblGay3AM  </p>
 </li>
-</ul>
+</ol>
+<h5 id="file-system-access-between-wsl-and-windows10">File System Access between WSL and Windows10<a class="headerlink" href="#file-system-access-between-wsl-and-windows10" title="Permanent link">#</a></h5>
+<p>From within WSL, the Windows drives are referenced in the /mnt directory. For example, in order to list documents within your (<username>) documents folder:</p>
+<pre><code>`ls /mnt/c/'Documents and Settings'/&lt;username&gt;/Documents`
+or
+`ls /mnt/c/Users/&lt;username&gt;/Documents`
+</code></pre>
+<p>From within Windows, the WSL distribution's files are located at (type in windows Explorer address bar):</p>
+<p><code>\\wsl$\&lt;distribution name&gt;</code>
+   e.g.
+   <code>\\wsl$\Ubuntu-18.04</code></p>
+<h4 id="how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl">How to run Airsim on Windows and ROS wrapper on WSL<a class="headerlink" href="#how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl" title="Permanent link">#</a></h4>
+<p>You need to have the same setting.json content for the simulator and WSL (e.g., in each Documents\Airsim folder).
+For WSL 1 execute:<br />
+<code>export WSL_HOST_IP=127.0.0.1</code><br />
+and for WSL 2:<br />
+<code>export WSL_HOST_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')</code><br />
+Now, as in the <a href="#running">running section for linux</a>, execute the following:<br />
+<pre class="highlight"><code>source devel/setup.bash
+roslaunch airsim_ros_pkgs airsim_node.launch output:=screen host:=$WSL_HOST_IP
+roslaunch airsim_ros_pkgs rviz.launch</code></pre></p>
               
             </div>
           </div>

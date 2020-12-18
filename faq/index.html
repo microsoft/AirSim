@@ -324,11 +324,9 @@ It should find the setting titled "Use Less CPU when in Background", and you wan
 <p>If you're using simple_flight, your vehicle is already armed and ready to fly. For PX4 you can arm by holding both sticks on remote control down and to the center.</p>
 <h4 id="when-making-api-call-i-get-error">When making API call I get error<a class="headerlink" href="#when-making-api-call-i-get-error" title="Permanent link">#</a></h4>
 <p>If you are getting this error,
-<div class="highlight"><pre><span></span><code>TypeError: unsupported operand type(s) for *: &#39;AsyncIOLoop&#39; and &#39;float&#39;
-</code></pre></div>
+<pre class="highlight"><code>TypeError: unsupported operand type(s) for *: 'AsyncIOLoop' and 'float'</code></pre>
 its probably due to upgraded version of tornado package with version &gt; 5.0 in Python that conflicts with <code>msgpack-rpc-python</code> which requires tornado package &lt; 5.0. To fix this you can update the package like this:
-<div class="highlight"><pre><span></span><code>pip install --upgrade msgpack-rpc-python
-</code></pre></div>
+<pre class="highlight"><code>pip install --upgrade msgpack-rpc-python</code></pre>
 But this might break something (for example, PyTorch 0.4+) because it will uninstall newer tornado and re-install older one. To avoid this you should create new <a href="https://conda.io/docs/user-guide/tasks/manage-environments.html">conda environment</a>.</p>
 <h4 id="im-getting-eigen-not-found-error-when-compiling-unreal-project">I'm getting Eigen not found error when compiling Unreal project.<a class="headerlink" href="#im-getting-eigen-not-found-error-when-compiling-unreal-project" title="Permanent link">#</a></h4>
 <p>This is most likely because AirSim wasn't built and Plugin folder was copied in Unreal project folder. To fix this make sure you <a href="../build_windows/">build AirSim</a> first (run <code>build.cmd</code> in Windows).</p>
@@ -350,14 +348,12 @@ But this might break something (for example, PyTorch 0.4+) because it will unins
 <p>It depends on how big your Unreal Environment is. The Blocks environment that comes with AirSim is very basic and works on typical laptops. The <a href="https://www.unrealengine.com/marketplace/modular-neighborhood-pack">Modular Neighborhood Pack</a> that we use ourselves for research requires GPUs with at least 4GB of RAM. The <a href="https://www.unrealengine.com/marketplace/open-world-demo-collection">Open World environment</a> needs GPU with 8GB RAM. Our typical development machines have 32GB of RAM and NVIDIA TitanX and a <a href="../hard_drive/">fast hard drive</a>.</p>
 <h4 id="how-do-i-report-issues">How do I report issues?<a class="headerlink" href="#how-do-i-report-issues" title="Permanent link">#</a></h4>
 <p>It's a good idea to include your configuration like below. If you can also include logs, that could also expedite the investigation.</p>
-<div class="highlight"><pre><span></span><code>Operating System: Windows 10 64bit
+<pre class="highlight"><code>Operating System: Windows 10 64bit
 CPU: Intel Core i7
 GPU: Nvidia GTX 1080
 RAM: 32 GB
 Flight Controller: Pixhawk v2
-Remote Control: Futaba
-</code></pre></div>
-
+Remote Control: Futaba</code></pre>
 <p>If you have modified the default <code>~/Document/AirSim/settings.json</code>, please include your
 settings also.</p>
 <p>If you are using PX4 then try to <a href="../px4_logging/">capture log from MavLink or PX4</a>.</p>

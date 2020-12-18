@@ -369,156 +369,152 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
 <p>The file is in usual <a href="https://en.wikipedia.org/wiki/JSON">json format</a>. On first startup AirSim would create <code>settings.json</code> file with no settings at the users home folder. To avoid problems, always use ASCII format to save json file.</p>
 <h2 id="how-to-chose-between-car-and-multirotor">How to Chose Between Car and Multirotor?<a class="headerlink" href="#how-to-chose-between-car-and-multirotor" title="Permanent link">#</a></h2>
 <p>The default is to use multirotor. To use car simple set <code>"SimMode": "Car"</code> like this:</p>
-<div class="highlight"><pre><span></span><code>{
-  &quot;SettingsVersion&quot;: 1.2,
-  &quot;SimMode&quot;: &quot;Car&quot;
-}
-</code></pre></div>
-
+<pre class="highlight"><code>{
+  "SettingsVersion": 1.2,
+  "SimMode": "Car"
+}</code></pre>
 <p>To choose multirotor, set <code>"SimMode": "Multirotor"</code>. If you want to prompt user to select vehicle type then use <code>"SimMode": ""</code>.</p>
 <h2 id="available-settings-and-their-defaults">Available Settings and Their Defaults<a class="headerlink" href="#available-settings-and-their-defaults" title="Permanent link">#</a></h2>
 <p>Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then default value is used. Some default values are simply specified as <code>""</code> which means actual value may be chosen based on the vehicle you are using. For example, <code>ViewMode</code> setting has default value <code>""</code> which translates to <code>"FlyWithMe"</code> for drones and <code>"SpringArmChase"</code> for cars.</p>
 <p><strong>WARNING:</strong> Do not copy paste all of below in your settings.json. We strongly recommend adding only those settings that you don't want default values. Only required element is <code>"SettingsVersion"</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-  <span class="nt">&quot;SimMode&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;ClockType&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;ClockSpeed&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-  <span class="nt">&quot;LocalHostIp&quot;</span><span class="p">:</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;RecordUIVisible&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="nt">&quot;LogMessagesVisible&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="nt">&quot;ViewMode&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;RpcEnabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="nt">&quot;EngineSound&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="nt">&quot;PhysicsEngineName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;SpeedUnitFactor&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-  <span class="nt">&quot;SpeedUnitLabel&quot;</span><span class="p">:</span> <span class="s2">&quot;m/s&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;Wind&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="p">},</span>
-  <span class="nt">&quot;Recording&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;RecordOnMove&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-    <span class="nt">&quot;RecordInterval&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
-    <span class="nt">&quot;Cameras&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span> <span class="nt">&quot;CameraName&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="nt">&quot;ImageType&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;PixelsAsFloat&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span> <span class="nt">&quot;Compress&quot;</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
-    <span class="p">]</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;CameraDefaults&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;CaptureSettings&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="nt">&quot;ImageType&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="nt">&quot;Width&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
-        <span class="nt">&quot;Height&quot;</span><span class="p">:</span> <span class="mi">144</span><span class="p">,</span>
-        <span class="nt">&quot;FOV_Degrees&quot;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span>
-        <span class="nt">&quot;AutoExposureSpeed&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="nt">&quot;AutoExposureBias&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="nt">&quot;AutoExposureMaxBrightness&quot;</span><span class="p">:</span> <span class="mf">0.64</span><span class="p">,</span>
-        <span class="nt">&quot;AutoExposureMinBrightness&quot;</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">,</span>
-        <span class="nt">&quot;MotionBlurAmount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="nt">&quot;TargetGamma&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="nt">&quot;ProjectionMode&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;OrthoWidth&quot;</span><span class="p">:</span> <span class="mf">5.12</span>
-      <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="nt">&quot;NoiseSettings&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="nt">&quot;Enabled&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-        <span class="nt">&quot;ImageType&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<pre class="highlight"><code class="language-json">{
+  "SimMode": "",
+  "ClockType": "",
+  "ClockSpeed": 1,
+  "LocalHostIp": "127.0.0.1",
+  "RecordUIVisible": true,
+  "LogMessagesVisible": true,
+  "ViewMode": "",
+  "RpcEnabled": true,
+  "EngineSound": true,
+  "PhysicsEngineName": "",
+  "SpeedUnitFactor": 1.0,
+  "SpeedUnitLabel": "m/s",
+  "Wind": { "X": 0, "Y": 0, "Z": 0 },
+  "Recording": {
+    "RecordOnMove": false,
+    "RecordInterval": 0.05,
+    "Cameras": [
+        { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "Compress": true }
+    ]
+  },
+  "CameraDefaults": {
+    "CaptureSettings": [
+      {
+        "ImageType": 0,
+        "Width": 256,
+        "Height": 144,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.64,
+        "AutoExposureMinBrightness": 0.03,
+        "MotionBlurAmount": 0,
+        "TargetGamma": 1.0,
+        "ProjectionMode": "",
+        "OrthoWidth": 5.12
+      }
+    ],
+    "NoiseSettings": [
+      {
+        "Enabled": false,
+        "ImageType": 0,
 
-        <span class="nt">&quot;RandContrib&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
-        <span class="nt">&quot;RandSpeed&quot;</span><span class="p">:</span> <span class="mf">100000.0</span><span class="p">,</span>
-        <span class="nt">&quot;RandSize&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
-        <span class="nt">&quot;RandDensity&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        "RandContrib": 0.2,
+        "RandSpeed": 100000.0,
+        "RandSize": 500.0,
+        "RandDensity": 2,
 
-        <span class="nt">&quot;HorzWaveContrib&quot;</span><span class="p">:</span><span class="mf">0.03</span><span class="p">,</span>
-        <span class="nt">&quot;HorzWaveStrength&quot;</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">,</span>
-        <span class="nt">&quot;HorzWaveVertSize&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="nt">&quot;HorzWaveScreenSize&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        "HorzWaveContrib":0.03,
+        "HorzWaveStrength": 0.08,
+        "HorzWaveVertSize": 1.0,
+        "HorzWaveScreenSize": 1.0,
 
-        <span class="nt">&quot;HorzNoiseLinesContrib&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="nt">&quot;HorzNoiseLinesDensityY&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
-        <span class="nt">&quot;HorzNoiseLinesDensityXY&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        "HorzNoiseLinesContrib": 1.0,
+        "HorzNoiseLinesDensityY": 0.01,
+        "HorzNoiseLinesDensityXY": 0.5,
 
-        <span class="nt">&quot;HorzDistortionContrib&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="nt">&quot;HorzDistortionStrength&quot;</span><span class="p">:</span> <span class="mf">0.002</span>
-      <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="nt">&quot;Gimbal&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;Stabilization&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-      <span class="nt">&quot;Pitch&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Roll&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="err">NaN</span>
-    <span class="p">}</span>
-    <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span>
-    <span class="nt">&quot;Pitch&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Roll&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="err">NaN</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;OriginGeopoint&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;Latitude&quot;</span><span class="p">:</span> <span class="mf">47.641468</span><span class="p">,</span>
-    <span class="nt">&quot;Longitude&quot;</span><span class="p">:</span> <span class="mf">-122.140165</span><span class="p">,</span>
-    <span class="nt">&quot;Altitude&quot;</span><span class="p">:</span> <span class="mi">122</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;TimeOfDay&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;Enabled&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-    <span class="nt">&quot;StartDateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;CelestialClockSpeed&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="nt">&quot;StartDateTimeDst&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-    <span class="nt">&quot;UpdateIntervalSecs&quot;</span><span class="p">:</span> <span class="mi">60</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;SubWindows&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span><span class="nt">&quot;WindowID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;CameraName&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="nt">&quot;ImageType&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nt">&quot;Visible&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&quot;WindowID&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nt">&quot;CameraName&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="nt">&quot;ImageType&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="nt">&quot;Visible&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">},</span>
-    <span class="p">{</span><span class="nt">&quot;WindowID&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nt">&quot;CameraName&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="nt">&quot;ImageType&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&quot;Visible&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">}</span>
-  <span class="p">],</span>
-  <span class="nt">&quot;SegmentationSettings&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;InitMethod&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;MeshNamingMethod&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;OverrideExisting&quot;</span><span class="p">:</span> <span class="kc">false</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;PawnPaths&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;BareboneCar&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;PawnBP&quot;</span><span class="p">:</span> <span class="s2">&quot;Class&#39;/AirSim/VehicleAdv/Vehicle/VehicleAdvPawn.VehicleAdvPawn_C&#39;&quot;</span><span class="p">},</span>
-    <span class="nt">&quot;DefaultCar&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;PawnBP&quot;</span><span class="p">:</span> <span class="s2">&quot;Class&#39;/AirSim/VehicleAdv/SUV/SuvCarPawn.SuvCarPawn_C&#39;&quot;</span><span class="p">},</span>
-    <span class="nt">&quot;DefaultQuadrotor&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;PawnBP&quot;</span><span class="p">:</span> <span class="s2">&quot;Class&#39;/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C&#39;&quot;</span><span class="p">},</span>
-    <span class="nt">&quot;DefaultComputerVision&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;PawnBP&quot;</span><span class="p">:</span> <span class="s2">&quot;Class&#39;/AirSim/Blueprints/BP_ComputerVisionPawn.BP_ComputerVisionPawn_C&#39;&quot;</span><span class="p">}</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;Vehicles&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;SimpleFlight&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleFlight&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;DefaultVehicleState&quot;</span><span class="p">:</span> <span class="s2">&quot;Armed&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;AutoCreate&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-      <span class="nt">&quot;PawnPath&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;EnableCollisionPassthrogh&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-      <span class="nt">&quot;EnableCollisions&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-      <span class="nt">&quot;AllowAPIAlways&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-      <span class="nt">&quot;RC&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;RemoteControlID&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="nt">&quot;AllowAPIWhenDisconnected&quot;</span><span class="p">:</span> <span class="kc">false</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;Cameras&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="err">//same</span> <span class="err">elements</span> <span class="err">as</span> <span class="err">CameraDefaults</span> <span class="err">above,</span> <span class="err">key</span> <span class="err">as</span> <span class="err">name</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span>
-      <span class="nt">&quot;Pitch&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Roll&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="err">NaN</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;PhysXCar&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;PhysXCar&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;DefaultVehicleState&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;AutoCreate&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-      <span class="nt">&quot;PawnPath&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;EnableCollisionPassthrogh&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-      <span class="nt">&quot;EnableCollisions&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-      <span class="nt">&quot;RC&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;RemoteControlID&quot;</span><span class="p">:</span> <span class="mi">-1</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;Cameras&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;MyCamera1&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="err">//same</span> <span class="err">elements</span> <span class="err">as</span> <span class="err">elements</span> <span class="err">inside</span> <span class="err">CameraDefaults</span> <span class="err">above</span>
-        <span class="p">},</span>
-        <span class="nt">&quot;MyCamera2&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="err">//same</span> <span class="err">elements</span> <span class="err">as</span> <span class="err">elements</span> <span class="err">inside</span> <span class="err">CameraDefaults</span> <span class="err">above</span>
-        <span class="p">},</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;X&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Y&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Z&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span>
-      <span class="nt">&quot;Pitch&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Roll&quot;</span><span class="p">:</span> <span class="err">NaN</span><span class="p">,</span> <span class="nt">&quot;Yaw&quot;</span><span class="p">:</span> <span class="err">NaN</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-
+        "HorzDistortionContrib": 1.0,
+        "HorzDistortionStrength": 0.002
+      }
+    ],
+    "Gimbal": {
+      "Stabilization": 0,
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+    }
+    "X": NaN, "Y": NaN, "Z": NaN,
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+  },
+  "OriginGeopoint": {
+    "Latitude": 47.641468,
+    "Longitude": -122.140165,
+    "Altitude": 122
+  },
+  "TimeOfDay": {
+    "Enabled": false,
+    "StartDateTime": "",
+    "CelestialClockSpeed": 1,
+    "StartDateTimeDst": false,
+    "UpdateIntervalSecs": 60
+  },
+  "SubWindows": [
+    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "", "Visible": false},
+    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "", "Visible": false},
+    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "", "Visible": false}
+  ],
+  "SegmentationSettings": {
+    "InitMethod": "",
+    "MeshNamingMethod": "",
+    "OverrideExisting": false
+  },
+  "PawnPaths": {
+    "BareboneCar": {"PawnBP": "Class'/AirSim/VehicleAdv/Vehicle/VehicleAdvPawn.VehicleAdvPawn_C'"},
+    "DefaultCar": {"PawnBP": "Class'/AirSim/VehicleAdv/SUV/SuvCarPawn.SuvCarPawn_C'"},
+    "DefaultQuadrotor": {"PawnBP": "Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"},
+    "DefaultComputerVision": {"PawnBP": "Class'/AirSim/Blueprints/BP_ComputerVisionPawn.BP_ComputerVisionPawn_C'"}
+  },
+  "Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
+      "DefaultVehicleState": "Armed",
+      "AutoCreate": true,
+      "PawnPath": "",
+      "EnableCollisionPassthrogh": false,
+      "EnableCollisions": true,
+      "AllowAPIAlways": true,
+      "RC": {
+        "RemoteControlID": 0,
+        "AllowAPIWhenDisconnected": false
+      },
+      "Cameras": {
+        //same elements as CameraDefaults above, key as name
+      },
+      "X": NaN, "Y": NaN, "Z": NaN,
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+    },
+    "PhysXCar": {
+      "VehicleType": "PhysXCar",
+      "DefaultVehicleState": "",
+      "AutoCreate": true,
+      "PawnPath": "",
+      "EnableCollisionPassthrogh": false,
+      "EnableCollisions": true,
+      "RC": {
+        "RemoteControlID": -1
+      },
+      "Cameras": {
+        "MyCamera1": {
+          //same elements as elements inside CameraDefaults above
+        },
+        "MyCamera2": {
+          //same elements as elements inside CameraDefaults above
+        },
+      },
+      "X": NaN, "Y": NaN, "Z": NaN,
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+    }
+  }
+}</code></pre>
 <h2 id="simmode">SimMode<a class="headerlink" href="#simmode" title="Permanent link">#</a></h2>
 <p>SimMode determines which simulation mode will be used. Below are currently supported values:
 - <code>""</code>: prompt user to select vehicle type multirotor or car
@@ -541,13 +537,19 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
 <h2 id="origingeopoint">OriginGeopoint<a class="headerlink" href="#origingeopoint" title="Permanent link">#</a></h2>
 <p>This setting specifies the latitude, longitude and altitude of the Player Start component placed in the Unreal environment. The vehicle's home point is computed using this transformation. Note that all coordinates exposed via APIs are using NED system in SI units which means each vehicle starts at (0, 0, 0) in NED system. Time of Day settings are computed for geographical coordinates specified in <code>OriginGeopoint</code>.</p>
 <h2 id="subwindows">SubWindows<a class="headerlink" href="#subwindows" title="Permanent link">#</a></h2>
-<p>This setting determines what is shown in each of 3 subwindows which are visible when you press 0 key. The WindowsID can be 0 to 2, CameraName is any <a href="../image_apis/#available_cameras">available camera</a> on the vehicle. ImageType integer value determines what kind of image gets shown according to <a href="../image_apis/#available-imagetype">ImageType enum</a>. For example, for car vehicles below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
-<div class="highlight"><pre><span></span><code>  &quot;SubWindows&quot;: [
-    {&quot;WindowID&quot;: 0, &quot;ImageType&quot;: 0, &quot;CameraName&quot;: &quot;3&quot;, &quot;Visible&quot;: true},
-    {&quot;WindowID&quot;: 1, &quot;ImageType&quot;: 3, &quot;CameraName&quot;: &quot;0&quot;, &quot;Visible&quot;: true},
-    {&quot;WindowID&quot;: 2, &quot;ImageType&quot;: 6, &quot;CameraName&quot;: &quot;4&quot;, &quot;Visible&quot;: true}
-  ]
-</code></pre></div></p>
+<p>This setting determines what is shown in each of 3 subwindows which are visible when you press 0,1,2 keys. The <code>WindowID</code> can be 0 to 2, <code>CameraName</code> is any <a href="../image_apis/#available_cameras">available camera</a> on the vehicle. <code>ImageType</code> integer value determines what kind of image gets shown according to <a href="../image_apis/#available-imagetype">ImageType enum</a>. <code>VehicleName</code> string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.</p>
+<p>For example, for a single car vehicle, below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
+<pre class="highlight"><code class="language-json">  "SubWindows": [
+    {"WindowID": 0, "ImageType": 0, "CameraName": "3", "Visible": true},
+    {"WindowID": 1, "ImageType": 3, "CameraName": "0", "Visible": true},
+    {"WindowID": 2, "ImageType": 6, "CameraName": "4", "Visible": true}
+  ]</code></pre></p>
+<p>In case of multiple vehicles, different vehicles can be specified as follows-</p>
+<pre class="highlight"><code class="language-json">    "SubWindows": [
+        {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "Car1", "Visible": false},
+        {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "Car2", "Visible": false},
+        {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "Car1", "Visible": false}
+    ]</code></pre>
 <h2 id="recording">Recording<a class="headerlink" href="#recording" title="Permanent link">#</a></h2>
 <p>The recording feature allows you to record data such as position, orientation, velocity along with the captured image at specified intervals. You can start recording by pressing red Record button on lower right or the R key. The data is stored in the <code>Documents\AirSim</code> folder, in a time stamped subfolder for each recording session, as tab separated file.</p>
 <ul>
@@ -612,63 +614,57 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
 <li><code>Sensors</code>: This element specifies the sensors associated with the vehicle, see <a href="../sensors/">Sensors page</a> for details.</li>
 <li><code>Cameras</code>: This element specifies camera settings for vehicle. The key in this element is name of the <a href="../image_apis/#available_cameras">available camera</a> and the value is same as <code>CameraDefaults</code> as described above. For example, to change FOV for the front center camera to 120 degrees, you can use this for <code>Vehicles</code> setting:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="s2">&quot;Vehicles&quot;</span><span class="err">:</span> <span class="p">{</span>
-    <span class="nt">&quot;FishEyeDrone&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;VehicleType&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleFlight&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;Cameras&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;front-center&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="nt">&quot;CaptureSettings&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-              <span class="nt">&quot;ImageType&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-              <span class="nt">&quot;FOV_Degrees&quot;</span><span class="p">:</span> <span class="mi">120</span>
-            <span class="p">}</span>
-          <span class="p">]</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre class="highlight"><code class="language-json">"Vehicles": {
+    "FishEyeDrone": {
+      "VehicleType": "SimpleFlight",
+      "Cameras": {
+        "front-center": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "FOV_Degrees": 120
+            }
+          ]
+        }
+      }
+    }
+}</code></pre>
 <h3 id="using-px4">Using PX4<a class="headerlink" href="#using-px4" title="Permanent link">#</a></h3>
 <p>By default we use <a href="../simple_flight/">simple_flight</a> so you don't have to do separate HITL or SITL setups. We also support <a href="../px4_setup/">"PX4"</a> for advanced users. To use PX4 with AirSim, you can use the following for <code>Vehicles</code> setting:</p>
-<div class="highlight"><pre><span></span><code>&quot;Vehicles&quot;: {
-    &quot;PX4&quot;: {
-      &quot;VehicleType&quot;: &quot;PX4Multirotor&quot;,
+<pre class="highlight"><code>"Vehicles": {
+    "PX4": {
+      "VehicleType": "PX4Multirotor",
     }
-}
-</code></pre></div>
-
+}</code></pre>
 <h4 id="additional-px4-settings">Additional PX4 Settings<a class="headerlink" href="#additional-px4-settings" title="Permanent link">#</a></h4>
 <p>The defaults for PX4 is to enable hardware-in-loop setup. There are various other settings available for PX4 as follows with their default values:</p>
-<div class="highlight"><pre><span></span><code>&quot;Vehicles&quot;: {
-    &quot;PX4&quot;: {
-      &quot;VehicleType&quot;: &quot;PX4Multirotor&quot;,
+<pre class="highlight"><code>"Vehicles": {
+    "PX4": {
+      "VehicleType": "PX4Multirotor",
 
-      &quot;ControlIp&quot;: &quot;127.0.0.1&quot;,
-      &quot;ControlPort&quot;: 14580,
-      &quot;LogViewerHostIp&quot;: &quot;127.0.0.1&quot;,
-      &quot;LogViewerPort&quot;: 14388,
-      &quot;OffboardCompID&quot;: 1,
-      &quot;OffboardSysID&quot;: 134,
-      &quot;QgcHostIp&quot;: &quot;127.0.0.1&quot;,
-      &quot;QgcPort&quot;: 14550,
-      &quot;SerialBaudRate&quot;: 115200,
-      &quot;SerialPort&quot;: &quot;*&quot;,
-      &quot;SimCompID&quot;: 42,
-      &quot;SimSysID&quot;: 142,
-      &quot;TcpPort&quot;: 4560,
-      &quot;UdpIp&quot;: &quot;127.0.0.1&quot;,
-      &quot;UdpPort&quot;: 14560,
-      &quot;UseSerial&quot;: true,
-      &quot;UseTcp&quot;: false,
-      &quot;VehicleCompID&quot;: 1,
-      &quot;VehicleSysID&quot;: 135,
-      &quot;Model&quot;: &quot;Generic&quot;,
-      &quot;LocalHostIp&quot;: &quot;127.0.0.1&quot;
+      "ControlIp": "127.0.0.1",
+      "ControlPort": 14580,
+      "LogViewerHostIp": "127.0.0.1",
+      "LogViewerPort": 14388,
+      "OffboardCompID": 1,
+      "OffboardSysID": 134,
+      "QgcHostIp": "127.0.0.1",
+      "QgcPort": 14550,
+      "SerialBaudRate": 115200,
+      "SerialPort": "*",
+      "SimCompID": 42,
+      "SimSysID": 142,
+      "TcpPort": 4560,
+      "UdpIp": "127.0.0.1",
+      "UdpPort": 14560,
+      "UseSerial": true,
+      "UseTcp": false,
+      "VehicleCompID": 1,
+      "VehicleSysID": 135,
+      "Model": "Generic",
+      "LocalHostIp": "127.0.0.1"
     }
-}
-</code></pre></div>
-
+}</code></pre>
 <p>These settings define the MavLink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for the vehicle (VehicleSysID, VehicleCompID)
 and the node that allows remote control of the drone from another app this is called the offboard node (OffboardSysID, OffboardCompID).</p>
 <p>If you want the simulator to also talk to your ground control app (like QGroundControl) you can also set the UDP address for that in case you want to run

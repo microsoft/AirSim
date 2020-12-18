@@ -324,25 +324,21 @@
 <p>The first step is accomplished by build.cmd available in AirSim root. This command will update everything you need for the plugin in the <code>Unreal\Plugins</code> folder. So to deploy the plugin, you just need to copy <code>Unreal\Plugins</code> folder in to your Unreal project folder. Next you should remove all  intermediate files in your Unreal project and then regenerate .sln file for your Unreal project. To do this, we have two handy .bat files in <code>Unreal\Environments\Blocks</code> folder: <code>clean.bat</code> and <code>GenerateProjectFiles.bat</code>. So just run these bat files in sequence from root of your Unreal project. Now you are ready to open new .sln in Visual Studio and press F5 to run it.</p>
 <h3 id="steps">Steps<a class="headerlink" href="#steps" title="Permanent link">#</a></h3>
 <p>Below are the steps we use to make changes in AirSim and test them out. The best way to do development in AirSim code is to use <a href="../unreal_blocks/">Blocks project</a>. This is the light weight project so compile time is relatively faster. Generally the workflow is,</p>
-<div class="highlight"><pre><span></span><code>REM //Use x64 Native Tools Command Prompt for VS 2019
+<pre class="highlight"><code>REM //Use x64 Native Tools Command Prompt for VS 2019
 REM //Navigate to AirSim repo folder
 
 git pull                          
 build.cmd                        
 cd Unreal\Environments\Blocks         
 update_from_git.bat
-start Blocks.sln
-</code></pre></div>
-
+start Blocks.sln</code></pre>
 <p>Above commands first builds the AirSim plugin and then deploys it to Blocks project using handy <code>update_from_git.bat</code>. Now you can work inside Visual Studio solution, make changes to the code and just run F5 to build, run and test your changes. The debugging, break points etc should work as usual. </p>
 <p>After you are done with you code changes, you might want to push your changes back to AirSim repo or your own fork or you may deploy the new plugin to your custom Unreal project. To do this, go back to command prompt and first update the AirSim repo folder:</p>
-<div class="highlight"><pre><span></span><code>REM //Use x64 Native Tools Command Prompt for VS 2019
+<pre class="highlight"><code>REM //Use x64 Native Tools Command Prompt for VS 2019
 REM //run this from Unreal\Environments\Blocks 
 
 update_to_git.bat
-build.cmd
-</code></pre></div>
-
+build.cmd</code></pre>
 <p>Above command will transfer your code changes from Unreal project folder back to <code>Unreal\Plugins</code> folder. Now your changes are ready to be pushed to AirSim repo or your own fork. You can also copy <code>Unreal\Plugins</code> to your custom Unreal engine project and see if everything works in your custom project as well.</p>
 <h3 id="take-away">Take Away<a class="headerlink" href="#take-away" title="Permanent link">#</a></h3>
 <p>Once you understand how Unreal Build system and plugin model works as well as why we are doing above steps, you should feel quite comfortable in following this workflow. Don't be afraid of opening up .bat files to peek inside and see what its doing. They are quite minimal and straightforward (except, of course, build.cmd - don't look in to that one).</p>

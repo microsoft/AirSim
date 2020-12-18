@@ -288,7 +288,7 @@
                 <h1 id="download-binaries">Download Binaries<a class="headerlink" href="#download-binaries" title="Permanent link">#</a></h1>
 <p>You can simply download precompiled binaries and run to get started immediately. If you want to set up your own Unreal environment then please see <a href="https://github.com/Microsoft/AirSim/#how-to-get-it">these instructions</a>.</p>
 <h3 id="unreal-engine">Unreal Engine<a class="headerlink" href="#unreal-engine" title="Permanent link">#</a></h3>
-<p><strong>Windows, Linux</strong>: Download the binaries for the environment of your choice from the <a href="https://github.com/Microsoft/AirSim/releases">latest release</a>.</p>
+<p><strong>Windows, Linux</strong>: Download the binaries for the environment of your choice from the <a href="https://github.com/Microsoft/AirSim/releases">latest release</a>. Some pre-compiled environment binaries may include multiple files (i.e. City.zip.001, City.zip.002). Make sure to download both files before starting the environment. You may need to concatenate both files to unzip them.</p>
 <p><strong>macOS</strong>:  You will need to <a href="https://microsoft.github.io/AirSim/build_linux/">build it yourself</a></p>
 <h3 id="unity-experimental">Unity (Experimental)<a class="headerlink" href="#unity-experimental" title="Permanent link">#</a></h3>
 <p>A free environment called Windridge City is available at <a href="https://assetstore.unity.com/">Unity Asset Store</a> as an experimental release of AirSim on Unity. <strong>Note</strong>: This is an old release, and many of the features and APIs might not work.</p>
@@ -296,11 +296,9 @@
 <p>Most of our users typically use <a href="../apis/">APIs</a> to control the vehicles. However if you can also control vehicles manually. You can drive the car using keyboard, gamepad or <a href="../steering_wheel_installation/">steering wheel</a>. To fly drone manually, you will need either XBox controller or a remote control (feel free to <a href="../CONTRIBUTING/">contribute</a> keyboard support). Please see <a href="../remote_control/">remote control setup</a> for more details. Alternatively you can use <a href="../apis/">APIs</a> for programmatic control or use so-called <a href="../image_apis/">Computer Vision mode</a> to move around in environment using the keyboard.</p>
 <h2 id="dont-have-good-gpu">Don't Have Good GPU?<a class="headerlink" href="#dont-have-good-gpu" title="Permanent link">#</a></h2>
 <p>The AirSim binaries, like CityEnviron, requires a beefy GPU to run smoothly. You can run them in low resolution mode by editing the <code>run.bat</code> file on Windows like this:
-<div class="highlight"><pre><span></span><code>start CityEnviron -ResX=640 -ResY=480 -windowed
-</code></pre></div></p>
+<pre class="highlight"><code>start CityEnviron -ResX=640 -ResY=480 -windowed</code></pre></p>
 <p>For Linux binaries, use the <code>Blocks.sh</code> or corresponding shell script as follows -
-<div class="highlight"><pre><span></span><code>./Blocks.sh -ResX=640 -ResY=480 -windowed
-</code></pre></div></p>
+<pre class="highlight"><code>./Blocks.sh -ResX=640 -ResY=480 -windowed</code></pre></p>
 <p>UE 4.24 uses Vulkan drivers by default, but they can consume more GPU memory. If you get memory allocation errors, then you can try switching to OpenGL using <code>-opengl</code></p>
               
             </div>

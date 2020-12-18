@@ -294,60 +294,53 @@
 See <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/README.md">airsim_ros_pkgs</a> for the ROS API.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">#</a></h2>
 <p>Make sure that the <a href="../airsim_ros_pkgs/">airsim_ros_pkgs Setup</a> has been completed and the prerequisites installed.</p>
-<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> PATH_TO/AirSim/ros
-$ catkin build airsim_tutorial_pkgs
-</code></pre></div>
-
+<pre class="highlight"><code class="language-shell">$ cd PATH_TO/AirSim/ros
+$ catkin build airsim_tutorial_pkgs</code></pre>
 <p>If your default GCC isn't 8 or greater (check using <code>gcc --version</code>), then compilation will fail. In that case, use <code>gcc-8</code> explicitly as follows-</p>
-<div class="highlight"><pre><span></span><code>catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER<span class="o">=</span>gcc-8 -DCMAKE_CXX_COMPILER<span class="o">=</span>g++-8
-</code></pre></div>
-
+<pre class="highlight"><code class="language-shell">catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8</code></pre>
 <p>Note: For running examples, and also whenever a new terminal is opened, sourcing the <code>setup.bash</code> file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the <code>source PATH_TO/AirSim/ros/devel/setup.bash</code> to your <code>~/.profile</code> or <code>~/.bashrc</code> to avoid the need to run the command every time a new terminal is opened</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
 <h3 id="single-drone-with-monocular-and-depth-cameras-and-lidar">Single drone with monocular and depth cameras, and lidar<a class="headerlink" href="#single-drone-with-monocular-and-depth-cameras-and-lidar" title="Permanent link">#</a></h3>
 <ul>
 <li>Settings.json - <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/front_stereo_and_center_mono.json">front_stereo_and_center_mono.json</a>
- <div class="highlight"><pre><span></span><code>$ <span class="nb">source</span> PATH_TO/AirSim/ros/devel/setup.bash
+ <pre class="highlight"><code class="language-shell">$ source PATH_TO/AirSim/ros/devel/setup.bash
 $ roscd airsim_tutorial_pkgs
 $ cp settings/front_stereo_and_center_mono.json ~/Documents/AirSim/settings.json
 
-<span class="c1">## Start your unreal package or binary here</span>
+## Start your unreal package or binary here
 
-$ roslaunch airsim_ros_pkgs airsim_node.launch<span class="p">;</span>
+$ roslaunch airsim_ros_pkgs airsim_node.launch;
 
-<span class="c1"># in a new pane / terminal</span>
-$ <span class="nb">source</span> PATH_TO/AirSim/ros/devel/setup.bash
-$ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch
-</code></pre></div>
+# in a new pane / terminal
+$ source PATH_TO/AirSim/ros/devel/setup.bash
+$ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch</code></pre>
  The above would start rviz with tf's, registered RGBD cloud using <a href="https://wiki.ros.org/depth_image_proc">depth_image_proc</a> using the <a href="https://github.com/microsoft/AirSim/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch"><code>depth_to_pointcloud</code> launch file</a>, and the lidar point cloud. </li>
 </ul>
 <h3 id="two-drones-with-cameras-lidar-imu-each">Two drones, with cameras, lidar, IMU each<a class="headerlink" href="#two-drones-with-cameras-lidar-imu-each" title="Permanent link">#</a></h3>
 <ul>
 <li>Settings.json - <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/two_drones_camera_lidar_imu.json">two_drones_camera_lidar_imu.json</a> </li>
 </ul>
-<p><div class="highlight"><pre><span></span><code>$ <span class="nb">source</span> PATH_TO/AirSim/ros/devel/setup.bash
+<p><pre class="highlight"><code class="language-shell">$ source PATH_TO/AirSim/ros/devel/setup.bash
 $ roscd airsim_tutorial_pkgs
 $ cp settings/two_drones_camera_lidar_imu.json ~/Documents/AirSim/settings.json
 
-<span class="c1">## Start your unreal package or binary here</span>
+## Start your unreal package or binary here
 
-$ roslaunch airsim_ros_pkgs airsim_node.launch<span class="p">;</span>
-$ roslaunch airsim_ros_pkgs rviz.launch
-</code></pre></div>
+$ roslaunch airsim_ros_pkgs airsim_node.launch;
+$ roslaunch airsim_ros_pkgs rviz.launch</code></pre>
 You can view the tfs in rviz. And do a <code>rostopic list</code> and <code>rosservice list</code> to inspect the services avaiable.    </p>
 <h3 id="twenty-five-drones-in-a-square-pattern">Twenty-five drones in a square pattern<a class="headerlink" href="#twenty-five-drones-in-a-square-pattern" title="Permanent link">#</a></h3>
 <ul>
 <li>Settings.json - <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/twenty_five_drones.json">twenty_five_drones.json</a> </li>
 </ul>
-<p><div class="highlight"><pre><span></span><code>$ <span class="nb">source</span> PATH_TO/AirSim/ros/devel/setup.bash
+<p><pre class="highlight"><code class="language-shell">$ source PATH_TO/AirSim/ros/devel/setup.bash
 $ roscd airsim_tutorial_pkgs
 $ cp settings/twenty_five_drones.json ~/Documents/AirSim/settings.json
 
-<span class="c1">## Start your unreal package or binary here</span>
+## Start your unreal package or binary here
 
-$ roslaunch airsim_ros_pkgs airsim_node.launch<span class="p">;</span>
-$ roslaunch airsim_ros_pkgs rviz.launch
-</code></pre></div>
+$ roslaunch airsim_ros_pkgs airsim_node.launch;
+$ roslaunch airsim_ros_pkgs rviz.launch</code></pre>
 You can view the tfs in rviz. And do a <code>rostopic list</code> and <code>rosservice list</code> to inspect the services avaiable.    </p>
               
             </div>

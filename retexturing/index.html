@@ -302,34 +302,28 @@ Use the same technique to add descriptive tags to groups of actors, which will b
 <p><img alt="Subset Editing" src="../images/tex_swap_subset.png" /></p>
 <h2 id="how-to-swap-textures-from-the-api">How to Swap Textures from the API<a class="headerlink" href="#how-to-swap-textures-from-the-api" title="Permanent link">#</a></h2>
 <p>The following API is available in C++ and python. (C++ shown)</p>
-<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">simSwapTextures</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">tags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tex_id</span><span class="p">);</span>
-</code></pre></div>
-
+<pre class="highlight"><code class="language-C++">std::vector&lt;std::string&gt; simSwapTextures(const std::string&amp; tags, int tex_id);</code></pre>
 <p>The string of "," or ", " delimited tags identifies on which actors to perform the swap.
 The tex_id indexes the array of textures assigned to each actor undergoing a swap.
 The function will return the list of objects which matched the provided tags and had the texture swap perfomed.
 If tex_id is out-of-bounds for some object's texture set, it will be taken modulo the number of textures that were available.</p>
 <p>Demo (Python):</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">airsim</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<pre class="highlight"><code class="language-Python">import airsim
+import time
 
-<span class="n">c</span> <span class="o">=</span> <span class="n">airsim</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">MultirotorClient</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">simSwapTextures</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">simSwapTextures</span><span class="p">(</span><span class="s2">&quot;chair&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">simSwapTextures</span><span class="p">(</span><span class="s2">&quot;table&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">simSwapTextures</span><span class="p">(</span><span class="s2">&quot;chair, right&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</code></pre></div>
-
+c = airsim.client.MultirotorClient()
+print(c.simSwapTextures("furniture", 0))
+time.sleep(2)
+print(c.simSwapTextures("chair", 1))
+time.sleep(2)
+print(c.simSwapTextures("table", 1))
+time.sleep(2)
+print(c.simSwapTextures("chair, right", 0))</code></pre>
 <p>Results:</p>
-<div class="highlight"><pre><span></span><code><span class="o">[</span><span class="s1">&#39;RetexturableChair&#39;</span>, <span class="s1">&#39;RetexturableChair2&#39;</span>, <span class="s1">&#39;RetexturableTable&#39;</span><span class="o">]</span>
-<span class="o">[</span><span class="s1">&#39;RetexturableChair&#39;</span>, <span class="s1">&#39;RetexturableChair2&#39;</span><span class="o">]</span>
-<span class="o">[</span><span class="s1">&#39;RetexturableTable&#39;</span><span class="o">]</span>
-<span class="o">[</span><span class="s1">&#39;RetexturableChair2&#39;</span><span class="o">]</span>
-</code></pre></div>
-
+<pre class="highlight"><code class="language-bash">['RetexturableChair', 'RetexturableChair2', 'RetexturableTable']
+['RetexturableChair', 'RetexturableChair2']
+['RetexturableTable']
+['RetexturableChair2']</code></pre>
 <p><img alt="Demo" src="../images/tex_swap_demo.gif" /></p>
 <p>Note that in this example, different textures were chosen on each actor for the same index value.</p>
               

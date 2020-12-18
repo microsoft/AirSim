@@ -327,34 +327,32 @@
 <p>Edit the <code>LandscapeMountains.uproject</code> so that it looks like this</p>
 </li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;FileVersion&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="nt">&quot;EngineAssociation&quot;</span><span class="p">:</span> <span class="s2">&quot;4.24&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Category&quot;</span><span class="p">:</span> <span class="s2">&quot;Samples&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Modules&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;LandscapeMountains&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;Type&quot;</span><span class="p">:</span> <span class="s2">&quot;Runtime&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;LoadingPhase&quot;</span><span class="p">:</span> <span class="s2">&quot;Default&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;AdditionalDependencies&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">&quot;AirSim&quot;</span>
-            <span class="p">]</span>
-        <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="nt">&quot;TargetPlatforms&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;MacNoEditor&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;WindowsNoEditor&quot;</span>
-    <span class="p">],</span>
-    <span class="nt">&quot;Plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;AirSim&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;Enabled&quot;</span><span class="p">:</span> <span class="kc">true</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre class="highlight"><code class="language-json">{
+    "FileVersion": 3,
+    "EngineAssociation": "4.24",
+    "Category": "Samples",
+    "Description": "",
+    "Modules": [
+        {
+            "Name": "LandscapeMountains",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "AdditionalDependencies": [
+                "AirSim"
+            ]
+        }
+    ],
+    "TargetPlatforms": [
+        "MacNoEditor",
+        "WindowsNoEditor"
+    ],
+    "Plugins": [
+        {
+            "Name": "AirSim",
+            "Enabled": true
+        }
+    ]
+}</code></pre>
 <ol>
 <li>
 <p>Close Visual Studio and the  <code>Unreal Editor</code> and right click the LandscapeMountains.uproject in Windows Explorer and select <code>Generate Visual Studio Project Files</code>.  This step detects all plugins and source files in your Unreal project and generates <code>.sln</code> file for Visual Studio.</p>
@@ -406,18 +404,16 @@ but you can use any environment. Another free environment is <a href="https://ww
 <h4 id="i-already-have-my-own-unreal-project-how-do-i-use-airsim-with-it">I already have my own Unreal project. How do I use AirSim with it?<a class="headerlink" href="#i-already-have-my-own-unreal-project-how-do-i-use-airsim-with-it" title="Permanent link">#</a></h4>
 <p>Copy the <code>Unreal\Plugins</code> folder from the build you did in the above section into the root of your Unreal project's folder. In your Unreal project's .uproject file, add the key <code>AdditionalDependencies</code> to the "Modules" object
 as we showed in the <code>LandscapeMountains.uproject</code> above.
-<div class="highlight"><pre><span></span><code><span class="s2">&quot;AdditionalDependencies&quot;</span><span class="err">:</span> <span class="p">[</span>
-    <span class="s2">&quot;AirSim&quot;</span>
-<span class="p">]</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-json">"AdditionalDependencies": [
+    "AirSim"
+]</code></pre></p>
 <p>and the <code>Plugins</code> section to the top level object:
-<div class="highlight"><pre><span></span><code><span class="s2">&quot;Plugins&quot;</span><span class="err">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="nt">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;AirSim&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;Enabled&quot;</span><span class="p">:</span> <span class="kc">true</span>
-    <span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-json">"Plugins": [
+    {
+        "Name": "AirSim",
+        "Enabled": true
+    }
+]</code></pre></p>
               
             </div>
           </div>

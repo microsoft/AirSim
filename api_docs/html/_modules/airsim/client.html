@@ -1,0 +1,1508 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>airsim.client &mdash; airsim 1.2.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> airsim
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">airsim</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>airsim.client</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for airsim.client</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">msgpackrpc</span> <span class="c1">#install as admin: pip install msgpack-rpc-python</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> <span class="c1">#pip install numpy</span>
+<span class="kn">import</span> <span class="nn">msgpack</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<div class="viewcode-block" id="VehicleClient"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient">[docs]</a><span class="k">class</span> <span class="nc">VehicleClient</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="mi">41451</span><span class="p">,</span> <span class="n">timeout_value</span> <span class="o">=</span> <span class="mi">3600</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ip</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">msgpackrpc</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">msgpackrpc</span><span class="o">.</span><span class="n">Address</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout_value</span><span class="p">,</span> <span class="n">pack_encoding</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">unpack_encoding</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+    <span class="c1"># -----------------------------------  Common vehicle APIs ---------------------------------------------</span>
+<div class="viewcode-block" id="VehicleClient.reset"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the vehicle to its original starting state</span>
+
+<span class="sd">        Note that you must call `enableApiControl` and `armDisarm` again after the call to reset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.ping"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If connection is established then this call will return true otherwise it will be blocked until timeout</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;ping&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getClientVersion"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getClientVersion">[docs]</a>    <span class="k">def</span> <span class="nf">getClientVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="c1"># sync with C++ client</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getServerVersion"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getServerVersion">[docs]</a>    <span class="k">def</span> <span class="nf">getServerVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getServerVersion&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getMinRequiredServerVersion"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getMinRequiredServerVersion">[docs]</a>    <span class="k">def</span> <span class="nf">getMinRequiredServerVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="c1"># sync with C++ client</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getMinRequiredClientVersion"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getMinRequiredClientVersion">[docs]</a>    <span class="k">def</span> <span class="nf">getMinRequiredClientVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getMinRequiredClientVersion&#39;</span><span class="p">)</span></div>
+
+    <span class="c1"># basic flight control</span>
+<div class="viewcode-block" id="VehicleClient.enableApiControl"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.enableApiControl">[docs]</a>    <span class="k">def</span> <span class="nf">enableApiControl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_enabled</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enables or disables API control for vehicle corresponding to vehicle_name</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            is_enabled (bool): True to enable, False to disable API control</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle to send this command to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;enableApiControl&#39;</span><span class="p">,</span> <span class="n">is_enabled</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.isApiControlEnabled"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.isApiControlEnabled">[docs]</a>    <span class="k">def</span> <span class="nf">isApiControlEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns true if API control is established.</span>
+
+<span class="sd">        If false (which is default) then API calls would be ignored. After a successful call to `enableApiControl`, `isApiControlEnabled` should return true.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If API control is enabled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;isApiControlEnabled&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.armDisarm"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.armDisarm">[docs]</a>    <span class="k">def</span> <span class="nf">armDisarm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arms or disarms vehicle</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arm (bool): True to arm, False to disarm the vehicle</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;armDisarm&#39;</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simPause"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPause">[docs]</a>    <span class="k">def</span> <span class="nf">simPause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_paused</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pauses simulation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            is_paused (bool): True to pause the simulation, False to release</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPause&#39;</span><span class="p">,</span> <span class="n">is_paused</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simIsPause"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simIsPause">[docs]</a>    <span class="k">def</span> <span class="nf">simIsPause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns true if the simulation is paused</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If the simulation is paused</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;simIsPaused&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simContinueForTime"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simContinueForTime">[docs]</a>    <span class="k">def</span> <span class="nf">simContinueForTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Continue the simulation for the specified number of seconds</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            seconds (float): Time to run the simulation for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simContinueForTime&#39;</span><span class="p">,</span> <span class="n">seconds</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getHomeGeoPoint"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getHomeGeoPoint">[docs]</a>    <span class="k">def</span> <span class="nf">getHomeGeoPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the Home location of the vehicle</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle to get home location of</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            GeoPoint: Home location of the vehicle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">GeoPoint</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getHomeGeoPoint&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.confirmConnection"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.confirmConnection">[docs]</a>    <span class="k">def</span> <span class="nf">confirmConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks state of connection every 1 sec and reports it in Console so user can see the progress for connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ping</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ping returned false!&quot;</span><span class="p">)</span>
+        <span class="n">server_ver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getServerVersion</span><span class="p">()</span>
+        <span class="n">client_ver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getClientVersion</span><span class="p">()</span>
+        <span class="n">server_min_ver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMinRequiredServerVersion</span><span class="p">()</span>
+        <span class="n">client_min_ver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMinRequiredClientVersion</span><span class="p">()</span>
+
+        <span class="n">ver_info</span> <span class="o">=</span> <span class="s2">&quot;Client Ver:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_ver</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; (Min Req: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_min_ver</span><span class="p">)</span> <span class="o">+</span> \
+              <span class="s2">&quot;), Server Ver:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">server_ver</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; (Min Req: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">server_min_ver</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+
+        <span class="k">if</span> <span class="n">server_ver</span> <span class="o">&lt;</span> <span class="n">server_min_ver</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ver_info</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AirSim server is of older version and not supported by this client. Please upgrade!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">client_ver</span> <span class="o">&lt;</span> <span class="n">client_min_ver</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ver_info</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AirSim client is of older version and not supported by this server. Please upgrade!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ver_info</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSwapTextures"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSwapTextures">[docs]</a>    <span class="k">def</span> <span class="nf">simSwapTextures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">tex_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">component_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">material_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runtime Swap Texture API</span>
+
+<span class="sd">        See https://microsoft.github.io/AirSim/retexturing/ for details</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tags (str): string of &quot;,&quot; or &quot;, &quot; delimited tags to identify on which actors to perform the swap</span>
+<span class="sd">            tex_id (int, optional): indexes the array of textures assigned to each actor undergoing a swap</span>
+
+<span class="sd">                                    If out-of-bounds for some object&#39;s texture set, it will be taken modulo the number of textures that were available</span>
+<span class="sd">            component_id (int, optional):</span>
+<span class="sd">            material_id (int, optional):</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: List of objects which matched the provided tags and had the texture swap perfomed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;simSwapTextures&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">tex_id</span><span class="p">,</span> <span class="n">component_id</span><span class="p">,</span> <span class="n">material_id</span><span class="p">)</span></div>
+
+    <span class="c1"># time-of-day control</span>
+<div class="viewcode-block" id="VehicleClient.simSetTimeOfDay"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetTimeOfDay">[docs]</a>    <span class="k">def</span> <span class="nf">simSetTimeOfDay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_enabled</span><span class="p">,</span> <span class="n">start_datetime</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">is_start_datetime_dst</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">celestial_clock_speed</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">update_interval_secs</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> <span class="n">move_sun</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Control the position of Sun in the environment</span>
+
+<span class="sd">        Sun&#39;s position is computed using the coordinates specified in `OriginGeopoint` in settings for the date-time specified in the argument,</span>
+<span class="sd">        else if the string is empty, current date &amp; time is used</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            is_enabled (bool): True to enable time-of-day effect, False to reset the position to original</span>
+<span class="sd">            start_datetime (str, optional): Date &amp; Time in %Y-%m-%d %H:%M:%S format, e.g. `2018-02-12 15:20:00`</span>
+<span class="sd">            is_start_datetime_dst (bool, optional): True to adjust for Daylight Savings Time</span>
+<span class="sd">            celestial_clock_speed (float, optional): Run celestial clock faster or slower than simulation clock</span>
+<span class="sd">                                                     E.g. Value 100 means for every 1 second of simulation clock, Sun&#39;s position is advanced by 100 seconds</span>
+<span class="sd">                                                     so Sun will move in sky much faster</span>
+<span class="sd">            update_interval_secs (float, optional): Interval to update the Sun&#39;s position</span>
+<span class="sd">            move_sun (bool, optional): Whether or not to move the Sun</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetTimeOfDay&#39;</span><span class="p">,</span> <span class="n">is_enabled</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">,</span> <span class="n">is_start_datetime_dst</span><span class="p">,</span> <span class="n">celestial_clock_speed</span><span class="p">,</span> <span class="n">update_interval_secs</span><span class="p">,</span> <span class="n">move_sun</span><span class="p">)</span></div>
+
+    <span class="c1"># weather</span>
+<div class="viewcode-block" id="VehicleClient.simEnableWeather"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simEnableWeather">[docs]</a>    <span class="k">def</span> <span class="nf">simEnableWeather</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enable Weather effects. Needs to be called before using `simSetWeatherParameter` API</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            enable (bool): True to enable, False to disable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simEnableWeather&#39;</span><span class="p">,</span> <span class="n">enable</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetWeatherParameter"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetWeatherParameter">[docs]</a>    <span class="k">def</span> <span class="nf">simSetWeatherParameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enable various weather effects</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            param (WeatherParameter): Weather effect to be enabled</span>
+<span class="sd">            val (float): Intensity of the effect, Range 0-1</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetWeatherParameter&#39;</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+    <span class="c1"># camera control</span>
+    <span class="c1"># simGetImage returns compressed png in array of bytes</span>
+    <span class="c1"># image_type uses one of the ImageType members</span>
+<div class="viewcode-block" id="VehicleClient.simGetImage"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetImage">[docs]</a>    <span class="k">def</span> <span class="nf">simGetImage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a single image</span>
+
+<span class="sd">        Returns bytes of png format image which can be dumped into abinary file to create .png image</span>
+<span class="sd">        `string_to_uint8_array()` can be used to convert into Numpy unit8 array</span>
+<span class="sd">        See https://microsoft.github.io/AirSim/image_apis/ for details</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
+<span class="sd">            image_type (ImageType): Type of image required</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle with the camera</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Binary string literal of compressed png image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># todo: in future remove below, it&#39;s only for compatibility to pre v1.2</span>
+        <span class="n">camera_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">)</span>
+
+        <span class="c1"># because this method returns std::vector&lt;uint8&gt;, msgpack decides to encode it as a string unfortunately.</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetImage&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="c1"># camera control</span>
+    <span class="c1"># simGetImage returns compressed png in array of bytes</span>
+    <span class="c1"># image_type uses one of the ImageType members</span>
+<div class="viewcode-block" id="VehicleClient.simGetImages"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetImages">[docs]</a>    <span class="k">def</span> <span class="nf">simGetImages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get multiple images</span>
+
+<span class="sd">        See https://microsoft.github.io/AirSim/image_apis/ for details and examples</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            requests (list[ImageRequest]): Images required</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle associated with the camera</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[ImageResponse]:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">responses_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetImages&#39;</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ImageResponse</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">response_raw</span><span class="p">)</span> <span class="k">for</span> <span class="n">response_raw</span> <span class="ow">in</span> <span class="n">responses_raw</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simRunConsoleCommand"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simRunConsoleCommand">[docs]</a>    <span class="k">def</span> <span class="nf">simRunConsoleCommand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allows the client to execute a command in Unreal&#39;s native console, via an API.</span>
+<span class="sd">        Affords access to the countless built-in commands such as &quot;stat unit&quot;, &quot;stat fps&quot;, &quot;open [map]&quot;, adjust any config settings, etc. etc.</span>
+<span class="sd">        Allows the user to create bespoke APIs very easily, by adding a custom event to the level blueprint, and then calling the console command &quot;ce MyEventName [args]&quot;. No recompilation of AirSim needed!</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            command ([string]): Desired Unreal Engine Console command to run</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [bool]: Success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simRunConsoleCommand&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span></div>
+
+    <span class="c1"># gets the static meshes in the unreal scene</span>
+<div class="viewcode-block" id="VehicleClient.simGetMeshPositionVertexBuffers"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetMeshPositionVertexBuffers">[docs]</a>    <span class="k">def</span> <span class="nf">simGetMeshPositionVertexBuffers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the static meshes that make up the scene</span>
+
+<span class="sd">        See https://microsoft.github.io/AirSim/meshes/ for details and how to use this</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[MeshPositionVertexBuffersResponse]:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">responses_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetMeshPositionVertexBuffers&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">MeshPositionVertexBuffersResponse</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">response_raw</span><span class="p">)</span> <span class="k">for</span> <span class="n">response_raw</span> <span class="ow">in</span> <span class="n">responses_raw</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetCollisionInfo"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetCollisionInfo">[docs]</a>    <span class="k">def</span> <span class="nf">simGetCollisionInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of the Vehicle to get the info of</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CollisionInfo:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">CollisionInfo</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetCollisionInfo&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetVehiclePose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetVehiclePose">[docs]</a>    <span class="k">def</span> <span class="nf">simSetVehiclePose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">ignore_collison</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the pose of the vehicle</span>
+
+<span class="sd">        If you don&#39;t want to change position (or orientation) then just set components of position (or orientation) to floating point nan values</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pose (Pose): Desired Pose pf the vehicle</span>
+<span class="sd">            ignore_collision (bool): Whether to ignore any collision or not</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle to move</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetVehiclePose&#39;</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">ignore_collison</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetVehiclePose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetVehiclePose">[docs]</a>    <span class="k">def</span> <span class="nf">simGetVehiclePose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle to get the Pose of</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Pose:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetVehiclePose&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Pose</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">pose</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetTraceLine"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetTraceLine">[docs]</a>    <span class="k">def</span> <span class="nf">simSetTraceLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_rgba</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modify the color and thickness of the line when Tracing is enabled</span>
+
+<span class="sd">        Tracing can be enabled by pressing T in the Editor or setting `EnableTrace` to `True` in the Vehicle Settings</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            color_rgba (list): desired RGBA values from 0.0 to 1.0</span>
+<span class="sd">            thickness (float, optional): Thickness of the line</span>
+<span class="sd">            vehicle_name (string, optional): Name of the vehicle to set Trace line values for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetTraceLine&#39;</span><span class="p">,</span> <span class="n">color_rgba</span><span class="p">,</span> <span class="n">thickness</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetObjectPose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetObjectPose">[docs]</a>    <span class="k">def</span> <span class="nf">simGetObjectPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            object_name (str): Object to get the Pose of</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Pose:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetObjectPose&#39;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Pose</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">pose</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetObjectPose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetObjectPose">[docs]</a>    <span class="k">def</span> <span class="nf">simSetObjectPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">teleport</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the pose of the object(actor) in the environment</span>
+
+<span class="sd">        The specified actor must have Mobility set to movable, otherwise there will be undefined behaviour.</span>
+<span class="sd">        See https://www.unrealengine.com/en-US/blog/moving-physical-objects for details on how to set Mobility and the effect of Teleport parameter</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            object_name (str): Name of the object(actor) to move</span>
+<span class="sd">            pose (Pose): Desired Pose of the object</span>
+<span class="sd">            teleport (bool, optional): Whether to move the object immediately without affecting their velocity</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If the move was successful</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetObjectPose&#39;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">teleport</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetObjectScale"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetObjectScale">[docs]</a>    <span class="k">def</span> <span class="nf">simGetObjectScale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets scale of an object in the world</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            object_name (str): Object to get the scale of</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            airsim.Vector3r: Scale</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetObjectScale&#39;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Vector3r</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetObjectScale"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetObjectScale">[docs]</a>    <span class="k">def</span> <span class="nf">simSetObjectScale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">scale_vector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets scale of an object in the world</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            object_name (str): Object to set the scale of</span>
+<span class="sd">            scale_vector (airsim.Vector3r): Desired scale of object</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if scale change was successful</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetObjectScale&#39;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">scale_vector</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simListSceneObjects"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simListSceneObjects">[docs]</a>    <span class="k">def</span> <span class="nf">simListSceneObjects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_regex</span> <span class="o">=</span> <span class="s1">&#39;.*&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lists the objects present in the environment</span>
+
+<span class="sd">        Default behaviour is to list all objects, regex can be used to return smaller list of matching objects or actors</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name_regex (str, optional): String to match actor names against, e.g. &quot;Cylinder.*&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: List containing all the names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simListSceneObjects&#39;</span><span class="p">,</span> <span class="n">name_regex</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSpawnObject"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSpawnObject">[docs]</a>    <span class="k">def</span> <span class="nf">simSpawnObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">physics_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Spawned selected object in the world</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            object_name (str): Desired name of new object</span>
+<span class="sd">            asset_name (str): Name of asset(mesh) in the project database</span>
+<span class="sd">            pose (airsim.Pose): Desired pose of object</span>
+<span class="sd">            scale (airsim.Vector3r): Desired scale of object</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Name of spawned object, in case it had to be modified</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSpawnObject&#39;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">physics_enabled</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simDestroyObject"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simDestroyObject">[docs]</a>    <span class="k">def</span> <span class="nf">simDestroyObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes selected object from the world</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            object_name (str): Name of object to be removed</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if object is queued up for removal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simDestroyObject&#39;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetSegmentationObjectID"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetSegmentationObjectID">[docs]</a>    <span class="k">def</span> <span class="nf">simSetSegmentationObjectID</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">is_name_regex</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set segmentation ID for specific objects</span>
+
+<span class="sd">        See https://microsoft.github.io/AirSim/image_apis/#segmentation for details</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mesh_name (str): Name of the mesh to set the ID of (supports regex)</span>
+<span class="sd">            object_id (int): Object ID to be set, range 0-255</span>
+
+<span class="sd">                             RBG values for IDs can be seen at https://microsoft.github.io/AirSim/seg_rgbs.txt</span>
+<span class="sd">            is_name_regex (bool, optional): Whether the mesh name is a regex</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: If the mesh was found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetSegmentationObjectID&#39;</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">is_name_regex</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetSegmentationObjectID"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetSegmentationObjectID">[docs]</a>    <span class="k">def</span> <span class="nf">simGetSegmentationObjectID</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns Object ID for the given mesh name</span>
+
+<span class="sd">        Mapping of Object IDs to RGB values can be seen at https://microsoft.github.io/AirSim/seg_rgbs.txt</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mesh_name (str): Name of the mesh to get the ID of</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetSegmentationObjectID&#39;</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simPrintLogMessage"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPrintLogMessage">[docs]</a>    <span class="k">def</span> <span class="nf">simPrintLogMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">message_param</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">severity</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints the specified message in the simulator&#39;s window.</span>
+
+<span class="sd">        If message_param is supplied, then it&#39;s printed next to the message and in that case if this API is called with same message value</span>
+<span class="sd">        but different message_param again then previous line is overwritten with new line (instead of API creating new line on display).</span>
+
+<span class="sd">        For example, `simPrintLogMessage(&quot;Iteration: &quot;, to_string(i))` keeps updating same line on display when API is called with different values of i.</span>
+<span class="sd">        The valid values of severity parameter is 0 to 3 inclusive that corresponds to different colors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): Message to be printed</span>
+<span class="sd">            message_param (str, optional): Parameter to be printed next to the message</span>
+<span class="sd">            severity (int, optional): Range 0-3, inclusive, corresponding to the severity of the message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPrintLogMessage&#39;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">message_param</span><span class="p">,</span> <span class="n">severity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetCameraInfo"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetCameraInfo">[docs]</a>    <span class="k">def</span> <span class="nf">simGetCameraInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get details about the camera</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
+<span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CameraInfo:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: below str() conversion is only needed for legacy reason and should be removed in future</span>
+        <span class="k">return</span> <span class="n">CameraInfo</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetCameraInfo&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetDistortionParams"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetDistortionParams">[docs]</a>    <span class="k">def</span> <span class="nf">simGetDistortionParams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get camera distortion parameters</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
+<span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetDistortionParams&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetDistortionParams"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDistortionParams">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDistortionParams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">distortion_params</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set camera distortion parameters</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
+<span class="sd">            distortion_params (dict): Dictionary of distortion param names and corresponding values</span>
+<span class="sd">                                        {&quot;K1&quot;: 0.0, &quot;K2&quot;: 0.0, &quot;K3&quot;: 0.0, &quot;P1&quot;: 0.0, &quot;P2&quot;: 0.0}</span>
+<span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">distortion_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetDistortionParam&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetDistortionParam"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDistortionParam">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDistortionParam</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set single camera distortion parameter</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
+<span class="sd">            param_name (str): Name of distortion parameter</span>
+<span class="sd">            value (float): Value of distortion parameter</span>
+<span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetDistortionParam&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetCameraPose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetCameraPose">[docs]</a>    <span class="k">def</span> <span class="nf">simSetCameraPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Control the pose of a selected camera</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            camera_name (str): Name of the camera to be controlled</span>
+<span class="sd">            pose (Pose): Pose representing the desired position and orientation of the camera</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle which the camera corresponds to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: below str() conversion is only needed for legacy reason and should be removed in future</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetCameraPose&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">pose</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetCameraOrientation"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetCameraOrientation">[docs]</a>    <span class="k">def</span> <span class="nf">simSetCameraOrientation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. note::</span>
+
+<span class="sd">            This API has been upgraded to `simSetCameraPose`</span>
+
+<span class="sd">        - Control the Orientation of a selected camera</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            camera_name (str): Name of the camera to be controlled</span>
+<span class="sd">            orientation (Quaternionr): Quaternion representing the desired orientation of the camera</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle which the camera corresponds to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code.&quot;</span><span class="p">)</span>
+        <span class="n">pose</span> <span class="o">=</span> <span class="n">Pose</span><span class="p">(</span><span class="n">orientation_val</span><span class="o">=</span><span class="n">orientation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simSetCameraPose</span><span class="p">(</span><span class="n">camera_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetCameraFov"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetCameraFov">[docs]</a>    <span class="k">def</span> <span class="nf">simSetCameraFov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">fov_degrees</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Control the field of view of a selected camera</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            camera_name (str): Name of the camera to be controlled</span>
+<span class="sd">            fov_degrees (float): Value of field of view in degrees</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle which the camera corresponds to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: below str() conversion is only needed for legacy reason and should be removed in future</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetCameraFov&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">fov_degrees</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetGroundTruthKinematics"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetGroundTruthKinematics">[docs]</a>    <span class="k">def</span> <span class="nf">simGetGroundTruthKinematics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get Ground truth kinematics of the vehicle</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            KinematicsState: Ground truth of the vehicle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kinematics_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetGroundTruthKinematics&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">KinematicsState</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">kinematics_state</span><span class="p">)</span></div>
+    <span class="n">simGetGroundTruthKinematics</span><span class="o">.</span><span class="vm">__annotations__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;return&#39;</span><span class="p">:</span> <span class="n">KinematicsState</span><span class="p">}</span>
+
+<div class="viewcode-block" id="VehicleClient.simGetGroundTruthEnvironment"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetGroundTruthEnvironment">[docs]</a>    <span class="k">def</span> <span class="nf">simGetGroundTruthEnvironment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get ground truth environment state</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            EnvironmentState: Ground truth environment state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">env_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetGroundTruthEnvironment&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">EnvironmentState</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">env_state</span><span class="p">)</span></div>
+    <span class="n">simGetGroundTruthEnvironment</span><span class="o">.</span><span class="vm">__annotations__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;return&#39;</span><span class="p">:</span> <span class="n">EnvironmentState</span><span class="p">}</span>
+
+    <span class="c1"># sensor APIs</span>
+<div class="viewcode-block" id="VehicleClient.getImuData"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getImuData">[docs]</a>    <span class="k">def</span> <span class="nf">getImuData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imu_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            imu_name (str, optional): Name of IMU to get data from, specified in settings.json</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ImuData:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ImuData</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getImuData&#39;</span><span class="p">,</span> <span class="n">imu_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getBarometerData"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getBarometerData">[docs]</a>    <span class="k">def</span> <span class="nf">getBarometerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">barometer_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            barometer_name (str, optional): Name of Barometer to get data from, specified in settings.json</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BarometerData:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BarometerData</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getBarometerData&#39;</span><span class="p">,</span> <span class="n">barometer_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getMagnetometerData"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getMagnetometerData">[docs]</a>    <span class="k">def</span> <span class="nf">getMagnetometerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">magnetometer_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            magnetometer_name (str, optional): Name of Magnetometer to get data from, specified in settings.json</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MagnetometerData:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MagnetometerData</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getMagnetometerData&#39;</span><span class="p">,</span> <span class="n">magnetometer_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getGpsData"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getGpsData">[docs]</a>    <span class="k">def</span> <span class="nf">getGpsData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gps_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            gps_name (str, optional): Name of GPS to get data from, specified in settings.json</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            GpsData:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">GpsData</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getGpsData&#39;</span><span class="p">,</span> <span class="n">gps_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getDistanceSensorData"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getDistanceSensorData">[docs]</a>    <span class="k">def</span> <span class="nf">getDistanceSensorData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance_sensor_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            distance_sensor_name (str, optional): Name of Distance Sensor to get data from, specified in settings.json</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DistanceSensorData:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DistanceSensorData</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getDistanceSensorData&#39;</span><span class="p">,</span> <span class="n">distance_sensor_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getLidarData"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getLidarData">[docs]</a>    <span class="k">def</span> <span class="nf">getLidarData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lidar_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            lidar_name (str, optional): Name of Lidar to get data from, specified in settings.json</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            LidarData:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">LidarData</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getLidarData&#39;</span><span class="p">,</span> <span class="n">lidar_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simGetLidarSegmentation"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetLidarSegmentation">[docs]</a>    <span class="k">def</span> <span class="nf">simGetLidarSegmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lidar_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns Segmentation ID of each point&#39;s collided object in the last Lidar update</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lidar_name (str, optional): Name of Lidar sensor</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle wth the sensor</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[int]: Segmentation IDs of the objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetLidarSegmentation&#39;</span><span class="p">,</span> <span class="n">lidar_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+    <span class="c1">#  Plotting APIs</span>
+<div class="viewcode-block" id="VehicleClient.simFlushPersistentMarkers"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simFlushPersistentMarkers">[docs]</a>    <span class="k">def</span> <span class="nf">simFlushPersistentMarkers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear any persistent markers - those plotted with setting `is_persistent=True` in the APIs below</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simFlushPersistentMarkers&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simPlotPoints"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPlotPoints">[docs]</a>    <span class="k">def</span> <span class="nf">simPlotPoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">color_rgba</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">size</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">is_persistent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot a list of 3D points in World NED frame</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            points (list[Vector3r]): List of Vector3r objects</span>
+<span class="sd">            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0</span>
+<span class="sd">            size (float, optional): Size of plotted point</span>
+<span class="sd">            duration (float, optional): Duration (seconds) to plot for</span>
+<span class="sd">            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPlotPoints&#39;</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">color_rgba</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">is_persistent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simPlotLineStrip"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPlotLineStrip">[docs]</a>    <span class="k">def</span> <span class="nf">simPlotLineStrip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">color_rgba</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">thickness</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">is_persistent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots a line strip in World NED frame, defined from points[0] to points[1], points[1] to points[2], ... , points[n-2] to points[n-1]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            points (list[Vector3r]): List of 3D locations of line start and end points, specified as Vector3r objects</span>
+<span class="sd">            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0</span>
+<span class="sd">            thickness (float, optional): Thickness of line</span>
+<span class="sd">            duration (float, optional): Duration (seconds) to plot for</span>
+<span class="sd">            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPlotLineStrip&#39;</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">color_rgba</span><span class="p">,</span> <span class="n">thickness</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">is_persistent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simPlotLineList"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPlotLineList">[docs]</a>    <span class="k">def</span> <span class="nf">simPlotLineList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">color_rgba</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">thickness</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">is_persistent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots a line strip in World NED frame, defined from points[0] to points[1], points[2] to points[3], ... , points[n-2] to points[n-1]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            points (list[Vector3r]): List of 3D locations of line start and end points, specified as Vector3r objects. Must be even</span>
+<span class="sd">            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0</span>
+<span class="sd">            thickness (float, optional): Thickness of line</span>
+<span class="sd">            duration (float, optional): Duration (seconds) to plot for</span>
+<span class="sd">            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPlotLineList&#39;</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">color_rgba</span><span class="p">,</span> <span class="n">thickness</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">is_persistent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simPlotArrows"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPlotArrows">[docs]</a>    <span class="k">def</span> <span class="nf">simPlotArrows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points_start</span><span class="p">,</span> <span class="n">points_end</span><span class="p">,</span> <span class="n">color_rgba</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">thickness</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">arrow_size</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">is_persistent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots a list of arrows in World NED frame, defined from points_start[0] to points_end[0], points_start[1] to points_end[1], ... , points_start[n-1] to points_end[n-1]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            points_start (list[Vector3r]): List of 3D start positions of arrow start positions, specified as Vector3r objects</span>
+<span class="sd">            points_end (list[Vector3r]): List of 3D end positions of arrow start positions, specified as Vector3r objects</span>
+<span class="sd">            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0</span>
+<span class="sd">            thickness (float, optional): Thickness of line</span>
+<span class="sd">            arrow_size (float, optional): Size of arrow head</span>
+<span class="sd">            duration (float, optional): Duration (seconds) to plot for</span>
+<span class="sd">            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPlotArrows&#39;</span><span class="p">,</span> <span class="n">points_start</span><span class="p">,</span> <span class="n">points_end</span><span class="p">,</span> <span class="n">color_rgba</span><span class="p">,</span> <span class="n">thickness</span><span class="p">,</span> <span class="n">arrow_size</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">is_persistent</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VehicleClient.simPlotStrings"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPlotStrings">[docs]</a>    <span class="k">def</span> <span class="nf">simPlotStrings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strings</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">color_rgba</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots a list of strings at desired positions in World NED frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            strings (list[String], optional): List of strings to plot</span>
+<span class="sd">            positions (list[Vector3r]): List of positions where the strings should be plotted. Should be in one-to-one correspondence with the strings&#39; list</span>
+<span class="sd">            scale (float, optional): Font scale of transform name</span>
+<span class="sd">            color_rgba (list, optional): desired RGBA values from 0.0 to 1.0</span>
+<span class="sd">            duration (float, optional): Duration (seconds) to plot for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPlotStrings&#39;</span><span class="p">,</span> <span class="n">strings</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">color_rgba</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simPlotTransforms"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPlotTransforms">[docs]</a>    <span class="k">def</span> <span class="nf">simPlotTransforms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poses</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">thickness</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">is_persistent</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots a list of transforms in World NED frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            poses (list[Pose]): List of Pose objects representing the transforms to plot</span>
+<span class="sd">            scale (float, optional): Length of transforms&#39; axes</span>
+<span class="sd">            thickness (float, optional): Thickness of transforms&#39; axes</span>
+<span class="sd">            duration (float, optional): Duration (seconds) to plot for</span>
+<span class="sd">            is_persistent (bool, optional): If set to True, the desired object will be plotted for infinite time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPlotTransforms&#39;</span><span class="p">,</span> <span class="n">poses</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">thickness</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">is_persistent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simPlotTransformsWithNames"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPlotTransformsWithNames">[docs]</a>    <span class="k">def</span> <span class="nf">simPlotTransformsWithNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poses</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">tf_scale</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">tf_thickness</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">text_scale</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">text_color_rgba</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">duration</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots a list of transforms with their names in World NED frame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            poses (list[Pose]): List of Pose objects representing the transforms to plot</span>
+<span class="sd">            names (list[string]): List of strings with one-to-one correspondence to list of poses</span>
+<span class="sd">            tf_scale (float, optional): Length of transforms&#39; axes</span>
+<span class="sd">            tf_thickness (float, optional): Thickness of transforms&#39; axes</span>
+<span class="sd">            text_scale (float, optional): Font scale of transform name</span>
+<span class="sd">            text_color_rgba (list, optional): desired RGBA values from 0.0 to 1.0 for the transform name</span>
+<span class="sd">            duration (float, optional): Duration (seconds) to plot for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPlotTransformsWithNames&#39;</span><span class="p">,</span> <span class="n">poses</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">tf_scale</span><span class="p">,</span> <span class="n">tf_thickness</span><span class="p">,</span> <span class="n">text_scale</span><span class="p">,</span> <span class="n">text_color_rgba</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.cancelLastTask"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.cancelLastTask">[docs]</a>    <span class="k">def</span> <span class="nf">cancelLastTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancel previous Async task</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;cancelLastTask&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.waitOnLastTask"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.waitOnLastTask">[docs]</a>    <span class="k">def</span> <span class="nf">waitOnLastTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for the last Async task to complete</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            timeout_sec (float, optional): Time for the task to complete</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Result of the last task</span>
+
+<span class="sd">                  True if the task completed without cancellation or timeout</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;waitOnLastTask&#39;</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">)</span></div>
+
+    <span class="c1"># Recording APIs</span>
+<div class="viewcode-block" id="VehicleClient.startRecording"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.startRecording">[docs]</a>    <span class="k">def</span> <span class="nf">startRecording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start Recording</span>
+
+<span class="sd">        Recording will be done according to the settings</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;startRecording&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.stopRecording"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.stopRecording">[docs]</a>    <span class="k">def</span> <span class="nf">stopRecording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop Recording</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;stopRecording&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.isRecording"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.isRecording">[docs]</a>    <span class="k">def</span> <span class="nf">isRecording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether Recording is running or not</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if Recording, else False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;isRecording&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simSetWind"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetWind">[docs]</a>    <span class="k">def</span> <span class="nf">simSetWind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wind</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set simulated wind, in World frame, NED direction, m/s</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wind (Vector3r): Wind, in World frame, NED direction, in m/s </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetWind&#39;</span><span class="p">,</span> <span class="n">wind</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.simCreateVoxelGrid"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simCreateVoxelGrid">[docs]</a>    <span class="k">def</span> <span class="nf">simCreateVoxelGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">of</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct and save a binvox-formatted voxel grid of environment</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            position (Vector3r): Position around which voxel grid is centered in m</span>
+<span class="sd">            x, y, z (int): Size of each voxel grid dimension in m</span>
+<span class="sd">            res (float): Resolution of voxel grid in m</span>
+<span class="sd">            of (str): Name of output file to save voxel grid as</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if output written to file successfully, else False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simCreateVoxelGrid&#39;</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">of</span><span class="p">)</span></div></div>
+
+<span class="c1"># -----------------------------------  Multirotor APIs ---------------------------------------------</span>
+<div class="viewcode-block" id="MultirotorClient"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient">[docs]</a><span class="k">class</span> <span class="nc">MultirotorClient</span><span class="p">(</span><span class="n">VehicleClient</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="mi">41451</span><span class="p">,</span> <span class="n">timeout_value</span> <span class="o">=</span> <span class="mi">3600</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MultirotorClient</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">timeout_value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultirotorClient.takeoffAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.takeoffAsync">[docs]</a>    <span class="k">def</span> <span class="nf">takeoffAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takeoff vehicle to 3m above ground. Vehicle should not be moving when this API is used</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            timeout_sec (int, optional): Timeout for the vehicle to reach desired altitude</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;takeoff&#39;</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.landAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.landAsync">[docs]</a>    <span class="k">def</span> <span class="nf">landAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Land the vehicle</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            timeout_sec (int, optional): Timeout for the vehicle to land</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;land&#39;</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.goHomeAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.goHomeAsync">[docs]</a>    <span class="k">def</span> <span class="nf">goHomeAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="mf">3e+38</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return vehicle to Home i.e. Launch location</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            timeout_sec (int, optional): Timeout for the vehicle to reach desired altitude</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;goHome&#39;</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+    <span class="c1"># APIs for control</span>
+<div class="viewcode-block" id="MultirotorClient.moveByVelocityBodyFrameAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByVelocityBodyFrameAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByVelocityBodyFrameAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span> <span class="o">=</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">MaxDegreeOfFreedom</span><span class="p">,</span> <span class="n">yaw_mode</span> <span class="o">=</span> <span class="n">YawMode</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vx (float): desired velocity in the X axis of the vehicle&#39;s local NED frame.</span>
+<span class="sd">            vy (float): desired velocity in the Y axis of the vehicle&#39;s local NED frame.</span>
+<span class="sd">            vz (float): desired velocity in the Z axis of the vehicle&#39;s local NED frame.</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            drivetrain (DrivetrainType, optional):</span>
+<span class="sd">            yaw_mode (YawMode, optional):</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByVelocityBodyFrame&#39;</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="MultirotorClient.moveByAngleZAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByAngleZAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByAngleZAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByAngleZ&#39;</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByAngleThrottleAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByAngleThrottleAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByAngleThrottleAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">yaw_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByAngleThrottle&#39;</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">yaw_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByVelocityAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByVelocityAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByVelocityAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span> <span class="o">=</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">MaxDegreeOfFreedom</span><span class="p">,</span> <span class="n">yaw_mode</span> <span class="o">=</span> <span class="n">YawMode</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vx (float): desired velocity in world (NED) X axis</span>
+<span class="sd">            vy (float): desired velocity in world (NED) Y axis</span>
+<span class="sd">            vz (float): desired velocity in world (NED) Z axis</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            drivetrain (DrivetrainType, optional):</span>
+<span class="sd">            yaw_mode (YawMode, optional):</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByVelocity&#39;</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByVelocityZAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByVelocityZAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByVelocityZAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span> <span class="o">=</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">MaxDegreeOfFreedom</span><span class="p">,</span> <span class="n">yaw_mode</span> <span class="o">=</span> <span class="n">YawMode</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByVelocityZ&#39;</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveOnPathAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveOnPathAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveOnPathAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="mf">3e+38</span><span class="p">,</span> <span class="n">drivetrain</span> <span class="o">=</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">MaxDegreeOfFreedom</span><span class="p">,</span> <span class="n">yaw_mode</span> <span class="o">=</span> <span class="n">YawMode</span><span class="p">(),</span>
+        <span class="n">lookahead</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">adaptive_lookahead</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveOnPath&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">,</span> <span class="n">drivetrain</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">lookahead</span><span class="p">,</span> <span class="n">adaptive_lookahead</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveToPositionAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveToPositionAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveToPositionAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="mf">3e+38</span><span class="p">,</span> <span class="n">drivetrain</span> <span class="o">=</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">MaxDegreeOfFreedom</span><span class="p">,</span> <span class="n">yaw_mode</span> <span class="o">=</span> <span class="n">YawMode</span><span class="p">(),</span>
+        <span class="n">lookahead</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">adaptive_lookahead</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveToPosition&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">,</span> <span class="n">drivetrain</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">lookahead</span><span class="p">,</span> <span class="n">adaptive_lookahead</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveToZAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveToZAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveToZAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="mf">3e+38</span><span class="p">,</span> <span class="n">yaw_mode</span> <span class="o">=</span> <span class="n">YawMode</span><span class="p">(),</span> <span class="n">lookahead</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">adaptive_lookahead</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveToZ&#39;</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">velocity</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">lookahead</span><span class="p">,</span> <span class="n">adaptive_lookahead</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByManualAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByManualAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByManualAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vx_max</span><span class="p">,</span> <span class="n">vy_max</span><span class="p">,</span> <span class="n">z_min</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span> <span class="o">=</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">MaxDegreeOfFreedom</span><span class="p">,</span> <span class="n">yaw_mode</span> <span class="o">=</span> <span class="n">YawMode</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Read current RC state and use it to control the vehicles.</span>
+
+<span class="sd">        Parameters sets up the constraints on velocity and minimum altitude while flying. If RC state is detected to violate these constraints</span>
+<span class="sd">        then that RC state would be ignored.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vx_max (float): max velocity allowed in x direction</span>
+<span class="sd">            vy_max (float): max velocity allowed in y direction</span>
+<span class="sd">            vz_max (float): max velocity allowed in z direction</span>
+<span class="sd">            z_min (float): min z allowed for vehicle position</span>
+<span class="sd">            duration (float): after this duration vehicle would switch back to non-manual mode</span>
+<span class="sd">            drivetrain (DrivetrainType): when ForwardOnly, vehicle rotates itself so that its front is always facing the direction of travel. If MaxDegreeOfFreedom then it doesn&#39;t do that (crab-like movement)</span>
+<span class="sd">            yaw_mode (YawMode): Specifies if vehicle should face at given angle (is_rate=False) or should be rotating around its axis at given rate (is_rate=True)</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByManual&#39;</span><span class="p">,</span> <span class="n">vx_max</span><span class="p">,</span> <span class="n">vy_max</span><span class="p">,</span> <span class="n">z_min</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.rotateToYawAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.rotateToYawAsync">[docs]</a>    <span class="k">def</span> <span class="nf">rotateToYawAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="mf">3e+38</span><span class="p">,</span> <span class="n">margin</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;rotateToYaw&#39;</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">,</span> <span class="n">margin</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.rotateByYawRateAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.rotateByYawRateAsync">[docs]</a>    <span class="k">def</span> <span class="nf">rotateByYawRateAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yaw_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;rotateByYawRate&#39;</span><span class="p">,</span> <span class="n">yaw_rate</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.hoverAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.hoverAsync">[docs]</a>    <span class="k">def</span> <span class="nf">hoverAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByRC"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByRC">[docs]</a>    <span class="k">def</span> <span class="nf">moveByRC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rcdata</span> <span class="o">=</span> <span class="n">RCData</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;moveByRC&#39;</span><span class="p">,</span> <span class="n">rcdata</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+    <span class="c1"># low-level control API</span>
+<div class="viewcode-block" id="MultirotorClient.moveByMotorPWMsAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByMotorPWMsAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByMotorPWMsAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">front_right_pwm</span><span class="p">,</span> <span class="n">rear_left_pwm</span><span class="p">,</span> <span class="n">front_left_pwm</span><span class="p">,</span> <span class="n">rear_right_pwm</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Directly control the motors using PWM values</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            front_right_pwm (float): PWM value for the front right motor (between 0.0 to 1.0)</span>
+<span class="sd">            rear_left_pwm (float): PWM value for the rear left motor (between 0.0 to 1.0)</span>
+<span class="sd">            front_left_pwm (float): PWM value for the front left motor (between 0.0 to 1.0)</span>
+<span class="sd">            rear_right_pwm (float): PWM value for the rear right motor (between 0.0 to 1.0)</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByMotorPWMs&#39;</span><span class="p">,</span> <span class="n">front_right_pwm</span><span class="p">,</span> <span class="n">rear_left_pwm</span><span class="p">,</span> <span class="n">front_left_pwm</span><span class="p">,</span> <span class="n">rear_right_pwm</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByRollPitchYawZAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByRollPitchYawZAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByRollPitchYawZAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - z is given in local NED frame of the vehicle.</span>
+<span class="sd">        - Roll angle, pitch angle, and yaw angle set points are given in **radians**, in the body frame.</span>
+<span class="sd">        - The body frame follows the Front Left Up (FLU) convention, and right-handedness.</span>
+
+<span class="sd">        - Frame Convention:</span>
+<span class="sd">            - X axis is along the **Front** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **roll** angle.</span>
+<span class="sd">            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Y axis is along the **Left** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **pitch** angle.</span>
+<span class="sd">            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Z axis is along the **Up** direction.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **yaw** angle.</span>
+<span class="sd">            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            roll (float): Desired roll angle, in radians.</span>
+<span class="sd">            pitch (float): Desired pitch angle, in radians.</span>
+<span class="sd">            yaw (float): Desired yaw angle, in radians.</span>
+<span class="sd">            z (float): Desired Z value (in local NED frame of the vehicle)</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByRollPitchYawZ&#39;</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="o">-</span><span class="n">pitch</span><span class="p">,</span> <span class="o">-</span><span class="n">yaw</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByRollPitchYawThrottleAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByRollPitchYawThrottleAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByRollPitchYawThrottleAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Desired throttle is between 0.0 to 1.0</span>
+<span class="sd">        - Roll angle, pitch angle, and yaw angle are given in **radians**, in the body frame.</span>
+<span class="sd">        - The body frame follows the Front Left Up (FLU) convention, and right-handedness.</span>
+
+<span class="sd">        - Frame Convention:</span>
+<span class="sd">            - X axis is along the **Front** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **roll** angle.</span>
+<span class="sd">            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Y axis is along the **Left** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **pitch** angle.</span>
+<span class="sd">            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Z axis is along the **Up** direction.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **yaw** angle.</span>
+<span class="sd">            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            roll (float): Desired roll angle, in radians.</span>
+<span class="sd">            pitch (float): Desired pitch angle, in radians.</span>
+<span class="sd">            yaw (float): Desired yaw angle, in radians.</span>
+<span class="sd">            throttle (float): Desired throttle (between 0.0 to 1.0)</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByRollPitchYawThrottle&#39;</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="o">-</span><span class="n">pitch</span><span class="p">,</span> <span class="o">-</span><span class="n">yaw</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByRollPitchYawrateThrottleAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByRollPitchYawrateThrottleAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByRollPitchYawrateThrottleAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw_rate</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Desired throttle is between 0.0 to 1.0</span>
+<span class="sd">        - Roll angle, pitch angle, and yaw rate set points are given in **radians**, in the body frame.</span>
+<span class="sd">        - The body frame follows the Front Left Up (FLU) convention, and right-handedness.</span>
+
+<span class="sd">        - Frame Convention:</span>
+<span class="sd">            - X axis is along the **Front** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **roll** angle.</span>
+<span class="sd">            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Y axis is along the **Left** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **pitch** angle.</span>
+<span class="sd">            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Z axis is along the **Up** direction.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **yaw** angle.</span>
+<span class="sd">            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            roll (float): Desired roll angle, in radians.</span>
+<span class="sd">            pitch (float): Desired pitch angle, in radians.</span>
+<span class="sd">            yaw_rate (float): Desired yaw rate, in radian per second.</span>
+<span class="sd">            throttle (float): Desired throttle (between 0.0 to 1.0)</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByRollPitchYawrateThrottle&#39;</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="o">-</span><span class="n">pitch</span><span class="p">,</span> <span class="o">-</span><span class="n">yaw_rate</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByRollPitchYawrateZAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByRollPitchYawrateZAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByRollPitchYawrateZAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw_rate</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - z is given in local NED frame of the vehicle.</span>
+<span class="sd">        - Roll angle, pitch angle, and yaw rate set points are given in **radians**, in the body frame.</span>
+<span class="sd">        - The body frame follows the Front Left Up (FLU) convention, and right-handedness.</span>
+
+<span class="sd">        - Frame Convention:</span>
+<span class="sd">            - X axis is along the **Front** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **roll** angle.</span>
+<span class="sd">            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Y axis is along the **Left** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **pitch** angle.</span>
+<span class="sd">            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Z axis is along the **Up** direction.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **yaw** angle.</span>
+<span class="sd">            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            roll (float): Desired roll angle, in radians.</span>
+<span class="sd">            pitch (float): Desired pitch angle, in radians.</span>
+<span class="sd">            yaw_rate (float): Desired yaw rate, in radian per second.</span>
+<span class="sd">            z (float): Desired Z value (in local NED frame of the vehicle)</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByRollPitchYawrateZ&#39;</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="o">-</span><span class="n">pitch</span><span class="p">,</span> <span class="o">-</span><span class="n">yaw_rate</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByAngleRatesZAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByAngleRatesZAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByAngleRatesZAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll_rate</span><span class="p">,</span> <span class="n">pitch_rate</span><span class="p">,</span> <span class="n">yaw_rate</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - z is given in local NED frame of the vehicle.</span>
+<span class="sd">        - Roll rate, pitch rate, and yaw rate set points are given in **radians**, in the body frame.</span>
+<span class="sd">        - The body frame follows the Front Left Up (FLU) convention, and right-handedness.</span>
+
+<span class="sd">        - Frame Convention:</span>
+<span class="sd">            - X axis is along the **Front** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **roll** angle.</span>
+<span class="sd">            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Y axis is along the **Left** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **pitch** angle.</span>
+<span class="sd">            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Z axis is along the **Up** direction.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **yaw** angle.</span>
+<span class="sd">            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            roll_rate (float): Desired roll rate, in radians / second</span>
+<span class="sd">            pitch_rate (float): Desired pitch rate, in radians / second</span>
+<span class="sd">            yaw_rate (float): Desired yaw rate, in radians / second</span>
+<span class="sd">            z (float): Desired Z value (in local NED frame of the vehicle)</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByAngleRatesZ&#39;</span><span class="p">,</span> <span class="n">roll_rate</span><span class="p">,</span> <span class="o">-</span><span class="n">pitch_rate</span><span class="p">,</span> <span class="o">-</span><span class="n">yaw_rate</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.moveByAngleRatesThrottleAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByAngleRatesThrottleAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByAngleRatesThrottleAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll_rate</span><span class="p">,</span> <span class="n">pitch_rate</span><span class="p">,</span> <span class="n">yaw_rate</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Desired throttle is between 0.0 to 1.0</span>
+<span class="sd">        - Roll rate, pitch rate, and yaw rate set points are given in **radians**, in the body frame.</span>
+<span class="sd">        - The body frame follows the Front Left Up (FLU) convention, and right-handedness.</span>
+
+<span class="sd">        - Frame Convention:</span>
+<span class="sd">            - X axis is along the **Front** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **roll** angle.</span>
+<span class="sd">            | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Y axis is along the **Left** direction of the quadrotor.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **pitch** angle.</span>
+<span class="sd">            | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.</span>
+
+<span class="sd">            - Z axis is along the **Up** direction.</span>
+
+<span class="sd">            | Clockwise rotation about this axis defines a positive **yaw** angle.</span>
+<span class="sd">            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            roll_rate (float): Desired roll rate, in radians / second</span>
+<span class="sd">            pitch_rate (float): Desired pitch rate, in radians / second</span>
+<span class="sd">            yaw_rate (float): Desired yaw rate, in radians / second</span>
+<span class="sd">            throttle (float): Desired throttle (between 0.0 to 1.0)</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByAngleRatesThrottle&#39;</span><span class="p">,</span> <span class="n">roll_rate</span><span class="p">,</span> <span class="o">-</span><span class="n">pitch_rate</span><span class="p">,</span> <span class="o">-</span><span class="n">yaw_rate</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.setAngleRateControllerGains"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.setAngleRateControllerGains">[docs]</a>    <span class="k">def</span> <span class="nf">setAngleRateControllerGains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle_rate_gains</span><span class="o">=</span><span class="n">AngleRateControllerGains</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Modifying these gains will have an affect on *ALL* move*() APIs.</span>
+<span class="sd">            This is because any velocity setpoint is converted to an angle level setpoint which is tracked with an angle level controllers.</span>
+<span class="sd">            That angle level setpoint is itself tracked with and angle rate controller.</span>
+<span class="sd">        - This function should only be called if the default angle rate control PID gains need to be modified.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            angle_rate_gains (AngleRateControllerGains):</span>
+<span class="sd">                - Correspond to the roll, pitch, yaw axes, defined in the body frame.</span>
+<span class="sd">                - Pass AngleRateControllerGains() to reset gains to default recommended values.</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;setAngleRateControllerGains&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">angle_rate_gains</span><span class="o">.</span><span class="n">to_lists</span><span class="p">()</span><span class="o">+</span><span class="p">(</span><span class="n">vehicle_name</span><span class="p">,)))</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.setAngleLevelControllerGains"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.setAngleLevelControllerGains">[docs]</a>    <span class="k">def</span> <span class="nf">setAngleLevelControllerGains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle_level_gains</span><span class="o">=</span><span class="n">AngleLevelControllerGains</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Sets angle level controller gains (used by any API setting angle references - for ex: moveByRollPitchYawZAsync(), moveByRollPitchYawThrottleAsync(), etc)</span>
+<span class="sd">        - Modifying these gains will also affect the behaviour of moveByVelocityAsync() API.</span>
+<span class="sd">            This is because the AirSim flight controller will track velocity setpoints by converting them to angle set points.</span>
+<span class="sd">        - This function should only be called if the default angle level control PID gains need to be modified.</span>
+<span class="sd">        - Passing AngleLevelControllerGains() sets gains to default airsim values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            angle_level_gains (AngleLevelControllerGains):</span>
+<span class="sd">                - Correspond to the roll, pitch, yaw axes, defined in the body frame.</span>
+<span class="sd">                - Pass AngleLevelControllerGains() to reset gains to default recommended values.</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;setAngleLevelControllerGains&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">angle_level_gains</span><span class="o">.</span><span class="n">to_lists</span><span class="p">()</span><span class="o">+</span><span class="p">(</span><span class="n">vehicle_name</span><span class="p">,)))</span></div>
+
+<div class="viewcode-block" id="MultirotorClient.setVelocityControllerGains"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.setVelocityControllerGains">[docs]</a>    <span class="k">def</span> <span class="nf">setVelocityControllerGains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity_gains</span><span class="o">=</span><span class="n">VelocityControllerGains</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        - Sets velocity controller gains for moveByVelocityAsync().</span>
+<span class="sd">        - This function should only be called if the default velocity control PID gains need to be modified.</span>
+<span class="sd">        - Passing VelocityControllerGains() sets gains to default airsim values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            velocity_gains (VelocityControllerGains):</span>
+<span class="sd">                - Correspond to the world X, Y, Z axes.</span>
+<span class="sd">                - Pass VelocityControllerGains() to reset gains to default recommended values.</span>
+<span class="sd">                - Modifying velocity controller gains will have an affect on the behaviour of moveOnSplineAsync() and moveOnSplineVelConstraintsAsync(), as they both use velocity control to track the trajectory.</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;setVelocityControllerGains&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">velocity_gains</span><span class="o">.</span><span class="n">to_lists</span><span class="p">()</span><span class="o">+</span><span class="p">(</span><span class="n">vehicle_name</span><span class="p">,)))</span></div>
+
+
+<div class="viewcode-block" id="MultirotorClient.setPositionControllerGains"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.setPositionControllerGains">[docs]</a>    <span class="k">def</span> <span class="nf">setPositionControllerGains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_gains</span><span class="o">=</span><span class="n">PositionControllerGains</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets position controller gains for moveByPositionAsync.</span>
+<span class="sd">        This function should only be called if the default position control PID gains need to be modified.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            position_gains (PositionControllerGains):</span>
+<span class="sd">                - Correspond to the X, Y, Z axes.</span>
+<span class="sd">                - Pass PositionControllerGains() to reset gains to default recommended values.</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;setPositionControllerGains&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">position_gains</span><span class="o">.</span><span class="n">to_lists</span><span class="p">()</span><span class="o">+</span><span class="p">(</span><span class="n">vehicle_name</span><span class="p">,)))</span></div>
+
+    <span class="c1"># query vehicle state</span>
+<div class="viewcode-block" id="MultirotorClient.getMultirotorState"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.getMultirotorState">[docs]</a>    <span class="k">def</span> <span class="nf">getMultirotorState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Vehicle to get the state of</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MultirotorState:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MultirotorState</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getMultirotorState&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+    <span class="n">getMultirotorState</span><span class="o">.</span><span class="vm">__annotations__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;return&#39;</span><span class="p">:</span> <span class="n">MultirotorState</span><span class="p">}</span></div>
+
+
+<span class="c1"># -----------------------------------  Car APIs ---------------------------------------------</span>
+<div class="viewcode-block" id="CarClient"><a class="viewcode-back" href="../../index.html#airsim.client.CarClient">[docs]</a><span class="k">class</span> <span class="nc">CarClient</span><span class="p">(</span><span class="n">VehicleClient</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="mi">41451</span><span class="p">,</span> <span class="n">timeout_value</span> <span class="o">=</span> <span class="mi">3600</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CarClient</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">timeout_value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CarClient.setCarControls"><a class="viewcode-back" href="../../index.html#airsim.client.CarClient.setCarControls">[docs]</a>    <span class="k">def</span> <span class="nf">setCarControls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controls</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Control the car using throttle, steering, brake, etc.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            controls (CarControls): Struct containing control values</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle to be controlled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;setCarControls&#39;</span><span class="p">,</span> <span class="n">controls</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CarClient.getCarState"><a class="viewcode-back" href="../../index.html#airsim.client.CarClient.getCarState">[docs]</a>    <span class="k">def</span> <span class="nf">getCarState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CarState:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">state_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getCarState&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CarState</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">state_raw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CarClient.getCarControls"><a class="viewcode-back" href="../../index.html#airsim.client.CarClient.getCarControls">[docs]</a>    <span class="k">def</span> <span class="nf">getCarControls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Name of vehicle</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CarControls:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">controls_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getCarControls&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CarControls</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">controls_raw</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Shital Shah, Ratnesh Madaan, Sai Vemprala, Nicholas Gyde
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -291,14 +291,12 @@
 <p>Press F1 key to see keyboard shortcuts for turning on/off any or all views. You can also select various view modes there, such as "Fly with Me" mode, FPV mode and "Ground View" mode.</p>
 <h2 id="configuring-sub-windows">Configuring Sub-Windows<a class="headerlink" href="#configuring-sub-windows" title="Permanent link">#</a></h2>
 <p>Now you can select what is shown by each of above sub windows. For instance, you can chose to show surface normals in first window (instead of depth) and disparity in second window (instead of segmentation). Below is the settings value you can use in <a href="../settings/">settings.json</a>:</p>
-<div class="highlight"><pre><span></span><code>{
-  &quot;SubWindows&quot;: [
-    {&quot;Index&quot;: 1, &quot;ImageType&quot;: 5},
-    {&quot;Index&quot;: 2, &quot;ImageType&quot;: 3}
+<pre class="highlight"><code>{
+  "SubWindows": [
+    {"Index": 1, "ImageType": 5},
+    {"Index": 2, "ImageType": 3}
   ]
-}
-</code></pre></div>
-
+}</code></pre>
 <h2 id="performance-impact">Performance Impact<a class="headerlink" href="#performance-impact" title="Permanent link">#</a></h2>
 <p><em>Note</em>: This section is outdated and has not been updated for new performance enhancement changes.</p>
 <p>Now rendering these views does impact the FPS performance of the game, since this is additional work for the GPU.  The following shows the impact on FPS when you open these views.</p>

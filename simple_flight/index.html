@@ -296,7 +296,7 @@
 <p>The advantage of using simple_flight is zero additional setup you need to do and it "just works". Also, simple_flight uses steppable clock which means you can pause the simulation and things are not at mercy of high variance low precision clock that operating system provides. Further, simple_flight is simple, cross platform and 100% header-only dependency-free C++ code which means you can literally step through from simulator to inside flight controller code within same code base!</p>
 <h2 id="design">Design<a class="headerlink" href="#design" title="Permanent link">#</a></h2>
 <p>Normally flight controllers are designed to run on actual hardware on vehicles and their support for running in simulator varies widely. They are often fairly difficult to configure for non-expert users and typically have complex build usually lacking cross platform support. All these problems have played significant part in design of simple_flight.</p>
-<p>simple_flight is designed from ground up as library with clean interface that can work onboard the vehicle as well as simulator. The core principle is that flight controller has no way to specify special simulation mode and there for it has no way to know if it is running under simulation or real vehicle. We thus view flight controller simply as collection of algorithms packaged in a library. Another key emphasis is to develop this code as dependency free header-only pure standard C++11 code. This means there is no special build required to compile simple_flight. You just copy its source code to any project you wish and it just works.</p>
+<p>simple_flight is designed from ground up as library with clean interface that can work onboard the vehicle as well as simulator. The core principle is that flight controller has no way to specify special simulation mode and therefore it has no way to know if it is running under simulation or real vehicle. We thus view flight controller simply as collection of algorithms packaged in a library. Another key emphasis is to develop this code as dependency free header-only pure standard C++11 code. This means there is no special build required to compile simple_flight. You just copy its source code to any project you wish and it just works.</p>
 <h2 id="control">Control<a class="headerlink" href="#control" title="Permanent link">#</a></h2>
 <p>simple_flight can control vehicle by taking in desired input as angle rate, angle level, velocity or position. Each axis of control can be specified with one of these modes. Internally simple_flight uses cascade of PID controllers to finally generate actuator signals. This means position PID drives velocity PID which drives angle level PID which finally drives angle rate PID.</p>
 <h2 id="state-estimation">State Estimation<a class="headerlink" href="#state-estimation" title="Permanent link">#</a></h2>
@@ -305,40 +305,33 @@
 <p>Currently we have implemented simple_flight interfaces for simulated board. We plan to implement it for Pixhawk V2 board and possibly Naze32 board. We expect all our code to remain unchanged and the implementation would mainly involve adding drivers for various sensors, handling ISRs and managing other board specific details. If you have experience this area than we encourage you to engage with us and contribute!</p>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">#</a></h2>
 <p>To have AirSim use simple_flight, you can specify it in <a href="../settings/">settings.json</a> as shown below. Note that this is default so you don't have to do it explicitly.</p>
-<div class="highlight"><pre><span></span><code>&quot;Vehicles&quot;: {
-    &quot;SimpleFlight&quot;: {
-      &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
+<pre class="highlight"><code>"Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
     }
-}
-</code></pre></div>
-
+}</code></pre>
 <p>By default, vehicle using simple_flight is already armed which is why you would see propellers spinning. However if you don't want that than set <code>DefaultVehicleState</code> to <code>Inactive</code> like this:</p>
-<div class="highlight"><pre><span></span><code>&quot;Vehicles&quot;: {
-    &quot;SimpleFlight&quot;: {
-      &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
-      &quot;DefaultVehicleState&quot;: &quot;Inactive&quot;
+<pre class="highlight"><code>"Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
+      "DefaultVehicleState": "Inactive"
     }
-}
-</code></pre></div>
-
+}</code></pre>
 <p>In this case, you will need to either manually arm using RC sticks in down inward position or using APIs.</p>
 <p>For safety reasons, flight controllers would disallow API control unless human operator has consented using a switch on RC. Also, when RC control is lost, vehicle should disable API control and enter hover mode for safety reasons. To simplify things a bit, simple_flight enables API control without human consent using RC and even when RC is not detected by default however you can change this using following setting:</p>
-<div class="highlight"><pre><span></span><code>&quot;Vehicles&quot;: {
-    &quot;SimpleFlight&quot;: {
-      &quot;VehicleType&quot;: &quot;SimpleFlight&quot;,
+<pre class="highlight"><code>"Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
 
-      &quot;AllowAPIAlways&quot;: true,
-      &quot;RC&quot;: {
-        &quot;RemoteControlID&quot;: 0,      
-        &quot;AllowAPIWhenDisconnected&quot;: true
+      "AllowAPIAlways": true,
+      "RC": {
+        "RemoteControlID": 0,      
+        "AllowAPIWhenDisconnected": true
       }
     }
-}
-</code></pre></div>
-
+}</code></pre>
 <p>Finally, simple_flight uses steppable clock by default which means clock advances when simulator tells it to advance (unlike wall clock which advances strictly according to passage of time). This means clock can be paused, for example, if code hits the break point and there is zero variance in clock (clock APIs provides by operating system might have significant variance unless its "real time" OS). If you want simple_flight to use wall clock instead than use following settings:</p>
-<div class="highlight"><pre><span></span><code>  &quot;ClockType&quot;: &quot;ScalableClock&quot;
-</code></pre></div>
+<pre class="highlight"><code>  "ClockType": "ScalableClock"</code></pre>
               
             </div>
           </div>
