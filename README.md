@@ -1,4 +1,3 @@
-# Welcome to AirSim
 ## New announcement
 We are pleased to announce the addition of two new members to the AirSim team. They are Jonathan Marino and David Zimmermann.
 
