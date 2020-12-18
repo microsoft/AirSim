@@ -1,4 +1,4 @@
-## New announcement
+## Last announcement
 We are pleased to announce the addition of two new members to the AirSim team. They are Jonathan Marino and David Zimmermann.
 
 Jonathan and David will help the community continue to grow through AirSim, support the current version, and clarify project scope.
