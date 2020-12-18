@@ -27,10 +27,8 @@ int main()
     try {
         client.confirmConnection();
 
-        std::cout << "Press Enter to get FPV image" << std::endl;
-        std::cin.get();
-
-        vector<ImageRequest> request{ ImageRequest("0", ImageType::Scene), ImageRequest("1", ImageType::DepthPlanner, true) };
+        std::cout << "Press Enter to get FPV image" << std::endl; std::cin.get();
+        vector<ImageRequest> request = { ImageRequest("0", ImageType::Scene), ImageRequest("1", ImageType::DepthPlanar, true) };
         const vector<ImageResponse>& response = client.simGetImages(request);
         std::cout << "# of images received: " << response.size() << std::endl;
 

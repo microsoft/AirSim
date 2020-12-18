@@ -93,7 +93,7 @@ public:
 
         do {
             std::vector<ImageRequest> request = {
-                ImageRequest("1", ImageType::DepthPlanner, true) /*,
+                ImageRequest("1", ImageType::DepthPlanar, true) /*,
                                                                  ImageRequest("1", ImageType::Scene),
                                                                  ImageRequest("1", ImageType::DisparityNormalized, true) */
             };

@@ -22,7 +22,7 @@ class MsgpackMixin:
 
 class ImageType:
     Scene = 0
-    DepthPlanner = 1
+    DepthPlanar = 1
     DepthPerspective = 2
     DepthVis = 3
     DisparityNormalized = 4

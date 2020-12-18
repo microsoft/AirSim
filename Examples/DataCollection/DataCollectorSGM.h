@@ -56,7 +56,7 @@ public:
         std::vector<ImageRequest> request = { 
             ImageRequest("front_left", ImageType::Scene, false, false), 
             ImageRequest("front_right", ImageType::Scene, false, false),
-            ImageRequest("front_left", ImageType::DepthPlanner, true),
+            ImageRequest("front_left", ImageType::DepthPlanar, true),
             ImageRequest("front_left", ImageType::DisparityNormalized, true)
         };
         const std::vector<ImageResponse>& response_init = client.simGetImages(request);
