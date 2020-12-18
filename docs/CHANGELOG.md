@@ -182,7 +182,7 @@ Below is summarized list of important changes. This does not include minor/less 
 * No need to build the code. Just download [binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
 * The [reinforcement learning example](reinforcement_learning.md) with AirSim
 * New built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
-* AirSim now also generates [depth as well as disparity images](image_apis.md) that is in camera plan. 
+* AirSim now also generates [depth as well as disparity images](image_apis.md) that are in camera plane. 
 * We also have official Linux build now!
 
 ## Sep 2017
