@@ -57,6 +57,7 @@ public:
     void moveByRC(const RCData& rc_data, const std::string& vehicle_name = "");
 
     MultirotorState getMultirotorState(const std::string& vehicle_name = "");
+    RotorStates getRotorStates(const std::string& vehicle_name = "");
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z, const std::string& vehicle_name = "");

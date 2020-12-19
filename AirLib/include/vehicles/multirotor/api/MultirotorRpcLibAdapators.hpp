@@ -39,6 +39,27 @@ public:
         }
     };
 
+    struct RotorStates {
+        RotorVector rotors;
+        uint64_t timestamp;
+
+        MSGPACK_DEFINE_MAP(rotors, timestamp);
+
+        RotorStates()
+        {}
+
+        RotorStates(const msr::airlib::RotorStates& s)
+        {
+            rotors = s.rotors;
+            timestamp = s.timestamp;
+        }
+
+        msr::airlib::RotorStates to() const
+        {
+            return msr::airlib::RotorStates(rotors.to(), timestamp);
+        }
+    };
+
     struct MultirotorState {
         CollisionInfo collision;
         KinematicsState kinematics_estimated;

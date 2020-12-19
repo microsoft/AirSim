@@ -217,6 +217,8 @@ class Pose(MsgpackMixin):
     def containsNan(self):
         return (self.position.containsNan() or self.orientation.containsNan())
 
+class RotorVector(MsgpackMixin):
+    parameters = []
 
 class CollisionInfo(MsgpackMixin):
     has_collided = False
@@ -358,6 +360,10 @@ class MultirotorState(MsgpackMixin):
     ready = False
     ready_message = ""
     can_arm = False
+
+class RotorStates(MsgpackMixin):
+    timestamp = np.uint64(0)
+    rotors = RotorVector()
 
 class ProjectionMatrix(MsgpackMixin):
     matrix = []
