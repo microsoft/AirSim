@@ -41,3 +41,15 @@ The voxel grids are stored in the binvox format which can then be converted by t
 
 ##### Blocks voxel grid converted to Octomap format (visualized in rviz):
 ![image](images/octomap.png)
+
+The Blocks voxel grid can be constructed through the following example script:
+
+```
+import airsim
+c = airsim.VehicleClient()
+center = airsim.Vector3r(0, 0, 0)
+output_path = "~/map.binvox"
+c.simCreateVoxelGrid(center, 100, 100, 100, 0.5, output_path)
+```
+
+And visualized through `viewvox ~/map.binvox`.

@@ -1,6 +1,9 @@
 AirSim provides a Python-based event camera simulator, aimed at performance and ability to run in real-time along with the sim.
 
+#### Event cameras
 An event camera is a special vision sensor that measures changes in logarithmic brightness and only reports 'events', i.e., a set of bytes every time the absolute change exceeds a certain threshold. The event camera only reports the timestamp of the measurement, pixel location and the polarity: which is a +1/-1 based on whether the logarithmic brightness increased or decreased. Most event cameras have a temporal resolution of the order of microseconds, making them significantly faster than RGB sensors, and also demonstrate a high dynamic range and low motion blur. More details about event cameras can be found in [this tutorial from RPG-UZH](http://rpg.ifi.uzh.ch/docs/scaramuzza/Tutorial_on_Event_Cameras_Scaramuzza.pdf)
+
+#### AirSim event simulator
 
 The AirSim event simulator uses two consecutive RGB images (converted to grayscale), and computes "past events" that would have occurred during the transition based on the change in log luminance between the images. These events are reported as a stream of bytes, following this format:
 
@@ -10,6 +13,7 @@ x and y are the pixel locations of the event firing, timestamp is the global tim
 
 ![image](images/event_sim.png)
 
+#### Usage
 An example script to run the event simulator alongside AirSim is located at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/test_event_sim.py. The implementation of the actual event simulation, written in Python and numba, is at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/event_simulator.py. The event simulator is initialized as follows, with the arguments controlling the resolution of the camera.
 
 ```
@@ -26,6 +30,15 @@ The callback returns an event image as a one dimensional array of +1/-1 values, 
 
 Through the callback, the event sim computes the difference between the past and the current image, and computes a stream of events which is then returned as a numpy array. This can then be appended to a file.
 
+There are quite a few parameters that can be tuned to achieve a level of visual fidelity/performance of the event simulation. The main factors to tune are the following:
+
+1. The resolution of the camera.
+2. The log luminance threshold `TOL` that determines whether or not a detected change counts as an event.
+
+Note: There is also currently a max limit on the number of events generated per pair of images, which can also be tuned.
+
+
+#### Algorithm
 The working of the event simulator loosely follows this set of operations:
 1. Take the difference between the log intensities of the current and previous frames. 
 2. Iterating over all pixels, calculate the polarity for each each pixel based on a threshold of change in log intensity. 
@@ -34,12 +47,4 @@ The working of the event simulator loosely follows this set of operations:
    
     $ t = t_{prev} + \frac{\Delta T}{N_e (u)} $
     
-5. Generate the output bytestream and sort by timestamp.
-
-
-There are quite a few parameters that can be tuned to achieve a level of visual fidelity/performance of the event simulation. The main factors to tune are the following:
-
-1. The resolution of the camera.
-2. The log luminance threshold `TOL` that determines whether or not a detected change counts as an event.
-
-Note: There is also currently a max limit on the number of events generated per pair of images, which can also be tuned.
+5. Generate the output bytestream by simulating events at every pixel and sort by timestamp.
