@@ -37,4 +37,7 @@ The occupancy of the map is calculated iteratively over all discretized cells, w
 The voxel grids are stored in the binvox format which can then be converted by the user into an octomap .bt or any other relevant, desired format. Subsequently, these voxel grids/octomaps can be used within mapping/planning. [viewvox](https://www.patrickmin.com/viewvox/) is a nifty little utility to then visualize the created binvox file. Similarly, `binvox2bt` can convert the binvox to an octomap file.
 
 ##### Example voxel grid in Blocks:
-![image](https://user-images.githubusercontent.com/2274262/101970694-c7755280-3be0-11eb-886c-74f05c839478.png)
+![image](images/voxel_grid.png)
+
+##### Blocks voxel grid converted to Octomap format (visualized in rviz):
+![image](images/octomap.png)
