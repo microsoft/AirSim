@@ -93,10 +93,10 @@ unless the home location is set to the same coordinates defined in  AVehiclePawn
 You can also run the following in the SITL PX4 console window to check
 that these values are set correctly.
 
-````
+```
 param show LPE_LAT
 param show LPE_LON
-````
+```
 
 ## Smooth Offboard Transitions
 
@@ -108,30 +108,30 @@ Notice the above setting is provided in the `params` section of the `settings.js
 This tells the drone automatically hover after each offboard control command finishes (the default setting is to land).  Hovering is a smoother transition between multiple offboard commands.  You can check this setting
 by running the following PX4 console command:
 
-````
+```
 param show COM_OBL_ACT
-````
+```
 
 ## Check the Home Position
 
 If you are using DroneShell to execute commands (arm, takeoff, etc) then you should wait until the Home position is set. You will see the PX4 SITL console output this message:
 
-````
+```
 INFO  [commander] home: 47.6414680, -122.1401672, 119.99
 INFO  [tone_alarm] home_set
-````
+```
 
 Now DroneShell 'pos' command should report this position and the commands should be accepted by PX4.  If you attempt to takeoff without a home position you will see the message:
 
-````
+```
 WARN  [commander] Takeoff denied, disarm and re-try
-````
+```
 
 After home position is set check the local position reported by 'pos' command :
 
-````
+```
 Local position: x=-0.0326988, y=0.00656854, z=5.48506
-````
+```
 
 If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL and simulation should fix that problem.
 
@@ -145,10 +145,10 @@ Notice the above setting is provided in the `params` section of the `settings.js
 
 This is required if you plan to fly the SITL mode PX4 with no remote control, just using python scripts, for example.  These parameters stop the PX4 from triggering "failsafe mode on" every time a move command is finished.  You can use the following PX4 command to check these values are set correctly:
 
-````
+```
 param show NAV_RCL_ACT
 param show NAV_DLL_ACT
-````
+```
 
 NOTE: Do `NOT` do this on a real drone as it is too dangerous to fly without these failsafe measures.
 
