@@ -311,11 +311,13 @@ but we've copied the relevant subset of those instructions here for your conveni
 the PX4 firmware, just follow the BashOnWindows instructions at the bottom of this page).</p>
 <h2 id="build-sitl-version">Build SITL version<a class="headerlink" href="#build-sitl-version" title="Permanent link">#</a></h2>
 <p>Now you can make the SITL version that runs in posix, from the Firmware folder you created above:
-<pre class="highlight"><code>make posix_sitl_ekf2</code></pre></p>
-<p>Note: this build system is quite special, it knows how to update git submodules (and there's a lot of them),
-then it runs cmake (if necessary), then it runs the build itself.  So in a way the root Makefile is a meta-meta makefile :-) </p>
-<p>It shouldn't take long, about 2 minutes.  If all succeeds, the last line will link the <code>px4</code> app, which you can then run using the following:</p>
-<pre class="highlight"><code>make posix_sitl_ekf2  none_iris</code></pre>
+<pre class="highlight"><code>make px4_sitl_default none_iris</code></pre></p>
+<p>Note: this build system is quite special, it knows how to update git submodules (and there's a lot
+of them), then it runs cmake (if necessary), then it runs the build itself. So in a way the root
+Makefile is a meta-meta makefile :-)</p>
+<p>It shouldn't take long, about 2 minutes. If all succeeds, the last line will link the <code>px4</code> app,
+which you can then run using the following:</p>
+<pre class="highlight"><code>make px4_sitl_default none_iris</code></pre>
 <p>And you should see output that looks like this:</p>
 <pre class="highlight"><code>creating new parameters file
 creating new dataman file
@@ -341,21 +343,22 @@ INFO  [dataman] Unkown restart, data manager file 'rootfs/fs/microsd/dataman' si
   CAL_ACC1_ID: curr: 0 -&gt; new: 1310728
   CAL_MAG0_ID: curr: 0 -&gt; new: 196616
 </code></pre>
-<p>so this is good, first run sets up the px4 parameters for SITL mode.  Second run has less output.
-This app is also an interactive console where you can type commands.  Type 'help' to see what they are
-and just type ctrl-C to kill it.  You can do that and restart it any time, that's a great way to reset
-any wonky state if you need to (it's equivalent to a Pixhawk hardware reboot).</p>
+<p>so this is good, first run sets up the px4 parameters for SITL mode. Second run has less output.
+This app is also an interactive console where you can type commands. Type 'help' to see what they
+are and just type ctrl-C to kill it. You can do that and restart it any time, that's a great way to
+reset any wonky state if you need to (it's equivalent to a Pixhawk hardware reboot).</p>
 <h2 id="arm-embedded-tools">ARM embedded tools<a class="headerlink" href="#arm-embedded-tools" title="Permanent link">#</a></h2>
-<p>If you plan to build the PX4 firmware for real Pixhawk hardware then you will need the gcc cross-compiler
-for ARM Cortex-M4 chipset.  You can get this compiler by PX4 DevGuide, specifically this is in their <code>ubuntu_sim_nuttx.sh</code> setup script.</p>
-<p>After following those setup instructions you can verify the install by entering this command <code>arm-none-eabi-gcc --version</code>.  You should see the following output:
+<p>If you plan to build the PX4 firmware for real Pixhawk hardware then you will need the gcc
+cross-compiler for ARM Cortex-M4 chipset. You can get this compiler by PX4 DevGuide, specifically
+this is in their <code>ubuntu_sim_nuttx.sh</code> setup script.</p>
+<p>After following those setup instructions you can verify the install by entering this command <code>arm-none-eabi-gcc --version</code>.  You should see the following output:</p>
 <pre class="highlight"><code>arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2017-q4-major) 7.2.1 20170904 (release) [ARM/embedded-7-branch revision 255204]
 Copyright (C) 2017 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</code></pre></p>
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</code></pre>
 <h2 id="build-px4-for-arm-hardware">Build PX4 for ARM hardware<a class="headerlink" href="#build-px4-for-arm-hardware" title="Permanent link">#</a></h2>
 <p>Now  you  can build the PX4 firmware for running on real pixhawk hardware:</p>
-<pre class="highlight"><code>make px4fmu-v2_default</code></pre>
+<pre class="highlight"><code>make px4_fmu-v4</code></pre>
 <p>This build will take a little longer because it is building a lot more including the NuttX real time OS,
 all the drivers for the sensors in the Pixhawk flight controller, and more.  It is also running the compiler
 in super size-squeezing mode so it can fit all that in a 1 megabyte ROM !!</p>
@@ -363,7 +366,7 @@ in super size-squeezing mode so it can fit all that in a 1 megabyte ROM !!</p>
 hardware with these brand new bits, so you don't need to use QGroundControl for that.</p>
 <h2 id="some-useful-parameters">Some Useful Parameters<a class="headerlink" href="#some-useful-parameters" title="Permanent link">#</a></h2>
 <p>PX4 has many customizable parameters (over 700 of them, in fact) and to get best results with AirSim we have
-found the following parameters are handy:
+found the following parameters are handy:</p>
 <pre class="highlight"><code>// be sure to enable the new position estimator module:
 param set SYS_MC_EST_GROUP 2
 
@@ -379,7 +382,7 @@ param COM_DISARM_LAND 60
 param NAV_RCL_ACT 0
 
 // enable new syslogger to get more information from PX4 logs
-param set SYS_LOGGER 1</code></pre></p>
+param set SYS_LOGGER 1</code></pre>
 <h2 id="using-bashonwindows">Using BashOnWindows<a class="headerlink" href="#using-bashonwindows" title="Permanent link">#</a></h2>
 <p>See <a href="https://dev.px4.io/en/setup/dev_env_windows_bash_on_win.html">Bash on Windows Toolchain</a>.</p>
               
