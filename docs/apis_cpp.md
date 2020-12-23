@@ -9,6 +9,7 @@ Fastest way to get started is to open AirSim.sln in Visual Studio 2019. You will
 * Include folders: `$(ProjectDir)..\AirLib\deps\rpclib\include;include;$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\AirLib\include`
 * Dependencies: `rpc.lib`
 * Lib folders: `$(ProjectDir)\..\AirLib\deps\MavLinkCom\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\deps\rpclib\lib\$(Platform)\$(Configuration);$(ProjectDir)\..\AirLib\lib\$(Platform)\$(Configuration)`
+* References: Reference AirLib and MavLinkCom to the project references. (Right click your project then go to `References`, `Add reference...`, and then select AirLib and MavLinkCom)
 
 ## Hello Car
 
