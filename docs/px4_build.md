@@ -3,16 +3,16 @@
 ## Source code
 
 Getting the PX4 source code is easy:
-````
+```
 git clone https://github.com/PX4/Firmware.git
 cd Firmware
-````
+```
 
 Oh, and if you don't have git yet just run this:
 
-````
+```
 sudo apt-get install git
-````
+```
 
 We are currently testing using the 1.6.0rc1 version, but the latest master branch should be ok too.
 Now to build it you will need the right tools.
@@ -28,22 +28,24 @@ the PX4 firmware, just follow the BashOnWindows instructions at the bottom of th
 ## Build SITL version
 
 Now you can make the SITL version that runs in posix, from the Firmware folder you created above:
-````
-make posix_sitl_ekf2
-````
+```
+make px4_sitl_default none_iris
+```
 
-Note: this build system is quite special, it knows how to update git submodules (and there's a lot of them),
-then it runs cmake (if necessary), then it runs the build itself.  So in a way the root Makefile is a meta-meta makefile :-) 
+Note: this build system is quite special, it knows how to update git submodules (and there's a lot
+of them), then it runs cmake (if necessary), then it runs the build itself. So in a way the root
+Makefile is a meta-meta makefile :-)
 
-It shouldn't take long, about 2 minutes.  If all succeeds, the last line will link the `px4` app, which you can then run using the following:
+It shouldn't take long, about 2 minutes. If all succeeds, the last line will link the `px4` app,
+which you can then run using the following:
 
-````
-make posix_sitl_ekf2  none_iris
-````
+```
+make px4_sitl_default none_iris
+```
 
 And you should see output that looks like this:
 
-````
+```
 creating new parameters file
 creating new dataman file
 
@@ -68,33 +70,35 @@ INFO  [dataman] Unkown restart, data manager file 'rootfs/fs/microsd/dataman' si
   CAL_ACC1_ID: curr: 0 -> new: 1310728
   CAL_MAG0_ID: curr: 0 -> new: 196616
 
-````
+```
 
-so this is good, first run sets up the px4 parameters for SITL mode.  Second run has less output.
-This app is also an interactive console where you can type commands.  Type 'help' to see what they are
-and just type ctrl-C to kill it.  You can do that and restart it any time, that's a great way to reset
-any wonky state if you need to (it's equivalent to a Pixhawk hardware reboot).
+so this is good, first run sets up the px4 parameters for SITL mode. Second run has less output.
+This app is also an interactive console where you can type commands. Type 'help' to see what they
+are and just type ctrl-C to kill it. You can do that and restart it any time, that's a great way to
+reset any wonky state if you need to (it's equivalent to a Pixhawk hardware reboot).
 
 ## ARM embedded tools
 
-If you plan to build the PX4 firmware for real Pixhawk hardware then you will need the gcc cross-compiler
-for ARM Cortex-M4 chipset.  You can get this compiler by PX4 DevGuide, specifically this is in their `ubuntu_sim_nuttx.sh` setup script.
+If you plan to build the PX4 firmware for real Pixhawk hardware then you will need the gcc
+cross-compiler for ARM Cortex-M4 chipset. You can get this compiler by PX4 DevGuide, specifically
+this is in their `ubuntu_sim_nuttx.sh` setup script.
 
 After following those setup instructions you can verify the install by entering this command `arm-none-eabi-gcc --version`.  You should see the following output:
-````
+
+```
 arm-none-eabi-gcc (GNU Tools for Arm Embedded Processors 7-2017-q4-major) 7.2.1 20170904 (release) [ARM/embedded-7-branch revision 255204]
 Copyright (C) 2017 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-````
+```
 
 ## Build PX4 for ARM hardware
 
 Now  you  can build the PX4 firmware for running on real pixhawk hardware:
 
-````
-make px4fmu-v2_default
-````
+```
+make px4_fmu-v4
+```
 
 This build will take a little longer because it is building a lot more including the NuttX real time OS,
 all the drivers for the sensors in the Pixhawk flight controller, and more.  It is also running the compiler
@@ -107,7 +111,8 @@ hardware with these brand new bits, so you don't need to use QGroundControl for 
 
 PX4 has many customizable parameters (over 700 of them, in fact) and to get best results with AirSim we have
 found the following parameters are handy:
-````
+
+```
 // be sure to enable the new position estimator module:
 param set SYS_MC_EST_GROUP 2
 
@@ -124,7 +129,7 @@ param NAV_RCL_ACT 0
 
 // enable new syslogger to get more information from PX4 logs
 param set SYS_LOGGER 1
-````
+```
 
 ## Using BashOnWindows
 
