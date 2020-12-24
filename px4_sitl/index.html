@@ -374,8 +374,7 @@ API does not require RC, see <code>No Remote Control</code> below.</p>
 <pre class="highlight"><code>    "LPE_LAT": 47.641468,
     "LPE_LON": -122.140165,</code></pre></p>
 <p>PX4 SITL mode needs to be configured to get the home location correct.
-There is a bug in AirSim that makes it such that flight does not work
-unless the home location is set to the same coordinates defined in  AVehiclePawnBase::HomeLatitude and HomeLongitude.</p>
+The home location needs to be set to the same coordinates defined in  <a href="../settings/#origingeopoint">OriginGeopoint</a>.</p>
 <p>You can also run the following in the SITL PX4 console window to check
 that these values are set correctly.</p>
 <pre class="highlight"><code>param show LPE_LAT

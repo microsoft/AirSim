@@ -344,6 +344,8 @@ Click on the <code>Install</code> button on the top right, which should show the
     &lt;Compiler&gt;VisualStudio2019&lt;/Compiler&gt;
   &lt;/WindowsPlatform&gt;
 &lt;/Configuration&gt;</code></pre>
+<h3 id="i-get-error-where-is-not-recognized-as-an-internal-or-external-command">I get error: 'where' is not recognized as an internal or external command<a class="headerlink" href="#i-get-error-where-is-not-recognized-as-an-internal-or-external-command" title="Permanent link">#</a></h3>
+<p>You have to add <code>C:\WINDOWS\SYSTEM32</code> to your PATH enviroment variable.</p>
 <h3 id="im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually">I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code><a class="headerlink" href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually" title="Permanent link">#</a></h3>
 <p>This will occur when there are compilation errors. Logs are stored in <code>&lt;My-Project&gt;\Saved\Logs</code> which can be used to figure out the problem.</p>
 <p>A common problem could be Visual Studio version conflict, AirSim uses VS 2019 while UE is using VS 2017, this can be found by searching for <code>2017</code> in the Log file. In that case, see the answer above.</p>

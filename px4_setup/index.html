@@ -357,7 +357,7 @@ See also <a href="https://dev.px4.io/starting-initial-config.html">initial firmw
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
 <h4 id="drone-doesnt-fly-properly-it-just-goes-crazy">Drone doesn't fly properly, it just goes "crazy".<a class="headerlink" href="#drone-doesnt-fly-properly-it-just-goes-crazy" title="Permanent link">#</a></h4>
 <p>There are a few reasons that can cause this. First, make sure your drone doesn't fall down large distance when starting the simulator. This might happen if you have created a custom Unreal environment and Player Start is placed too high above the ground. It seems that when this happens internal calibration in PX4 gets confused. </p>
-<p>You should also use QGroundControl and make sure you can arm and takeoff in QGroundControl properly.</p>
+<p>You should <a href="#setting-up-px4-hardware-in-loop">also use QGroundControl</a> and make sure you can arm and takeoff in QGroundControl properly.</p>
 <p>Finally, this also can be a machine performance issue in some rare cases, check your <a href="../hard_drive/">hard drive performance</a>.</p>
 <h4 id="can-i-use-arducopter-or-other-mavlink-implementations">Can I use Arducopter or other MavLink implementations?<a class="headerlink" href="#can-i-use-arducopter-or-other-mavlink-implementations" title="Permanent link">#</a></h4>
 <p>Our code is tested with the <a href="https://dev.px4.io/">PX4 firmware</a>. We have not tested Arducopter or other mavlink implementations. Some of the flight API's do use the
