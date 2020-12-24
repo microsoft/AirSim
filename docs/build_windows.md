@@ -79,6 +79,10 @@ And add this Compiler version setting:
 </Configuration>
 ```
 
+### I get error: 'where' is not recognized as an internal or external command
+
+You have to add `C:\WINDOWS\SYSTEM32` to your PATH enviroment variable.
+
 ### I'm getting error `<MyProject> could not be compiled. Try rebuilding from source manually`
 
 This will occur when there are compilation errors. Logs are stored in `<My-Project>\Saved\Logs` which can be used to figure out the problem.

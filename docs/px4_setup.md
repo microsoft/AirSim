@@ -67,7 +67,7 @@ The PX4 SITL mode doesn't require you to have separate device such as a Pixhawk 
 
 There are a few reasons that can cause this. First, make sure your drone doesn't fall down large distance when starting the simulator. This might happen if you have created a custom Unreal environment and Player Start is placed too high above the ground. It seems that when this happens internal calibration in PX4 gets confused. 
 
-You should also use QGroundControl and make sure you can arm and takeoff in QGroundControl properly.
+You should [also use QGroundControl](#setting-up-px4-hardware-in-loop) and make sure you can arm and takeoff in QGroundControl properly.
 
 Finally, this also can be a machine performance issue in some rare cases, check your [hard drive performance](hard_drive.md).
 

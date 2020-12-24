@@ -87,8 +87,7 @@ Notice the above settings are provided in the `params` section of the `settings.
 ```
 
 PX4 SITL mode needs to be configured to get the home location correct.
-There is a bug in AirSim that makes it such that flight does not work
-unless the home location is set to the same coordinates defined in  AVehiclePawnBase::HomeLatitude and HomeLongitude.
+The home location needs to be set to the same coordinates defined in  [OriginGeopoint](settings.md#origingeopoint).
 
 You can also run the following in the SITL PX4 console window to check
 that these values are set correctly.
