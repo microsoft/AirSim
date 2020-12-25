@@ -80,7 +80,9 @@ Once AirSim is setup:
 - After Unreal Editor loads, press Play button.
 
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available for AirSim usage.
-Tip: go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
+
+!!! tip
+    Go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
 
 ### [Optional] Setup Remote Control (Multirotor Only)
 
