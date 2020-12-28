@@ -21,4 +21,5 @@ Just add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick
 * [National University of Ireland, Galway (NUIG)](http://www.nuigalway.ie/)
 * [Soda Mobility Technologies](http://sodacar.com)
 * [University of Cambridge](https://github.com/proroklab/private_flocking)
+* [Skoods](https://www.skoods.org/)
 
