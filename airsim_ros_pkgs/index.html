@@ -551,17 +551,24 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
 </li>
 <li>
 <p>Congratulations, you now have a working Ubuntu subsystem under Windows, you can now go to <a href="#setup">Ubuntu 16 / 18 instructions</a> and then <a href="#how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl">How to run Airsim on Windows and ROS wrapper on WSL</a>!</p>
-<p><strong>Note</strong>:</p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>You can run XWindows applications (including SITL) by installing <a href="https://sourceforge.net/projects/vcxsrv/">VcXsrv</a>  on Windows. 
 To use it find and run <code>XLaunch</code> from the Windows start menu.  <br />
 Select <code>Multiple Windows</code> in first popup, <code>Start no client</code> in second popup, <strong>only</strong> <code>Clipboard</code> in third popup. Do <strong>not</strong> select <code>Native Opengl</code> (and if you are not able to connect select <code>Disable access control</code>).<br />
-You will need to set the DISPLAY variable to point to your display: in WSL it is 127.0.0.1:0, in WSL2 it will be the ip address of the PC's network port and can be set by using the code below. Also in WSL2 you may have to disable the firewall for public networks, or create an exception in order for VcXsrv to communicate with WSL2:</p>
+You will need to set the DISPLAY variable to point to your display: in WSL it is <code>127.0.0.1:0</code>, in WSL2 it will be the ip address of the PC's network port and can be set by using the code below. Also in WSL2 you may have to disable the firewall for public networks, or create an exception in order for VcXsrv to communicate with WSL2:</p>
 <p><code>export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0</code></p>
-<p><strong>tip</strong>: If you add this line to your ~/.bashrc file you won't need to run this command again<br />
-<strong>tip</strong>: For code editing you can install VSCode inside WSL.<br />
-<strong>Note</strong>: Windows 10 includes "Windows Defender" virus scanner. It will slow down WSL quite a bit. Disabling it greatly improves disk performance but increases your risk to viruses so disable at your own risk. Here is one of many resources/videos that show you how to disable it: https://www.youtube.com/watch?v=FmjblGay3AM  </p>
-</li>
-</ol>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<ul>
+<li>If you add this line to your ~/.bashrc file you won't need to run this command again  </li>
+<li>For code editing you can install VSCode inside WSL.  </li>
+<li>Windows 10 includes "Windows Defender" virus scanner. It will slow down WSL quite a bit. Disabling it greatly improves disk performance but increases your risk to viruses so disable at your own risk. Here is one of many resources/videos that show you how to disable it: <a href="https://youtu.be/FmjblGay3AM">How to Disable or Enable Windows Defender on Windows 10</a></li>
+</ul>
+</div>
 <h5 id="file-system-access-between-wsl-and-windows10">File System Access between WSL and Windows10<a class="headerlink" href="#file-system-access-between-wsl-and-windows10" title="Permanent link">#</a></h5>
 <p>From within WSL, the Windows drives are referenced in the /mnt directory. For example, in order to list documents within your (<username>) documents folder:</p>
 <pre><code>`ls /mnt/c/'Documents and Settings'/&lt;username&gt;/Documents`

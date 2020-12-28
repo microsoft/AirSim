@@ -298,7 +298,10 @@ See <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_
 $ catkin build airsim_tutorial_pkgs</code></pre>
 <p>If your default GCC isn't 8 or greater (check using <code>gcc --version</code>), then compilation will fail. In that case, use <code>gcc-8</code> explicitly as follows-</p>
 <pre class="highlight"><code class="language-shell">catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8</code></pre>
-<p>Note: For running examples, and also whenever a new terminal is opened, sourcing the <code>setup.bash</code> file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the <code>source PATH_TO/AirSim/ros/devel/setup.bash</code> to your <code>~/.profile</code> or <code>~/.bashrc</code> to avoid the need to run the command every time a new terminal is opened</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For running examples, and also whenever a new terminal is opened, sourcing the <code>setup.bash</code> file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the <code>source PATH_TO/AirSim/ros/devel/setup.bash</code> to your <code>~/.profile</code> or <code>~/.bashrc</code> to avoid the need to run the command every time a new terminal is opened</p>
+</div>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
 <h3 id="single-drone-with-monocular-and-depth-cameras-and-lidar">Single drone with monocular and depth cameras, and lidar<a class="headerlink" href="#single-drone-with-monocular-and-depth-cameras-and-lidar" title="Permanent link">#</a></h3>
 <ul>
