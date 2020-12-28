@@ -51,6 +51,54 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-get-it">How to Get It</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#windows">Windows</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#linux">Linux</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#macos">macOS</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-use-it">How to Use It</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#manual-drive">Manual drive</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#programmatic-control">Programmatic control</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#gathering-training-data">Gathering training data</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#computer-vision-mode">Computer Vision mode</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#weather-effects">Weather Effects</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#tutorials">Tutorials</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#participate">Participate</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#paper">Paper</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#contribute">Contribute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#who-is-using-airsim">Who is Using AirSim?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#contact">Contact</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#whats-new">What's New</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#faq">FAQ</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of Conduct</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#license">License</a>
+    </li>
     </ul>
                     </li>
                 </ul>
@@ -277,23 +325,7 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="last-announcement">Last announcement<a class="headerlink" href="#last-announcement" title="Permanent link">#</a></h2>
-<p>We are pleased to announce the addition of two new members to the AirSim team. They are Jonathan Marino and David Zimmermann.</p>
-<p>Jonathan and David will help the community continue to grow through AirSim, support the current version, and clarify project scope.</p>
-<p>Ending 2020, we want to thank the AirSim community and especially those who help others by sharing their knowledge and experience, and those who have helped with exciting additions this year like these:</p>
-<ul>
-<li><a href="https://github.com/microsoft/AirSim/pull/3215">Python wrapper for Open AI gym interfaces.</a></li>
-<li><a href="https://github.com/microsoft/AirSim/pull/3202">Python wrapper for Event camera simulation</a></li>
-<li><a href="https://github.com/microsoft/AirSim/pull/3209">Voxel grid construction</a></li>
-<li><a href="https://github.com/microsoft/AirSim/pull/3039">Programmable camera distortion</a></li>
-<li><a href="https://github.com/microsoft/AirSim/pull/2867">Wind simulation</a></li>
-<li><a href="https://github.com/microsoft/AirSim/pull/2816">Azure development environment with documentation</a></li>
-<li>ROS wrapper for <a href="https://github.com/microsoft/AirSim/blob/master/docs/airsim_ros_pkgs.md">multirotor</a> and <a href="https://github.com/microsoft/AirSim/pull/2743">car</a>.</li>
-<li>(See all the merged pull requests from this year <a href="https://github.com/microsoft/AirSim/pulls?q=is%3Apr+merged%3A%3E%3D2020-01-01">here</a>)</li>
-</ul>
-<p>Thank you all!
-The AirSim Team</p>
-<h1 id="welcome-to-airsim">Welcome to AirSim<a class="headerlink" href="#welcome-to-airsim" title="Permanent link">#</a></h1>
+                <h1 id="welcome-to-airsim">Welcome to AirSim<a class="headerlink" href="#welcome-to-airsim" title="Permanent link">#</a></h1>
 <p>AirSim is a simulator for drones, cars and more, built on <a href="https://www.unrealengine.com/">Unreal Engine</a> (we now also have an experimental <a href="https://unity3d.com/">Unity</a> release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 &amp; ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.</p>
 <p>Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.</p>
 <p><strong>Check out the quick 1.5 minute demo</strong></p>
@@ -301,22 +333,6 @@ The AirSim Team</p>
 <p><a href="https://youtu.be/-WfTr1-OBGQ"><img alt="AirSim Drone Demo Video" src="images/demo_video.png" /></a></p>
 <p>Cars in AirSim</p>
 <p><a href="https://youtu.be/gnz1X3UNM5Y"><img alt="AirSim Car Demo Video" src="images/car_demo_video.png" /></a></p>
-<h2 id="whats-new">What's New<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h2>
-<ul>
-<li>Latest release <code>v1.3.1</code> for <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.1-windows">Windows</a> and <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.1-linux">Linux</a></li>
-<li>Upgraded to Unreal Engine 4.24, Visual Studio 2019, Clang 8, C++ 17 standard</li>
-<li>Mac OSX Catalina support</li>
-<li>Updated <a href="https://pypi.org/project/airsim/">airsim</a> Python package, with lots of new APIs</li>
-<li><a href="https://github.com/microsoft/AirSim/pull/2494">Removed legacy API wrappers</a></li>
-<li><a href="https://microsoft.github.io/AirSim/px4_setup/">Support for latest PX4 stable release</a></li>
-<li>Support for <a href="https://ardupilot.org/ardupilot/">ArduPilot</a> - <a href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">Copter, Rover vehicles</a></li>
-<li><a href="https://microsoft.github.io/AirSim/Unity/">Updated Unity support</a></li>
-<li><a href="https://github.com/microsoft/AirSim/pull/2493">Removed simChar* APIs</a></li>
-<li><a href="https://github.com/microsoft/AirSim/pull/2304">Plotting APIs for Debugging</a></li>
-<li>ROS wrapper for multirotors is available. See <a href="https://microsoft.github.io/AirSim/airsim_ros_pkgs/">airsim_ros_pkgs</a> for the ROS API, and <a href="https://microsoft.github.io/AirSim/airsim_tutorial_pkgs/">airsim_tutorial_pkgs</a> for tutorials.</li>
-<li>Added support for <a href="https://microsoft.github.io/AirSim/docker_ubuntu/">docker in ubuntu</a></li>
-</ul>
-<p>For complete list of changes, view our <a href="CHANGELOG/">Changelog</a></p>
 <h2 id="how-to-get-it">How to Get It<a class="headerlink" href="#how-to-get-it" title="Permanent link">#</a></h2>
 <p><a href="https://travis-ci.org/Microsoft/AirSim"><img alt="Build Status" src="https://travis-ci.org/Microsoft/AirSim.svg?branch=master" /></a></p>
 <h3 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">#</a></h3>
@@ -388,6 +404,17 @@ The AirSim Team</p>
 <p>We are maintaining a <a href="https://microsoft.github.io/AirSim/who_is_using">list</a> of a few projects, people and groups that we are aware of. If you would like to be featured in this list please <a href="https://github.com/microsoft/airsim/issues">make a request here</a>.</p>
 <h2 id="contact">Contact<a class="headerlink" href="#contact" title="Permanent link">#</a></h2>
 <p>Join the AirSim group on <a href="https://www.facebook.com/groups/1225832467530667/">Facebook</a> to stay up to date or ask any questions.</p>
+<h2 id="whats-new">What's New<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/3215">Python wrapper for Open AI gym interfaces.</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3202">Python wrapper for Event camera simulation</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3209">Voxel grid construction</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3039">Programmable camera distortion</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2867">Wind simulation</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2816">Azure development environment with documentation</a></li>
+<li>ROS wrapper for <a href="https://github.com/microsoft/AirSim/blob/master/docs/airsim_ros_pkgs.md">multirotor</a> and <a href="https://github.com/microsoft/AirSim/pull/2743">car</a>.</li>
+</ul>
+<p>For complete list of changes, view our <a href="CHANGELOG/">Changelog</a></p>
 <h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
 <p>If you run into problems, check the <a href="https://microsoft.github.io/AirSim/faq">FAQ</a> and feel free to post issues in the  <a href="https://github.com/Microsoft/AirSim/issues">AirSim</a> repository.</p>
 <h2 id="code-of-conduct">Code of Conduct<a class="headerlink" href="#code-of-conduct" title="Permanent link">#</a></h2>
