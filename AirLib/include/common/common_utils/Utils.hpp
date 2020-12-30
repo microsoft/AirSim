@@ -704,6 +704,35 @@ public:
                 }
             }
         }
+
+        file.close();
+    }
+
+    static void writePPMfile(const uint8_t* const image_data, int width, int height, const std::string& path)
+    {
+        std::ofstream file(path.c_str(), std::ios::binary);
+
+        // Header information
+        file << "P6\n";                             // Magic type for PPM files
+        file << width << " " << height << "\n";
+        file << "255\n";                            // Max color value
+
+        auto write_binary = [&file](const uint8_t &data) {
+            file.write(reinterpret_cast<const char*>(&data), sizeof(data));
+        };
+
+        for (int i=0; i<height; i++) {
+            for (int j=0; j<width; j++) {
+                int id = (i*width + j)*3;           // Pixel index
+
+                // Image is in BGR, write as RGB
+                write_binary(image_data[id+2]);     // R
+                write_binary(image_data[id+1]);     // G
+                write_binary(image_data[id]);       // B
+            }
+        }
+
+        file.close();
     }
 
     template<typename T>
