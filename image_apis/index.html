@@ -487,7 +487,7 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) </code></pre>
 <h2 id="camera-apis">Camera APIs<a class="headerlink" href="#camera-apis" title="Permanent link">#</a></h2>
 <p>The <code>simGetCameraInfo</code> returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">example usage</a>.</p>
 <p>The <code>simSetCameraPose</code> sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy <code>airsim.to_quaternion()</code> function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:
-<pre class="highlight"><code>camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #RPY in radians
+<pre class="highlight"><code>camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #PRY in radians
 client.simSetCameraPose(0, camera_pose);</code></pre></p>
 <h3 id="gimbal">Gimbal<a class="headerlink" href="#gimbal" title="Permanent link">#</a></h3>
 <p>You can set stabilization for pitch, roll or yaw for any camera <a href="../settings/#gimbal">using settings</a>.</p>
