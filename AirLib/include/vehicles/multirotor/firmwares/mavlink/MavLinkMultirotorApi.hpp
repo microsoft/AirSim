@@ -117,9 +117,9 @@ public: //methods
             if (count_distance_sensors != 0) {
                 const auto& distance_output = getDistanceSensorData("");
 
-                sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
-                    distance_output.max_distance / 100, //m -> cm
-                    distance_output.distance,
+                sendDistanceSensor(distance_output.min_distance * 100, //m -> cm
+                    distance_output.max_distance * 100, //m -> cm
+                    distance_output.distance * 100, //m-> cm
                     0, //sensor type: //TODO: allow changing in settings?
                     77, //sensor id, //TODO: should this be something real?
                     distance_output.relative_pose.orientation); //TODO: convert from radians to degrees?
