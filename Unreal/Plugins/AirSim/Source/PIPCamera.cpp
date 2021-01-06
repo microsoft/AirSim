@@ -288,6 +288,8 @@ void APIPCamera::setCameraFoV(float fov_degrees)
     for (int image_type = 0; image_type < image_count; ++image_type) {
         captures_[image_type]->FOVAngle = fov_degrees;
     }
+
+    camera_->SetFieldOfView(fov_degrees);
 }
 
 
