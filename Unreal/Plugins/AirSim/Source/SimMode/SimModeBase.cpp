@@ -459,6 +459,37 @@ void ASimModeBase::initializeCameraDirector(const FTransform& camera_transform, 
     }
 }
 
+void ASimModeBase::initializeExternalCameras()
+{
+     //UStaticMeshComponent* bodyMesh = UAirBlueprintLib::GetActorComponent<UStaticMeshComponent>(this, TEXT("BodyMesh"));
+    // USceneComponent* bodyMesh = params_.pawn->GetRootComponent();
+    FActorSpawnParameters camera_spawn_params;
+    camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+    const auto& transform = getGlobalNedTransform();
+
+    //for each camera in settings
+    for (const auto& camera_setting_pair : getSettings().external_cameras) {
+        const auto& setting = camera_setting_pair.second;
+
+        //get pose
+        FVector position = transform.fromLocalNed(
+            NedTransform::Vector3r(setting.position.x(), setting.position.y(), setting.position.z()))
+            - transform.fromLocalNed(NedTransform::Vector3r(0.0, 0.0, 0.0));
+        FTransform camera_transform(FRotator(setting.rotation.pitch, setting.rotation.yaw, setting.rotation.roll),
+            position, FVector(1., 1., 1.));
+
+        //spawn and attach camera to pawn
+        camera_spawn_params.Name = FName(("external_" + camera_setting_pair.first).c_str());
+        APIPCamera* camera = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class, camera_transform, camera_spawn_params);
+        // camera->AttachToComponent(bodyMesh, FAttachmentTransformRules::KeepRelativeTransform);
+
+        camera->setupCameraFromSettings(setting, transform);
+
+        //add on to our collection
+        external_cameras_.insert_or_assign(camera_setting_pair.first, camera);
+    }
+}
+
 bool ASimModeBase::toggleRecording()
 {
     if (isRecording())
@@ -692,6 +723,9 @@ void ASimModeBase::setupVehiclesAndCamera()
             vehicle_sim_apis_.push_back(std::move(vehicle_sim_api));
         }
     }
+
+    // Create External Cameras
+    initializeExternalCameras();
 
     if (getApiProvider()->hasDefaultVehicle()) {
         //TODO: better handle no FPV vehicles scenario

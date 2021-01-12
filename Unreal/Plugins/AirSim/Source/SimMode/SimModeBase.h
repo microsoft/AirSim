@@ -121,6 +121,7 @@ protected: //optional overrides
     void initializeCameraDirector(const FTransform& camera_transform, float follow_distance);
     void checkVehicleReady(); //checks if vehicle is available to use
     virtual void updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter);
+    virtual void initializeExternalCameras();
 
 protected: //Utility methods for derived classes
     virtual const msr::airlib::AirSimSettings& getSettings() const;
@@ -174,6 +175,7 @@ private:
     msr::airlib::StateReporterWrapper debug_reporter_;
 
     std::vector<std::unique_ptr<msr::airlib::VehicleSimApiBase>> vehicle_sim_apis_;
+    common_utils::UniqueValueMap<std::string, APIPCamera*> external_cameras_;
 
     UPROPERTY()
     TArray<AActor*> spawned_actors_; //keep refs alive from Unreal GC
