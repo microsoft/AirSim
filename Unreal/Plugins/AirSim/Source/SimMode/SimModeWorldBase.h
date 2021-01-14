@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include <memory>
 #include <vector>
+#include "Kismet/KismetSystemLibrary.h"
 #include "api/VehicleSimApiBase.hpp"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/World.hpp"
