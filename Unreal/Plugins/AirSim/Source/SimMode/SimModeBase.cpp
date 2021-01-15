@@ -515,6 +515,14 @@ bool ASimModeBase::isRecording() const
     return FRecordingThread::isRecording();
 }
 
+msr::airlib::CameraInfo ASimModeBase::getCameraInfo(const std::string& camera_name, const std::string& vehicle_name, bool external) const
+{
+    if (external)
+        return getExternalCamera(camera_name)->getCameraInfo();
+    else
+        return getVehicleSimApi(vehicle_name)->getCameraInfo(camera_name);
+}
+
 //API server start/stop
 void ASimModeBase::startApiServer()
 {

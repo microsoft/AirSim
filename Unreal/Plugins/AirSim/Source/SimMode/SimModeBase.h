@@ -70,6 +70,8 @@ public:
     virtual void stopRecording();
     virtual bool isRecording() const;
 
+    virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name, const std::string& vehicle_name, bool external) const;
+
     void startApiServer();
     void stopApiServer();
     bool isApiServerStarted();
@@ -90,6 +92,17 @@ public:
     PawnSimApi* getVehicleSimApi(const std::string& vehicle_name = "")
     {
         return static_cast<PawnSimApi*>(api_provider_->getVehicleSimApi(vehicle_name));
+    }
+
+    const APIPCamera* getExternalCamera(const std::string& camera_name) const
+    {
+        return external_cameras_.findOrDefault(camera_name, nullptr);
+    }
+
+    APIPCamera* getExternalCamera(const std::string& camera_name)
+    {
+        return const_cast<APIPCamera*>(
+            static_cast<const ASimModeBase*>(this)->getExternalCamera(camera_name));
     }
 
     TMap<FString, FAssetData> asset_map;

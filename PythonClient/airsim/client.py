@@ -579,7 +579,7 @@ class VehicleClient:
         """
         self.client.call('simPrintLogMessage', message, message_param, severity)
 
-    def simGetCameraInfo(self, camera_name, vehicle_name = ''):
+    def simGetCameraInfo(self, camera_name, vehicle_name = '', external=False):
         """
         Get details about the camera
 
@@ -591,7 +591,7 @@ class VehicleClient:
             CameraInfo:
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
-        return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name))
+        return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name, external))
 
     def simGetDistortionParams(self, camera_name, vehicle_name = ''):
         """

@@ -268,8 +268,8 @@ namespace airlib
             return RpcLibAdaptorsBase::DistanceSensorData(distance_sensor_data);
         });
 
-        pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name, const std::string& vehicle_name) -> RpcLibAdaptorsBase::CameraInfo {
-            const auto& camera_info = getVehicleSimApi(vehicle_name)->getCameraInfo(camera_name);
+        pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::CameraInfo {
+            const auto& camera_info = getWorldSimApi()->getCameraInfo(camera_name, vehicle_name, external);
             return RpcLibAdaptorsBase::CameraInfo(camera_info);
         });
 

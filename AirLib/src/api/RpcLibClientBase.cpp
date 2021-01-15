@@ -435,9 +435,9 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simSetObjectScale", object_name, RpcLibAdaptorsBase::Vector3r(scale)).as<bool>();
         }
 
-        CameraInfo RpcLibClientBase::simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name) const
+        CameraInfo RpcLibClientBase::simGetCameraInfo(const std::string& camera_name, const std::string& vehicle_name, bool external) const
         {
-            return pimpl_->client.call("simGetCameraInfo", camera_name, vehicle_name).as<RpcLibAdaptorsBase::CameraInfo>().to();
+            return pimpl_->client.call("simGetCameraInfo", camera_name, vehicle_name, external).as<RpcLibAdaptorsBase::CameraInfo>().to();
         }
 
         void RpcLibClientBase::simSetCameraPose(const std::string& camera_name, const Pose& pose, const std::string& vehicle_name)
