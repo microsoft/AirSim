@@ -46,6 +46,11 @@ Below are complete list of settings available along with their default values. I
   "SpeedUnitFactor": 1.0,
   "SpeedUnitLabel": "m/s",
   "Wind": { "X": 0, "Y": 0, "Z": 0 },
+  "CameraDirector": {
+    "FollowDistance": -3,
+    "X": NaN, "Y": NaN, "Z": NaN,
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+  },
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
@@ -96,7 +101,7 @@ Below are complete list of settings available along with their default values. I
     "Gimbal": {
       "Stabilization": 0,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN
-    }
+    },
     "X": NaN, "Y": NaN, "Z": NaN,
     "Pitch": NaN, "Roll": NaN, "Yaw": NaN
   },
@@ -239,6 +244,13 @@ The `InitMethod` determines how object IDs are initialized at startup to generat
 ## Wind Settings
 
 This setting specifies the wind speed in World frame, in NED direction. Values are in m/s. By default, speed is 0, i.e. no wind.
+
+## Camera Director Settings
+
+This element specifies the settings used for the camera following the vehicle in the ViewPort.
+
+* `FollowDistance`: Distance at which camera follows the vehicle, default is -8 (8 meters) for Car, -3 for others.
+* `X, Y, Z, Yaw, Roll, Pitch`: These elements allows you to specify the position and orientation of the camera relative to the vehicle. Position is in NED coordinates in SI units with origin set to Player Start location in Unreal environment. The orientation is specified in degrees.
 
 ## Camera Settings
 The `CameraDefaults` element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in `Cameras` element inside `Vehicles` as described later.
