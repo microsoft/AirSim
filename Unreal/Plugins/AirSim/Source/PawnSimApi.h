@@ -75,7 +75,6 @@ public: //implementation of VehicleSimApiBase
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
-    virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
     virtual void setCameraPose(const std::string& camera_name, const Pose& pose) override;
     virtual void setCameraFoV(const std::string& camera_name, float fov_degrees) override;
     virtual void setDistortionParam(const std::string& camera_name, const std::string& param_name, float value) override;

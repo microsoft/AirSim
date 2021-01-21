@@ -501,11 +501,6 @@ void PawnSimApi::plot(std::istream& s, FColor color, const Vector3r& offset)
     }
 }
 
-msr::airlib::CameraInfo PawnSimApi::getCameraInfo(const std::string& camera_name) const
-{
-    return getCamera(camera_name)->getCameraInfo();
-}
-
 void PawnSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose)
 {
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, pose]() {

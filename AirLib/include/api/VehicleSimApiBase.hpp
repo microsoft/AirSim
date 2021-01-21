@@ -59,7 +59,6 @@ namespace airlib
         virtual const Kinematics::State* getGroundTruthKinematics() const = 0;
         virtual const msr::airlib::Environment* getGroundTruthEnvironment() const = 0;
 
-        virtual CameraInfo getCameraInfo(const std::string& camera_name) const = 0;
         virtual void setCameraPose(const std::string& camera_name, const Pose& pose) = 0;
         virtual void setCameraFoV(const std::string& camera_name, float fov_degrees) = 0;
         virtual void setDistortionParam(const std::string& camera_name, const std::string& param_name, float value) = 0;
