@@ -501,40 +501,6 @@ void PawnSimApi::plot(std::istream& s, FColor color, const Vector3r& offset)
     }
 }
 
-void PawnSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, pose]() {
-        APIPCamera* camera = getCamera(camera_name);
-        camera->setCameraPose(pose);
-    }, true);
-}
-
-void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, fov_degrees]() {
-        APIPCamera* camera = getCamera(camera_name);
-        camera->setCameraFoV(fov_degrees);
-    },
-                                             true);
-}
-
-void PawnSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this, &camera_name, &param_name, &value]() {
-        getCamera(camera_name)->setDistortionParam(param_name, value);
-    }, true);
-}
-
-std::vector<float> PawnSimApi::getDistortionParams(const std::string& camera_name) const
-{
-    std::vector<float> param_values;
-    UAirBlueprintLib::RunCommandOnGameThread([this, &camera_name, &param_values]() {
-        param_values = getCamera(camera_name)->getDistortionParams();
-    }, true);
-
-    return param_values;
-}
-
 //parameters in NED frame
 PawnSimApi::Pose PawnSimApi::getPose() const
 {

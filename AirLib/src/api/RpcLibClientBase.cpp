@@ -440,31 +440,31 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simGetCameraInfo", camera_name, vehicle_name, external).as<RpcLibAdaptorsBase::CameraInfo>().to();
         }
 
-        void RpcLibClientBase::simSetCameraPose(const std::string& camera_name, const Pose& pose, const std::string& vehicle_name)
+        void RpcLibClientBase::simSetCameraPose(const std::string& camera_name, const Pose& pose, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simSetCameraPose", camera_name, RpcLibAdaptorsBase::Pose(pose), vehicle_name);
+            pimpl_->client.call("simSetCameraPose", camera_name, RpcLibAdaptorsBase::Pose(pose), vehicle_name, external);
         }
 
-        void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name)
+        void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name, bool external)
         {
             std::cout << "`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code." << std::endl;
             Pose pose{ Vector3r::Zero(), orientation };
-            RpcLibClientBase::simSetCameraPose(camera_name, pose, vehicle_name);
+            RpcLibClientBase::simSetCameraPose(camera_name, pose, vehicle_name, external);
         }
 
-        void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name)
+        void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name);
+            pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name, external);
         }
 
-        void RpcLibClientBase::simSetDistortionParam(const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name)
+        void RpcLibClientBase::simSetDistortionParam(const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simSetDistortionParam", camera_name, param_name, value, vehicle_name);
+            pimpl_->client.call("simSetDistortionParam", camera_name, param_name, value, vehicle_name, external);
         }
 
-        std::vector<float> RpcLibClientBase::simGetDistortionParams(const std::string& camera_name, const std::string& vehicle_name)
+        std::vector<float> RpcLibClientBase::simGetDistortionParams(const std::string& camera_name, const std::string& vehicle_name, bool external)
         {
-            return pimpl_->client.call("simGetDistortionParams", camera_name, vehicle_name).as<std::vector<float>>();
+            return pimpl_->client.call("simGetDistortionParams", camera_name, vehicle_name, external).as<std::vector<float>>();
         }
 
         msr::airlib::Kinematics::State RpcLibClientBase::simGetGroundTruthKinematics(const std::string& vehicle_name) const

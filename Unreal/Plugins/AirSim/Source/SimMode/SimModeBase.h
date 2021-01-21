@@ -97,7 +97,19 @@ public:
         return external_cameras_.findOrDefault(camera_name, nullptr);
     }
 
-    const APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const;    
+    APIPCamera* getExternalCamera(const std::string& camera_name)
+    {
+        return const_cast<APIPCamera*>(
+            static_cast<const ASimModeBase*>(this)->getExternalCamera(camera_name));
+    }
+
+    const APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const;
+    
+    APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false)
+    {
+        return const_cast<APIPCamera*>(
+            static_cast<const ASimModeBase*>(this)->getCamera(camera_name, vehicle_name, external));
+    } 
 
     TMap<FString, FAssetData> asset_map;
     TMap<FString, AActor*> scene_object_map;

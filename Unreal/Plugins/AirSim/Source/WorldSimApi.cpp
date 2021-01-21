@@ -743,3 +743,42 @@ CameraInfo WorldSimApi::getCameraInfo(const std::string& camera_name, const std:
 
     return info;
 }
+
+void WorldSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose,
+                               const std::string& vehicle_name, bool external)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, &camera_name, &vehicle_name, &external, &pose]() {
+        auto camera = simmode_->getCamera(camera_name, vehicle_name, external);
+        camera->setCameraPose(pose);
+    }, true);
+}
+
+void WorldSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees,
+                               const std::string& vehicle_name, bool external)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, &camera_name, &vehicle_name, &external, &fov_degrees]() {
+        auto camera = simmode_->getCamera(camera_name, vehicle_name, external);
+        camera->setCameraFoV(fov_degrees);
+    }, true);
+}
+
+void WorldSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value,
+                                    const std::string& vehicle_name, bool external)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, &camera_name, &vehicle_name, &external,
+                                              &param_name, &value]() {
+        auto camera = simmode_->getCamera(camera_name, vehicle_name, external);
+        camera->setDistortionParam(param_name, value);
+    }, true);
+}
+
+std::vector<float> WorldSimApi::getDistortionParams(const std::string& camera_name, const std::string& vehicle_name, bool external) const
+{
+    std::vector<float> param_values;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &camera_name, &vehicle_name, &external, &param_values]() {
+        auto camera = simmode_->getCamera(camera_name, vehicle_name, external);
+        param_values = camera->getDistortionParams();
+    }, true);
+
+    return param_values;
+}
