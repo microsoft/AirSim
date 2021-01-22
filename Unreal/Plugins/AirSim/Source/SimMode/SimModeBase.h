@@ -15,6 +15,7 @@
 #include "PawnSimApi.h"
 #include "common/StateReporterWrapper.hpp"
 #include "LoadingScreenWidget.h"
+#include "UnrealImageCapture.h"
 #include "SimModeBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
@@ -102,14 +103,20 @@ public:
         return const_cast<APIPCamera*>(
             static_cast<const ASimModeBase*>(this)->getExternalCamera(camera_name));
     }
-
-    const APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const;
     
     APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false)
     {
         return const_cast<APIPCamera*>(
             static_cast<const ASimModeBase*>(this)->getCamera(camera_name, vehicle_name, external));
-    } 
+    }
+
+    const UnrealImageCapture* getExternalImageCapture() const
+    {
+        return external_image_capture_.get();
+    }
+
+    const APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const;
+    const UnrealImageCapture* getImageCapture(const std::string& vehicle_name = "", bool external = false) const;
 
     TMap<FString, FAssetData> asset_map;
     TMap<FString, AActor*> scene_object_map;
@@ -195,6 +202,7 @@ private:
 
     std::vector<std::unique_ptr<msr::airlib::VehicleSimApiBase>> vehicle_sim_apis_;
     common_utils::UniqueValueMap<std::string, APIPCamera*> external_cameras_;
+    std::unique_ptr<UnrealImageCapture> external_image_capture_;
 
     UPROPERTY()
     TArray<AActor*> spawned_actors_; //keep refs alive from Unreal GC

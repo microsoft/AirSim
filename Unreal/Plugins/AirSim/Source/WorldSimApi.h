@@ -16,6 +16,7 @@ public:
     typedef msr::airlib::Pose Pose;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::MeshPositionVertexBuffersResponse MeshPositionVertexBuffersResponse;
+    typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
     WorldSimApi(ASimModeBase* simmode);
     virtual ~WorldSimApi() = default;
@@ -88,6 +89,11 @@ public:
                                     const std::string& vehicle_name = "", bool external = false) override;
     virtual std::vector<float> getDistortionParams(const std::string& camera_name, const std::string& vehicle_name = "",
                                                    bool external = false) const override;
+
+    std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,
+                                                           const std::string& vehicle_name = "", bool external = false) const;
+    std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                  const std::string& vehicle_name = "", bool external = false) const;
 
 private:
     AActor* createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);

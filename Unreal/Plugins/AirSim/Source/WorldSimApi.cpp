@@ -782,3 +782,25 @@ std::vector<float> WorldSimApi::getDistortionParams(const std::string& camera_na
 
     return param_values;
 }
+
+std::vector<WorldSimApi::ImageCaptureBase::ImageResponse> WorldSimApi::getImages(
+    const std::vector<ImageCaptureBase::ImageRequest>& requests, const std::string& vehicle_name, bool external) const
+{
+    std::vector<ImageCaptureBase::ImageResponse> responses;
+
+    const auto* camera = simmode_->getImageCapture(vehicle_name, external);
+    camera->getImages(requests, responses);
+
+    return responses;
+}
+
+std::vector<uint8_t> WorldSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+    const std::string& vehicle_name, bool external) const
+{
+    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_name, image_type) };
+    const auto& response = getImages(request);
+    if (response.size() > 0)
+        return response.at(0).image_data_uint8;
+    else
+        return std::vector<uint8_t>();
+}
