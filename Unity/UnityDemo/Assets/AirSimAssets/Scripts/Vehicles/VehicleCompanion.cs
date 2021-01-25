@@ -95,6 +95,8 @@ namespace AirSimUnity {
                 Marshal.GetFunctionPointerForDelegate(new Func<string, string, CameraInfo>(GetCameraInfo)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, AirSimPose, string, bool>(SetCameraPose)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, float, string, bool>(SetCameraFoV)),
+                Marshal.GetFunctionPointerForDelegate(new Func<string, string, float, string, bool>(SetDistortionParam)),
+                Marshal.GetFunctionPointerForDelegate(new Func<string, string, bool>(getDistortionParams)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, int, bool, bool>(SetSegmentationObjectId)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, int>(GetSegmentationObjectId)),
                 Marshal.GetFunctionPointerForDelegate(new Func<string, string, string, int, bool>(PrintLogMessage)),
@@ -192,6 +194,17 @@ namespace AirSimUnity {
         private static bool SetCameraFoV(string cameraName, float fov_degrees, string vehicleName) {
             var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
             return vehicle.VehicleInterface.SetCameraFoV(cameraName, fov_degrees);
+        }
+
+        private static bool SetDistortionParam(string cameraName, string paramName, float value, string vehicleName) {
+            var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
+            return vehicle.VehicleInterface.setDistortionParam(cameraName, paramName, value);
+        }
+
+        private static bool getDistortionParams(string cameraName, string vehicleName)
+        {
+            var vehicle = Vehicles.Find(element => element.vehicleName == vehicleName);
+            return vehicle.VehicleInterface.getDistortionParams(cameraName);
         }
 
         private static bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity) {

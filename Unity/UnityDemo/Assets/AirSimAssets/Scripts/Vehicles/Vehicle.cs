@@ -284,6 +284,18 @@ namespace AirSimUnity {
             return false;
         }
 
+        public bool setDistortionParam(string cameraName, string paramName, float value)
+        {
+            // not implemented
+            return false;
+        }
+
+        public bool getDistortionParams(string cameraName)
+        {
+            // not implemented
+            return false;
+        }
+
         public bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity) {
 
             if (!print_log_messages_)
