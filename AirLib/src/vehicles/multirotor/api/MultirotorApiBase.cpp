@@ -72,6 +72,25 @@ bool MultirotorApiBase::goHome(float timeout_sec)
     return moveToPosition(0, 0, 0, 0.5f, timeout_sec, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
 }
 
+bool MultirotorApiBase::moveByVelocityBodyFrame(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
+{
+    SingleTaskCall lock(this);
+    float pitch, roll, yaw;
+    VectorMath::toEulerianAngle(getKinematicsEstimated().pose.orientation, pitch, roll, yaw);
+    float vx_new = (vx * (float)std::cos(yaw)) - (vy * (float)std::sin(yaw));
+    float vy_new = (vx * (float)std::sin(yaw)) + (vy * (float)std::cos(yaw));
+    
+    if (duration <= 0)
+        return true;
+    
+    YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
+    adjustYaw(vx_new, vy_new, drivetrain, adj_yaw_mode);
+
+    return waitForFunction([&]() {
+        moveByVelocityInternal(vx_new, vy_new, vz, adj_yaw_mode);
+        return false; //keep moving until timeout
+        }, duration).isTimeout();
+}
 bool MultirotorApiBase::moveByMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration)
 {
     SingleTaskCall lock(this);

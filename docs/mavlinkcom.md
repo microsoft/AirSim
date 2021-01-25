@@ -15,7 +15,7 @@ The following are the most important classes in this library.
 This is the base class for all MavLinkNodes (subclasses include MavLinkVehicle, MavLinkVideoClient and MavLinkVideoServer).
 The node connects to your mavlink enabled vehicle via a MavLinkConnection and provides methods for sending MavLinkMessages and MavLinkCommands
 and for subscribing to receive messages.  This base class also stores the local system id and component id your app wants to use to identify
-itself to your remove vehicle.  You can also call startHeartbeat to send regular heartbeat messages to keep the connection alive.
+itself to your remote vehicle.  You can also call startHeartbeat to send regular heartbeat messages to keep the connection alive.
 
 ### MavLinkMessage
 

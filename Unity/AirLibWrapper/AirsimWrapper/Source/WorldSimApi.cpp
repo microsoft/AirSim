@@ -103,6 +103,11 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     //TODO: implement weather for Unity
 }
 
+bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
+{
+    return false;
+}
+
 //----------------Plotting APIs-----------/
 void WorldSimApi::simFlushPersistentMarkers()
 {

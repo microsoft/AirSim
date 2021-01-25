@@ -19,7 +19,9 @@ If your default GCC isn't 8 or greater (check using `gcc --version`), then compi
 catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
 ```
 
-Note: For running examples, and also whenever a new terminal is opened, sourcing the `setup.bash` file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the `source PATH_TO/AirSim/ros/devel/setup.bash` to your `~/.profile` or `~/.bashrc` to avoid the need to run the command every time a new terminal is opened
+!!! note
+
+    For running examples, and also whenever a new terminal is opened, sourcing the `setup.bash` file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the `source PATH_TO/AirSim/ros/devel/setup.bash` to your `~/.profile` or `~/.bashrc` to avoid the need to run the command every time a new terminal is opened
 
 ## Examples
 

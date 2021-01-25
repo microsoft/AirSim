@@ -141,12 +141,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     });
 
     pimpl_->server.bind("simGetImage", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> vector<uint8_t> {
-        auto result = getVehicleSimApi(vehicle_name)->getImage(camera_name, type);
-        if (result.size() == 0) {
-            // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-            result.push_back(0);
-        }
-        return result;
+        return getVehicleSimApi(vehicle_name)->getImage(camera_name, type);
     });
 
     pimpl_->server.bind("simGetMeshPositionVertexBuffers", [&]() ->vector<RpcLibAdapatorsBase::MeshPositionVertexBuffersResponse> {
@@ -241,6 +236,14 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name, const std::string& vehicle_name) -> RpcLibAdapatorsBase::CameraInfo {
         const auto& camera_info = getVehicleSimApi(vehicle_name)->getCameraInfo(camera_name);
         return RpcLibAdapatorsBase::CameraInfo(camera_info);
+    });
+
+    pimpl_->server.bind("simSetDistortionParam", [&](const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name) -> void {
+        getVehicleSimApi(vehicle_name)->setDistortionParam(camera_name, param_name, value);
+    });
+
+    pimpl_->server.bind("simGetDistortionParams", [&](const std::string& camera_name, const std::string& vehicle_name) -> std::vector<float> {
+        return getVehicleSimApi(vehicle_name)->getDistortionParams(camera_name);
     });
 
     pimpl_->server.bind("simSetCameraPose", [&](const std::string& camera_name, const RpcLibAdapatorsBase::Pose& pose, 
@@ -348,6 +351,9 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("simGetGroundTruthEnvironment", [&](const std::string& vehicle_name) -> RpcLibAdapatorsBase::EnvironmentState {
         const Environment::State& result = (*getVehicleSimApi(vehicle_name)->getGroundTruthEnvironment()).getState();
         return RpcLibAdapatorsBase::EnvironmentState(result);
+    });
+    pimpl_->server.bind("simCreateVoxelGrid", [&](const RpcLibAdapatorsBase::Vector3r& position, const int& x, const int& y, const int& z, const float& res, const std::string& output_file) -> bool {
+        return getWorldSimApi()->createVoxelGrid(position.to(), x, y, z, res, output_file);
     });
 
     pimpl_->server.bind("cancelLastTask", [&](const std::string& vehicle_name) -> void {
