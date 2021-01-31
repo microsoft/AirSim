@@ -104,6 +104,10 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         getWorldSimApi()->continueForTime(seconds); 
     });
 
+    pimpl_->server.bind("simContinueForFrames", [&](uint32_t frames) -> void { 
+        getWorldSimApi()->continueForFrames(frames); 
+    });
+
     pimpl_->server.bind("simSetTimeOfDay", [&](bool is_enabled, const string& start_datetime, bool is_start_datetime_dst, 
         float celestial_clock_speed, float update_interval_secs, bool move_sun) -> void {
         getWorldSimApi()->setTimeOfDay(is_enabled, start_datetime, is_start_datetime_dst, 

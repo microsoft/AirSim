@@ -63,6 +63,18 @@ public:
         paused_ = false;
     }
 
+    void continueForFrames(uint32_t frames)
+    {
+        frame_countdown_enabled_ = true;
+        targetFrameNumber_ = frames + currentFrameNumber_;
+        paused_ = false;
+    }
+
+    void setFrameNumber(uint32_t frameNumber)
+    {
+        currentFrameNumber_ = frameNumber;    
+    }
+
     void stop()
     {
         if (started_) {
@@ -150,6 +162,15 @@ private:
         while (started_) {
             TTimePoint period_start = nanos();
             TTimeDelta since_last_call = period_start - call_end;
+
+            if (frame_countdown_enabled_) {
+                if (targetFrameNumber_ <= currentFrameNumber_){
+                    if (! isPaused())
+                        pause(true);
+
+                    frame_countdown_enabled_ = false;
+                }
+            }
             
             if (pause_period_start_ > 0) {
                 if (nanos() - pause_period_start_ >= pause_period_) {
@@ -196,6 +217,9 @@ private:
     std::atomic_bool paused_;
     std::atomic<TTimeDelta> pause_period_;
     std::atomic<TTimePoint> pause_period_start_;
+    uint32_t currentFrameNumber_;
+    uint32_t targetFrameNumber_;
+    std::atomic_bool frame_countdown_enabled_;
     
     double sleep_time_avg_;
 
