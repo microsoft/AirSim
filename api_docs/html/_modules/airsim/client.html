@@ -260,6 +260,15 @@
 <span class="sd">            seconds (float): Time to run the simulation for</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simContinueForTime&#39;</span><span class="p">,</span> <span class="n">seconds</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="VehicleClient.simContinueForFrames"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simContinueForFrames">[docs]</a>    <span class="k">def</span> <span class="nf">simContinueForFrames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Continue (or resume if paused) the simulation for the specified number of frames, after which the simulation will be paused.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frames (float): Frames to run the simulation for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simContinueForFrames&#39;</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="VehicleClient.getHomeGeoPoint"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getHomeGeoPoint">[docs]</a>    <span class="k">def</span> <span class="nf">getHomeGeoPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
