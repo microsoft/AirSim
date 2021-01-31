@@ -461,8 +461,6 @@ void ASimModeBase::initializeCameraDirector(const FTransform& camera_transform, 
 
 void ASimModeBase::initializeExternalCameras()
 {
-     //UStaticMeshComponent* bodyMesh = UAirBlueprintLib::GetActorComponent<UStaticMeshComponent>(this, TEXT("BodyMesh"));
-    // USceneComponent* bodyMesh = params_.pawn->GetRootComponent();
     FActorSpawnParameters camera_spawn_params;
     camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     const auto& transform = getGlobalNedTransform();
@@ -472,16 +470,13 @@ void ASimModeBase::initializeExternalCameras()
         const auto& setting = camera_setting_pair.second;
 
         //get pose
-        FVector position = transform.fromLocalNed(
-            NedTransform::Vector3r(setting.position.x(), setting.position.y(), setting.position.z()))
-            - transform.fromLocalNed(NedTransform::Vector3r(0.0, 0.0, 0.0));
+        FVector position = transform.fromLocalNed(setting.position) - transform.fromLocalNed(Vector3r::Zero());
         FTransform camera_transform(FRotator(setting.rotation.pitch, setting.rotation.yaw, setting.rotation.roll),
             position, FVector(1., 1., 1.));
 
         //spawn and attach camera to pawn
         camera_spawn_params.Name = FName(("external_" + camera_setting_pair.first).c_str());
         APIPCamera* camera = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class, camera_transform, camera_spawn_params);
-        // camera->AttachToComponent(bodyMesh, FAttachmentTransformRules::KeepRelativeTransform);
 
         camera->setupCameraFromSettings(setting, transform);
 
@@ -528,7 +523,7 @@ const UnrealImageCapture* ASimModeBase::getImageCapture(const std::string& vehic
     if (external)
         return external_image_capture_.get();
     else
-        getVehicleSimApi(vehicle_name)->getImageCapture();
+        return getVehicleSimApi(vehicle_name)->getImageCapture();
 }
 
 //API server start/stop
@@ -742,7 +737,6 @@ void ASimModeBase::setupVehiclesAndCamera()
 
     // Create External Cameras
     initializeExternalCameras();
-    // external_image_capture_.reset(new UnrealImageCapture(&external_cameras_));
     external_image_capture_ = std::make_unique<UnrealImageCapture>(&external_cameras_);
 
     if (getApiProvider()->hasDefaultVehicle()) {

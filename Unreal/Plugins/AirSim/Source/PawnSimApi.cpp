@@ -130,9 +130,7 @@ void PawnSimApi::createCamerasFromSettings()
         const auto& setting = camera_setting_pair.second;
 
         //get pose
-        FVector position = transform.fromLocalNed(
-                               NedTransform::Vector3r(setting.position.x(), setting.position.y(), setting.position.z())) -
-                           transform.fromLocalNed(NedTransform::Vector3r(0.0, 0.0, 0.0));
+        FVector position = transform.fromLocalNed(setting.position) - transform.fromLocalNed(Vector3r::Zero());
         FTransform camera_transform(FRotator(setting.rotation.pitch, setting.rotation.yaw, setting.rotation.roll),
                                     position,
                                     FVector(1., 1., 1.));
