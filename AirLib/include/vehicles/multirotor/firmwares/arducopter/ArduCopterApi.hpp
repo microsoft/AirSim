@@ -338,10 +338,29 @@ private:
         if (sensors_ == nullptr)
             return;
 
-        const auto& gps_output = getGpsData("");
-        const auto& imu_output = getImuData("");
-
         std::ostringstream oss;
+
+        const uint count_gps_sensors = sensors_->size(SensorBase::SensorType::Gps);
+        if (count_gps_sensors != 0) {
+            const auto& gps_output = getGpsData("");
+
+            oss << ","
+                   "\"gps\": {"
+                << std::fixed << std::setprecision(7)
+                << "\"lat\":" << gps_output.gnss.geo_point.latitude << ","
+                << "\"lon\":" << gps_output.gnss.geo_point.longitude << ","
+                << std::setprecision(3) << "\"alt\":" << gps_output.gnss.geo_point.altitude
+                << "},"
+
+                << "\"velocity\": {"
+                << std::setprecision(12)
+                << "\"world_linear_velocity\": [" 
+                << gps_output.gnss.velocity[0] << ","
+                << gps_output.gnss.velocity[1] << ","
+                << gps_output.gnss.velocity[2] << "]"
+                "}";
+        }
+
 
         // Send RC channels to Ardupilot if present
         if (is_rc_connected_ && last_rcData_.is_valid) {
@@ -402,30 +421,22 @@ private:
             oss << "]}";
         }
 
+        const auto& imu_output = getImuData("");
+
         float yaw;
         float pitch;
         float roll;
         VectorMath::toEulerianAngle(imu_output.orientation, pitch, roll, yaw);
 
+        // UDP packets have a maximum size limit of 65kB
         char buf[65000];
 
-        // TODO: Split the following sensor packet formation into different parts for individual sensors
-
-        // UDP packets have a maximum size limit of 65kB
         int ret = snprintf(buf, sizeof(buf),
                            "{"
                            "\"timestamp\": %" PRIu64 ","
                            "\"imu\": {"
                            "\"angular_velocity\": [%.12f, %.12f, %.12f],"
                            "\"linear_acceleration\": [%.12f, %.12f, %.12f]"
-                           "},"
-                           "\"gps\": {"
-                           "\"lat\": %.7f,"
-                           "\"lon\": %.7f,"
-                           "\"alt\": %.3f"
-                           "},"
-                           "\"velocity\": {"
-                           "\"world_linear_velocity\": [%.12f, %.12f, %.12f]"
                            "},"
                            "\"pose\": {"
                            "\"roll\": %.12f,"
@@ -441,21 +452,15 @@ private:
                            imu_output.linear_acceleration[0],
                            imu_output.linear_acceleration[1],
                            imu_output.linear_acceleration[2],
-                           gps_output.gnss.geo_point.latitude,
-                           gps_output.gnss.geo_point.longitude,
-                           gps_output.gnss.geo_point.altitude,
-                           gps_output.gnss.velocity[0],
-                           gps_output.gnss.velocity[1],
-                           gps_output.gnss.velocity[2],
                            roll, pitch, yaw,
                            oss.str().c_str());
 
         if (ret < 0) {
-            Utils::log("Encoding error while forming sensor message", Utils::kLogLevelInfo);
+            Utils::log("Encoding error while forming sensor message", Utils::kLogLevelError);
             return;
         }
         else if (static_cast<uint>(ret) >= sizeof(buf)) {
-            Utils::log(Utils::stringf("Sensor message truncated, lost %d bytes", ret - sizeof(buf)), Utils::kLogLevelInfo);
+            Utils::log(Utils::stringf("Sensor message truncated, lost %d bytes", ret - sizeof(buf)), Utils::kLogLevelWarn);
         }
 
         // Send data
