@@ -50,7 +50,7 @@ int main()
                 if (path != "") {
                     std::string file_path = FileSystem::combine(path, std::to_string(image_info.time_stamp));
                     if (image_info.pixels_as_float) {
-                        Utils::writePfmFile(image_info.image_data_float.data(), image_info.width, image_info.height,
+                        Utils::writePFMfile(image_info.image_data_float.data(), image_info.width, image_info.height,
                             file_path + ".pfm");
                     }
                     else {
