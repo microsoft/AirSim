@@ -284,13 +284,13 @@ namespace AirSimUnity {
             return false;
         }
 
-        public bool setDistortionParam(string cameraName, string paramName, float value)
+        public bool SetDistortionParam(string cameraName, string paramName, float value)
         {
             // not implemented
             return false;
         }
 
-        public bool getDistortionParams(string cameraName)
+        public bool GetDistortionParams(string cameraName)
         {
             // not implemented
             return false;

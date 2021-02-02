@@ -13,8 +13,8 @@ namespace AirSimUnity {
         [DllImport(DLL_NAME)]
         public static extern void InitVehicleManager(IntPtr SetPose, IntPtr GetPose, IntPtr GetCollisionInfo, IntPtr GetRCData,
             IntPtr GetSimImages, IntPtr SetRotorSpeed, IntPtr SetEnableApi, IntPtr SetCarApiControls, IntPtr GetCarState,
-            IntPtr GetCameraInfo, IntPtr SetCameraPose, IntPtr SetCameraFoV, IntPtr setDistortionParam, IntPtr getDistortionParams,
-            IntPtr setSegmentationObjectId, IntPtr getSegmentationObjectId, IntPtr PrintLogMessage, IntPtr GetTransformFromUnity, 
+            IntPtr GetCameraInfo, IntPtr SetCameraPose, IntPtr SetCameraFoV, IntPtr SetDistortionParam, IntPtr GetDistortionParams,
+            IntPtr SetSegmentationObjectId, IntPtr GetSegmentationObjectId, IntPtr PrintLogMessage, IntPtr GetTransformFromUnity, 
             IntPtr Reset, IntPtr GetVelocity, IntPtr GetRayCastHit, IntPtr Pause);
 
         [DllImport(DLL_NAME)]
