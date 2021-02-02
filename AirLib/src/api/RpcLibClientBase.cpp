@@ -325,6 +325,11 @@ void RpcLibClientBase::simContinueForTime(double seconds)
     pimpl_->client.call("simContinueForTime", seconds);
 }
 
+void RpcLibClientBase::simContinueForFrames(uint32_t frames)
+{
+    pimpl_->client.call("simContinueForFrames", frames);
+}
+
 void RpcLibClientBase::simEnableWeather(bool enable)
 {
     pimpl_->client.call("simEnableWeather", enable);

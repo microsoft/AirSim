@@ -91,6 +91,16 @@ public:
         world_.continueForTime(seconds);
     }
 
+    void continueForFrames(uint32_t frames)
+    {
+        world_.continueForFrames(frames);
+    }
+
+    void setFrameNumber(uint32_t frameNumber)
+    {
+        world_.setFrameNumber(frameNumber);
+    }
+
 private:
     void initializeWorld(const std::vector<UpdatableObject*>& bodies, bool start_async_updator)
     {

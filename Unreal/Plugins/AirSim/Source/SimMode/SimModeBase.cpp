@@ -287,6 +287,13 @@ void ASimModeBase::continueForTime(double seconds)
     throw std::domain_error("continueForTime is not implemented by SimMode");
 }
 
+void ASimModeBase::continueForFrames(uint32_t frames)
+{
+    //should be overriden by derived class
+    unused(frames);
+    throw std::domain_error("continueForFrames is not implemented by SimMode");
+}
+
 void ASimModeBase::setWind(const msr::airlib::Vector3r& wind) const
 {
     // should be overridden by derived class

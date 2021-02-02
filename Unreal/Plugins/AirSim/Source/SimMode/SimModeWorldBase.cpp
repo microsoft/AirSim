@@ -100,6 +100,23 @@ void ASimModeWorldBase::continueForTime(double seconds)
     UGameplayStatics::SetGamePaused(this->GetWorld(), true);
 }
 
+void ASimModeWorldBase::continueForFrames(uint32_t frames)
+{
+    if(physics_world_->isPaused())
+    {
+        physics_world_->pause(false);
+        UGameplayStatics::SetGamePaused(this->GetWorld(), false);        
+    }
+    
+    physics_world_->setFrameNumber((uint32_t)GFrameNumber);
+    physics_world_->continueForFrames(frames);
+    while(!physics_world_->isPaused())
+    {
+        physics_world_->setFrameNumber((uint32_t)GFrameNumber);
+    }
+    UGameplayStatics::SetGamePaused(this->GetWorld(), true);
+}
+
 void ASimModeWorldBase::setWind(const msr::airlib::Vector3r& wind) const
 {
     physics_engine_->setWind(wind);
