@@ -225,6 +225,16 @@ public: //methods
 		grounded_ = grounded;
 	}
 
+	void lock()
+	{
+		mutex_.lock();
+	}
+
+	void unlock()
+	{
+		mutex_.unlock();
+	}
+
 public:
     //for use in physics engine: //TODO: use getter/setter or friend method?
     TTimePoint last_kinematics_time;
@@ -243,6 +253,7 @@ private:
     CollisionResponse collision_response_;
 
 	bool grounded_ = false;
+	std::mutex mutex_;
 };
 
 }} //namespace
