@@ -2,6 +2,28 @@
 
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
+### Jan 2021
+
+* Latest release `v1.4.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.4.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.4.0-linux)
+
+### Dec 2020
+
+* [Add Actions script to build and deploy to gh-pages](https://github.com/microsoft/AirSim/pull/3224)
+* [Gym environments and stable-baselines integration for RL](https://github.com/microsoft/AirSim/pull/3215)
+* [Programmable camera distortion](https://github.com/microsoft/AirSim/pull/3039)
+* [Voxel grid construction](https://github.com/microsoft/AirSim/pull/3209)
+* [Event camera simulation](https://github.com/microsoft/AirSim/pull/3202)
+* [Add Github Actions CI Checks](https://github.com/microsoft/AirSim/pull/3180)
+* [Added moveByVelocityBodyFrame](https://github.com/microsoft/AirSim/pull/3169)
+
+### Nov 2020
+
+* [fix auto-detect of pixhawk 4 hardware](https://github.com/microsoft/AirSim/pull/3156)
+
+### Oct 2020
+
+* [\[Travis\] Add Ubuntu 20.04, OSX XCode 11.5 jobs](https://github.com/microsoft/AirSim/pull/2953)
+
 ### Sep 2020
 
 * [Add Vehicle option for Subwindow settings](https://github.com/microsoft/AirSim/pull/2841)
