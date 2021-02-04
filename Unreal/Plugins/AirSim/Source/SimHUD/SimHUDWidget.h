@@ -46,6 +46,9 @@ public:
 
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool initializeForPlay();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
+		bool maximizeSubWindow(int window_index);
 protected:
     UFUNCTION(BlueprintImplementableEvent, Category = "C++ Interface")
         bool setReportContainerVisibility(bool is_visible);
