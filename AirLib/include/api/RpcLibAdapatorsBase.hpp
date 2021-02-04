@@ -85,8 +85,9 @@ public:
         msr::airlib::RotorVector to() const
         {
             msr::airlib::RotorVector d;
-            for (unsigned int i = 0; i < d.rotor.size(); i++)
+            for (unsigned int i = 0; i < rotor.size(); i++)
             {
+                d.rotor.push_back(msr::airlib::RotorParameters());
                 d.rotor[i].speed = rotor[i].speed;
                 d.rotor[i].thrust = rotor[i].thrust;
                 d.rotor[i].torque_scaler = rotor[i].torque_scaler;
