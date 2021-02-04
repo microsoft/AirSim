@@ -268,8 +268,17 @@ void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetim
         celestial_clock_speed, update_interval_secs, move_sun);
 }
 
-bool WorldSimApi::createVehicleAtRuntime(AirSimSettings::VehicleSetting& vehicle_setting)
+bool WorldSimApi::createVehicleAtRuntime(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path)
 {
+    // Create settings object
+    AirSimSettings::VehicleSetting vehicle_setting;
+
+    vehicle_setting.vehicle_name = vehicle_name;
+    vehicle_setting.vehicle_type = vehicle_type;
+    vehicle_setting.pawn_path = pawn_path;
+    vehicle_setting.position = pose.position;
+    VectorMath::toEulerianAngle(pose.orientation, vehicle_setting.rotation.pitch, vehicle_setting.rotation.roll, vehicle_setting.rotation.yaw);
+
     bool result;
 	
     // We need to run this code on the main game thread, since it iterates over actors
