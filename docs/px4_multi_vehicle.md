@@ -78,6 +78,7 @@ Here is how you would do so:
     ```
     cd PX4
     mkdir -p Scripts
+    cd Scripts
     wget https://raw.githubusercontent.com/microsoft/AirSim/main/PX4Scripts/sitl_kill.sh
     wget https://raw.githubusercontent.com/microsoft/AirSim/main/PX4Scripts/run_airsim_sitl.sh
     ```
