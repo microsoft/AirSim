@@ -100,7 +100,7 @@ public:
     vector<uint8_t> simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name = "");
 
     vector<MeshPositionVertexBuffersResponse> simGetMeshPositionVertexBuffers();
-    bool simAddVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const std::string& pawn_path, float north, float east, float down);
+    bool simAddVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "");
 
     CollisionInfo simGetCollisionInfo(const std::string& vehicle_name = "") const;
 
