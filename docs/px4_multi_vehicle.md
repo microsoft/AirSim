@@ -79,11 +79,11 @@ Here is how you would do so:
     cd PX4
     mkdir -p Scripts
     cd Scripts
-    wget https://raw.githubusercontent.com/microsoft/AirSim/main/PX4Scripts/sitl_kill.sh
-    wget https://raw.githubusercontent.com/microsoft/AirSim/main/PX4Scripts/run_airsim_sitl.sh
+    wget https://raw.githubusercontent.com/microsoft/AirSim/master/PX4Scripts/sitl_kill.sh
+    wget https://raw.githubusercontent.com/microsoft/AirSim/master/PX4Scripts/run_airsim_sitl.sh
     ```
-    **Note** the shell scripts expect the `Scripts` and `Firmware` directories to be within the same parent directory
-2. Run the `sitl_kill.sh` script to kill all active PX4 SITL instances
+    **Note** the shell scripts expect the `Scripts` and `Firmware` directories to be within the same parent directory. Also, you may need to make the scripts executable by running `chmod +x sitl_kill.sh` and `chmod +x run_airsim_sitl.sh`.
+2. Run the `sitl_kill.sh` script to kill all active PX4 SITL instances 
     ```
     ./sitl_kill.sh
     ```
