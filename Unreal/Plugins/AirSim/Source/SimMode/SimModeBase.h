@@ -111,6 +111,8 @@ protected: //must overrides
         const PawnSimApi* sim_api) const;
 
 protected: //optional overrides
+    virtual APawn* createVehiclePawn(const AirSimSettings::VehicleSetting& vehicle_setting);
+    virtual std::unique_ptr<PawnSimApi> createVehicleApi(APawn* vehicle_pawn);
     virtual void setupVehiclesAndCamera();
     virtual void setupInputBindings();
     //called when SimMode should handle clock speed setting
