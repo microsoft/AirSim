@@ -6,7 +6,6 @@ import os
 import inspect
 import types
 import re
-import cv2      # pip install opencv-python
 import logging
 
 from .types import *
@@ -202,6 +201,8 @@ def write_pfm(file, image, scale=1):
 def write_png(filename, image):
     """ image must be numpy array H X W X channels
     """
+    import cv2      # pip install opencv-python
+
     ret = cv2.imwrite(filename, image)
     if not ret:
         logging.error(f"Writing PNG file {filename} failed")

@@ -27,6 +27,7 @@ public:
     virtual void reset() override;
     virtual void pause(bool is_paused) override;
     virtual void continueForTime(double seconds) override;
+    virtual void continueForFrames(uint32_t frames) override;
 
     virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
         float celestial_clock_speed, float update_interval_secs, bool move_sun);
@@ -65,6 +66,7 @@ public:
     virtual bool isRecording() const override;
 
     virtual void setWind(const Vector3r& wind) const override;
+    virtual bool createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file) override;
 
 private:
     AActor* createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);
@@ -73,4 +75,5 @@ private:
 private:
     ASimModeBase* simmode_;
     ULevelStreamingDynamic* current_level_;
+    std::vector<bool> voxel_grid_;
 };

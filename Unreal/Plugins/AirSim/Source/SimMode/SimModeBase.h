@@ -15,7 +15,6 @@
 #include "PawnSimApi.h"
 #include "common/StateReporterWrapper.hpp"
 #include "LoadingScreenWidget.h"
-
 #include "SimModeBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
@@ -61,6 +60,7 @@ public:
     virtual bool isPaused() const;
     virtual void pause(bool is_paused);
     virtual void continueForTime(double seconds);
+    virtual void continueForFrames(uint32_t frames);
 
     virtual void setWind(const msr::airlib::Vector3r& wind) const;
 
@@ -124,7 +124,6 @@ protected: //Utility methods for derived classes
 
 protected:
     int record_tick_count;
-
     UPROPERTY() UClass* pip_camera_class;
     UPROPERTY() UParticleSystem* collision_display_template;
 

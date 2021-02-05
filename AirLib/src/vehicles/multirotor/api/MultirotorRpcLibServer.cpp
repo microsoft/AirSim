@@ -54,6 +54,11 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(ApiProvider* api_provider, string
         return getVehicleApi(vehicle_name)->goHome(timeout_sec); 
     });
     (static_cast<rpc::server*>(getServer()))->
+        bind("moveByVelocityBodyFrame", [&](float vx, float vy, float vz, float duration, DrivetrainType drivetrain,
+            const MultirotorRpcLibAdapators::YawMode& yaw_mode, const std::string& vehicle_name) -> bool {
+        return getVehicleApi(vehicle_name)->moveByVelocityBodyFrame(vx, vy, vz, duration, drivetrain, yaw_mode.to());
+    });
+    (static_cast<rpc::server*>(getServer()))->
         bind("moveByMotorPWMs", [&](float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration, const std::string& vehicle_name) ->
         bool { return getVehicleApi(vehicle_name)->moveByMotorPWMs(front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm, duration);
     });

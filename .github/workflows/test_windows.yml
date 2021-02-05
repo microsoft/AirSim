@@ -1,0 +1,25 @@
+name: Windows Build
+
+# Controls when the action will run.
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Enable Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1.4.1
+
+      - name: Build AirLib
+        shell: cmd
+        run: build.cmd
+
+      - name: Unity build
+        shell: cmd
+        run: |
+          cd Unity
+          build.cmd

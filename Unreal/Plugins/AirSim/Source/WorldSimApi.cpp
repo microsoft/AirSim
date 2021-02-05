@@ -161,6 +161,79 @@ AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, c
     return NewActor;
 }
 
+bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
+{
+    bool success = false;
+    int ncells_x = x_size / res;
+    int ncells_y = y_size / res;
+    int ncells_z = z_size / res;
+    
+    voxel_grid_.resize(ncells_x * ncells_y * ncells_z);
+
+    float scale_cm = res * 100;
+    FCollisionQueryParams params;
+    params.bFindInitialOverlaps = true;
+    params.bTraceComplex = false;
+    params.TraceTag = "";
+    auto position_in_UE_frame = simmode_->getGlobalNedTransform().fromGlobalNed(position);
+    for (float i = 0; i < ncells_x; i++) {
+        for (float k = 0; k < ncells_z; k++) {
+            for (float j = 0; j < ncells_y; j++) {
+                int idx = i + ncells_x * (k + ncells_z * j);
+                FVector position = FVector((i - ncells_x /2) * scale_cm, (j - ncells_y /2) * scale_cm, (k - ncells_z /2) * scale_cm) + position_in_UE_frame;
+                voxel_grid_[idx] = simmode_->GetWorld()->OverlapBlockingTestByChannel(position, FQuat::Identity, ECollisionChannel::ECC_Pawn, FCollisionShape::MakeBox(FVector(scale_cm /2)), params);
+            }
+        }
+    }
+    
+    std::ofstream output(output_file, std::ios::out | std::ios::binary);
+    if (!output.good())
+    {
+        UE_LOG(LogTemp, Error, TEXT("Could not open output file to write voxel grid!"));
+        return success;
+    }
+
+    // Write the binvox file using run-length encoding
+    // where each pair of bytes is of the format (run value, run length)
+    output << "#binvox 1\n";
+    output << "dim " << ncells_x << " " << ncells_z << " " << ncells_y << "\n";
+    output << "translate " << -x_size * 0.5 << " " << -y_size * 0.5 << " " << -z_size * 0.5 << "\n";
+    output << "scale " << 1.0f/x_size << "\n";
+    output << "data\n";
+    bool run_value = voxel_grid_[0];
+    unsigned int run_length = 0;
+    for (size_t i = 0; i < voxel_grid_.size(); ++i)
+    {
+        if (voxel_grid_[i] == run_value)
+        {
+            // This is a run (repeated bit value)
+            run_length++;
+            if (run_length == 255)
+            {
+                output << static_cast<char>(run_value);
+                output << static_cast<char>(run_length);
+                run_length = 0;
+            }
+        }
+        else
+        {
+            // End of a run
+            output << static_cast<char>(run_value);
+            output << static_cast<char>(run_length);
+            run_value = voxel_grid_[i];
+            run_length = 1;
+        }
+    }
+    if (run_length > 0)
+    {
+        output << static_cast<char>(run_value);
+        output << static_cast<char>(run_length);
+    }
+    output.close();
+    success = true;
+    return success;
+}
+
 bool WorldSimApi::isPaused() const
 {
     return simmode_->isPaused();
@@ -181,6 +254,11 @@ void WorldSimApi::pause(bool is_paused)
 void WorldSimApi::continueForTime(double seconds)
 {
     simmode_->continueForTime(seconds);
+}
+
+void WorldSimApi::continueForFrames(uint32_t frames)
+{
+    simmode_->continueForFrames(frames);
 }
 
 void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,

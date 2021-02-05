@@ -325,6 +325,11 @@ void RpcLibClientBase::simContinueForTime(double seconds)
     pimpl_->client.call("simContinueForTime", seconds);
 }
 
+void RpcLibClientBase::simContinueForFrames(uint32_t frames)
+{
+    pimpl_->client.call("simContinueForFrames", frames);
+}
+
 void RpcLibClientBase::simEnableWeather(bool enable)
 {
     pimpl_->client.call("simEnableWeather", enable);
@@ -398,6 +403,16 @@ void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, float fov
     pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name);
 }
 
+void RpcLibClientBase::simSetDistortionParam(const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name)
+{
+    pimpl_->client.call("simSetDistortionParam", camera_name, param_name, value, vehicle_name);
+}
+
+std::vector<float> RpcLibClientBase::simGetDistortionParams(const std::string& camera_name, const std::string& vehicle_name)
+{
+    return pimpl_->client.call("simGetDistortionParams", camera_name, vehicle_name).as<std::vector<float>>();
+}
+
 msr::airlib::Kinematics::State RpcLibClientBase::simGetGroundTruthKinematics(const std::string& vehicle_name) const
 {
     return pimpl_->client.call("simGetGroundTruthKinematics", vehicle_name).as<RpcLibAdapatorsBase::KinematicsState>().to();
@@ -406,6 +421,11 @@ msr::airlib::Environment::State RpcLibClientBase::simGetGroundTruthEnvironment(c
 {
     return pimpl_->client.call("simGetGroundTruthEnvironment", vehicle_name).as<RpcLibAdapatorsBase::EnvironmentState>().to();;
 }
+bool RpcLibClientBase::simCreateVoxelGrid(const msr::airlib::Vector3r& position, const int& x, const int& y, const int& z, const float& res, const std::string& output_file)
+{
+    return pimpl_->client.call("simCreateVoxelGrid", RpcLibAdapatorsBase::Vector3r(position), x, y, z, res, output_file).as<bool>();
+}
+
 
 void RpcLibClientBase::cancelLastTask(const std::string& vehicle_name)
 {

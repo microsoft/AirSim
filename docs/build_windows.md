@@ -4,9 +4,9 @@
 
 1. [Download](https://www.unrealengine.com/download) the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.
 2. Run the Epic Games Launcher, open the `Unreal Engine` tab on the left pane.
-Click on the `Install` button on the top right, which should show the option to download **Unreal Engine >= 4.24**. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then **make sure the version you are using is set to `current`** by clicking down arrow next to the Launch button for the version.
+Click on the `Install` button on the top right, which should show the option to download **Unreal Engine >= 4.25**. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then **make sure the version you are using is set to `current`** by clicking down arrow next to the Launch button for the version.
 
-   **Note**: AirSim also works with UE >= 4.22, however, we recommend you update to >= 4.24.
+   **Note**: AirSim also works with UE >= 4.25, however, we recommend 4.25.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ![Unreal Engine Tab UI Screenshot](images/ue_install.png)
@@ -39,7 +39,10 @@ Once AirSim is set up by following above steps, you can,
 
 1. Double click on .sln file to load the Blocks project in `Unreal\Environments\Blocks` (or .sln file in your own [custom](unreal_custenv.md) Unreal project). If you don't see .sln file then you probably haven't completed steps in Build Unreal Project section above.
 2. Select your Unreal project as Start Up project (for example, Blocks project) and make sure Build config is set to "Develop Editor" and x64.
-3. After Unreal Editor loads, press Play button. Tip: go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
+3. After Unreal Editor loads, press Play button. 
+
+!!! tip
+    Go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
 
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available.
 
@@ -50,9 +53,9 @@ See [Using APIs](apis.md) and [settings.json](settings.md) for various options a
 
 ### How to force Unreal to use Visual Studio 2019?
 
-If the default `update_from_git.bat` file results in VS 2017 project, then you may need to run the `C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\DotNET\UnrealBuildTool.exe` tool manually, with the command line options `-projectfiles -project=<your.uproject>  -game -rocket -progress -2019`.
+If the default `update_from_git.bat` file results in VS 2017 project, then you may need to run the `C:\Program Files\Epic Games\UE_4.25\Engine\Binaries\DotNET\UnrealBuildTool.exe` tool manually, with the command line options `-projectfiles -project=<your.uproject>  -game -rocket -progress -2019`.
 
-If you are upgrading from 4.18 to 4.24 you may also need to add `BuildSettingsVersion.V2` to your `*.Target.cs` and `*Editor.Target.cs` build files, like this:
+If you are upgrading from 4.18 to 4.25 you may also need to add `BuildSettingsVersion.V2` to your `*.Target.cs` and `*Editor.Target.cs` build files, like this:
 
 ```c#
 	public AirSimNHTestTarget(TargetInfo Target) : base(Target)
@@ -78,6 +81,10 @@ And add this Compiler version setting:
   </WindowsPlatform>
 </Configuration>
 ```
+
+### I get error: 'where' is not recognized as an internal or external command
+
+You have to add `C:\WINDOWS\SYSTEM32` to your PATH enviroment variable.
 
 ### I'm getting error `<MyProject> could not be compiled. Try rebuilding from source manually`
 

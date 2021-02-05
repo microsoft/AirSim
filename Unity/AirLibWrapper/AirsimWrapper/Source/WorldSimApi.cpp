@@ -30,6 +30,11 @@ void WorldSimApi::continueForTime(double seconds)
 	simmode_->continueForTime(seconds);
 }
 
+void WorldSimApi::continueForFrames(uint32_t frames)
+{
+	simmode_->continueForFrames(frames);
+}
+
 void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
     float celestial_clock_speed, float update_interval_secs, bool move_sun)
 {
@@ -101,6 +106,11 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     unused(param);
     unused(val);
     //TODO: implement weather for Unity
+}
+
+bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
+{
+    return false;
 }
 
 //----------------Plotting APIs-----------/

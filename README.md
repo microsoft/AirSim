@@ -14,24 +14,10 @@ Cars in AirSim
 
 [![AirSim Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
 
-## What's New
-
-* Latest release `v1.3.1` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-linux)
-* Upgraded to Unreal Engine 4.24, Visual Studio 2019, Clang 8, C++ 17 standard
-* Mac OSX Catalina support
-* Updated [airsim](https://pypi.org/project/airsim/) Python package, with lots of new APIs
-* [Removed legacy API wrappers](https://github.com/microsoft/AirSim/pull/2494)
-* [Support for latest PX4 stable release](https://microsoft.github.io/AirSim/px4_setup/)
-* Support for [ArduPilot](https://ardupilot.org/ardupilot/) - [Copter, Rover vehicles](https://ardupilot.org/dev/docs/sitl-with-airsim.html)
-* [Updated Unity support](https://microsoft.github.io/AirSim/Unity/)
-* [Removed simChar* APIs](https://github.com/microsoft/AirSim/pull/2493)
-* [Plotting APIs for Debugging](https://github.com/microsoft/AirSim/pull/2304)
-* ROS wrapper for multirotors is available. See [airsim_ros_pkgs](https://microsoft.github.io/AirSim/airsim_ros_pkgs/) for the ROS API, and [airsim_tutorial_pkgs](https://microsoft.github.io/AirSim/airsim_tutorial_pkgs/) for tutorials.
-* Added support for [docker in ubuntu](https://microsoft.github.io/AirSim/docker_ubuntu/)
-
-For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
 ## How to Get It
+
+[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
 
 ### Windows
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
@@ -44,7 +30,7 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 ### macOS
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
-[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
+For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 
 
 ## How to Use It
 
@@ -125,7 +111,6 @@ Please take a look at [open issues](https://github.com/microsoft/airsim/issues) 
 * [More on AirSim design](https://microsoft.github.io/AirSim/design)
 * [More on code structure](https://microsoft.github.io/AirSim/code_structure)
 * [Contribution Guidelines](CONTRIBUTING.md)
-* [Trello Board](https://trello.com/b/1t2qCeaA/wishlist-by-community-for-community)
 
 ### Who is Using AirSim?
 
@@ -135,10 +120,30 @@ We are maintaining a [list](https://microsoft.github.io/AirSim/who_is_using) of 
 
 Join the AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
 
+
+## What's New
+
+- [Python wrapper for Open AI gym interfaces.](https://github.com/microsoft/AirSim/pull/3215)
+- [Python wrapper for Event camera simulation](https://github.com/microsoft/AirSim/pull/3202)
+- [Voxel grid construction](https://github.com/microsoft/AirSim/pull/3209)
+- [Programmable camera distortion](https://github.com/microsoft/AirSim/pull/3039)
+- [Wind simulation](https://github.com/microsoft/AirSim/pull/2867)
+- [Azure development environment with documentation](https://github.com/microsoft/AirSim/pull/2816)
+- ROS wrapper for [multirotor](https://github.com/microsoft/AirSim/blob/master/docs/airsim_ros_pkgs.md) and [car](https://github.com/microsoft/AirSim/pull/2743).
+
+For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
+
 ## FAQ
 
 If you run into problems, check the [FAQ](https://microsoft.github.io/AirSim/faq) and feel free to post issues in the  [AirSim](https://github.com/Microsoft/AirSim/issues) repository.
 
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+
 ## License
 
 This project is released under the MIT License. Please review the [License file](LICENSE) for more details.
+
+

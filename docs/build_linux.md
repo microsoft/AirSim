@@ -18,11 +18,11 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
 
 - Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required to get source code access for Unreal Engine.
 
-- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.22 at present. We recommend using 4.24.
+- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.25 at present. We recommend using 4.25.
 
 ```bash
 # go to the folder where you clone GitHub projects
-git clone -b 4.24 https://github.com/EpicGames/UnrealEngine.git
+git clone -b 4.25 https://github.com/EpicGames/UnrealEngine.git
 cd UnrealEngine
 ./Setup.sh
 ./GenerateProjectFiles.sh
@@ -33,9 +33,9 @@ make
 
 1. [Download](https://www.unrealengine.com/download) the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.
 2. Run the Epic Games Launcher, open the `Library` tab on the left pane.
-Click on the `Add Versions` which should show the option to download **Unreal 4.24** as shown below. If you have multiple versions of Unreal installed then **make sure 4.24 is set to `current`** by clicking down arrow next to the Launch button for the version.
+Click on the `Add Versions` which should show the option to download **Unreal 4.25** as shown below. If you have multiple versions of Unreal installed then **make sure 4.25 is set to `current`** by clicking down arrow next to the Launch button for the version.
 
-   **Note**: AirSim also works with UE >= 4.22, however, we recommend you update to 4.24.
+   **Note**: AirSim also works with UE >= 4.25, however, we recommend 4.25.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ### Build AirSim
@@ -48,7 +48,7 @@ git clone https://github.com/Microsoft/AirSim.git
 cd AirSim
 ```
 
-  By default AirSim uses clang 8 to build for compatibility with UE 4.24. The setup script will install the right version of cmake, llvm, and eigen.
+  By default AirSim uses clang 8 to build for compatibility with UE 4.25. The setup script will install the right version of cmake, llvm, and eigen.
 
 ```bash
 ./setup.sh
@@ -75,12 +75,14 @@ Once AirSim is setup:
 ### Mac
 
 - Browse to `AirSim/Unreal/Environments/Blocks`.
-- Run `./GenerateProjectFiles.sh <UE_PATH>` from the terminal, where `UE_PATH` is the path to the Unreal installation folder. (By default, this is `/Users/Shared/Epic\ Games/UE_4.24/`) The script creates an XCode workspace by the name Blocks.xcworkspace.
+- Run `./GenerateProjectFiles.sh <UE_PATH>` from the terminal, where `UE_PATH` is the path to the Unreal installation folder. (By default, this is `/Users/Shared/Epic\ Games/UE_4.25/`) The script creates an XCode workspace by the name Blocks.xcworkspace.
 - Open the XCode workspace, and press the Build and run button in the top left.
 - After Unreal Editor loads, press Play button.
 
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available for AirSim usage.
-Tip: go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
+
+!!! tip
+    Go to 'Edit->Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
 
 ### [Optional] Setup Remote Control (Multirotor Only)
 

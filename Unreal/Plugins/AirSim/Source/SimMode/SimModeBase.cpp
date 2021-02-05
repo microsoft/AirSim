@@ -65,8 +65,7 @@ ASimModeBase::ASimModeBase()
 
     }
     else
-        loading_screen_widget_ = nullptr;
-
+        loading_screen_widget_ = nullptr;    
 }
 
 void ASimModeBase::toggleLoadingScreen(bool is_visible)
@@ -220,7 +219,7 @@ void ASimModeBase::initializeTimeOfDay()
         sky_sphere_ = sky_spheres[0];
         static const FName sun_prop_name(TEXT("Directional light actor"));
         auto* p = sky_sphere_class_->FindPropertyByName(sun_prop_name);
-        UObjectProperty* sun_prop = Cast<UObjectProperty>(p);
+        FObjectProperty* sun_prop = CastFieldChecked<FObjectProperty>(p);
         UObject* sun_obj = sun_prop->GetObjectPropertyValue_InContainer(sky_sphere_);
         sun_ = Cast<ADirectionalLight>(sun_obj);
         if (sun_)
@@ -286,6 +285,13 @@ void ASimModeBase::continueForTime(double seconds)
     //should be overridden by derived class
     unused(seconds);
     throw std::domain_error("continueForTime is not implemented by SimMode");
+}
+
+void ASimModeBase::continueForFrames(uint32_t frames)
+{
+    //should be overriden by derived class
+    unused(frames);
+    throw std::domain_error("continueForFrames is not implemented by SimMode");
 }
 
 void ASimModeBase::setWind(const msr::airlib::Vector3r& wind) const
