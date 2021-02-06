@@ -111,12 +111,13 @@ By default, Distance Sensor points to the front of the vehicle. It can be pointe
 
 Configurable Parameters -
 
-Parameter        | Description
------------------|------------
-X Y Z            | Position of the sensor relative to the vehicle (in NED, in meters) (Default (0,0,0)-Multirotor, (0,0,-1)-Car)
-Yaw Pitch Roll   | Orientation of the sensor relative to the vehicle (degrees) (Default (0,0,0))
-MinDistance      | Minimum distance measured by distance sensor (metres, only used to fill Mavlink message for PX4) (Default 0.2m)
-MaxDistance      | Maximum distance measured by distance sensor (metres) (Default 40.0m)
+Parameter           | Description
+--------------------|------------
+X Y Z               | Position of the sensor relative to the vehicle (in NED, in meters) (Default (0,0,0)-Multirotor, (0,0,-1)-Car)
+Yaw Pitch Roll      | Orientation of the sensor relative to the vehicle (degrees) (Default (0,0,0))
+MinDistance         | Minimum distance measured by distance sensor (metres, only used to fill Mavlink message for PX4) (Default 0.2m)
+MaxDistance         | Maximum distance measured by distance sensor (metres) (Default 40.0m)
+ExternalController  | Whether data is to be sent to external controller such as ArduPilot or PX4 if being used (default `true`)
 
 For example, to make the sensor point towards the ground (for altitude measurement similar to barometer), the orientation can be modified as follows -
 
