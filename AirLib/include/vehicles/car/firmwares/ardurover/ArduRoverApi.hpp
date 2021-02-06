@@ -15,7 +15,8 @@
 #include "sensors/gps/GpsBase.hpp"
 #include "sensors/magnetometer/MagnetometerBase.hpp"
 #include "sensors/barometer/BarometerBase.hpp"
-#include "sensors/lidar/LidarBase.hpp"
+#include "sensors/distance/DistanceSimple.hpp"
+#include "sensors/lidar/LidarSimple.hpp"
 
 #include "UdpSocket.hpp"
 
@@ -212,18 +213,19 @@ private:
                     "\"rng\": {"
                     "\"distances\": [";
 
-            // Add the first sensor separately since otherwise there's an extra ","
-            // Which leads to AP counting an extra sensor, and if there are 10 sensors (AP supports upto 10), last one will get ignored
-            auto distance_output = getDistanceSensorData("");
-            oss << distance_output.distance;
+            // Used to avoid trailing comma
+            std::string sep = "";
 
-            // Add remaining sensors in the array
-            for (uint i=1; i<count_distance_sensors; ++i) {
-                const auto* distance_sensor = static_cast<const DistanceBase*>(sensors_->getByType(SensorBase::SensorType::Distance, i));
-                if (distance_sensor != nullptr) {
-                    distance_output = distance_sensor->getOutput();
+            // Add sensor outputs in the array
+            for (uint i=0; i<count_distance_sensors; ++i) {
+                const auto* distance_sensor = static_cast<const DistanceSimple*>(
+                                                sensors_->getByType(SensorBase::SensorType::Distance, i));
+                // Don't send the data if sending to external controller is disabled in settings
+                if (distance_sensor && distance_sensor->getParams().external_controller) {
+                    const auto& distance_output = distance_sensor->getOutput();
                     // AP uses meters so no need to convert here
-                    oss << "," << distance_output.distance;
+                    oss << sep << distance_output.distance;
+                    sep = ",";
                 }
             }
 
@@ -232,15 +234,23 @@ private:
         }
 
         const uint count_lidars = sensors_->size(SensorBase::SensorType::Lidar);
-        // TODO: Add bool value in settings to check whether to send lidar data or not
-        // Since it's possible that we don't want to send the lidar data to Ardupilot but still have the lidar (maybe as a ROS topic)
         if (count_lidars != 0) {
-            const auto& lidar_output = getLidarData("");
             oss << ","
                    "\"lidar\": {"
                    "\"point_cloud\": [";
 
-            std::copy(lidar_output.point_cloud.begin(), lidar_output.point_cloud.end(), std::ostream_iterator<real_T>(oss, ","));
+            // Add sensor outputs in the array
+            for (uint i=0; i<count_lidars; ++i) {
+                const auto* lidar = static_cast<const LidarSimple*>(sensors_->getByType(SensorBase::SensorType::Lidar, i));
+
+                if (lidar && lidar->getParams().external_controller) {
+                    const auto& lidar_output = lidar->getOutput();
+                    std::copy(lidar_output.point_cloud.begin(), lidar_output.point_cloud.end(), std::ostream_iterator<real_T>(oss, ","));
+                    // AP backend only takes in a single Lidar sensor data currently
+                    break;
+                }
+            }
+
             oss << "]}";
         }
 
