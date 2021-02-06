@@ -34,6 +34,8 @@ struct LidarSimpleParams {
     bool draw_debug_points = false;
     std::string data_frame = AirSimSettings::kVehicleInertialFrame;
 
+    bool external_controller = true;
+
     real_T update_frequency = 10;             // Hz
     real_T startup_delay = 0;                 // sec
 
@@ -90,6 +92,7 @@ struct LidarSimpleParams {
            
         draw_debug_points = settings.draw_debug_points;
         data_frame = settings.data_frame;
+        external_controller = settings.external_controller;
     }
 };
 

@@ -21,6 +21,7 @@ struct DistanceSimpleParams {
     };
 
     bool draw_debug_points = false;
+    bool external_controller = true;
 
 /*
     Ref: A Stochastic Approach to Noise Modeling for Barometric Altimeters
@@ -52,6 +53,7 @@ struct DistanceSimpleParams {
         max_distance = settings.max_distance;
 
         draw_debug_points = settings.draw_debug_points;
+        external_controller = settings.external_controller;
 
         relative_pose.position = settings.position;
         if (std::isnan(relative_pose.position.x()))
