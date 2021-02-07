@@ -270,21 +270,18 @@ void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetim
 
 bool WorldSimApi::createVehicleAtRuntime(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path)
 {
-    // Create settings object
-    AirSimSettings::VehicleSetting vehicle_setting;
+    // TODO: Figure out a better way to add more fields
+    //       Maybe allow passing a JSON string for the vehicle settings?
 
-    vehicle_setting.vehicle_name = vehicle_name;
-    vehicle_setting.vehicle_type = vehicle_type;
-    vehicle_setting.pawn_path = pawn_path;
-    vehicle_setting.position = pose.position;
-    VectorMath::toEulerianAngle(pose.orientation, vehicle_setting.rotation.pitch, vehicle_setting.rotation.roll, vehicle_setting.rotation.yaw);
+    // Retroactively adjust AirSimSettings, so it's like we knew about this vehicle all along
+    AirSimSettings::singleton().addVehicleSetting(vehicle_name, vehicle_type, pose, pawn_path);
 
     bool result;
 	
     // We need to run this code on the main game thread, since it iterates over actors
     FGraphEventRef task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]()
     {
-        result = simmode_->createVehicleAtRuntime(vehicle_setting);
+        result = simmode_->createVehicleAtRuntime(*(AirSimSettings::singleton().getVehicleSetting(vehicle_name)));
     }, TStatId(), NULL, ENamedThreads::GameThread);
 
     // Wait for the result
