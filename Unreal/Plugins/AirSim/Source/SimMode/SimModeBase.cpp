@@ -609,16 +609,12 @@ std::unique_ptr<PawnSimApi> ASimModeBase::createVehicleApi(APawn* vehicle_pawn)
     return vehicle_sim_api;
 }
 
-bool ASimModeBase::createVehicleAtRuntime(const AirSimSettings::VehicleSetting &vehicle_setting)
+bool ASimModeBase::createVehicleAtRuntime(const AirSimSettings::VehicleSetting& vehicle_setting)
 {
     if (!isVehicleTypeSupported(vehicle_setting.vehicle_type)) {
         Utils::log(Utils::stringf("Vehicle type %s is not supported in this game mode", vehicle_setting.vehicle_type.c_str()), Utils::kLogLevelWarn);
         return false;
     }
-
-    // Retroactively adjust AirSimSettings, so it's like we knew about this vehicle all along
-    // (Other places in the code use this for reference)
-    AirSimSettings::singleton().addVehicleSetting(vehicle_setting);
 
     auto spawned_pawn = createVehiclePawn(vehicle_setting);
 
