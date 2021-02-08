@@ -6,7 +6,7 @@ use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cy
 **Note** that every time you stop the unreal app you have to restart the `px4` app.
 
 
-1. From your bash terminal follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html) and follow **all** the instructions under `NuttX based hardware` to install prerequisites. We've also included our own copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need exactly.
+1. From your bash terminal follow [these steps for Linux](https://docs.px4.io/master/en/dev_setup/dev_env_linux.html) and follow **all** the instructions under `NuttX based hardware` to install prerequisites. We've also included our own copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need exactly.
 
 2. Get the PX4 source code and build the posix SITL version of PX4:
     ```
@@ -16,6 +16,8 @@ use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cy
     cd Firmware
     git checkout v1.10.1 # recommended version 
     ```
+    **Note**: __Cygwin version [0.8](https://github.com/PX4/PX4-windows-toolchain/releases/download/v0.8/PX4.Windows.Cygwin.Toolchain.0.8.msi) is recommended for PX4 v1.10.1__
+
 3. Use following command to build and start PX4 firmware in SITL mode:
     ```
     make px4_sitl_default none_iris
@@ -162,6 +164,10 @@ param set COM_OBL_ACT 1
 param set NAV_RCL_ACT 0
 param set NAV_DLL_ACT 0
 ```
+
+## Setting up multi-vehicle simulation
+
+You can simulate multiple drones in SITL mode using AirSim. However, this requires setting up multiple instances of the PX4 firmware simulator to be able to listen for each vehicle's connection on a separate TCP port (4560, 4561, etc). Please see [this dedicated page](px4_multi_vehicle.md) for instructions on setting up multiple instances of PX4 in SITL mode.
 
 ## Using VirtualBox Ubuntu
 
