@@ -153,11 +153,15 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#manually-set-parameters">Manually set parameters</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#setting-up-multi-vehicle-simulation">Setting up multi-vehicle simulation</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#using-virtualbox-ubuntu">Using VirtualBox Ubuntu</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#remote-controller">Remote Controller</a>
     </li>
     </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_multi_vehicle/">PX4 Multi-vehicle in SITL</a>
                 </li>
                 <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
                 </li>
@@ -301,7 +305,7 @@ use the <a href="https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html"
 <p><strong>Note</strong> that every time you stop the unreal app you have to restart the <code>px4</code> app.</p>
 <ol>
 <li>
-<p>From your bash terminal follow <a href="http://dev.px4.io/starting-installing-linux.html">these steps for Linux</a> and follow <strong>all</strong> the instructions under <code>NuttX based hardware</code> to install prerequisites. We've also included our own copy of the <a href="../px4_build/">PX4 build instructions</a> which is a bit more concise about what we need exactly.</p>
+<p>From your bash terminal follow <a href="https://docs.px4.io/master/en/dev_setup/dev_env_linux.html">these steps for Linux</a> and follow <strong>all</strong> the instructions under <code>NuttX based hardware</code> to install prerequisites. We've also included our own copy of the <a href="../px4_build/">PX4 build instructions</a> which is a bit more concise about what we need exactly.</p>
 </li>
 <li>
 <p>Get the PX4 source code and build the posix SITL version of PX4:
@@ -309,7 +313,8 @@ use the <a href="https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html"
 cd PX4
 git clone https://github.com/PX4/Firmware.git
 cd Firmware
-git checkout v1.10.1 # recommended version </code></pre></p>
+git checkout v1.10.1 # recommended version </code></pre>
+    <strong>Note</strong>: <strong>Cygwin version <a href="https://github.com/PX4/PX4-windows-toolchain/releases/download/v0.8/PX4.Windows.Cygwin.Toolchain.0.8.msi">0.8</a> is recommended for PX4 v1.10.1</strong></p>
 </li>
 <li>
 <p>Use following command to build and start PX4 firmware in SITL mode:
@@ -409,6 +414,8 @@ param set LPE_LON -122.140165
 param set COM_OBL_ACT 1
 param set NAV_RCL_ACT 0
 param set NAV_DLL_ACT 0</code></pre>
+<h2 id="setting-up-multi-vehicle-simulation">Setting up multi-vehicle simulation<a class="headerlink" href="#setting-up-multi-vehicle-simulation" title="Permanent link">#</a></h2>
+<p>You can simulate multiple drones in SITL mode using AirSim. However, this requires setting up multiple instances of the PX4 firmware simulator to be able to listen for each vehicle's connection on a separate TCP port (4560, 4561, etc). Please see <a href="../px4_multi_vehicle/">this dedicated page</a> for instructions on setting up multiple instances of PX4 in SITL mode.</p>
 <h2 id="using-virtualbox-ubuntu">Using VirtualBox Ubuntu<a class="headerlink" href="#using-virtualbox-ubuntu" title="Permanent link">#</a></h2>
 <p>If you want to run the above posix_sitl in a <code>VirtualBox Ubuntu</code> machine then it will have a different ip address from localhost. So in this case you need to edit the <a href="../settings/">settings file</a> and change the UdpIp and SitlIp to the ip address of your virtual machine
 set the  LocalIpAddress to the address of your host machine running the Unreal engine.</p>
@@ -421,7 +428,7 @@ set the  LocalIpAddress to the address of your host machine running the Unreal e
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../px4_build/" class="btn btn-neutral float-right" title="Building PX4">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../px4_multi_vehicle/" class="btn btn-neutral float-right" title="PX4 Multi-vehicle in SITL">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../px4_setup/" class="btn btn-neutral" title="PX4 Setup for AirSim"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -457,7 +464,7 @@ set the  LocalIpAddress to the address of your host machine running the Unreal e
         <span><a href="../px4_setup/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../px4_build/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../px4_multi_vehicle/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
