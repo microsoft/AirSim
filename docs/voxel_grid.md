@@ -1,9 +1,9 @@
 AirSim provides a feature that constructs ground truth voxel grids of the world directly from Unreal Engine. A voxel grid is a representation of the occupancy of a given world/map, by discretizing into cells of a certain size; and recording a voxel if that particular location is occupied. 
 
-The logic for constructing the voxel grid is in WorldSimApi.cpp->createVoxelGrid(). For now, the assumption is that the voxel grid is a cube - and the API call is of the structure:
+The logic for constructing the voxel grid is in WorldSimApi.cpp->createVoxelGrid(). For now, the assumption is that the voxel grid is a cube - and the API call from Python is of the structure:
 
 ```
-createVoxelGrid(self, position, x, y, z, res, of)
+simCreateVoxelGrid(self, position, x, y, z, res, of)
 
 position (Vector3r): Global position around which voxel grid is centered in m
 x, y, z (float): Size of each voxel grid dimension in m
@@ -34,7 +34,7 @@ for (float i = 0; i < ncells_x; i++) {
 The occupancy of the map is calculated iteratively over all discretized cells, which can make it an intensive operation depending on the resolution of the cells, and the total size of the area being measured. If the user's map of interest does not change much, it is possible to run the voxel grid operation once on this map, and save the voxel grid and reuse it. For performance, or with dynamic environments, we recommend running the voxel grid generation for a small area around the robot; and subsequently use it for local planning purposes.
 
 
-The voxel grids are stored in the binvox format which can then be converted by the user into an octomap .bt or any other relevant, desired format. Subsequently, these voxel grids/octomaps can be used within mapping/planning. [viewvox](https://www.patrickmin.com/viewvox/) is a nifty little utility to then visualize the created binvox file. Similarly, `binvox2bt` can convert the binvox to an octomap file.
+The voxel grids are stored in the binvox format which can then be converted by the user into an octomap .bt or any other relevant, desired format. Subsequently, these voxel grids/octomaps can be used within mapping/planning. One nifty little utility to visualize a created binvox files is [viewvox](https://www.patrickmin.com/viewvox/). Similarly, `binvox2bt` can convert the binvox to an octomap file.
 
 ##### Example voxel grid in Blocks:
 ![image](images/voxel_grid.png)
@@ -42,13 +42,13 @@ The voxel grids are stored in the binvox format which can then be converted by t
 ##### Blocks voxel grid converted to Octomap format (visualized in rviz):
 ![image](images/octomap.png)
 
-The Blocks voxel grid can be constructed through the following example script:
+As an example, a voxel grid can be constructed as follows, once the Blocks environment is up and running:
 
 ```
 import airsim
 c = airsim.VehicleClient()
 center = airsim.Vector3r(0, 0, 0)
-output_path = "~/map.binvox"
+output_path = os.path.join(os.getcwd(), "map.binvox")
 c.simCreateVoxelGrid(center, 100, 100, 100, 0.5, output_path)
 ```
 

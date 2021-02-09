@@ -1,7 +1,7 @@
 AirSim provides a Python-based event camera simulator, aimed at performance and ability to run in real-time along with the sim.
 
 #### Event cameras
-An event camera is a special vision sensor that measures changes in logarithmic brightness and only reports 'events', i.e., a set of bytes every time the absolute change exceeds a certain threshold. The event camera only reports the timestamp of the measurement, pixel location and the polarity: which is a +1/-1 based on whether the logarithmic brightness increased or decreased. Most event cameras have a temporal resolution of the order of microseconds, making them significantly faster than RGB sensors, and also demonstrate a high dynamic range and low motion blur. More details about event cameras can be found in [this tutorial from RPG-UZH](http://rpg.ifi.uzh.ch/docs/scaramuzza/Tutorial_on_Event_Cameras_Scaramuzza.pdf)
+An event camera is a special vision sensor that measures changes in logarithmic brightness and only reports 'events'. Each event is a set of four values that gets generated every time the absolute change in the logarithmic brightness exceeds a certain threshold. An event contains the timestamp of the measurement, pixel location (x and y coordinates) and the polarity: which is either +1/-1 based on whether the logarithmic brightness has increased or decreased. Most event cameras have a temporal resolution of the order of microseconds, making them significantly faster than RGB sensors, and also demonstrate a high dynamic range and low motion blur. More details about event cameras can be found in [this tutorial from RPG-UZH](http://rpg.ifi.uzh.ch/docs/scaramuzza/Tutorial_on_Event_Cameras_Scaramuzza.pdf)
 
 #### AirSim event simulator
 
@@ -14,7 +14,15 @@ x and y are the pixel locations of the event firing, timestamp is the global tim
 ![image](images/event_sim.png)
 
 #### Usage
-An example script to run the event simulator alongside AirSim is located at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/test_event_sim.py. The implementation of the actual event simulation, written in Python and numba, is at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/event_simulator.py. The event simulator is initialized as follows, with the arguments controlling the resolution of the camera.
+An example script to run the event simulator alongside AirSim is located at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/test_event_sim.py. The following optional command-line arguments can be passed to this script.
+
+```
+args.width, args.height (float): Simulated event camera resolution
+args.save (bool): Whether or not to save the event data to a file, args.debug (bool): Whether or not to display the simulated events as an image
+```
+
+
+The implementation of the actual event simulation, written in Python and numba, is at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/event_simulator.py. The event simulator is initialized as follows, with the arguments controlling the resolution of the camera.
 
 ```
 from event_simulator import *
@@ -26,7 +34,7 @@ The actual computation of the events is triggered through a callback function, w
 ```
 event_img, events = ev_sim.image_callback(img, ts_delta)
 ```
-The callback returns an event image as a one dimensional array of +1/-1 values, thus indicating only whether events were seen at each pixel, but not the timing/number of events. This one dimensional array can be converted into the red/blue event image as seen in the function `convert_event_img_rgb`. `events` is a numpy array of events, each of format `<x> <y> <timestamp> <pol>`.
+This function, which behaves similar to a callback (called every time a new image is received) returns an event image as a one dimensional array of +1/-1 values, thus indicating only whether events were seen at each pixel, but not the timing/number of events. This one dimensional array can be converted into the red/blue event image as seen in the function `convert_event_img_rgb`. `events` is a numpy array of events, each of format `<x> <y> <timestamp> <pol>`.
 
 Through the callback, the event sim computes the difference between the past and the current image, and computes a stream of events which is then returned as a numpy array. This can then be appended to a file.
 
