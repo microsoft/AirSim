@@ -12,6 +12,7 @@ import numpy as np
 import tf2_ros
 import tf2_geometry_msgs
 import cv2
+import shutil
 
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -26,13 +27,16 @@ from geometry_msgs.msg import Pose, PoseWithCovariance, PoseStamped, PoseWithCov
 from mavros_test_common import MavrosTestCommon
 from pymavlink import mavutil
 
-class KeyFrame:
-	stamp = 0.0
-	latitude = 0.0
-	longitude = 0.0
-	altitude = 0.0
-	orientation = [0.0,0.0,0.0,0.0]
-	image = ""	
+class KeyFrame(object):
+	empty = []
+
+	def __init__(self):
+		self.header = Header()
+		self.latitude = 0.0
+		self.longitude = 0.0
+		self.altitude = 0.0
+		self.orientation = [0.0,0.0,0.0,0.0]
+		self.image = ""	
 
 class companion():
 
@@ -57,6 +61,10 @@ class companion():
 		orbslam.start()
 
    		rospy.init_node('companion_node', anonymous=True)
+		
+		#clear old images
+		shutil.rmtree('img')
+		os.mkdir('img')		
 
 		self.local_pose = Pose()
 		self.slam_pose = PoseStamped()
@@ -70,6 +78,7 @@ class companion():
 		self.slam_scale = 1
 		self.state = "SYSTEM_NOT_READY"
 		self.last_state = "SYSTEM_NOT_READY"
+
 			#States:
 			#"SYSTEM_NOT_READY"
 			#"NO_IMAGES_YET"
@@ -156,48 +165,59 @@ class companion():
 		return converted
 
 	def imageBuffer(self, data):
-		buffer_size = 60
+		buffer_size = 30
 		if (len(self.image_buffer) > buffer_size):
 			self.image_buffer.pop()
 		self.image_buffer.insert(0,data)
 
 	def keyframesCallback(self,data):
-		#TODO not currently captureing all keyframes
-		print(len(data.keyframes),len(self.keyframes))
+		#TODO not currently capturing all keyframes
+		#print(len(data.keyframes),len(self.keyframes))
 		#check for new keyframes
 		data = list(data.keyframes)
 		if (len(self.keyframes) == 0):
-			self.addKeyFrame(data.pop())
+			for kf in data:
+				self.addKeyFrame(kf)
 		else:
 			#check for removed keyframes
 			for old_kf in self.keyframes:
 				found = False
 				for new_kf in data:
-					if (old_kf.stamp == new_kf.header.stamp):
+					if (old_kf.header.stamp == new_kf.header.stamp):
 						found = True
 						break
+				#print(found)				
 				if (not found):
-					print('remove frame')
-					self.keyframes.remove(old_kf)
-			kf = data.pop()
-			#Add new Keyframes to end of list
-			while (kf.header.stamp > self.keyframes[-1].stamp):
-				self.addKeyFrame(kf)
-				kf = data.pop()
+					self.removeKeyFrame(old_kf)
+			#Add new kfs
+			latest = self.keyframes[-1].header.stamp
+			for new_kf in data:
+				if (new_kf.header.stamp > latest):
+					self.addKeyFrame(new_kf)		
 
+	def removeKeyFrame(self, data):
+		#print('remove frame '+data.image)
+		self.keyframes.remove(data)
+		if os.path.exists(data.image):
+ 			os.remove(data.image)
 
 	def addKeyFrame(self, data):
 		kf = KeyFrame()
+		found = False
 		for img in self.image_buffer:
 			#print(img.header.stamp, data.header.stamp)
-			if (img.header.stamp == data.header.stamp):
-				print('added frame')
-				kf.stamp = data.header.stamp
+			if (img.header.stamp.to_sec() == data.header.stamp.to_sec()):
+				#print('add frame')
+				kf.header.stamp = data.header.stamp
 				cv_img = self.bridge.imgmsg_to_cv2(img, "passthrough")
-				kf.image = 'img/'+str(kf.stamp.to_sec())+'.png'
+				kf.image = 'img/'+str(kf.header.stamp.to_sec())+'.png'
 				cv2.imwrite(kf.image, cv_img)
 				self.keyframes.append(kf)
+				found = True
 				break
+		if (not found):
+			print('Image not found, consider increasing image buffer size')
+			
 
 		
 if __name__ == '__main__':
