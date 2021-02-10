@@ -220,7 +220,7 @@ class VehicleClient:
     # camera control
     # simGetImage returns compressed png in array of bytes
     # image_type uses one of the ImageType members
-    def simGetImage(self, camera_name, image_type, vehicle_name = ''):
+    def simGetImage(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Get a single image
 
@@ -240,7 +240,7 @@ class VehicleClient:
         camera_name = str(camera_name)
 
         # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
-        result = self.client.call('simGetImage', camera_name, image_type, vehicle_name)
+        result = self.client.call('simGetImage', camera_name, image_type, vehicle_name, external)
         if (result == "" or result == "\0"):
             return None
         return result
@@ -248,7 +248,7 @@ class VehicleClient:
     # camera control
     # simGetImage returns compressed png in array of bytes
     # image_type uses one of the ImageType members
-    def simGetImages(self, requests, vehicle_name = ''):
+    def simGetImages(self, requests, vehicle_name = '', external = False):
         """
         Get multiple images
 
@@ -261,7 +261,7 @@ class VehicleClient:
         Returns:
             list[ImageResponse]:
         """
-        responses_raw = self.client.call('simGetImages', requests, vehicle_name)
+        responses_raw = self.client.call('simGetImages', requests, vehicle_name, external)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
         
     def simTestLineOfSightToPoint(self, point, vehicle_name = ''):
