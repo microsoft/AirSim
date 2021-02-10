@@ -52,4 +52,4 @@ output_path = os.path.join(os.getcwd(), "map.binvox")
 c.simCreateVoxelGrid(center, 100, 100, 100, 0.5, output_path)
 ```
 
-And visualized through `viewvox ~/map.binvox`.
+And visualized through `viewvox map.binvox`.
