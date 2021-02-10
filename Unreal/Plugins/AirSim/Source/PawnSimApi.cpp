@@ -184,27 +184,6 @@ APawn* PawnSimApi::getPawn()
     return params_.pawn;
 }
 
-std::vector<PawnSimApi::ImageCaptureBase::ImageResponse> PawnSimApi::getImages(
-    const std::vector<ImageCaptureBase::ImageRequest>& requests) const
-{
-    std::vector<ImageCaptureBase::ImageResponse> responses;
-
-    const ImageCaptureBase* camera = getImageCapture();
-    camera->getImages(requests, responses);
-
-    return responses;
-}
-
-std::vector<uint8_t> PawnSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
-{
-    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_name, image_type) };
-    const std::vector<ImageCaptureBase::ImageResponse>& response = getImages(request);
-    if (response.size() > 0)
-        return response.at(0).image_data_uint8;
-    else
-        return std::vector<uint8_t>();
-}
-
 void PawnSimApi::setRCForceFeedback(float rumble_strength, float auto_center)
 {
     if (joystick_state_.is_initialized) {
