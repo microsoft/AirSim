@@ -28,7 +28,7 @@ public:
             const auto& imu_output = getImuData("");
 
             SensorMessage packet;
-            packet.timestamp = Utils::getTimeSinceEpochNanos() / 1000;
+            packet.timestamp = clock()->nowNanos() / 1000;
             packet.latitude = gps_output.gnss.geo_point.latitude;
             packet.longitude = gps_output.gnss.geo_point.longitude;
             packet.altitude = gps_output.gnss.geo_point.altitude;
