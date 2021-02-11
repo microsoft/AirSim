@@ -232,6 +232,7 @@ class VehicleClient:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
             vehicle_name (str, optional): Name of the vehicle with the camera
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             Binary string literal of compressed png image
@@ -257,6 +258,7 @@ class VehicleClient:
         Args:
             requests (list[ImageRequest]): Images required
             vehicle_name (str, optional): Name of vehicle associated with the camera
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             list[ImageResponse]:
@@ -586,6 +588,7 @@ class VehicleClient:
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             CameraInfo:
@@ -600,6 +603,7 @@ class VehicleClient:
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.
@@ -616,6 +620,7 @@ class VehicleClient:
             distortion_params (dict): Dictionary of distortion param names and corresponding values
                                         {"K1": 0.0, "K2": 0.0, "K3": 0.0, "P1": 0.0, "P2": 0.0}
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
         """
 
         for param_name, value in distortion_params.items():
@@ -631,6 +636,7 @@ class VehicleClient:
             param_name (str): Name of distortion parameter
             value (float): Value of distortion parameter
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
         """
         self.client.call('simSetDistortionParam', str(camera_name), param_name, value, vehicle_name, external)
 
@@ -642,6 +648,7 @@ class VehicleClient:
             camera_name (str): Name of the camera to be controlled
             pose (Pose): Pose representing the desired position and orientation of the camera
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+            external (bool, optional): Whether the camera is an External Camera
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name, external)
@@ -658,6 +665,7 @@ class VehicleClient:
             camera_name (str): Name of the camera to be controlled
             orientation (Quaternionr): Quaternion representing the desired orientation of the camera
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+            external (bool, optional): Whether the camera is an External Camera
         """
         logging.warning("`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code.")
         pose = Pose(orientation_val=orientation)
@@ -671,6 +679,7 @@ class VehicleClient:
             camera_name (str): Name of the camera to be controlled
             fov_degrees (float): Value of field of view in degrees
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+            external (bool, optional): Whether the camera is an External Camera
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraFov', str(camera_name), fov_degrees, vehicle_name, external)
