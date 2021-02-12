@@ -624,7 +624,6 @@ class VehicleClient:
         """
 
         for param_name, value in distortion_params.items():
-            # self.client.call('simSetDistortionParam', str(camera_name), param_name, value, vehicle_name, external)
             self.simSetDistortionParam(camera_name, param_name, value, vehicle_name, external)
 
     def simSetDistortionParam(self, camera_name, param_name, value, vehicle_name = '', external = False):

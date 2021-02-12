@@ -5,7 +5,7 @@
 #define air_WorldSimApiBase_hpp
 
 #include "common/CommonStructs.hpp"
-#include "common/AirSimSettings.hpp"
+#include "common/ImageCaptureBase.hpp"
 
 namespace msr
 {

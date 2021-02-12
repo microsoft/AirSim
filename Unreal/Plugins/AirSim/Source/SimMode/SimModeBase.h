@@ -150,7 +150,7 @@ protected: //optional overrides
     virtual void initializeExternalCameras();
 
 protected: //Utility methods for derived classes
-    virtual const msr::airlib::AirSimSettings& getSettings() const;
+    virtual const AirSimSettings& getSettings() const;
     FRotator toFRotator(const AirSimSettings::Rotation& rotation, const FRotator& default_val);
 
 protected:

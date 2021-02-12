@@ -512,18 +512,14 @@ bool ASimModeBase::isRecording() const
 
 const APIPCamera* ASimModeBase::getCamera(const std::string& camera_name, const std::string& vehicle_name, bool external) const
 {
-    if (external)
-        return getExternalCamera(camera_name);
-    else
-        return getVehicleSimApi(vehicle_name)->getCamera(camera_name);
+    return external ? getExternalCamera(camera_name) :
+                      getVehicleSimApi(vehicle_name)->getCamera(camera_name);
 }
 
 const UnrealImageCapture* ASimModeBase::getImageCapture(const std::string& vehicle_name, bool external) const
 {
-    if (external)
-        return external_image_capture_.get();
-    else
-        return getVehicleSimApi(vehicle_name)->getImageCapture();
+    return external ? external_image_capture_.get() :
+                      getVehicleSimApi(vehicle_name)->getImageCapture();
 }
 
 //API server start/stop
