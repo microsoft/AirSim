@@ -1,7 +1,7 @@
 #pragma once
 
 #include "api/WorldSimApiBase.hpp"
-#include "./SimMode/SimModeBase.h"
+#include "SimMode/SimModeBase.h"
 #include "AirSimStructs.hpp"
 
 class WorldSimApi : public msr::airlib::WorldSimApiBase
@@ -10,6 +10,7 @@ public:
     typedef msr::airlib::Pose Pose;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::MeshPositionVertexBuffersResponse MeshPositionVertexBuffersResponse;
+    typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
     WorldSimApi(SimModeBase* simmode, std::string vehicle_name);
     virtual ~WorldSimApi();
@@ -71,6 +72,22 @@ public:
 
     virtual bool testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const override;
     virtual std::vector<msr::airlib::GeoPoint> getWorldExtents() const override;
+
+    // Image APIs
+    virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const override;
+    virtual void setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose,
+                               const std::string& vehicle_name = "", bool external = false) override;
+    virtual void setCameraFoV(const std::string& camera_name, float fov_degrees,
+                              const std::string& vehicle_name = "", bool external = false) override;
+    virtual void setDistortionParam(const std::string& camera_name, const std::string& param_name, float value,
+                                    const std::string& vehicle_name = "", bool external = false) override;
+    virtual std::vector<float> getDistortionParams(const std::string& camera_name, const std::string& vehicle_name = "",
+                                                   bool external = false) const override;
+
+    virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,
+                                                                   const std::string& vehicle_name = "", bool external = false) const override;
+    virtual std::vector<uint8_t> getImage(const std::string& camera_name, msr::airlib::ImageCaptureBase::ImageType image_type,
+                                          const std::string& vehicle_name = "", bool external = false) const override;
 
 private:
     SimModeBase* simmode_;

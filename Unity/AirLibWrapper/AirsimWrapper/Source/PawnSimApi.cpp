@@ -135,24 +135,6 @@ const NedTransform& PawnSimApi::getNedTransform() const
     return ned_transform_;
 }
 
-std::vector<PawnSimApi::ImageCaptureBase::ImageResponse> PawnSimApi::getImages(
-    const std::vector<ImageCaptureBase::ImageRequest>& requests) const
-{
-    std::vector<ImageCaptureBase::ImageResponse> responses;
-    const ImageCaptureBase* camera = getImageCapture();
-    camera->getImages(requests, responses);
-    return responses;
-}
-
-std::vector<uint8_t> PawnSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
-{
-    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_name, image_type) };
-    const std::vector<ImageCaptureBase::ImageResponse>& response = getImages(request);
-    if (response.size() > 0)
-        return response.at(0).image_data_uint8;
-    else
-        return std::vector<uint8_t>();
-}
 
 msr::airlib::RCData PawnSimApi::getRCData() const
 {
@@ -249,42 +231,6 @@ void PawnSimApi::allowPassthroughToggleInput()
     PrintLogMessage("enable_passthrough_on_collisions: ", state_.passthrough_enabled ? "true" : "false", params_.vehicle_name.c_str(), ErrorLogSeverity::Information);
 }
 
-msr::airlib::CameraInfo PawnSimApi::getCameraInfo(const std::string& camera_name) const
-{
-    AirSimCameraInfo airsim_camera_info = GetCameraInfo(camera_name.c_str(), params_.vehicle_name.c_str()); // Into Unity
-    msr::airlib::CameraInfo camera_info;
-    camera_info.pose.position.x() = airsim_camera_info.pose.position.x;
-    camera_info.pose.position.y() = airsim_camera_info.pose.position.y;
-    camera_info.pose.position.z() = airsim_camera_info.pose.position.z;
-    camera_info.pose.orientation.x() = airsim_camera_info.pose.orientation.x;
-    camera_info.pose.orientation.y() = airsim_camera_info.pose.orientation.y;
-    camera_info.pose.orientation.z() = airsim_camera_info.pose.orientation.z;
-    camera_info.pose.orientation.w() = airsim_camera_info.pose.orientation.w;
-    camera_info.fov = airsim_camera_info.fov;
-    return camera_info;
-}
-
-void PawnSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose)
-{
-    SetCameraPose(camera_name.c_str(), UnityUtilities::Convert_to_AirSimPose(pose), params_.vehicle_name.c_str());
-}
-
-void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
-{
-    SetCameraFoV(camera_name.c_str(), fov_degrees, params_.vehicle_name.c_str());
-}
-
-void PawnSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value)
-{
-    // not implemented
-}
-
-std::vector<float> PawnSimApi::getDistortionParams(const std::string& camera_name) const
-{
-    // not implemented
-    std::vector<float> params(5, 0.0);
-    return params;
-}
 
 //parameters in NED frame
 PawnSimApi::Pose PawnSimApi::getPose() const

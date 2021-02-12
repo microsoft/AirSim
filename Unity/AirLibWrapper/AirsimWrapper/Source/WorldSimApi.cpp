@@ -266,4 +266,68 @@ std::vector<msr::airlib::GeoPoint> WorldSimApi::getWorldExtents() const
     return result;
 }
 
+msr::airlib::CameraInfo WorldSimApi::getCameraInfo(const std::string& camera_name, const std::string& vehicle_name, bool external) const
+{
+    if (external)
+        throw std::invalid_argument(common_utils::Utils::stringf("external field is not supported on Unity Image APIs").c_str());
+
+    AirSimCameraInfo airsim_camera_info = GetCameraInfo(camera_name.c_str(), vehicle_name.c_str()); // Into Unity
+    msr::airlib::CameraInfo camera_info;
+    camera_info.pose = UnityUtilities::Convert_to_Pose(airsim_camera_info.pose);
+    camera_info.fov = airsim_camera_info.fov;
+    return camera_info;
+}
+
+void WorldSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose,
+                                const std::string& vehicle_name, bool external)
+{
+    if (external)
+        throw std::invalid_argument(common_utils::Utils::stringf("external field is not supported on Unity Image APIs").c_str());
+
+    SetCameraPose(camera_name.c_str(), UnityUtilities::Convert_to_AirSimPose(pose), vehicle_name.c_str());
+}
+
+void WorldSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees,
+                               const std::string& vehicle_name, bool external)
+{
+    if (external)
+        throw std::invalid_argument(common_utils::Utils::stringf("external field is not supported on Unity Image APIs").c_str());
+
+    SetCameraFoV(camera_name.c_str(), fov_degrees, vehicle_name.c_str());
+}
+
+void WorldSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value,
+                                     const std::string& vehicle_name, bool external)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf("setDistortionParam is not supported on unity").c_str());
+}
+
+std::vector<float> WorldSimApi::getDistortionParams(const std::string& camera_name, const std::string& vehicle_name, bool external) const
+{
+    throw std::invalid_argument(common_utils::Utils::stringf("getDistortionParams is not supported on unity").c_str());
+
+    std::vector<float> params(5, 0.0);
+    return params;
+}
+
+std::vector<WorldSimApi::ImageCaptureBase::ImageResponse> WorldSimApi::getImages(
+    const std::vector<ImageCaptureBase::ImageRequest>& requests, const std::string& vehicle_name, bool external) const
+{
+    std::vector<ImageCaptureBase::ImageResponse> responses;
+    const ImageCaptureBase* camera = simmode_->getVehicleSimApi(vehicle_name)->getImageCapture();
+    camera->getImages(requests, responses);
+    return responses;
+}
+
+std::vector<uint8_t> WorldSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                           const std::string& vehicle_name, bool external) const
+{
+    std::vector<ImageCaptureBase::ImageRequest> request{ ImageCaptureBase::ImageRequest(camera_name, image_type) };
+    const auto& response = getImages(request);
+    if (response.size() > 0)
+        return response.at(0).image_data_uint8;
+    else
+        return std::vector<uint8_t>();
+}
+
 #pragma endregion
