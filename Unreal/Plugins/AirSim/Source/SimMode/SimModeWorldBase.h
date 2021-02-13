@@ -43,7 +43,7 @@ protected:
     void initializeForPlay();
 
     //used for adding physics bodies on the fly
-    virtual void registerPhysicsBody(msr::airlib::VehicleSimApiBase *physicsBody);
+    virtual void registerPhysicsBody(msr::airlib::VehicleSimApiBase *physicsBody) override;
 
     long long getPhysicsLoopPeriod() const;
     void setPhysicsLoopPeriod(long long  period);

@@ -155,7 +155,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 
     pimpl_->server.bind("simAddVehicle", [&](const std::string& vehicle_name, const std::string& vehicle_type, 
         const RpcLibAdapatorsBase::Pose& pose, const std::string& pawn_path) -> bool {
-        return getWorldSimApi()->createVehicleAtRuntime(vehicle_name, vehicle_type, pose.to(), pawn_path);
+        return getWorldSimApi()->addVehicle(vehicle_name, vehicle_type, pose.to(), pawn_path);
     });
 
     pimpl_->server.bind("simSetVehiclePose", [&](const RpcLibAdapatorsBase::Pose &pose, bool ignore_collision, const std::string& vehicle_name) -> void {

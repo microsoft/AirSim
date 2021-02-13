@@ -75,7 +75,8 @@ public:
     void stopApiServer();
     bool isApiServerStarted();
 
-    bool createVehicleAtRuntime(const msr::airlib::AirSimSettings::VehicleSetting &vehicle_setting);
+    bool createVehicleAtRuntime(const std::string& vehicle_name, const std::string& vehicle_type,
+        const msr::airlib::Pose& pose, const std::string& pawn_path = "");
 
     const NedTransform& getGlobalNedTransform();
 
@@ -109,6 +110,7 @@ protected: //must overrides
         const PawnSimApi::Params& pawn_sim_api_params) const;
     virtual msr::airlib::VehicleApiBase* getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
         const PawnSimApi* sim_api) const;
+    virtual void registerPhysicsBody(msr::airlib::VehicleSimApiBase *physicsBody);
 
 protected: //optional overrides
     virtual APawn* createVehiclePawn(const AirSimSettings::VehicleSetting& vehicle_setting);
@@ -120,7 +122,6 @@ protected: //optional overrides
     void initializeCameraDirector(const FTransform& camera_transform, float follow_distance);
     void checkVehicleReady(); //checks if vehicle is available to use
     virtual void updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter);
-    virtual void registerPhysicsBody(msr::airlib::VehicleSimApiBase *physicsBody) {}
 
 protected: //Utility methods for derived classes
     virtual const msr::airlib::AirSimSettings& getSettings() const;
