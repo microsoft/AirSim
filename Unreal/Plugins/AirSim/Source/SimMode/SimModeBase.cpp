@@ -602,25 +602,31 @@ std::unique_ptr<PawnSimApi> ASimModeBase::createVehicleApi(APawn* vehicle_pawn)
     return vehicle_sim_api;
 }
 
-bool ASimModeBase::createVehicleAtRuntime(const AirSimSettings::VehicleSetting& vehicle_setting)
+bool ASimModeBase::createVehicleAtRuntime(const std::string& vehicle_name, const std::string& vehicle_type,
+    const msr::airlib::Pose& pose, const std::string& pawn_path)
 {
-    if (!isVehicleTypeSupported(vehicle_setting.vehicle_type)) {
-        Utils::log(Utils::stringf("Vehicle type %s is not supported in this game mode", vehicle_setting.vehicle_type.c_str()), Utils::kLogLevelWarn);
+    if (!isVehicleTypeSupported(vehicle_type)) {
+        Utils::log(Utils::stringf("Vehicle type %s is not supported in this game mode", vehicle_type.c_str()), Utils::kLogLevelWarn);
         return false;
     }
 
-    auto spawned_pawn = createVehiclePawn(vehicle_setting);
+    // TODO: Figure out a better way to add more fields
+    //       Maybe allow passing a JSON string for the vehicle settings?
+
+    // Retroactively adjust AirSimSettings, so it's like we knew about this vehicle all along
+    AirSimSettings::singleton().addVehicleSetting(vehicle_name, vehicle_type, pose, pawn_path);
+    const auto* vehicle_setting = getSettings().getVehicleSetting(vehicle_name);
+
+    auto spawned_pawn = createVehiclePawn(*vehicle_setting);
 
     auto vehicle_sim_api = createVehicleApi(spawned_pawn);
-    auto vehicle_sim_api_p = vehicle_sim_api.get();
-    std::string vehicle_name = vehicle_sim_api->getVehicleName();
 
     // Usually physics registration happens at init, in ASimModeWorldBase::initializeForPlay(), but not in this case
-    vehicle_sim_api_p->reset();
-    registerPhysicsBody(vehicle_sim_api_p);
+    vehicle_sim_api->reset();
+    registerPhysicsBody(vehicle_sim_api.get());
 
     // Can't be done before the vehicle apis have been created
-    if ((vehicle_setting.is_fpv_vehicle || !getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
+    if ((vehicle_setting->is_fpv_vehicle || !getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
         getApiProvider()->makeDefaultVehicle(vehicle_name);
 
     vehicle_sim_apis_.push_back(std::move(vehicle_sim_api));

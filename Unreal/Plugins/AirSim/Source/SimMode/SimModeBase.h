@@ -75,7 +75,8 @@ public:
     void stopApiServer();
     bool isApiServerStarted();
 
-    bool createVehicleAtRuntime(const msr::airlib::AirSimSettings::VehicleSetting &vehicle_setting);
+    bool createVehicleAtRuntime(const std::string& vehicle_name, const std::string& vehicle_type,
+        const msr::airlib::Pose& pose, const std::string& pawn_path = "");
 
     const NedTransform& getGlobalNedTransform();
 
