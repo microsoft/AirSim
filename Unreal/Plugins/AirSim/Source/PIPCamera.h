@@ -9,6 +9,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
+#include "DetectionComponent.h"
 
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
@@ -52,6 +53,7 @@ public:
 
     USceneCaptureComponent2D* getCaptureComponent(const ImageType type, bool if_active);
     UTextureRenderTarget2D* getRenderTarget(const ImageType type, bool if_active);
+    UDetectionComponent* getDetectionComponent(const ImageType type, bool if_active);
 
     msr::airlib::Pose getPose() const;
 
@@ -61,6 +63,7 @@ public:
 private: //members
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
     UPROPERTY() TArray<UTextureRenderTarget2D*> render_targets_;
+    UPROPERTY() TArray<UDetectionComponent*> detections_;
 
     UPROPERTY() UCameraComponent*  camera_;
     //TMap<int, UMaterialInstanceDynamic*> noise_materials_;
@@ -75,6 +78,8 @@ private: //members
     float gimbal_stabilization_;
     const NedTransform* ned_transform_;
     TMap<int, EPixelFormat> image_type_to_pixel_format_map_;
+
+    FObjectFilter object_filter;
 
 private: //methods
     typedef common_utils::Utils Utils;

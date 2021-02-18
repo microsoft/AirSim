@@ -47,6 +47,9 @@ public:
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
     virtual int getSegmentationObjectID(const std::string& mesh_name) const = 0;
 
+    virtual void addDetectionFilterMeshName(const std::string& mesh_name) = 0;
+    virtual void setDetectionFilterRadius(const float radius_cm) = 0;
+
     virtual bool addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "") = 0;
 
     virtual void printLogMessage(const std::string& message,

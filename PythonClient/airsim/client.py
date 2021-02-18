@@ -460,6 +460,12 @@ class VehicleClient:
         """
         return self.client.call('simGetSegmentationObjectID', mesh_name)
 
+    def simAddDetectionFilterMeshName(self, mesh_name):
+        self.client.call('simAddDetectionFilterMeshName', mesh_name)
+    
+    def simSetDetectionFilterRadius(self, radius_cm):
+        self.client.call('simSetDetectionFilterRadius', radius_cm)
+
     def simPrintLogMessage(self, message, message_param = "", severity = 0):
         """
         Prints the specified message in the simulator's window.

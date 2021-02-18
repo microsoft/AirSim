@@ -180,6 +180,13 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->getSegmentationObjectID(mesh_name);
     });
 
+	pimpl_->server.bind("simAddDetectionFilterMeshName", [&](const std::string& mesh_name) -> void {
+		getWorldSimApi()->addDetectionFilterMeshName(mesh_name);
+		});
+	pimpl_->server.bind("simSetDetectionFilterRadius", [&](const float radius_cm) -> void {
+		getWorldSimApi()->setDetectionFilterRadius(radius_cm);
+		});
+    
     pimpl_->server.bind("reset", [&]() -> void {
         //Exit if already resetting.
         static bool resetInProgress;
