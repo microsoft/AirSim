@@ -26,6 +26,7 @@
 #include "Modules/ModuleManager.h"
 #include "ARFilter.h"
 #include "AssetRegistryModule.h"
+#include "DetectionComponent.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -325,6 +326,7 @@ template USceneCaptureComponent2D* UAirBlueprintLib::GetActorComponent(AActor*, 
 template UStaticMeshComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 template URotatingMovementComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 template UCameraComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
+template UDetectionComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 
 bool UAirBlueprintLib::IsInGameThread()
 {
@@ -584,6 +586,24 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
     return meshes;
 }
 
+
+void UAirBlueprintLib::addDetectionFilterMeshName(const std::string& name)
+{
+	for (TObjectIterator<UDetectionComponent> detectionIterator; detectionIterator; ++detectionIterator)
+	{
+		UDetectionComponent* detection = *detectionIterator;
+        detection->ObjectFilter.WildcardMeshNames.Add(FString(name.c_str()));
+	}
+}
+
+void UAirBlueprintLib::setDetectionFilterRadius(const float radius_cm)
+{
+	for (TObjectIterator<UDetectionComponent> detectionIterator; detectionIterator; ++detectionIterator)
+	{
+		UDetectionComponent* detection = *detectionIterator;
+        detection->MaxDistanceToCamera = radius_cm;
+	}
+}
 
 TArray<FName> UAirBlueprintLib::ListWorldsInRegistry()
 {

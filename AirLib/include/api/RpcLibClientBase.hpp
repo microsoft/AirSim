@@ -64,6 +64,9 @@ public:
     int simGetSegmentationObjectID(const std::string& mesh_name) const;
     void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
+	void simAddDetectionFilterMeshName(const std::string& mesh_name);
+	void simSetDetectionFilterRadius(const float radius_cm);
+
     void simFlushPersistentMarkers();
     void simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent);
     void simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent);
