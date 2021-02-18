@@ -28,13 +28,22 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 	}
 	
 	// If not set we assume a match
+/*
 	bool bMatchesStaticMesh = !StaticMesh;
 	bool bMatchesSkeletalMesh = !SkeletalMesh;
 	bool bMatchesWildcardMeshName = WildcardMeshNames.Num() == 0;//  IsEmpty();
 	bool bMatchesActorClass = !ActorClass;
 	bool bMatchesActorTag = ActorTag.IsNone();
 	bool bMatchesComponentClass = !ComponentClass;
-	bool bMatchesComponentTag = ComponentTag.IsNone();
+	bool bMatchesComponentTag = ComponentTag.IsNone();*/
+
+	bool bMatchesStaticMesh = false;
+	bool bMatchesSkeletalMesh = false;
+	bool bMatchesWildcardMeshName = false;
+	bool bMatchesActorClass = false;
+	bool bMatchesActorTag = false;
+	bool bMatchesComponentClass = false;
+	bool bMatchesComponentTag = false;
 
 	TInlineComponentArray<UActorComponent*> ActorComponents;
 	Actor->GetComponents(ActorComponents);
@@ -47,12 +56,14 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 			if (StaticMeshComponent) {
 				if (StaticMesh && StaticMeshComponent->GetStaticMesh() == StaticMesh) 
 				{
-					bMatchesStaticMesh = true;
+					//bMatchesStaticMesh = true;
+					return true;
 				}
 				if (!WildcardMeshNames.Num() == 0 /*IsEmpty()*/ &&
 					IsMatchAnyWildcard(StaticMeshComponent->GetStaticMesh()->GetName()))//.MatchesWildcard(WildcardMeshNames))
 				{
-					bMatchesWildcardMeshName = true;
+					//bMatchesWildcardMeshName = true;
+					return true;
 				}
 			}
 		}
@@ -64,12 +75,14 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 				if (SkeletalMesh &&
 					SkeletalMeshComponent->SkeletalMesh == SkeletalMesh) 
 				{
-					bMatchesSkeletalMesh = true;
+					//bMatchesSkeletalMesh = true;
+					return true;
 				}
 				if (!WildcardMeshNames.Num() == 0 /*IsEmpty()*/ &&
 					IsMatchAnyWildcard(SkeletalMeshComponent->SkeletalMesh->GetName()))//.MatchesWildcard(WildcardMeshNames))
 				{
-					bMatchesWildcardMeshName = true;
+					//bMatchesWildcardMeshName = true;
+					return true;
 				}
 			}
 		}
@@ -77,14 +90,16 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 		{
 			if (ActorComponent->GetClass()->IsChildOf(ComponentClass)) 
 			{
-				bMatchesComponentClass = true;
+			//	bMatchesComponentClass = true;
+				return true;
 			}
 		}
 		if (!ComponentTag.IsNone()) 
 		{
 			if (ActorComponent->ComponentHasTag(ComponentTag)) 
 			{
-				bMatchesComponentTag = true;
+				//bMatchesComponentTag = true;
+				return true;
 			}
 		}
 	}
@@ -93,7 +108,8 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 	{
 		if (Actor->GetClass()->IsChildOf(ActorClass)) 
 		{
-			bMatchesActorClass = true;
+			//bMatchesActorClass = true;
+			return true;
 		}
 	}
 
@@ -101,13 +117,14 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 	{
 		if (Actor->ActorHasTag(ActorTag)) 
 		{
-			bMatchesActorTag = true;
+		//	bMatchesActorTag = true;
+			return true;
 		}
 	}
 
-	return bMatchesStaticMesh && bMatchesSkeletalMesh &&
-		bMatchesWildcardMeshName && bMatchesActorClass && bMatchesActorTag &&
-		bMatchesComponentClass && bMatchesComponentClass &&
+	return bMatchesStaticMesh || bMatchesSkeletalMesh ||
+		bMatchesWildcardMeshName || bMatchesActorClass || bMatchesActorTag ||
+		bMatchesComponentClass || bMatchesComponentClass ||
 		bMatchesComponentTag;
 }
 
