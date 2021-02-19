@@ -34,7 +34,7 @@
 #include "sensors/imu/ImuBase.hpp"
 #include "sensors/gps/GpsBase.hpp"
 #include "sensors/magnetometer/MagnetometerBase.hpp"
-#include "sensors/distance/DistanceBase.hpp"
+#include "sensors/distance/DistanceSimple.hpp"
 
 namespace msr { namespace airlib {
 
@@ -115,14 +115,19 @@ public: //methods
 
             const uint count_distance_sensors = getSensors().size(SensorBase::SensorType::Distance);
             if (count_distance_sensors != 0) {
-                const auto& distance_output = getDistanceSensorData("");
+                const auto* distance_sensor = static_cast<const DistanceSimple*>(
+                                                sensors_->getByType(SensorBase::SensorType::Distance));
+                // Don't send the data if sending to external controller is disabled in settings
+                if (distance_sensor && distance_sensor->getParams().external_controller) {
+                    const auto& distance_output = distance_sensor->getOutput();
 
-                sendDistanceSensor(distance_output.min_distance * 100, //m -> cm
-                    distance_output.max_distance * 100, //m -> cm
-                    distance_output.distance * 100, //m-> cm
-                    0, //sensor type: //TODO: allow changing in settings?
-                    77, //sensor id, //TODO: should this be something real?
-                    distance_output.relative_pose.orientation); //TODO: convert from radians to degrees?
+                    sendDistanceSensor(distance_output.min_distance * 100, //m -> cm
+                        distance_output.max_distance * 100, //m -> cm
+                        distance_output.distance * 100, //m-> cm
+                        0, //sensor type: //TODO: allow changing in settings?
+                        77, //sensor id, //TODO: should this be something real?
+                        distance_output.relative_pose.orientation); //TODO: convert from radians to degrees?
+                }
             }
 
             const uint count_gps_sensors = getSensors().size(SensorBase::SensorType::Gps);
@@ -1457,7 +1462,8 @@ private: //methods
         last_sensor_message_ = hil_sensor;
     }
 
-    void sendDistanceSensor(float min_distance, float max_distance, float current_distance, float sensor_type, float sensor_id, Quaternionr orientation)
+    void sendDistanceSensor(float min_distance, float max_distance, float current_distance,
+        uint8_t sensor_type, uint8_t sensor_id, const Quaternionr& orientation)
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated distance sensor messages while not in simulation mode");
@@ -1468,8 +1474,8 @@ private: //methods
         distance_sensor.min_distance = static_cast<uint16_t>(min_distance);
         distance_sensor.max_distance = static_cast<uint16_t>(max_distance);
         distance_sensor.current_distance = static_cast<uint16_t>(current_distance);
-        distance_sensor.type = static_cast<uint8_t>(sensor_type);
-        distance_sensor.id = static_cast<uint8_t>(sensor_id);
+        distance_sensor.type = sensor_type;
+        distance_sensor.id = sensor_id;
 
         // Use custom orientation
         distance_sensor.orientation = 100;  // MAV_SENSOR_ROTATION_CUSTOM
