@@ -19,8 +19,8 @@ from cv_bridge import CvBridge, CvBridgeError
 from mavros import mavlink
 from mavros_msgs.msg import Mavlink, Waypoint, WaypointReached, GlobalPositionTarget, State, TakeoffAction, TakeoffGoal, LandAction, LandGoal, WaypointsAction, WaypointsGoal, HomePosition
 from mavros_msgs.srv import CommandBool, SetMode, CommandTOL, WaypointPush, WaypointClear, CommandHome
-from orb_slam2_ros.msg import KeyFrames
-from sensor_msgs.msg import NavSatFix, Image
+from orb_slam2_ros.msg import KeyFrames, Observations
+from sensor_msgs.msg import NavSatFix, Image, PointCloud2
 from std_msgs.msg import Header
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Pose, PoseWithCovariance, PoseStamped, PoseWithCovarianceStamped
@@ -31,7 +31,7 @@ class KeyFrame(object):
 	empty = []
 
 	def __init__(self):
-		self.header = Header()
+		self.image_id = ""
 		self.latitude = 0.0
 		self.longitude = 0.0
 		self.altitude = 0.0
@@ -93,6 +93,8 @@ class companion():
 		rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self.local_pose_callback)
 		rospy.Subscriber('/orb_slam2_mono/pose', PoseStamped, self.slamCallback)
 		rospy.Subscriber('/orb_slam2_mono/state', Header, self.stateCallback)
+		rospy.Subscriber('/orb_slam2_mono/map_points', PointCloud2, self.pointcloudCallback)
+		rospy.Subscriber('/orb_slam2_mono/observations', Observations, self.observationsCallback)
 		rospy.Subscriber('/orb_slam2_mono/keyframes', KeyFrames, self.keyframesCallback)
 		rospy.Subscriber('/airsim/base_link/camera/image_raw', Image, self.imageBuffer)
 		#rospy.Subscriber('/orb_slam2_mono/keyframes', KeyFrames, self.keyframesCallback)
@@ -165,7 +167,7 @@ class companion():
 		return converted
 
 	def imageBuffer(self, data):
-		buffer_size = 30
+		buffer_size = 50
 		if (len(self.image_buffer) > buffer_size):
 			self.image_buffer.pop()
 		self.image_buffer.insert(0,data)
@@ -183,16 +185,16 @@ class companion():
 			for old_kf in self.keyframes:
 				found = False
 				for new_kf in data:
-					if (old_kf.header.stamp == new_kf.header.stamp):
+					if (old_kf.image_id == new_kf.header.stamp.to_sec()):
 						found = True
 						break
 				#print(found)				
 				if (not found):
 					self.removeKeyFrame(old_kf)
 			#Add new kfs
-			latest = self.keyframes[-1].header.stamp
+			latest = self.keyframes[-1].image_id
 			for new_kf in data:
-				if (new_kf.header.stamp > latest):
+				if (new_kf.header.stamp.to_sec() > latest):
 					self.addKeyFrame(new_kf)		
 
 	def removeKeyFrame(self, data):
@@ -208,17 +210,22 @@ class companion():
 			#print(img.header.stamp, data.header.stamp)
 			if (img.header.stamp.to_sec() == data.header.stamp.to_sec()):
 				#print('add frame')
-				kf.header.stamp = data.header.stamp
+				kf.image_id = data.header.stamp.to_sec()
 				cv_img = self.bridge.imgmsg_to_cv2(img, "passthrough")
-				kf.image = 'img/'+str(kf.header.stamp.to_sec())+'.png'
+				kf.image = 'img/'+str(kf.image_id)+'.png'
 				cv2.imwrite(kf.image, cv_img)
 				self.keyframes.append(kf)
 				found = True
-				break
-		if (not found):
-			print('Image not found, consider increasing image buffer size')
+				return
+		print('Image not found, consider increasing image buffer size')
 			
+	def pointcloudCallback(self, data):
+		self.pointcloud = data
 
+	def observationsCallback(self, data):
+		data = list(data.observations)
+		print(self.pointcloud.width, len(data))
+		
 		
 if __name__ == '__main__':
 	companion()
