@@ -18,7 +18,7 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
 
 - Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required to get source code access for Unreal Engine.
 
-- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.25 at present. We recommend using 4.25.
+- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.24 at present. We recommend using 4.25.
 
 ```bash
 # go to the folder where you clone GitHub projects
@@ -35,7 +35,7 @@ make
 2. Run the Epic Games Launcher, open the `Library` tab on the left pane.
 Click on the `Add Versions` which should show the option to download **Unreal 4.25** as shown below. If you have multiple versions of Unreal installed then **make sure 4.25 is set to `current`** by clicking down arrow next to the Launch button for the version.
 
-   **Note**: AirSim also works with UE >= 4.25, however, we recommend 4.25.
+   **Note**: AirSim also works with UE >= 4.24, however, we recommend 4.25.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ### Build AirSim
