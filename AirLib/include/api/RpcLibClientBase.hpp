@@ -15,6 +15,7 @@
 #include "physics/Kinematics.hpp"
 #include "physics/Environment.hpp"
 #include "api/WorldSimApiBase.hpp"
+#include <map>
 
 namespace msr { namespace airlib {
 
@@ -66,6 +67,7 @@ public:
 
 	void simAddDetectionFilterMeshName(const std::string& mesh_name);
 	void simSetDetectionFilterRadius(const float radius_cm);
+    std::map<std::string, std::vector<int>> simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name ="");
 
     void simFlushPersistentMarkers();
     void simPlotPoints(const vector<Vector3r>& points, const vector<float>& color_rgba, float size, float duration, bool is_persistent);
