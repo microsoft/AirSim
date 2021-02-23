@@ -6,7 +6,7 @@
 
 AFlyingPawn::AFlyingPawn()
 {
-    init_id = pawn_events_.getActuatorSignal().connect_member(this, &AFlyingPawn::initializeRotors);
+    init_id_ = pawn_events_.getActuatorSignal().connect_member(this, &AFlyingPawn::initializeRotors);
     pawn_events_.getActuatorSignal().connect_member(this, &AFlyingPawn::setRotorSpeed);
 }
 
@@ -93,5 +93,5 @@ void AFlyingPawn::initializeRotors(const std::vector<MultirotorPawnEvents::Rotor
     for (auto i = 0; i < rotor_infos.size(); ++i) {
         rotating_movements_.Add(UAirBlueprintLib::GetActorComponent<URotatingMovementComponent>(this, TEXT("Rotation") + FString::FromInt(i)));
     }
-    pawn_events_.getActuatorSignal().disconnect(init_id);
+    pawn_events_.getActuatorSignal().disconnect(init_id_);
 }

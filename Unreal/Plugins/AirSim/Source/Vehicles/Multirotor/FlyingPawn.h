@@ -49,5 +49,5 @@ private: //variables
     UPROPERTY() TArray<URotatingMovementComponent*> rotating_movements_;
 
     MultirotorPawnEvents pawn_events_;
-    int init_id;
+    int init_id_;
 };
