@@ -67,6 +67,9 @@ public:
     virtual void toggleTrace() = 0;
     virtual void setTraceLine(const std::vector<float>& color_rgba, float thickness) = 0;
 
+    virtual std::map<std::string, std::vector<int>> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const = 0;
+
+
     //use pointer here because of derived classes for VehicleSetting
     const AirSimSettings::VehicleSetting* getVehicleSetting() const
     {
