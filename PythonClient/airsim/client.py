@@ -466,6 +466,9 @@ class VehicleClient:
     def simSetDetectionFilterRadius(self, radius_cm):
         self.client.call('simSetDetectionFilterRadius', radius_cm)
 
+    def simGetDetections(self, camera_name, image_type, vehicle_name = ''):
+        return self.client.call('simGetDetections', camera_name, image_type, vehicle_name)
+
     def simPrintLogMessage(self, message, message_param = "", severity = 0):
         """
         Prints the specified message in the simulator's window.
