@@ -100,7 +100,7 @@ public: //implementation of VehicleSimApiBase
     virtual std::string getRecordFileLine(bool is_header_line) const override;
     virtual void reportState(msr::airlib::StateReporter& reporter) override;
 
-	virtual std::map<std::string, std::vector<int>> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name) const override;
+	virtual std::map<std::string, std::vector<int>> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
 
 protected: //additional interface for derived class
     virtual void pawnTick(float dt);

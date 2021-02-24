@@ -53,7 +53,7 @@ public:
 
     USceneCaptureComponent2D* getCaptureComponent(const ImageType type, bool if_active);
     UTextureRenderTarget2D* getRenderTarget(const ImageType type, bool if_active);
-    UDetectionComponent* getDetectionComponent(const ImageType type, bool if_active);
+    UDetectionComponent* getDetectionComponent(const ImageType type, bool if_active) const;
 
     msr::airlib::Pose getPose() const;
 

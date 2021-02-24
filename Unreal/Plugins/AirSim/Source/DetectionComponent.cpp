@@ -5,20 +5,15 @@
 
 #include <Components/SceneCaptureComponent2D.h>
 #include <Components/StaticMeshComponent.h>
+#include <DrawDebugHelpers.h>
 #include <Engine/Engine.h>
 #include <Engine/StaticMesh.h>
 #include <Engine/TextureRenderTarget2D.h>
 #include <EngineUtils.h>
-#include <Kismet/KismetSystemLibrary.h>
-//#include <Runtime/Engine/Classes/Kismet/KismetRenderingLibrary.h>
-#include <Logging/LogMacros.h>
-#include <Kismet/GameplayStatics.h>
-#include <GameFramework/HUD.h>
+#include <Math/UnrealMathUtility.h>
 
 UDetectionComponent::UDetectionComponent()
-	: bOnlyTrackRecentlyRenderedActors(false)
-	, bOnlyTrackOnScreenActors(false)
-	, MaxDistanceToCamera(2000.f)
+	: MaxDistanceToCamera(2000.f)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -46,29 +41,27 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		AActor* Actor = *ActorItr;
 		if (ObjectFilter.MatchesActor(Actor))
 		{
-			if (FVector::DistSquared2D(Actor->GetActorLocation(), GetComponentLocation()) <=
-				MaxDistanceToCamera * MaxDistanceToCamera)
+			if (FVector::/*DistSquared2D*/Distance(Actor->GetActorLocation(), GetComponentLocation()) <=
+				/*MaxDistanceToCamera * */MaxDistanceToCamera)
 			{
 				FBox2D BoxOut;
-				if (SceneCaptureComponent2D->TextureTarget && CalcBoundingFromViewInfo(Actor, BoxOut))
+				if (TextureTarget && CalcBoundingFromViewInfo(Actor, BoxOut))
 				{
 					CachedBoundingBoxes.Add(Actor,BoxOut);
 
-					FVector Origin;
+					/*FVector Origin;
 					FVector Extend;
 					Actor->GetActorBounds(false, Origin, Extend);
-					UKismetSystemLibrary::DrawDebugBox(GetWorld(), Origin, Extend, FLinearColor::Red, FRotator::ZeroRotator, 0.1f, 4.f);
-// 					int32 X;
-// 					int32 Y;
-// 					UGameplayStatics::GetPlayerControllerFromID(GetWorld(), 0)->GetViewportSize(X, Y);
-// 					float XAxisMultiplier = X / SceneCaptureComponent2D->TextureTarget->GetSurfaceWidth();
-// 					float YAxisMultiplier = Y / SceneCaptureComponent2D->TextureTarget->GetSurfaceHeight();
-					//UGameplayStatics::GetPlayerControllerFromID(GetWorld(), 0)->GetHUD()->DrawRect(FLinearColor::Blue, BoxOut.Min.X * XAxisMultiplier, BoxOut.Min.Y * YAxisMultiplier, BoxOut.Max.X * XAxisMultiplier, BoxOut.Max.Y * YAxisMultiplier);					
-					//UE_LOG(LogTemp, Log, TEXT("Object detected: %s"), *(Actor->GetFName().ToString()));
+					DrawDebugBox(GetWorld(), Origin, Extend, FColor::Red, false, 0.03, 0, 4.f);*/
 				}
 			}
 		}		
 	}
+}
+
+TMap<AActor*, FBox2D> UDetectionComponent::GetDetections() const
+{
+	return CachedBoundingBoxes;
 }
 
 bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut)
@@ -77,14 +70,12 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 	FVector Extend;
 	Actor->GetActorBounds(false, Origin, Extend);
 	
-	/*FBox2D BoxOut;*/
 	TArray<FVector> Points;
 	TArray<FVector2D> Points2D;
 	bool IsInView = false;
 	
 	// get render target for texture size
-	UTextureRenderTarget2D* RenderTexture = SceneCaptureComponent2D->TextureTarget;
-	FRenderTarget* RenderTarget = SceneCaptureComponent2D->TextureTarget->GameThread_GetRenderTargetResource();
+	FRenderTarget* RenderTarget = TextureTarget->GameThread_GetRenderTargetResource();
 	
 	// initialize viewinfo for projection matrix
 	FMinimalViewInfo Info; 
@@ -92,7 +83,7 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 	Info.Rotation = SceneCaptureComponent2D->GetComponentTransform().GetRotation().Rotator();
 	Info.FOV = SceneCaptureComponent2D->FOVAngle;
 	Info.ProjectionMode = SceneCaptureComponent2D->ProjectionType;
-	Info.AspectRatio = float(RenderTexture->SizeX) / float(RenderTexture->SizeY);
+	Info.AspectRatio = float(TextureTarget->SizeX) / float(TextureTarget->SizeY);
 	Info.OrthoNearClipPlane = 1;
 	Info.OrthoFarClipPlane = 0;//1000;
 	Info.bConstrainAspectRatio = true;
@@ -108,9 +99,9 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 	Points.Add(Origin + FVector(-Extend.X, -Extend.Y, -Extend.Z));
 	
 	// initialize pixel values
-	FVector2D MinPixel(RenderTexture->SizeX, RenderTexture->SizeY);
+	FVector2D MinPixel(TextureTarget->SizeX, TextureTarget->SizeY);
 	FVector2D MaxPixel(0, 0);
-	FIntRect ScreenRect(0, 0, RenderTexture->SizeX, RenderTexture->SizeY);
+	FIntRect ScreenRect(0, 0, TextureTarget->SizeX, TextureTarget->SizeY);
 	
 	// initialize projection data for sceneview
 	FSceneViewProjectionData ProjectionData;
@@ -146,49 +137,13 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 		MinPixel.Y = FMath::Min(Pixel.Y, MinPixel.Y);
 	}
 
-	BoxOut = FBox2D(MinPixel, MaxPixel);
-	// clamp min point
-	if (BoxOut.Min.X < 0) 
-	{
-		BoxOut.Min.X = 0;
-	//	IsInView = false;
-	}
-	else if (BoxOut.Min.X > RenderTexture->SizeX) 
-	{
-		BoxOut.Min.X = RenderTexture->SizeX;
-	//	IsInView = false;
-	}
-	if (BoxOut.Min.Y < 0) 
-	{
-		BoxOut.Min.Y = 0;
-	//	IsInView = false;
-	}
-	else if (BoxOut.Min.Y > RenderTexture->SizeY) 
-	{
-		BoxOut.Min.Y = RenderTexture->SizeY;
-//		IsInView = false;
-	}
-	// clamp max point
-	if (BoxOut.Max.X > RenderTexture->SizeX) 
-	{
-		BoxOut.Max.X = RenderTexture->SizeX;
-	//	IsInView = false;
-	}
-	else if (BoxOut.Max.X < 0) 
-	{
-		BoxOut.Max.X = 0;
-//		IsInView = false;
-	}
-	if (BoxOut.Max.Y > RenderTexture->SizeY) 
-	{
-		BoxOut.Max.Y = RenderTexture->SizeY;
-//		IsInView = false;
-	}
-	else if (BoxOut.Max.Y < 0) 
-	{
-		BoxOut.Max.Y = 0;
-	//	IsInView = false;
-	}
+	FBox2D BoxOutTemp = FBox2D(MinPixel, MaxPixel);
+
+	BoxOut.Min.X = FMath::Clamp<float>(BoxOutTemp.Min.X, 0, TextureTarget->SizeX);
+	BoxOut.Min.Y = FMath::Clamp<float>(BoxOutTemp.Min.Y, 0, TextureTarget->SizeY);
+	BoxOut.Max.X = FMath::Clamp<float>(BoxOutTemp.Max.X, 0, TextureTarget->SizeX);
+	BoxOut.Max.Y = FMath::Clamp<float>(BoxOutTemp.Max.Y, 0, TextureTarget->SizeY);
+
 	return IsInView;
 }
 
