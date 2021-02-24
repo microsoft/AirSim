@@ -6,7 +6,7 @@
 2. Run the Epic Games Launcher, open the `Unreal Engine` tab on the left pane.
 Click on the `Install` button on the top right, which should show the option to download **Unreal Engine >= 4.25**. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then **make sure the version you are using is set to `current`** by clicking down arrow next to the Launch button for the version.
 
-   **Note**: AirSim also works with UE >= 4.25, however, we recommend 4.25.
+   **Note**: AirSim also works with UE >= 4.24, however, we recommend 4.25.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ![Unreal Engine Tab UI Screenshot](images/ue_install.png)
