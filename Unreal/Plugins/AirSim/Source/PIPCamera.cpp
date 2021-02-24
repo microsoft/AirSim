@@ -497,6 +497,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
                 capture->Activate();
                 if (detection != nullptr)
 				{
+                    detection->TextureTarget = capture->TextureTarget;
                     detection->Activate();
                 }
             }
@@ -508,6 +509,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
 				if (detection != nullptr)
 				{
 					detection->Deactivate();
+                    detection->TextureTarget = nullptr;
 				}
             }
         }
@@ -525,7 +527,7 @@ UTextureRenderTarget2D* APIPCamera::getRenderTarget(const APIPCamera::ImageType 
     return nullptr;
 }
 
-UDetectionComponent* APIPCamera::getDetectionComponent(const ImageType type, bool if_active)
+UDetectionComponent* APIPCamera::getDetectionComponent(const ImageType type, bool if_active) const
 {
 	unsigned int image_type = Utils::toNumeric(type);
 

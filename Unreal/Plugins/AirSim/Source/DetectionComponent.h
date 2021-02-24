@@ -25,6 +25,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	TMap<AActor*, FBox2D> GetDetections() const;
 private:
 	bool CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut);
 
@@ -34,17 +35,14 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Tracked Actors")
 		float MaxDistanceToCamera;
+
+	UPROPERTY()
+		UTextureRenderTarget2D* TextureTarget;
 private:
+
 	UPROPERTY()
 		USceneCaptureComponent2D* SceneCaptureComponent2D;
 
 	UPROPERTY()
 		TMap<AActor*, FBox2D> CachedBoundingBoxes;
-
-	UPROPERTY(EditAnywhere, Category = "Tracked Actors")
-		bool bOnlyTrackRecentlyRenderedActors;
-
-	UPROPERTY(EditAnywhere, Category = "Tracked Actors")
-		bool bOnlyTrackOnScreenActors;
-
 };

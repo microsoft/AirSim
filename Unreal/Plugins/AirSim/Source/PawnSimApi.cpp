@@ -318,17 +318,23 @@ void PawnSimApi::reportState(msr::airlib::StateReporter& reporter)
     reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
 }
 
-std::map<std::string, std::vector<int>> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name) const
+std::map<std::string, std::vector<int>> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
 {
     std::map<std::string, std::vector<int>> result;
-    TMap<AActor*, FBox2D> Detections = getCamera(camera_name)->getDetectionComponent(image_type, false)->CachedBoundingBoxes;
+   // TMap<AActor*, FBox2D> Detections = getCamera(camera_name)->getDetectionComponent(image_type, false)->CachedBoundingBoxes;
+    const APIPCamera* camera = getCamera(camera_name);
+    TMap<AActor*, FBox2D> Detections = camera->getDetectionComponent(image_type, false)->GetDetections();
     for (const TPair<AActor*, FBox2D>& Detection : Detections)
     {
 		std::vector<int> vec;
         vec.push_back(Detection.Value.Min.X);
-        vec.push_back(Detection.Value.Min.Y);bnb
-        result.insert(make_pair(std::string(TCHAR_TO_UTF8(*(Detection.Key->GetFName().ToString()))), vec);
+		vec.push_back(Detection.Value.Min.Y);
+		vec.push_back(Detection.Value.Max.X);
+		vec.push_back(Detection.Value.Max.Y);
+        result.insert(make_pair(std::string(TCHAR_TO_UTF8(*(Detection.Key->GetFName().ToString()))), vec));
     }
+
+    return result;
 }
 
 //void playBack()
