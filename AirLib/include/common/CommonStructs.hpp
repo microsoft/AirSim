@@ -17,12 +17,6 @@ struct RotorParameters {
     RotorParameters()
     {}
 };
-struct RotorVector {
-    std::vector<RotorParameters> rotor;
-
-    RotorVector()
-    {}
-};
 
 //velocity
 struct Twist {

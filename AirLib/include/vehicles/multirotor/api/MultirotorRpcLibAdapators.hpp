@@ -40,7 +40,7 @@ public:
     };
 
     struct RotorStates {
-        RotorVector rotors;
+        std::vector<RotorParameters> rotors;
         uint64_t timestamp;
 
         MSGPACK_DEFINE_MAP(rotors, timestamp);
@@ -50,13 +50,21 @@ public:
 
         RotorStates(const msr::airlib::RotorStates& s)
         {
-            rotors = s.rotors;
+            for (const auto& r : s.rotors)
+            {
+                rotors.push_back(RotorParameters(r));
+            }
             timestamp = s.timestamp;
         }
 
         msr::airlib::RotorStates to() const
         {
-            return msr::airlib::RotorStates(rotors.to(), timestamp);
+            std::vector<msr::airlib::RotorParameters> d;
+            for (const auto& r : rotors)
+            {
+                d.push_back(msr::airlib::RotorParameters(r.to()));
+            }
+            return msr::airlib::RotorStates(d, timestamp);
         }
     };
 

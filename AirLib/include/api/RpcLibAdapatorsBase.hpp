@@ -64,37 +64,7 @@ public:
             return d;
         }
     };
-    struct RotorVector {
-        std::vector<RotorParameters> rotor;
 
-        MSGPACK_DEFINE_MAP(rotor);
-
-        RotorVector()
-        {}
-
-        RotorVector(const msr::airlib::RotorVector& s)
-        {
-            rotor.clear();
-            for (unsigned int i = 0; i < s.rotor.size(); i++)
-            {
-                rotor.push_back(RotorParameters());
-                rotor[i] = s.rotor[i];
-            }
-        }
-
-        msr::airlib::RotorVector to() const
-        {
-            msr::airlib::RotorVector d;
-            for (unsigned int i = 0; i < rotor.size(); i++)
-            {
-                d.rotor.push_back(msr::airlib::RotorParameters());
-                d.rotor[i].speed = rotor[i].speed;
-                d.rotor[i].thrust = rotor[i].thrust;
-                d.rotor[i].torque_scaler = rotor[i].torque_scaler;
-            }
-            return d;
-        }
-    };
     struct Vector3r {
         msr::airlib::real_T x_val = 0, y_val = 0, z_val = 0;
         MSGPACK_DEFINE_MAP(x_val, y_val, z_val);

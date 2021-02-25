@@ -849,5 +849,6 @@ float MultirotorApiBase::getObsAvoidanceVelocity(float risk_dist, float max_obs_
     unused(risk_dist);
     return max_obs_avoidance_vel;
 }
+
 }} //namespace
 #endif

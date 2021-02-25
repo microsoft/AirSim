@@ -18,12 +18,12 @@ enum class LandedState : uint {
 };
 // Struct for rotor state API
 struct RotorStates {
-    RotorVector rotors;
+    std::vector<RotorParameters> rotors;
     uint64_t timestamp;
 
     RotorStates()
     {}
-    RotorStates(const RotorVector& rotors_val, uint64_t timestamp_val)
+    RotorStates(const std::vector<RotorParameters>& rotors_val, uint64_t timestamp_val)
         : rotors(rotors_val), timestamp(timestamp_val)
     {
     }

@@ -68,14 +68,14 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
     collision_response = multirotor_physics_body_->getCollisionResponseInfo();
 
     //update rotor poses
-    rotor_states_.rotors.rotor.clear();
+    rotor_states_.rotors.clear();
     for (unsigned int i = 0; i < rotor_count_; ++i) {
         const auto& rotor_output = multirotor_physics_body_->getRotorOutput(i);
         // update private rotor variable
-        rotor_states_.rotors.rotor.push_back(RotorParameters());
-        rotor_states_.rotors.rotor[i].speed = rotor_output.speed;
-        rotor_states_.rotors.rotor[i].thrust = rotor_output.thrust;
-        rotor_states_.rotors.rotor[i].torque_scaler = rotor_output.torque_scaler;
+        rotor_states_.rotors.push_back(RotorParameters());
+        rotor_states_.rotors[i].speed = rotor_output.speed;
+        rotor_states_.rotors[i].thrust = rotor_output.thrust;
+        rotor_states_.rotors[i].torque_scaler = rotor_output.torque_scaler;
         RotorActuatorInfo* info = &rotor_actuator_info_[i];
         info->rotor_speed = rotor_output.speed;
         info->rotor_direction = static_cast<int>(rotor_output.turning_direction);
