@@ -16,6 +16,11 @@ struct RotorParameters {
 
     RotorParameters()
     {}
+
+    RotorParameters(const real_T& thrust_val, const real_T& torque_scaler_val, const real_T& speed_val)
+        : thrust(thrust_val), torque_scaler(torque_scaler_val), speed(speed_val)
+    {
+    }
 };
 
 //velocity

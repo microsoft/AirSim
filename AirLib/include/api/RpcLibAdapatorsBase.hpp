@@ -55,13 +55,7 @@ public:
 
         msr::airlib::RotorParameters to() const
         {
-            msr::airlib::RotorParameters d;
-
-            d.thrust = thrust;
-            d.torque_scaler = torque_scaler;
-            d.speed = speed;
-
-            return d;
+            return msr::airlib::RotorParameters(thrust, torque_scaler, speed);
         }
     };
 

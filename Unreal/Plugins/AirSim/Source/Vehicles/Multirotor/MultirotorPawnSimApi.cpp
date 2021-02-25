@@ -72,10 +72,12 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
     for (unsigned int i = 0; i < rotor_count_; ++i) {
         const auto& rotor_output = multirotor_physics_body_->getRotorOutput(i);
         // update private rotor variable
-        rotor_states_.rotors.push_back(RotorParameters());
-        rotor_states_.rotors[i].speed = rotor_output.speed;
-        rotor_states_.rotors[i].thrust = rotor_output.thrust;
-        rotor_states_.rotors[i].torque_scaler = rotor_output.torque_scaler;
+        if (rotor_states_.rotors.size() < i + 1)
+            //add a new element to the vector if it doesnt contain a rotor/element of index 'i' yet
+            rotor_states_.rotors.push_back(RotorParameters(rotor_output.speed, rotor_output.thrust, rotor_output.torque_scaler));
+        else
+            //if the vector has already been populated previously, just update the values
+            rotor_states_.rotors[i] = RotorParameters(rotor_output.speed, rotor_output.thrust, rotor_output.torque_scaler);
         RotorActuatorInfo* info = &rotor_actuator_info_[i];
         info->rotor_speed = rotor_output.speed;
         info->rotor_direction = static_cast<int>(rotor_output.turning_direction);
