@@ -68,7 +68,6 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
     collision_response = multirotor_physics_body_->getCollisionResponseInfo();
 
     //update rotor poses
-    rotor_states_.rotors.clear();
     for (unsigned int i = 0; i < rotor_count_; ++i) {
         const auto& rotor_output = multirotor_physics_body_->getRotorOutput(i);
         // update private rotor variable
