@@ -7,16 +7,17 @@
 #include "common/common_utils/FileSystem.hpp"
 
 
-void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, msr::airlib::VehicleSimApiBase* vehicle_sim_api)
+void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses,
+    msr::airlib::VehicleSimApiBase* vehicle_sim_api) const
 {
     bool save_success = false;
-    std::stringstream image_file_names;
+    std::ostringstream image_file_names;
 
     for (auto i = 0; i < responses.size(); ++i) {
         const auto& response = responses.at(i);
 
         //build image file name
-        std::stringstream image_file_name;
+        std::ostringstream image_file_name;
         image_file_name << "img_"
             << vehicle_sim_api->getVehicleName() << "_" 
             << response.camera_name << "_" <<
@@ -69,7 +70,6 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
         writeString(vehicle_sim_api->getRecordFileLine(false).append(image_file_names.str()).append("\n"));
 
         //UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
-        images_saved_++;
     }
 }
 
@@ -92,7 +92,7 @@ void RecordingFile::createFile(const std::string& file_path, const std::string& 
     }
 }
 
-bool RecordingFile::isFileOpen()
+bool RecordingFile::isFileOpen() const
 {
     return log_file_handle_ != nullptr;
 }
@@ -105,11 +105,11 @@ void RecordingFile::closeFile()
     log_file_handle_ = nullptr;
 }
 
-void RecordingFile::writeString(const std::string& str)
+void RecordingFile::writeString(const std::string& str) const
 {
     try {    
         if (log_file_handle_) {
-            FString line_f = FString(str.c_str());
+            FString line_f(str.c_str());
             log_file_handle_->Write((const uint8*)TCHAR_TO_ANSI(*line_f), line_f.Len());
         }
         else
@@ -167,7 +167,7 @@ void RecordingFile::stopRecording(bool ignore_if_stopped)
     UAirBlueprintLib::LogMessage(TEXT("Data saved to: "), FString(image_path_.c_str()), LogDebugLevel::Success);
 }
 
-bool RecordingFile::isRecording()
+bool RecordingFile::isRecording() const
 {
     return is_recording_;
 }

@@ -66,7 +66,7 @@ public: //types
         {
         }
 
-        RecordingSetting(bool record_on_move_val, float record_interval_val, std::string folder_val, bool enabled_val)
+        RecordingSetting(bool record_on_move_val, float record_interval_val, const std::string& folder_val, bool enabled_val)
             : record_on_move(record_on_move_val), record_interval(record_interval_val), folder(folder_val),
               enabled(enabled_val)
         {
@@ -124,7 +124,6 @@ public: //types
         // ShowFlag.VisualizeHDR 1.
         //to replicate camera settings_json to SceneCapture2D
         //TODO: should we use UAirBlueprintLib::GetDisplayGamma()?
-        typedef msr::airlib::Utils Utils;
         static constexpr float kSceneTargetGamma = 1.4f;
 
         int image_type = 0;
@@ -620,7 +619,6 @@ private:
                 // Get name of the default vehicle to be used if "VehicleName" isn't specified
                 // Map contains a default vehicle if vehicles haven't been specified
                 std::string default_vehicle_name = vehicles.begin()->first;
-
 
                 for (size_t child_index = 0; child_index < req_cameras_settings.size(); ++child_index) {
                     Settings req_camera_settings;
