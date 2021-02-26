@@ -1292,7 +1292,7 @@ class MultirotorClient(VehicleClient, object):
             vehicle_name (str, optional): Vehicle to get the rotor state of
 
         Returns:
-            RotorStates: Containing a timestamp and the speed, trust and torque of all rotors.
+            RotorStates: Containing a timestamp and the speed, thrust and torque of all rotors.
         """
         return RotorStates.from_msgpack(self.client.call('getRotorStates', vehicle_name))
     getRotorStates.__annotations__ = {'return': RotorStates}

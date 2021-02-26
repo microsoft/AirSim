@@ -36,29 +36,6 @@ public:
             d.push_back(TDest(s.at(i)));
     }
 
-    struct RotorParameters {
-        msr::airlib::real_T thrust;
-        msr::airlib::real_T torque_scaler;
-        msr::airlib::real_T speed;
-
-        MSGPACK_DEFINE_MAP(thrust, torque_scaler, speed);
-
-        RotorParameters()
-        {}
-
-        RotorParameters(const msr::airlib::RotorParameters& s)
-        {
-            thrust = s.thrust;
-            torque_scaler = s.torque_scaler;
-            speed = s.speed;
-        }
-
-        msr::airlib::RotorParameters to() const
-        {
-            return msr::airlib::RotorParameters(thrust, torque_scaler, speed);
-        }
-    };
-
     struct Vector3r {
         msr::airlib::real_T x_val = 0, y_val = 0, z_val = 0;
         MSGPACK_DEFINE_MAP(x_val, y_val, z_val);

@@ -16,7 +16,21 @@ enum class LandedState : uint {
     Landed = 0,
     Flying = 1
 };
-// Struct for rotor state API
+// Structs for rotor state API
+struct RotorParameters {
+    real_T thrust = 0;
+    real_T torque_scaler = 0;
+    real_T speed = 0;
+
+    RotorParameters()
+    {}
+
+    RotorParameters(const real_T& thrust_val, const real_T& torque_scaler_val, const real_T& speed_val)
+        : thrust(thrust_val), torque_scaler(torque_scaler_val), speed(speed_val)
+    {
+    }
+};
+
 struct RotorStates {
     std::vector<RotorParameters> rotors;
     uint64_t timestamp;
@@ -28,6 +42,7 @@ struct RotorStates {
     {
     }
 };
+
 //Yaw mode specifies if yaw should be set as angle or angular velocity around the center of drone
 struct YawMode {
     bool is_rate = true;

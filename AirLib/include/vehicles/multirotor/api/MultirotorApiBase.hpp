@@ -149,7 +149,7 @@ public: //these APIs uses above low level APIs
     }
 
     /******************* rotors' states setter ********************/
-    void setRotorStates(RotorStates& rotor_states)
+    void setRotorStates(const RotorStates& rotor_states)
     {
         rotor_states_ = rotor_states;
     }

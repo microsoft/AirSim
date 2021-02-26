@@ -39,6 +39,29 @@ public:
         }
     };
 
+    struct RotorParameters {
+        msr::airlib::real_T thrust;
+        msr::airlib::real_T torque_scaler;
+        msr::airlib::real_T speed;
+
+        MSGPACK_DEFINE_MAP(thrust, torque_scaler, speed);
+
+        RotorParameters()
+        {}
+
+        RotorParameters(const msr::airlib::RotorParameters& s)
+        {
+            thrust = s.thrust;
+            torque_scaler = s.torque_scaler;
+            speed = s.speed;
+        }
+
+        msr::airlib::RotorParameters to() const
+        {
+            return msr::airlib::RotorParameters(thrust, torque_scaler, speed);
+        }
+    };
+
     struct RotorStates {
         std::vector<RotorParameters> rotors;
         uint64_t timestamp;
@@ -62,7 +85,7 @@ public:
             std::vector<msr::airlib::RotorParameters> d;
             for (const auto& r : rotors)
             {
-                d.push_back(msr::airlib::RotorParameters(r.to()));
+                d.push_back(r.to());
             }
             return msr::airlib::RotorStates(d, timestamp);
         }

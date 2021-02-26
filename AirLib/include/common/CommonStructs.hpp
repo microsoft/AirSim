@@ -8,20 +8,6 @@
 #include <ostream>
 
 namespace msr { namespace airlib {
-//rotor feedback
-struct RotorParameters {
-    real_T thrust = 0;
-    real_T torque_scaler = 0;
-    real_T speed = 0;
-
-    RotorParameters()
-    {}
-
-    RotorParameters(const real_T& thrust_val, const real_T& torque_scaler_val, const real_T& speed_val)
-        : thrust(thrust_val), torque_scaler(torque_scaler_val), speed(speed_val)
-    {
-    }
-};
 
 //velocity
 struct Twist {

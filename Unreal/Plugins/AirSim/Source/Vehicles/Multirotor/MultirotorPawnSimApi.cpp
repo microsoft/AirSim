@@ -73,10 +73,10 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
         // update private rotor variable
         if (rotor_states_.rotors.size() < i + 1)
             //add a new element to the vector if it doesnt contain a rotor/element of index 'i' yet
-            rotor_states_.rotors.push_back(RotorParameters(rotor_output.speed, rotor_output.thrust, rotor_output.torque_scaler));
+            rotor_states_.rotors.push_back(RotorParameters(rotor_output.thrust, rotor_output.torque_scaler, rotor_output.speed));
         else
             //if the vector has already been populated previously, just update the values
-            rotor_states_.rotors[i] = RotorParameters(rotor_output.speed, rotor_output.thrust, rotor_output.torque_scaler);
+            rotor_states_.rotors[i] = RotorParameters(rotor_output.thrust, rotor_output.torque_scaler, rotor_output.speed);
         RotorActuatorInfo* info = &rotor_actuator_info_[i];
         info->rotor_speed = rotor_output.speed;
         info->rotor_direction = static_cast<int>(rotor_output.turning_direction);
