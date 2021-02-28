@@ -109,6 +109,11 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(ApiProvider* api_provider, string
             return getVehicleApi(vehicle_name)->moveOnPath(conv_path, velocity, timeout_sec, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead);
         });
     (static_cast<rpc::server*>(getServer()))->
+        bind("moveToGPS", [&](float latitude, float longitude, float altitude, float velocity, float timeout_sec, DrivetrainType drivetrain,
+        const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name) -> bool {
+        return getVehicleApi(vehicle_name)->moveToGPS(latitude, longitude, altitude, velocity, timeout_sec, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead);
+    });
+    (static_cast<rpc::server*>(getServer()))->
         bind("moveToPosition", [&](float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
         const MultirotorRpcLibAdapators::YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name) -> bool {
         return getVehicleApi(vehicle_name)->moveToPosition(x, y, z, velocity, timeout_sec, drivetrain, yaw_mode.to(), lookahead, adaptive_lookahead); 

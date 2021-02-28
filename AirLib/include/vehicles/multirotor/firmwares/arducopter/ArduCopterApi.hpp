@@ -87,6 +87,10 @@ public:
         Utils::log("Not Implemented: getHomeGeoPoint", Utils::kLogLevelInfo);
         return GeoPoint(Utils::nan<double>(), Utils::nan<double>(), Utils::nan<float>());
     }
+    virtual GeoPoint getHomeGpsLocation() const override
+    {
+        return AirSimSettings::singleton().origin_geopoint.home_geo_point;
+    }
     virtual void getStatusMessages(std::vector<std::string>& messages) override
     {
         unused(messages);

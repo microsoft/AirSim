@@ -394,6 +394,18 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
     return waiter.isComplete();
 }
 
+bool MultirotorApiBase::moveToGPS(float latitude, float longitude, float altitude, float velocity, float timeout_sec, DrivetrainType drivetrain,
+    const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
+{
+    SingleTaskCall lock(this);
+    GeoPoint target;
+    target.latitude = latitude;
+    target.longitude = longitude;
+    target.altitude = altitude;
+    vector<Vector3r> path{ msr::airlib::EarthUtils::GeodeticToNedFast(target, getHomeGpsLocation()) };
+    return moveOnPath(path, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead);
+}
+
 bool MultirotorApiBase::moveToPosition(float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
     const YawMode& yaw_mode, float lookahead, float adaptive_lookahead)
 {

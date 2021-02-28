@@ -43,6 +43,7 @@ protected: //must be implemented
     virtual LandedState getLandedState() const = 0;
     virtual GeoPoint getGpsLocation() const = 0;
     virtual const MultirotorApiParams& getMultirotorApiParams() const = 0;
+    virtual GeoPoint getHomeGpsLocation() const = 0;
 
     /************************* basic config APIs *********************************/
     virtual float getCommandPeriod() const = 0; //time between two command required for drone in seconds
@@ -89,6 +90,8 @@ public: //these APIs uses above low level APIs
     virtual bool land(float timeout_sec);
     virtual bool goHome(float timeout_sec);
 
+    virtual bool moveToGPS(float latitude, float longitude, float altitude, float velocity, float timeout_sec, DrivetrainType drivetrain,
+        const YawMode& yaw_mode, float lookahead, float adaptive_lookahead);
     virtual bool moveByVelocityBodyFrame(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
     virtual bool moveByMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration);
     virtual bool moveByRollPitchYawZ(float roll, float pitch, float yaw, float z, float duration);
