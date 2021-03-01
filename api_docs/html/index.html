@@ -635,7 +635,8 @@ See <a class="reference external" href="https://microsoft.github.io/AirSim/image
 <dl class="py method">
 <dt id="airsim.client.VehicleClient.simGetLidarSegmentation">
 <code class="sig-name descname"><span class="pre">simGetLidarSegmentation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lidar_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetLidarSegmentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetLidarSegmentation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns Segmentation ID of each point’s collided object in the last Lidar update</p>
+<dd><p>NOTE: Deprecated API, use <cite>getLidarData()</cite> API instead
+Returns Segmentation ID of each point’s collided object in the last Lidar update</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2613,6 +2614,11 @@ This function should only be called if the default position control PID gains ne
 <dl class="py attribute">
 <dt id="airsim.types.LidarData.pose">
 <code class="sig-name descname"><span class="pre">pose</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;Pose&gt;</span> <span class="pre">{</span>&#160;&#160; <span class="pre">'orientation':</span> <span class="pre">&lt;Quaternionr&gt;</span> <span class="pre">{</span>&#160;&#160; <span class="pre">'w_val':</span> <span class="pre">1.0,</span>&#160;&#160;&#160;&#160; <span class="pre">'x_val':</span> <span class="pre">0.0,</span>&#160;&#160;&#160;&#160; <span class="pre">'y_val':</span> <span class="pre">0.0,</span>&#160;&#160;&#160;&#160; <span class="pre">'z_val':</span> <span class="pre">0.0},</span>&#160;&#160;&#160;&#160; <span class="pre">'position':</span> <span class="pre">&lt;Vector3r&gt;</span> <span class="pre">{</span>&#160;&#160; <span class="pre">'x_val':</span> <span class="pre">0.0,</span>&#160;&#160;&#160;&#160; <span class="pre">'y_val':</span> <span class="pre">0.0,</span>&#160;&#160;&#160;&#160; <span class="pre">'z_val':</span> <span class="pre">0.0}}</span></em><a class="headerlink" href="#airsim.types.LidarData.pose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="airsim.types.LidarData.segmentation">
+<code class="sig-name descname"><span class="pre">segmentation</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#airsim.types.LidarData.segmentation" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

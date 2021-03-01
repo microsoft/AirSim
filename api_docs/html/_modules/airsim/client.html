@@ -819,6 +819,7 @@
 
 <div class="viewcode-block" id="VehicleClient.simGetLidarSegmentation"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetLidarSegmentation">[docs]</a>    <span class="k">def</span> <span class="nf">simGetLidarSegmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lidar_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        NOTE: Deprecated API, use `getLidarData()` API instead</span>
 <span class="sd">        Returns Segmentation ID of each point&#39;s collided object in the last Lidar update</span>
 
 <span class="sd">        Args:</span>
@@ -828,7 +829,8 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list[int]: Segmentation IDs of the objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetLidarSegmentation&#39;</span><span class="p">,</span> <span class="n">lidar_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;simGetLidarSegmentation API is deprecated, use getLidarData() API instead&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getLidarData</span><span class="p">(</span><span class="n">lidar_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span><span class="o">.</span><span class="n">segmentation</span></div>
 
     <span class="c1">#  Plotting APIs</span>
 <div class="viewcode-block" id="VehicleClient.simFlushPersistentMarkers"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simFlushPersistentMarkers">[docs]</a>    <span class="k">def</span> <span class="nf">simFlushPersistentMarkers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

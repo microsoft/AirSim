@@ -294,15 +294,18 @@
             <div class="section">
               
                 <h1 id="how-to-use-lidar-in-airsim">How to Use Lidar in AirSim<a class="headerlink" href="#how-to-use-lidar-in-airsim" title="Permanent link">#</a></h1>
-<p>AirSim supports Lidar for multirotors and cars. </p>
+<p>AirSim supports Lidar for multirotors and cars.</p>
 <p>The enablement of lidar and the other lidar settings can be configured via AirSimSettings json.
 Please see <a href="../sensors/">general sensors</a> for information on configruation of general/shared sensor settings.</p>
 <h2 id="enabling-lidar-on-a-vehicle">Enabling lidar on a vehicle<a class="headerlink" href="#enabling-lidar-on-a-vehicle" title="Permanent link">#</a></h2>
 <ul>
-<li>By default, lidars are not enabled. To enable lidar, set the SensorType and Enabled attributes in settings json.
-<pre class="highlight"><code>        "Lidar1": { 
-             "SensorType": 6,
-             "Enabled" : true,</code></pre></li>
+<li>By default, lidars are not enabled. To enable lidar, set the SensorType and Enabled attributes in settings json.</li>
+</ul>
+<pre class="highlight"><code class="language-json">    "Lidar1": {
+         "SensorType": 6,
+         "Enabled" : true,
+    }</code></pre>
+<ul>
 <li>Multiple lidars can be enabled on a vehicle.</li>
 </ul>
 <h2 id="lidar-configuration">Lidar configuration<a class="headerlink" href="#lidar-configuration" title="Permanent link">#</a></h2>
@@ -361,8 +364,8 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
 </tr>
 </tbody>
 </table>
-<p>e.g.,
-<pre class="highlight"><code>{
+<p>e.g.</p>
+<pre class="highlight"><code class="language-json">{
     "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md",
     "SettingsVersion": 1.2,
 
@@ -373,7 +376,7 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
             "VehicleType": "simpleflight",
             "AutoCreate": true,
             "Sensors": {
-                "LidarSensor1": { 
+                "LidarSensor1": {
                     "SensorType": 6,
                     "Enabled" : true,
                     "NumberOfChannels": 16,
@@ -388,7 +391,7 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
                     "DrawDebugPoints": true,
                     "DataFrame": "SensorLocalFrame"
                 },
-                "LidarSensor2": { 
+                "LidarSensor2": {
                    "SensorType": 6,
                     "Enabled" : true,
                     "NumberOfChannels": 4,
@@ -404,29 +407,38 @@ Please see <a href="../sensors/">general sensors</a> for information on configru
             }
         }
     }
-}</code></pre></p>
+}</code></pre>
 <h2 id="server-side-visualization-for-debugging">Server side visualization for debugging<a class="headerlink" href="#server-side-visualization-for-debugging" title="Permanent link">#</a></h2>
-<p>Be default, the lidar points are not drawn on the viewport. To enable the drawing of hit laser points on the viewport, please enable setting 'DrawDebugPoints' via settings json.
-e.g.,
-<pre class="highlight"><code>        "Lidar1": { 
-             ...
-             "DrawDebugPoints": true
-        },</code></pre></p>
+<p>By default, the lidar points are not drawn on the viewport. To enable the drawing of hit laser points on the viewport, please enable setting <code>DrawDebugPoints</code> via settings json.</p>
+<pre class="highlight"><code class="language-json">    "Lidar1": {
+         ...
+         "DrawDebugPoints": true
+    },</code></pre>
+<p><strong>Note:</strong> Enabling <code>DrawDebugPoints</code> can cause excessive memory usage and crash in releases <code>v1.3.1</code>, <code>v1.3.0</code>. This has been fixed in master and should work in later releases</p>
 <h2 id="client-api">Client API<a class="headerlink" href="#client-api" title="Permanent link">#</a></h2>
-<p>Use <code>getLidarData()</code> API to retrieve the Lidar data. 
-* The API returns a Point-Cloud as a flat array of floats along with the timestamp of the capture and lidar pose.
-* Point-Cloud: 
-  * The floats represent [x,y,z] coordinate for each point hit within the range in the last scan.
-  * The frame for the points in the output is configurable using "DataFrame" attribute
-  "" or "VehicleInertialFrame" -- default; returned points are in vehicle inertial frame (in NED, in meters)
-  "SensorLocalFrame" -- returned points are in lidar local frame (in NED, in meters)
-* Lidar Pose:
-    * Lidar pose in the vehicle inertial frame (in NED, in meters)
-    * Can be used to transform points to other frames.</p>
+<p>Use <code>getLidarData()</code> API to retrieve the Lidar data.</p>
+<ul>
+<li>The API returns a Point-Cloud as a flat array of floats along with the timestamp of the capture and lidar pose.</li>
+<li>Point-Cloud:<ul>
+<li>The floats represent [x,y,z] coordinate for each point hit within the range in the last scan.</li>
+<li>The frame for the points in the output is configurable using "DataFrame" attribute -<ul>
+<li>"" or <code>VehicleInertialFrame</code> -- default; returned points are in vehicle inertial frame (in NED, in meters)</li>
+<li><code>SensorLocalFrame</code> -- returned points are in lidar local frame (in NED, in meters)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Lidar Pose:<ul>
+<li>Lidar pose in the vehicle inertial frame (in NED, in meters)</li>
+<li>Can be used to transform points to other frames.</li>
+</ul>
+</li>
+<li>Segmentation: The segmentation of each lidar point's collided object</li>
+</ul>
 <h3 id="python-examples">Python Examples<a class="headerlink" href="#python-examples" title="Permanent link">#</a></h3>
 <ul>
-<li><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor">drone_lidar.py</a></li>
-<li><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//car">car_lidar.py</a></li>
+<li><a href="https://github.com/microsoft/AirSim/blob/master/PythonClient/multirotor/drone_lidar.py">drone_lidar.py</a></li>
+<li><a href="https://github.com/microsoft/AirSim/blob/master/PythonClient/car/car_lidar.py">car_lidar.py</a></li>
 </ul>
 <h2 id="coming-soon">Coming soon<a class="headerlink" href="#coming-soon" title="Permanent link">#</a></h2>
 <ul>
