@@ -396,8 +396,10 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
+    "Folder": "",
+    "Enabled": false,
     "Cameras": [
-        { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "Compress": true }
+        { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false,  "VehicleName": "", "Compress": true }
     ]
   },
   "CameraDefaults": {
@@ -553,12 +555,25 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
         {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "Car1", "Visible": false}
     ]</code></pre>
 <h2 id="recording">Recording<a class="headerlink" href="#recording" title="Permanent link">#</a></h2>
-<p>The recording feature allows you to record data such as position, orientation, velocity along with the captured image at specified intervals. You can start recording by pressing red Record button on lower right or the R key. The data is stored in the <code>Documents\AirSim</code> folder, in a time stamped subfolder for each recording session, as tab separated file.</p>
+<p>The recording feature allows you to record data such as position, orientation, velocity along with the captured image at specified intervals. You can start recording by pressing red Record button on lower right or the R key. The data is stored in the <code>Documents\AirSim</code> folder (or the folder specified using <code>Folder</code>), in a time stamped subfolder for each recording session, as tab separated file.</p>
 <ul>
 <li><code>RecordInterval</code>: specifies minimal interval in seconds between capturing two images.</li>
 <li><code>RecordOnMove</code>: specifies that do not record frame if there was vehicle's position or orientation hasn't changed.</li>
-<li><code>Cameras</code>: this element controls which cameras are used to capture images. By default scene image from camera 0 is recorded as compressed png format. This setting is json array so you can specify multiple cameras to capture images, each with potentially different <a href="./#image-capture-settings">image types</a>. When PixelsAsFloat is true, image is saved as <a href="../pfm/">pfm</a> file instead of png file.</li>
+<li><code>Folder</code>: Parent folder where timestamped subfolder with recordings are created. Absolute path of the directory must be specified. If not used, then <code>Documents/AirSim</code> folder will be used. E.g. <code>"Folder": "/home/&lt;user&gt;/Documents"</code></li>
+<li><code>Enabled</code>: Whether Recording should start from the beginning itself, setting to <code>true</code> will start recording automatically when the simulation starts. By default, it's set to <code>false</code></li>
+<li><code>Cameras</code>: this element controls which cameras are used to capture images. By default scene image from camera 0 is recorded as compressed png format. This setting is json array so you can specify multiple cameras to capture images, each with potentially different <a href="./#image-capture-settings">image types</a>. <ul>
+<li>When <code>PixelsAsFloat</code> is true, image is saved as <a href="../pfm/">pfm</a> file instead of png file.</li>
+<li><code>VehicleName</code> option allows you to specify separate cameras for individual vehicles. If the <code>Cameras</code> element isn't present, <code>Scene</code> image from the default camera of each vehicle will be recorded.</li>
+<li>If you don't want to record any images and just the vehicle's physics data, then specify the <code>Cameras</code> element but leave it empty, like this: <code>"Cameras": []</code></li>
 </ul>
+</li>
+</ul>
+<p>For example, the <code>Cameras</code> element below records scene &amp; segmentation images for <code>Car1</code> &amp; scene for <code>Car2</code>-</p>
+<pre class="highlight"><code class="language-json">"Cameras": [
+    { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "VehicleName": "Car1", "Compress": true },
+    { "CameraName": "0", "ImageType": 5, "PixelsAsFloat": false, "VehicleName": "Car1", "Compress": true },
+    { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "VehicleName": "Car2", "Compress": true }
+]</code></pre>
 <h2 id="clockspeed">ClockSpeed<a class="headerlink" href="#clockspeed" title="Permanent link">#</a></h2>
 <p>This setting allows you to set the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simulation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collision is not detected. However slowing down simulation clock (i.e. values &lt; 1.0) generally improves the quality of simulation.</p>
 <h2 id="segmentation-settings">Segmentation Settings<a class="headerlink" href="#segmentation-settings" title="Permanent link">#</a></h2>
