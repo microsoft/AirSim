@@ -402,7 +402,7 @@ bool MultirotorApiBase::moveToGPS(float latitude, float longitude, float altitud
     target.latitude = latitude;
     target.longitude = longitude;
     target.altitude = altitude;
-    vector<Vector3r> path{ msr::airlib::EarthUtils::GeodeticToNedFast(target, getHomeGpsLocation()) };
+    vector<Vector3r> path{ msr::airlib::EarthUtils::GeodeticToNed(target, getHomeGpsLocation()) };
     return moveOnPath(path, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead);
 }
 
