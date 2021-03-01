@@ -41,20 +41,14 @@ std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
                "Throttle\tSteering\tBrake\tGear\tHandbrake\tRPM\tSpeed\t";
     }
 
-    const msr::airlib::Kinematics::State* kinematics = getGroundTruthKinematics();
-    const auto state = pawn_api_->getCarState();
+    const auto& state = pawn_api_->getCarState();
 
-    common_line
-        .append(std::to_string(current_controls_.throttle)).append("\t")
-        .append(std::to_string(current_controls_.steering)).append("\t")
-        .append(std::to_string(current_controls_.brake)).append("\t")
-        .append(std::to_string(state.gear)).append("\t")
-        .append(std::to_string(state.handbrake)).append("\t")
-        .append(std::to_string(state.rpm)).append("\t")
-        .append(std::to_string(state.speed)).append("\t")
-        ;
+    std::ostringstream ss;
+    ss << common_line;
+    ss << current_controls_.throttle << "\t" << current_controls_.steering << "\t" << current_controls_.brake << "\t";
+    ss << state.gear << "\t" << state.handbrake << "\t" << state.rpm << "\t" << state.speed << "\t";
 
-    return common_line;
+    return ss.str();
 }
 
 //these are called on render ticks

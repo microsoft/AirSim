@@ -53,7 +53,7 @@ struct LidarSimpleParams {
         // for cars, the lidars FOV is more forward facing.
         vertical_FOV_upper = settings.vertical_FOV_upper;
         if (std::isnan(vertical_FOV_upper)) {
-            if (simmode_name == "Multirotor")
+            if (simmode_name == AirSimSettings::kSimModeTypeMultirotor)
                 vertical_FOV_upper = -15;
             else
                 vertical_FOV_upper = +10;
@@ -61,7 +61,7 @@ struct LidarSimpleParams {
 
         vertical_FOV_lower = settings.vertical_FOV_lower;
         if (std::isnan(vertical_FOV_lower)) {
-            if (simmode_name == "Multirotor")
+            if (simmode_name == AirSimSettings::kSimModeTypeMultirotor)
                 vertical_FOV_lower = -45;
             else
                 vertical_FOV_lower = -10;
@@ -73,7 +73,7 @@ struct LidarSimpleParams {
         if (std::isnan(relative_pose.position.y()))
             relative_pose.position.y() = 0;
         if (std::isnan(relative_pose.position.z())) {
-            if (simmode_name == "Multirotor")
+            if (simmode_name == AirSimSettings::kSimModeTypeMultirotor)
                 relative_pose.position.z() = 0;
             else
                 relative_pose.position.z() = -1;  // a little bit above for cars

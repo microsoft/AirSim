@@ -678,9 +678,9 @@ public:
         return uval[0] == 1;
     }
 
-    static void writePfmFile(const float * const image_data, int width, int height, std::string path, float scalef=1)
+    static void writePFMfile(const float * const image_data, int width, int height, const std::string& path, float scalef=1)
     {
-        std::fstream file(path.c_str(), std::ios::out | std::ios::binary);
+        std::ofstream file(path.c_str(), std::ios::binary);
 
         std::string bands;
         float fvalue;       // scale factor and temp value to hold pixel value
@@ -704,6 +704,35 @@ public:
                 }
             }
         }
+
+        file.close();
+    }
+
+    static void writePPMfile(const uint8_t* const image_data, int width, int height, const std::string& path)
+    {
+        std::ofstream file(path.c_str(), std::ios::binary);
+
+        // Header information
+        file << "P6\n";                             // Magic type for PPM files
+        file << width << " " << height << "\n";
+        file << "255\n";                            // Max color value
+
+        auto write_binary = [&file](const uint8_t &data) {
+            file.write(reinterpret_cast<const char*>(&data), sizeof(data));
+        };
+
+        for (int i=0; i<height; i++) {
+            for (int j=0; j<width; j++) {
+                int id = (i*width + j)*3;           // Pixel index
+
+                // Image is in BGR, write as RGB
+                write_binary(image_data[id+2]);     // R
+                write_binary(image_data[id+1]);     // G
+                write_binary(image_data[id]);       // B
+            }
+        }
+
+        file.close();
     }
 
     template<typename T>

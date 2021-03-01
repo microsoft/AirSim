@@ -174,7 +174,7 @@ private:
 
             denormalizeDisparity(disparity_data, result.response.at(2).width);
 
-            Utils::writePfmFile(disparity_data.data(), result.response.at(2).width, result.response.at(2).height,
+            Utils::writePFMfile(disparity_data.data(), result.response.at(2).width, result.response.at(2).height,
                 FileSystem::combine(result.storage_dir_, disparity_file_name));
 
             (* result.file_list) << left_file_name << "," << right_file_name << "," << disparity_file_name << std::endl;
