@@ -359,6 +359,10 @@ class MultirotorState(MsgpackMixin):
     ready_message = ""
     can_arm = False
 
+class RotorStates(MsgpackMixin):
+    timestamp = np.uint64(0)
+    rotors = []
+
 class ProjectionMatrix(MsgpackMixin):
     matrix = []
 

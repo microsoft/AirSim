@@ -123,6 +123,11 @@ public: //these APIs uses above low level APIs
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
 
     /************************* high level status APIs *********************************/
+    RotorStates getRotorStates() const
+    {
+        return rotor_states_;
+    }
+
     MultirotorState getMultirotorState() const
     {
         MultirotorState state;
@@ -141,6 +146,12 @@ public: //these APIs uses above low level APIs
     virtual void cancelLastTask() override
     {
         token_.cancel();
+    }
+
+    /******************* rotors' states setter ********************/
+    void setRotorStates(const RotorStates& rotor_states)
+    {
+        rotor_states_ = rotor_states;
     }
 
 protected: //utility methods
@@ -341,6 +352,7 @@ private: //variables
     float landing_vel_ = 0.2f; //velocity to use for landing
     float approx_zero_vel_ = 0.05f;
     float approx_zero_angular_vel_ = 0.01f;
+    RotorStates rotor_states_;
 };
 
 }} //namespace

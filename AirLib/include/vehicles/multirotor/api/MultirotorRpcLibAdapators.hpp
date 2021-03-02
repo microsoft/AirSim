@@ -39,6 +39,58 @@ public:
         }
     };
 
+    struct RotorParameters {
+        msr::airlib::real_T thrust;
+        msr::airlib::real_T torque_scaler;
+        msr::airlib::real_T speed;
+
+        MSGPACK_DEFINE_MAP(thrust, torque_scaler, speed);
+
+        RotorParameters()
+        {}
+
+        RotorParameters(const msr::airlib::RotorParameters& s)
+        {
+            thrust = s.thrust;
+            torque_scaler = s.torque_scaler;
+            speed = s.speed;
+        }
+
+        msr::airlib::RotorParameters to() const
+        {
+            return msr::airlib::RotorParameters(thrust, torque_scaler, speed);
+        }
+    };
+
+    struct RotorStates {
+        std::vector<RotorParameters> rotors;
+        uint64_t timestamp;
+
+        MSGPACK_DEFINE_MAP(rotors, timestamp);
+
+        RotorStates()
+        {}
+
+        RotorStates(const msr::airlib::RotorStates& s)
+        {
+            for (const auto& r : s.rotors)
+            {
+                rotors.push_back(RotorParameters(r));
+            }
+            timestamp = s.timestamp;
+        }
+
+        msr::airlib::RotorStates to() const
+        {
+            std::vector<msr::airlib::RotorParameters> d;
+            for (const auto& r : rotors)
+            {
+                d.push_back(r.to());
+            }
+            return msr::airlib::RotorStates(d, timestamp);
+        }
+    };
+
     struct MultirotorState {
         CollisionInfo collision;
         KinematicsState kinematics_estimated;
