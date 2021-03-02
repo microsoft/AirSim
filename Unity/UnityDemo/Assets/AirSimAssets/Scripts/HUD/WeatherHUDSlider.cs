@@ -1,8 +1,4 @@
-﻿using System;
-using UnityEditor.UI;
-using UnityEditor.VersionControl;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace AirSimUnity {
