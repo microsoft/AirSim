@@ -4,11 +4,11 @@ using UnityEngine.UI;
 namespace AirSimUnity {
     /// <summary>
     /// HUD class that manage weather-related UI elements.
-    /// </summary>
+    /// </summary>x
     public class WeatherHUD : MonoBehaviour {
-        [SerializeField] private RectTransform rootPanel;
-        [SerializeField] private Toggle weatherEnabledToggle;
-        [SerializeField] private WeatherHUDSlider snowSlider;
+        [SerializeField] private RectTransform rootPanel = default;
+        [SerializeField] private Toggle weatherEnabledToggle = default;
+        [SerializeField] private WeatherHUDSlider snowSlider = default;
 
         private void Start() {
             rootPanel.gameObject.SetActive(false);

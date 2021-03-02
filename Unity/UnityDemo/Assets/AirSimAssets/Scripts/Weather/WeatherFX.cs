@@ -7,7 +7,7 @@ namespace AirSimUnity
     /// </summary>
     public class WeatherFX : MonoBehaviour
     {
-        [SerializeField] private ParticleSystem snowParticleSystem;
+        [SerializeField] private ParticleSystem snowParticleSystem = default;
         private float snowParticleSystemMaximumRate;
 
         private void OnValidate() {

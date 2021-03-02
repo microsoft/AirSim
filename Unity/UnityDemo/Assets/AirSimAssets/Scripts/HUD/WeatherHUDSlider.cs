@@ -6,8 +6,8 @@ namespace AirSimUnity {
     /// HUD class that manage weather-related UI elements.
     /// </summary>
     public class WeatherHUDSlider : MonoBehaviour {
-        [SerializeField] private Slider slider;
-        [SerializeField] private InputField inputField;
+        [SerializeField] private Slider slider = default;
+        [SerializeField] private InputField inputField = default;
 
         public Slider.SliderEvent OnValueChanged;
 

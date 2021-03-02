@@ -14,7 +14,7 @@ namespace AirSimUnity
         }
 
         [Tooltip("WeatherFX prefab that will be spawned as a child of each vehicle.")]
-        [SerializeField] private WeatherFX WeatherFXPrefab;
+        [SerializeField] private WeatherFX WeatherFXPrefab = default;
 
         private bool isEnabled;
         private float[] weatherParamScalars = new float[(int)WeatherParamScalar.Count];
