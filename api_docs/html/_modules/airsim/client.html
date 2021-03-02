@@ -1433,8 +1433,21 @@
 <span class="sd">            MultirotorState:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">MultirotorState</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getMultirotorState&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
-    <span class="n">getMultirotorState</span><span class="o">.</span><span class="vm">__annotations__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;return&#39;</span><span class="p">:</span> <span class="n">MultirotorState</span><span class="p">}</span></div>
+    <span class="n">getMultirotorState</span><span class="o">.</span><span class="vm">__annotations__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;return&#39;</span><span class="p">:</span> <span class="n">MultirotorState</span><span class="p">}</span>
+    <span class="c1"># query rotor states</span>
+<div class="viewcode-block" id="MultirotorClient.getRotorStates"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.getRotorStates">[docs]</a>    <span class="k">def</span> <span class="nf">getRotorStates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used to obtain the current state of all a multirotor&#39;s rotors. The state includes the speeds,</span>
+<span class="sd">        thrusts and torques for all rotors.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str, optional): Vehicle to get the rotor state of</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RotorStates: Containing a timestamp and the speed, thrust and torque of all rotors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">RotorStates</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getRotorStates&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+    <span class="n">getRotorStates</span><span class="o">.</span><span class="vm">__annotations__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;return&#39;</span><span class="p">:</span> <span class="n">RotorStates</span><span class="p">}</span></div>
 
 <span class="c1"># -----------------------------------  Car APIs ---------------------------------------------</span>
 <div class="viewcode-block" id="CarClient"><a class="viewcode-back" href="../../index.html#airsim.client.CarClient">[docs]</a><span class="k">class</span> <span class="nc">CarClient</span><span class="p">(</span><span class="n">VehicleClient</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>

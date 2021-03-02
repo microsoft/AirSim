@@ -1270,6 +1270,24 @@ so Sun will move in sky much faster</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="airsim.client.MultirotorClient.getRotorStates">
+<code class="sig-name descname"><span class="pre">getRotorStates</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#airsim.types.RotorStates" title="airsim.types.RotorStates"><span class="pre">airsim.types.RotorStates</span></a><a class="reference internal" href="_modules/airsim/client.html#MultirotorClient.getRotorStates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.MultirotorClient.getRotorStates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to obtain the current state of all a multirotor’s rotors. The state includes the speeds,
+thrusts and torques for all rotors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle to get the rotor state of</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Containing a timestamp and the speed, thrust and torque of all rotors.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#airsim.types.RotorStates" title="airsim.types.RotorStates">RotorStates</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="airsim.client.MultirotorClient.goHomeAsync">
 <code class="sig-name descname"><span class="pre">goHomeAsync</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3e+38</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#MultirotorClient.goHomeAsync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.MultirotorClient.goHomeAsync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return vehicle to Home i.e. Launch location</p>
@@ -3028,6 +3046,21 @@ AngleLevel/AngleRate/Velocity/PositionControllerGains objects.</p>
 <dl class="py attribute">
 <dt id="airsim.types.RCData.yaw">
 <code class="sig-name descname"><span class="pre">yaw</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.0</span></em><a class="headerlink" href="#airsim.types.RCData.yaw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="airsim.types.RotorStates">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">airsim.types.</span></code><code class="sig-name descname"><span class="pre">RotorStates</span></code><a class="reference internal" href="_modules/airsim/types.html#RotorStates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.types.RotorStates" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="airsim.types.RotorStates.rotors">
+<code class="sig-name descname"><span class="pre">rotors</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[]</span></em><a class="headerlink" href="#airsim.types.RotorStates.rotors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="airsim.types.RotorStates.timestamp">
+<code class="sig-name descname"><span class="pre">timestamp</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#airsim.types.RotorStates.timestamp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
