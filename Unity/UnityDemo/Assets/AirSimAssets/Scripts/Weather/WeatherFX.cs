@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
-/// <summary>
-/// Renders an instance of weather visual effects.
-/// </summary>
 namespace AirSimUnity
 {
+    /// <summary>
+    /// Renders an instance of weather visual effects.
+    /// </summary>
     public class WeatherFX : MonoBehaviour
     {
         [SerializeField] private ParticleSystem snowParticleSystem;
