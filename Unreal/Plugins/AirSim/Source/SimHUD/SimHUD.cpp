@@ -354,7 +354,12 @@ void ASimHUD::initializeSubWindows()
 
 }
 
-
+FString ASimHUD::getLaunchPath(const std::string& filename)
+{
+    FString launch_rel_path = FPaths::LaunchDir();
+    FString abs_path = FPaths::ConvertRelativePathToFull(launch_rel_path);
+    return FPaths::Combine(abs_path, FString(filename.c_str()) );
+}
 
 // Attempts to parse the settings text from one of multiple locations.
 // First, check the command line for settings provided via "-s" or "--settings" arguments
@@ -367,6 +372,8 @@ bool ASimHUD::getSettingsText(std::string& settingsText)
     return (getSettingsTextFromCommandLine(settingsText)
         ||
         readSettingsTextFromFile(FString(msr::airlib::Settings::getExecutableFullPath("settings.json").c_str()), settingsText)
+        ||
+        readSettingsTextFromFile(getLaunchPath("settings.json"), settingsText)
         ||
         readSettingsTextFromFile(FString(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json").c_str()), settingsText));
 }
@@ -401,9 +408,8 @@ bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText)
     return found;
 }
 
-bool ASimHUD::readSettingsTextFromFile(FString settingsFilepath, std::string& settingsText) 
+bool ASimHUD::readSettingsTextFromFile(const FString& settingsFilepath, std::string& settingsText) 
 {
-
     bool found = FPaths::FileExists(settingsFilepath);
     if (found) {
         FString settingsTextFStr;
