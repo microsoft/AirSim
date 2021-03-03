@@ -1419,7 +1419,7 @@ cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse& img_response)
 }
 
 sensor_msgs::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response, 
-                                                                const std::string frame_id)
+                                                                const std::string& frame_id)
 {
     sensor_msgs::ImagePtr img_msg_ptr = boost::make_shared<sensor_msgs::Image>();
     img_msg_ptr->data = img_response.image_data_uint8;
@@ -1436,7 +1436,7 @@ sensor_msgs::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const ImageRes
 }
 
 sensor_msgs::ImagePtr AirsimROSWrapper::get_depth_img_msg_from_response(const ImageResponse& img_response,
-                                                                        const std::string frame_id)
+                                                                        const std::string& frame_id)
 {
     // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error, 
     // hence the dependency on opencv and cv_bridge. however, this is an extremely fast op, so no big deal.

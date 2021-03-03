@@ -259,8 +259,8 @@ private:
     sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
     cv::Mat manual_decode_depth(const ImageResponse& img_response) const;
 
-    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const std::string frame_id);
-    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const std::string frame_id);
+    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const std::string& frame_id);
+    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const std::string& frame_id);
     
     void process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name);
 
