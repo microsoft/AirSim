@@ -321,16 +321,15 @@ void PawnSimApi::reportState(msr::airlib::StateReporter& reporter)
 std::map<std::string, std::vector<int>> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
 {
     std::map<std::string, std::vector<int>> result;
-   // TMap<AActor*, FBox2D> Detections = getCamera(camera_name)->getDetectionComponent(image_type, false)->CachedBoundingBoxes;
     const APIPCamera* camera = getCamera(camera_name);
-    TMap<AActor*, FBox2D> Detections = camera->getDetectionComponent(image_type, false)->GetDetections();
-    for (const TPair<AActor*, FBox2D>& Detection : Detections)
+    const TMap<AActor*, FBox2D> Detections = camera->getDetectionComponent(image_type, false)->GetDetections();
+    for (const TPair<AActor*, FBox2D> Detection : Detections)
     {
-		std::vector<int> vec;
-        vec.push_back(Detection.Value.Min.X);
-		vec.push_back(Detection.Value.Min.Y);
-		vec.push_back(Detection.Value.Max.X);
-		vec.push_back(Detection.Value.Max.Y);
+		std::vector<int> vec(4);
+        vec[0] = Detection.Value.Min.X;
+		vec[1] = Detection.Value.Min.Y;
+		vec[2] = Detection.Value.Max.X;
+		vec[3] = Detection.Value.Max.Y;
         result.insert(make_pair(std::string(TCHAR_TO_UTF8(*(Detection.Key->GetFName().ToString()))), vec));
     }
 

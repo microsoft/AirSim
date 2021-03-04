@@ -11,9 +11,12 @@
 #include <Engine/TextureRenderTarget2D.h>
 #include <EngineUtils.h>
 #include <Math/UnrealMathUtility.h>
+#include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
+#include <Engine/EngineTypes.h>
 
 UDetectionComponent::UDetectionComponent()
-	: MaxDistanceToCamera(2000.f)
+	: MaxDistanceToCamera(20000.f)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -41,18 +44,19 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		AActor* Actor = *ActorItr;
 		if (ObjectFilter.MatchesActor(Actor))
 		{
-			if (FVector::/*DistSquared2D*/Distance(Actor->GetActorLocation(), GetComponentLocation()) <=
-				/*MaxDistanceToCamera * */MaxDistanceToCamera)
+			if (FVector::Distance(Actor->GetActorLocation(), GetComponentLocation()) <= MaxDistanceToCamera)
 			{
 				FBox2D BoxOut;
 				if (TextureTarget && CalcBoundingFromViewInfo(Actor, BoxOut))
 				{
 					CachedBoundingBoxes.Add(Actor,BoxOut);
 
-					/*FVector Origin;
+					/*  ---Debug only---
+					FVector Origin;
 					FVector Extend;
 					Actor->GetActorBounds(false, Origin, Extend);
-					DrawDebugBox(GetWorld(), Origin, Extend, FColor::Red, false, 0.03, 0, 4.f);*/
+					DrawDebugBox(GetWorld(), Origin, Extend, FColor::Red, false, 0.03, 0, 4.f);
+						---------------- */
 				}
 			}
 		}		
@@ -72,7 +76,7 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 	
 	TArray<FVector> Points;
 	TArray<FVector2D> Points2D;
-	bool IsInView = false;
+	bool IsInCameraView = false;
 	
 	// get render target for texture size
 	FRenderTarget* RenderTarget = TextureTarget->GameThread_GetRenderTargetResource();
@@ -114,7 +118,7 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 		FPlane(0, 1, 0, 0),
 		FPlane(0, 0, 0, 1));
 
-	if (SceneCaptureComponent2D->bUseCustomProjectionMatrix == true) 
+	if (SceneCaptureComponent2D->bUseCustomProjectionMatrix) 
 	{
 		ProjectionData.ProjectionMatrix = SceneCaptureComponent2D->CustomProjectionMatrix;
 	}
@@ -129,12 +133,52 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 	{
 		FVector2D Pixel(0, 0);
 		FSceneView::ProjectWorldToScreen((Point), ScreenRect, ProjectionData.ComputeViewProjectionMatrix(), Pixel);
-		IsInView |= (Pixel != ScreenRect.Min) && (Pixel != ScreenRect.Max) && ScreenRect.Contains(FIntPoint(Pixel.X,Pixel.Y));
+		IsInCameraView |= (Pixel != ScreenRect.Min) && (Pixel != ScreenRect.Max) && ScreenRect.Contains(FIntPoint(Pixel.X,Pixel.Y));
 		Points2D.Add(Pixel);
 		MaxPixel.X = FMath::Max(Pixel.X, MaxPixel.X);
 		MaxPixel.Y = FMath::Max(Pixel.Y, MaxPixel.Y);
 		MinPixel.X = FMath::Min(Pixel.X, MinPixel.X);
 		MinPixel.Y = FMath::Min(Pixel.Y, MinPixel.Y);
+	}
+
+	// If actor in camera view - check if it's actually visible or hidden
+	// Check against 8 extend points
+	bool IsVisible = false; 
+	if (IsInCameraView)
+	{
+		FHitResult Result;
+		bool bWorldHit;
+		for (FVector& Point : Points)
+		{					
+			bWorldHit = GetWorld()->LineTraceSingleByChannel(Result, GetComponentLocation(), Point, ECC_WorldStatic);
+			if (bWorldHit)
+			{
+				if (Result.Actor == Actor)
+				{
+					IsVisible = true;
+					break;
+				}				
+			}
+		}
+		
+		// If actor in camera view but didn't hit any point out of 8 extend points,
+		// check against 10 random points
+		if (!IsVisible)
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				FVector Point = UKismetMathLibrary::RandomPointInBoundingBox(Origin, Extend);
+				bWorldHit = GetWorld()->LineTraceSingleByChannel(Result, GetComponentLocation(), Point, ECC_WorldStatic);
+				if (bWorldHit)
+				{
+					if (Result.Actor == Actor)
+					{
+						IsVisible = true;
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	FBox2D BoxOutTemp = FBox2D(MinPixel, MaxPixel);
@@ -144,7 +188,7 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 	BoxOut.Max.X = FMath::Clamp<float>(BoxOutTemp.Max.X, 0, TextureTarget->SizeX);
 	BoxOut.Max.Y = FMath::Clamp<float>(BoxOutTemp.Max.Y, 0, TextureTarget->SizeY);
 
-	return IsInView;
+	return IsInCameraView && IsVisible;
 }
 
 
