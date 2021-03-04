@@ -6,6 +6,8 @@ site_description: 'Open source simulator based on Unreal Engine for autonomous v
 markdown_extensions:
     - toc:
         permalink: "#"
+    - pymdownx.arithmatex:
+        generic: true
     - pymdownx.extra:
 
 remote_branch: gh-pages
@@ -26,6 +28,11 @@ extra:
         link: https://www.facebook.com/groups/1225832467530667/
       - type: github-alt
         link: https://github.com/Microsoft/AirSim
+
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 copyright: Copyright &copy; 2018 Microsoft Research
 
@@ -64,6 +71,8 @@ nav:
     - "Domain Randomization": "retexturing.md"
     - "Mesh Vertex Buffers": "meshes.md"
     - "Playing Logs": 'playback.md'
+    - "Voxel Grid Generator": "voxel_grid.md"
+    - "Event camera" : "event_sim.md"
   - "Design":
     - "Architecture": 'design.md'
     - "Code Structure": 'code_structure.md'
