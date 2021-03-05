@@ -88,6 +88,6 @@ int main()
 ## See Also
 * [Examples](../Examples) of how to use internal infrastructure in AirSim in your other projects
 * [DroneShell](../DroneShell) app shows how to make simple interface using C++ APIs to control drones
-* [HelloSpawnedDrones](./HelloSpawnedDrones) app shows how to make additional vehicles on the fly
+* [HelloSpawnedDrones](../HelloSpawnedDrones) app shows how to make additional vehicles on the fly
 * [Python APIs](apis.md)
 
