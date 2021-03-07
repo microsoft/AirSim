@@ -45,6 +45,9 @@ void AFlyingPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
     camera_back_center_ = nullptr;
     camera_bottom_center_ = nullptr;
 
+    pawn_events_.getActuatorSignal().disconnect_all();
+    rotating_movements_.Empty();
+
     Super::EndPlay(EndPlayReason);
 }
 
