@@ -7,6 +7,20 @@
 #include "ObjectFilter.h"
 #include "DetectionComponent.generated.h"
 
+USTRUCT()
+struct FDetectionInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+		AActor* Actor;
+
+	UPROPERTY()
+		FBox2D BBox;
+
+	UPROPERTY()
+		FVector Location;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AIRSIM_API UDetectionComponent : public USceneComponent
@@ -25,7 +39,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	TMap<AActor*, FBox2D> GetDetections() const;
+	TArray<FDetectionInfo> GetDetections() const;
 private:
 	bool CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut);
 
@@ -44,5 +58,5 @@ private:
 		USceneCaptureComponent2D* SceneCaptureComponent2D;
 
 	UPROPERTY()
-		TMap<AActor*, FBox2D> CachedBoundingBoxes;
+		TArray<FDetectionInfo> CachedBoundingBoxes;
 };

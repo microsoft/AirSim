@@ -186,8 +186,11 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
 	pimpl_->server.bind("simSetDetectionFilterRadius", [&](const float radius_cm) -> void {
 		getWorldSimApi()->setDetectionFilterRadius(radius_cm);
 		});
-	pimpl_->server.bind("simGetDetections", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> std::map<std::string, std::vector<int>> {
-		return getVehicleSimApi(vehicle_name)->getDetections(camera_name, type);
+
+	pimpl_->server.bind("simGetDetections", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> vector<RpcLibAdapatorsBase::DetectionInfo> {
+        const auto& response = getVehicleSimApi(vehicle_name)->getDetections(camera_name, type);
+        //return RpcLibAdapatorsBase::DetectionInfo(response);
+        return RpcLibAdapatorsBase::DetectionInfo::from(response);
 		});
 
     pimpl_->server.bind("reset", [&]() -> void {

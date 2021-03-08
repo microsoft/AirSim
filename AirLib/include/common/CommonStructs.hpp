@@ -244,6 +244,24 @@ struct CameraInfo {
     }
 };
 
+struct DetectionInfo
+{
+	std::string name = "";
+	GeoPoint geoPoint = GeoPoint();
+    int topLeft_x = 0;
+    int topLeft_y = 0; 
+    int bottomRight_x = 0;
+    int bottomRight_y = 0;
+
+    DetectionInfo()
+	{}
+
+    DetectionInfo(const std::string& name_val, const GeoPoint& geoPoint_val, int topLeft_x_val, int topLeft_y_val, int bottomRight_x_val, int bottomRight_y_val)
+		: name(name_val), geoPoint(geoPoint_val), topLeft_x(topLeft_x_val), topLeft_y(topLeft_y_val), bottomRight_x(bottomRight_x_val), bottomRight_y(bottomRight_y_val)
+	{
+	}
+};
+
 struct CollisionResponse {
     unsigned int collision_count_raw = 0;
     unsigned int collision_count_non_resting = 0;
