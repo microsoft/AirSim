@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace AirSimUnity {
     /// <summary>
     /// HUD class that manage weather-related UI elements.
-    /// </summary>x
+    /// </summary>
     public class WeatherHUD : MonoBehaviour {
         [SerializeField] private RectTransform rootPanel = default;
         [SerializeField] private Toggle weatherEnabledToggle = default;
