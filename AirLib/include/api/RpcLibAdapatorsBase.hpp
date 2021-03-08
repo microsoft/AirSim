@@ -221,6 +221,64 @@ public:
         }
     };
 
+	struct DetectionInfo {
+		std::string name;
+		GeoPoint geoPoint;
+		int topLeft_x = 0;
+		int topLeft_y = 0;
+		int bottomRight_x = 0;
+		int bottomRight_y = 0;
+
+		MSGPACK_DEFINE_MAP(name, geoPoint, topLeft_x, topLeft_y, bottomRight_x, bottomRight_y);
+
+		DetectionInfo()
+		{
+        }
+
+		DetectionInfo(const msr::airlib::DetectionInfo& d)
+		{
+			name = d.name;
+            geoPoint = d.geoPoint;
+			topLeft_x = d.topLeft_x;
+			topLeft_y = d.topLeft_y;
+			bottomRight_x = d.bottomRight_x;
+			bottomRight_y = d.bottomRight_y;
+		}
+
+		msr::airlib::DetectionInfo to() const
+		{
+			msr::airlib::DetectionInfo d;
+			d.name = name;
+			d.geoPoint = geoPoint.to();
+			d.topLeft_x = topLeft_x;
+			d.topLeft_y = topLeft_y;
+			d.bottomRight_x = bottomRight_x;
+			d.bottomRight_y = bottomRight_y;
+
+			return d;
+		}
+
+		static std::vector<DetectionInfo> from(
+			const std::vector<msr::airlib::DetectionInfo>& request
+		) {
+			std::vector<DetectionInfo> request_adaptor;
+			for (const auto& item : request)
+				request_adaptor.push_back(DetectionInfo(item));
+
+			return request_adaptor;
+		}
+		static std::vector<msr::airlib::DetectionInfo> to(
+			const std::vector<DetectionInfo>& request_adapter
+		) {
+			std::vector<msr::airlib::DetectionInfo> request;
+			for (const auto& item : request_adapter)
+				request.push_back(item.to());
+
+			return request;
+		}
+
+	};
+
     struct CameraInfo {
         Pose pose;
         float fov;
@@ -248,7 +306,7 @@ public:
             return s;
         }
     };
-    
+
     struct KinematicsState {
         Vector3r position;
         Quaternionr orientation;

@@ -461,13 +461,39 @@ class VehicleClient:
         return self.client.call('simGetSegmentationObjectID', mesh_name)
 
     def simAddDetectionFilterMeshName(self, mesh_name):
+        """
+        Add mesh name to detect in wild card format
+
+        For example: simAddDetectionFilterMeshName("Car_*") will detect all instance named "Car_*"
+
+        Args:
+            mesh_name (str): mesh name in wild card format
+        """
         self.client.call('simAddDetectionFilterMeshName', mesh_name)
     
     def simSetDetectionFilterRadius(self, radius_cm):
+        """
+        Set detection radius for all cameras
+
+        Args:
+            radius_cm (int): Radius in [cm]
+        """
         self.client.call('simSetDetectionFilterRadius', radius_cm)
 
     def simGetDetections(self, camera_name, image_type, vehicle_name = ''):
-        return self.client.call('simGetDetections', camera_name, image_type, vehicle_name)
+        """
+        Get current detections
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            image_type (ImageType): Type of image required
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+
+        Returns:
+            DetectionInfo array
+        """
+        responses_raw = self.client.call('simGetDetections', camera_name, image_type, vehicle_name)
+        return [DetectionInfo.from_msgpack(response_raw) for response_raw in responses_raw]
 
     def simPrintLogMessage(self, message, message_param = "", severity = 0):
         """

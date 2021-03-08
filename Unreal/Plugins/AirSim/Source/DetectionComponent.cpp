@@ -49,7 +49,11 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 				FBox2D BoxOut;
 				if (TextureTarget && CalcBoundingFromViewInfo(Actor, BoxOut))
 				{
-					CachedBoundingBoxes.Add(Actor,BoxOut);
+					FDetectionInfo Detection;
+					Detection.Actor = Actor;
+					Detection.BBox = BoxOut;
+					Detection.Location = Actor->GetActorLocation();
+					CachedBoundingBoxes.Add(Detection);
 
 					/*  ---Debug only---
 					FVector Origin;
@@ -63,7 +67,7 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	}
 }
 
-TMap<AActor*, FBox2D> UDetectionComponent::GetDetections() const
+TArray<FDetectionInfo> UDetectionComponent::GetDetections() const
 {
 	return CachedBoundingBoxes;
 }

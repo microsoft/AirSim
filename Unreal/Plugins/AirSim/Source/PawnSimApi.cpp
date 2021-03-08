@@ -318,19 +318,26 @@ void PawnSimApi::reportState(msr::airlib::StateReporter& reporter)
     reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
 }
 
-std::map<std::string, std::vector<int>> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
+std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
 {
-    std::map<std::string, std::vector<int>> result;
     const APIPCamera* camera = getCamera(camera_name);
-    const TMap<AActor*, FBox2D> Detections = camera->getDetectionComponent(image_type, false)->GetDetections();
-    for (const TPair<AActor*, FBox2D> Detection : Detections)
+    const TArray<FDetectionInfo> Detections = camera->getDetectionComponent(image_type, false)->GetDetections();
+    int detectionCount = Detections.Num();
+    std::vector<msr::airlib::DetectionInfo> result(detectionCount);   
+    
+    
+    for (int i = 0; i < Detections.Num(); i++)
     {
-		std::vector<int> vec(4);
-        vec[0] = Detection.Value.Min.X;
-		vec[1] = Detection.Value.Min.Y;
-		vec[2] = Detection.Value.Max.X;
-		vec[3] = Detection.Value.Max.Y;
-        result.insert(make_pair(std::string(TCHAR_TO_UTF8(*(Detection.Key->GetFName().ToString()))), vec));
+        result[i].name = std::string(TCHAR_TO_UTF8(*(Detections[i].Actor->GetFName().ToString())));
+	    
+        Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(Detections[i].Actor->GetActorLocation());
+        result[i].geoPoint  = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
+			AirSimSettings::singleton().origin_geopoint);
+        
+        result[i].topLeft_x = Detections[i].BBox.Min.X;
+		result[i].topLeft_y = Detections[i].BBox.Min.Y;
+		result[i].bottomRight_x = Detections[i].BBox.Max.X;
+		result[i].bottomRight_y = Detections[i].BBox.Max.Y;
     }
 
     return result;

@@ -420,6 +420,15 @@ class DistanceSensorData(MsgpackMixin):
     max_distance = 0.0
     relative_pose = Pose()
 
+class DetectionInfo(MsgpackMixin):
+    name = ''
+    geoPoint = GeoPoint()
+    topLeft_x = 0
+    topLeft_y = 0
+    bottomRight_x = 0
+    bottomRight_y = 0
+
+
 class PIDGains():
     """
     Struct to store values of PID gains. Used to transmit controller gain values while instantiating
