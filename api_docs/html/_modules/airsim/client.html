@@ -1004,7 +1004,23 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if output written to file successfully, else False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simCreateVoxelGrid&#39;</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">of</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simCreateVoxelGrid&#39;</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">of</span><span class="p">)</span></div>
+
+    <span class="c1"># Add new vehicle via RPC</span>
+<div class="viewcode-block" id="VehicleClient.simAddVehicle"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simAddVehicle">[docs]</a>    <span class="k">def</span> <span class="nf">simAddVehicle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">vehicle_type</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">pawn_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create vehicle at runtime</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vehicle_name (str): Name of the vehicle being created</span>
+<span class="sd">            vehicle_type (str): Type of vehicle, e.g. &quot;simpleflight&quot;</span>
+<span class="sd">            pose (Pose): Initial pose of the vehicle</span>
+<span class="sd">            pawn_path (str): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Whether vehicle was created</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simAddVehicle&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">vehicle_type</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">pawn_path</span><span class="p">)</span></div></div>
 
 <span class="c1"># -----------------------------------  Multirotor APIs ---------------------------------------------</span>
 <div class="viewcode-block" id="MultirotorClient"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient">[docs]</a><span class="k">class</span> <span class="nc">MultirotorClient</span><span class="p">(</span><span class="n">VehicleClient</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>

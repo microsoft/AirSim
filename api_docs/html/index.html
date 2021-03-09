@@ -421,6 +421,28 @@
 </dd></dl>
 
 <dl class="py method">
+<dt id="airsim.client.VehicleClient.simAddVehicle">
+<code class="sig-name descname"><span class="pre">simAddVehicle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pawn_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simAddVehicle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simAddVehicle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create vehicle at runtime</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the vehicle being created</p></li>
+<li><p><strong>vehicle_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Type of vehicle, e.g. “simpleflight”</p></li>
+<li><p><strong>pose</strong> (<a class="reference internal" href="#airsim.types.Pose" title="airsim.types.Pose"><em>Pose</em></a>) – Initial pose of the vehicle</p></li>
+<li><p><strong>pawn_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether vehicle was created</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="airsim.client.VehicleClient.simContinueForFrames">
 <code class="sig-name descname"><span class="pre">simContinueForFrames</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simContinueForFrames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simContinueForFrames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Continue (or resume if paused) the simulation for the specified number of frames, after which the simulation will be paused.</p>
