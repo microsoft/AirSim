@@ -43,7 +43,6 @@ protected: //must be implemented
     virtual LandedState getLandedState() const = 0;
     virtual GeoPoint getGpsLocation() const = 0;
     virtual const MultirotorApiParams& getMultirotorApiParams() const = 0;
-    virtual GeoPoint getHomeGpsLocation() const = 0;
 
     /************************* basic config APIs *********************************/
     virtual float getCommandPeriod() const = 0; //time between two command required for drone in seconds

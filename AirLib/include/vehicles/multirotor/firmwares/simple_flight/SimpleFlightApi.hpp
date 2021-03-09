@@ -83,10 +83,6 @@ public: //VehicleApiBase implementation
     {
         return AirSimSimpleFlightCommon::toGeoPoint(firmware_->offboardApi().getHomeGeoPoint());
     }
-    virtual GeoPoint getHomeGpsLocation() const override
-    {
-        return AirSimSettings::singleton().origin_geopoint.home_geo_point;
-    }
     virtual void getStatusMessages(std::vector<std::string>& messages) override
     {
         comm_link_->getStatusMessages(messages);

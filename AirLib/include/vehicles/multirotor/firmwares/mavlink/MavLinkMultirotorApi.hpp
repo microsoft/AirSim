@@ -400,11 +400,6 @@ public: //methods
             return GeoPoint(Utils::nan<double>(), Utils::nan<double>(), Utils::nan<float>());
     }
 
-    virtual GeoPoint getHomeGpsLocation() const override
-    {
-        return AirSimSettings::singleton().origin_geopoint.home_geo_point;
-    }
-
     virtual GeoPoint getGpsLocation() const override
     {
         updateState();
