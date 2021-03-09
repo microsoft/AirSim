@@ -18,6 +18,14 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AirLib\AirLib.vcxproj">
+      <Project>{4bfb7231-077a-4671-bd21-d3ade3ea36e7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\MavLinkCom\MavLinkCom.vcxproj">
+      <Project>{8510c7a4-bf63-41d2-94f6-d8731d137a5a}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{99CBF376-5EBA-4164-A657-E7D708C9D685}</ProjectGuid>
