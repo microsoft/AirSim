@@ -40,7 +40,7 @@ STRICT_MODE_OFF
 STRICT_MODE_ON
 #ifdef _MSC_VER
 __pragma(warning( disable : 4239))
-#endif			  
+#endif
 
 
 namespace msr { namespace airlib {
@@ -125,7 +125,7 @@ void RpcLibClientBase::confirmConnection()
     while (getConnectionState() != RpcLibClientBase::ConnectionState::Connected)
     {
         std::cout << "X" << std::flush;
-        clock->sleep_for(pause_time); 
+        clock->sleep_for(pause_time);
     }
     std::cout << std::endl << "Connected!" << std::endl;
 
@@ -133,7 +133,7 @@ void RpcLibClientBase::confirmConnection()
     auto client_ver = getClientVersion();
     auto server_min_ver = getMinRequiredServerVersion();
     auto client_min_ver = getMinRequiredClientVersion();
-    
+
     std::string ver_info = Utils::stringf("Client Ver:%i (Min Req:%i), Server Ver:%i (Min Req:%i)",
         client_ver, client_min_ver, server_ver, server_min_ver);
 
@@ -221,7 +221,7 @@ void RpcLibClientBase::simSetTraceLine(const std::vector<float>& color_rgba, flo
 
 vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name)
 {
-    const auto& response_adaptor = pimpl_->client.call("simGetImages", 
+    const auto& response_adaptor = pimpl_->client.call("simGetImages",
         RpcLibAdapatorsBase::ImageRequest::from(request), vehicle_name)
         .as<vector<RpcLibAdapatorsBase::ImageResponse>>();
 
@@ -241,6 +241,11 @@ vector<MeshPositionVertexBuffersResponse> RpcLibClientBase::simGetMeshPositionVe
 {
     const auto& response_adaptor = pimpl_->client.call("simGetMeshPositionVertexBuffers").as<vector<RpcLibAdapatorsBase::MeshPositionVertexBuffersResponse>>();
     return RpcLibAdapatorsBase::MeshPositionVertexBuffersResponse::to(response_adaptor);
+}
+
+bool RpcLibClientBase::simAddVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path)
+{
+    return pimpl_->client.call("simAddVehicle", vehicle_name, vehicle_type, RpcLibAdapatorsBase::Pose(pose), pawn_path).as<bool>();
 }
 
 void RpcLibClientBase::simPrintLogMessage(const std::string& message, std::string message_param, unsigned char  severity)

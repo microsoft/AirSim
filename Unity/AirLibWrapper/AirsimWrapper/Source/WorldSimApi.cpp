@@ -195,4 +195,12 @@ void WorldSimApi::setWind(const Vector3r& wind) const
     simmode_->setWind(wind);
 };
 
+bool WorldSimApi::addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const WorldSimApi::Pose& pose, const std::string& pawn_path)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+        "addVehicle is not supported on unity").c_str());
+    return false;
+}
+
+
 #pragma endregion

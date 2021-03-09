@@ -75,6 +75,9 @@ public:
     void stopApiServer();
     bool isApiServerStarted();
 
+    bool createVehicleAtRuntime(const std::string& vehicle_name, const std::string& vehicle_type,
+        const msr::airlib::Pose& pose, const std::string& pawn_path = "");
+
     const NedTransform& getGlobalNedTransform();
 
     msr::airlib::ApiProvider* getApiProvider() const
@@ -107,8 +110,11 @@ protected: //must overrides
         const PawnSimApi::Params& pawn_sim_api_params) const;
     virtual msr::airlib::VehicleApiBase* getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
         const PawnSimApi* sim_api) const;
+    virtual void registerPhysicsBody(msr::airlib::VehicleSimApiBase *physicsBody);
 
 protected: //optional overrides
+    virtual APawn* createVehiclePawn(const AirSimSettings::VehicleSetting& vehicle_setting);
+    virtual std::unique_ptr<PawnSimApi> createVehicleApi(APawn* vehicle_pawn);
     virtual void setupVehiclesAndCamera();
     virtual void setupInputBindings();
     //called when SimMode should handle clock speed setting

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 16
+# Visual Studio Version 16
 VisualStudioVersion = 16.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DroneShell", "DroneShell\DroneShell.vcxproj", "{9FE9234B-373A-4D5A-AD6B-FB0B593312DD}"
@@ -42,6 +42,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sgmstereo", "SGM\src\sgmstereo\sgmstereo.vcxproj", "{A01E543F-EF34-46BB-8F3F-29AB84E7A5D4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stereoPipeline", "SGM\src\stereoPipeline\stereoPipeline.vcxproj", "{E512EB59-4EAB-49D1-9174-0CAF1B40CED0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloSpawnedDrones", "HelloSpawnedDrones\HelloSpawnedDrones.vcxproj", "{99CBF376-5EBA-4164-A657-E7D708C9D685}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -207,6 +209,18 @@ Global
 		{E512EB59-4EAB-49D1-9174-0CAF1B40CED0}.Release|x64.Build.0 = Release|x64
 		{E512EB59-4EAB-49D1-9174-0CAF1B40CED0}.Release|x86.ActiveCfg = Release|Win32
 		{E512EB59-4EAB-49D1-9174-0CAF1B40CED0}.Release|x86.Build.0 = Release|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|ARM.ActiveCfg = Debug|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|x64.ActiveCfg = Debug|x64
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|x64.Build.0 = Debug|x64
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|x86.ActiveCfg = Debug|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Debug|x86.Build.0 = Debug|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|Any CPU.ActiveCfg = Release|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|ARM.ActiveCfg = Release|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|x64.ActiveCfg = Release|x64
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|x64.Build.0 = Release|x64
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|x86.ActiveCfg = Release|Win32
+		{99CBF376-5EBA-4164-A657-E7D708C9D685}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -435,6 +435,22 @@ public: //methods
         settings_json.saveJSonFile(settings_filename);
     }
 
+    // This is for the case when a new vehicle is made on the fly, at runtime
+    void addVehicleSetting(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path="")
+    {
+        auto vehicle_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting());
+
+        vehicle_setting->vehicle_name = vehicle_name;
+        vehicle_setting->vehicle_type = vehicle_type;
+        vehicle_setting->position = pose.position;
+        vehicle_setting->pawn_path = pawn_path;
+
+        VectorMath::toEulerianAngle(pose.orientation, vehicle_setting->rotation.pitch, 
+                                    vehicle_setting->rotation.roll, vehicle_setting->rotation.yaw);
+
+        vehicles[vehicle_name] = std::move(vehicle_setting);
+    }
+
     const VehicleSetting* getVehicleSetting(const std::string& vehicle_name) const
     {
         auto it = vehicles.find(vehicle_name);
