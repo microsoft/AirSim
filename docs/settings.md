@@ -200,7 +200,7 @@ Also see [Time of Day API](apis.md#time-of-day-api).
 This setting specifies the latitude, longitude and altitude of the Player Start component placed in the Unreal environment. The vehicle's home point is computed using this transformation. Note that all coordinates exposed via APIs are using NED system in SI units which means each vehicle starts at (0, 0, 0) in NED system. Time of Day settings are computed for geographical coordinates specified in `OriginGeopoint`.
 
 ## SubWindows
-This setting determines what is shown in each of 3 subwindows which are visible when you press 0,1,2 keys. The `WindowID` can be 0 to 2, `CameraName` is any [available camera](image_apis.md#available_cameras) on the vehicle. `ImageType` integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype). `VehicleName` string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.
+This setting determines what is shown in each of 3 subwindows which are visible when you press 0,1,2 keys. The `WindowID` can be 0 to 2, `CameraName` is any [available camera](image_apis.md#available_cameras) on the vehicle. `ImageType` integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype-values). `VehicleName` string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.
 
 For example, for a single car vehicle, below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
 ```json
@@ -261,7 +261,7 @@ This setting specifies the wind speed in World frame, in NED direction. Values a
 The `CameraDefaults` element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in `Cameras` element inside `Vehicles` as described later.
 
 ### Note on ImageType element
-The `ImageType` element in JSON array determines which image type that settings applies to. The valid values are described in [ImageType section](image_apis.md#available-imagetype). In addition, we also support special value `ImageType: -1` to apply the settings to external camera (i.e. what you are looking at on the screen).
+The `ImageType` element in JSON array determines which image type that settings applies to. The valid values are described in [ImageType section](image_apis.md#available-imagetype-values). In addition, we also support special value `ImageType: -1` to apply the settings to external camera (i.e. what you are looking at on the screen).
 
 For example, `CaptureSettings` element is json array so you can add settings for multiple image types easily.
 
