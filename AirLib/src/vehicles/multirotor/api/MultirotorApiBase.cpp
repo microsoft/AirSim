@@ -704,7 +704,7 @@ void MultirotorApiBase::moveToPathPosition(const Vector3r& dest, float velocity,
     //send commands
     //try to maintain altitude if path was in XY plan only, velocity based control is not as good
     if (std::abs(cur.z() - dest.z()) <= getDistanceAccuracy()) //for paths in XY plan current code leaves z untouched, so we can compare with strict equality
-        moveByVelocityZInternal(velocity_vect.x(), velocity_vect.y(), dest.z(), yaw_mode);
+        moveByVelocityInternal(velocity_vect.x(), velocity_vect.y(), 0, yaw_mode);
     else
         moveByVelocityInternal(velocity_vect.x(), velocity_vect.y(), velocity_vect.z(), yaw_mode);
 }
