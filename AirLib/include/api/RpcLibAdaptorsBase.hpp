@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef air_RpcLibAdapatorsBase_hpp
-#define air_RpcLibAdapatorsBase_hpp
+#ifndef air_RpcLibAdaptorsBase_hpp
+#define air_RpcLibAdaptorsBase_hpp
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
@@ -18,7 +18,7 @@
 
 namespace msr { namespace airlib_rpclib {
 
-class RpcLibAdapatorsBase {
+class RpcLibAdaptorsBase {
 public:
     template<typename TSrc, typename TDest>
     static void to(const std::vector<TSrc>& s, std::vector<TDest>& d)

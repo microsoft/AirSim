@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef air_CarRpcLibAdapators_hpp
-#define air_CarRpcLibAdapators_hpp
+#ifndef air_CarRpcLibAdaptors_hpp
+#define air_CarRpcLibAdaptors_hpp
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "api/RpcLibAdapatorsBase.hpp"
+#include "api/RpcLibAdaptorsBase.hpp"
 #include "common/ImageCaptureBase.hpp"
 #include "vehicles/car/api/CarApiBase.hpp"
 
@@ -16,7 +16,7 @@
 
 namespace msr { namespace airlib_rpclib {
 
-class CarRpcLibAdapators : public RpcLibAdapatorsBase {
+class CarRpcLibAdaptors : public RpcLibAdaptorsBase {
 public:
     struct CarControls {
         float throttle = 0;
