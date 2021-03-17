@@ -934,6 +934,20 @@ class MultirotorClient(VehicleClient, object):
         return self.client.call_async('moveByVelocityBodyFrame', vx, vy, vz, duration, drivetrain, yaw_mode, vehicle_name)
 
     def moveByVelocityZBodyFrameAsync(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
+        """
+        Args:
+            vx (float): desired velocity in the X axis of the vehicle's local NED frame
+            vy (float): desired velocity in the Y axis of the vehicle's local NED frame
+            z (float): desired Z value (in local NED frame of the vehicle)
+            duration (float): Desired amount of time (seconds), to send this command for
+            drivetrain (DrivetrainType, optional):
+            yaw_mode (YawMode, optional):
+            vehicle_name (str, optional): Name of the multirotor to send this command to
+
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+
         return self.client.call_async('moveByVelocityZBodyFrame', vx, vy, z, duration, drivetrain, yaw_mode, vehicle_name)
 
     def moveByAngleZAsync(self, pitch, roll, z, yaw, duration, vehicle_name = ''):
