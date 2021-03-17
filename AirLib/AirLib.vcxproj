@@ -25,7 +25,7 @@
   <ItemGroup>
     <ClInclude Include="include\api\ApiProvider.hpp" />
     <ClInclude Include="include\api\ApiServerBase.hpp" />
-    <ClInclude Include="include\api\RpcLibAdapatorsBase.hpp" />
+    <ClInclude Include="include\api\RpcLibAdaptorsBase.hpp" />
     <ClInclude Include="include\api\RpcLibClientBase.hpp" />
     <ClInclude Include="include\api\RpcLibServerBase.hpp" />
     <ClInclude Include="include\api\WorldSimApiBase.hpp" />
@@ -85,7 +85,7 @@
     <ClInclude Include="include\sensors\SensorFactory.hpp" />
     <ClInclude Include="include\vehicles\car\api\CarApiBase.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorCommon.hpp" />
-    <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibAdapators.hpp" />
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibAdaptors.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibClient.hpp" />
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibServer.hpp" />
     <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\ArduCopterSoloApi.hpp" />
@@ -134,7 +134,7 @@
     <ClInclude Include="include\vehicles\multirotor\firmwares\mavlink\MavLinkMultirotorApi.hpp" />
     <ClInclude Include="include\safety\ObstacleMap.hpp" />
     <ClInclude Include="include\common\PidController.hpp" />
-    <ClInclude Include="include\vehicles\car\api\CarRpcLibAdapators.hpp" />
+    <ClInclude Include="include\vehicles\car\api\CarRpcLibAdaptors.hpp" />
     <ClInclude Include="include\vehicles\car\api\CarRpcLibClient.hpp" />
     <ClInclude Include="include\vehicles\car\api\CarRpcLibServer.hpp" />
     <ClInclude Include="include\safety\SafetyEval.hpp" />

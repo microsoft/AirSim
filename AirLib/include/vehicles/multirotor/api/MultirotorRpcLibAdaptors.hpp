@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef air_MultirotorRpcLibAdapators_hpp
-#define air_MultirotorRpcLibAdapators_hpp
+#ifndef air_MultirotorRpcLibAdaptors_hpp
+#define air_MultirotorRpcLibAdaptors_hpp
 
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "api/RpcLibAdapatorsBase.hpp"
+#include "api/RpcLibAdaptorsBase.hpp"
 #include "vehicles/multirotor/api/MultirotorCommon.hpp"
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/ImageCaptureBase.hpp"
@@ -18,7 +18,7 @@
 
 namespace msr { namespace airlib_rpclib {
 
-class MultirotorRpcLibAdapators : public RpcLibAdapatorsBase {
+class MultirotorRpcLibAdaptors : public RpcLibAdaptorsBase {
 public:
     struct YawMode {
         bool is_rate = true;
