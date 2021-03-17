@@ -88,6 +88,8 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
     ```
     You can also save float array to .pfm file (Portable Float Map format) using `airsim.write_pfm()` function.
 
+- If you are looking to query position and orientation information in sync with a call to one of the image APIs, you can use `client.simPause(True)` and `client.simPause(False)` to pause the simulation while calling the image API and querying the desired physics state, ensuring that the physics state remains the same immediately after the image API call.
+
 ### C++
 
 ```cpp
