@@ -1288,13 +1288,13 @@ private:
 
     static void initializeBarometerSetting(BarometerSetting& barometer_setting, const Settings& settings_json)
     {
-	barometer_setting.qnh = settings_json.getFloat("SeaLevelPressure", barometer_setting.qnh);
-	barometer_setting.pressure_factor_sigma = settings_json.getFloat("PressureFactorSigma", barometer_setting.pressure_factor_sigma);
-	barometer_setting.pressure_factor_tau = settings_json.getFloat("PressureFactorTau", barometer_setting.pressure_factor_tau);
-	barometer_setting.unnorrelated_noise_sigma = settings_json.getFloat("NoiseSigma", barometer_setting.unnorrelated_noise_sigma);
-	barometer_setting.update_latency = settings_json.getFloat("UpdateLatency", barometer_setting.update_latency);
-	barometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", barometer_setting.update_frequency);
-	barometer_setting.startup_delay = settings_json.getFloat("StartupDelay", barometer_setting.startup_delay);
+        barometer_setting.qnh = settings_json.getFloat("SeaLevelPressure", barometer_setting.qnh);
+        barometer_setting.pressure_factor_sigma = settings_json.getFloat("PressureFactorSigma", barometer_setting.pressure_factor_sigma);
+        barometer_setting.pressure_factor_tau = settings_json.getFloat("PressureFactorTau", barometer_setting.pressure_factor_tau);
+        barometer_setting.unnorrelated_noise_sigma = settings_json.getFloat("NoiseSigma", barometer_setting.unnorrelated_noise_sigma);
+        barometer_setting.update_latency = settings_json.getFloat("UpdateLatency", barometer_setting.update_latency);
+        barometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", barometer_setting.update_frequency);
+        barometer_setting.startup_delay = settings_json.getFloat("StartupDelay", barometer_setting.startup_delay);
         barometer_setting.position = createVectorSetting(settings_json, barometer_setting.position);
         barometer_setting.rotation = createRotationSetting(settings_json, barometer_setting.rotation);
     }
@@ -1317,17 +1317,17 @@ private:
 
     static void initializeGpsSetting(GpsSetting& gps_setting, const Settings& settings_json)
     {
-	gps_setting.eph_time_constant = settings_json.getFloat("EphTimeConstant", gps_setting.eph_time_constant);
-	gps_setting.epv_time_constant = settings_json.getFloat("EpvTimeConstant", gps_setting.epv_time_constant);
-	gps_setting.eph_initial = settings_json.getFloat("EphInitial", gps_setting.eph_initial);
-	gps_setting.epv_initial = settings_json.getFloat("EpvInitial", gps_setting.epv_initial);
-	gps_setting.eph_final = settings_json.getFloat("EphFinal", gps_setting.eph_final);
-	gps_setting.epv_final = settings_json.getFloat("EpvFinal", gps_setting.epv_final);
-	gps_setting.eph_min_3d = settings_json.getFloat("EphMin3d", gps_setting.eph_min_3d);
-	gps_setting.eph_min_2d = settings_json.getFloat("EphMin2d", gps_setting.eph_min_2d);
-	gps_setting.update_latency = settings_json.getFloat("UpdateLatency", gps_setting.update_latency);
-	gps_setting.update_frequency = settings_json.getFloat("UpdateFrequency", gps_setting.update_frequency);
-	gps_setting.startup_delay = settings_json.getFloat("StartupDelay", gps_setting.startup_delay);
+        gps_setting.eph_time_constant = settings_json.getFloat("EphTimeConstant", gps_setting.eph_time_constant);
+        gps_setting.epv_time_constant = settings_json.getFloat("EpvTimeConstant", gps_setting.epv_time_constant);
+        gps_setting.eph_initial = settings_json.getFloat("EphInitial", gps_setting.eph_initial);
+        gps_setting.epv_initial = settings_json.getFloat("EpvInitial", gps_setting.epv_initial);
+        gps_setting.eph_final = settings_json.getFloat("EphFinal", gps_setting.eph_final);
+        gps_setting.epv_final = settings_json.getFloat("EpvFinal", gps_setting.epv_final);
+        gps_setting.eph_min_3d = settings_json.getFloat("EphMin3d", gps_setting.eph_min_3d);
+        gps_setting.eph_min_2d = settings_json.getFloat("EphMin2d", gps_setting.eph_min_2d);
+        gps_setting.update_latency = settings_json.getFloat("UpdateLatency", gps_setting.update_latency);
+        gps_setting.update_frequency = settings_json.getFloat("UpdateFrequency", gps_setting.update_frequency);
+        gps_setting.startup_delay = settings_json.getFloat("StartupDelay", gps_setting.startup_delay);
         gps_setting.position = createVectorSetting(settings_json, gps_setting.position);
         gps_setting.rotation = createRotationSetting(settings_json, gps_setting.rotation);
 
@@ -1337,9 +1337,9 @@ private:
     {
         magnetometer_setting.noise_sigma = createNoiseSigmaSetting(settings_json, magnetometer_setting.noise_sigma);
         magnetometer_setting.scale_factor = settings_json.getFloat("ScaleFactor", magnetometer_setting.scale_factor);
-	magnetometer_setting.dynamic_reference_source = settings_json.getBool("DynamicReferenceSource", magnetometer_setting.dynamic_reference_source);
+        magnetometer_setting.dynamic_reference_source = settings_json.getBool("DynamicReferenceSource", magnetometer_setting.dynamic_reference_source);
         magnetometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", magnetometer_setting.update_frequency);
-	magnetometer_setting.ref_source = settings_json.getInt("ReferenceSource", magnetometer_setting.ref_source);
+        magnetometer_setting.ref_source = settings_json.getInt("ReferenceSource", magnetometer_setting.ref_source);
         magnetometer_setting.update_latency = settings_json.getFloat("UpdateLatency", magnetometer_setting.update_latency);
         magnetometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", magnetometer_setting.update_frequency);
         magnetometer_setting.startup_delay = settings_json.getFloat("StartupDelay", magnetometer_setting.startup_delay);
