@@ -197,75 +197,71 @@ public: //types
     };
 
     struct BarometerSetting : SensorSetting {
-	real_T qnh = EarthUtils::SeaLevelPressure / 100.0f; // hPa
-	real_T pressure_factor_sigma = 0.0365f / 20;
-	real_T pressure_factor_tau = 3600;
-	real_T unnorrelated_noise_sigma = 0.027f * 100;
-	real_T update_latency = 0.0f;    //sec
-	real_T update_frequency = 50;    //Hz
-	real_T startup_delay = 0;        //sec
+        real_T qnh = EarthUtils::SeaLevelPressure / 100.0f; // hPa
+        real_T pressure_factor_sigma = 0.0365f / 20;
+        real_T pressure_factor_tau = 3600;
+        real_T unnorrelated_noise_sigma = 0.027f * 100;
+        real_T update_latency = 0.0f;    //sec
+        real_T update_frequency = 50;    //Hz
+        real_T startup_delay = 0;        //sec
         Vector3r position = VectorMath::nanVector();
         Rotation rotation = Rotation::nanRotation();
     };
 
     struct ImuSetting : SensorSetting {
-	//angule random walk (ARW)
-	real_T gyro_arw = 0.30f / sqrt(3600.0f) * M_PIf / 180; //deg/sqrt(hour) converted to rad/sqrt(sec)
-	//Bias Stability (tau = 500s)
-	real_T gyro_tau = 500;
-	real_T gyro_bias_stability = 4.6f / 3600 * M_PIf / 180; //deg/hr converted to rad/sec
-	Vector3r gyro_turn_on_bias = Vector3r::Zero(); //assume calibration is done
+        // Angular random walk (ARW)
+        real_T gyro_arw = 0.30f / sqrt(3600.0f) * M_PIf / 180; //deg/sqrt(hour) converted to rad/sqrt(sec)
+        // Bias Stability (tau = 500s)
+        real_T gyro_tau = 500;
+        real_T gyro_bias_stability = 4.6f / 3600 * M_PIf / 180; //deg/hr converted to rad/sec
+        Vector3r gyro_turn_on_bias = Vector3r::Zero(); //assume calibration is done
 
-	//velocity random walk (ARW)
-	real_T accel_vrw = 0.24f * EarthUtils::Gravity / 1.0E3f; //mg converted to m/s^2
-	//Bias Stability (tau = 800s)
-	real_T accel_tau = 800;
-	real_T accel_bias_stability = 36.0f * 1E-6f * 9.80665f; //ug converted to m/s^2
-	Vector3r accel_turn_on_bias = Vector3r::Zero(); //assume calibration is done
+        // Velocity random walk (VRW)
+        real_T accel_vrw = 0.24f * EarthUtils::Gravity / 1.0E3f; //mg converted to m/s^2
+        // Bias Stability (tau = 800s)
+        real_T accel_tau = 800;
+        real_T accel_bias_stability = 36.0f * 1E-6f * 9.80665f; //ug converted to m/s^2
+        Vector3r accel_turn_on_bias = Vector3r::Zero(); //assume calibration is done
         Vector3r position = VectorMath::nanVector();
         Rotation rotation = Rotation::nanRotation();
-
     };
 
     struct GpsSetting : SensorSetting {
+        real_T eph_time_constant = 0.9f, epv_time_constant = 0.9f;
+        real_T eph_initial = 100.0f, epv_initial = 100.0f;   //initially fully diluted positions
+        real_T eph_final = 0.3f, epv_final = 0.4f;
+        real_T eph_min_3d = 3.0f, eph_min_2d = 4.0f;
 
-	real_T eph_time_constant = 0.9f, epv_time_constant = 0.9f;
-	real_T eph_initial = 100.0f, epv_initial = 100.0f;   //initially fully diluted positions
-	real_T eph_final = 0.3f, epv_final = 0.4f;
-	real_T eph_min_3d = 3.0f, eph_min_2d = 4.0f;
+        real_T update_latency = 0.2f;    //sec
+        real_T update_frequency = 50;    //Hz
+        real_T startup_delay = 1;        //sec
 
-	real_T update_latency = 0.2f;    //sec
-	real_T update_frequency = 50;    //Hz
-	real_T startup_delay = 1;        //sec
-
-	Vector3r position = VectorMath::nanVector();
-	Rotation rotation = Rotation::nanRotation();
-
+        Vector3r position = VectorMath::nanVector();
+        Rotation rotation = Rotation::nanRotation();
     };
 
     struct MagnetometerSetting : SensorSetting {
-	Vector3r noise_sigma = Vector3r(0.005f, 0.005f, 0.005f); //5 mgauss as per specs sheet (RMS is same as stddev) https://goo.gl/UOz6FT
-	real_T scale_factor = 1.0f;
-	Vector3r noise_bias = Vector3r(0.0f, 0.0f, 0.0f); //no offset as per specsheet (zero gauss level) https://goo.gl/UOz6FT
-	float ref_update_frequency = 0.2f;    //Hz
+        Vector3r noise_sigma = Vector3r(0.005f, 0.005f, 0.005f); //5 mgauss as per specs sheet (RMS is same as stddev) https://goo.gl/UOz6FT
+        real_T scale_factor = 1.0f;
+        Vector3r noise_bias = Vector3r(0.0f, 0.0f, 0.0f); //no offset as per specsheet (zero gauss level) https://goo.gl/UOz6FT
+        float ref_update_frequency = 0.2f;    //Hz
 
-	//use dipole model if there is enough compute power available
-	bool dynamic_reference_source = true;
-	// ref_source 0==ConstantModel; 1==DipoleModel
-	int ref_source = 1;
+        //use dipole model if there is enough compute power available
+        bool dynamic_reference_source = true;
+        // ref_source 0==ConstantModel; 1==DipoleModel
+        int ref_source = 1;
 
-	//see PX4 param reference for EKF: https://dev.px4.io/en/advanced/parameter_reference.html
-	real_T update_latency = 0.0f;    //sec: from PX4 doc
-	real_T update_frequency = 50;    //Hz
-	real_T startup_delay = 0;        //sec
+        //see PX4 param reference for EKF: https://dev.px4.io/en/advanced/parameter_reference.html
+        real_T update_latency = 0.0f;    //sec: from PX4 doc
+        real_T update_frequency = 50;    //Hz
+        real_T startup_delay = 0;        //sec
 
-	Vector3r position = VectorMath::nanVector();
-	Rotation rotation = Rotation::nanRotation();
-
+        Vector3r position = VectorMath::nanVector();
+        Rotation rotation = Rotation::nanRotation();
     };
 
     struct DistanceSetting : SensorSetting {
-        //nan means keep the default values set in components
+        // nan means keep the default values set in components
         Vector3r position = VectorMath::nanVector();
         Rotation rotation = Rotation::nanRotation();
 
@@ -280,7 +276,6 @@ public: //types
     };
 
     struct LidarSetting : SensorSetting {
-
         // shared defaults
         uint number_of_channels = 16;
         real_T range = 10000.0f / 100;                    // meters
@@ -300,11 +295,11 @@ public: //types
     };
 
     struct VehicleSetting {
-        //required
+        // Required
         std::string vehicle_name;
         std::string vehicle_type;
 
-        //optional
+        // Optional
         std::string default_vehicle_state;
         std::string pawn_path;
         bool allow_api_always = true;
@@ -314,7 +309,7 @@ public: //types
         bool enable_collisions = true;
         bool is_fpv_vehicle = false;
 
-        //nan means use player start
+        // nan means use player start
         Vector3r position = VectorMath::nanVector(); //in global NED
         Rotation rotation = Rotation::nanRotation();
 
@@ -329,7 +324,7 @@ public: //types
 
         bool use_serial = true; // false means use UDP or TCP instead
 
-        //Used to connect via HITL: needed only if use_serial = true
+        // Used to connect via HITL: needed only if use_serial = true
         std::string serial_port = "*";
         int baud_rate = 115200;
 
@@ -357,7 +352,7 @@ public: //types
         int qgc_ip_port = 0;
         std::string qgc_ip_address = "";
 
-        // mavlink vehicle identifiers
+        // Mavlink vehicle identifiers
         uint8_t sim_sysid = 142;
         int sim_compid = 42;
         uint8_t offboard_sysid = 134;
@@ -365,9 +360,9 @@ public: //types
         uint8_t vehicle_sysid = 135;
         int vehicle_compid = 1;
 
-        // if you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet)
-        // then you will want to change the LocalHostIp accordingly.  This default only works when log viewer and QGC are also on the
-        // same machine.  Whatever network you choose it has to be the same one for external
+        // If you want to select a specific local network adapter so you can reach certain remote machines (e.g. wifi versus ethernet),
+        // then you will want to change the LocalHostIp accordingly. This default only works when log viewer and QGC are also on the
+        // same machine. Whatever network you choose, it has to be the same one for external.
         std::string local_host_ip = "127.0.0.1";
 
         std::string model = "Generic";
