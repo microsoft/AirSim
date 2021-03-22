@@ -27,7 +27,7 @@ struct ImuSimpleParams {
     Pose relative_pose;
 
     struct Gyroscope {
-        //angule random walk (ARW)
+        //angular random walk (ARW)
         real_T arw = 0.30f / sqrt(3600.0f) * M_PIf / 180; //deg/sqrt(hour) converted to rad/sqrt(sec)
         //Bias Stability (tau = 500s)
         real_T tau = 500;
@@ -36,7 +36,7 @@ struct ImuSimpleParams {
     } gyro;
 
     struct Accelerometer {
-        //velocity random walk (ARW)
+        //velocity random walk (VRW)
         real_T vrw = 0.24f * EarthUtils::Gravity / 1.0E3f; //mg converted to m/s^2
         //Bias Stability (tau = 800s)
         real_T tau = 800;

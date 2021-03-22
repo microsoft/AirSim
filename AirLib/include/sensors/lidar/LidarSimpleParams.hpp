@@ -29,7 +29,7 @@ struct LidarSimpleParams {
     Pose relative_pose {
         Vector3r(0,0,-1),                     // position - a little above vehicle (especially for cars) or Vector3r::Zero()
         Quaternionr::Identity()               // orientation - by default Quaternionr(1, 0, 0, 0)
-        };
+    };
 
     bool draw_debug_points = false;
     std::string data_frame = AirSimSettings::kVehicleInertialFrame;

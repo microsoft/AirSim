@@ -93,7 +93,7 @@ Alternatively, you can use [APIs](apis.md) for programmatic control or use the s
 ## FAQs
 
 - I'm getting error `<MyProject> could not be compiled. Try rebuilding from source manually`.
-* This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
+    * This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
 
 `fatal error: file '/usr/include/linux/version.h''/usr/include/linux/version.h' has been modified since the precompiled header`
 
