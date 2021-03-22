@@ -23,25 +23,25 @@ struct GpsSimpleParams {
 
     void initializeFromSettings(const AirSimSettings::GpsSetting& settings)
     {
-	eph_time_constant = settings.eph_time_constant;
-	epv_time_constant = settings.epv_time_constant;
-	eph_initial = settings.eph_initial;
-	epv_initial = settings.epv_initial;
-	eph_final = settings.eph_final;
-	epv_final = settings.epv_final;
-	eph_min_3d = settings.eph_min_3d;
-	eph_min_2d = settings.eph_min_2d;
+        eph_time_constant = settings.eph_time_constant;
+        epv_time_constant = settings.epv_time_constant;
+        eph_initial = settings.eph_initial;
+        epv_initial = settings.epv_initial;
+        eph_final = settings.eph_final;
+        epv_final = settings.epv_final;
+        eph_min_3d = settings.eph_min_3d;
+        eph_min_2d = settings.eph_min_2d;
 
-	update_latency = settings.update_latency;
-	update_frequency = settings.update_frequency;
-	startup_delay = settings.startup_delay;
+        update_latency = settings.update_latency;
+        update_frequency = settings.update_frequency;
+        startup_delay = settings.startup_delay;
 
         relative_pose.position = settings.position;
         if (std::isnan(relative_pose.position.x()))
             relative_pose.position.x() = 0;
         if (std::isnan(relative_pose.position.y()))
             relative_pose.position.y() = 0;
-        if (std::isnan(relative_pose.position.z())) 
+        if (std::isnan(relative_pose.position.z()))
 	    relative_pose.position.z() = 0;
 
         float pitch, roll, yaw;
@@ -51,7 +51,8 @@ struct GpsSimpleParams {
         relative_pose.orientation = VectorMath::toQuaternion(
             Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
             Utils::degreesToRadians(roll),    //roll  - rotation around X axis
-            Utils::degreesToRadians(yaw));    //yaw   - rotation around Z axis
+            Utils::degreesToRadians(yaw)      //yaw   - rotation around Z axis
+        );
     }
 };
 

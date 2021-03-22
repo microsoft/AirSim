@@ -51,30 +51,31 @@ struct BarometerSimpleParams {
 
     void initializeFromSettings(const AirSimSettings::BarometerSetting& settings)
     {
-	qnh = settings.qnh;
-	pressure_factor_sigma = settings.pressure_factor_sigma;
-	pressure_factor_tau = settings.pressure_factor_tau;
-	unnorrelated_noise_sigma = settings.unnorrelated_noise_sigma;
-	update_latency = settings.update_latency;
-	update_frequency = settings.update_frequency;
-	startup_delay = settings.startup_delay;
+        qnh = settings.qnh;
+        pressure_factor_sigma = settings.pressure_factor_sigma;
+        pressure_factor_tau = settings.pressure_factor_tau;
+        unnorrelated_noise_sigma = settings.unnorrelated_noise_sigma;
+        update_latency = settings.update_latency;
+        update_frequency = settings.update_frequency;
+        startup_delay = settings.startup_delay;
 
-	relative_pose.position = settings.position;
-	if (std::isnan(relative_pose.position.x()))
-	    relative_pose.position.x() = 0;
-	if (std::isnan(relative_pose.position.y()))
-	    relative_pose.position.y() = 0;
-	if (std::isnan(relative_pose.position.z())) 
-	    relative_pose.position.z() = 0;
+        relative_pose.position = settings.position;
+        if (std::isnan(relative_pose.position.x()))
+            relative_pose.position.x() = 0;
+        if (std::isnan(relative_pose.position.y()))
+            relative_pose.position.y() = 0;
+        if (std::isnan(relative_pose.position.z()))
+            relative_pose.position.z() = 0;
 
-	float pitch, roll, yaw;
-	pitch = !std::isnan(settings.rotation.pitch) ? settings.rotation.pitch : 0;
-	roll = !std::isnan(settings.rotation.roll) ? settings.rotation.roll : 0;
-	yaw = !std::isnan(settings.rotation.yaw) ? settings.rotation.yaw : 0;
-	relative_pose.orientation = VectorMath::toQuaternion(
-	    Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
-	    Utils::degreesToRadians(roll),    //roll  - rotation around X axis
-	    Utils::degreesToRadians(yaw));    //yaw   - rotation around Z axis
+        float pitch, roll, yaw;
+        pitch = !std::isnan(settings.rotation.pitch) ? settings.rotation.pitch : 0;
+        roll = !std::isnan(settings.rotation.roll) ? settings.rotation.roll : 0;
+        yaw = !std::isnan(settings.rotation.yaw) ? settings.rotation.yaw : 0;
+        relative_pose.orientation = VectorMath::toQuaternion(
+            Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
+            Utils::degreesToRadians(roll),    //roll  - rotation around X axis
+            Utils::degreesToRadians(yaw)     //yaw   - rotation around Z axis
+        );
     }
 };
 

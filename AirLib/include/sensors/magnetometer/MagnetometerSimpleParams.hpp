@@ -38,13 +38,15 @@ struct MagnetometerSimpleParams {
     void initializeFromSettings(const AirSimSettings::MagnetometerSetting& settings)
     {
         noise_sigma = settings.noise_sigma;
-	noise_bias = settings.noise_bias;
+        noise_bias = settings.noise_bias;
         scale_factor = settings.scale_factor;
-	dynamic_reference_source = settings.dynamic_reference_source;
+        dynamic_reference_source = settings.dynamic_reference_source;
         ref_update_frequency = settings.update_frequency;
-	if (settings.ref_source == 0){
-		ref_source = ReferenceSource::ReferenceSource_Constant;
-	}
+
+        if (settings.ref_source == 0){
+            ref_source = ReferenceSource::ReferenceSource_Constant;
+        }
+
         update_latency = settings.update_latency;
         update_frequency = settings.update_frequency;
         startup_delay = settings.startup_delay;
@@ -54,7 +56,7 @@ struct MagnetometerSimpleParams {
             relative_pose.position.x() = 0;
         if (std::isnan(relative_pose.position.y()))
             relative_pose.position.y() = 0;
-        if (std::isnan(relative_pose.position.z())) 
+        if (std::isnan(relative_pose.position.z()))
 	    relative_pose.position.z() = 0;
 
         float pitch, roll, yaw;
@@ -64,7 +66,8 @@ struct MagnetometerSimpleParams {
         relative_pose.orientation = VectorMath::toQuaternion(
             Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
             Utils::degreesToRadians(roll),    //roll  - rotation around X axis
-            Utils::degreesToRadians(yaw));    //yaw   - rotation around Z axis
+            Utils::degreesToRadians(yaw)      //yaw   - rotation around Z axis
+        );
     }
 };
 

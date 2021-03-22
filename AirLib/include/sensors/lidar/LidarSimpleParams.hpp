@@ -17,9 +17,9 @@ struct LidarSimpleParams {
     // default settings
     // TODO: enable reading of these params from AirSim settings
 
-    uint number_of_channels = 16; 
+    uint number_of_channels = 16;
     real_T range = 10000.0f / 100;            // meters
-    uint points_per_second = 100000;  
+    uint points_per_second = 100000;
     uint horizontal_rotation_frequency = 10;  // rotations/sec
     real_T horizontal_FOV_start = 0;
     real_T horizontal_FOV_end = 359;
@@ -28,8 +28,8 @@ struct LidarSimpleParams {
 
     Pose relative_pose {
         Vector3r(0,0,-1),                     // position - a little above vehicle (especially for cars) or Vector3r::Zero()
-        Quaternionr::Identity()               // orientation - by default Quaternionr(1, 0, 0, 0) 
-        };                       
+        Quaternionr::Identity()               // orientation - by default Quaternionr(1, 0, 0, 0)
+        };
 
     bool draw_debug_points = false;
     std::string data_frame = AirSimSettings::kVehicleInertialFrame;
@@ -86,8 +86,8 @@ struct LidarSimpleParams {
         relative_pose.orientation = VectorMath::toQuaternion(
             Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
             Utils::degreesToRadians(roll),    //roll  - rotation around X axis
-            Utils::degreesToRadians(yaw));    //yaw   - rotation around Z axis
-           
+            Utils::degreesToRadians(yaw)      //yaw   - rotation around Z axis
+        );
         draw_debug_points = settings.draw_debug_points;
         data_frame = settings.data_frame;
     }
