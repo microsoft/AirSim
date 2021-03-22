@@ -50,6 +50,10 @@ struct DistanceSimpleParams {
 
         min_distance = settings.min_distance;
         max_distance = settings.max_distance;
+        unnorrelated_noise_sigma = settings.unnorrelated_noise_sigma;
+        update_latency = settings.update_latency;
+        update_frequency = settings.update_frequency;
+        startup_delay = settings.startup_delay;
 
         draw_debug_points = settings.draw_debug_points;
 
@@ -72,7 +76,8 @@ struct DistanceSimpleParams {
         relative_pose.orientation = VectorMath::toQuaternion(
             Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
             Utils::degreesToRadians(roll),    //roll  - rotation around X axis
-            Utils::degreesToRadians(yaw));    //yaw   - rotation around Z axis
+            Utils::degreesToRadians(yaw)      //yaw   - rotation around Z axis
+        );
     }
 };
 

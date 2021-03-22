@@ -1,0 +1,21 @@
+digraph G {
+"map" -> "map_ned"[label="Broadcaster: /mavros\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1608106089.618 sec old)\nBuffer length: 0.000 sec\n"];
+"odom" -> "odom_ned"[label="Broadcaster: /mavros\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1608106089.618 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "base_link_frd"[label="Broadcaster: /mavros\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1608106089.618 sec old)\nBuffer length: 0.000 sec\n"];
+"map" -> "base_link"[label="Broadcaster: /autonomy_11715_1608104044344\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1608106089.618 sec old)\nBuffer length: 0.000 sec\n"];
+"Drone1" -> "color"[label="Broadcaster: /autonomy_11715_1608104044344\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1608106089.618 sec old)\nBuffer length: 0.000 sec\n"];
+"Drone1" -> "depth"[label="Broadcaster: /autonomy_11715_1608104044344\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1608106089.618 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "main"[label="Broadcaster: /autonomy_11715_1608104044344\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1608106089.618 sec old)\nBuffer length: 0.000 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1608106089.618"[ shape=plaintext ] ;
+ }->"map";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1608106089.618"[ shape=plaintext ] ;
+ }->"odom";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1608106089.618"[ shape=plaintext ] ;
+ }->"Drone1";
+}

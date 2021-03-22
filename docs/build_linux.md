@@ -93,13 +93,14 @@ Alternatively, you can use [APIs](apis.md) for programmatic control or use the s
 ## FAQs
 
 - I'm getting error `<MyProject> could not be compiled. Try rebuilding from source manually`.
-    * This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
+  * This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?
 
 `fatal error: file '/usr/include/linux/version.h''/usr/include/linux/version.h' has been modified since the precompiled header`
 
-* If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's [relevant thread](https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html) on Unreal Engine forums.
+  * If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's [relevant thread](https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html) on Unreal Engine forums.
 
-* If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.
+  * If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.
+  * Additionally, if you are having trouble rebuilding the plugin in UE4 after making changes to the AirSim library, you may need to manually delete the binaries and intermediate folders in both your Unreal Project folder, and in the UnrealProject/Plugin/AirSim folder.  This will force clang to recompile both the UE4 project and plugin and may resolve issues of "clang could not find file x"
 
 - Unreal crashed! How do I know what went wrong?
     * Go to the `MyUnrealProject/Saved/Crashes` folder and search for the file `MyProject.log` within its subdirectories. At the end of this file you will see the stack trace and messages.
