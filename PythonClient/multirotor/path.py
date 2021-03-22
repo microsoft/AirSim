@@ -32,7 +32,7 @@ if state.landed_state == airsim.LandedState.Landed:
 # z of -7 is 7 meters above the original launch point.
 z = -70
 print("make sure we are hovering at 7 meters...")
-client.moveToZAsync(z, 5).join()
+client.moveToZAsync(z, 1).join()
 
 # see https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo
 
