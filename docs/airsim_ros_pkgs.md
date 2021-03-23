@@ -222,18 +222,20 @@ Once installed, you can switch between WSL1 or WSL2 versions as you prefer.
 
 2. Congratulations, you now have a working Ubuntu subsystem under Windows, you can now go to [Ubuntu 16 / 18 instructions](#setup) and then [How to run Airsim on Windows and ROS wrapper on WSL](#how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl)!
 
-    **Note**:
+!!! note
 
     You can run XWindows applications (including SITL) by installing [VcXsrv](https://sourceforge.net/projects/vcxsrv/)  on Windows. 
     To use it find and run `XLaunch` from the Windows start menu.    
     Select `Multiple Windows` in first popup, `Start no client` in second popup, **only** `Clipboard` in third popup. Do **not** select `Native Opengl` (and if you are not able to connect select `Disable access control`).  
-    You will need to set the DISPLAY variable to point to your display: in WSL it is 127.0.0.1:0, in WSL2 it will be the ip address of the PC's network port and can be set by using the code below. Also in WSL2 you may have to disable the firewall for public networks, or create an exception in order for VcXsrv to communicate with WSL2:
+    You will need to set the DISPLAY variable to point to your display: in WSL it is `127.0.0.1:0`, in WSL2 it will be the ip address of the PC's network port and can be set by using the code below. Also in WSL2 you may have to disable the firewall for public networks, or create an exception in order for VcXsrv to communicate with WSL2:
 
     `export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0`
 
-    **tip**: If you add this line to your ~/.bashrc file you won't need to run this command again  
-    **tip**: For code editing you can install VSCode inside WSL.  
-    **Note**: Windows 10 includes "Windows Defender" virus scanner. It will slow down WSL quite a bit. Disabling it greatly improves disk performance but increases your risk to viruses so disable at your own risk. Here is one of many resources/videos that show you how to disable it: https://www.youtube.com/watch?v=FmjblGay3AM  
+!!! tip
+
+    - If you add this line to your ~/.bashrc file you won't need to run this command again  
+    - For code editing you can install VSCode inside WSL.  
+    - Windows 10 includes "Windows Defender" virus scanner. It will slow down WSL quite a bit. Disabling it greatly improves disk performance but increases your risk to viruses so disable at your own risk. Here is one of many resources/videos that show you how to disable it: [How to Disable or Enable Windows Defender on Windows 10](https://youtu.be/FmjblGay3AM)
 
 ##### File System Access between WSL and Windows10
 

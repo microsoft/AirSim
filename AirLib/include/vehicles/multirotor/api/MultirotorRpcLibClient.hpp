@@ -25,6 +25,8 @@ public:
 
     MultirotorRpcLibClient* moveByVelocityBodyFrameAsync(float vx, float vy, float vz, float duration,
         DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), const std::string& vehicle_name = "");
+    MultirotorRpcLibClient* moveByVelocityZBodyFrameAsync(float vx, float vy, float z, float duration,
+        DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), const std::string& vehicle_name = "");
     MultirotorRpcLibClient* moveByMotorPWMsAsync(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration, const std::string& vehicle_name = "");
     MultirotorRpcLibClient* moveByRollPitchYawZAsync(float roll, float pitch, float yaw, float z, float duration, const std::string& vehicle_name = "");
     MultirotorRpcLibClient* moveByRollPitchYawThrottleAsync(float roll, float pitch, float yaw, float throttle, float duration, const std::string& vehicle_name = "");
@@ -57,6 +59,7 @@ public:
     void moveByRC(const RCData& rc_data, const std::string& vehicle_name = "");
 
     MultirotorState getMultirotorState(const std::string& vehicle_name = "");
+    RotorStates getRotorStates(const std::string& vehicle_name = "");
 
     bool setSafety(SafetyEval::SafetyViolationType enable_reasons, float obs_clearance, SafetyEval::ObsAvoidanceStrategy obs_startegy,
         float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z, const std::string& vehicle_name = "");

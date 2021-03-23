@@ -234,13 +234,13 @@ private:
             fclose(img_r);
 
             //GT disparity and depth
-            Utils::writePfmFile(gt_depth_data.data(), w, h, FileSystem::combine(result->storage_dir_, depth_gt_file_name));
+            Utils::writePFMfile(gt_depth_data.data(), w, h, FileSystem::combine(result->storage_dir_, depth_gt_file_name));
             denormalizeDisparity(gt_disparity_data, w);
-            Utils::writePfmFile(gt_disparity_data.data(), w, h, FileSystem::combine(result->storage_dir_, disparity_gt_file_name));
+            Utils::writePFMfile(gt_disparity_data.data(), w, h, FileSystem::combine(result->storage_dir_, disparity_gt_file_name));
             
             //SGM depth disparity and confidence
-            Utils::writePfmFile(sgm_depth_data.data(), w, h, FileSystem::combine(result->storage_dir_, depth_sgm_file_name));
-            Utils::writePfmFile(sgm_disparity_data.data(), w, h, FileSystem::combine(result->storage_dir_, disparity_sgm_file_name));
+            Utils::writePFMfile(sgm_depth_data.data(), w, h, FileSystem::combine(result->storage_dir_, depth_sgm_file_name));
+            Utils::writePFMfile(sgm_disparity_data.data(), w, h, FileSystem::combine(result->storage_dir_, disparity_sgm_file_name));
             FILE *sgm_c = fopen(FileSystem::combine(result->storage_dir_, confidence_sgm_file_name).c_str(), "wb");
             svpng(sgm_c,w,h,reinterpret_cast<const unsigned char*>(sgm_confidence_data.data()),0,1);
             fclose(sgm_c);

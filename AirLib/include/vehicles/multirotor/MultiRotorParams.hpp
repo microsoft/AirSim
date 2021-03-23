@@ -223,7 +223,12 @@ protected: //static utility functions for derived classes to use
         std::vector<real_T> arm_lengths(params.rotor_count, 0.2275f);
 
         //set up mass
-        params.mass = 1.0f; //can be varied from 0.800 to 1.600
+        //this has to be between max_thrust*rotor_count/10 (1.6kg using default parameters in RotorParams.hpp) and (idle throttle percentage)*max_thrust*rotor_count/10 (0.8kg using default parameters and SimpleFlight)
+        //any value above the maximum would result in the motors not being able to lift the body even at max thrust,
+        //and any value below the minimum would cause the drone to fly upwards on idling throttle (50% of the max throttle if using SimpleFlight)
+        //Note that the default idle throttle percentage is 50% if you are using SimpleFlight
+        params.mass = 1.0f; 
+
         real_T motor_assembly_weight = 0.055f;  //weight for MT2212 motor for F450 frame
         real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
 
@@ -250,7 +255,11 @@ protected: //static utility functions for derived classes to use
         std::vector<real_T> arm_lengths(params.rotor_count, 0.2275f);
 
         //set up mass
-        params.mass = 1.0f; //can be varied from 0.800 to 1.600
+        //this has to be between max_thrust*rotor_count/10 (2.5kg using default parameters in RotorParams.hpp) and (idle throttle percentage)*max_thrust*rotor_count/10 (1.25kg using default parameters and SimpleFlight)
+        //any value above the maximum would result in the motors not being able to lift the body even at max thrust,
+        //and any value below the minimum would cause the drone to fly upwards on idling throttle (50% of the max throttle if using SimpleFlight)
+        params.mass = 1.0f;
+
         real_T motor_assembly_weight = 0.055f;  //weight for MT2212 motor for F450 frame
         real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
 

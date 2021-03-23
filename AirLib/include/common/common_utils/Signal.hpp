@@ -81,8 +81,9 @@ public:
 
     // calls all connected functions
     void emit(Args... p) {
-        for (auto it : slots_) {
-            it.second(p...);
+        for(auto it=slots_.begin(); it!=slots_.end(); ) {
+            // Increment here so that the entry can be erased from inside the method as well
+            (it++)->second(p...);
         }
     }
 

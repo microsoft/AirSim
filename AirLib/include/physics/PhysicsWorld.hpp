@@ -43,6 +43,13 @@ public:
         unlock();
     }
 
+    void addBody(UpdatableObject* body)
+    {
+        lock();
+        world_.insert(body);
+        unlock();
+    }
+
     uint64_t getUpdatePeriodNanos() const
     {
         return update_period_nanos_;
@@ -89,6 +96,16 @@ public:
     void continueForTime(double seconds)
     {
         world_.continueForTime(seconds);
+    }
+
+    void continueForFrames(uint32_t frames)
+    {
+        world_.continueForFrames(frames);
+    }
+
+    void setFrameNumber(uint32_t frameNumber)
+    {
+        world_.setFrameNumber(frameNumber);
     }
 
 private:

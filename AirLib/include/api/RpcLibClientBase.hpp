@@ -41,6 +41,7 @@ public:
     bool simIsPaused() const;
     void simPause(bool is_paused);
     void simContinueForTime(double seconds);
+    void simContinueForFrames(uint32_t frames);
 
     void simSetTimeOfDay(bool is_enabled, const string& start_datetime = "", bool is_start_datetime_dst = false,
         float celestial_clock_speed = 1, float update_interval_secs = 60, bool move_sun = true);
@@ -68,7 +69,7 @@ public:
     void simPlotLineStrip(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent);
     void simPlotLineList(const vector<Vector3r>& points, const vector<float>& color_rgba, float thickness, float duration, bool is_persistent);
     void simPlotArrows(const vector<Vector3r>& points_start, const vector<Vector3r>& points_end, const vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent);
-    void simPlotStrings(const vector<std::string>& strings, const vector<Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration); 
+    void simPlotStrings(const vector<std::string>& strings, const vector<Vector3r>& positions, float scale, const vector<float>& color_rgba, float duration);
     void simPlotTransforms(const vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent);
     void simPlotTransformsWithNames(const vector<Pose>& poses, const vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const vector<float>& text_color_rgba, float duration);
 
@@ -88,9 +89,6 @@ public:
     msr::airlib::GpsBase::Output getGpsData(const std::string& gps_name = "", const std::string& vehicle_name = "") const;
     msr::airlib::DistanceSensorData getDistanceSensorData(const std::string& distance_sensor_name = "", const std::string& vehicle_name = "") const;
 
-    // sensor omniscient APIs
-    vector<int> simGetLidarSegmentation(const std::string& lidar_name = "", const std::string& vehicle_name = "") const;
-
     Pose simGetVehiclePose(const std::string& vehicle_name = "") const;
     void simSetVehiclePose(const Pose& pose, bool ignore_collision, const std::string& vehicle_name = "");
     void simSetTraceLine(const std::vector<float>& color_rgba, float thickness=3.0f, const std::string& vehicle_name = "");
@@ -99,6 +97,7 @@ public:
     vector<uint8_t> simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name = "");
 
     vector<MeshPositionVertexBuffersResponse> simGetMeshPositionVertexBuffers();
+    bool simAddVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "");
 
     CollisionInfo simGetCollisionInfo(const std::string& vehicle_name = "") const;
 

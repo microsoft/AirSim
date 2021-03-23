@@ -37,6 +37,10 @@ namespace AirSimUnity {
 
         bool SetCameraFoV(string cameraName, float fov_degrees);
 
+        bool SetDistortionParam(string cameraName, string paramName, float value);
+
+        bool GetDistortionParams(string cameraName);
+
         bool PrintLogMessage(string message, string messageParams, string vehicleName, int severity);
 
         void ResetVehicle();

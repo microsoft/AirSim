@@ -5,6 +5,8 @@
 #define air_WorldSimApiBase_hpp
 
 #include "common/CommonStructs.hpp"
+#include "common/AirSimSettings.hpp"
+
 
 namespace msr { namespace airlib {
 
@@ -34,6 +36,7 @@ public:
     virtual void reset() = 0;
     virtual void pause(bool is_paused) = 0;
     virtual void continueForTime(double seconds) = 0;
+    virtual void continueForFrames(uint32_t frames) = 0;
 
     virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
         float celestial_clock_speed, float update_interval_secs, bool move_sun) = 0;
@@ -43,6 +46,8 @@ public:
 
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) = 0;
     virtual int getSegmentationObjectID(const std::string& mesh_name) const = 0;
+
+    virtual bool addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "") = 0;
 
     virtual void printLogMessage(const std::string& message,
         const std::string& message_param = "", unsigned char severity = 0) = 0;

@@ -6,7 +6,7 @@ use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cy
 **Note** that every time you stop the unreal app you have to restart the `px4` app.
 
 
-1. From your bash terminal follow [these steps for Linux](http://dev.px4.io/starting-installing-linux.html) and follow **all** the instructions under `NuttX based hardware` to install prerequisites. We've also included out own copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need exactly.
+1. From your bash terminal follow [these steps for Linux](https://docs.px4.io/master/en/dev_setup/dev_env_linux.html) and follow **all** the instructions under `NuttX based hardware` to install prerequisites. We've also included our own copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need exactly.
 
 2. Get the PX4 source code and build the posix SITL version of PX4:
     ```
@@ -16,6 +16,8 @@ use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cy
     cd Firmware
     git checkout v1.10.1 # recommended version 
     ```
+    **Note**: __Cygwin version [0.8](https://github.com/PX4/PX4-windows-toolchain/releases/download/v0.8/PX4.Windows.Cygwin.Toolchain.0.8.msi) is recommended for PX4 v1.10.1__
+
 3. Use following command to build and start PX4 firmware in SITL mode:
     ```
     make px4_sitl_default none_iris
@@ -87,16 +89,15 @@ Notice the above settings are provided in the `params` section of the `settings.
 ```
 
 PX4 SITL mode needs to be configured to get the home location correct.
-There is a bug in AirSim that makes it such that flight does not work
-unless the home location is set to the same coordinates defined in  AVehiclePawnBase::HomeLatitude and HomeLongitude.
+The home location needs to be set to the same coordinates defined in  [OriginGeopoint](settings.md#origingeopoint).
 
 You can also run the following in the SITL PX4 console window to check
 that these values are set correctly.
 
-````
+```
 param show LPE_LAT
 param show LPE_LON
-````
+```
 
 ## Smooth Offboard Transitions
 
@@ -108,30 +109,30 @@ Notice the above setting is provided in the `params` section of the `settings.js
 This tells the drone automatically hover after each offboard control command finishes (the default setting is to land).  Hovering is a smoother transition between multiple offboard commands.  You can check this setting
 by running the following PX4 console command:
 
-````
+```
 param show COM_OBL_ACT
-````
+```
 
 ## Check the Home Position
 
 If you are using DroneShell to execute commands (arm, takeoff, etc) then you should wait until the Home position is set. You will see the PX4 SITL console output this message:
 
-````
+```
 INFO  [commander] home: 47.6414680, -122.1401672, 119.99
 INFO  [tone_alarm] home_set
-````
+```
 
 Now DroneShell 'pos' command should report this position and the commands should be accepted by PX4.  If you attempt to takeoff without a home position you will see the message:
 
-````
+```
 WARN  [commander] Takeoff denied, disarm and re-try
-````
+```
 
 After home position is set check the local position reported by 'pos' command :
 
-````
+```
 Local position: x=-0.0326988, y=0.00656854, z=5.48506
-````
+```
 
 If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL and simulation should fix that problem.
 
@@ -145,10 +146,10 @@ Notice the above setting is provided in the `params` section of the `settings.js
 
 This is required if you plan to fly the SITL mode PX4 with no remote control, just using python scripts, for example.  These parameters stop the PX4 from triggering "failsafe mode on" every time a move command is finished.  You can use the following PX4 command to check these values are set correctly:
 
-````
+```
 param show NAV_RCL_ACT
 param show NAV_DLL_ACT
-````
+```
 
 NOTE: Do `NOT` do this on a real drone as it is too dangerous to fly without these failsafe measures.
 
@@ -163,6 +164,10 @@ param set COM_OBL_ACT 1
 param set NAV_RCL_ACT 0
 param set NAV_DLL_ACT 0
 ```
+
+## Setting up multi-vehicle simulation
+
+You can simulate multiple drones in SITL mode using AirSim. However, this requires setting up multiple instances of the PX4 firmware simulator to be able to listen for each vehicle's connection on a separate TCP port (4560, 4561, etc). Please see [this dedicated page](px4_multi_vehicle.md) for instructions on setting up multiple instances of PX4 in SITL mode.
 
 ## Using VirtualBox Ubuntu
 

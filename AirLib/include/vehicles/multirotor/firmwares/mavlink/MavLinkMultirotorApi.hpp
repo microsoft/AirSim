@@ -117,9 +117,9 @@ public: //methods
             if (count_distance_sensors != 0) {
                 const auto& distance_output = getDistanceSensorData("");
 
-                sendDistanceSensor(distance_output.min_distance / 100, //m -> cm
-                    distance_output.max_distance / 100, //m -> cm
-                    distance_output.distance,
+                sendDistanceSensor(distance_output.min_distance * 100, //m -> cm
+                    distance_output.max_distance * 100, //m -> cm
+                    distance_output.distance * 100, //m-> cm
                     0, //sensor type: //TODO: allow changing in settings?
                     77, //sensor id, //TODO: should this be something real?
                     distance_output.relative_pose.orientation); //TODO: convert from radians to degrees?
@@ -1339,7 +1339,7 @@ private: //methods
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
 
-        auto now = static_cast<uint64_t>(Utils::getTimeSinceEpochNanos() / 1000.0);
+        auto now = clock()->nowNanos() / 1000;
         if (lock_step_enabled_) {
             if (last_hil_sensor_time_ + 100000 < now) {
                 // if 100 ms passes then something is terribly wrong, reset lockstep mode
@@ -1401,8 +1401,8 @@ private: //methods
             throw std::logic_error("Attempt to send simulated distance sensor messages while not in simulation mode");
 
         mavlinkcom::MavLinkDistanceSensor distance_sensor;
-        distance_sensor.time_boot_ms = static_cast<uint32_t>(Utils::getTimeSinceEpochNanos() / 1000000.0);
 
+        distance_sensor.time_boot_ms = static_cast<uint32_t>(clock()->nowNanos() / 1000000);
         distance_sensor.min_distance = static_cast<uint16_t>(min_distance);
         distance_sensor.max_distance = static_cast<uint16_t>(max_distance);
         distance_sensor.current_distance = static_cast<uint16_t>(current_distance);

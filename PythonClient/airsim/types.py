@@ -386,6 +386,10 @@ class MultirotorState(MsgpackMixin):
     ready_message = ""
     can_arm = False
 
+class RotorStates(MsgpackMixin):
+    timestamp = np.uint64(0)
+    rotors = []
+
 class ProjectionMatrix(MsgpackMixin):
     matrix = []
 
@@ -398,6 +402,7 @@ class LidarData(MsgpackMixin):
     point_cloud = 0.0
     time_stamp = np.uint64(0)
     pose = Pose()
+    segmentation = 0
 
 class ImuData(MsgpackMixin):
     time_stamp = np.uint64(0)

@@ -123,6 +123,16 @@ public:
         executor_.continueForTime(seconds);
     }
 
+    void continueForFrames(uint32_t frames)
+    {
+        executor_.continueForFrames(frames);
+    }
+
+    void setFrameNumber(uint32_t frameNumber)
+    {
+        executor_.setFrameNumber(frameNumber);
+    }
+
 private:
     bool worldUpdatorAsync(uint64_t dt_nanos)
     {

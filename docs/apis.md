@@ -86,6 +86,7 @@ Here's how to use AirSim APIs using Python to control simulated quadrotor (see a
 ```python
 # ready to run example: PythonClient/multirotor/hello_drone.py
 import airsim
+import os
 
 # connect to the AirSim simulator
 client = airsim.MultirotorClient()

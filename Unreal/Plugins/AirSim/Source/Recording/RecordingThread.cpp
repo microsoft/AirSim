@@ -15,14 +15,14 @@ bool FRecordingThread::first_ = true;
 
 
 FRecordingThread::FRecordingThread()
-    : stop_task_counter_(0), recording_file_(nullptr), kinematics_(nullptr), is_ready_(false)
+    : stop_task_counter_(0), recording_file_(nullptr), is_ready_(false)
 {
     thread_.reset(FRunnableThread::Create(this, TEXT("FRecordingThread"), 0, TPri_BelowNormal)); // Windows default, possible to specify more priority
 }
 
 
-void FRecordingThread::startRecording(const msr::airlib::ImageCaptureBase* image_capture, const msr::airlib::Kinematics::State* kinematics,
-    const RecordingSetting& settings, msr::airlib::VehicleSimApiBase* vehicle_sim_api)
+void FRecordingThread::startRecording(const RecordingSetting& settings,
+    const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis)
 {
     stopRecording();
 
@@ -30,18 +30,24 @@ void FRecordingThread::startRecording(const msr::airlib::ImageCaptureBase* image
     assert(!isRecording());
 
     running_instance_.reset(new FRecordingThread());
-    running_instance_->image_capture_ = image_capture;
-    running_instance_->kinematics_ = kinematics;
     running_instance_->settings_ = settings;
-    running_instance_->vehicle_sim_api_ = vehicle_sim_api;
+    running_instance_->vehicle_sim_apis_ = vehicle_sim_apis;
+
+    for (const auto& vehicle_sim_api : vehicle_sim_apis) {
+        auto vehicle_name = vehicle_sim_api->getVehicleName();
+
+        running_instance_->image_captures_[vehicle_name] = vehicle_sim_api->getImageCapture();
+        running_instance_->last_poses_[vehicle_name] = msr::airlib::Pose();
+    }
 
     running_instance_->last_screenshot_on_ = 0;
-    running_instance_->last_pose_ = msr::airlib::Pose();
-
-    running_instance_->is_ready_ = true;
 
     running_instance_->recording_file_.reset(new RecordingFile());
-    running_instance_->recording_file_->startRecording(vehicle_sim_api);
+    // Just need any 1 instance, to set the header line of the record file
+    running_instance_->recording_file_->startRecording(*(vehicle_sim_apis.begin()), settings.folder);
+
+    // Set is_ready at the end, setting this before can cause a race when the file isn't open yet
+    running_instance_->is_ready_ = true;
 }
 
 FRecordingThread::~FRecordingThread()
@@ -92,7 +98,7 @@ bool FRecordingThread::Init()
     else {
         finishing_signal_.wait();
     }
-    if (image_capture_ && recording_file_)
+    if (recording_file_)
     {
         UAirBlueprintLib::LogMessage(TEXT("Initiated recording thread"), TEXT(""), LogDebugLevel::Success);
     }
@@ -103,27 +109,31 @@ uint32 FRecordingThread::Run()
 {
     while (stop_task_counter_.GetValue() == 0)
     {
-        //make sire all vars are set up
+        //make sure all vars are set up
         if (is_ready_) {
             bool interval_elapsed = msr::airlib::ClockFactory::get()->elapsedSince(last_screenshot_on_) > settings_.record_interval;
-            bool is_pose_unequal = kinematics_ && last_pose_ != kinematics_->pose;
-            if (interval_elapsed && (!settings_.record_on_move || is_pose_unequal))
-            {
+
+            if (interval_elapsed) {
                 last_screenshot_on_ = msr::airlib::ClockFactory::get()->nowNanos();
-                last_pose_ = kinematics_->pose;
 
-                //TODO: should we go as fast as possible, or should we limit this to a particular number of
-                // frames per second?
+                for (const auto& vehicle_sim_api : vehicle_sim_apis_) {
+                    const auto& vehicle_name = vehicle_sim_api->getVehicleName();
 
-                //BG: Workaround to get sync ground truth. See https://github.com/Microsoft/AirSim/issues/1494 for details
-                uint64_t timestamp_millis = static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E6);
-                std::string gt = vehicle_sim_api_->getRecordFileLine(false);
-                std::vector<msr::airlib::ImageCaptureBase::ImageResponse> responses;
+                    const auto* kinematics = vehicle_sim_api->getGroundTruthKinematics();
+                    bool is_pose_unequal = kinematics && last_poses_[vehicle_name] != kinematics->pose;
 
-                image_capture_->getImages(settings_.requests, responses);
-                recording_file_->appendRecord(responses, vehicle_sim_api_);
+                    if (!settings_.record_on_move || is_pose_unequal) {
+                        last_poses_[vehicle_name] = kinematics->pose;
+
+                        std::vector<ImageCaptureBase::ImageResponse> responses;
+
+                        image_captures_[vehicle_name]->getImages(settings_.requests[vehicle_name], responses);
+                        recording_file_->appendRecord(responses, vehicle_sim_api);
+                    }
+                }
             }
         }
+
     }
 
     recording_file_.reset();
