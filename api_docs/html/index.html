@@ -1797,6 +1797,30 @@ then that RC state would be ignored.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="airsim.client.MultirotorClient.moveByVelocityZBodyFrameAsync">
+<code class="sig-name descname"><span class="pre">moveByVelocityZBodyFrameAsync</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vx</span></em>, <em class="sig-param"><span class="pre">vy</span></em>, <em class="sig-param"><span class="pre">z</span></em>, <em class="sig-param"><span class="pre">duration</span></em>, <em class="sig-param"><span class="pre">drivetrain=0</span></em>, <em class="sig-param"><span class="pre">yaw_mode=&lt;YawMode&gt;</span> <span class="pre">{</span>&#160;&#160; <span class="pre">'is_rate':</span> <span class="pre">True</span></em>, <em class="sig-param"><span class="pre">'yaw_or_rate':</span> <span class="pre">0.0}</span></em>, <em class="sig-param"><span class="pre">vehicle_name=''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#MultirotorClient.moveByVelocityZBodyFrameAsync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.MultirotorClient.moveByVelocityZBodyFrameAsync" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – desired velocity in the X axis of the vehicle’s local NED frame</p></li>
+<li><p><strong>vy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – desired velocity in the Y axis of the vehicle’s local NED frame</p></li>
+<li><p><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – desired Z value (in local NED frame of the vehicle)</p></li>
+<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Desired amount of time (seconds), to send this command for</p></li>
+<li><p><strong>drivetrain</strong> (<a class="reference internal" href="#airsim.types.DrivetrainType" title="airsim.types.DrivetrainType"><em>DrivetrainType</em></a><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>yaw_mode</strong> (<a class="reference internal" href="#airsim.types.YawMode" title="airsim.types.YawMode"><em>YawMode</em></a><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of the multirotor to send this command to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>future. call .join() to wait for method to finish. Example: client.METHOD().join()</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>msgpackrpc.future.Future</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="airsim.client.MultirotorClient.moveOnPathAsync">
 <code class="sig-name descname"><span class="pre">moveOnPathAsync</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path</span></em>, <em class="sig-param"><span class="pre">velocity</span></em>, <em class="sig-param"><span class="pre">timeout_sec=3e+38</span></em>, <em class="sig-param"><span class="pre">drivetrain=0</span></em>, <em class="sig-param"><span class="pre">yaw_mode=&lt;YawMode&gt;</span> <span class="pre">{</span>&#160;&#160; <span class="pre">'is_rate':</span> <span class="pre">True</span></em>, <em class="sig-param"><span class="pre">'yaw_or_rate':</span> <span class="pre">0.0}</span></em>, <em class="sig-param"><span class="pre">lookahead=-1</span></em>, <em class="sig-param"><span class="pre">adaptive_lookahead=1</span></em>, <em class="sig-param"><span class="pre">vehicle_name=''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#MultirotorClient.moveOnPathAsync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.MultirotorClient.moveOnPathAsync" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>

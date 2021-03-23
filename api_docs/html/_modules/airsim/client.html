@@ -1082,7 +1082,24 @@
 <span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByVelocityBodyFrame&#39;</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
-        
+
+<div class="viewcode-block" id="MultirotorClient.moveByVelocityZBodyFrameAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByVelocityZBodyFrameAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByVelocityZBodyFrameAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span> <span class="o">=</span> <span class="n">DrivetrainType</span><span class="o">.</span><span class="n">MaxDegreeOfFreedom</span><span class="p">,</span> <span class="n">yaw_mode</span> <span class="o">=</span> <span class="n">YawMode</span><span class="p">(),</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vx (float): desired velocity in the X axis of the vehicle&#39;s local NED frame</span>
+<span class="sd">            vy (float): desired velocity in the Y axis of the vehicle&#39;s local NED frame</span>
+<span class="sd">            z (float): desired Z value (in local NED frame of the vehicle)</span>
+<span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
+<span class="sd">            drivetrain (DrivetrainType, optional):</span>
+<span class="sd">            yaw_mode (YawMode, optional):</span>
+<span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByVelocityZBodyFrame&#39;</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">drivetrain</span><span class="p">,</span> <span class="n">yaw_mode</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="MultirotorClient.moveByAngleZAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByAngleZAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByAngleZAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call_async</span><span class="p">(</span><span class="s1">&#39;moveByAngleZ&#39;</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
 
