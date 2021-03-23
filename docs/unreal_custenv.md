@@ -21,42 +21,48 @@ There is no `Epic Games Launcher` for Linux which means that if you need to crea
 
 5. Go to your folder for AirSim repo and copy `Unreal\Plugins` folder in to your `LandscapeMountains` folder. This way now your own Unreal project has AirSim plugin.
 
+    !!!note
+
+        If the AirSim installation is fresh, i.e, hasn't been built before, make sure that you run `build.cmd` from the root directory once before copying `Unreal\Plugins` folder so that `AirLib` files are also included. If you have made some changes in the Blocks environment, make sure to run `update_to_git.bat` from `Unreal\Environments\Blocks` to update the files in `Unreal\Plugins`.
+
 6. Edit the `LandscapeMountains.uproject` so that it looks like this
 
-```json
-{
-	"FileVersion": 3,
-	"EngineAssociation": "4.24",
-	"Category": "Samples",
-	"Description": "",
-	"Modules": [
-		{
-			"Name": "LandscapeMountains",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"AirSim"
-			]
-		}
-	],
-	"TargetPlatforms": [
-		"MacNoEditor",
-		"WindowsNoEditor"
-	],
-	"Plugins": [
-		{
-			"Name": "AirSim",
-			"Enabled": true
-		}
-	]
-}
-```
+    ```json
+    {
+    	"FileVersion": 3,
+    	"EngineAssociation": "4.24",
+    	"Category": "Samples",
+    	"Description": "",
+    	"Modules": [
+    		{
+    			"Name": "LandscapeMountains",
+    			"Type": "Runtime",
+    			"LoadingPhase": "Default",
+    			"AdditionalDependencies": [
+    				"AirSim"
+    			]
+    		}
+    	],
+    	"TargetPlatforms": [
+    		"MacNoEditor",
+    		"WindowsNoEditor"
+    	],
+    	"Plugins": [
+    		{
+    			"Name": "AirSim",
+    			"Enabled": true
+    		}
+    	]
+    }
+    ```
 
 7. Close Visual Studio and the  `Unreal Editor` and right click the LandscapeMountains.uproject in Windows Explorer and select `Generate Visual Studio Project Files`.  This step detects all plugins and source files in your Unreal project and generates `.sln` file for Visual Studio.
 
     ![regen](images/regen_sln.png)
 
-    Tip: If the `Generate Visual Studio Project Files` option is missing you may need to reboot your machine for the Unreal Shell extensions to take effect.  If it is still missing then open the LandscapeMountains.uproject in the Unreal Editor and select `Refresh Visual Studio Project` from the `File` menu.
+    !!!tip
+
+        If the `Generate Visual Studio Project Files` option is missing you may need to reboot your machine for the Unreal Shell extensions to take effect.  If it is still missing then open the LandscapeMountains.uproject in the Unreal Editor and select `Refresh Visual Studio Project` from the `File` menu.
 
 8. Reopen `LandscapeMountains.sln` in Visual Studio, and make sure "DebugGame Editor" and "Win64" build configuration is the active build configuration.
 
