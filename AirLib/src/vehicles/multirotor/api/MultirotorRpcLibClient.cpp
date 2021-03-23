@@ -87,7 +87,7 @@ MultirotorRpcLibClient* MultirotorRpcLibClient::moveByVelocityZBodyFrameAsync(fl
     DrivetrainType drivetrain, const YawMode& yaw_mode, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByVelocityZBodyFrame", vx, vy, z, duration,
-        drivetrain, MultirotorRpcLibAdapators::YawMode(yaw_mode), vehicle_name);
+        drivetrain, MultirotorRpcLibAdaptors::YawMode(yaw_mode), vehicle_name);
     return this;
 }
 
