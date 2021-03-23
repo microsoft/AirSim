@@ -115,6 +115,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#wind-settings">Wind Settings</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#camera-director-settings">Camera Director Settings</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#camera-settings">Camera Settings</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#note-on-imagetype-element">Note on ImageType element</a>
@@ -397,6 +399,11 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
   "SpeedUnitFactor": 1.0,
   "SpeedUnitLabel": "m/s",
   "Wind": { "X": 0, "Y": 0, "Z": 0 },
+  "CameraDirector": {
+    "FollowDistance": -3,
+    "X": NaN, "Y": NaN, "Z": NaN,
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+  },
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
@@ -449,7 +456,7 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
     "Gimbal": {
       "Stabilization": 0,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN
-    }
+    },
     "X": NaN, "Y": NaN, "Z": NaN,
     "Pitch": NaN, "Roll": NaN, "Yaw": NaN
   },
@@ -586,6 +593,12 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
 <p>If <code>MeshNamingMethod</code> is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If it is "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.</p>
 <h2 id="wind-settings">Wind Settings<a class="headerlink" href="#wind-settings" title="Permanent link">#</a></h2>
 <p>This setting specifies the wind speed in World frame, in NED direction. Values are in m/s. By default, speed is 0, i.e. no wind.</p>
+<h2 id="camera-director-settings">Camera Director Settings<a class="headerlink" href="#camera-director-settings" title="Permanent link">#</a></h2>
+<p>This element specifies the settings used for the camera following the vehicle in the ViewPort.</p>
+<ul>
+<li><code>FollowDistance</code>: Distance at which camera follows the vehicle, default is -8 (8 meters) for Car, -3 for others.</li>
+<li><code>X, Y, Z, Yaw, Roll, Pitch</code>: These elements allows you to specify the position and orientation of the camera relative to the vehicle. Position is in NED coordinates in SI units with origin set to Player Start location in Unreal environment. The orientation is specified in degrees.</li>
+</ul>
 <h2 id="camera-settings">Camera Settings<a class="headerlink" href="#camera-settings" title="Permanent link">#</a></h2>
 <p>The <code>CameraDefaults</code> element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in <code>Cameras</code> element inside <code>Vehicles</code> as described later.</p>
 <h3 id="note-on-imagetype-element">Note on ImageType element<a class="headerlink" href="#note-on-imagetype-element" title="Permanent link">#</a></h3>
