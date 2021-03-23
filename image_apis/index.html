@@ -437,6 +437,9 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) </code></pre>
     <pre class="highlight"><code>airsim.list_to_2d_float_array(response.image_data_float, response.width, response.height)</code></pre>
     You can also save float array to .pfm file (Portable Float Map format) using <code>airsim.write_pfm()</code> function.</p>
 </li>
+<li>
+<p>If you are looking to query position and orientation information in sync with a call to one of the image APIs, you can use <code>client.simPause(True)</code> and <code>client.simPause(False)</code> to pause the simulation while calling the image API and querying the desired physics state, ensuring that the physics state remains the same immediately after the image API call.</p>
+</li>
 </ul>
 <h3 id="c_1">C++<a class="headerlink" href="#c_1" title="Permanent link">#</a></h3>
 <pre class="highlight"><code class="language-cpp">int getStereoAndDepthImages() 
