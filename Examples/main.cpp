@@ -104,7 +104,7 @@ void runDepthNavGT()
     typedef ImageCaptureBase::ImageType ImageType;
                                                     
     std::vector<ImageRequest> request = {
-        ImageRequest("front_left", ImageType::DepthPlanner, true) /*,
+        ImageRequest("front_left", ImageType::DepthPlanar, true) /*,
         ImageRequest("front_left", ImageType::Scene),
         ImageRequest("front_left", ImageType::DisparityNormalized, true) */
     };
@@ -135,7 +135,7 @@ void runDepthNavSGM()
     std::vector<ImageRequest> request = {
         ImageRequest("front_left", ImageType::Scene, false, false), 
         ImageRequest("front_right", ImageType::Scene, false, false), /*
-        ImageRequest("front_left", ImageType::DepthPlanner, true), 
+        ImageRequest("front_left", ImageType::DepthPlanar, true), 
         ImageRequest("front_left", ImageType::DisparityNormalized, true) */
     };
 
