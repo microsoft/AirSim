@@ -410,7 +410,7 @@ while True:
     # get camera images from the car
     responses = client.simGetImages([
         airsim.ImageRequest(0, airsim.ImageType.DepthVis),
-        airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
+        airsim.ImageRequest(1, airsim.ImageType.DepthPlanar, True)])
     print('Retrieved images: %d', len(responses))
 
     # do something with images
@@ -441,7 +441,7 @@ client.moveToPositionAsync(-10, 10, -10, 5).join()
 # take images
 responses = client.simGetImages([
     airsim.ImageRequest("0", airsim.ImageType.DepthVis),
-    airsim.ImageRequest("1", airsim.ImageType.DepthPlanner, True)])
+    airsim.ImageRequest("1", airsim.ImageType.DepthPlanar, True)])
 print('Retrieved images: %d', len(responses))
 
 # do something with the images
@@ -463,7 +463,7 @@ for response in responses:
 <li><code>simGetObjectPose</code>, <code>simSetObjectPose</code>: Gets and sets the pose of specified object in Unreal environment. Here the object means "actor" in Unreal terminology. They are searched by tag as well as name. Please note that the names shown in UE Editor are <em>auto-generated</em> in each run and are not permanent. So if you want to refer to actor by name, you must change its auto-generated name in UE Editor. Alternatively you can add a tag to actor which can be done by clicking on that actor in Unreal Editor and then going to <a href="https://answers.unrealengine.com/questions/543807/whats-the-difference-between-tag-and-tag.html">Tags property</a>, click "+" sign and add some string value. If multiple actors have same tag then the first match is returned. If no matches are found then NaN pose is returned. The returned pose is in NED coordinates in SI units with its origin at Player Start. For <code>simSetObjectPose</code>, the specified actor must have <a href="https://docs.unrealengine.com/en-us/Engine/Actors/Mobility">Mobility</a> set to Movable or otherwise you will get undefined behavior. The <code>simSetObjectPose</code> has parameter <code>teleport</code> which means object is <a href="https://www.unrealengine.com/en-US/blog/moving-physical-objects">moved through other objects</a> in its way and it returns true if move was successful</li>
 </ul>
 <h3 id="image-computer-vision-apis">Image / Computer Vision APIs<a class="headerlink" href="#image-computer-vision-apis" title="Permanent link">#</a></h3>
-<p>AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in <a href="../settings/">settings.json</a>. There is also API for detecting collision state. See also <a href="https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp">complete code</a> that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to <a href="../pfm/">pfm format</a>.</p>
+<p>AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in <a href="../settings/">settings.json</a>. There is also API for detecting collision state. See also <a href="https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp">complete code</a> that generates specified number of stereo images and ground truth depth with normalization to camera plane, computation of disparity image and saving it to <a href="../pfm/">pfm format</a>.</p>
 <p>More on <a href="../image_apis/">image APIs and Computer Vision mode</a>.
 For vision problems that can benefit from domain randomization, there is also an <a href="../retexturing/">object retexturing API</a>, which can be used in supported scenes.</p>
 <h3 id="pause-and-continue-apis">Pause and Continue APIs<a class="headerlink" href="#pause-and-continue-apis" title="Permanent link">#</a></h3>
