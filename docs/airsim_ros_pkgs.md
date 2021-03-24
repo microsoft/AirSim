@@ -54,7 +54,7 @@ Let's look at the ROS API for both nodes:
 ### AirSim ROS Wrapper Node
 #### Publishers:
 - `/airsim_node/origin_geo_point` [airsim_ros_pkgs/GPSYaw](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GPSYaw.msg)   
-GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/docs/settings/) file under the `OriginGeopoint` key. 
+GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/settings/) file under the `OriginGeopoint` key. 
   
 - `/airsim_node/VEHICLE_NAME/global_gps` [sensor_msgs/NavSatFix](https://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html)   
 This the current GPS coordinates of the drone in airsim. 
