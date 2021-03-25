@@ -1,42 +1,59 @@
 # Python client example to get Lidar data from a drone, although this script works for any AirSim-supported vehicle
 # This script is for Lidar sensors using 'VehicleInertialFrame' as DataFrame under settings.json
 # Sample settings.json used for this script:
-#    {
-#        "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md",
-#        "SettingsVersion": 1.2,
-#        "SimMode": "Multirotor",
-#         "Vehicles": {
-#            "Drone1": {
-#                "VehicleType": "SimpleFlight",
-#                "AutoCreate": true,
-#                "Sensors": {
-#                    "LidarSensor1": { 
-#                        "SensorType": 6,
-#                        "Enabled" : true,
-#                        ...
-#                        "DataFrame": "VehicleInertialFrame"
-#                    },
-#                    "LidarSensor2": { 
-#                        "SensorType": 6,
-#                        "Enabled" : true,
-#                        ...
-#                        "DataFrame": "VehicleInertialFrame"
-#                    }
-#                }
-#            }
-#        }
-#    }
+'''
+{
+    "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md",
+    "SettingsVersion": 1.2,
+
+    "SimMode": "Multirotor",
+
+     "Vehicles": {
+        "Drone1": {
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "Sensors": {
+                "LidarSensor1": { 
+                    "SensorType": 6,
+                    "Enabled" : true,
+                    "NumberOfChannels": 1,
+                    "RotationsPerSecond": 10,
+                    "Range":12,
+                    "PointsPerSecond": 8000,
+                    "X": 0, "Y": 0, "Z": -1,
+                    "Roll": 0, "Pitch": 90, "Yaw" : 0,
+                    "VerticalFOVUpper": 0,
+                    "VerticalFOVLower": 0,
+                    "HorizontalFOVStart": 0,
+                    "HorizontalFOVEnd": 0,
+                    "DrawDebugPoints": true,
+                    "DataFrame": "VehicleInertialFrame"
+                },
+                "LidarSensor2": { 
+                    "SensorType": 6,
+                    "Enabled" : true,
+                    "NumberOfChannels": 1,
+                    "RotationsPerSecond": 10,
+                    "Range":12,
+                    "PointsPerSecond": 8000,
+                    "X": 0, "Y": 0, "Z": -1,
+                    "Roll": 90, "Pitch": 90, "Yaw" : 0,
+                    "VerticalFOVUpper": 0,
+                    "VerticalFOVLower": 0,
+                    "HorizontalFOVStart": 0,
+                    "HorizontalFOVEnd": 0,
+                    "DrawDebugPoints": true,
+                    "DataFrame": "VehicleInertialFrame"
+                }
+            }
+        }
+    }
+}
+'''
 import setup_path 
 import airsim
-
-import sys
-import math
-import time
-import argparse
-import pprint
 import numpy as np
 
-# Makes the drone fly and get Lidar data
 class LidarTest:
 
     def __init__(self):
@@ -47,7 +64,6 @@ class LidarTest:
         print('Connected!\n')
 
     def execute(self,vehicle_name,lidar_names):
-        #self.client.reset()
         print('Scanning Has Started\n')
         print('Use Keyboard Interrupt \'CTRL + C\' to Stop Scanning\n')
         existing_data_cleared = False   #change to true to superimpose new scans onto existing .asc files
@@ -59,29 +75,16 @@ class LidarTest:
                         f = open(filename,'w')
                     else:
                         f = open(filename,'a')
-                    lidarData = self.client.getLidarData(lidar_name=lidar_name,vehicle_name=vehicle_name)
-                    xyz_flag = 0
-                    for xyz_values in lidarData.point_cloud:
-                        if (xyz_flag == 0):
-                            x = xyz_values
-                        elif (xyz_flag == 1):
-                            y = xyz_values
-                        else:
-                            z = xyz_values
-                        xyz_flag = xyz_flag + 1
-                        if (xyz_flag == 3):
-                            f.write("%f %f %f %d %d %d \n" % (x,y,z,255,255,0))
-                            xyz_flag=0
-                        else:
-                            pass
+                    lidar_data = self.client.getLidarData(lidar_name=lidar_name,vehicle_name=vehicle_name)
+
+                    for i in range(0, len(lidar_data.point_cloud), 3):
+                        xyz = lidar_data.point_cloud[i:i+3]
+                        
+                        f.write("%f %f %f %d %d %d \n" % (xyz[0],xyz[1],xyz[2],255,255,0))
                     f.close()
                 existing_data_cleared = True
         except KeyboardInterrupt:
-            f.close()
-            pass
-            #time.sleep(5)
-            airsim.wait_key('Press any key to reset to original state')
-            self.client.reset()
+            airsim.wait_key('Press any key to stop running this script')
             print("Done!\n")
 
 # main
