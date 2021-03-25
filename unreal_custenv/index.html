@@ -328,11 +328,13 @@
 </li>
 <li>
 <p>Go to your folder for AirSim repo and copy <code>Unreal\Plugins</code> folder in to your <code>LandscapeMountains</code> folder. This way now your own Unreal project has AirSim plugin.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the AirSim installation is fresh, i.e, hasn't been built before, make sure that you run <code>build.cmd</code> from the root directory once before copying <code>Unreal\Plugins</code> folder so that <code>AirLib</code> files are also included. If you have made some changes in the Blocks environment, make sure to run <code>update_to_git.bat</code> from <code>Unreal\Environments\Blocks</code> to update the files in <code>Unreal\Plugins</code>.</p>
+</div>
 </li>
 <li>
 <p>Edit the <code>LandscapeMountains.uproject</code> so that it looks like this</p>
-</li>
-</ol>
 <pre class="highlight"><code class="language-json">{
     "FileVersion": 3,
     "EngineAssociation": "4.24",
@@ -359,11 +361,14 @@
         }
     ]
 }</code></pre>
-<ol>
+</li>
 <li>
 <p>Close Visual Studio and the  <code>Unreal Editor</code> and right click the LandscapeMountains.uproject in Windows Explorer and select <code>Generate Visual Studio Project Files</code>.  This step detects all plugins and source files in your Unreal project and generates <code>.sln</code> file for Visual Studio.</p>
 <p><img alt="regen" src="../images/regen_sln.png" /></p>
-<p>Tip: If the <code>Generate Visual Studio Project Files</code> option is missing you may need to reboot your machine for the Unreal Shell extensions to take effect.  If it is still missing then open the LandscapeMountains.uproject in the Unreal Editor and select <code>Refresh Visual Studio Project</code> from the <code>File</code> menu.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If the <code>Generate Visual Studio Project Files</code> option is missing you may need to reboot your machine for the Unreal Shell extensions to take effect.  If it is still missing then open the LandscapeMountains.uproject in the Unreal Editor and select <code>Refresh Visual Studio Project</code> from the <code>File</code> menu.</p>
+</div>
 </li>
 <li>
 <p>Reopen <code>LandscapeMountains.sln</code> in Visual Studio, and make sure "DebugGame Editor" and "Win64" build configuration is the active build configuration.</p>
