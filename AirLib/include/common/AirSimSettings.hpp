@@ -219,17 +219,21 @@ public: //types
         real_T accel_vrw = 0.24f * EarthUtils::Gravity / 1.0E3f; //mg converted to m/s^2
         // Bias Stability (tau = 800s)
         real_T accel_tau = 800;
-        real_T accel_bias_stability = 36.0f * 1E-6f * 9.80665f; //ug converted to m/s^2
+        real_T accel_bias_stability = 36.0f * 1E-6f * EarthUtils::Gravity; //ug converted to m/s^2
         Vector3r accel_turn_on_bias = Vector3r::Zero(); //assume calibration is done
         Vector3r position = VectorMath::nanVector();
         Rotation rotation = Rotation::nanRotation();
     };
 
     struct GpsSetting : SensorSetting {
-        real_T eph_time_constant = 0.9f, epv_time_constant = 0.9f;
-        real_T eph_initial = 100.0f, epv_initial = 100.0f;   //initially fully diluted positions
-        real_T eph_final = 0.3f, epv_final = 0.4f;
-        real_T eph_min_3d = 3.0f, eph_min_2d = 4.0f;
+        real_T eph_time_constant = 0.9f;
+        real_T epv_time_constant = 0.9f;
+        real_T eph_initial = 100.0f;
+        real_T epv_initial = 100.0f;   //initially fully diluted positions
+        real_T eph_final = 0.3f;
+        real_T epv_final = 0.4f;
+        real_T eph_min_3d = 3.0f;
+        real_T eph_min_2d = 4.0f;
 
         real_T update_latency = 0.2f;    //sec
         real_T update_frequency = 50;    //Hz
@@ -240,9 +244,9 @@ public: //types
     };
 
     struct MagnetometerSetting : SensorSetting {
-        Vector3r noise_sigma = Vector3r(0.005f, 0.005f, 0.005f); //5 mgauss as per specs sheet (RMS is same as stddev) https://goo.gl/UOz6FT
+        Vector3r noise_sigma(0.005f, 0.005f, 0.005f); //5 mgauss as per specs sheet (RMS is same as stddev) https://goo.gl/UOz6FT
         real_T scale_factor = 1.0f;
-        Vector3r noise_bias = Vector3r(0.0f, 0.0f, 0.0f); //no offset as per specsheet (zero gauss level) https://goo.gl/UOz6FT
+        Vector3r noise_bias(0.0f, 0.0f, 0.0f); //no offset as per specsheet (zero gauss level) https://goo.gl/UOz6FT
         float ref_update_frequency = 0.2f;    //Hz
 
         //use dipole model if there is enough compute power available
