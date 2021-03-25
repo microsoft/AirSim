@@ -1291,7 +1291,6 @@ private:
         barometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", barometer_setting.update_frequency);
         barometer_setting.startup_delay = settings_json.getFloat("StartupDelay", barometer_setting.startup_delay);
         barometer_setting.position = createVectorSetting(settings_json, barometer_setting.position);
-        barometer_setting.rotation = createRotationSetting(settings_json, barometer_setting.rotation);
     }
 
     static void initializeImuSetting(ImuSetting& imu_setting, const Settings& settings_json)
@@ -1307,7 +1306,6 @@ private:
         imu_setting.accel_turn_on_bias = createAccelBiasSetting(settings_json, imu_setting.accel_turn_on_bias);
 
         imu_setting.position = createVectorSetting(settings_json, imu_setting.position);
-        imu_setting.rotation = createRotationSetting(settings_json, imu_setting.rotation);
     }
 
     static void initializeGpsSetting(GpsSetting& gps_setting, const Settings& settings_json)
@@ -1324,7 +1322,6 @@ private:
         gps_setting.update_frequency = settings_json.getFloat("UpdateFrequency", gps_setting.update_frequency);
         gps_setting.startup_delay = settings_json.getFloat("StartupDelay", gps_setting.startup_delay);
         gps_setting.position = createVectorSetting(settings_json, gps_setting.position);
-        gps_setting.rotation = createRotationSetting(settings_json, gps_setting.rotation);
 
     }
 
@@ -1339,7 +1336,6 @@ private:
         magnetometer_setting.update_frequency = settings_json.getFloat("UpdateFrequency", magnetometer_setting.update_frequency);
         magnetometer_setting.startup_delay = settings_json.getFloat("StartupDelay", magnetometer_setting.startup_delay);
         magnetometer_setting.position = createVectorSetting(settings_json, magnetometer_setting.position);
-        magnetometer_setting.rotation = createRotationSetting(settings_json, magnetometer_setting.rotation);
     }
 
     static void initializeDistanceSetting(DistanceSetting& distance_setting, const Settings& settings_json)
