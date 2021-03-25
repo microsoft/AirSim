@@ -222,7 +222,6 @@ public: //types
         real_T accel_bias_stability = 36.0f * 1E-6f * EarthUtils::Gravity; //ug converted to m/s^2
         Vector3r accel_turn_on_bias = Vector3r::Zero(); //assume calibration is done
         Vector3r position = VectorMath::nanVector();
-        Rotation rotation = Rotation::nanRotation();
     };
 
     struct GpsSetting : SensorSetting {
@@ -240,7 +239,6 @@ public: //types
         real_T startup_delay = 1;        //sec
 
         Vector3r position = VectorMath::nanVector();
-        Rotation rotation = Rotation::nanRotation();
     };
 
     struct MagnetometerSetting : SensorSetting {
@@ -260,7 +258,6 @@ public: //types
         real_T startup_delay = 0;        //sec
 
         Vector3r position = VectorMath::nanVector();
-        Rotation rotation = Rotation::nanRotation();
     };
 
     struct DistanceSetting : SensorSetting {
