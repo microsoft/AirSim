@@ -205,7 +205,6 @@ public: //types
         real_T update_frequency = 50;    //Hz
         real_T startup_delay = 0;        //sec
         Vector3r position = VectorMath::nanVector();
-        Rotation rotation = Rotation::nanRotation();
     };
 
     struct ImuSetting : SensorSetting {
