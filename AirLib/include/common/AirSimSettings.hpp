@@ -204,7 +204,6 @@ public: //types
         real_T update_latency = 0.0f;    //sec
         real_T update_frequency = 50;    //Hz
         real_T startup_delay = 0;        //sec
-        Vector3r position = VectorMath::nanVector();
     };
 
     struct ImuSetting : SensorSetting {
@@ -221,7 +220,6 @@ public: //types
         real_T accel_tau = 800;
         real_T accel_bias_stability = 36.0f * 1E-6f * EarthUtils::Gravity; //ug converted to m/s^2
         Vector3r accel_turn_on_bias = Vector3r::Zero(); //assume calibration is done
-        Vector3r position = VectorMath::nanVector();
     };
 
     struct GpsSetting : SensorSetting {
@@ -237,8 +235,6 @@ public: //types
         real_T update_latency = 0.2f;    //sec
         real_T update_frequency = 50;    //Hz
         real_T startup_delay = 1;        //sec
-
-        Vector3r position = VectorMath::nanVector();
     };
 
     struct MagnetometerSetting : SensorSetting {
@@ -256,8 +252,6 @@ public: //types
         real_T update_latency = 0.0f;    //sec: from PX4 doc
         real_T update_frequency = 50;    //Hz
         real_T startup_delay = 0;        //sec
-
-        Vector3r position = VectorMath::nanVector();
     };
 
     struct DistanceSetting : SensorSetting {
