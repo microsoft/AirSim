@@ -21,7 +21,6 @@
 
 
 #include "PawnEvents.h"
-#include <map>
 
 class PawnSimApi : public msr::airlib::VehicleSimApiBase {
 public: //types

@@ -15,7 +15,6 @@
 #include "physics/Kinematics.hpp"
 #include "physics/Environment.hpp"
 #include "api/WorldSimApiBase.hpp"
-#include <map>
 
 namespace msr { namespace airlib {
 
