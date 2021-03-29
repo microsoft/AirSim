@@ -38,7 +38,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 	Actor->GetComponents(ActorComponents);
 	for (UActorComponent* ActorComponent : ActorComponents) 
 	{
-		if (StaticMesh || !WildcardMeshNames.Num() == 0) 
+		if (StaticMesh || WildcardMeshNames.Num() != 0) 
 		{
 			UStaticMeshComponent* StaticMeshComponent =
 				Cast<UStaticMeshComponent>(ActorComponent);
@@ -48,7 +48,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 					//bMatchesStaticMesh = true;
 					return true;
 				}
-				if (!WildcardMeshNames.Num() == 0 &&
+				if (WildcardMeshNames.Num() != 0 &&
 					IsMatchAnyWildcard(StaticMeshComponent->GetStaticMesh()->GetName()))
 				{
 					//bMatchesWildcardMeshName = true;
@@ -56,7 +56,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 				}
 			}
 		}
-		if (SkeletalMesh || !WildcardMeshNames.Num() == 0) 
+		if (SkeletalMesh || WildcardMeshNames.Num() != 0) 
 		{
 			USkeletalMeshComponent* SkeletalMeshComponent =	Cast<USkeletalMeshComponent>(ActorComponent);
 			if (SkeletalMeshComponent) 
@@ -67,7 +67,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 					//bMatchesSkeletalMesh = true;
 					return true;
 				}
-				if (!WildcardMeshNames.Num() == 0 &&
+				if (WildcardMeshNames.Num() != 0 &&
 					IsMatchAnyWildcard(SkeletalMeshComponent->SkeletalMesh->GetName()))
 				{
 					//bMatchesWildcardMeshName = true;
@@ -127,7 +127,7 @@ bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const
 	bool bMatchesComponentClass = !ComponentClass;
 	bool bMatchesComponentTag = ComponentTag.IsNone();
 
-	if (StaticMesh || !WildcardMeshNames.Num() == 0)
+	if (StaticMesh || WildcardMeshNames.Num() != 0)
 	{
 		UStaticMeshComponent* StaticMeshComponent =	Cast<UStaticMeshComponent>(ActorComponent);
 		if (StaticMeshComponent) 
@@ -136,7 +136,7 @@ bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const
 			{
 				bMatchesStaticMesh = true;
 			}
-			if (!WildcardMeshNames.Num() == 0 &&
+			if (WildcardMeshNames.Num() != 0 &&
 				StaticMeshComponent->GetStaticMesh()->IsValidLowLevel() &&
 				IsMatchAnyWildcard(StaticMeshComponent->GetStaticMesh()->GetName()))
 			{
@@ -144,7 +144,7 @@ bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const
 			}
 		}
 	}
-	if (SkeletalMesh || !WildcardMeshNames.Num() == 0) 
+	if (SkeletalMesh || WildcardMeshNames.Num() != 0) 
 	{
 		USkeletalMeshComponent* SkeletalMeshComponent =	Cast<USkeletalMeshComponent>(ActorComponent);
 		if (SkeletalMeshComponent)
@@ -153,7 +153,7 @@ bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const
 			{
 				bMatchesSkeletalMesh = true;
 			}
-			if (!WildcardMeshNames.Num() == 0 &&
+			if (WildcardMeshNames.Num() != 0 &&
 				IsMatchAnyWildcard(SkeletalMeshComponent->SkeletalMesh->GetName()))
 			{
 				bMatchesWildcardMeshName = true;
