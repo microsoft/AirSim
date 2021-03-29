@@ -589,21 +589,22 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
 
 void UAirBlueprintLib::addDetectionFilterMeshName(const std::string& name)
 {
-	for (TObjectIterator<UDetectionComponent> detectionIterator; detectionIterator; ++detectionIterator)
+    FString mesh_name= FString(name.c_str());
+	for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
 	{
-		UDetectionComponent* detection = *detectionIterator;
-        if (!detection->ObjectFilter.WildcardMeshNames.Contains(FString(name.c_str())))
+		UDetectionComponent* detection = *itr;
+        if (!detection->ObjectFilter.WildcardMeshNames.Contains(mesh_name)
         {
-            detection->ObjectFilter.WildcardMeshNames.Add(FString(name.c_str()));
+            detection->ObjectFilter.WildcardMeshNames.Add(mesh_name);
         }
 	}
 }
 
 void UAirBlueprintLib::setDetectionFilterRadius(const float radius_cm)
 {
-	for (TObjectIterator<UDetectionComponent> detectionIterator; detectionIterator; ++detectionIterator)
+	for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
 	{
-		UDetectionComponent* detection = *detectionIterator;
+		UDetectionComponent* detection = *itr;
         detection->MaxDistanceToCamera = radius_cm;
 	}
 }
