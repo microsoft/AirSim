@@ -593,7 +593,7 @@ void UAirBlueprintLib::addDetectionFilterMeshName(const std::string& name)
 	for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
 	{
 		UDetectionComponent* detection = *itr;
-        if (!detection->ObjectFilter.WildcardMeshNames.Contains(mesh_name)
+        if (!detection->ObjectFilter.WildcardMeshNames.Contains(mesh_name))
         {
             detection->ObjectFilter.WildcardMeshNames.Add(mesh_name);
         }
