@@ -58,6 +58,17 @@ void PawnSimApi::pawnTick(float dt)
 	updateRendering(dt);
 }
 
+std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
+{
+	unused(camera_name);
+	unused(camera_name);
+
+	throw std::invalid_argument(common_utils::Utils::stringf(
+		"getDetections is not supported on unity").c_str());
+
+	return std::vector<DetectionInfo>();
+}
+
 void PawnSimApi::OnCollision(msr::airlib::CollisionInfo collisionInfo)
 {
 	state_.collision_info.has_collided = collisionInfo.has_collided;

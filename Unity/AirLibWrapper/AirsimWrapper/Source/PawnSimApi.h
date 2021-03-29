@@ -29,6 +29,7 @@ public:
 	typedef msr::airlib::Utils Utils;
 	typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
 	typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
+	typedef msr::airlib::DetectionInfo DetectionInfo;
 
 public:
 	struct Params {
@@ -94,6 +95,8 @@ public:
 	void OnCollision(msr::airlib::CollisionInfo collisionInfo);
 	const NedTransform& getNedTransform() const;
 	virtual void pawnTick(float dt);
+
+	virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
 
 private:
 	Params params_;
