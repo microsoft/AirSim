@@ -22,13 +22,14 @@ while True:
     if not rawImage:
         continue
     png = cv2.imdecode(airsim.string_to_uint8_array(rawImage), cv2.IMREAD_UNCHANGED)
-    cars = client.simGetDetections(camera_name, image_type)
-    if cars:
-        for car in cars:
-            s = pprint.pformat(car)
+    cylinders = client.simGetDetections(camera_name, image_type)
+    if cylinders:
+        for cylinder in cylinders:
+            s = pprint.pformat(cylinder)
             print("Cylinder: %s" % s)
 
-            cv2.rectangle(png,(car.topLeft_x,car.topLeft_y),(car.bottomRight_x,car.bottomRight_y),(255,0,0),2)
+            cv2.rectangle(png,(cylinder.topLeft_x,cylinder.topLeft_y),(cylinder.bottomRight_x,cylinder.bottomRight_y),(255,0,0),2)
+            cv2.putText(png, cylinder.name, (cylinder.topLeft_x, cylinder.topLeft_y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36,255,12))
 
     
     cv2.imshow("AirSim", png)
