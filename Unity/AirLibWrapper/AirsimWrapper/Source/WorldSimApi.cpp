@@ -64,6 +64,12 @@ void WorldSimApi::setDetectionFilterRadius(const float radius_cm)
 		"setDetectionFilterRadius is not supported on unity").c_str());
 }
 
+void WorldSimApi::clearDetectionMeshNames()
+{
+	throw std::invalid_argument(common_utils::Utils::stringf(
+		"clearDetectionMeshNames is not supported on unity").c_str());
+}
+
 void WorldSimApi::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
 {
 	PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
