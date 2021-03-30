@@ -4,7 +4,7 @@
 
 Getting the PX4 source code is easy:
 ```
-git clone https://github.com/PX4/Firmware.git
+git clone https://github.com/PX4/PX4-Autopilot.git
 cd Firmware
 ```
 
@@ -19,7 +19,7 @@ Now to build it you will need the right tools.
 
 ## PX4 Build tools
 
-The full instructions are available on the [dev.px4.io](http://dev.px4.io/starting-installing-linux.html) website,
+The full instructions are available on the [dev.px4.io](https://docs.px4.io/master/en/dev_setup/building_px4.html) website,
 but we've copied the relevant subset of those instructions here for your convenience.
 
 (Note that [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)) can be used to build

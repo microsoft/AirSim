@@ -86,7 +86,7 @@ int main()
 ```
 
 ## See Also
-* [Examples](../Examples) of how to use internal infrastructure in AirSim in your other projects
-* [DroneShell](../DroneShell) app shows how to make simple interface using C++ APIs to control drones
+* [Examples](https://github.com/microsoft/AirSim/tree/master/Examples) of how to use internal infrastructure in AirSim in your other projects
+* [DroneShell](https://github.com/microsoft/AirSim/tree/master/DroneShell) app shows how to make simple interface using C++ APIs to control drones
 * [Python APIs](apis.md)
 

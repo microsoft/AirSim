@@ -6,7 +6,7 @@ You can simply download precompiled binaries and run to get started immediately.
 
 **Windows, Linux**: Download the binaries for the environment of your choice from the [latest release](https://github.com/Microsoft/AirSim/releases). Some pre-compiled environment binaries may include multiple files (i.e. City.zip.001, City.zip.002). Make sure to download both files before starting the environment. You may need to concatenate both files to unzip them.
 
-**macOS**:  You will need to [build it yourself](https://microsoft.github.io/AirSim/build_linux/)
+**macOS**:  You will need to [build it yourself](build_linux.md)
 
 ### Unity (Experimental)
 A free environment called Windridge City is available at [Unity Asset Store](https://assetstore.unity.com/) as an experimental release of AirSim on Unity. **Note**: This is an old release, and many of the features and APIs might not work.

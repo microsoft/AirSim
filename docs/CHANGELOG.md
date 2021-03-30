@@ -115,7 +115,7 @@ Below is summarized list of important changes. This does not include minor/less 
 * Added [Time of Day API](apis.md#time-of-day-api)
 * An experimental integration of [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity) is now available. Learn more in [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation). 
 * [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
-* Highly efficient [NoDisplay view mode](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md#viewmode) to turn off main screen rendering so you can capture images at high rate
+* Highly efficient [NoDisplay view mode](settings.md#viewmode) to turn off main screen rendering so you can capture images at high rate
 * [Enable/disable sensors](https://github.com/Microsoft/AirSim/pull/1479) via settings
 * [Lidar Sensor](lidar.md)
 * [Support for Flysky FS-SM100 RC](https://github.com/Microsoft/AirSim/commit/474214364676b6631c01b3ed79d00c83ba5bccf5) USB adapter

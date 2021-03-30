@@ -184,7 +184,7 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
   Listens to odometry published by `airsim_node`
 
 #### Publishers:
-- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](airsim_ros_pkgs/VelCmd)   
+- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/VelCmd.msg)   
   Sends velocity command to `airsim_node`
 
 ### Global params
