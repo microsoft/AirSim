@@ -334,10 +334,11 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
         result[i].geoPoint  = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
 			AirSimSettings::singleton().origin_geopoint);
         
-        result[i].topLeft_x = Detections[i].Box2D.Min.X;
-		result[i].topLeft_y = Detections[i].Box2D.Min.Y;
-		result[i].bottomRight_x = Detections[i].Box2D.Max.X;
-		result[i].bottomRight_y = Detections[i].Box2D.Max.Y;
+		result[i].box2D.min = Vector2r(Detections[i].Box2D.Min.X, Detections[i].Box2D.Min.Y);
+		result[i].box2D.max = Vector2r(Detections[i].Box2D.Max.X, Detections[i].Box2D.Max.Y);
+
+		result[i].box3D.min = Vector3r(Detections[i].Box3D.Min.X, Detections[i].Box3D.Min.Y, Detections[i].Box3D.Min.Z);
+		result[i].box3D.max = Vector3r(Detections[i].Box3D.Max.X, Detections[i].Box3D.Max.Y, Detections[i].Box3D.Max.Z);
     }
 
     return result;

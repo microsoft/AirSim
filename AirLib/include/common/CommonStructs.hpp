@@ -244,20 +244,46 @@ struct CameraInfo {
     }
 };
 
+struct Box2D
+{
+	Vector2r min;
+	Vector2r max;
+
+    Box2D()
+    {}
+
+    Box2D(Vector2r min_val, Vector2r max_val)
+        : min(min_val), max(max_val)
+    {
+    }
+};
+
+struct Box3D
+{
+	Vector3r min;
+	Vector3r max;
+
+    Box3D()
+	{}
+
+    Box3D(Vector3r min_val, Vector3r max_val)
+		: min(min_val), max(max_val)
+	{
+	}
+};
+
 struct DetectionInfo
 {
 	std::string name = "";
 	GeoPoint geoPoint = GeoPoint();
-    int topLeft_x = 0;
-    int topLeft_y = 0; 
-    int bottomRight_x = 0;
-    int bottomRight_y = 0;
+    Box2D box2D = Box2D();
+	Box3D box3D = Box3D();
 
     DetectionInfo()
 	{}
 
-    DetectionInfo(const std::string& name_val, const GeoPoint& geoPoint_val, int topLeft_x_val, int topLeft_y_val, int bottomRight_x_val, int bottomRight_y_val)
-		: name(name_val), geoPoint(geoPoint_val), topLeft_x(topLeft_x_val), topLeft_y(topLeft_y_val), bottomRight_x(bottomRight_x_val), bottomRight_y(bottomRight_y_val)
+    DetectionInfo(const std::string& name_val, const GeoPoint& geoPoint_val, const Box2D& box2D_val, const Box3D& box3D_val/*int topLeft_x_val, int topLeft_y_val, int bottomRight_x_val, int bottomRight_y_val*/)
+		: name(name_val), geoPoint(geoPoint_val), box2D(box2D_val), box3D(box3D_val)/*topLeft_x(topLeft_x_val), topLeft_y(topLeft_y_val), bottomRight_x(bottomRight_x_val), bottomRight_y(bottomRight_y_val)*/
 	{
 	}
 };

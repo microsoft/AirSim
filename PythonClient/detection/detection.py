@@ -28,8 +28,8 @@ while True:
             s = pprint.pformat(cylinder)
             print("Cylinder: %s" % s)
 
-            cv2.rectangle(png,(cylinder.topLeft_x,cylinder.topLeft_y),(cylinder.bottomRight_x,cylinder.bottomRight_y),(255,0,0),2)
-            cv2.putText(png, cylinder.name, (cylinder.topLeft_x, cylinder.topLeft_y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36,255,12))
+            cv2.rectangle(png,(int(cylinder.box2D.min.x_val),int(cylinder.box2D.min.y_val)),(int(cylinder.box2D.max.x_val),int(cylinder.box2D.max.y_val)),(255,0,0),2)
+            cv2.putText(png, cylinder.name, (int(cylinder.box2D.min.x_val),int(cylinder.box2D.min.y_val - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36,255,12))
 
     
     cv2.imshow("AirSim", png)

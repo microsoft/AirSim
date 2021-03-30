@@ -36,6 +36,24 @@ public:
             d.push_back(TDest(s.at(i)));
     }
 
+	struct Vector2r {
+		msr::airlib::real_T x_val = 0, y_val = 0;
+		MSGPACK_DEFINE_MAP(x_val, y_val);
+
+		Vector2r()
+		{}
+
+        Vector2r(const msr::airlib::Vector2r& s)
+		{
+			x_val = s.x();
+			y_val = s.y();
+		}
+		msr::airlib::Vector2r to() const
+		{
+			return msr::airlib::Vector2r(x_val, y_val);
+		}
+	};
+
     struct Vector3r {
         msr::airlib::real_T x_val = 0, y_val = 0, z_val = 0;
         MSGPACK_DEFINE_MAP(x_val, y_val, z_val);
@@ -221,15 +239,67 @@ public:
         }
     };
 
+	struct Box2D
+	{
+		Vector2r min;
+		Vector2r max;
+
+        MSGPACK_DEFINE_MAP(min, max);
+
+        Box2D()
+        {}
+
+        Box2D(const msr::airlib::Box2D& s)
+		{
+			min = s.min;
+			max = s.max;
+		}
+
+		msr::airlib::Box2D to() const
+		{
+			msr::airlib::Box2D s;
+            s.min = min.to();
+			s.max = max.to();
+
+			return s;
+		}
+
+	};
+
+	struct Box3D
+	{
+		Vector3r min;
+		Vector3r max;
+
+		MSGPACK_DEFINE_MAP(min, max);
+
+        Box3D()
+        {}
+
+		Box3D(const msr::airlib::Box3D& s)
+		{
+			min = s.min;
+			max = s.max;
+		}
+
+		msr::airlib::Box3D to() const
+		{
+			msr::airlib::Box3D s;
+			s.min = min.to();
+			s.max = max.to();
+
+			return s;
+		}
+
+	};
+
 	struct DetectionInfo {
 		std::string name;
 		GeoPoint geoPoint;
-		int topLeft_x = 0;
-		int topLeft_y = 0;
-		int bottomRight_x = 0;
-		int bottomRight_y = 0;
+		Box2D box2D;
+        Box3D box3D;
 
-		MSGPACK_DEFINE_MAP(name, geoPoint, topLeft_x, topLeft_y, bottomRight_x, bottomRight_y);
+		MSGPACK_DEFINE_MAP(name, geoPoint, box2D, box3D);
 
 		DetectionInfo()
 		{
@@ -239,10 +309,8 @@ public:
 		{
 			name = d.name;
             geoPoint = d.geoPoint;
-			topLeft_x = d.topLeft_x;
-			topLeft_y = d.topLeft_y;
-			bottomRight_x = d.bottomRight_x;
-			bottomRight_y = d.bottomRight_y;
+            box2D = d.box2D;
+            box3D = d.box3D;
 		}
 
 		msr::airlib::DetectionInfo to() const
@@ -250,10 +318,8 @@ public:
 			msr::airlib::DetectionInfo d;
 			d.name = name;
 			d.geoPoint = geoPoint.to();
-			d.topLeft_x = topLeft_x;
-			d.topLeft_y = topLeft_y;
-			d.bottomRight_x = bottomRight_x;
-			d.bottomRight_y = bottomRight_y;
+            d.box2D = box2D.to();
+            d.box3D = box3D.to();
 
 			return d;
 		}

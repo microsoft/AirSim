@@ -25,7 +25,8 @@
 class PawnSimApi : public msr::airlib::VehicleSimApiBase {
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
-    typedef msr::airlib::Vector3r Vector3r;
+	typedef msr::airlib::Vector2r Vector2r;
+	typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Pose Pose;
     typedef msr::airlib::Quaternionr Quaternionr;
     typedef msr::airlib::CollisionInfo CollisionInfo;
