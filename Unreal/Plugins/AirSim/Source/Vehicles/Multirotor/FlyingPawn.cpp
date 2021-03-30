@@ -6,16 +6,13 @@
 
 AFlyingPawn::AFlyingPawn()
 {
+    init_id_ = pawn_events_.getActuatorSignal().connect_member(this, &AFlyingPawn::initializeRotors);
     pawn_events_.getActuatorSignal().connect_member(this, &AFlyingPawn::setRotorSpeed);
 }
 
 void AFlyingPawn::BeginPlay()
 {
     Super::BeginPlay();
-
-    for (auto i = 0; i < rotor_count; ++i) {
-        rotating_movements_[i] = UAirBlueprintLib::GetActorComponent<URotatingMovementComponent>(this, TEXT("Rotation") + FString::FromInt(i));
-    }
 }
 
 void AFlyingPawn::initializeForBeginPlay()
@@ -47,6 +44,9 @@ void AFlyingPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
     camera_front_center_ = nullptr;
     camera_back_center_ = nullptr;
     camera_bottom_center_ = nullptr;
+
+    pawn_events_.getActuatorSignal().disconnect_all();
+    rotating_movements_.Empty();
 
     Super::EndPlay(EndPlayReason);
 }
@@ -91,3 +91,10 @@ void AFlyingPawn::setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorAct
     }
 }
 
+void AFlyingPawn::initializeRotors(const std::vector<MultirotorPawnEvents::RotorActuatorInfo>& rotor_infos)
+{
+    for (auto i = 0; i < rotor_infos.size(); ++i) {
+        rotating_movements_.Add(UAirBlueprintLib::GetActorComponent<URotatingMovementComponent>(this, TEXT("Rotation") + FString::FromInt(i)));
+    }
+    pawn_events_.getActuatorSignal().disconnect(init_id_);
+}

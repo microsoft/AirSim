@@ -21,6 +21,12 @@ void ASimModeWorldBase::initializeForPlay()
         vehicles, getPhysicsLoopPeriod()));
 }
 
+void ASimModeWorldBase::registerPhysicsBody(msr::airlib::VehicleSimApiBase *physicsBody)
+{
+    physics_world_.get()->addBody(physicsBody);
+}
+
+
 void ASimModeWorldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     //remove everything that we created in BeginPlay

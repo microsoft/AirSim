@@ -278,10 +278,10 @@ std::string ASimHUD::getSimModeFromUser()
         "Would you like to use car simulation? Choose no to use quadrotor simulation.",
         "Choose Vehicle"))
     {
-        return "Multirotor";
+        return AirSimSettings::kSimModeTypeMultirotor;
     }
     else
-        return "Car";
+        return AirSimSettings::kSimModeTypeCar;
 }
 
 void ASimHUD::loadLevel()
@@ -299,13 +299,13 @@ void ASimHUD::createSimMode()
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
     //spawn at origin. We will use this to do global NED transforms, for ex, non-vehicle objects in environment
-    if (simmode_name == "Multirotor")
+    if (simmode_name == AirSimSettings::kSimModeTypeMultirotor)
         simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, 
             FRotator::ZeroRotator, simmode_spawn_params);
-    else if (simmode_name == "Car")
+    else if (simmode_name == AirSimSettings::kSimModeTypeCar)
         simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector,
             FRotator::ZeroRotator, simmode_spawn_params);
-    else if (simmode_name == "ComputerVision")
+    else if (simmode_name == AirSimSettings::kSimModeTypeComputerVision)
         simmode_ = this->GetWorld()->SpawnActor<ASimModeComputerVision>(FVector::ZeroVector,
             FRotator::ZeroRotator, simmode_spawn_params);
     else {

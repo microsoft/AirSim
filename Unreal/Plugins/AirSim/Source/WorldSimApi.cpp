@@ -268,6 +268,16 @@ void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetim
         celestial_clock_speed, update_interval_secs, move_sun);
 }
 
+bool WorldSimApi::addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path)
+{
+    bool result;
+    UAirBlueprintLib::RunCommandOnGameThread([&]() {
+        result = simmode_->createVehicleAtRuntime(vehicle_name, vehicle_type, pose, pawn_path);
+    }, true);
+		
+    return result;
+}
+
 bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
 {
     bool success;

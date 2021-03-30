@@ -33,6 +33,7 @@ void MultirotorPawnSimApi::initialize()
     pending_pose_status_ = PendingPoseStatus::NonePending;
     reset_pending_ = false;
     did_reset_ = false;
+    rotor_states_.rotors.assign(rotor_count_, RotorParameters());
 
 	//reset roll & pitch of vehicle as multirotors required to be on plain surface at start
     Pose pose = getPose();
@@ -70,6 +71,8 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
     //update rotor poses
     for (unsigned int i = 0; i < rotor_count_; ++i) {
         const auto& rotor_output = multirotor_physics_body_->getRotorOutput(i);
+        // update private rotor variable
+        rotor_states_.rotors[i].update(rotor_output.thrust, rotor_output.torque_scaler, rotor_output.speed);
         RotorActuatorInfo* info = &rotor_actuator_info_[i];
         info->rotor_speed = rotor_output.speed;
         info->rotor_direction = static_cast<int>(rotor_output.turning_direction);
@@ -81,6 +84,8 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
 
     if (getRemoteControlID() >= 0)
         vehicle_api_->setRCData(getRCData());
+    rotor_states_.timestamp = clock()->nowNanos();
+    vehicle_api_->setRotorStates(rotor_states_);
 }
 
 void MultirotorPawnSimApi::updateRendering(float dt)

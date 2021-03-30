@@ -50,7 +50,7 @@ namespace UnityUtilities
 		airsim_request.camera_name = const_cast<char*>(request.camera_name.c_str());
 		airsim_request.compress = request.compress;
 		airsim_request.image_type = request.image_type;
-		airsim_request.pixels_as_float = airsim_request.pixels_as_float;
+		airsim_request.pixels_as_float = request.pixels_as_float;
 		return airsim_request;
 	}
 

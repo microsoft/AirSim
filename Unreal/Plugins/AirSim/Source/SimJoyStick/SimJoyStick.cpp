@@ -316,7 +316,7 @@ public:
                     else { //XBox
                         switch(event_.number) {
                         case 0: state.left_x = normalizeAxisVal(event_.value, true, false, false); break;
-                        case 1: state.left_y = normalizeAxisVal(event_.value, false, true, true); break;
+                        case 1: state.left_y = normalizeAxisVal(event_.value, true, false, true); break;
                         case 2: state.left_z = normalizeAxisVal(event_.value, true, false, false); break;
                         case 3: state.right_x = normalizeAxisVal(event_.value, true, false, false); break;
                         case 4: state.right_y = normalizeAxisVal(event_.value, true, false, false); break;

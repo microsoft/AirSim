@@ -46,11 +46,18 @@ Below are complete list of settings available along with their default values. I
   "SpeedUnitFactor": 1.0,
   "SpeedUnitLabel": "m/s",
   "Wind": { "X": 0, "Y": 0, "Z": 0 },
+  "CameraDirector": {
+    "FollowDistance": -3,
+    "X": NaN, "Y": NaN, "Z": NaN,
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+  },
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
+    "Folder": "",
+    "Enabled": false,
     "Cameras": [
-        { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "Compress": true }
+        { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false,  "VehicleName": "", "Compress": true }
     ]
   },
   "CameraDefaults": {
@@ -96,7 +103,7 @@ Below are complete list of settings available along with their default values. I
     "Gimbal": {
       "Stabilization": 0,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN
-    }
+    },
     "X": NaN, "Y": NaN, "Z": NaN,
     "Pitch": NaN, "Roll": NaN, "Yaw": NaN
   },
@@ -220,11 +227,26 @@ In case of multiple vehicles, different vehicles can be specified as follows-
 ```
 
 ## Recording
-The recording feature allows you to record data such as position, orientation, velocity along with the captured image at specified intervals. You can start recording by pressing red Record button on lower right or the R key. The data is stored in the `Documents\AirSim` folder, in a time stamped subfolder for each recording session, as tab separated file.
+The recording feature allows you to record data such as position, orientation, velocity along with the captured image at specified intervals. You can start recording by pressing red Record button on lower right or the R key. The data is stored in the `Documents\AirSim` folder (or the folder specified using `Folder`), in a time stamped subfolder for each recording session, as tab separated file.
 
 * `RecordInterval`: specifies minimal interval in seconds between capturing two images.
 * `RecordOnMove`: specifies that do not record frame if there was vehicle's position or orientation hasn't changed.
-* `Cameras`: this element controls which cameras are used to capture images. By default scene image from camera 0 is recorded as compressed png format. This setting is json array so you can specify multiple cameras to capture images, each with potentially different [image types](settings.md#image-capture-settings). When PixelsAsFloat is true, image is saved as [pfm](pfm.md) file instead of png file.
+* `Folder`: Parent folder where timestamped subfolder with recordings are created. Absolute path of the directory must be specified. If not used, then `Documents/AirSim` folder will be used. E.g. `"Folder": "/home/<user>/Documents"`
+* `Enabled`: Whether Recording should start from the beginning itself, setting to `true` will start recording automatically when the simulation starts. By default, it's set to `false`
+* `Cameras`: this element controls which cameras are used to capture images. By default scene image from camera 0 is recorded as compressed png format. This setting is json array so you can specify multiple cameras to capture images, each with potentially different [image types](settings.md#image-capture-settings). 
+    * When `PixelsAsFloat` is true, image is saved as [pfm](pfm.md) file instead of png file.
+    * `VehicleName` option allows you to specify separate cameras for individual vehicles. If the `Cameras` element isn't present, `Scene` image from the default camera of each vehicle will be recorded.
+    * If you don't want to record any images and just the vehicle's physics data, then specify the `Cameras` element but leave it empty, like this: `"Cameras": []`
+
+For example, the `Cameras` element below records scene & segmentation images for `Car1` & scene for `Car2`-
+
+```json
+"Cameras": [
+    { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "VehicleName": "Car1", "Compress": true },
+    { "CameraName": "0", "ImageType": 5, "PixelsAsFloat": false, "VehicleName": "Car1", "Compress": true },
+    { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "VehicleName": "Car2", "Compress": true }
+]
+``` 
 
 ## ClockSpeed
 This setting allows you to set the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simulation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collision is not detected. However slowing down simulation clock (i.e. values < 1.0) generally improves the quality of simulation.
@@ -239,6 +261,13 @@ The `InitMethod` determines how object IDs are initialized at startup to generat
 ## Wind Settings
 
 This setting specifies the wind speed in World frame, in NED direction. Values are in m/s. By default, speed is 0, i.e. no wind.
+
+## Camera Director Settings
+
+This element specifies the settings used for the camera following the vehicle in the ViewPort.
+
+* `FollowDistance`: Distance at which camera follows the vehicle, default is -8 (8 meters) for Car, -3 for others.
+* `X, Y, Z, Yaw, Roll, Pitch`: These elements allows you to specify the position and orientation of the camera relative to the vehicle. Position is in NED coordinates in SI units with origin set to Player Start location in Unreal environment. The orientation is specified in degrees.
 
 ## Camera Settings
 The `CameraDefaults` element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in `Cameras` element inside `Vehicles` as described later.

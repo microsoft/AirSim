@@ -669,6 +669,7 @@ class VehicleClient:
 
     def simGetLidarSegmentation(self, lidar_name = '', vehicle_name = ''):
         """
+        NOTE: Deprecated API, use `getLidarData()` API instead
         Returns Segmentation ID of each point's collided object in the last Lidar update
 
         Args:
@@ -678,7 +679,8 @@ class VehicleClient:
         Returns:
             list[int]: Segmentation IDs of the objects
         """
-        return self.client.call('simGetLidarSegmentation', lidar_name, vehicle_name)
+        logging.warning("simGetLidarSegmentation API is deprecated, use getLidarData() API instead")
+        return self.getLidarData(lidar_name, vehicle_name).segmentation
 
     #  Plotting APIs
     def simFlushPersistentMarkers(self):
@@ -854,6 +856,22 @@ class VehicleClient:
         """
         return self.client.call('simCreateVoxelGrid', position, x, y, z, res, of)
 
+    # Add new vehicle via RPC
+    def simAddVehicle(self, vehicle_name, vehicle_type, pose, pawn_path = ""):
+        """
+        Create vehicle at runtime
+
+        Args:
+            vehicle_name (str): Name of the vehicle being created
+            vehicle_type (str): Type of vehicle, e.g. "simpleflight"
+            pose (Pose): Initial pose of the vehicle
+            pawn_path (str): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type
+
+        Returns:
+            bool: Whether vehicle was created
+        """
+        return self.client.call('simAddVehicle', vehicle_name, vehicle_type, pose, pawn_path)
+
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):
@@ -914,7 +932,24 @@ class MultirotorClient(VehicleClient, object):
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
         return self.client.call_async('moveByVelocityBodyFrame', vx, vy, vz, duration, drivetrain, yaw_mode, vehicle_name)
-        
+
+    def moveByVelocityZBodyFrameAsync(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
+        """
+        Args:
+            vx (float): desired velocity in the X axis of the vehicle's local NED frame
+            vy (float): desired velocity in the Y axis of the vehicle's local NED frame
+            z (float): desired Z value (in local NED frame of the vehicle)
+            duration (float): Desired amount of time (seconds), to send this command for
+            drivetrain (DrivetrainType, optional):
+            yaw_mode (YawMode, optional):
+            vehicle_name (str, optional): Name of the multirotor to send this command to
+
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+
+        return self.client.call_async('moveByVelocityZBodyFrame', vx, vy, z, duration, drivetrain, yaw_mode, vehicle_name)
+
     def moveByAngleZAsync(self, pitch, roll, z, yaw, duration, vehicle_name = ''):
         return self.client.call_async('moveByAngleZ', pitch, roll, z, yaw, duration, vehicle_name)
 
@@ -1282,7 +1317,20 @@ class MultirotorClient(VehicleClient, object):
         """
         return MultirotorState.from_msgpack(self.client.call('getMultirotorState', vehicle_name))
     getMultirotorState.__annotations__ = {'return': MultirotorState}
+    # query rotor states
+    def getRotorStates(self, vehicle_name = ''):
+        """
+        Used to obtain the current state of all a multirotor's rotors. The state includes the speeds,
+        thrusts and torques for all rotors.
 
+        Args:
+            vehicle_name (str, optional): Vehicle to get the rotor state of
+
+        Returns:
+            RotorStates: Containing a timestamp and the speed, thrust and torque of all rotors.
+        """
+        return RotorStates.from_msgpack(self.client.call('getRotorStates', vehicle_name))
+    getRotorStates.__annotations__ = {'return': RotorStates}
 
 # -----------------------------------  Car APIs ---------------------------------------------
 class CarClient(VehicleClient, object):
