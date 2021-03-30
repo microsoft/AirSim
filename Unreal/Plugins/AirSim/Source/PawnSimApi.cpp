@@ -337,8 +337,8 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
 		result[i].box2D.min = Vector2r(Detections[i].Box2D.Min.X, Detections[i].Box2D.Min.Y);
 		result[i].box2D.max = Vector2r(Detections[i].Box2D.Max.X, Detections[i].Box2D.Max.Y);
 
-		result[i].box3D.min = Vector3r(Detections[i].Box3D.Min.X, Detections[i].Box3D.Min.Y, Detections[i].Box3D.Min.Z);
-		result[i].box3D.max = Vector3r(Detections[i].Box3D.Max.X, Detections[i].Box3D.Max.Y, Detections[i].Box3D.Max.Z);
+		result[i].box3D.min = ned_transform_.toLocalNed(Detections[i].Box3D.Min);
+        result[i].box3D.max = ned_transform_.toLocalNed(Detections[i].Box3D.Max);
 
 		result[i].relative_pose = toPose(Detections[i].RelativeTransform.GetTranslation(), Detections[i].RelativeTransform.GetRotation());
     }
