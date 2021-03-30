@@ -373,6 +373,61 @@ public: //methods
         return rc;
     }
 
+    virtual bool moveToPosition(float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
+        const YawMode& yaw_mode, float lookahead, float adaptive_lookahead) override
+    {
+        SingleTaskCall lock(this);
+
+        unused(adaptive_lookahead);
+        unused(lookahead);
+        unused(drivetrain);
+
+        // save current cruise velocity value
+        bool result = false;
+        mavlinkcom::MavLinkParameter cruise_velocity_parameter;
+        result = mav_vehicle_->getParameter("MPC_XY_CRUISE").wait(1000, &cruise_velocity_parameter);
+
+        if (result) {
+            // set cruise velocity
+            mavlinkcom::MavLinkParameter p;
+            p.name = "MPC_XY_CRUISE";
+            p.value = velocity;
+            mav_vehicle_->setParameter(p).wait(1000, &result);
+
+            if (result) {
+                const Vector3r& goal_pos = Vector3r(x, y, z);
+                Vector3r goal_dist_vect;
+                float goal_dist;
+
+                Waiter waiter(getCommandPeriod(), timeout_sec, getCancelToken());
+
+                while (!waiter.isComplete()) {
+                    goal_dist_vect = getPosition() - goal_pos;
+                    const Vector3r& goal_normalized = goal_dist_vect.normalized();
+                    goal_dist = goal_dist_vect.dot(goal_normalized);
+
+                    if (goal_dist > getDistanceAccuracy()) {
+                        moveToPositionInternal(goal_pos, yaw_mode);
+
+                        //sleep for rest of the cycle
+                        if (!waiter.sleep())
+                            return false;
+                    }
+                    else {
+                        waiter.complete();
+                    }
+                }
+
+                // reset max velocity parameter
+                mav_vehicle_->setParameter(cruise_velocity_parameter).wait(1000, &result);
+
+                return waiter.isComplete();
+            }
+        }
+
+        return result;
+    }
+
     virtual bool hover() override
     {
         SingleCall lock(this);
