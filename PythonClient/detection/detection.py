@@ -35,5 +35,8 @@ while True:
     cv2.imshow("AirSim", png)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
+    elif cv2.waitKey(1) & 0xFF == ord('c'):
+        client.simClearDetectionMeshNames()
+    elif cv2.waitKey(1) & 0xFF == ord('a'):
+        client.simAddDetectionFilterMeshName("Cylinder*")
 cv2.destroyAllWindows() 
