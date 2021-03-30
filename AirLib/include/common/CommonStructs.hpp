@@ -278,12 +278,13 @@ struct DetectionInfo
 	GeoPoint geoPoint = GeoPoint();
     Box2D box2D = Box2D();
 	Box3D box3D = Box3D();
+    Pose relative_pose = Pose();
 
     DetectionInfo()
 	{}
 
-    DetectionInfo(const std::string& name_val, const GeoPoint& geoPoint_val, const Box2D& box2D_val, const Box3D& box3D_val)
-		: name(name_val), geoPoint(geoPoint_val), box2D(box2D_val), box3D(box3D_val)
+    DetectionInfo(const std::string& name_val, const GeoPoint& geoPoint_val, const Box2D& box2D_val, const Box3D& box3D_val, const Pose& relative_pose_val)
+		: name(name_val), geoPoint(geoPoint_val), box2D(box2D_val), box3D(box3D_val), relative_pose(relative_pose_val)
 	{
 	}
 };

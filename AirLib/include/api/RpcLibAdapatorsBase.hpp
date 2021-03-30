@@ -298,8 +298,9 @@ public:
 		GeoPoint geoPoint;
 		Box2D box2D;
         Box3D box3D;
+        Pose relative_pose;
 
-		MSGPACK_DEFINE_MAP(name, geoPoint, box2D, box3D);
+		MSGPACK_DEFINE_MAP(name, geoPoint, box2D, box3D, relative_pose);
 
 		DetectionInfo()
 		{
@@ -311,6 +312,7 @@ public:
             geoPoint = d.geoPoint;
             box2D = d.box2D;
             box3D = d.box3D;
+            relative_pose = d.relative_pose;
 		}
 
 		msr::airlib::DetectionInfo to() const
@@ -320,6 +322,7 @@ public:
 			d.geoPoint = geoPoint.to();
             d.box2D = box2D.to();
             d.box3D = box3D.to();
+            d.relative_pose = relative_pose.to();
 
 			return d;
 		}
