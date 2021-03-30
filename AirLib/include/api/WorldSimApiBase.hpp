@@ -49,6 +49,7 @@ public:
 
     virtual void addDetectionFilterMeshName(const std::string& mesh_name) = 0;
     virtual void setDetectionFilterRadius(const float radius_cm) = 0;
+    virtual void clearDetectionMeshNames() = 0;
 
     virtual bool addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "") = 0;
 

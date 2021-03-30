@@ -479,6 +479,13 @@ class VehicleClient:
             radius_cm (int): Radius in [cm]
         """
         self.client.call('simSetDetectionFilterRadius', radius_cm)
+     
+    def simClearDetectionMeshNames(self):
+        """
+        Clear all mesh names from detection filter
+
+        """
+        self.client.call('simClearDetectionMeshNames')
 
     def simGetDetections(self, camera_name, image_type, vehicle_name = ''):
         """

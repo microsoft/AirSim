@@ -609,6 +609,15 @@ void UAirBlueprintLib::setDetectionFilterRadius(const float radius_cm)
 	}
 }
 
+void UAirBlueprintLib::clearDetectionMeshNames()
+{
+	for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
+	{
+		UDetectionComponent* detection = *itr;
+        detection->ObjectFilter.WildcardMeshNames.Empty();
+	}
+}
+
 TArray<FName> UAirBlueprintLib::ListWorldsInRegistry()
 {
     FARFilter Filter;

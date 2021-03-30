@@ -200,6 +200,7 @@ public:
 
     static void addDetectionFilterMeshName(const  std::string& name);
     static void setDetectionFilterRadius(const float radius_cm);
+    static void clearDetectionMeshNames();
 private:
     template<typename T>
     static void InitializeObjectStencilID(T* mesh, bool ignore_existing = true)

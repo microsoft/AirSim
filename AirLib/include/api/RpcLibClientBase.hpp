@@ -66,6 +66,7 @@ public:
 
 	void simAddDetectionFilterMeshName(const std::string& mesh_name);
 	void simSetDetectionFilterRadius(const float radius_cm);
+    void simClearDetectionMeshNames();
     vector<DetectionInfo> simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name ="");
 
     void simFlushPersistentMarkers();

@@ -303,6 +303,13 @@ void WorldSimApi::addDetectionFilterMeshName(const std::string& mesh_name)
 	}, false);
 }
 
+void WorldSimApi::clearDetectionMeshNames()
+{
+    UAirBlueprintLib::RunCommandOnGameThread([&]() {
+        UAirBlueprintLib::clearDetectionMeshNames();
+        }, false);
+}
+
 void WorldSimApi::setDetectionFilterRadius(const float radius_cm)
 {
 	UAirBlueprintLib::RunCommandOnGameThread([radius_cm]() {

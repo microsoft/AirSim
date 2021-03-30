@@ -206,6 +206,10 @@ void RpcLibClientBase::simSetDetectionFilterRadius(const float radius_cm)
 {
     pimpl_->client.call("simSetDetectionFilterRadius", radius_cm);
 }
+void RpcLibClientBase::simClearDetectionMeshNames()
+{
+	pimpl_->client.call("simClearDetectionMeshNames");
+}
 vector<DetectionInfo> RpcLibClientBase::simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name)
 {
     const auto& result = pimpl_->client.call("simGetDetections", camera_name, image_type, vehicle_name).as<vector<RpcLibAdapatorsBase::DetectionInfo>>();
