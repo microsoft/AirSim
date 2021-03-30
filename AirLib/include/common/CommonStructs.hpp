@@ -282,8 +282,8 @@ struct DetectionInfo
     DetectionInfo()
 	{}
 
-    DetectionInfo(const std::string& name_val, const GeoPoint& geoPoint_val, const Box2D& box2D_val, const Box3D& box3D_val/*int topLeft_x_val, int topLeft_y_val, int bottomRight_x_val, int bottomRight_y_val*/)
-		: name(name_val), geoPoint(geoPoint_val), box2D(box2D_val), box3D(box3D_val)/*topLeft_x(topLeft_x_val), topLeft_y(topLeft_y_val), bottomRight_x(bottomRight_x_val), bottomRight_y(bottomRight_y_val)*/
+    DetectionInfo(const std::string& name_val, const GeoPoint& geoPoint_val, const Box2D& box2D_val, const Box3D& box3D_val)
+		: name(name_val), geoPoint(geoPoint_val), box2D(box2D_val), box3D(box3D_val)
 	{
 	}
 };
