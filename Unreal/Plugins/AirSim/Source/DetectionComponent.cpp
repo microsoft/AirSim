@@ -37,7 +37,7 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	CachedBoundingBoxes.Empty();
+	CachedDetections.Empty();
 
 	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
@@ -46,14 +46,19 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		{
 			if (FVector::Distance(Actor->GetActorLocation(), GetComponentLocation()) <= MaxDistanceToCamera)
 			{
-				FBox2D BoxOut;
-				if (TextureTarget && CalcBoundingFromViewInfo(Actor, BoxOut))
+				FBox2D Box2DOut;
+				if (TextureTarget && CalcBoundingFromViewInfo(Actor, Box2DOut))
 				{
 					FDetectionInfo Detection;
 					Detection.Actor = Actor;
-					Detection.BBox = BoxOut;
-					Detection.Location = Actor->GetActorLocation();
-					CachedBoundingBoxes.Add(Detection);
+					Detection.Box2D = Box2DOut;
+
+					FBox Box3D = Actor->GetComponentsBoundingBox(true);
+					Detection.Box3D = FBox(GetRelativeLocation(Box3D.Min), GetRelativeLocation(Box3D.Max));
+
+					Detection.RelativeTransform = FTransform(GetRelativeRotation(Actor->GetActorLocation()),
+						GetRelativeLocation(Actor->GetActorLocation()));
+					CachedDetections.Add(Detection);
 
 					/*  ---Debug only---
 					FVector Origin;
@@ -69,7 +74,7 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 TArray<FDetectionInfo> UDetectionComponent::GetDetections() const
 {
-	return CachedBoundingBoxes;
+	return CachedDetections;
 }
 
 bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut)
@@ -195,5 +200,13 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 	return IsInCameraView && IsVisible;
 }
 
+FVector UDetectionComponent::GetRelativeLocation(FVector InLocation)
+{
+	return GetComponentTransform().InverseTransformPosition(InLocation);
+}
 
+FRotator UDetectionComponent::GetRelativeRotation(FVector InLocation)
+{
+	return UKismetMathLibrary::FindLookAtRotation(GetComponentLocation(), InLocation);
+}
 

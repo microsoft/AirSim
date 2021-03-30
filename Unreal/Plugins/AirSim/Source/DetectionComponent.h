@@ -16,10 +16,13 @@ struct FDetectionInfo
 		AActor* Actor;
 
 	UPROPERTY()
-		FBox2D BBox;
+		FBox2D Box2D;
 
 	UPROPERTY()
-		FVector Location;
+		FBox Box3D;
+
+	UPROPERTY()
+		FTransform RelativeTransform;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -42,7 +45,10 @@ public:
 	TArray<FDetectionInfo> GetDetections() const;
 private:
 	bool CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut);
+	
+	FVector GetRelativeLocation(FVector InLocation);
 
+	FRotator GetRelativeRotation(FVector InLocation);
 public:
 	UPROPERTY()
 		FObjectFilter ObjectFilter;
@@ -58,5 +64,5 @@ private:
 		USceneCaptureComponent2D* SceneCaptureComponent2D;
 
 	UPROPERTY()
-		TArray<FDetectionInfo> CachedBoundingBoxes;
+		TArray<FDetectionInfo> CachedDetections;
 };
