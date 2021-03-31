@@ -21,7 +21,11 @@ instructions](px4_sitl_wsl2.md).
     cd PX4
     git clone https://github.com/PX4/PX4-Autopilot.git
     cd PX4-Autopilot
-    git checkout v1.10.1 # recommended version 
+    ```
+    And find the latest stable release from [https://github.com/PX4/PX4-Autopilot/releases](https://github.com/PX4/PX4-Autopilot/releases)
+    and checkout the source code matching that release, for example:
+    ```
+    git checkout v1.11.3
     ```
 
 3. Use following command to build and start PX4 firmware in SITL mode:
