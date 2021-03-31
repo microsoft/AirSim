@@ -48,7 +48,7 @@ private:
 	
 	FVector GetRelativeLocation(FVector InLocation);
 
-	FRotator GetRelativeRotation(FVector InLocation);
+	FRotator GetRelativeRotation(FVector InLocation, FRotator InRotation);
 public:
 	UPROPERTY()
 		FObjectFilter ObjectFilter;

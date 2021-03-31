@@ -56,7 +56,7 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 					FBox Box3D = Actor->GetComponentsBoundingBox(true);
 					Detection.Box3D = FBox(GetRelativeLocation(Box3D.Min), GetRelativeLocation(Box3D.Max));
 
-					Detection.RelativeTransform = FTransform(GetRelativeRotation(Actor->GetActorLocation()),
+					Detection.RelativeTransform = FTransform(GetRelativeRotation(Actor->GetActorLocation(), Actor->GetActorRotation()),
 						GetRelativeLocation(Actor->GetActorLocation()));
 					CachedDetections.Add(Detection);
 
@@ -205,8 +205,10 @@ FVector UDetectionComponent::GetRelativeLocation(FVector InLocation)
 	return GetComponentTransform().InverseTransformPosition(InLocation);
 }
 
-FRotator UDetectionComponent::GetRelativeRotation(FVector InLocation)
+FRotator UDetectionComponent::GetRelativeRotation(FVector InLocation, FRotator InRotation)
 {
-	return UKismetMathLibrary::FindLookAtRotation(GetComponentLocation(), InLocation);
+    FTransform CameraTransform(GetComponentRotation(), GetComponentLocation());
+    FTransform RelativeObjectTransform = CameraTransform.GetRelativeTransform(FTransform(InRotation, InLocation));
+	return RelativeObjectTransform.Rotator();
 }
 
