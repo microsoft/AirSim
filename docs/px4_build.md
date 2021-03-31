@@ -5,7 +5,7 @@
 Getting the PX4 source code is easy:
 ```
 git clone https://github.com/PX4/PX4-Autopilot.git
-cd Firmware
+cd PX4-Autopilot
 ```
 
 Oh, and if you don't have git yet just run this:

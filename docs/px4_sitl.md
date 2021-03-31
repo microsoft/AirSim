@@ -20,7 +20,7 @@ instructions](px4_sitl_wsl2.md).
     mkdir -p PX4
     cd PX4
     git clone https://github.com/PX4/PX4-Autopilot.git
-    cd Firmware
+    cd PX4-Autopilot
     git checkout v1.10.1 # recommended version 
     ```
 

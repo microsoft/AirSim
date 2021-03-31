@@ -8,9 +8,8 @@ However, the provided script does not let us view the PX4 console. If you want t
 **Note** you have to build PX4 with `make px4_sitl_default none_iris` as shown [here](px4_sitl.md#setting-up-px4-software-in-loop) before trying to run multiple PX4 instances.
 
 1. From your bash (or Cygwin) terminal go to the PX4 Firmware directory and run the `sitl_multiple_run.sh` script while specifying the number of vehicles you need
-    ```
-    cd PX4
-    cd Firmware
+    ```    
+    cd PX4-Autopilot
     ./Tools/sitl_multiple_run.sh 2    # 2 here is the number of vehicles/instances 
     ```
     This starts multiple instances that listen to TCP ports 4560 to 4560+i where 'i' is the number of vehicles/instances specified

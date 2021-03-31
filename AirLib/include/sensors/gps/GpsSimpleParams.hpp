@@ -11,8 +11,8 @@ namespace msr { namespace airlib {
 
 struct GpsSimpleParams {
     real_T eph_time_constant = 0.9f, epv_time_constant = 0.9f;
-    real_T eph_initial = 100.0f, epv_initial = 100.0f;   //initially fully diluted positions
-    real_T eph_final = 0.3f, epv_final = 0.4f;
+    real_T eph_initial = 25, epv_initial = 25; //initially 25% error in horizontal and vertical
+    real_T eph_final = 0.1f, epv_final = 0.1f; // clamp down to 10% error over time.
     real_T eph_min_3d = 3.0f, eph_min_2d = 4.0f;
 
     real_T update_latency = 0.2f;    //sec
