@@ -4,8 +4,8 @@
 #ifndef msr_airlib_BarometerSimpleParams_hpp
 #define msr_airlib_BarometerSimpleParams_hpp
 
+#include "common/AirSimSettings.hpp"
 #include "common/Common.hpp"
-
 
 namespace msr { namespace airlib {
 
@@ -49,7 +49,12 @@ struct BarometerSimpleParams {
 
     void initializeFromSettings(const AirSimSettings::BarometerSetting& settings)
     {
-        unused(settings);
+        pressure_factor_sigma = settings.pressure_factor_sigma;
+        pressure_factor_tau = settings.pressure_factor_tau;
+        unnorrelated_noise_sigma = settings.unnorrelated_noise_sigma;
+        update_latency = settings.update_latency;
+        update_frequency = settings.update_frequency;
+        startup_delay = settings.startup_delay;
     }
 };
 

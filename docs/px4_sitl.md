@@ -60,18 +60,24 @@ The default ports have changed recently, so check them closely to make sure AirS
                 "UseTcp": true,
                 "TcpPort": 4560,
                 "ControlPort": 14580,
+                "Sensors":{
+                    "Barometer":{
+                        "SensorType": 1,
+                        "Enabled": true,
+                        "pressure_factor_sigma": 0.0001825
+                    }
+                },
                 "Parameters": {
                     "NAV_RCL_ACT": 0,
-                    "NAV_DLL_ACT": 0,
-                    "LPE_LAT": 47.641468,
-                    "LPE_LON": -122.140165,
-                    "COM_OBL_ACT": 1
+                    "NAV_DLL_ACT": 0
                 }
             }
         }
     }
     ```
-    Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
+    Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`. The
+    "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
+    noise generation.  This setting clamps that down a bit.
 
 6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
    a bunch of messages from the SITL PX4 window. Specifically, the following messages tell you that
@@ -181,12 +187,9 @@ NOTE: Do `NOT` do this on a real drone as it is too dangerous to fly without the
 
 ## Manually set parameters
 
-You can also run the following in the PX4 console to set all these parameters:
+You can also run the following in the PX4 console to set all these parameters manually:
 
 ```
-param set LPE_LAT 47.641468
-param set LPE_LON -122.140165
-param set COM_OBL_ACT 1
 param set NAV_RCL_ACT 0
 param set NAV_DLL_ACT 0
 ```

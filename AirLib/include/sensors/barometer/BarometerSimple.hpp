@@ -76,7 +76,7 @@ private: //methods
         auto altitude = ground_truth.environment->getState().geo_point.altitude;
         auto pressure = EarthUtils::getStandardPressure(altitude);
 
-        //add drift in pressure, about 10m change per hour
+        //add drift in pressure, about 10m change per hour using default settings.
         pressure_factor_.update();
         pressure += pressure * pressure_factor_.getOutput();
 

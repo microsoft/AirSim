@@ -197,6 +197,12 @@ public: //types
     };
 
     struct BarometerSetting : SensorSetting {
+        float pressure_factor_sigma;
+        float pressure_factor_tau;
+        float unnorrelated_noise_sigma;
+        float update_latency;
+        float update_frequency;
+        float startup_delay;
     };
 
     struct ImuSetting : SensorSetting {
@@ -1195,12 +1201,16 @@ private:
         clock_speed = settings_json.getFloat("ClockSpeed", 1.0f);
     }
 
-    static void initializeBarometerSetting(BarometerSetting& barometer_setting, const Settings& settings_json)
+    static void initializeBarometerSetting(BarometerSetting& barometer_setting, const Settings& settings)
     {
-        unused(barometer_setting);
-        unused(settings_json);
-
-        //TODO: set from json as needed
+        // BUGBUG defaults copied from BarometerSimpleParams.  We'd really like to use that class here, but
+        // that creates a circular dependency...
+        barometer_setting.pressure_factor_sigma = settings.getFloat("pressure_factor_sigma", 0.0365f / 20);
+        barometer_setting.pressure_factor_tau = settings.getFloat("pressure_factor_tau", 3600);
+        barometer_setting.unnorrelated_noise_sigma = settings.getFloat("unnorrelated_noise_sigma", 0.027f * 100);
+        barometer_setting.update_latency = settings.getFloat("update_latency", 0.0f);
+        barometer_setting.update_frequency = settings.getFloat("update_frequency", 50);
+        barometer_setting.startup_delay = settings.getFloat("startup_delay", 0);
     }
 
     static void initializeImuSetting(ImuSetting& imu_setting, const Settings& settings_json)
@@ -1260,7 +1270,6 @@ private:
         bool enabled)
     {
         std::unique_ptr<SensorSetting> sensor_setting;
-
         switch (sensor_type) {
         case SensorBase::SensorType::Barometer:
             sensor_setting = std::unique_ptr<SensorSetting>(new BarometerSetting());
@@ -1287,7 +1296,6 @@ private:
         sensor_setting->sensor_type = sensor_type;
         sensor_setting->sensor_name = sensor_name;
         sensor_setting->enabled = enabled;
-
         return sensor_setting;
     }
 
@@ -1334,7 +1342,6 @@ private:
 
                 auto sensor_type = Utils::toEnum<SensorBase::SensorType>(child.getInt("SensorType", 0));
                 auto enabled = child.getBool("Enabled", false);
-
                 sensors[key] = createSensorSetting(sensor_type, key, enabled);
                 initializeSensorSetting(sensors[key].get(), child);
             }

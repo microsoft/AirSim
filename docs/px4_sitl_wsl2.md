@@ -34,9 +34,13 @@ export PX4_SIM_HOST_ADDR=172.31.64.1
 
 Open incoming port 4560 using your Windows Firewall settings.
 
+Now on the linux side run `ip address show` and copy the `eth0 inet` address, it should be something
+like `172.31.66.156`.  This is the address Windows needs to know in order to find PX4.
+
 Edit your [AirSim settings](settings.md) file and add `LocalHostIp` to tell AirSim to use the WSL
 ethernet adapter address instead of the default `localhost`.  This will cause AirSim to open the TCP
-port on that adapter which is the address that the PX4 app will be looking for.
+port on that adapter which is the address that the PX4 app will be looking for.  Also tell AirSim
+what the PX4 address is by setting `ControlIp` to the Linux address you found above.
 
 ```json
 {
@@ -48,19 +52,23 @@ port on that adapter which is the address that the PX4 app will be looking for.
             "UseSerial": false,
             "UseTcp": true,
             "TcpPort": 4560,
+            "ControlIp": "172.31.66.156",
             "ControlPort": 14580,
             "LocalHostIp": "172.31.64.1",
-            "Parameters": {
-                "NAV_RCL_ACT": 0,
-                "NAV_DLL_ACT": 0,
-                "LPE_LAT": 47.641468,
-                "LPE_LON": -122.140165,
-                "COM_OBL_ACT": 1
+            "Sensors":{
+                "Barometer":{
+                    "SensorType": 1,
+                    "Enabled": true,
+                    "pressure_factor_sigma": 0.0001825
+                }
             }
         }
     }
 }
 ```
+
+The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
+noise generation.  This setting clamps that down a bit.
 
 Lastly, please edit the Linux file in `ROMFS/px4fmu_common/init.d-posix/rcS` and make sure
 it is looking for the `PX4_SIM_HOST_ADDR` environment variable and is passing that through to the

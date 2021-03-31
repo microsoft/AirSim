@@ -37,18 +37,25 @@ See also [initial firmware setup video](https://docs.px4.io/master/en/config/).
         "Vehicles": {
             "PX4": {
                 "VehicleType": "PX4Multirotor",
-                "UseSerial": true,
+                "UseSerial": true,,
+                "Sensors":{
+                    "Barometer":{
+                        "SensorType": 1,
+                        "Enabled": true,
+                        "pressure_factor_sigma": 0.0001825
+                    }
+                },
                 "Parameters": {
                     "NAV_RCL_ACT": 0,
-                    "NAV_DLL_ACT": 0,
-                    "LPE_LAT": 47.641468,
-                    "LPE_LON": -122.140165,
-                    "COM_OBL_ACT": 1
+                    "NAV_DLL_ACT": 0
                 }
             }
         }
     }
 ```
+
+The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
+noise generation.  This setting clamps that down a bit.
 
 After above setup you should be able to use RC to fly with AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.  See [PX4 Basic Flying Guide](https://docs.px4.io/master/en/flying/basic_flying.html).
 
