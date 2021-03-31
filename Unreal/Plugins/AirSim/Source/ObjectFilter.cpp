@@ -49,7 +49,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
 					return true;
 				}
 				if (WildcardMeshNames.Num() != 0 &&
-					StaticMeshComponent->GetStaticMesh()->IsValidLowLevel() &&
+					StaticMeshComponent->GetStaticMesh() != nullptr &&
 					IsMatchAnyWildcard(StaticMeshComponent->GetStaticMesh()->GetName()))
 				{
 					//bMatchesWildcardMeshName = true;
