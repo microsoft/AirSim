@@ -295,12 +295,12 @@ public:
 
 	struct DetectionInfo {
 		std::string name;
-		GeoPoint geoPoint;
+		GeoPoint geo_point;
 		Box2D box2D;
         Box3D box3D;
         Pose relative_pose;
 
-		MSGPACK_DEFINE_MAP(name, geoPoint, box2D, box3D, relative_pose);
+		MSGPACK_DEFINE_MAP(name, geo_point, box2D, box3D, relative_pose);
 
 		DetectionInfo()
 		{
@@ -309,7 +309,7 @@ public:
 		DetectionInfo(const msr::airlib::DetectionInfo& d)
 		{
 			name = d.name;
-            geoPoint = d.geoPoint;
+            geo_point = d.geo_point;
             box2D = d.box2D;
             box3D = d.box3D;
             relative_pose = d.relative_pose;
@@ -319,7 +319,7 @@ public:
 		{
 			msr::airlib::DetectionInfo d;
 			d.name = name;
-			d.geoPoint = geoPoint.to();
+			d.geo_point = geo_point.to();
             d.box2D = box2D.to();
             d.box3D = box3D.to();
             d.relative_pose = relative_pose.to();

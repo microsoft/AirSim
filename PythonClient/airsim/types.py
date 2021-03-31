@@ -438,7 +438,7 @@ class Box3D(MsgpackMixin):
 
 class DetectionInfo(MsgpackMixin):
     name = ''
-    geoPoint = GeoPoint()
+    geo_point = GeoPoint()
     box2D = Box2D()
     box3D = Box3D()
     relative_pose = Pose()

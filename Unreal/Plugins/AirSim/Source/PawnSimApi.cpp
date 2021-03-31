@@ -331,7 +331,7 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
         result[i].name = std::string(TCHAR_TO_UTF8(*(Detections[i].Actor->GetFName().ToString())));
 	    
         Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(Detections[i].Actor->GetActorLocation());
-        result[i].geoPoint  = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
+        result[i].geo_point  = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
 			AirSimSettings::singleton().origin_geopoint);
         
 		result[i].box2D.min = Vector2r(Detections[i].Box2D.Min.X, Detections[i].Box2D.Min.Y);
