@@ -59,7 +59,7 @@ what the PX4 address is by setting `ControlIp` to the Linux address you found ab
                 "Barometer":{
                     "SensorType": 1,
                     "Enabled": true,
-                    "pressure_factor_sigma": 0.0001825
+                    "PressureFactorSigma": 0.0001825
                 }
             }
         }

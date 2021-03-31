@@ -194,15 +194,10 @@ public: //types
         SensorBase::SensorType sensor_type;
         std::string sensor_name;
         bool enabled;
+        Settings settings;
     };
 
     struct BarometerSetting : SensorSetting {
-        float pressure_factor_sigma;
-        float pressure_factor_tau;
-        float unnorrelated_noise_sigma;
-        float update_latency;
-        float update_frequency;
-        float startup_delay;
     };
 
     struct ImuSetting : SensorSetting {
@@ -215,32 +210,9 @@ public: //types
     };
 
     struct DistanceSetting : SensorSetting {
-        // shared defaults
-        real_T min_distance = 20.0f / 100; //m
-        real_T max_distance = 4000.0f / 100; //m
-        Vector3r position = VectorMath::nanVector();
-        Rotation rotation = Rotation::nanRotation();
-        bool draw_debug_points = false;
     };
 
     struct LidarSetting : SensorSetting {
-
-        // shared defaults
-        uint number_of_channels = 16;
-        real_T range = 10000.0f / 100;                    // meters
-        uint points_per_second = 100000;
-        uint horizontal_rotation_frequency = 10;          // rotations/sec
-        float horizontal_FOV_start = 0;                   // degrees
-        float horizontal_FOV_end = 359;                   // degrees
-
-        // defaults specific to a mode
-        float vertical_FOV_upper = Utils::nan<float>();   // drones -15, car +10
-        float vertical_FOV_lower = Utils::nan<float>();   // drones -45, car -10
-        Vector3r position = VectorMath::nanVector();
-        Rotation rotation = Rotation::nanRotation();
-
-        bool draw_debug_points = false;
-        std::string data_frame = AirSimSettings::kVehicleInertialFrame;
     };
 
     struct VehicleSetting {
@@ -464,6 +436,19 @@ public: //methods
             // pre-existing flying pawns in Unreal Engine don't have name 'SimpleFlight'
             it = vehicles.find("SimpleFlight");
         return it->second.get();
+    }
+
+    static Vector3r createVectorSetting(const Settings& settings_json, const Vector3r& default_vec)
+    {
+        return Vector3r(settings_json.getFloat("X", default_vec.x()),
+            settings_json.getFloat("Y", default_vec.y()),
+            settings_json.getFloat("Z", default_vec.z()));
+    }
+    static Rotation createRotationSetting(const Settings& settings_json, const Rotation& default_rot)
+    {
+        return Rotation(settings_json.getFloat("Yaw", default_rot.yaw),
+            settings_json.getFloat("Pitch", default_rot.pitch),
+            settings_json.getFloat("Roll", default_rot.roll));
     }
 
 private:
@@ -751,19 +736,6 @@ private:
         }
 
         return vehicle_setting_p;
-    }
-
-    static Vector3r createVectorSetting(const Settings& settings_json, const Vector3r& default_vec)
-    {
-        return Vector3r(settings_json.getFloat("X", default_vec.x()),
-            settings_json.getFloat("Y", default_vec.y()),
-            settings_json.getFloat("Z", default_vec.z()));
-    }
-    static Rotation createRotationSetting(const Settings& settings_json, const Rotation& default_rot)
-    {
-        return Rotation(settings_json.getFloat("Yaw", default_rot.yaw),
-            settings_json.getFloat("Pitch", default_rot.pitch),
-            settings_json.getFloat("Roll", default_rot.roll));
     }
 
     static std::unique_ptr<VehicleSetting> createVehicleSetting(const std::string& simmode_name,  const Settings& settings_json,
@@ -1203,70 +1175,6 @@ private:
         clock_speed = settings_json.getFloat("ClockSpeed", 1.0f);
     }
 
-    static void initializeBarometerSetting(BarometerSetting& barometer_setting, const Settings& settings)
-    {
-        // BUGBUG defaults copied from BarometerSimpleParams.  We'd really like to use that class here, but
-        // that creates a circular dependency...
-        barometer_setting.pressure_factor_sigma = settings.getFloat("pressure_factor_sigma", 0.0365f / 20);
-        barometer_setting.pressure_factor_tau = settings.getFloat("pressure_factor_tau", 3600);
-        barometer_setting.unnorrelated_noise_sigma = settings.getFloat("unnorrelated_noise_sigma", 0.027f * 100);
-        barometer_setting.update_latency = settings.getFloat("update_latency", 0.0f);
-        barometer_setting.update_frequency = settings.getFloat("update_frequency", 50);
-        barometer_setting.startup_delay = settings.getFloat("startup_delay", 0);
-    }
-
-    static void initializeImuSetting(ImuSetting& imu_setting, const Settings& settings_json)
-    {
-        unused(imu_setting);
-        unused(settings_json);
-
-        //TODO: set from json as needed
-    }
-
-    static void initializeGpsSetting(GpsSetting& gps_setting, const Settings& settings_json)
-    {
-        unused(gps_setting);
-        unused(settings_json);
-
-        //TODO: set from json as needed
-    }
-
-    static void initializeMagnetometerSetting(MagnetometerSetting& magnetometer_setting, const Settings& settings_json)
-    {
-        unused(magnetometer_setting);
-        unused(settings_json);
-
-        //TODO: set from json as needed
-    }
-
-    static void initializeDistanceSetting(DistanceSetting& distance_setting, const Settings& settings_json)
-    {
-        distance_setting.min_distance = settings_json.getFloat("MinDistance", distance_setting.min_distance);
-        distance_setting.max_distance = settings_json.getFloat("MaxDistance", distance_setting.max_distance);
-        distance_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", distance_setting.draw_debug_points);
-
-        distance_setting.position = createVectorSetting(settings_json, distance_setting.position);
-        distance_setting.rotation = createRotationSetting(settings_json, distance_setting.rotation);
-    }
-
-    static void initializeLidarSetting(LidarSetting& lidar_setting, const Settings& settings_json)
-    {
-        lidar_setting.number_of_channels = settings_json.getInt("NumberOfChannels", lidar_setting.number_of_channels);
-        lidar_setting.range = settings_json.getFloat("Range", lidar_setting.range);
-        lidar_setting.points_per_second = settings_json.getInt("PointsPerSecond", lidar_setting.points_per_second);
-        lidar_setting.horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", lidar_setting.horizontal_rotation_frequency);
-        lidar_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", lidar_setting.draw_debug_points);
-        lidar_setting.data_frame = settings_json.getString("DataFrame", lidar_setting.data_frame);
-
-        lidar_setting.vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", lidar_setting.vertical_FOV_upper);
-        lidar_setting.vertical_FOV_lower = settings_json.getFloat("VerticalFOVLower", lidar_setting.vertical_FOV_lower);
-        lidar_setting.horizontal_FOV_start = settings_json.getFloat("HorizontalFOVStart", lidar_setting.horizontal_FOV_start);
-        lidar_setting.horizontal_FOV_end = settings_json.getFloat("HorizontalFOVEnd", lidar_setting.horizontal_FOV_end);
-
-        lidar_setting.position = createVectorSetting(settings_json, lidar_setting.position);
-        lidar_setting.rotation = createRotationSetting(settings_json, lidar_setting.rotation);
-    }
-
     static std::shared_ptr<SensorSetting> createSensorSetting(
         SensorBase::SensorType sensor_type, const std::string& sensor_name,
         bool enabled)
@@ -1304,29 +1212,10 @@ private:
     static void initializeSensorSetting(SensorSetting* sensor_setting, const Settings& settings_json)
     {
         sensor_setting->enabled = settings_json.getBool("Enabled", sensor_setting->enabled);
-
-        switch (sensor_setting->sensor_type) {
-        case SensorBase::SensorType::Barometer:
-            initializeBarometerSetting(*static_cast<BarometerSetting*>(sensor_setting), settings_json);
-            break;
-        case SensorBase::SensorType::Imu:
-            initializeImuSetting(*static_cast<ImuSetting*>(sensor_setting), settings_json);
-            break;
-        case SensorBase::SensorType::Gps:
-            initializeGpsSetting(*static_cast<GpsSetting*>(sensor_setting), settings_json);
-            break;
-        case SensorBase::SensorType::Magnetometer:
-            initializeMagnetometerSetting(*static_cast<MagnetometerSetting*>(sensor_setting), settings_json);
-            break;
-        case SensorBase::SensorType::Distance:
-            initializeDistanceSetting(*static_cast<DistanceSetting*>(sensor_setting), settings_json);
-            break;
-        case SensorBase::SensorType::Lidar:
-            initializeLidarSetting(*static_cast<LidarSetting*>(sensor_setting), settings_json);
-            break;
-        default:
-            throw std::invalid_argument("Unexpected sensor type");
-        }
+        // pass the json Settings property bag through to the specific sensor params object where it is
+        // extracted there.  This way default values can be kept in one place.  For example, see the 
+        // BarometerSimpleParams::initializeFromSettings method.
+        sensor_setting->settings = settings_json;
     }
 
     // creates and intializes sensor settings from json

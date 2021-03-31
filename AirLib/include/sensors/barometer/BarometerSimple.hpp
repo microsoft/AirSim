@@ -27,7 +27,7 @@ public:
         //GM process that would do random walk for pressure factor
         pressure_factor_.initialize(params_.pressure_factor_tau, params_.pressure_factor_sigma, 0);
 
-        uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
+        uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.uncorrelated_noise_sigma);
         //correlated_noise_.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
 
         //initialize frequency limiter

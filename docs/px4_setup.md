@@ -42,7 +42,7 @@ See also [initial firmware setup video](https://docs.px4.io/master/en/config/).
                     "Barometer":{
                         "SensorType": 1,
                         "Enabled": true,
-                        "pressure_factor_sigma": 0.0001825
+                        "PressureFactorSigma": 0.0001825
                     }
                 },
                 "Parameters": {

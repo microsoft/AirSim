@@ -12,7 +12,7 @@ void UnitySensorFactory::setActor(std::string vehicle_name, const NedTransform* 
 	ned_transform_ = ned_transform;
 }
 
-std::unique_ptr<msr::airlib::SensorBase> UnitySensorFactory::createSensorFromSettings(const AirSimSettings::SensorSetting * sensor_setting) const
+std::shared_ptr<msr::airlib::SensorBase> UnitySensorFactory::createSensorFromSettings(const AirSimSettings::SensorSetting * sensor_setting) const
 {
 	
 	using SensorBase = msr::airlib::SensorBase;
@@ -20,7 +20,7 @@ std::unique_ptr<msr::airlib::SensorBase> UnitySensorFactory::createSensorFromSet
 	switch (sensor_setting->sensor_type)
 	{
 	case SensorBase::SensorType::Distance:
-		return std::unique_ptr<UnityDistanceSensor>(new UnityDistanceSensor(vehicle_name_, ned_transform_));
+		return std::shared_ptr<UnityDistanceSensor>(new UnityDistanceSensor(vehicle_name_, ned_transform_));
 	default:
 		return msr::airlib::SensorFactory::createSensorFromSettings(sensor_setting);
 	}

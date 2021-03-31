@@ -64,7 +64,7 @@ The default ports have changed recently, so check them closely to make sure AirS
                     "Barometer":{
                         "SensorType": 1,
                         "Enabled": true,
-                        "pressure_factor_sigma": 0.0001825
+                        "PressureFactorSigma": 0.0001825
                     }
                 },
                 "Parameters": {
