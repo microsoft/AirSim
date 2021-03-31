@@ -263,7 +263,7 @@ public: //types
         Rotation rotation = Rotation::nanRotation();
 
         std::map<std::string, CameraSetting> cameras;
-        std::map<std::string, std::unique_ptr<SensorSetting>> sensors;
+        std::map<std::string, std::shared_ptr<SensorSetting>> sensors;
 
         RCSettings rc;
     };
@@ -380,7 +380,7 @@ public: //fields
     CameraDirectorSetting camera_director;
     float speed_unit_factor =  1.0f;
     std::string speed_unit_label = "m\\s";
-    std::map<std::string, std::unique_ptr<SensorSetting>> sensor_defaults;
+    std::map<std::string, std::shared_ptr<SensorSetting>> sensor_defaults;
     Vector3r wind = Vector3r::Zero();
 
 public: //methods
@@ -414,7 +414,7 @@ public: //methods
         loadPawnPaths(settings_json, pawn_paths);
         loadOtherSettings(settings_json);
         loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults);
-        loadVehicleSettings(simmode_name, settings_json, vehicles);
+        loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults);
 
         //this should be done last because it depends on vehicles (and/or their type) we have
         loadRecordingSetting(settings_json);
@@ -767,7 +767,8 @@ private:
     }
 
     static std::unique_ptr<VehicleSetting> createVehicleSetting(const std::string& simmode_name,  const Settings& settings_json,
-        const std::string vehicle_name)
+        const std::string vehicle_name, 
+        std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
     {
         auto vehicle_type = Utils::toLower(settings_json.getString("VehicleType", ""));
 
@@ -811,7 +812,7 @@ private:
         vehicle_setting->rotation = createRotationSetting(settings_json, vehicle_setting->rotation);
 
         loadCameraSettings(settings_json, vehicle_setting->cameras);
-        loadSensorSettings(settings_json, "Sensors", vehicle_setting->sensors);
+        loadSensorSettings(settings_json, "Sensors", vehicle_setting->sensors, sensor_defaults);
 
         return vehicle_setting;
     }
@@ -853,7 +854,8 @@ private:
     }
 
     static void loadVehicleSettings(const std::string& simmode_name, const Settings& settings_json,
-        std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
+        std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles,
+        std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
     {
         initializeVehicleSettings(simmode_name, vehicles);
 
@@ -869,7 +871,7 @@ private:
             for (const auto& key : keys) {
                 msr::airlib::Settings child;
                 vehicles_child.getChild(key, child);
-                vehicles[key] = createVehicleSetting(simmode_name, child, key);
+                vehicles[key] = createVehicleSetting(simmode_name, child, key, sensor_defaults);
             }
         }
     }
@@ -1265,29 +1267,29 @@ private:
         lidar_setting.rotation = createRotationSetting(settings_json, lidar_setting.rotation);
     }
 
-    static std::unique_ptr<SensorSetting> createSensorSetting(
+    static std::shared_ptr<SensorSetting> createSensorSetting(
         SensorBase::SensorType sensor_type, const std::string& sensor_name,
         bool enabled)
     {
-        std::unique_ptr<SensorSetting> sensor_setting;
+        std::shared_ptr<SensorSetting> sensor_setting;
         switch (sensor_type) {
         case SensorBase::SensorType::Barometer:
-            sensor_setting = std::unique_ptr<SensorSetting>(new BarometerSetting());
+            sensor_setting = std::shared_ptr<SensorSetting>(new BarometerSetting());
             break;
         case SensorBase::SensorType::Imu:
-            sensor_setting = std::unique_ptr<SensorSetting>(new ImuSetting());
+            sensor_setting = std::shared_ptr<SensorSetting>(new ImuSetting());
             break;
         case SensorBase::SensorType::Gps:
-            sensor_setting = std::unique_ptr<SensorSetting>(new GpsSetting());
+            sensor_setting = std::shared_ptr<SensorSetting>(new GpsSetting());
             break;
         case SensorBase::SensorType::Magnetometer:
-            sensor_setting = std::unique_ptr<SensorSetting>(new MagnetometerSetting());
+            sensor_setting = std::shared_ptr<SensorSetting>(new MagnetometerSetting());
             break;
         case SensorBase::SensorType::Distance:
-            sensor_setting = std::unique_ptr<SensorSetting>(new DistanceSetting());
+            sensor_setting = std::shared_ptr<SensorSetting>(new DistanceSetting());
             break;
         case SensorBase::SensorType::Lidar:
-            sensor_setting = std::unique_ptr<SensorSetting>(new LidarSetting());
+            sensor_setting = std::shared_ptr<SensorSetting>(new LidarSetting());
             break;
         default:
             throw std::invalid_argument("Unexpected sensor type");
@@ -1329,8 +1331,15 @@ private:
 
     // creates and intializes sensor settings from json
     static void loadSensorSettings( const Settings& settings_json, const std::string& collectionName,
-        std::map<std::string, std::unique_ptr<SensorSetting>>& sensors)
+        std::map<std::string, std::shared_ptr<SensorSetting>>& sensors, 
+        std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
     {
+        // start with defaults.
+        for (auto ptr = sensor_defaults.begin(); ptr != sensor_defaults.end(); ptr++) {
+            auto key = ptr->first;
+            sensors[key] = sensor_defaults[key];
+        }
+
         msr::airlib::Settings sensors_child;
         if (settings_json.getChild(collectionName, sensors_child)) {
             std::vector<std::string> keys;
@@ -1350,7 +1359,7 @@ private:
 
     // creates default sensor list when none specified in json
     static void createDefaultSensorSettings(const std::string& simmode_name,
-        std::map<std::string, std::unique_ptr<SensorSetting>>& sensors)
+        std::map<std::string, std::shared_ptr<SensorSetting>>& sensors)
     {
         if (simmode_name == kSimModeTypeMultirotor) {
             sensors["imu"] = createSensorSetting(SensorBase::SensorType::Imu, "imu", true);
@@ -1369,11 +1378,11 @@ private:
     // loads or creates default sensor list
     static void loadDefaultSensorSettings(const std::string& simmode_name,
         const Settings& settings_json,
-        std::map<std::string, std::unique_ptr<SensorSetting>>& sensors)
+        std::map<std::string, std::shared_ptr<SensorSetting>>& sensors)
     {
         msr::airlib::Settings sensors_child;
         if (settings_json.getChild("DefaultSensors", sensors_child))
-            loadSensorSettings(settings_json, "DefaultSensors", sensors);
+            loadSensorSettings(settings_json, "DefaultSensors", sensors, sensors);
         else
             createDefaultSensorSettings(simmode_name, sensors);
     }

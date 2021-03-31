@@ -1378,7 +1378,6 @@ private: //methods
 
         hil_sensor.abs_pressure = abs_pressure;
         hil_sensor.pressure_alt = pressure_alt;
-
         hil_sensor.fields_updated |= 0b1101000000000; // Set baro bit fields
 
         //TODO: enable temperature? diff_pressure
