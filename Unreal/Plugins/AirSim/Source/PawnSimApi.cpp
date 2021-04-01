@@ -320,26 +320,31 @@ void PawnSimApi::reportState(msr::airlib::StateReporter& reporter)
 
 std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
 {
-    const APIPCamera* camera = getCamera(camera_name);
-    const TArray<FDetectionInfo> detections = camera->getDetectionComponent(image_type, false)->GetDetections();
-    std::vector<msr::airlib::DetectionInfo> result(detections.Num());
-     
-    for (int i = 0; i < detections.Num(); i++)
-    {
-        result[i].name = std::string(TCHAR_TO_UTF8(*(detections[i].Actor->GetFName().ToString())));
-	    
-        Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(detections[i].Actor->GetActorLocation());
-        result[i].geo_point  = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
-			AirSimSettings::singleton().origin_geopoint);
-        
-		result[i].box2D.min = Vector2r(detections[i].Box2D.Min.X, detections[i].Box2D.Min.Y);
-		result[i].box2D.max = Vector2r(detections[i].Box2D.Max.X, detections[i].Box2D.Max.Y);
+    std::vector<msr::airlib::DetectionInfo> result;
 
-		result[i].box3D.min = ned_transform_.toLocalNed(detections[i].Box3D.Min);
-        result[i].box3D.max = ned_transform_.toLocalNed(detections[i].Box3D.Max);
+	UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, &result]() {
+		const APIPCamera* camera = getCamera(camera_name);
+		const TArray<FDetectionInfo> detections = camera->getDetectionComponent(image_type, false)->GetDetections();
+        result.resize(detections.Num());
 
-		result[i].relative_pose = toPose(detections[i].RelativeTransform.GetTranslation(), detections[i].RelativeTransform.GetRotation());
-    }
+		for (int i = 0; i < detections.Num(); i++)
+		{
+			result[i].name = std::string(TCHAR_TO_UTF8(*(detections[i].Actor->GetFName().ToString())));
+
+			Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(detections[i].Actor->GetActorLocation());
+			result[i].geo_point = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
+				AirSimSettings::singleton().origin_geopoint);
+
+			result[i].box2D.min = Vector2r(detections[i].Box2D.Min.X, detections[i].Box2D.Min.Y);
+			result[i].box2D.max = Vector2r(detections[i].Box2D.Max.X, detections[i].Box2D.Max.Y);
+
+			result[i].box3D.min = ned_transform_.toLocalNed(detections[i].Box3D.Min);
+			result[i].box3D.max = ned_transform_.toLocalNed(detections[i].Box3D.Max);
+
+			result[i].relative_pose = toPose(detections[i].RelativeTransform.GetTranslation(), detections[i].RelativeTransform.GetRotation());
+		}
+
+		}, true);
 
     return result;
 }
