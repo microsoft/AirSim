@@ -467,7 +467,11 @@ class VehicleClient:
         For example: simAddDetectionFilterMeshName("Car_*") will detect all instance named "Car_*"
 
         Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            image_type (ImageType): Type of image required
             mesh_name (str): mesh name in wild card format
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+
         """
         self.client.call('simAddDetectionFilterMeshName', camera_name, image_type, mesh_name, vehicle_name)
     
@@ -476,13 +480,21 @@ class VehicleClient:
         Set detection radius for all cameras
 
         Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            image_type (ImageType): Type of image required
             radius_cm (int): Radius in [cm]
+            vehicle_name (str, optional): Vehicle which the camera is associated with
         """
         self.client.call('simSetDetectionFilterRadius', camera_name, image_type, radius_cm, vehicle_name)
      
     def simClearDetectionMeshNames(self, camera_name, image_type, vehicle_name = ''):
         """
         Clear all mesh names from detection filter
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            image_type (ImageType): Type of image required
+            vehicle_name (str, optional): Vehicle which the camera is associated with
 
         """
         self.client.call('simClearDetectionMeshNames', camera_name, image_type, vehicle_name)
