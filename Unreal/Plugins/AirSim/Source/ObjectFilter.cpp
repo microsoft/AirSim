@@ -26,6 +26,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
         return Actor == ActorInstance;
     }
     
+    bool bMatchesActorName = false;
     bool bMatchesStaticMesh = false;
     bool bMatchesSkeletalMesh = false;
     bool bMatchesWildcardMeshName = false;
@@ -33,6 +34,12 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
     bool bMatchesActorTag = false;
     bool bMatchesComponentClass = false;
     bool bMatchesComponentTag = false;
+    
+    if (!WildcardMeshNames.Num() == 0 && IsMatchAnyWildcard(Actor->GetName()))
+    {
+        //bMatchesActorName = true;
+        return true;
+    }
 
     TInlineComponentArray<UActorComponent*> ActorComponents;
     Actor->GetComponents(ActorComponents);
@@ -112,7 +119,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
         }
     }
 
-    return bMatchesStaticMesh || bMatchesSkeletalMesh ||
+    return bMatchesActorName || bMatchesStaticMesh || bMatchesSkeletalMesh ||
         bMatchesWildcardMeshName || bMatchesActorClass || bMatchesActorTag ||
         bMatchesComponentClass || bMatchesComponentClass ||
         bMatchesComponentTag;
