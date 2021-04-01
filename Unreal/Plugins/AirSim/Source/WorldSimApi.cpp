@@ -296,27 +296,6 @@ int WorldSimApi::getSegmentationObjectID(const std::string& mesh_name) const
     return result;
 }
 
-void WorldSimApi::addDetectionFilterMeshName(const std::string& mesh_name)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([mesh_name]() {
-        UAirBlueprintLib::addDetectionFilterMeshName(mesh_name);
-    }, false);
-}
-
-void WorldSimApi::clearDetectionMeshNames()
-{
-    UAirBlueprintLib::RunCommandOnGameThread([&]() {
-        UAirBlueprintLib::clearDetectionMeshNames();
-        }, false);
-}
-
-void WorldSimApi::setDetectionFilterRadius(const float radius_cm)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([radius_cm]() {
-        UAirBlueprintLib::setDetectionFilterRadius(radius_cm);
-    }, false);
-}
-
 void WorldSimApi::printLogMessage(const std::string& message,
     const std::string& message_param, unsigned char severity)
 {

@@ -38,10 +38,6 @@ public:
     virtual bool setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex = false) override;
     virtual int getSegmentationObjectID(const std::string& mesh_name) const override;
 
-    virtual void addDetectionFilterMeshName(const std::string& mesh_name) override;
-    virtual void setDetectionFilterRadius(const float radius_cm) override;
-    virtual void clearDetectionMeshNames() override;
-
     virtual bool addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "") override;
 
     virtual void printLogMessage(const std::string& message,

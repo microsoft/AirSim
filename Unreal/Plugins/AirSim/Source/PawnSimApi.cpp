@@ -318,6 +318,38 @@ void PawnSimApi::reportState(msr::airlib::StateReporter& reporter)
     reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
 }
 
+void PawnSimApi::addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, mesh_name]() {
+        const APIPCamera* camera = getCamera(camera_name);
+        UDetectionComponent* detection_comp = camera->getDetectionComponent(image_type, false);
+
+        FString name = FString(mesh_name.c_str());
+
+        if (!detection_comp->ObjectFilter.WildcardMeshNames.Contains(name))
+        {
+            detection_comp->ObjectFilter.WildcardMeshNames.Add(name);
+        }
+        
+        }, true);
+}
+
+void PawnSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type]() {
+        const APIPCamera* camera = getCamera(camera_name);
+        camera->getDetectionComponent(image_type, false)->ObjectFilter.WildcardMeshNames.Empty();
+        }, true);
+}
+
+void PawnSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, radius_cm]() {
+        const APIPCamera* camera = getCamera(camera_name);
+        camera->getDetectionComponent(image_type, false)->MaxDistanceToCamera = radius_cm;
+        }, true);
+}
+
 std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
 {
     std::vector<msr::airlib::DetectionInfo> result;
