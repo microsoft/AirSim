@@ -590,32 +590,32 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
 void UAirBlueprintLib::addDetectionFilterMeshName(const std::string& name)
 {
     FString mesh_name= FString(name.c_str());
-	for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
-	{
-		UDetectionComponent* detection = *itr;
+    for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
+    {
+        UDetectionComponent* detection = *itr;
         if (!detection->ObjectFilter.WildcardMeshNames.Contains(mesh_name))
         {
             detection->ObjectFilter.WildcardMeshNames.Add(mesh_name);
         }
-	}
+    }
 }
 
 void UAirBlueprintLib::setDetectionFilterRadius(const float radius_cm)
 {
-	for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
-	{
-		UDetectionComponent* detection = *itr;
+    for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
+    {
+        UDetectionComponent* detection = *itr;
         detection->MaxDistanceToCamera = radius_cm;
-	}
+    }
 }
 
 void UAirBlueprintLib::clearDetectionMeshNames()
 {
-	for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
-	{
-		UDetectionComponent* detection = *itr;
+    for (TObjectIterator<UDetectionComponent> itr; itr; ++itr)
+    {
+        UDetectionComponent* detection = *itr;
         detection->ObjectFilter.WildcardMeshNames.Empty();
-	}
+    }
 }
 
 TArray<FName> UAirBlueprintLib::ListWorldsInRegistry()

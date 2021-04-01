@@ -64,8 +64,8 @@ public:
     int simGetSegmentationObjectID(const std::string& mesh_name) const;
     void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
-	void simAddDetectionFilterMeshName(const std::string& mesh_name);
-	void simSetDetectionFilterRadius(const float radius_cm);
+    void simAddDetectionFilterMeshName(const std::string& mesh_name);
+    void simSetDetectionFilterRadius(const float radius_cm);
     void simClearDetectionMeshNames();
     vector<DetectionInfo> simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name ="");
 

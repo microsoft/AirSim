@@ -180,19 +180,19 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
         return getWorldSimApi()->getSegmentationObjectID(mesh_name);
     });
 
-	pimpl_->server.bind("simAddDetectionFilterMeshName", [&](const std::string& mesh_name) -> void {
-		getWorldSimApi()->addDetectionFilterMeshName(mesh_name);
-		});
-	pimpl_->server.bind("simSetDetectionFilterRadius", [&](const float radius_cm) -> void {
-		getWorldSimApi()->setDetectionFilterRadius(radius_cm);
-		});
-	pimpl_->server.bind("simClearDetectionMeshNames", [&]() -> void {
-		getWorldSimApi()->clearDetectionMeshNames();
-		});
-	pimpl_->server.bind("simGetDetections", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> vector<RpcLibAdaptorsBase::DetectionInfo> {
+    pimpl_->server.bind("simAddDetectionFilterMeshName", [&](const std::string& mesh_name) -> void {
+        getWorldSimApi()->addDetectionFilterMeshName(mesh_name);
+        });
+    pimpl_->server.bind("simSetDetectionFilterRadius", [&](const float radius_cm) -> void {
+        getWorldSimApi()->setDetectionFilterRadius(radius_cm);
+        });
+    pimpl_->server.bind("simClearDetectionMeshNames", [&]() -> void {
+        getWorldSimApi()->clearDetectionMeshNames();
+        });
+    pimpl_->server.bind("simGetDetections", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> vector<RpcLibAdaptorsBase::DetectionInfo> {
         const auto& response = getVehicleSimApi(vehicle_name)->getDetections(camera_name, type);
         return RpcLibAdaptorsBase::DetectionInfo::from(response);
-		});
+        });
 
     pimpl_->server.bind("reset", [&]() -> void {
         //Exit if already resetting.

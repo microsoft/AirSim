@@ -200,7 +200,7 @@ int RpcLibClientBase::simGetSegmentationObjectID(const std::string& mesh_name) c
 
 void RpcLibClientBase::simAddDetectionFilterMeshName(const std::string& mesh_name)
 {
-	pimpl_->client.call("simAddDetectionFilterMeshName", mesh_name);
+    pimpl_->client.call("simAddDetectionFilterMeshName", mesh_name);
 }
 void RpcLibClientBase::simSetDetectionFilterRadius(const float radius_cm)
 {
@@ -208,12 +208,12 @@ void RpcLibClientBase::simSetDetectionFilterRadius(const float radius_cm)
 }
 void RpcLibClientBase::simClearDetectionMeshNames()
 {
-	pimpl_->client.call("simClearDetectionMeshNames");
+    pimpl_->client.call("simClearDetectionMeshNames");
 }
 vector<DetectionInfo> RpcLibClientBase::simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name)
 {
     const auto& result = pimpl_->client.call("simGetDetections", camera_name, image_type, vehicle_name).as<vector<RpcLibAdaptorsBase::DetectionInfo>>();
-	return RpcLibAdaptorsBase::DetectionInfo::to(result);
+    return RpcLibAdaptorsBase::DetectionInfo::to(result);
 }
 
 CollisionInfo RpcLibClientBase::simGetCollisionInfo(const std::string& vehicle_name) const

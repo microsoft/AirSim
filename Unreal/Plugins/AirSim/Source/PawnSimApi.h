@@ -25,8 +25,8 @@
 class PawnSimApi : public msr::airlib::VehicleSimApiBase {
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
-	typedef msr::airlib::Vector2r Vector2r;
-	typedef msr::airlib::Vector3r Vector3r;
+    typedef msr::airlib::Vector2r Vector2r;
+    typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Pose Pose;
     typedef msr::airlib::Quaternionr Quaternionr;
     typedef msr::airlib::CollisionInfo CollisionInfo;
@@ -101,7 +101,7 @@ public: //implementation of VehicleSimApiBase
     virtual std::string getRecordFileLine(bool is_header_line) const override;
     virtual void reportState(msr::airlib::StateReporter& reporter) override;
 
-	virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
+    virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
 
 protected: //additional interface for derived class
     virtual void pawnTick(float dt);
