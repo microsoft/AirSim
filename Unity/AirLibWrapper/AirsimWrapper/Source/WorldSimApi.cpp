@@ -52,24 +52,6 @@ int WorldSimApi::getSegmentationObjectID(const std::string& mesh_name) const
 	return GetSegmentationObjectId(mesh_name.c_str());
 }
 
-void WorldSimApi::addDetectionFilterMeshName(const std::string& mesh_name)
-{
-	throw std::invalid_argument(common_utils::Utils::stringf(
-		"addDetectionFilterMeshName is not supported on unity").c_str());
-}
-
-void WorldSimApi::setDetectionFilterRadius(const float radius_cm)
-{
-	throw std::invalid_argument(common_utils::Utils::stringf(
-		"setDetectionFilterRadius is not supported on unity").c_str());
-}
-
-void WorldSimApi::clearDetectionMeshNames()
-{
-	throw std::invalid_argument(common_utils::Utils::stringf(
-		"clearDetectionMeshNames is not supported on unity").c_str());
-}
-
 void WorldSimApi::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
 {
 	PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
