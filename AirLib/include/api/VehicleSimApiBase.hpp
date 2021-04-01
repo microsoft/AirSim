@@ -67,6 +67,9 @@ public:
     virtual void toggleTrace() = 0;
     virtual void setTraceLine(const std::vector<float>& color_rgba, float thickness) = 0;
 
+    virtual void addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name) = 0;
+    virtual void setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm) = 0;
+    virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type) = 0;
     virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const = 0;
 
 

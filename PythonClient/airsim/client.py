@@ -460,7 +460,7 @@ class VehicleClient:
         """
         return self.client.call('simGetSegmentationObjectID', mesh_name)
 
-    def simAddDetectionFilterMeshName(self, mesh_name):
+    def simAddDetectionFilterMeshName(self, camera_name, image_type, mesh_name, vehicle_name = ''):
         """
         Add mesh name to detect in wild card format
 
@@ -469,23 +469,23 @@ class VehicleClient:
         Args:
             mesh_name (str): mesh name in wild card format
         """
-        self.client.call('simAddDetectionFilterMeshName', mesh_name)
+        self.client.call('simAddDetectionFilterMeshName', camera_name, image_type, mesh_name, vehicle_name)
     
-    def simSetDetectionFilterRadius(self, radius_cm):
+    def simSetDetectionFilterRadius(self, camera_name, image_type, radius_cm, vehicle_name = ''):
         """
         Set detection radius for all cameras
 
         Args:
             radius_cm (int): Radius in [cm]
         """
-        self.client.call('simSetDetectionFilterRadius', radius_cm)
+        self.client.call('simSetDetectionFilterRadius', camera_name, image_type, radius_cm, vehicle_name)
      
-    def simClearDetectionMeshNames(self):
+    def simClearDetectionMeshNames(self, camera_name, image_type, vehicle_name = ''):
         """
         Clear all mesh names from detection filter
 
         """
-        self.client.call('simClearDetectionMeshNames')
+        self.client.call('simClearDetectionMeshNames', camera_name, image_type, vehicle_name)
 
     def simGetDetections(self, camera_name, image_type, vehicle_name = ''):
         """

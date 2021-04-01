@@ -8,14 +8,15 @@ import pprint
 client = airsim.MultirotorClient()
 client.confirmConnection()
 
-# set detection radius in [cm]
-client.simSetDetectionFilterRadius(200 * 100) 
-# add desired object name to detect in wild card/regex format
-client.simAddDetectionFilterMeshName("Cylinder*") 
-
 # set camera name and image type to request images and detections
 camera_name = "0"
 image_type = airsim.ImageType.Scene
+
+# set detection radius in [cm]
+client.simSetDetectionFilterRadius(camera_name, image_type, 200 * 100) 
+# add desired object name to detect in wild card/regex format
+client.simAddDetectionFilterMeshName(camera_name, image_type, "Cylinder*") 
+
 
 while True:
     rawImage = client.simGetImage(camera_name, image_type)
@@ -36,7 +37,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     elif cv2.waitKey(1) & 0xFF == ord('c'):
-        client.simClearDetectionMeshNames()
+        client.simClearDetectionMeshNames(camera_name, image_type)
     elif cv2.waitKey(1) & 0xFF == ord('a'):
-        client.simAddDetectionFilterMeshName("Cylinder*")
+        client.simAddDetectionFilterMeshName(camera_name, image_type, "Cylinder*")
 cv2.destroyAllWindows() 

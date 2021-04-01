@@ -198,17 +198,17 @@ int RpcLibClientBase::simGetSegmentationObjectID(const std::string& mesh_name) c
     return pimpl_->client.call("simGetSegmentationObjectID", mesh_name).as<int>();
 }
 
-void RpcLibClientBase::simAddDetectionFilterMeshName(const std::string& mesh_name)
+void RpcLibClientBase::simAddDetectionFilterMeshName(const std::string& camera_name, const std::string& mesh_name, const std::string& vehicle_name)
 {
-    pimpl_->client.call("simAddDetectionFilterMeshName", mesh_name);
+    pimpl_->client.call("simAddDetectionFilterMeshName", camera_name, mesh_name, vehicle_name);
 }
-void RpcLibClientBase::simSetDetectionFilterRadius(const float radius_cm)
+void RpcLibClientBase::simSetDetectionFilterRadius(const std::string& camera_name, const float radius_cm, const std::string& vehicle_name)
 {
-    pimpl_->client.call("simSetDetectionFilterRadius", radius_cm);
+    pimpl_->client.call("simSetDetectionFilterRadius", camera_name, radius_cm, vehicle_name);
 }
-void RpcLibClientBase::simClearDetectionMeshNames()
+void RpcLibClientBase::simClearDetectionMeshNames(const std::string& camera_name, const std::string& vehicle_name)
 {
-    pimpl_->client.call("simClearDetectionMeshNames");
+    pimpl_->client.call("simClearDetectionMeshNames", camera_name, vehicle_name);
 }
 vector<DetectionInfo> RpcLibClientBase::simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name)
 {
