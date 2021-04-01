@@ -682,8 +682,10 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
 AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int customSubMode, bool waitForAck)
 {
     // this mode change take precedence over offboard mode.
-    control_requested_ = false;
-    control_request_sent_ = false;
+    if (customMode != static_cast<int>(PX4_CUSTOM_MAIN_MODE_OFFBOARD)) {
+        control_requested_ = false;
+        control_request_sent_ = false;
+    }
 
     if ((vehicle_state_.mode & static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED)) != 0) {
         mode |= static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED); // must preserve this flag.
