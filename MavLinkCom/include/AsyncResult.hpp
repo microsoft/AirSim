@@ -78,9 +78,16 @@ namespace mavlinkcom {
         {
             state_ = std::make_shared<AsyncResultState<T>>(owner);
         }
+
         ~AsyncResult() 
         {
             state_ = nullptr;
+        }
+
+        static AsyncResult<T> Completed(T state) {
+            AsyncResult<T> r(nullptr);
+            r.setResult(state);
+            return r;
         }
 
         void then(ResultHandler handler)
@@ -98,6 +105,7 @@ namespace mavlinkcom {
         void setState(int s) const {
             state_->setState(s);
         }
+
         void setResult(T result) const {
             if (state_ != nullptr) {
                 state_->setResult(result);

@@ -50,10 +50,10 @@ AsyncResult<bool>  MavLinkVehicle::returnToHome()
 	return ptr->returnToHome();
 }
 
-AsyncResult<bool>  MavLinkVehicle::setMode(int modeFlags, int customMode, int customSubMode)
+AsyncResult<bool>  MavLinkVehicle::setMode(int modeFlags, int customMode, int customSubMode, bool waitForAck)
 {
     auto ptr = static_cast<MavLinkVehicleImpl*>(pImpl.get());
-    return ptr->setMode(modeFlags, customMode, customSubMode);
+    return ptr->setMode(modeFlags, customMode, customSubMode, waitForAck);
 }
 
 bool MavLinkVehicle::isLocalControlSupported()

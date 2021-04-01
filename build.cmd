@@ -23,12 +23,14 @@ if "%VisualStudioVersion%" lss "16.0" (
 
 if "%1"=="" goto noargs
 if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
-if "%1"=="--Debug" set "buildMode=--Debug"
-if "%1"=="--Release" set "buildMode=--Release"
+if "%1"=="--Debug" set "buildMode=Debug"
+if "%1"=="--Release" set "buildMode=Release"
+if "%1"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
 
 if "%2"=="" goto noargs
-if "%2"=="--Debug" set "buildMode=--Debug"
-if "%2"=="--Release" set "buildMode=--Release"
+if "%2"=="--Debug" set "buildMode=Debug"
+if "%2"=="--Release" set "buildMode=Release"
+if "%2"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
 
 :noargs
 
@@ -93,13 +95,11 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2
 cd external\rpclib\rpclib-2.2.1\build
 cmake -G"Visual Studio 16 2019" ..
 
-if "%buildMode%" == "--Debug" (
-cmake --build . --config Debug
-) else if "%buildMode%" == "--Release" (
+if "%buildMode%" == "" (
+cmake --build . 
 cmake --build . --config Release
 ) else (
-cmake --build .
-cmake --build . --config Release
+cmake --build . --config %buildMode%
 )
 
 if ERRORLEVEL 1 goto :buildfailed
@@ -112,13 +112,11 @@ set RPCLIB_TARGET_INCLUDE=AirLib\deps\rpclib\include
 if NOT exist %RPCLIB_TARGET_INCLUDE% mkdir %RPCLIB_TARGET_INCLUDE%
 robocopy /MIR external\rpclib\rpclib-2.2.1\include %RPCLIB_TARGET_INCLUDE%
 
-if "%buildMode%" == "--Debug" (
+if "%buildMode%" == "" (
 robocopy /MIR external\rpclib\rpclib-2.2.1\build\Debug %RPCLIB_TARGET_LIB%\Debug
-) else if "%buildMode%" == "--Release" (
 robocopy /MIR external\rpclib\rpclib-2.2.1\build\Release %RPCLIB_TARGET_LIB%\Release
 ) else (
-robocopy /MIR external\rpclib\rpclib-2.2.1\build\Debug %RPCLIB_TARGET_LIB%\Debug
-robocopy /MIR external\rpclib\rpclib-2.2.1\build\Release %RPCLIB_TARGET_LIB%\Release
+robocopy /MIR external\rpclib\rpclib-2.2.1\build\%buildMode% %RPCLIB_TARGET_LIB%\%buildMode%
 )
 
 REM //---------- get High PolyCount SUV Car Model ------------
@@ -169,16 +167,13 @@ IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
-if "%buildMode%" == "--Debug" (
-msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Debug AirSim.sln
-if ERRORLEVEL 1 goto :buildfailed
-) else if "%buildMode%" == "--Release" (
-msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Release AirSim.sln
-if ERRORLEVEL 1 goto :buildfailed
-) else (
+if "%buildMode%" == "" (
 msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Debug AirSim.sln
 if ERRORLEVEL 1 goto :buildfailed
 msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Release AirSim.sln 
+if ERRORLEVEL 1 goto :buildfailed
+) else (
+msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=%buildMode% AirSim.sln
 if ERRORLEVEL 1 goto :buildfailed
 )
 

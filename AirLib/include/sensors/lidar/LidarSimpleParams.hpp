@@ -52,8 +52,8 @@ struct LidarSimpleParams {
         horizontal_FOV_start = settings_json.getFloat("HorizontalFOVStart", horizontal_FOV_start);
         horizontal_FOV_end = settings_json.getFloat("HorizontalFOVEnd", horizontal_FOV_end);
 
-        auto position = createVectorSetting(settings_json, VectorMath::nanVector());
-        auto rotation = createRotationSetting(settings_json, AirSimSettings::Rotation::nanRotation());
+        auto position = AirSimSettings::createVectorSetting(settings_json, VectorMath::nanVector());
+        auto rotation = AirSimSettings::createRotationSetting(settings_json, AirSimSettings::Rotation::nanRotation());
 
         std::string simmode_name = AirSimSettings::singleton().simmode_name;
 

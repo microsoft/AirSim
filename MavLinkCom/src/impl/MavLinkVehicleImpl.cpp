@@ -585,9 +585,8 @@ void MavLinkVehicleImpl::releaseControl()
     control_requested_ = false;
     control_request_sent_ = false;
     vehicle_state_.controls.offboard = false;
-    MavCmdNavGuidedEnable cmd{};
-    cmd.Enable = 0;
-    sendCommand(cmd);
+    setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
+        static_cast<int>(PX4_CUSTOM_MAIN_MODE_POSCTL), 0, false);
 }
 
 void MavLinkVehicleImpl::checkOffboard()
@@ -610,14 +609,15 @@ void MavLinkVehicleImpl::checkOffboard()
         }
 
         Utils::log("MavLinkVehicleImpl::checkOffboard: sending MavCmdNavGuidedEnable \n");		
-        // now the command should succeed.
-        bool r = false;
-        MavCmdNavGuidedEnable cmd{};
-        cmd.Enable = 1;
+
         // Note: we can't wait for ACK here, I've tried it.  The ACK takes too long to get back to
         // us by which time the PX4 times out offboard mode!!
-        sendCommand(cmd);
+        setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
+            static_cast<int>(PX4_CUSTOM_MAIN_MODE_OFFBOARD), 0, false);
+
         control_request_sent_ = true;
+        // assume this was successful, we'll find out if so in the next heartbeat.
+        vehicle_state_.controls.offboard = true;
     }
 }
 
@@ -679,7 +679,7 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
     writeMessage(msg);
 }
 
-AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int customSubMode)
+AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int customSubMode, bool waitForAck)
 {
     // this mode change take precedence over offboard mode.
     control_requested_ = false;
@@ -696,7 +696,13 @@ AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int cust
     cmd.Mode = static_cast<float>(mode);
     cmd.CustomMode = static_cast<float>(customMode);
     cmd.CustomSubmode = static_cast<float>(customSubMode);
-    return sendCommandAndWaitForAck(cmd);
+    if (waitForAck) {
+        return sendCommandAndWaitForAck(cmd);
+    }
+    else {
+        sendCommand(cmd);
+        return AsyncResult<bool>::Completed(true);
+    }
 }
 
 AsyncResult<bool>  MavLinkVehicleImpl::setPositionHoldMode()
