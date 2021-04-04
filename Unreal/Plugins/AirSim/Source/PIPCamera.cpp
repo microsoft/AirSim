@@ -499,7 +499,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
                 capture->TextureTarget = getRenderTarget(type, false);
                 capture->Activate();
                 if (detection != nullptr)
-				{
+                {
                     detection->TextureTarget = capture->TextureTarget;
                     detection->Activate();
                 }
@@ -509,11 +509,11 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
             if (capture->IsActive() || capture->TextureTarget != nullptr) {
                 capture->Deactivate();
                 capture->TextureTarget = nullptr;
-				if (detection != nullptr)
-				{
-					detection->Deactivate();
+                if (detection != nullptr)
+                {
+                    detection->Deactivate();
                     detection->TextureTarget = nullptr;
-				}
+                }
             }
         }
         camera_type_enabled_[Utils::toNumeric(type)] = is_enabled;
@@ -532,11 +532,11 @@ UTextureRenderTarget2D* APIPCamera::getRenderTarget(const APIPCamera::ImageType 
 
 UDetectionComponent* APIPCamera::getDetectionComponent(const ImageType type, bool if_active) const
 {
-	unsigned int image_type = Utils::toNumeric(type);
+    unsigned int image_type = Utils::toNumeric(type);
 
-	if (!if_active || camera_type_enabled_[image_type])
-		return detections_[image_type];
-	return nullptr;
+    if (!if_active || camera_type_enabled_[image_type])
+        return detections_[image_type];
+    return nullptr;
 }
 
 USceneCaptureComponent2D* APIPCamera::getCaptureComponent(const APIPCamera::ImageType type, bool if_active)

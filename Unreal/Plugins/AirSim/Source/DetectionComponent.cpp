@@ -59,16 +59,9 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
                     Detection.RelativeTransform = FTransform(GetRelativeRotation(Actor->GetActorLocation(), Actor->GetActorRotation()),
                         GetRelativeLocation(Actor->GetActorLocation()));
                     CachedDetections.Add(Detection);
-
-                    /*  ---Debug only---
-                    FVector Origin;
-                    FVector Extend;
-                    Actor->GetActorBounds(false, Origin, Extend);
-                    DrawDebugBox(GetWorld(), Origin, Extend, FColor::Red, false, 0.03, 0, 4.f);
-                        ---------------- */
                 }
             }
-        }		
+        }
     }
 }
 
@@ -98,7 +91,7 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
     Info.ProjectionMode = SceneCaptureComponent2D->ProjectionType;
     Info.AspectRatio = float(TextureTarget->SizeX) / float(TextureTarget->SizeY);
     Info.OrthoNearClipPlane = 1;
-    Info.OrthoFarClipPlane = 0;//1000;
+    Info.OrthoFarClipPlane = 100000;
     Info.bConstrainAspectRatio = true;
     
     // calculate 3D corner Points of bounding box
@@ -158,7 +151,7 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
         FHitResult Result;
         bool bWorldHit;
         for (FVector& Point : Points)
-        {					
+        {
             bWorldHit = GetWorld()->LineTraceSingleByChannel(Result, GetComponentLocation(), Point, ECC_WorldStatic);
             if (bWorldHit)
             {
@@ -166,7 +159,7 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
                 {
                     IsVisible = true;
                     break;
-                }				
+                }
             }
         }
         

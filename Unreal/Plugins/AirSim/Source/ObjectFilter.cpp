@@ -66,7 +66,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
         }
         if (SkeletalMesh || WildcardMeshNames.Num() != 0) 
         {
-            USkeletalMeshComponent* SkeletalMeshComponent =	Cast<USkeletalMeshComponent>(ActorComponent);
+            USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(ActorComponent);
             if (SkeletalMeshComponent) 
             {
                 if (SkeletalMesh &&
@@ -87,7 +87,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
         {
             if (ActorComponent->GetClass()->IsChildOf(ComponentClass)) 
             {
-            //	bMatchesComponentClass = true;
+            // bMatchesComponentClass = true;
                 return true;
             }
         }
@@ -114,7 +114,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
     {
         if (Actor->ActorHasTag(ActorTag)) 
         {
-        //	bMatchesActorTag = true;
+        // bMatchesActorTag = true;
             return true;
         }
     }
@@ -137,7 +137,7 @@ bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const
 
     if (StaticMesh || WildcardMeshNames.Num() != 0)
     {
-        UStaticMeshComponent* StaticMeshComponent =	Cast<UStaticMeshComponent>(ActorComponent);
+        UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ActorComponent);
         if (StaticMeshComponent) 
         {
             if (StaticMesh && StaticMeshComponent->GetStaticMesh() == StaticMesh)
@@ -154,7 +154,7 @@ bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const
     }
     if (SkeletalMesh || WildcardMeshNames.Num() != 0) 
     {
-        USkeletalMeshComponent* SkeletalMeshComponent =	Cast<USkeletalMeshComponent>(ActorComponent);
+        USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(ActorComponent);
         if (SkeletalMeshComponent)
         {
             if (SkeletalMesh && SkeletalMeshComponent->SkeletalMesh == SkeletalMesh)
@@ -240,7 +240,7 @@ uint32 GetTypeHash(const FObjectFilter& Key)
     KeyHash = HashCombine(KeyHash, GetTypeHash(Key.ComponentTag));
     KeyHash = HashCombine(KeyHash, GetTypeHash(Key.SkeletalMesh));
     KeyHash = HashCombine(KeyHash, GetTypeHash(Key.StaticMesh));
-//	KeyHash = HashCombine(KeyHash, GetTypeHash(Key.WildcardMeshNames));
+// KeyHash = HashCombine(KeyHash, GetTypeHash(Key.WildcardMeshNames));
 
     return KeyHash;
 }
