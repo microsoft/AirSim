@@ -86,6 +86,10 @@ much as possible and avoid that style of programming from leaking into the large
 
 Religiously check if you can use const everywhere, for example, `const float * const xP`. Avoid using prefix or suffix to indicate pointer types in variable names, i.e. use `my_obj` instead of `myobj_ptr` except in cases where it might make sense to differentiate variables better, for example, `int mynum = 5; int* mynum_ptr = mynum;`
 
+## Indentation
+
+The C++ code base uses four spaces for indentation (not tabs).
+
 ## This is Too Short, ye?
 
 Yes, and it's on purpose because no one likes to read 200 page coding guidelines. The goal here is to cover only most significant things which are 
