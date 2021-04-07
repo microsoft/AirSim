@@ -1,0 +1,109 @@
+{
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "ViewMode": "SpringArmChase",
+  "ClockSpeed": 1.0,
+  "Vehicles": {
+    "base_link": {
+      "VehicleType": "PX4Multirotor",
+      "UseSerial": false,
+      "UseTcp": true,
+      "LocalHostIp": "127.0.0.1",
+      "TcpPort": 4560,
+      "ControlPort": 14580,
+      "EnableCollisions": true,
+      "AllowAPIAlways": true,
+      "RC": {
+        "RemoteControlID": 0,
+        "AllowAPIWhenDisconnected": false
+      },
+      "X": 0, "Y": 0, "Z": 0.0,
+      "Sensors": {
+        "barometer" : {
+          "SensorType": 1,
+          "Enabled": true
+        },
+	"imu" : {
+          "SensorType": 2,
+          "Enabled": true
+        },
+        "gps" : {
+          "SensorType": 3,
+          "Enabled": true
+        },
+	"magnetometer": {
+          "SensorType": 4,
+          "Enabled": true
+	},
+	"distance": {
+         "SensorType": 5,
+         "Enabled" : true,
+	 "Noise": 0.02,
+	 "MaxDistance": 8.0,
+	 "MinDistance": 0.17,
+         "X": -0.06, "Y": 0, "Z": -0.025,
+	 "Roll": 0, "Pitch": 0, "Yaw":0
+	}
+      },
+      "Cameras": {
+        "camera": {
+          "CaptureSettings": [
+            {
+              "PublishToRos": 1,
+              "ImageType": 0,
+              "Width": 640,
+              "Height": 480,
+              "FOV_Degrees": 100
+            }
+          ],
+          "X": 0.33, "Y": 0, "Z": 0.07,
+	  "Roll": 0, "Pitch": -90, "Yaw": 0
+        }
+      }
+    }
+  },
+  "OriginGeopoint": {
+    "Latitude": 40,
+    "Longitude": 100,
+    "Altitude": 122
+  },
+  "SubWindows": [
+    {"WindowID": 0, "ImageType": 0, "CameraName": "main", "Visible": false},
+    {"WindowID": 1, "ImageType": 0, "CameraName": "left", "Visible": false},
+    {"WindowID": 2, "ImageType": 0, "CameraName": "right", "Visible": false}
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
