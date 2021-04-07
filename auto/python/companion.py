@@ -55,10 +55,10 @@ class companion():
 		mavros.start()
 
 		#Launch ORBSLAM
-		cli_args = ('orb_slam2_ros', 'orb_slam2_mono.launch')
-		roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments(cli_args)[0])]
-		orbslam = roslaunch.parent.ROSLaunchParent(uuid, roslaunch_file)
-		orbslam.start()
+		#cli_args = ('orb_slam2_ros', 'orb_slam2_mono.launch')
+		#roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments(cli_args)[0])]
+		#orbslam = roslaunch.parent.ROSLaunchParent(uuid, roslaunch_file)
+		#orbslam.start()
 
    		rospy.init_node('companion_node', anonymous=True)
 		
