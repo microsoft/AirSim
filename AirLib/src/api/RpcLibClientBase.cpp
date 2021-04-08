@@ -34,7 +34,7 @@ STRICT_MODE_OFF
 #endif
 #include "common/common_utils/WindowsApisCommonPost.hpp"
 
-#include "api/RpcLibAdapatorsBase.hpp"
+#include "api/RpcLibAdpatorsBase.hpp"
 
 
 STRICT_MODE_ON
