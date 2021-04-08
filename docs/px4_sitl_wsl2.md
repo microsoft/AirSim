@@ -61,6 +61,10 @@ what the PX4 address is by setting `ControlIp` to the Linux address you found ab
                     "Enabled": true,
                     "PressureFactorSigma": 0.0001825
                 }
+            },
+            "Parameters": {
+                "NAV_RCL_ACT": 0,
+                "NAV_DLL_ACT": 0
             }
         }
     }
