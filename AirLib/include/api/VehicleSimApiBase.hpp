@@ -48,6 +48,25 @@ public:
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const = 0;
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const = 0;
 
+    //CinemAirSim 
+    virtual std::vector<std::string> getPresetLensSettings();
+    virtual std::string getLensSettings();
+    virtual void setPresetLensSettings(std::string);
+    virtual std::vector<std::string> getPresetFilmbackSettings();
+    virtual void setPresetFilmbackSettings(std::string);
+    virtual std::string getFilmbackSettings();
+    virtual float setFilmbackSettings(float width, float height);
+    virtual float getFocalLength();
+    virtual void setFocalLength(float focal_length);
+    virtual void enableManualFocus(bool enable);
+    virtual float getFocusDistance();
+    virtual void setFocusDistance(float focus_distance);
+    virtual float getFocusAperture();
+    virtual void setFocusAperture(float focus_aperture);
+    virtual void enableFocusPlane(bool enable);
+    virtual std::string getCurrentFieldOfView();
+    //end CinemAirSim 
+
     virtual Pose getPose() const = 0;
     virtual void setPose(const Pose& pose, bool ignore_collision) = 0;
     virtual const Kinematics::State* getGroundTruthKinematics() const = 0;

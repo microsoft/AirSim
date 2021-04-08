@@ -10,6 +10,10 @@
 #include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
 
+//CinemAirSim
+#include <CineCameraActor.h>
+#include <CineCameraComponent.h>
+
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -17,7 +21,7 @@
 
 
 UCLASS()
-class AIRSIM_API APIPCamera : public ACameraActor
+class AIRSIM_API APIPCamera : public ACineCameraActor //CinemAirSim
 {
     GENERATED_BODY()
     
@@ -28,7 +32,7 @@ public:
     typedef AirSimSettings::CameraSetting CameraSetting;
 
 
-    APIPCamera();
+    APIPCamera(const FObjectInitializer& ObjectInitializer); //CinemAirSim
 
     virtual void PostInitializeComponents() override;
     virtual void BeginPlay() override;
@@ -40,6 +44,28 @@ public:
     void disableAllPIP();
     void disableMain();
     void onViewModeChanged(bool nodisplay);
+
+    //CinemAirSim methods
+    std::vector<std::string> getPresetLensSettings();
+    void setPresetLensSettings(std::string preset_string);
+    std::vector<std::string> getPresetFilmbackSettings();
+    void setPresetFilmbackSettings(std::string preset_string);
+    std::string getLensSettings();
+    std::string getFilmbackSettings();
+    float setFilmbackSettings(float sensor_width,float sensot_height);
+    float getFocalLength();
+    void setFocalLength(float focal_length);
+    void enableManualFocus(bool enable);
+    float getFocusDistance();
+    void setFocusDistance(float focus_distance);
+    float getFocusAperture();
+    void setFocusAperture(float focus_aperture);
+    void enableFocusPlane(bool enable);
+    std::string getCurrentFieldOfView();
+
+    void CopyCameraSettingsToAllSceneCapture(UCameraComponent* camera_);
+    void CopyCameraSettingsToSceneCapture(UCameraComponent* Src, USceneCaptureComponent2D* Dst);
+    //end CinemAirSim methods
 
     void setCameraTypeEnabled(ImageType type, bool enabled);
     bool getCameraTypeEnabled(ImageType type) const;
@@ -62,7 +88,8 @@ private: //members
     UPROPERTY() TArray<USceneCaptureComponent2D*> captures_;
     UPROPERTY() TArray<UTextureRenderTarget2D*> render_targets_;
 
-    UPROPERTY() UCameraComponent*  camera_;
+    //CinemAirSim
+    UPROPERTY() UCineCameraComponent*  camera_;
     //TMap<int, UMaterialInstanceDynamic*> noise_materials_;
     //below is needed because TMap doesn't work with UPROPERTY, but we do have -ve index
     UPROPERTY() TArray<UMaterialInstanceDynamic*> noise_materials_;
@@ -89,5 +116,7 @@ private: //methods
     void setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings);
     void setDistortionMaterial(int image_type, UObject* outer, FPostProcessSettings& obj);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
-    static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
+    
+    //CinemAirSim
+    static void updateCameraSetting(UCineCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
 };
