@@ -72,48 +72,6 @@ bool MultirotorApiBase::goHome(float timeout_sec)
     return moveToPosition(0, 0, 0, 0.5f, timeout_sec, DrivetrainType::MaxDegreeOfFreedom, YawMode::Zero(), -1, 1);
 }
 
-bool MultirotorApiBase::moveByVelocityBodyFrame(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
-{
-    SingleTaskCall lock(this);
-
-    if (duration <= 0)
-        return true;
-
-    float pitch, roll, yaw;
-    VectorMath::toEulerianAngle(getKinematicsEstimated().pose.orientation, pitch, roll, yaw);
-    float vx_new = (vx * (float)std::cos(yaw)) - (vy * (float)std::sin(yaw));
-    float vy_new = (vx * (float)std::sin(yaw)) + (vy * (float)std::cos(yaw));
-    
-    YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
-    adjustYaw(vx_new, vy_new, drivetrain, adj_yaw_mode);
-
-    return waitForFunction([&]() {
-        moveByVelocityInternal(vx_new, vy_new, vz, adj_yaw_mode);
-        return false; //keep moving until timeout
-        }, duration).isTimeout();
-}
-
-bool MultirotorApiBase::moveByVelocityZBodyFrame(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
-{
-    SingleTaskCall lock(this);
-
-    if (duration <= 0)
-        return true;
-
-    float pitch, roll, yaw;
-    VectorMath::toEulerianAngle(getKinematicsEstimated().pose.orientation, pitch, roll, yaw);
-    float vx_new = (vx * (float)std::cos(yaw)) - (vy * (float)std::sin(yaw));
-    float vy_new = (vx * (float)std::sin(yaw)) + (vy * (float)std::cos(yaw));
-
-    YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
-    adjustYaw(vx_new, vy_new, drivetrain, adj_yaw_mode);
-
-    return waitForFunction([&]() {
-        moveByVelocityZInternal(vx_new, vy_new, z, adj_yaw_mode);
-        return false; //keep moving until timeout
-        }, duration).isTimeout();
-}
-
 bool MultirotorApiBase::moveByMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm, float duration)
 {
     SingleTaskCall lock(this);
@@ -311,7 +269,7 @@ bool MultirotorApiBase::moveOnPath(const vector<Vector3r>& path, float velocity,
     float goal_dist = 0;
 
     //until we are at the end of the path (last seg is always zero size)
-    while (!waiter.isTimeout() && (next_path_loc.seg_index < path_segs.size()-1 || goal_dist > 0)
+    while (!waiter.isTimeout() && !waiter.isComplete() && (next_path_loc.seg_index < path_segs.size() || goal_dist > 0)
         ) { //current position is approximately at the last end point
 
         float seg_velocity = path_segs.at(next_path_loc.seg_index).seg_velocity;
@@ -727,7 +685,7 @@ void MultirotorApiBase::moveToPathPosition(const Vector3r& dest, float velocity,
     //send commands
     //try to maintain altitude if path was in XY plan only, velocity based control is not as good
     if (std::abs(cur.z() - dest.z()) <= getDistanceAccuracy()) //for paths in XY plan current code leaves z untouched, so we can compare with strict equality
-        moveByVelocityInternal(velocity_vect.x(), velocity_vect.y(), 0, yaw_mode);
+        moveByVelocityZInternal(velocity_vect.x(), velocity_vect.y(), dest.z(), yaw_mode);
     else
         moveByVelocityInternal(velocity_vect.x(), velocity_vect.y(), velocity_vect.z(), yaw_mode);
 }

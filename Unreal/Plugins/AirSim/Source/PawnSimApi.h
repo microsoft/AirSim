@@ -74,14 +74,31 @@ public: //implementation of VehicleSimApiBase
     virtual const UnrealImageCapture* getImageCapture() const override;
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const override;
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
+
+    //CinemAirSim
+    virtual std::vector<std::string> getPresetLensSettings() override;
+    virtual std::string getLensSettings() override;
+    virtual void setPresetLensSettings(std::string preset) override;
+    virtual std::vector<std::string> getPresetFilmbackSettings() override;
+    virtual void setPresetFilmbackSettings(std::string preset) override;
+    virtual std::string getFilmbackSettings() override;
+    virtual float setFilmbackSettings(float width, float height) override;
+    virtual float getFocalLength() override;
+    virtual void setFocalLength(float focal_length) override;
+    virtual void enableManualFocus(bool enable) override;
+    virtual  float getFocusDistance() override;
+    virtual void setFocusDistance(float focus_distance) override;
+    virtual  float getFocusAperture() override;
+    virtual void setFocusAperture(float focus_aperture) override;
+    virtual void enableFocusPlane(bool enable) override;
+    virtual std::string getCurrentFieldOfView() override;
+    //end CinemAirSim
+    
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
     virtual void setCameraPose(const std::string& camera_name, const Pose& pose) override;
     virtual void setCameraFoV(const std::string& camera_name, float fov_degrees) override;
-    virtual void setDistortionParam(const std::string& camera_name, const std::string& param_name, float value) override;
-    virtual std::vector<float> getDistortionParams(const std::string& camera_name) override;
-
     virtual CollisionInfo getCollisionInfo() const override;
     virtual int getRemoteControlID() const override;
     virtual msr::airlib::RCData getRCData() const override;
