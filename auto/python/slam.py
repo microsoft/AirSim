@@ -13,19 +13,22 @@ import tf2_ros
 import tf2_geometry_msgs
 import cv2
 import shutil
+import pcl_ros
+import tf2_sensor_msgs.tf2_sensor_msgs
+from sensor_msgs import point_cloud2
 
 from cv_bridge import CvBridge, CvBridgeError
 
-from mavros import mavlink
 from mavros_msgs.msg import Mavlink, Waypoint, WaypointReached, GlobalPositionTarget, State, TakeoffAction, TakeoffGoal, LandAction, LandGoal, WaypointsAction, WaypointsGoal, HomePosition
 from mavros_msgs.srv import CommandBool, SetMode, CommandTOL, WaypointPush, WaypointClear, CommandHome
 from orb_slam2_ros.msg import KeyFrames, Observations
-from sensor_msgs.msg import NavSatFix, Image, PointCloud2
-from std_msgs.msg import Header
+from sensor_msgs.msg import NavSatFix, Image, PointCloud2, PointField
+from std_msgs.msg import Header, Float32
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Pose, PoseWithCovariance, PoseStamped, PoseWithCovarianceStamped
+from geometry_msgs.msg import Pose, PoseWithCovariance, PoseStamped, PoseWithCovarianceStamped, TransformStamped
 from mavros_test_common import MavrosTestCommon
 from pymavlink import mavutil
+from tf.transformations import quaternion_from_matrix, quaternion_from_euler, euler_from_quaternion, quaternion_conjugate
 
 class KeyFrame(object):
 	empty = []
@@ -47,12 +50,6 @@ class companion():
 		launch.start()	
 		uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
 		roslaunch.configure_logging(uuid)
-
-		#Launch MAVROS
-		cli_args = ('mavros', 'px4.launch')
-		roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments(cli_args)[0])]
-		mavros = roslaunch.parent.ROSLaunchParent(uuid, roslaunch_file)
-		mavros.start()
 
 		#Launch ORBSLAM
 		cli_args = ('orb_slam2_ros', 'orb_slam2_mono.launch')
@@ -99,6 +96,10 @@ class companion():
 		rospy.Subscriber('/airsim/base_link/camera/image_raw', Image, self.imageBuffer)
 		#rospy.Subscriber('/orb_slam2_mono/keyframes', KeyFrames, self.keyframesCallback)
 		self.slam_pub = rospy.Publisher('/mavros/vision_pose/pose', PoseStamped, queue_size=50)
+		self.cloud_pub = rospy.Publisher('/test/new_cloud', PointCloud2)
+		self.scale_pub = rospy.Publisher('/orb_slam2_mono/map_scale', Float32, queue_size=1)
+		self.tfBuffer = tf2_ros.Buffer()
+    		listener = tf2_ros.TransformListener(self.tfBuffer)
 
 		rospy.spin()
 
@@ -121,6 +122,8 @@ class companion():
 	def slamCallback(self,data):
 
 		self.raw_slam_pose = self.convertFRD(data)
+		#self.slam_pub.publish(self.raw_slam_pose)
+		#return		
 		self.runCalibration()
 		if (self.slam_calibrated):
 			#transform SLAM pose
@@ -149,22 +152,46 @@ class companion():
 				self.slam_offset_z = (self.calib_init_local.position.z-self.slam_scale*self.calib_init_slam.position.z)
 				#print('offset', self.slam_offset_x, self.slam_offset_y, self.slam_offset_z)
 				self.slam_calibrated = True
+				print(self.slam_scale)
+
 
 	def convertFRD(self, data):
 
-		#convert to px4 coord system  (this is working Dec 15th)
-		converted = PoseStamped()
-		converted.header.frame_id = 'map'
-		converted.pose.position.x = -data.pose.position.y
-		converted.pose.position.y = data.pose.position.z
-		converted.pose.position.z = -data.pose.position.x
+		stage1 = PoseStamped()
+		stage2 = PoseStamped()
+		#first, apply camera gimbal rotation
+		t = TransformStamped()
+		t.header.frame_id = "camera_link"
+		t.header.stamp = rospy.Time.now()
+		t.child_frame_id = "map"
+		t.transform.translation.x = 0.0
+		t.transform.translation.y = 0.0
+		t.transform.translation.z = 0.0
+
+		q = quaternion_from_euler(0, 90*(math.pi/180), 90*(math.pi/180))
+		t.transform.rotation.x = q[0]
+		t.transform.rotation.y = q[1]
+		t.transform.rotation.z = q[2]
+		t.transform.rotation.w = q[3]
+
+		stage1 = tf2_geometry_msgs.do_transform_pose(data, t)
+		#second, convert from x-forward (orb-slam) to y-forward (drone)	
 		
-		converted.pose.orientation.x = -data.pose.orientation.y
-		converted.pose.orientation.y = data.pose.orientation.z
-		converted.pose.orientation.z = -data.pose.orientation.x
-		converted.pose.orientation.w = data.pose.orientation.w
+		stage2.pose.position.x = stage1.pose.position.x
+		stage2.pose.position.y = stage1.pose.position.y
+		stage2.pose.position.z = stage1.pose.position.z
+
+		stage2.pose.orientation = stage1.pose.orientation
+		stage2.header.frame_id = "map"
 
 		return data
+		#convert to px4 coord system  (this is working Dec 15th)
+
+		#transform = self.tfBuffer.lookup_transform('cam_odometry', 'camera_link', rospy.Time(0),rospy.Duration(1.0));
+		#print(transform)
+		#converted = tf2_geometry_msgs.do_transform_pose(data, transform)
+		#converted.header.frame_id = 'cam_odometry'
+		#return data
 
 	def imageBuffer(self, data):
 		buffer_size = 50
@@ -222,6 +249,27 @@ class companion():
 	def pointcloudCallback(self, data):
 		self.pointcloud = data
 
+		t = TransformStamped()
+		t.header.frame_id = "camera_link"
+		t.header.stamp = rospy.Time.now()
+		t.child_frame_id = "map"
+		t.transform.translation.x = self.slam_offset_x
+		t.transform.translation.y = self.slam_offset_y
+		t.transform.translation.z = 0.0
+
+		q = quaternion_from_euler(0, 90*(math.pi/180), 90*(math.pi/180))
+		t.transform.rotation.x = q[0]
+		t.transform.rotation.y = q[1]
+		t.transform.rotation.z = q[2]
+		t.transform.rotation.w = q[3]
+
+		cloud_out = tf2_sensor_msgs.do_transform_cloud(data, t)
+		cloud_out.header.frame_id = 'base_link'
+
+		self.scale_pub.publish(self.slam_scale)
+		self.cloud_pub.publish(cloud_out)
+
+
 	def observationsCallback(self, data):
 		data = list(data.observations)
 		#print(self.pointcloud.width, len(data))
@@ -229,3 +277,4 @@ class companion():
 		
 if __name__ == '__main__':
 	companion()
+

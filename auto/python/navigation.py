@@ -76,7 +76,7 @@ class offboard():
 		time.sleep(5)
 
 		goal = TakeoffGoal()
-		goal.height = 10
+		goal.height = 22
 	
 		print('Actionlib started')
 

@@ -79,7 +79,39 @@ class AirSimHelper(threading.Thread):
 			if (not robot.sitl):
 				print('Starting px4_sitl for '+vehicle)
 				robot.setPX4(subprocess.Popen(["make","px4_sitl_default","none_iris"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd="../px4/Firmware"))
-			transforms = ASP.getTransforms(airsim_settings['Vehicles'][vehicle], robot)	
+			transforms = ASP.getTransforms(airsim_settings['Vehicles'][vehicle], robot)
+
+			#add ned transforms
+			ned2enu = TransformStamped()
+			ned2enu.header.frame_id = robot.name
+			ned2enu.header.stamp = rospy.Time.now()
+			ned2enu.child_frame_id = robot.name  + "_ned"
+			ned2enu.transform.translation.x = 0.0
+			ned2enu.transform.translation.y = 0.0
+			ned2enu.transform.translation.z = 0.0
+
+			q = quaternion_from_euler(180*(math.pi/180), 0, 90*(math.pi/180))
+			ned2enu.transform.rotation.x = q[0]
+			ned2enu.transform.rotation.y = q[1]
+			ned2enu.transform.rotation.z = q[2]
+			ned2enu.transform.rotation.w = q[3]
+			transforms.append(ned2enu)
+			#add orb transforms
+			orb2enu = TransformStamped()
+			orb2enu.header.frame_id = robot.name
+			orb2enu.header.stamp = rospy.Time.now()
+			orb2enu.child_frame_id = robot.name  + "_orb"
+			orb2enu.transform.translation.x = 0.0
+			orb2enu.transform.translation.y = 0.0
+			orb2enu.transform.translation.z = 0.0
+
+			q = quaternion_from_euler(0, 0, 90*(math.pi/180))
+			orb2enu.transform.rotation.x = q[0]
+			orb2enu.transform.rotation.y = q[1]
+			orb2enu.transform.rotation.z = q[2]
+			orb2enu.transform.rotation.w = q[3]
+			transforms.append(orb2enu)
+	
 			static_br.sendTransform(transforms)
 			ASP.addRobot(robot)
 
@@ -182,15 +214,18 @@ class AirSimPublisher:
 		return img_msg
 
 	def getPoseMsg(self,robot):
-		#FOR SIMULATION ONLY
 		pose_data = self.client.simGetVehiclePose(robot.name)
-		pose_msg = PoseStamped()
-		pose_msg.header.stamp = self.time
-		pose_msg.header.frame_id = robot.name
-		#convert to REP-103 ENU
-		pose_msg.pose.position = Point(pose_data.position.y_val, pose_data.position.x_val, -pose_data.position.z_val)
-		pose_msg.pose.orientation = Quaternion(pose_data.orientation.y_val, pose_data.orientation.x_val, -pose_data.orientation.z_val, pose_data.orientation.w_val)
-		return pose_msg
+		
+		ned_pose = PoseStamped()
+		ned_pose.header.stamp = self.time
+		ned_pose.header.frame_id = robot.name + "_ned"
+		ned_pose.pose.position = Point(pose_data.position.x_val, pose_data.position.y_val, pose_data.position.z_val)
+		ned_pose.pose.orientation = Quaternion(pose_data.orientation.x_val, pose_data.orientation.y_val, pose_data.orientation.z_val, pose_data.orientation.w_val)
+		
+		#pose_msg = PoseStamped()
+		#pose_msg = tf2_geometry_msgs.do_transform_pose(ned_pose, t)
+		
+		return ned_pose
 
 	def getTransforms(self, settings, robot):
 		#https://github.com/methylDragon/ros-sensor-fusion-tutorial/blob/master/01%20-%20ROS%20and%20Sensor%20Fusion%20Tutorial.md#3.1
@@ -202,33 +237,37 @@ class AirSimPublisher:
 				transforms.append(self.staticTransform(cameras[camera], str(camera), robot.name))
 		robot_2_map = TransformStamped()
 		robot_2_map.header.stamp = self.time
-		robot_2_map.header.frame_id = 'map'
+		robot_2_map.header.frame_id = 'odom'
 		robot_2_map.child_frame_id = robot.name
 		robot_2_map.transform.rotation = Quaternion(0,0,0,1)
 		transforms.append(robot_2_map)
+		map_2_odom = TransformStamped()
+		map_2_odom.header.stamp = self.time
+		map_2_odom.header.frame_id = 'map'
+		map_2_odom.child_frame_id = 'odom'
+		map_2_odom.transform.rotation = Quaternion(0,0,0,1)
+		transforms.append(map_2_odom)
 		return transforms
 
 	def staticTransform(self, sensor, child, parent):
 		x = sensor['X'] if ('X' in sensor) else 0
 		y = sensor['Y'] if ('Y' in sensor) else 0
 		z = sensor['Z'] if ('Z' in sensor) else 0
-		roll = sensor['Roll']/(180/math.pi) if ('Roll' in sensor) else 0
-		pitch = sensor['Pitch']/(180/math.pi) if ('Pitch' in sensor) else 0
-		yaw = sensor['Yaw']/(180/math.pi) if ('Yaw' in sensor) else 0
+		roll = -sensor['Roll']*(math.pi/180) if ('Roll' in sensor) else 0
+		pitch = -sensor['Pitch']*(math.pi/180) if ('Pitch' in sensor) else 0
+		yaw = -sensor['Yaw']*(math.pi/180) if ('Yaw' in sensor) else 0
 
 		transform = TransformStamped()
 		transform.header.stamp = self.time
-		transform.header.frame_id = str(parent)
-		transform.child_frame_id = child + '_pose'
-		#transform.transform.rotation = Quaternion(q[0],q[1],q[2],q[3])
+		transform.header.frame_id = 'base_link_orb'
+		transform.child_frame_id = 'camera_link'
+		print(parent,child)
 		q = quaternion_from_euler(roll, pitch, yaw)
-		#invert to get transform from sensor to base_link
-		q = quaternion_conjugate(q)
-		transform.transform.translation = Point(-x,-y,-z)
-		transform.transform.rotation = Quaternion(q[0],q[1],q[2],q[3])	
-		t_euler = euler_from_quaternion([transform.transform.rotation.x,transform.transform.rotation.y,transform.transform.rotation.z,transform.transform.rotation.w])
-		print(t_euler)
-		print(transform)
+		transform.transform.translation = Point(x,y,z)
+		transform.transform.rotation.x = q[0]
+		transform.transform.rotation.y = q[1]
+		transform.transform.rotation.z = q[2]
+		transform.transform.rotation.w = q[3]
 		return transform
 
 	def updateData(self, robot):
