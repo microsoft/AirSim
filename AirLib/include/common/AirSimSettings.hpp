@@ -305,6 +305,8 @@ public: //types
         std::string model = "Generic";
 
         std::map<std::string, float> params;
+        std::string logs;
+
     };
 
     struct MavLinkVehicleSetting : public VehicleSetting {
@@ -740,6 +742,7 @@ private:
         connection_info.serial_port = settings_json.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = settings_json.getInt("SerialBaudRate", connection_info.baud_rate);
         connection_info.model = settings_json.getString("Model", connection_info.model);
+        connection_info.logs = settings_json.getString("Logs", connection_info.logs);
 
         Settings params;
         if (settings_json.getChild("Parameters", params)) {

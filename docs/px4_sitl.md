@@ -69,7 +69,10 @@ The default ports have changed recently, so check them closely to make sure AirS
                 },
                 "Parameters": {
                     "NAV_RCL_ACT": 0,
-                    "NAV_DLL_ACT": 0
+                    "NAV_DLL_ACT": 0,
+                    "COM_OBL_ACT": 1,
+                    "LPE_LAT": 47.641468,
+                    "LPE_LON": -122.140165,
                 }
             }
         }

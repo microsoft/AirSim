@@ -20,6 +20,7 @@
 #include <tuple>
 
 #include "common/Common.hpp"
+#include "common/common_utils/FileSystem.hpp"
 #include "common/common_utils/SmoothingFilter.hpp"
 #include "common/common_utils/Timer.hpp"
 #include "common/CommonStructs.hpp"
@@ -96,11 +97,6 @@ public: //methods
 
             if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
                 return;
-
-            if (send_params_) {
-                send_params_ = false;
-                sendParams();
-            }
 
             //send sensor updates
             const auto& imu_output = getImuData("");
@@ -271,6 +267,44 @@ public: //methods
 
         mav_vehicle_->armDisarm(arm).wait(10000, &rc);
         return rc;
+    }
+
+    void onArmed() {
+        if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
+            auto con = mav_vehicle_->getConnection();
+            if (con != nullptr) {
+                if (log_ != nullptr) {
+                    log_->close();
+                }
+                common_utils::FileSystem::createDirectory(connection_info_.logs);
+                std::time_t t = std::time(0);   // get time now
+                std::tm* now = std::localtime(&t);
+                auto filename = Utils::stringf("%02d-%02d-%02d.mavlink", now->tm_hour, now->tm_min, now->tm_sec);
+                auto path = common_utils::FileSystem::combine(connection_info_.logs, filename);
+                addStatusMessage(Utils::stringf("Opening log file: %s", path.c_str()));
+                log_ = std::make_shared<mavlinkcom::MavLinkFileLog>();
+                log_->openForWriting(path, false);
+                con->startLoggingSendMessage(log_);
+                if (con != connection_) {
+                    // log the SITL channel also
+                    connection_->startLoggingSendMessage(log_);
+                }
+            }
+        }
+    }
+
+    void onDisarmed() {
+        if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
+            auto con = mav_vehicle_->getConnection();
+            if (con != nullptr) {
+                con->stopLoggingSendMessage();
+                addStatusMessage("Closing log file.");
+            }
+            connection_->stopLoggingSendMessage();
+            if (log_ != nullptr) {
+                log_->close();
+            }
+        }
     }
 
     void waitForHomeLocation(float timeout_sec)
@@ -657,6 +691,12 @@ protected: //methods
     {
         addStatusMessage("Waiting for mavlink vehicle...");
         connecting_ = true;
+        send_params_ = false;
+        got_first_heartbeat_ = false;
+        is_hil_mode_set_ = false;
+        is_armed_ = false;
+        has_home_ = false;
+
         createMavConnection(connection_info_);
         if (mav_vehicle_ != nullptr) {
             connectToLogViewer();
@@ -664,6 +704,15 @@ protected: //methods
         }
         connecting_ = false;
         connected_ = true;
+
+        // wait for px4 to connect so we can send the initial parameters
+        while (!send_params_ && connected_) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+        if (connected_) {
+            sendParams();
+            send_params_ = false;
+        }
     }
 
     virtual void close()
@@ -972,12 +1021,10 @@ private: //methods
         close();
 
         connecting_ = true;
-        got_first_heartbeat_ = false;
-        is_hil_mode_set_ = false;
-        is_armed_ = false;
-        has_home_ = false;
         is_controls_0_1_ = true;
-        Utils::setValue(rotor_controls_, 0.0f);
+        std::string remoteIpAddr;
+        Utils::setValue(rotor_controls_, 0.0f);        
+
 
         if (connection_info.use_tcp) {
             if (connection_info.tcp_port == 0) {
@@ -988,7 +1035,7 @@ private: //methods
             addStatusMessage(msg);
             try {
                 connection_ = std::make_shared<mavlinkcom::MavLinkConnection>();
-                connection_->acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
+                remoteIpAddr = connection_->acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
             }
             catch (std::exception& e) {
                 addStatusMessage("Accepting TCP socket failed, is another instance running?");
@@ -1029,19 +1076,23 @@ private: //methods
             if (connection_info_.control_port == 0) {
                 throw std::invalid_argument("ControlPort setting has an invalid value.");
             }
+            if (!connection_info.use_tcp || connection_info_.control_ip_address != "remote") {
+                remoteIpAddr = connection_info_.control_ip_address;
+            }
 
             // The PX4 SITL mode app cannot receive commands to control the drone over the same HIL mavlink connection.
             // The HIL mavlink connection can only handle HIL_SENSOR messages.  This separate channel is needed for
             // everything else.
             addStatusMessage(Utils::stringf("Connecting to PX4 Control UDP port %d, local IP %s, remote IP...",
-                connection_info_.control_port, connection_info_.local_host_ip.c_str(), connection_info_.control_ip_address.c_str()));
+                connection_info_.control_port, connection_info_.local_host_ip.c_str(), remoteIpAddr.c_str()));
 
             // if we try and connect the UDP port too quickly it doesn't work, bug in PX4 ?
             for (int retries = 60; retries >= 0 && connecting_; retries--) {
                 try {
                     auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
-                        connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
+                        connection_info_.local_host_ip, remoteIpAddr, connection_info_.control_port);
                     mav_vehicle_->connect(gcsConnection);
+                    break;
                 }
                 catch (std::exception&) {
                     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -1064,7 +1115,8 @@ private: //methods
     {
         // listen to this UDP mavlink connection also
         auto mavcon = mav_vehicle_->getConnection();
-        if (mavcon != connection_) {
+        if (mavcon != nullptr && mavcon != connection_) {
+            // we have two channels, so we need to subscribe to the second one also.
             mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                 unused(connection);
                 processMavMessages(msg);
@@ -1087,6 +1139,7 @@ private: //methods
         close();
 
         connecting_ = true;
+
         bool reported = false;
         std::string port_name_auto = port_name;
         while (port_name_auto == "" || port_name_auto == "*") {
@@ -1122,14 +1175,15 @@ private: //methods
                 hil_node_->connect(connection_);
                 addStatusMessage(Utils::stringf("Connected to PX4 over serial port: %s", port_name_auto.c_str()));
 
-                mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
-                mav_vehicle_->connect(connection_); // in this case we can use the same connection.
-                mav_vehicle_->startHeartbeat();
                 // start listening to the HITL connection.
                 connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                     unused(connection);
                     processMavMessages(msg);
                     });
+
+                mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
+                
+                connectVehicle();
 
                 return;
             }
@@ -1166,7 +1220,7 @@ private: //methods
     void sendParams()
     {
         // send any mavlink parameters from settings.json through to the connected vehicle.
-        if (connection_info_.params.size() > 0) {
+        if (mav_vehicle_ != nullptr && connection_info_.params.size() > 0) {
             for (auto iter : connection_info_.params) {
                 auto key = iter.first;
                 auto value = iter.second;
@@ -1184,6 +1238,17 @@ private: //methods
 
     void setArmed(bool armed)
     {
+        if (is_armed_) {
+            if (!armed) {
+                onDisarmed();
+            }
+        }
+        else {
+            if (armed) {
+                onArmed();
+            }
+        }
+
         is_armed_ = armed;
         if (!armed) {
             //reset motor controls
@@ -1234,8 +1299,6 @@ private: //methods
                     // and it scales multi rotor servo output to 0 to 1.
                     is_controls_0_1_ = false;
                 }
-
-                send_params_ = true;
             }
             else if (is_simulation_mode_ && !is_hil_mode_set_) {
                 setHILMode();
@@ -1330,6 +1393,19 @@ private: //methods
         else if (msg.msgid == mavlinkcom::MavLinkHomePosition::kMessageId) {
             mavlinkcom::MavLinkHomePosition home;
             home.decode(msg);
+            // this is a good time to send the params
+            send_params_ = true;
+        }
+        else if (msg.msgid == mavlinkcom::MavLinkSysStatus::kMessageId) {
+            // this is a good time to send the params
+            send_params_ = true;
+        }
+        else if (msg.msgid == mavlinkcom::MavLinkAutopilotVersion::kMessageId) {
+            // this is a good time to send the params
+            send_params_ = true;
+        }
+        else {
+            Utils::log(Utils::stringf("Ignronig msg %d from %d,%d ", msg.msgid, msg.compid, msg.sysid));
         }
         //else ignore message
     }
@@ -1544,7 +1620,7 @@ private: //variables
     std::mutex mocap_pose_mutex_, heartbeat_mutex_, set_mode_mutex_, status_text_mutex_, last_message_mutex_;
 
     //variables required for VehicleApiBase implementation
-    bool got_first_heartbeat_, is_hil_mode_set_, is_armed_;
+    bool got_first_heartbeat_ = false, is_hil_mode_set_ = false, is_armed_ = false;
     bool is_controls_0_1_; //Are motor controls specified in 0..1 or -1..1?
     bool send_params_ = false;
     std::queue<std::string> status_messages_;
@@ -1576,6 +1652,7 @@ private: //variables
     PidController thrust_controller_;
     common_utils::Timer hil_message_timer_;
     common_utils::Timer gcs_message_timer_;
+    std::shared_ptr<mavlinkcom::MavLinkFileLog> log_;
 
     //every time we return status update, we need to check if we have new data
     //this is why below two variables are marked as mutable

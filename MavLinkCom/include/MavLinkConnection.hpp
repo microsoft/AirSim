@@ -89,7 +89,8 @@ namespace mavlinkcom {
         // You may need to open this port in your firewall.
         // The  localAddr can also a specific local ip address if you need to specify which
         // NIC to use, for example, wifi versus hard wired ethernet adapter.  For localhost pass 127.0.0.1.
-        void acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort);
+        // It returns the address of the remote machine that connected.
+        std::string acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort);
 
         // instance methods
         std::string getName();

@@ -40,7 +40,8 @@ like `172.31.66.156`.  This is the address Windows needs to know in order to fin
 Edit your [AirSim settings](settings.md) file and add `LocalHostIp` to tell AirSim to use the WSL
 ethernet adapter address instead of the default `localhost`.  This will cause AirSim to open the TCP
 port on that adapter which is the address that the PX4 app will be looking for.  Also tell AirSim
-what the PX4 address is by setting `ControlIp` to the Linux address you found above.
+to connect the `ControlIp` UDP channel by setting `ControlIp` to the magic string `remote`.
+This resolves to the WSL 2 remote ip address found in the TCP socket.
 
 ```json
 {
@@ -52,7 +53,7 @@ what the PX4 address is by setting `ControlIp` to the Linux address you found ab
             "UseSerial": false,
             "UseTcp": true,
             "TcpPort": 4560,
-            "ControlIp": "172.31.66.156",
+            "ControlIp": "remote",
             "ControlPort": 14580,
             "LocalHostIp": "172.31.64.1",
             "Sensors":{
@@ -64,7 +65,10 @@ what the PX4 address is by setting `ControlIp` to the Linux address you found ab
             },
             "Parameters": {
                 "NAV_RCL_ACT": 0,
-                "NAV_DLL_ACT": 0
+                "NAV_DLL_ACT": 0,
+                "COM_OBL_ACT": 1,
+                "LPE_LAT": 47.641468,
+                "LPE_LON": -122.140165,
             }
         }
     }

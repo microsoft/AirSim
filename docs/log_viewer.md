@@ -6,10 +6,51 @@ For example, the picture below shows  a real time graph of the x, y an z gyro se
 
 ### Usage
 
-To use this LogViewer, connect the simulator `before` you run the simulation.  Simply press the blue connector
-button on the top right corner of the window, select the Socket `tab`, enter the port number 14388, and
-your `localhost` network.  Then press the record button (triangle on the right hand side of the toolbar).
-Now start the simulator, pick some mavlink items to graph,  you  should see something like this:
+There are two ways to use the LogViewer.  First you can load a previously recorded *.mavlink log file.
+You can get a mavlink log file by setting the following "PX4" vehicle parametr in your `settings.json` file:
+```
+{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+    "Vehicles": {
+        "PX4": {
+            ...,
+            "Logs": "d:\\temp\\mavlink"
+        }
+    }
+}
+```
+
+Each time the drone is armed a new log file is created with the current time as the filename.
+
+When the drone is disarmed the log file is closed and you can then load it into the LogView using the Open toolbar button.
+
+### Realtime
+
+You can also get a realtime view if you connect the LogViewer `before` you run the simulation.  For this to work you need to configure the `settings.json` with the following settings:
+```
+{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+    "Vehicles": {
+        "PX4": {
+            ...,
+            "LogViewerHostIp": "127.0.0.1",
+            "LogViewerPort": 14388,
+        }
+    }
+}
+```
+If you are using a different `LocalHostIp` other than "127.0.0.1" then be sure to set a
+matching `LogViewerHostIp`.  For example, if you are using WSL 2 on Windows and your 
+`LogViewerHostIp` is set to some address like `172.31.64.1` and if the LogViewer is running
+on the same machine as AirSim then you will need to set `LogViewerHostIp` to  `172.31.64.1` also.
+
+Simply press the blue connector button on the top right corner of the window, select the Socket
+`tab`, enter the port number `14388`, and your `localhost` network.  If you are using WSL 2 on 
+Windows then select `vEthernet (WSL)`.  
+
+Then press the record button (triangle on the right hand side of the toolbar). Now start the simulator, pick some mavlink items to graph,  you  should see something like this:
 
 ![Log Viewer](images/log_viewer.png)
 

@@ -86,7 +86,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std:
     return createConnection(nodeName, socket);
 }
 
-void MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort)
+std::string MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort)
 {
     std::string local = localAddr;
     close();
@@ -95,10 +95,13 @@ void MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent,
     port = socket; // this is so that a call to close() can cancel this blocking accept call.
     socket->accept(localAddr, listeningPort);
 
+    std::string remote = socket->remoteAddress();
+
     socket->setNonBlocking();
     socket->setNoDelay();
 
     parent->startListening(nodeName, socket);
+    return remote;
 }
 
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const std::string& nodeName, const std::string& portName, int baudRate, const std::string& initString)

@@ -82,7 +82,8 @@ namespace Microsoft.Networking.Mavlink
 
         public bool IsValid()
         {
-            return Magic == 254 && Length <= 255;
+            // 253 for Mavlink 2.0.
+            return (Magic == 254 || Magic == 253) && Length <= 255;
         }
 
         /// <summary>
@@ -393,7 +394,12 @@ namespace Microsoft.Networking.Mavlink
                                 crc = (ushort)((b << 8) + crc);
                                 // ok, let's see if it's good.
                                 msg.Crc = crc;
-                                ushort found = msg.crc_calculate();
+                                ushort found = crc;
+                                if (msg.Payload != null)
+                                {
+                                    found = msg.crc_calculate();
+                                    
+                                }
                                 if (found != crc)
                                 {
                                     // bad crc!!

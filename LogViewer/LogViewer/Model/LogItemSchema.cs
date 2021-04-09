@@ -77,6 +77,10 @@ namespace LogViewer.Model
                     }
                     else
                     {
+                        if (this.ChildItems == null)
+                        {
+                            this.ChildItems = new List<LogItemSchema>();
+                        }
                         LogItemSchema copy = child.Clone();
                         copy.Parent = this;
                         this.ChildItems.Add(child);
