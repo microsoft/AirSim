@@ -215,22 +215,22 @@ namespace LogViewer.Model.ULog
         byte logLevel;
         long timestamp;
         string msg;
+        ushort tag;
 
-        public MessageLogging(byte logLevel, long timestamp, string msg)
+        public MessageLogging(byte logLevel, long timestamp, string msg, ushort tag = 0)
         {
             this.logLevel = logLevel;
             this.timestamp = timestamp;
             this.msg = msg;
+            this.tag = tag;
         }
 
         public override double GetTimestamp()
         {
             return timestamp;
         }
-
-
     }
-
+    
     class MessageData : Message
     {
         internal MessageSubscription subscription;
@@ -516,12 +516,14 @@ namespace LogViewer.Model.ULog
     class MessageInfo : Message
     {
         string key;
-        byte[] value;
+        bool isContinued;
+        string value;
 
-        public MessageInfo(string key, byte[] value)
+        public MessageInfo(string key, bool isContinued, string value)
         {
             this.key = key;
             this.value = value;
+            this.isContinued = isContinued;
         }
         public override double GetTimestamp()
         {
@@ -530,16 +532,47 @@ namespace LogViewer.Model.ULog
         
     }
 
-    class MessageParameter : Message
+    class MessageParameter<T> : Message
     {
-        string key;
-        byte[] value;
+        string name;
+        T value;
 
-        public MessageParameter(string key, byte[] value)
+        public MessageParameter(string name, T value)
         {
-            this.key = key;
+            this.name = name;
             this.value = value;
         }
+
+        public string Name => name;
+        public T Value => value;
+
+        public override double GetTimestamp()
+        {
+            return 0;
+        }
+    }
+
+    [Flags]
+    enum UlogParameterDefaultType
+    {
+        system = 1,
+        current_setup = 2
+    }
+
+    class MessageParameterDefault<T> : Message
+    {
+        UlogParameterDefaultType type;
+        string name;
+        T value;
+
+        public MessageParameterDefault(UlogParameterDefaultType type, string name, T value)
+        {
+            this.type = type;
+            this.name = name;
+            this.value = value;
+        }
+        public string Key => name;
+        public T Value => value;
 
 
         public override double GetTimestamp()
@@ -602,12 +635,16 @@ namespace LogViewer.Model.ULog
             FORMAT = 'F',
             DATA = 'D',
             INFO = 'I',
+            INFO_MULTIPLE = 'M',
             PARAMETER = 'P',
+            PARAMETER_DEFAULT = 'Q',
             ADD_LOGGED_MSG = 'A',
             REMOVE_LOGGED_MSG = 'R',
             SYNC = 'S',
             DROPOUT = 'O',
             LOGGING = 'L',
+            LOGGING_TAGGED = 'C',
+            FLAG_BITS = 'B',
         };
 
         BinaryReader reader;
@@ -736,7 +773,7 @@ namespace LogViewer.Model.ULog
 
             await Task.Run(() =>
             {
-                this.msgs = new List<ULog.Message>();
+                var msgs = new List<ULog.Message>();
 
                 using (Stream s = File.OpenRead(file))
                 {
@@ -764,7 +801,7 @@ namespace LogViewer.Model.ULog
                     }
                     this.reader = null;
                 }
-
+                this.msgs = msgs;
                 CreateSchema();
             });
             this.duration = lastTime - startTime;
@@ -819,16 +856,17 @@ namespace LogViewer.Model.ULog
 
         private void ReadFileHeader()
         {
-            if (reader.ReadByte() == 'U' &&
-                reader.ReadByte() == 'L' &&
-                reader.ReadByte() == 'o' &&
-                reader.ReadByte() == 'g' &&
-                reader.ReadByte() == 0x1 &&
-                reader.ReadByte() == 0x12 &&
-                reader.ReadByte() == 0x35)
+            byte[] magic = reader.ReadBytes(8);
+            var logStartTimestamp = reader.ReadInt64();
+            if (magic[0] == 'U' &&
+                magic[1] == 'L' &&
+                magic[2] == 'o' &&
+                magic[3] == 'g' &&
+                magic[4] == 0x1 &&
+                magic[5]== 0x12 &&
+                magic[6] == 0x35)
             {
-                version = reader.ReadByte();
-                logStartTimestamp = reader.ReadInt64();
+                // good header
             }
             else
             {
@@ -839,17 +877,26 @@ namespace LogViewer.Model.ULog
         private Message ReadMessage()
         {
             UInt16 len = reader.ReadUInt16();
-            ULogMessageType msgType = (ULogMessageType)reader.ReadByte();
+            byte type = reader.ReadByte();
+            ULogMessageType msgType = (ULogMessageType)type;
+            // Debug.WriteLine(msgType);
             switch (msgType)
             {
+                case 0:
+                    // not sure what these are about!
+                    return null;
                 case ULogMessageType.FORMAT:
                     return ReadMessageFormat(len);
                 case ULogMessageType.DATA:
                     return ReadDataMessage(len);
                 case ULogMessageType.INFO:
                     return ReadInfoMessage(len);
+                case ULogMessageType.INFO_MULTIPLE:
+                    return ReadInfoMessageMultiple(len);
                 case ULogMessageType.PARAMETER:
                     return ReadParameter(len);
+                case ULogMessageType.PARAMETER_DEFAULT:
+                    return ReadParameterDefault(len);
                 case ULogMessageType.ADD_LOGGED_MSG:
                     return ReadAddLoggedMessage(len);
                 case ULogMessageType.REMOVE_LOGGED_MSG:
@@ -860,9 +907,24 @@ namespace LogViewer.Model.ULog
                     return ReadDropOutMessage(len);
                 case ULogMessageType.LOGGING:
                     return ReadLoggingMessage(len);
+                case ULogMessageType.LOGGING_TAGGED:
+                    return ReadLoggingMessageTagged(len);
+                case ULogMessageType.FLAG_BITS:
+                    return ReadFlagBits(len);
                 default:
                     throw new FormatException("found unexpected ulog message type: " + msgType.ToString());
             }
+        }
+
+        private Message ReadFlagBits(ushort len)
+        {
+            const byte ULOG_INCOMPAT_FLAG0_DATA_APPENDED_MASK = 1;
+            const byte ULOG_COMPAT_FLAG0_DEFAULT_PARAMETERS_MASK = 1;
+
+            byte[] msg = reader.ReadBytes(len);
+            bool contains_appended_data = (msg[8] & ULOG_INCOMPAT_FLAG0_DATA_APPENDED_MASK) != 0;
+            bool has_unknown_incompat_bits = (msg[0] & ~0x1) != 0;
+            return null;
         }
 
         internal Message ReadMessageFormat(ushort len)
@@ -880,6 +942,15 @@ namespace LogViewer.Model.ULog
             long timestamp = reader.ReadInt64();
             string msg = reader.ReadAsciiString(len - 9);
             return new MessageLogging(logLevel, timestamp, msg);
+        }
+
+        public MessageLogging ReadLoggingMessageTagged(ushort len)
+        {
+            byte logLevel = reader.ReadByte();
+            ushort tag = reader.ReadUInt16();
+            long timestamp = reader.ReadInt64();
+            string msg = reader.ReadAsciiString(len - 9);
+            return new MessageLogging(logLevel, timestamp, msg, tag);
         }
 
         public MessageData ReadDataMessage(ushort len)
@@ -913,21 +984,159 @@ namespace LogViewer.Model.ULog
         internal MessageInfo ReadInfoMessage(ushort len)
         {
             int keyLen = reader.ReadByte();
-            string key = reader.ReadAsciiString(keyLen);
+            string key = reader.ReadAsciiString(keyLen); 
+            int space = key.IndexOf(' ');
+            if (space < 0)
+            {
+                throw new Exception("Expecting space separated parameter type/value pair, but found " + key);
+            }
+            string type = key.Substring(0, space);
+            string name = key.Substring(space + 1);
             int valueSize = len - keyLen - 1;
-            byte[] value = new byte[valueSize];
-            reader.Read(value, 0, valueSize);
-            return new MessageInfo(key, value);
+
+            if (type == "int32_t")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for int32_t parameter value but got " + valueSize);
+                }
+                int value = reader.ReadInt32();
+                return new MessageInfo(name, false, value.ToString());
+            }
+            else if (type == "float")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for float parameter value but got " + valueSize);
+                }
+                float value = reader.ReadSingle();
+                return new MessageInfo(name, false, value.ToString());
+            }
+            else
+            {
+                byte[] value = new byte[valueSize];
+                reader.Read(value, 0, valueSize);
+                return new MessageInfo(name, false, Encoding.UTF8.GetString(value));
+            }
         }
 
-        internal MessageParameter ReadParameter(ushort len)
+        internal MessageInfo ReadInfoMessageMultiple(ushort len)
+        {
+            bool isContinued = reader.ReadByte() != 0;
+            int keyLen = reader.ReadByte();
+            string key = reader.ReadAsciiString(keyLen);
+            int space = key.IndexOf(' ');
+            if (space < 0)
+            {
+                throw new Exception("Expecting space separated parameter type/value pair, but found " + key);
+            }
+            string type = key.Substring(0, space);
+            string name = key.Substring(space + 1);
+            int valueSize = len - keyLen - 2;
+
+            if (type == "int32_t")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for int32_t parameter value but got " + valueSize);
+                }
+                int value = reader.ReadInt32();
+                return new MessageInfo(name, isContinued, value.ToString());
+            }
+            else if (type == "float")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for float parameter value but got " + valueSize);
+                }
+                float value = reader.ReadSingle();
+                return new MessageInfo(name, isContinued, value.ToString());
+            }
+            else
+            {
+                byte[] value = new byte[valueSize];
+                reader.Read(value, 0, valueSize);
+                return new MessageInfo(name, isContinued, Encoding.UTF8.GetString(value));
+            }
+        }
+
+        internal Message ReadParameter(ushort len)
         {
             int keyLen = reader.ReadByte();
             string key = reader.ReadAsciiString(keyLen);
             int valueSize = len - keyLen - 1;
-            byte[] value = new byte[valueSize];
-            reader.Read(value, 0, valueSize);
-            return new MessageParameter(key, value);
+            int space = key.IndexOf(' ');
+            if (space < 0)
+            {
+                throw new Exception("Expecting space separated parameter type/value pair, but found " + key);
+            }
+            string type = key.Substring(0, space);
+            string name = key.Substring(space + 1);
+
+            if (type == "int32_t")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for int32_t parameter value but got " + valueSize);
+                }
+                int value = reader.ReadInt32();
+                return new MessageParameter<int>(name, value);
+            }
+            else if (type == "float")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for float parameter value but got " + valueSize);
+                }
+                float value = reader.ReadSingle();
+                return new MessageParameter<float>(name, value);
+            }
+            else
+            {
+                byte[] value = new byte[valueSize];
+                reader.Read(value, 0, valueSize);
+                return new MessageParameter<string>(name, Encoding.UTF8.GetString(value));
+            }
+        }
+
+        internal Message ReadParameterDefault(ushort len)
+        {
+            var defaultType = (UlogParameterDefaultType)reader.ReadByte();
+            int keyLen = reader.ReadByte();
+            int valueSize = len - keyLen - 2;
+            string key = reader.ReadAsciiString(keyLen);
+            int space = key.IndexOf(' ');
+            if (space < 0)
+            {
+                throw new Exception("Expecting space separated parameter type/value pair, but found " + key);
+            }
+            string type = key.Substring(0, space);
+            string name = key.Substring(space + 1);
+
+            if (type == "int32_t")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for int32_t parameter value but got " + valueSize);
+                }
+                int value = reader.ReadInt32();
+                return new MessageParameterDefault<int>(defaultType, name, value);
+            }
+            else if (type == "float")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for float parameter value but got " + valueSize);
+                }
+                float value = reader.ReadSingle();
+                return new MessageParameterDefault<float>(defaultType, name, value);
+            }
+            else
+            {
+                byte[] value = new byte[valueSize];
+                reader.Read(value, 0, valueSize);
+                return new MessageParameter<string>(name, Encoding.UTF8.GetString(value));
+            }
         }
 
         public Message ReadAddLoggedMessage(ushort len)
@@ -936,7 +1145,10 @@ namespace LogViewer.Model.ULog
             UInt16 msgId = reader.ReadUInt16();
             string msgName = reader.ReadAsciiString(len - 3);
             MessageFormat fmt = formats[msgName];
-            subscriptions[msgId] = new MessageSubscription(msgId, fmt, multi_id);
+            if (!subscriptions.ContainsKey(msgId))
+            {
+                subscriptions[msgId] = new MessageSubscription(msgId, fmt, multi_id);
+            }
             return null;
         }
 
