@@ -49,22 +49,22 @@ public:
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const = 0;
 
     //CinemAirSim 
-    virtual std::vector<std::string> getPresetLensSettings();
-    virtual std::string getLensSettings();
-    virtual void setPresetLensSettings(std::string);
-    virtual std::vector<std::string> getPresetFilmbackSettings();
-    virtual void setPresetFilmbackSettings(std::string);
-    virtual std::string getFilmbackSettings();
-    virtual float setFilmbackSettings(float width, float height);
-    virtual float getFocalLength();
-    virtual void setFocalLength(float focal_length);
-    virtual void enableManualFocus(bool enable);
-    virtual float getFocusDistance();
-    virtual void setFocusDistance(float focus_distance);
-    virtual float getFocusAperture();
-    virtual void setFocusAperture(float focus_aperture);
-    virtual void enableFocusPlane(bool enable);
-    virtual std::string getCurrentFieldOfView();
+    virtual std::vector<std::string> getPresetLensSettings() = 0;
+    virtual std::string getLensSettings() = 0;
+    virtual void setPresetLensSettings(std::string) = 0;
+    virtual std::vector<std::string> getPresetFilmbackSettings() = 0;
+    virtual void setPresetFilmbackSettings(std::string) = 0;
+    virtual std::string getFilmbackSettings() = 0;
+    virtual float setFilmbackSettings(float width, float height) = 0;
+    virtual float getFocalLength() = 0;
+    virtual void setFocalLength(float focal_length) = 0;
+    virtual void enableManualFocus(bool enable) = 0;
+    virtual float getFocusDistance() = 0;
+    virtual void setFocusDistance(float focus_distance) = 0;
+    virtual float getFocusAperture() = 0;
+    virtual void setFocusAperture(float focus_aperture) = 0;
+    virtual void enableFocusPlane(bool enable) = 0;
+    virtual std::string getCurrentFieldOfView() = 0;
     //end CinemAirSim 
 
     virtual Pose getPose() const = 0;
