@@ -209,7 +209,7 @@ void PawnSimApi::enableFocusPlane(bool enable)
 
 std::string PawnSimApi::getCurrentFieldOfView()
 {
-   std::unique_ptr<std::vector<std::string>> result;
+   std::string result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getCurrentFieldOfView is not supported on unity").c_str());
     return result;
