@@ -103,7 +103,7 @@ std::vector<uint8_t> PawnSimApi::getImage(const std::string& camera_name, ImageC
 //CinemAirSim
 std::vector<std::string> PawnSimApi::getPresetLensSettings()
 {
-    std::unique_ptr<std::vector<std::string>> result;
+    std::vector<std::string> result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getPresetLensSettings is not supported on unity").c_str());
     return result;
@@ -111,7 +111,7 @@ std::vector<std::string> PawnSimApi::getPresetLensSettings()
 
 std::string PawnSimApi::getLensSettings()
 {
-   std::unique_ptr<std::vector<std::string>> result;
+   std::string result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getLensSettings is not supported on unity").c_str());
     return result;
@@ -119,15 +119,13 @@ std::string PawnSimApi::getLensSettings()
 
 void PawnSimApi::setPresetLensSettings(std::string preset)
 {
-   std::unique_ptr<std::vector<std::string>> result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "setPresetLensSettings is not supported on unity").c_str());
-    return result;
 }
 
 std::vector<std::string> PawnSimApi::getPresetFilmbackSettings()
 {
-   std::unique_ptr<std::vector<std::string>> result;
+   std::vector<std::string> result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getPresetFilmbackSettings is not supported on unity").c_str());
     return result;
@@ -135,15 +133,13 @@ std::vector<std::string> PawnSimApi::getPresetFilmbackSettings()
 
 void PawnSimApi::setPresetFilmbackSettings(std::string preset)
 {
-   std::unique_ptr<std::vector<std::string>> result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "setPresetFilmbackSettings is not supported on unity").c_str());
-    return result;
 }
 
 std::string PawnSimApi::getFilmbackSettings()
 {
-   std::unique_ptr<std::vector<std::string>> result;
+   std::string result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getFilmbackSettings is not supported on unity").c_str());
     return result;
@@ -151,7 +147,7 @@ std::string PawnSimApi::getFilmbackSettings()
 
 float PawnSimApi::setFilmbackSettings(float width, float height)
 {
-  std::unique_ptr<std::vector<std::string>> result;
+  float result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "setFilmbackSettings is not supported on unity").c_str());
     return result;
@@ -159,31 +155,26 @@ float PawnSimApi::setFilmbackSettings(float width, float height)
 
 float PawnSimApi::getFocalLength()
 {
-   std::unique_ptr<std::vector<std::string>> result;
+   float result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getFocalLength is not supported on unity").c_str());
-    return result;
 }
 
 void PawnSimApi::setFocalLength(float focal_length)
 {
-   std::unique_ptr<std::vector<std::string>> result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "setFocalLength is not supported on unity").c_str());
-    return result;
 }
 
 void PawnSimApi::enableManualFocus(bool enable)
 {
-   std::unique_ptr<std::vector<std::string>> result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "enableManualFocus is not supported on unity").c_str());
-    return result;
 }
 
 float PawnSimApi::getFocusDistance()
 {
-   std::unique_ptr<std::vector<std::string>> result;
+   float result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getFocusDistance is not supported on unity").c_str());
     return result;
@@ -191,15 +182,14 @@ float PawnSimApi::getFocusDistance()
 
 void PawnSimApi::setFocusDistance(float focus_distance)
 {
-  std::unique_ptr<std::vector<std::string>> result;
+  
     throw std::invalid_argument(common_utils::Utils::stringf(
         "setFocusDistance is not supported on unity").c_str());
-    return result;
 }
 
 float PawnSimApi::getFocusAperture()
 {
-   std::unique_ptr<std::vector<std::string>> result;
+   float result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getFocusAperture is not supported on unity").c_str());
     return result;
@@ -207,18 +197,14 @@ float PawnSimApi::getFocusAperture()
 
 void PawnSimApi::setFocusAperture(float focus_aperture)
 {
-   std::unique_ptr<std::vector<std::string>> result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "setFocusAperture is not supported on unity").c_str());
-    return result;
 }
 
 void PawnSimApi::enableFocusPlane(bool enable)
 {
-   std::unique_ptr<std::vector<std::string>> result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "enableFocusPlane is not supported on unity").c_str());
-    return result;
 }
 
 std::string PawnSimApi::getCurrentFieldOfView()
