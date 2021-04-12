@@ -544,6 +544,9 @@ namespace LogViewer.Controls
             if (start < 0) start = 0;
 
             bool started = (figure.Segments.Count > 0);
+            double sum = 0;
+            double count = 0;
+            int previousX = 0;
             for (int i = start; i < end; i++)
             {
                 DataValue d = series.Values[i];
@@ -552,7 +555,6 @@ namespace LogViewer.Controls
                 Point pt = GetScaledValue(d);
 
                 double rx = pt.X + offset;
-
                 if (pt.X >= 0)
                 {
                     visibleCount++;
@@ -560,10 +562,27 @@ namespace LogViewer.Controls
                     {
                         figure.StartPoint = pt;
                         started = true;
+                        previousX = (int)rx;
                     }
                     else
                     {
-                        figure.Segments.Add(new LineSegment() { Point = pt });
+                        if (previousX == (int)rx)
+                        {
+                            sum += pt.Y;
+                            count++;
+                        }
+                        else if (count > 0)
+                        {
+                            // this helps WPF scale better.
+                            figure.Segments.Add(new LineSegment() { Point = new Point(pt.X, sum / count) });
+                            count = 0;
+                            sum = 0;
+                            previousX = (int)pt.X;
+                        } 
+                        else 
+                        {
+                            figure.Segments.Add(new LineSegment() { Point = pt });
+                        }
                     }
                 }
             }

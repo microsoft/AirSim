@@ -37,7 +37,6 @@ namespace LogViewer.Model
 
         public MavlinkLog()
         {
-            MaxSize = 1000000;
         }
 
         public LogItemSchema Schema
@@ -405,10 +404,7 @@ namespace LogViewer.Model
             lock (data)
             {
                 this.data.Add(msg);
-                if (this.data.Count > MaxSize)
-                {
-                    this.data.RemoveAt(0);
-                }
+                
                 if (msg.TypedValue is MAVLink.mavlink_param_value_t)
                 {
                     MAVLink.mavlink_param_value_t param = (MAVLink.mavlink_param_value_t)msg.TypedValue;
@@ -431,8 +427,6 @@ namespace LogViewer.Model
             }
             return msg;
         }
-
-        public int MaxSize { get; set; }
 
         public DateTime GetTime(ulong timeMs)
         {
