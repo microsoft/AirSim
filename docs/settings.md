@@ -144,6 +144,7 @@ Below are complete list of settings available along with their default values. I
       "EnableCollisionPassthrogh": false,
       "EnableCollisions": true,
       "AllowAPIAlways": true,
+      "EnableTrace": false,
       "RC": {
         "RemoteControlID": 0,
         "AllowAPIWhenDisconnected": false
