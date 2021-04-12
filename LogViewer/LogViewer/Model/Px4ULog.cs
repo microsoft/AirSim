@@ -12,7 +12,7 @@ namespace LogViewer.Model.ULog
 {
     public abstract class Message
     {
-        public abstract double GetTimestamp();
+        public abstract ulong GetTimestamp();
     }
 
     public enum FieldType
@@ -174,7 +174,7 @@ namespace LogViewer.Model.ULog
         public int id;
         public List<MessageField> fields = new List<MessageField>();
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -217,6 +217,11 @@ namespace LogViewer.Model.ULog
         string msg;
         ushort tag;
 
+        public byte LogLevel => logLevel;
+        public long Timestamp => timestamp;
+        public string Contents => msg;
+        public ushort Tag => tag;
+
         public MessageLogging(byte logLevel, long timestamp, string msg, ushort tag = 0)
         {
             this.logLevel = logLevel;
@@ -225,9 +230,9 @@ namespace LogViewer.Model.ULog
             this.tag = tag;
         }
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
-            return timestamp;
+            return (ulong)timestamp;
         }
     }
     
@@ -247,12 +252,12 @@ namespace LogViewer.Model.ULog
             this.format = s.format;
         }
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             object ts = null;
             if (values.TryGetValue("timestamp", out ts))
             {
-                return Convert.ToDouble(ts);
+                return Convert.ToUInt64(ts);
             }
             return 0;
         }
@@ -264,7 +269,7 @@ namespace LogViewer.Model.ULog
                 ParseValues();
             }
 
-            double x = GetTimestamp();
+            ulong x = GetTimestamp();
             double y = 0;
 
             object o = null;
@@ -274,7 +279,7 @@ namespace LogViewer.Model.ULog
             }
             return new DataValue()
             {
-                X = x,
+                X = (double)x,
                 Y = y,
                 UserData = this,
                 Label = GetLabel(field, y)
@@ -282,38 +287,69 @@ namespace LogViewer.Model.ULog
         }
 
 
-        static string[] NavStateNames = {
-            "NAVIGATION_STATE_MANUAL",
-            "NAVIGATION_STATE_ALTCTL",
-            "NAVIGATION_STATE_POSCTL",
-            "NAVIGATION_STATE_AUTO_MISSION",
-            "NAVIGATION_STATE_AUTO_LOITER",
-            "NAVIGATION_STATE_AUTO_RTL",
-            "NAVIGATION_STATE_AUTO_RCRECOVER",
-            "NAVIGATION_STATE_AUTO_RTGS",
-            "NAVIGATION_STATE_AUTO_LANDENGFAIL",
-            "NAVIGATION_STATE_AUTO_LANDGPSFAIL",
-            "NAVIGATION_STATE_ACRO",
-            "NAVIGATION_STATE_UNUSED",
-            "NAVIGATION_STATE_DESCEND",
-            "NAVIGATION_STATE_TERMINATION",
-            "NAVIGATION_STATE_OFFBOARD",
-            "NAVIGATION_STATE_STAB",
-            "NAVIGATION_STATE_RATTITUDE",
-            "NAVIGATION_STATE_AUTO_TAKEOFF",
-            "NAVIGATION_STATE_AUTO_LAND",
-            "NAVIGATION_STATE_AUTO_FOLLOW_TARGET",
-            "NAVIGATION_STATE_MAX"
+        public enum NavStates {
+            NAVIGATION_STATE_MANUAL = 0, //		# Manual mode
+            NAVIGATION_STATE_ALTCTL = 1, //		# Altitude control mode
+            NAVIGATION_STATE_POSCTL = 2, //		# Position control mode
+            NAVIGATION_STATE_AUTO_MISSION = 3, //		# Auto mission mode
+            NAVIGATION_STATE_AUTO_LOITER = 4, //		# Auto loiter mode
+            NAVIGATION_STATE_AUTO_RTL = 5, //		# Auto return to launch mode
+            NAVIGATION_STATE_AUTO_LANDENGFAIL = 8, // 	# Auto land on engine failure
+            NAVIGATION_STATE_AUTO_LANDGPSFAIL = 9, //	# Auto land on gps failure (e.g. open loop loiter down)
+            NAVIGATION_STATE_ACRO = 10, //		# Acro mode
+            NAVIGATION_STATE_UNUSED = 11, //		# Free slot
+            NAVIGATION_STATE_DESCEND = 12, //		# Descend mode (no position control)
+            NAVIGATION_STATE_TERMINATION = 13, //		# Termination mode
+            NAVIGATION_STATE_OFFBOARD = 14, //
+            NAVIGATION_STATE_STAB = 15, //		# Stabilized mode
+            NAVIGATION_STATE_UNUSED2 = 16, //		# Free slot
+            NAVIGATION_STATE_AUTO_TAKEOFF = 17, //	# Takeoff
+            NAVIGATION_STATE_AUTO_LAND = 18, //		# Land
+            NAVIGATION_STATE_AUTO_FOLLOW_TARGET = 19, //	# Auto Follow
+            NAVIGATION_STATE_AUTO_PRECLAND = 20, //	# Precision land with landing target
+            NAVIGATION_STATE_ORBIT = 21, //       # Orbit in a circle
+            NAVIGATION_STATE_MAX = 22, //
         };
+
+        public enum ArmingStates {
+            ARMING_STATE_INIT = 0,
+            ARMING_STATE_STANDBY = 1,
+            ARMING_STATE_ARMED = 2,
+            ARMING_STATE_STANDBY_ERROR = 3,
+            ARMING_STATE_SHUTDOWN = 4,
+            ARMING_STATE_IN_AIR_RESTORE = 5,
+            ARMING_STATE_MAX = 6
+        }
+
+        [Flags]
+        public enum FailureDetectorFlags
+        {
+            FAILURE_NONE = 0, //
+            FAILURE_ROLL = 1, // 	        # (1 << 0)
+            FAILURE_PITCH = 2, //	        # (1 << 1)
+            FAILURE_ALT = 4, // 	        # (1 << 2)
+            FAILURE_EXT = 8, // 	        # (1 << 3)
+            FAILURE_ARM_ESC = 16, //      # (1 << 4)
+        }
 
         string GetLabel(MessageField field, double y)
         {
-            if (field.name == "nav_state" && this.format.name == "vehicle_status")
+            if (this.format.name == "vehicle_status")
             {
-                int i = (int)y;
-                if (i < NavStateNames.Length)
+                if (field.name == "nav_state")
                 {
-                    return NavStateNames[i];
+                    NavStates s = (NavStates)y;
+                    return s.ToString();
+                }
+                else if (field.name == "arming_state")
+                {
+                    ArmingStates s = (ArmingStates)y;
+                    return s.ToString();
+                }
+                else if (field.name == "failure_detector_status")
+                {
+                    FailureDetectorFlags s = (FailureDetectorFlags)y;
+                    return s.ToString();
                 }
             }
             return null;
@@ -525,7 +561,7 @@ namespace LogViewer.Model.ULog
             this.value = value;
             this.isContinued = isContinued;
         }
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -546,7 +582,7 @@ namespace LogViewer.Model.ULog
         public string Name => name;
         public T Value => value;
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -575,7 +611,7 @@ namespace LogViewer.Model.ULog
         public T Value => value;
 
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -591,7 +627,7 @@ namespace LogViewer.Model.ULog
         }
 
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -607,7 +643,7 @@ namespace LogViewer.Model.ULog
         }
 
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -728,7 +764,67 @@ namespace LogViewer.Model.ULog
 
         public IEnumerable<Flight> GetFlights()
         {
-            return new Flight[0];
+            MessageField field = new MessageField("uint8_t arming_state");
+            List <Flight> actualFlights = new List<Flight>();
+            Flight current = null;
+            bool flying = false;
+            Px4ULog log = null;
+            int length = this.msgs.Count;
+            for (int i = 0; i < length; i++)
+            {
+                var msg = this.msgs[i];
+                bool lastMessage = (i == length - 1);
+                if (msg is MessageData md)
+                {
+                    if (md.format.name == "vehicle_status")
+                    {
+                        var data = md.GetValue(field);
+                        if (data != null)
+                        {
+                            var s = (MessageData.ArmingStates)data.Y;
+                            if (s == MessageData.ArmingStates.ARMING_STATE_ARMED)
+                            {
+                                flying = true;
+                            } 
+                            else
+                            {
+                                flying = false;
+                            }
+                        }
+                    }
+                }
+                if (flying)
+                {
+                    if (current == null)
+                    {
+                        log = new Px4ULog()
+                        {
+                            file = this.file,
+                            formats = this.formats,
+                            logStartTimestamp = (long)msg.GetTimestamp(),
+                            msgs = new List<Message>(),
+                            schema = this.schema,
+                            startTime = GetTime(msg.GetTimestamp()),
+                            subscriptions = this.subscriptions,
+                            version = this.version
+                        };
+                        current = new Flight() { Name = string.Format("Flight {0}", actualFlights.Count + 1), StartTime = log.startTime, Log = log };
+                    }
+                    log.msgs.Add(msg);
+
+                }
+
+                if ((!flying || lastMessage) && current != null)
+                {
+                    var now = GetTime(msg.GetTimestamp());
+                    current.Duration = now - current.StartTime;
+                    actualFlights.Add(current);
+                    log = null;
+                    current = null;
+                }
+            }
+
+            return actualFlights;
         }
 
         public IEnumerable<LogEntry> GetRows(string typeName, DateTime startTime, TimeSpan duration)
@@ -756,7 +852,8 @@ namespace LogViewer.Model.ULog
 
         public DateTime GetTime(ulong timeMs)
         {
-            throw new NotImplementedException();
+            var delta = timeMs - (ulong)this.logStartTimestamp;
+            return this.startTime + new TimeSpan((long)delta * 10); // microseconds to 100 nanosecond ticks.
         }
 
         public IEnumerable<DataValue> LiveQuery(LogItemSchema schema, CancellationToken token)
@@ -767,7 +864,7 @@ namespace LogViewer.Model.ULog
         public async Task Load(string file, ProgressUtility progress)
         {
             this.file = file;
-            this.startTime = DateTime.MinValue;
+            this.startTime = File.GetCreationTime(file);
             this.duration = TimeSpan.Zero;
             DateTime lastTime = DateTime.MinValue;
 
