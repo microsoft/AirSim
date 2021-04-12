@@ -179,6 +179,12 @@ namespace LogViewer.Model.ULog
             return 0;
         }
 
+        public MessageFormat(string name, List<MessageField> fields)
+        {
+            this.fields = fields;
+            this.name = name;
+        }
+
         public MessageFormat(string fmt)
         {
             this.fmt = fmt;
@@ -243,6 +249,7 @@ namespace LogViewer.Model.ULog
         UInt16 msgId;
         byte[] value;
         Dictionary<string, object> values;
+        Dictionary<string, MessageFormat> nestedFormats;
 
         public MessageData(UInt16 msgId, byte[] value, MessageSubscription s)
         {
@@ -456,37 +463,52 @@ namespace LogViewer.Model.ULog
                     object value = values[fieldName];
                     if (field.arraySize > 0)
                     {
-                        // cook up a MessageData just for the array.
-                        MessageData array = new MessageData(this.msgId, null, this.subscription);
-                        StringBuilder fieldTypes = new StringBuilder();
-                        fieldTypes.Append(fieldName);
-                        fieldTypes.Append(':');
+                        if (nestedFormats == null)
+                        {
+                            nestedFormats = new Dictionary<string, MessageFormat>();
+                        }
 
+                        MessageFormat format = null;
+                        if (!nestedFormats.TryGetValue(fieldName, out format))
+                        {
+                            List<MessageField> fields = new List<MessageField>();
+
+                            object tv;
+                            // we need to copy the timestamp down so the data renders with time sync.
+                            if (this.values.TryGetValue("timestamp", out tv))
+                            {
+                                fields.Add(new MessageField("double timestamp"));
+                            }
+
+                            for (int i = 0; i < field.arraySize; i++)
+                            {
+                                var name = i.ToString();
+                                fields.Add(new MessageField(MessageField.GetFieldTypeName(field.type) + " " + name));
+                            }
+
+                            format = new MessageFormat(fieldName, fields);
+                            nestedFormats[fieldName] = format;
+                        }
+
+                        MessageData array = new MessageData(this.msgId, null, this.subscription);
+                        array.format = format;
                         var values = new Dictionary<string, object>();
-                        bool first = true;
                         object ts = null;
+                        int offset = 0;
                         // we need to copy the timestamp down so the data renders with time sync.
                         if (this.values.TryGetValue("timestamp", out ts))
                         {
-                            fieldTypes.Append("double timestamp");
                             values["timestamp"] = ts;
-                            first = false;
+                            offset++;
                         }
 
                         Array data = (Array)value;
                         for (int i = 0; i < field.arraySize; i++)
                         {
-                            if (!first)
-                            {
-                                fieldTypes.Append(';');
-                            }
-                            fieldTypes.Append(MessageField.GetFieldTypeName(field.type));
-                            fieldTypes.Append(' ');
-                            fieldTypes.Append(i.ToString());
-                            values[i.ToString()] = data.GetValue(i);
-                            first = false;
+                            string name = format.fields[i + offset].name;
+                            values[name] = data.GetValue(i);
                         }
-                        array.format = new MessageFormat(fieldTypes.ToString());
+
                         array.values = values;
                         return array;
                     }
