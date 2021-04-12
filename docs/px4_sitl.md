@@ -19,7 +19,8 @@ instructions](px4_sitl_wsl2.md).
     ```
     mkdir -p PX4
     cd PX4
-    git clone https://github.com/PX4/PX4-Autopilot.git
+    git clone https://github.com/PX4/PX4-Autopilot.git --recursive
+    bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools 
     cd PX4-Autopilot
     ```
     And find the latest stable release from [https://github.com/PX4/PX4-Autopilot/releases](https://github.com/PX4/PX4-Autopilot/releases)
