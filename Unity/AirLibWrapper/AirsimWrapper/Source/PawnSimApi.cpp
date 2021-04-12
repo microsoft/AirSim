@@ -158,6 +158,7 @@ float PawnSimApi::getFocalLength()
    float result;
     throw std::invalid_argument(common_utils::Utils::stringf(
         "getFocalLength is not supported on unity").c_str());
+	return result;
 }
 
 void PawnSimApi::setFocalLength(float focal_length)
