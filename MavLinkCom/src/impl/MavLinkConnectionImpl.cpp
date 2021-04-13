@@ -147,6 +147,17 @@ void MavLinkConnectionImpl::stopLoggingSendMessage()
     sendLog_ = nullptr;
 }
 
+// log every message that is "sent" using sendMessage.
+void MavLinkConnectionImpl::startLoggingReceiveMessage(std::shared_ptr<MavLinkLog> log)
+{
+    receiveLog_ = log;
+}
+
+void MavLinkConnectionImpl::stopLoggingReceiveMessage()
+{
+    receiveLog_ = nullptr;
+}
+
 void MavLinkConnectionImpl::close()
 {
     closed = true;
@@ -163,6 +174,7 @@ void MavLinkConnectionImpl::close()
         publish_thread_.join();
     }
     sendLog_ = nullptr;
+    receiveLog_ = nullptr;
 }
 
 bool MavLinkConnectionImpl::isOpen()
@@ -506,6 +518,11 @@ void MavLinkConnectionImpl::drainQueue()
         {
             return;
         }
+
+        if (receiveLog_ != nullptr) {
+            receiveLog_->write(message);
+        }
+
         // publish the message from this thread, this is safer than publishing from the readPackets thread
         // as it ensures we don't lose messages if the listener is slow.
         if (snapshot_stale) {

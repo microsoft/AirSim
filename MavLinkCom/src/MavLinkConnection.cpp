@@ -53,6 +53,17 @@ void MavLinkConnection::stopLoggingSendMessage()
     pImpl->stopLoggingSendMessage();
 }
 
+// log every message that is "received"
+void MavLinkConnection::startLoggingReceiveMessage(std::shared_ptr<MavLinkLog> log)
+{
+    pImpl->startLoggingReceiveMessage(log);
+}
+
+void MavLinkConnection::stopLoggingReceiveMessage()
+{
+    pImpl->stopLoggingReceiveMessage();
+}
+
 void MavLinkConnection::close()
 {
     pImpl->close();

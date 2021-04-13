@@ -44,6 +44,8 @@ namespace mavlinkcom_impl {
         ~MavLinkConnectionImpl();
         void startListening(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, std::shared_ptr<Port>  connectedPort);
         void startLoggingSendMessage(std::shared_ptr<MavLinkLog> log);
+        void startLoggingReceiveMessage(std::shared_ptr<MavLinkLog> log);
+        void stopLoggingReceiveMessage();
         void stopLoggingSendMessage();
         void close();
         bool isOpen();
@@ -74,6 +76,7 @@ namespace mavlinkcom_impl {
         std::string accept_node_name_;
         std::shared_ptr<TcpClientPort> server_;
         std::shared_ptr<MavLinkLog> sendLog_;
+        std::shared_ptr<MavLinkLog> receiveLog_;
 
         struct MessageHandlerEntry {
         public:

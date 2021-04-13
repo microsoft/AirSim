@@ -331,9 +331,11 @@ public: //methods
                 log_ = std::make_shared<mavlinkcom::MavLinkFileLog>();
                 log_->openForWriting(fullpath, false);
                 con->startLoggingSendMessage(log_);
+                con->startLoggingReceiveMessage(log_);
                 if (con != connection_) {
                     // log the SITL channel also
                     connection_->startLoggingSendMessage(log_);
+                    connection_->startLoggingReceiveMessage(log_);
                 }
             }
         }

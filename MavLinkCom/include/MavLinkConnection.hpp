@@ -107,6 +107,10 @@ namespace mavlinkcom {
         void startLoggingSendMessage(std::shared_ptr<MavLinkLog> log);
         void stopLoggingSendMessage();
 
+        // log every message that is "received" by a subscriber.
+        void startLoggingReceiveMessage(std::shared_ptr<MavLinkLog> log);
+        void stopLoggingReceiveMessage();
+
         uint8_t getNextSequence();
 
         // Advanced method that create a bridge between two connections.  For example, if you use connectRemoteUdp to connect to 
