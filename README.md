@@ -87,6 +87,7 @@ Press F10 to see various options available for weather effects. You can also con
 - [Reinforcement Learning with AirSim](https://microsoft.github.io/AirSim/reinforcement_learning) by Ashish Kapoor
 - [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
 - [Using TensorFlow for simple collision avoidance](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
+- [Importing a custom multirotor mesh](https://youtu.be/Bp86WiLUC80) by Ahmed Elsaharti
 
 ## Participate
 
