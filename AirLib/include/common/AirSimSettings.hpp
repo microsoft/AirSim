@@ -193,7 +193,7 @@ public: //types
     struct SensorSetting {
         SensorBase::SensorType sensor_type;
         std::string sensor_name;
-        bool enabled;
+        bool enabled = true;
         Settings settings;
     };
 
@@ -940,7 +940,7 @@ private:
 
     static void initializeNoiseSettings(std::map<int, NoiseSetting>&  noise_settings)
     {
-        int image_count = Utils::toNumeric(ImageType::Count);
+        const int image_count = Utils::toNumeric(ImageType::Count);
         noise_settings.clear();
         for (int i = -1; i < image_count; ++i)
             noise_settings[i] = NoiseSetting();

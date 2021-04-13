@@ -104,8 +104,7 @@ public:
                 break;
         }
         if (i < 0) return "";
-        auto ui = static_cast<uint>(i);
-        return str.substr(ui, len - ui);
+        return str.substr(i, len - i);
     }
 
     static std::string getLogFolderPath(bool folder_timestamp, const std::string& parent = "")

@@ -212,7 +212,8 @@ Upon completion, you will be able to build and run the ros wrapper as in a nativ
 
 ##### WSL1 vs WSL2
 
-WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 and is therefore much preferred  for building the code in terms of speed. 
+WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 (if you use the native file system in `/home/...` rather
+than Windows mounted folders under `/mnt/...`) and is therefore much preferred for building the code in terms of speed. 
 
 Once installed, you can switch between WSL1 or WSL2 versions as you prefer.
 
