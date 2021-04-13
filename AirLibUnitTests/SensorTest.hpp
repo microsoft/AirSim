@@ -3,7 +3,6 @@
 #define msr_AirLibUnitTests_SensorTest_hpp
 
 #include <chrono>
-#include <io.h>
 
 #include "sensors/SensorFactory.hpp"
 #include "common/SteppableClock.hpp"
