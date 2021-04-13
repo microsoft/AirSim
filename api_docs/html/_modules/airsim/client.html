@@ -1020,7 +1020,16 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: Whether vehicle was created</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simAddVehicle&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">vehicle_type</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">pawn_path</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simAddVehicle&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">vehicle_type</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">pawn_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.getSettingsString"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getSettingsString">[docs]</a>    <span class="k">def</span> <span class="nf">getSettingsString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch the settings text being used by AirSim</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Settings text in JSON format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;getSettingsString&#39;</span><span class="p">)</span></div></div>
 
 <span class="c1"># -----------------------------------  Multirotor APIs ---------------------------------------------</span>
 <div class="viewcode-block" id="MultirotorClient"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient">[docs]</a><span class="k">class</span> <span class="nc">MultirotorClient</span><span class="p">(</span><span class="n">VehicleClient</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
