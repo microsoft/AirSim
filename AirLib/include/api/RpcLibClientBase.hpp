@@ -120,6 +120,8 @@ public:
 
     void simSetWind(const Vector3r& wind) const;
 
+    std::string getSettingsString() const;
+
 protected:
     void* getClient();
     const void* getClient() const;

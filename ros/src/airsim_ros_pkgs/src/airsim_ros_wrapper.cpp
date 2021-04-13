@@ -34,13 +34,14 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHan
     host_ip_(host_ip),
     airsim_client_images_(host_ip),
     airsim_client_lidar_(host_ip),
+    airsim_settings_parser_(host_ip),
     tf_listener_(tf_buffer_)
 {
     ros_clock_.clock.fromSec(0);
     is_used_lidar_timer_cb_queue_ = false;
     is_used_img_timer_cb_queue_ = false;
 
-    if (AirSimSettings::singleton().simmode_name != "Car")
+    if (AirSimSettings::singleton().simmode_name != AirSimSettings::kSimModeTypeCar)
     {
         airsim_mode_ = AIRSIM_MODE::DRONE;
         ROS_INFO("Setting ROS wrapper to DRONE mode");
@@ -68,7 +69,7 @@ void AirsimROSWrapper::initialize_airsim()
         }
         else
         {
-            airsim_client_ = std::move(std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::CarRpcLibClient(host_ip_)));
+            airsim_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::CarRpcLibClient(host_ip_));
         }
         airsim_client_->confirmConnection();
         airsim_client_images_.confirmConnection();
@@ -189,7 +190,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         {
             auto& camera_setting = curr_camera_elem.second;
             auto& curr_camera_name = curr_camera_elem.first;
-            // vehicle_setting_vec_.push_back(*vehicle_setting.get());
+
             set_nans_to_zeros_in_pose(*vehicle_setting, camera_setting);
             append_static_camera_tf(vehicle_ros.get(), curr_camera_name, camera_setting);
             // camera_setting.gimbal

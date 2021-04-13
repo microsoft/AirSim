@@ -377,6 +377,8 @@ public: //fields
     std::map<std::string, std::unique_ptr<SensorSetting>> sensor_defaults;
     Vector3r wind = Vector3r::Zero();
 
+    std::string settings_text_ = "";
+
 public: //methods
     static AirSimSettings& singleton()
     {
@@ -417,6 +419,7 @@ public: //methods
 
     static void initializeSettings(const std::string& json_settings_text)
     {
+        singleton().settings_text_ = json_settings_text;
         Settings& settings_json = Settings::loadJSonString(json_settings_text);
         if (! settings_json.isLoadSuccess())
             throw std::invalid_argument("Cannot parse JSON settings_json string.");
@@ -424,12 +427,14 @@ public: //methods
 
     static void createDefaultSettingsFile()
     {
-        std::string settings_filename = Settings::getUserDirectoryFullPath("settings.json");
-        Settings& settings_json = Settings::loadJSonString("{}");
+        initializeSettings("{}");
+
+        Settings& settings_json = Settings::singleton();
         //write some settings_json in new file otherwise the string "null" is written if all settings_json are empty
         settings_json.setString("SeeDocsAt", "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md");
         settings_json.setDouble("SettingsVersion", 1.2);
 
+        std::string settings_filename = Settings::getUserDirectoryFullPath("settings.json");
         //TODO: there is a crash in Linux due to settings_json.saveJSonString(). Remove this workaround after we only support Unreal 4.17
         //https://answers.unrealengine.com/questions/664905/unreal-crashes-on-two-lines-of-extremely-simple-st.html
         settings_json.saveJSonFile(settings_filename);

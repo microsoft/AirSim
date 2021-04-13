@@ -66,6 +66,8 @@ public:
     virtual bool createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file) override;
     virtual bool addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "") override;
 
+    virtual std::string getSettingsString() const override;
+
 private:
 	SimModeBase * simmode_;
 	std::string vehicle_name_;

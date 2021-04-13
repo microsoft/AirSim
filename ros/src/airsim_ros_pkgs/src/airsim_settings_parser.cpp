@@ -1,6 +1,7 @@
 #include "airsim_settings_parser.h"
 
-AirSimSettingsParser::AirSimSettingsParser()
+AirSimSettingsParser::AirSimSettingsParser(const std::string& host_ip)
+    : host_ip_(host_ip)
 {
     success_ = initializeSettings();
 }
@@ -10,52 +11,34 @@ bool AirSimSettingsParser::success()
     return success_;
 }
 
-bool AirSimSettingsParser::readSettingsTextFromFile(std::string settingsFilepath, std::string& settingsText) 
+bool AirSimSettingsParser::getSettingsText(std::string& settings_text) const
 {
-    // check if path exists
-    bool found = std::ifstream(settingsFilepath.c_str()).good(); 
-    if (found)
-    {
-        std::ifstream ifs(settingsFilepath);
-        std::stringstream buffer;
-        buffer << ifs.rdbuf();
-        // todo airsim's simhud.cpp does error checking here
-        settingsText = buffer.str(); // todo convert to utf8 as done in simhud.cpp?
-    }
+    msr::airlib::RpcLibClientBase airsim_client(host_ip_);
+    airsim_client.confirmConnection();
 
-    return found;
-}
+    settings_text = airsim_client.getSettingsString();
 
-bool AirSimSettingsParser::getSettingsText(std::string& settingsText) 
-{
-    bool success = readSettingsTextFromFile(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json"), settingsText);
-    return success;
+    return !settings_text.empty();
 }
 
 std::string AirSimSettingsParser::getSimMode()
 {
-    Settings& settings_json = Settings::loadJSonString(settingsText_);
+    Settings& settings_json = Settings::loadJSonString(settings_text_);
     return settings_json.getString("SimMode", "");
 }
 
 // mimics void ASimHUD::initializeSettings()
 bool AirSimSettingsParser::initializeSettings()
 {
-    if (getSettingsText(settingsText_))
+    if (getSettingsText(settings_text_))
     {
-        AirSimSettings::initializeSettings(settingsText_);
-
-        // not sure where settings_json initialized in AirSimSettings::initializeSettings() is actually used
-        Settings& settings_json = Settings::loadJSonString(settingsText_);
-        std::string simmode_name = settings_json.getString("SimMode", "");
-        std::cout << "simmode_name: " << simmode_name << std::endl; 
+        AirSimSettings::initializeSettings(settings_text_);
 
         AirSimSettings::singleton().load(std::bind(&AirSimSettingsParser::getSimMode, this));
+        std::cout << "SimMode: " << AirSimSettings::singleton().simmode_name << std::endl;
 
         return true;
     }
-    else
-    {
-        return false;
-    }
+    
+    return false;
 }
