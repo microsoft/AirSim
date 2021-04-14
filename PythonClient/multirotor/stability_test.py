@@ -11,9 +11,6 @@ client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
 
-print("arming the drone...")
-client.armDisarm(True)
-
 def play_sound(wavfile):
     import speaker
     import wav_reader
@@ -44,6 +41,9 @@ while True:
     x = Numbers()
     y = Numbers()
     z = Numbers()
+        
+    print("arming the drone...")
+    client.armDisarm(True)
 
     while client.getMultirotorState().landed_state == airsim.LandedState.Landed:
         print("taking off...")
@@ -66,6 +66,9 @@ while True:
     print("landing...")
     client.landAsync().join()
     
+    print("disarming the drone...")
+    client.armDisarm(False)
+
     # more than 50 centimeter drift is unacceptable.
     a = x.is_unstable(0.5)
     b = y.is_unstable(0.5)

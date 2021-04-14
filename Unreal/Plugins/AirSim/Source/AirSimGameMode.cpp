@@ -4,6 +4,7 @@
 #include "SimHUD/SimHUD.h"
 #include "common/Common.hpp"
 #include "AirBlueprintLib.h"
+#include "MavLinkDebugLog.hpp"
 
 
 class AUnrealLog : public msr::airlib::Utils::Logger
@@ -42,6 +43,44 @@ public:
 
 static AUnrealLog GlobalASimLog;
 
+
+class AMavLink : public mavlinkcom::MavLinkDebugLog
+{
+public:
+    virtual void log(int level, const std::string& message) override
+    {
+        size_t tab_pos;
+        static const std::string delim = ":\t";
+        if ((tab_pos = message.find(delim)) != std::string::npos) {
+            UAirBlueprintLib::LogMessageString(message.substr(0, tab_pos),
+                message.substr(tab_pos + delim.size(), std::string::npos), LogDebugLevel::Informational);
+
+            return; //display only
+        }
+
+        if (level == msr::airlib::Utils::kLogLevelError) {
+            UE_LOG(LogTemp, Error, TEXT("%s"), *FString(message.c_str()));
+        }
+        else if (level == msr::airlib::Utils::kLogLevelWarn) {
+            UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(message.c_str()));
+        }
+        else {
+            UE_LOG(LogTemp, Log, TEXT("%s"), *FString(message.c_str()));
+        }
+
+        //#ifdef _MSC_VER
+        //        //print to VS output window
+        //        OutputDebugString(std::wstring(message.begin(), message.end()).c_str());
+        //#endif
+
+                //also do default logging
+        mavlinkcom::MavLinkDebugLog::log(level, message);
+    }
+};
+
+static AMavLink GlobalAMavLinkLog;
+
+
 AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
@@ -49,6 +88,7 @@ AAirSimGameMode::AAirSimGameMode(const FObjectInitializer& ObjectInitializer)
     HUDClass = ASimHUD::StaticClass();
 
     common_utils::Utils::getSetLogger(&GlobalASimLog);
+    mavlinkcom::MavLinkDebugLog::getSetLogger(&GlobalAMavLinkLog);
 
     //module loading is not allowed outside of the main thread, so we load the ImageWrapper module ahead of time.
     static IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(TEXT("ImageWrapper"));

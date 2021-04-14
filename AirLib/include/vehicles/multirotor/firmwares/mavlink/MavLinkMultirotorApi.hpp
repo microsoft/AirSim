@@ -91,10 +91,10 @@ public: //methods
 
     unsigned long long getSimTime() {
         if (lock_step_enabled_) {
-            if (sim_time_us == 0) {
-                sim_time_us = clock()->nowNanos() / 1000;
+            if (sim_time_us_ == 0) {
+                sim_time_us_ = clock()->nowNanos() / 1000;
             }
-            return sim_time_us;
+            return sim_time_us_;
         }
         else {
             return clock()->nowNanos() / 1000;
@@ -103,7 +103,7 @@ public: //methods
 
     void advanceTime() {
         if (lock_step_enabled_) {
-            sim_time_us += ticks_per_update;
+            sim_time_us_ += ticks_per_update_;
         }
     }
 
@@ -116,28 +116,17 @@ public: //methods
             if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
                 return;
 
-            if (ticks_per_update == 0) {
-                ticks_per_update = 1000000 / DEFAULT_SIM_RATE;
+            if (ticks_per_update_ == 0) {
+                ticks_per_update_ = 1000000 / DEFAULT_SIM_RATE;
             }
 
             auto now = clock()->nowNanos() / 1000;
 
-            if (last_hil_sensor_time_ != 0 && last_hil_sensor_time_ + ticks_per_update > now)
+            if (last_hil_sensor_time_ != 0 && last_hil_sensor_time_ + ticks_per_update_ > now)
             {
                 // then update() is being called too often, so we just skip this one.
                 // TODO: I think this needs to be aware of AirSim ClockSpeed...
                 return;
-            }
-
-            if (fps_start == 0) {
-                fps_start = now;
-            }
-            fps_count++;
-            if (now - fps_start > 1000000) {
-                // one second print out of hil_sensor FPS rate
-                Utils::log(Utils::stringf("HIL_SENSOR update rate is %d / second", fps_count));
-                fps_start = 0;
-                fps_count = 0;
             }
 
             //send sensor updates
@@ -1525,11 +1514,11 @@ private: //methods
         // SYSTEM TIME from host
         auto tu = getSimTime();;
         uint32_t ms = (uint32_t)(tu / 1000);
-        if (ms != last_sys_time) {
-            last_sys_time = ms;
+        if (ms != last_sys_time_) {
+            last_sys_time_ = ms;
             mavlinkcom::MavLinkSystemTime msg_system_time;
             msg_system_time.time_unix_usec = tu;
-            msg_system_time.time_boot_ms = last_sys_time;
+            msg_system_time.time_boot_ms = last_sys_time_;
             if (hil_node_ != nullptr) {
                 hil_node_->sendMessage(msg_system_time);
             }
@@ -1616,11 +1605,9 @@ private: //methods
         got_first_heartbeat_ = false;
         is_armed_ = false;
         has_home_ = false;
-        sim_time_us = 0;
-        fps_start = 0;
-        fps_count = 0;
-        last_sys_time = 0;
-        sim_time_us = 0;
+        sim_time_us_ = 0;
+        last_sys_time_ = 0;
+        sim_time_us_ = 0;
         last_gps_time_ = 0;
         last_hil_sensor_time_ = 0;
         hil_sensor_clock_ = 0;
@@ -1721,15 +1708,12 @@ private: //variables
 
     // variables for throttling HIL_SENSOR and SYSTEM_TIME messages
     const int DEFAULT_SIM_RATE = 250; // Hz.
-    unsigned long ticks_per_update = 0; // microseconds
-    unsigned long long fps_start = 0;
-    int fps_count = 0;
-    uint32_t last_sys_time = 0;
-    unsigned long long sim_time_us = 0;
+    unsigned long ticks_per_update_ = 0; // microseconds
+    uint32_t last_sys_time_ = 0;
+    unsigned long long sim_time_us_ = 0;
     uint64_t last_gps_time_ = 0;
     uint64_t last_hil_sensor_time_ = 0;
     uint64_t hil_sensor_clock_ = 0;
-
 
     //additional variables required for MultirotorApiBase implementation
     //this is optional for methods that might not use vehicle commands

@@ -9,13 +9,13 @@ CommonSetup()
 
 include_directories(
   ${AIRSIM_ROOT}/MavLinkCom
-  ${AIRSIM_ROOT}/MavLinkCom/common_utils
+  ${AIRSIM_ROOT}/MavLinkCom/mavlink_utils
   ${AIRSIM_ROOT}/MavLinkCom/include
 )
 
 
-LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/common_utils/FileSystem.cpp")
-LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/common_utils/ThreadUtils.cpp")
+LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/mavlink_utils/FileSystem.cpp")
+LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/mavlink_utils/ThreadUtils.cpp")
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/AdHocConnection.cpp") 
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/MavLinkConnection.cpp") 
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/MavLinkFtpClient.cpp") 

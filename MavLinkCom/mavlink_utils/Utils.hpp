@@ -22,6 +22,7 @@
 #include <limits>
 #include <queue>
 #include "type_utils.hpp"
+#include "MavLinkDebugLog.hpp"
 
 #ifndef _WIN32
 #include <limits.h> // needed for CHAR_BIT used below
@@ -98,17 +99,6 @@ private:
 
 
 public:
-    class Logger {
-    public:
-        virtual void log(int level, const std::string& message)
-        {
-            if (level >= 0)
-                std::cout << message;
-            else
-                std::cerr << message;
-        }
-    };
-    
     static void enableImmediateConsoleFlush() {
         //disable buffering
         setbuf(stdout, NULL);
@@ -136,25 +126,12 @@ public:
         return static_cast<float>(radians * 180.0f / M_PIf);
     }
 
-    static Logger* getSetLogger(Logger* logger = nullptr)
-    {
-        static Logger logger_default_;
-        static Logger* logger_;
-
-        if (logger != nullptr)
-            logger_ = logger;
-        else if (logger_ == nullptr)
-            logger_ = &logger_default_;
-
-        return logger_;
-    }
-
     static constexpr int kLogLevelInfo = 0;
     static constexpr int kLogLevelWarn = -1;
     static constexpr int kLogLevelError = -2;
     static void log(std::string message, int level = kLogLevelInfo)
     {
-        getSetLogger()->log(level, message);
+        mavlinkcom::MavLinkDebugLog::getSetLogger()->log(level, message);
     }
 
     template <typename T>
