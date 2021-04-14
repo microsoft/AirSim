@@ -9,7 +9,7 @@
 #include <linux/wireless.h>
 #include <stdlib.h>
 #include <string.h>
-#include "common_utils/Utils.hpp"
+#include "mavlink_utils/Utils.hpp"
 
 int getWifiRssi(int socket, const char* ifaceName)
 {
