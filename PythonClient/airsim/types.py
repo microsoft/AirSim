@@ -436,9 +436,18 @@ class GnssReport(MsgpackMixin):
     time_utc = np.uint64(0)
 
 class GpsData(MsgpackMixin):
-    time_stamp = np.uint64(0)
     gnss = GnssReport()
+    eph = 0.0
+    epv = 0.0
+    fix_type = 0
+    geo_point = GeoPoint()
+    latitude = 0.0
+    longitude = 0.0
+    velocity = Vector3r()
+    y_val = 0.0
+    z_val = 0.0
     is_valid = False
+    time_stamp = np.uint64(0)
 
 class DistanceSensorData(MsgpackMixin):
     time_stamp = np.uint64(0)

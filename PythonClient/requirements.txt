@@ -1,0 +1,4 @@
+msgpack-python
+msgpack-rpc-python
+numpy
+pyaudio
