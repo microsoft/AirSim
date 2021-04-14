@@ -19,17 +19,6 @@ class MsgpackMixin:
         #return cls(**msgpack.unpack(encoded))
         return obj
 
-
-class ImageType:
-    Scene = 0
-    DepthPlanar = 1
-    DepthPerspective = 2
-    DepthVis = 3
-    DisparityNormalized = 4
-    Segmentation = 5
-    SurfaceNormals = 6
-    Infrared = 7
-
 class _ImageType(type):
     @property
     def Scene(cls):
@@ -55,7 +44,14 @@ class _ImageType(type):
             raise AttributeError
 
 class ImageType(metaclass=_ImageType):
-    pass
+    Scene = 0
+    DepthPlanar = 1
+    DepthPerspective = 2
+    DepthVis = 3
+    DisparityNormalized = 4
+    Segmentation = 5
+    SurfaceNormals = 6
+    Infrared = 7
 
 class DrivetrainType:
     MaxDegreeOfFreedom = 0
