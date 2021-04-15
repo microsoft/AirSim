@@ -113,14 +113,14 @@ void MavLinkNode::sendMessage(MavLinkMessage& msg)
 }
 
 // send a command to the remote node
-void MavLinkNode::sendCommand(MavLinkCommand& cmd)
+void MavLinkNode::sendCommand(MavLinkCommand& cmd, bool throwOnError)
 {
-	pImpl->sendCommand(cmd);
+	pImpl->sendCommand(cmd, throwOnError);
 }
 
-AsyncResult<bool> MavLinkNode::sendCommandAndWaitForAck(MavLinkCommand& cmd)
+AsyncResult<bool> MavLinkNode::sendCommandAndWaitForAck(MavLinkCommand& cmd, bool throwOnError)
 {
-	return  pImpl->sendCommandAndWaitForAck(cmd);
+	return  pImpl->sendCommandAndWaitForAck(cmd, throwOnError);
 }
 
 //MavLinkNode::MavLinkNode() = default;

@@ -4,7 +4,9 @@ The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (
 their stack that runs in Linux. If you are on Windows then you can use the [Cygwin
 Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) or you can use the
 [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) and follow
-the PX4 Linux toolchain setup. If you are using WSL2 please read these [additional
+the PX4 Linux toolchain setup.
+
+If you are using WSL2 please read these [additional
 instructions](px4_sitl_wsl2.md).
 
 **Note** that every time you stop the unreal app you have to restart the `px4` app.
@@ -73,7 +75,7 @@ The default ports have changed recently, so check them closely to make sure AirS
                     "NAV_DLL_ACT": 0,
                     "COM_OBL_ACT": 1,
                     "LPE_LAT": 47.641468,
-                    "LPE_LON": -122.140165,
+                    "LPE_LON": -122.140165
                 }
             }
         }

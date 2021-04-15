@@ -1138,7 +1138,7 @@ void HilCommand::HilThread()
     MavCmdDoSetMode cmd;
     cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
     cmd.Mode = static_cast<float>(mode);
-    com->sendCommand(cmd);
+    com->sendCommand(cmd, false);
 
 
     while (started) {
@@ -1194,7 +1194,7 @@ void HilCommand::HilThread()
     mode &= ~static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
     cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
     cmd.Mode = static_cast<float>(mode);
-    com->sendCommand(cmd);
+    com->sendCommand(cmd, false);
 }
 
 bool BatteryCommand::Parse(const std::vector<std::string>& args) {

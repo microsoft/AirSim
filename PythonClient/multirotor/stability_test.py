@@ -22,8 +22,9 @@ def play_sound(wavfile):
             break
 
 class Numbers:
-    def __init__(self):
+    def __init__(self, name):
         self.data = []
+        self.name = name
 
     def add(self, x):
         self.data += [x]
@@ -34,13 +35,13 @@ class Numbers:
         maximum = a.max()
         mean = np.mean(a)
         stddev = np.std(a)
-        print("min={}, max={}, mean={}, stddev={}".format(minimum, maximum, mean, stddev))
+        print("{}: min={}, max={}, mean={}, stddev={}".format(self.name, minimum, maximum, mean, stddev))
         return (maximum - minimum) > amount
 
 while True:
-    x = Numbers()
-    y = Numbers()
-    z = Numbers()
+    x = Numbers("x")
+    y = Numbers("y")
+    z = Numbers("z")
         
     print("arming the drone...")
     client.armDisarm(True)
@@ -59,7 +60,7 @@ while True:
         z_val = state.kinematics_estimated.position.z_val
         x.add(x_val)
         y.add(y_val)
-        z.add(state.gps_location.altitude)
+        z.add(z_val)
         print("x: {}, y: {}, z: {}".format(x_val, y_val, z_val))
         time.sleep(1)
 

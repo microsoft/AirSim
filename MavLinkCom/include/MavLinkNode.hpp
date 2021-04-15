@@ -93,10 +93,10 @@ namespace mavlinkcom {
         void sendMessage(MavLinkMessage& msg);
 
         // send a command to the remote node
-        void sendCommand(MavLinkCommand& cmd);
+        void sendCommand(MavLinkCommand& cmd, bool throwOnError = false);
 
         // send a command to the remote node and get async result that tells you whether it succeeded or not.
-        AsyncResult<bool> sendCommandAndWaitForAck(MavLinkCommand& cmd);
+        AsyncResult<bool> sendCommandAndWaitForAck(MavLinkCommand& cmd, bool throwOnError = false);
     public:
         MavLinkNode();
         //MavLinkNode(MavLinkNode&&);

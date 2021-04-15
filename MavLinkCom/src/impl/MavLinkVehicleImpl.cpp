@@ -487,7 +487,7 @@ AsyncResult<bool> MavLinkVehicleImpl::armDisarm(bool arm)
 {
     MavCmdComponentArmDisarm cmd{};
     cmd.Arm = arm ? 1.0f : 0.0f;
-    return sendCommandAndWaitForAck(cmd);
+    return sendCommandAndWaitForAck(cmd, true);
 }
 
 AsyncResult<bool> MavLinkVehicleImpl::takeoff(float z, float pitch, float yaw)
@@ -502,7 +502,7 @@ AsyncResult<bool> MavLinkVehicleImpl::takeoff(float z, float pitch, float yaw)
     cmd.Latitude = INFINITY;
     cmd.Longitude = INFINITY;
     cmd.Altitude = targetAlt;
-    return sendCommandAndWaitForAck(cmd);
+    return sendCommandAndWaitForAck(cmd, true);
 }
 
 AsyncResult<bool> MavLinkVehicleImpl::waitForAltitude(float z, float dz, float dvz)
@@ -535,13 +535,13 @@ AsyncResult<bool> MavLinkVehicleImpl::land(float yaw, float lat, float lon, floa
     cmd.Latitude = lat;
     cmd.Longitude = lon;
     cmd.Altitude = altitude;
-    return sendCommandAndWaitForAck(cmd);
+    return sendCommandAndWaitForAck(cmd, true);
 }
 
 AsyncResult<bool> MavLinkVehicleImpl::returnToHome()
 {
     MavCmdNavReturnToLaunch cmd{};
-    return sendCommandAndWaitForAck(cmd);
+    return sendCommandAndWaitForAck(cmd, true);
 }
 
 bool MavLinkVehicleImpl::getRcSwitch(int channel, float threshold)
@@ -699,10 +699,10 @@ AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int cust
     cmd.CustomMode = static_cast<float>(customMode);
     cmd.CustomSubmode = static_cast<float>(customSubMode);
     if (waitForAck) {
-        return sendCommandAndWaitForAck(cmd);
+        return sendCommandAndWaitForAck(cmd, true);
     }
     else {
-        sendCommand(cmd);
+        sendCommand(cmd, true);
         return AsyncResult<bool>::Completed(true);
     }
 }
@@ -725,7 +725,7 @@ AsyncResult<bool> MavLinkVehicleImpl::setHomePosition(float lat, float lon, floa
     cmd.Latitude = lat;
     cmd.Longitude = lon;
     cmd.Altitude = alt;
-    return sendCommandAndWaitForAck(cmd);
+    return sendCommandAndWaitForAck(cmd, true);
 }
 
 AsyncResult<bool> MavLinkVehicleImpl::setMissionMode()

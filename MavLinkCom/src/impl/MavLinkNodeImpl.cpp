@@ -70,7 +70,7 @@ void MavLinkNodeImpl::handleMessage(std::shared_ptr<MavLinkConnection> connectio
             req_cap_ = true;
             MavCmdRequestAutopilotCapabilities cmd{};
             cmd.param1 = 1;
-            sendCommand(cmd);
+            sendCommand(cmd, false);
         }
         break;
     case static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION):
@@ -129,7 +129,7 @@ AsyncResult<MavLinkAutopilotVersion> MavLinkNodeImpl::getCapabilities()
     // request capabilities, it will respond with AUTOPILOT_VERSION.
     MavCmdRequestAutopilotCapabilities cmd{};
     cmd.param1 = 1;
-    sendCommand(cmd);
+    sendCommand(cmd, true);
 
     return result;
 }
@@ -190,7 +190,7 @@ void MavLinkNodeImpl::setMessageInterval(int msgId, int frequency)
     MavCmdSetMessageInterval cmd{};
     cmd.MessageId = static_cast<float>(msgId);
     cmd.Interval = intervalMicroseconds;
-    sendCommand(cmd);
+    sendCommand(cmd, true);
 }
 
 union param_value_u {
@@ -574,7 +574,7 @@ void MavLinkNodeImpl::sendMessage(MavLinkMessage& msg)
     ensureConnection()->sendMessage(msg);
 }
 
-void MavLinkNodeImpl::sendCommand(MavLinkCommand& command)
+void MavLinkNodeImpl::sendCommand(MavLinkCommand& command, bool throwOnError)
 {
     MavLinkCommandLong cmd{};
     command.pack();
@@ -593,12 +593,13 @@ void MavLinkNodeImpl::sendCommand(MavLinkCommand& command)
         sendMessage(cmd);
     }
     catch (const std::exception& e) {
-        // silently fail since we are on a background thread here...
-        unused(e);
+        if (throwOnError) {
+            throw e;
+        }
     }
 }
 
-AsyncResult<bool> MavLinkNodeImpl::sendCommandAndWaitForAck(MavLinkCommand& command)
+AsyncResult<bool> MavLinkNodeImpl::sendCommandAndWaitForAck(MavLinkCommand& command, bool throwOnError)
 {
     auto con = ensureConnection();
 
@@ -638,6 +639,6 @@ AsyncResult<bool> MavLinkNodeImpl::sendCommandAndWaitForAck(MavLinkCommand& comm
         }
     });
     result.setState(subscription);
-    sendCommand(command);
+    sendCommand(command, throwOnError);
     return result;
 }

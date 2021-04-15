@@ -78,10 +78,10 @@ namespace mavlinkcom_impl {
         void sendMessage(MavLinkMessage& msg);
 
         // send a command to the remote node
-        void sendCommand(MavLinkCommand& cmd);
+        void sendCommand(MavLinkCommand& cmd, bool throwOnError);
 
         // send a command to the remote node and return async result that tells you whether ACK was received or not.
-        AsyncResult<bool> sendCommandAndWaitForAck(MavLinkCommand& cmd);
+        AsyncResult<bool> sendCommandAndWaitForAck(MavLinkCommand& cmd, bool throwOnError);
 
     protected:
         // this is called for all messages received on the connection.

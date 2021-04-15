@@ -106,7 +106,7 @@ void MavLinkVideoClientImpl::requestVideo(int camera_id, float every_n_sec, bool
     cmd.Transmission = 1.0f;
     cmd.Interval = every_n_sec;
     cmd.Recording = save_locally ? 1.0f : 0.0f;
-    sendCommand(cmd);
+    sendCommand(cmd, true);
 }
 
 //================================= SERVER ==============================================================

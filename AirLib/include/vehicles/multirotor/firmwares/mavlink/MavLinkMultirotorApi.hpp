@@ -57,7 +57,6 @@ public: //methods
         connection_info_ = connection_info;
         sensors_ = sensors;
         is_simulation_mode_ = is_simulation;
-
         try {
             openAllConnections();
             is_ready_ = true;
@@ -83,10 +82,7 @@ public: //methods
     virtual void resetImplementation() override
     {
         MultirotorApiBase::resetImplementation();
-
-        resetState();
         was_reset_ = true;
-        setNormalMode();
     }
 
     unsigned long long getSimTime() {
@@ -722,6 +718,8 @@ protected: //methods
             qgc_proxy_->close();
             qgc_proxy_ = nullptr;
         }
+
+        resetState();        
     }
 
     void connect_thread()
@@ -734,16 +732,9 @@ protected: //methods
             connectToLogViewer();
             connectToQGC();
         }
-        connecting_ = false;
-        connected_ = true;
-
-        // wait for px4 to connect so we can send the initial parameters
-        while (!send_params_ && connected_) {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-        if (connected_) {
-            sendParams();
-            send_params_ = false;
+        if (connecting_) {
+            connecting_ = false;
+            connected_ = true;
         }
     }
 
@@ -762,9 +753,9 @@ private: //methods
 
     void openAllConnections()
     {
+        Utils::log("Opening mavlink connection");
         close(); //just in case if connections were open
         resetState(); //reset all variables we might have changed during last session
-
         connect();
     }
 
@@ -1057,7 +1048,6 @@ private: //methods
         std::string remoteIpAddr;
         Utils::setValue(rotor_controls_, 0.0f);        
 
-
         if (connection_info.use_tcp) {
             if (connection_info.tcp_port == 0) {
                 throw std::invalid_argument("TcpPort setting has an invalid value.");
@@ -1124,6 +1114,8 @@ private: //methods
                     auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
                         connection_info_.local_host_ip, remoteIpAddr, connection_info_.control_port);
                     mav_vehicle_->connect(gcsConnection);
+                    // need to try and send something to make sure the connection is good.
+                    mav_vehicle_->setMessageInterval(mavlinkcom::MavLinkHomePosition::kMessageId, 1);
                     break;
                 }
                 catch (std::exception&) {
@@ -1139,8 +1131,40 @@ private: //methods
                 return;
             }
         }
+       
+        try {
+            connectVehicle();
+        }
+        catch (std::exception& e) {
+            addStatusMessage("Error connecting vehicle:");
+            addStatusMessage(e.what());
+        }
+    }
 
-        connectVehicle();
+    void processControlMessages(const mavlinkcom::MavLinkMessage& msg) 
+    {
+        // Utils::log(Utils::stringf("Control msg %d", msg.msgid));
+        // PX4 usually sends the following on the control channel.
+        // If nothing is arriving here it means our control channel UDP connection isn't working.
+        // MAVLINK_MSG_ID_HIGHRES_IMU
+        // MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET
+        // MAVLINK_MSG_ID_SERVO_OUTPUT_RAW
+        // MAVLINK_MSG_ID_GPS_RAW_INT
+        // MAVLINK_MSG_ID_TIMESYNC
+        // MAVLINK_MSG_ID_ALTITUDE
+        // MAVLINK_MSG_ID_VFR_HUD
+        // MAVLINK_MSG_ID_ESTIMATOR_STATUS
+        // MAVLINK_MSG_ID_EXTENDED_SYS_STATE
+        // MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN
+        // MAVLINK_MSG_ID_PING
+        // MAVLINK_MSG_ID_SYS_STATUS
+        // MAVLINK_MSG_ID_SYSTEM_TIME
+        // MAVLINK_MSG_ID_LINK_NODE_STATUS
+        // MAVLINK_MSG_ID_AUTOPILOT_VERSION
+        // MAVLINK_MSG_ID_COMMAND_ACK
+        // MAVLINK_MSG_ID_STATUSTEXT
+        // MAVLINK_MSG_ID_PARAM_VALUE
+        processMavMessages(msg);
     }
 
     void connectVehicle()
@@ -1151,7 +1175,7 @@ private: //methods
             // we have two channels, so we need to subscribe to the second one also.
             mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                 unused(connection);
-                processMavMessages(msg);
+                processControlMessages(msg);
                 });
         }
         else {
@@ -1159,11 +1183,21 @@ private: //methods
         }
 
         connected_ = true;
-        // now we can start our heartbeats.
-        mav_vehicle_->startHeartbeat();
 
         // Also request home position messages
         mav_vehicle_->setMessageInterval(mavlinkcom::MavLinkHomePosition::kMessageId, 1);
+
+        // now we can start our heartbeats.
+        mav_vehicle_->startHeartbeat();
+
+        // wait for px4 to connect so we can send the initial parameters
+        while (!send_params_ && connected_) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+        if (connected_) {
+            sendParams();
+            send_params_ = false;
+        }
     }
 
     void createMavSerialConnection(const std::string& port_name, int baud_rate)
@@ -1416,7 +1450,7 @@ private: //methods
                 addStatusMessage("Got GPS Home Location");
                 has_home_ = true;
             }
-
+            send_params_ = true;
         }
         else if (msg.msgid == mavlinkcom::MavLinkLocalPositionNed::kMessageId) {
             // we are getting position information... so we can use this to check the stability of the z coordinate before takeoff.
@@ -1428,6 +1462,7 @@ private: //methods
         else if (msg.msgid == mavlinkcom::MavLinkExtendedSysState::kMessageId) {
             // check landed state.
             getLandedState();
+            send_params_ = true;
         }
         else if (msg.msgid == mavlinkcom::MavLinkHomePosition::kMessageId) {
             mavlinkcom::MavLinkHomePosition home;

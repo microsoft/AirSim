@@ -68,7 +68,7 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
                 "NAV_DLL_ACT": 0,
                 "COM_OBL_ACT": 1,
                 "LPE_LAT": 47.641468,
-                "LPE_LON": -122.140165,
+                "LPE_LON": -122.140165
             }
         }
     }
