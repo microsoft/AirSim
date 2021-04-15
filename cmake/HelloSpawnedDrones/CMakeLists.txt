@@ -15,7 +15,7 @@ include_directories(
   ${AIRSIM_ROOT}/AirLib/include
   ${RPC_LIB_INCLUDES}
   ${AIRSIM_ROOT}/MavLinkCom/include
-  ${AIRSIM_ROOT}/MavLinkCom/mavlink_utils
+  ${AIRSIM_ROOT}/MavLinkCom/common_utils
 )
 
 AddExecutableSource()

@@ -10,7 +10,7 @@ SetupConsoleBuild()
 include_directories(
   ${AIRSIM_ROOT}/MavLinkCom/MavLinkTest
   ${AIRSIM_ROOT}/MavLinkCom/include
-  ${AIRSIM_ROOT}/MavLinkCom/mavlink_utils
+  ${AIRSIM_ROOT}/MavLinkCom/common_utils
 )
 
     set(PROJECT_CPP ${PROJECT_NAME}_sources)
