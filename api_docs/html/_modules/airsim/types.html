@@ -169,17 +169,6 @@
         <span class="c1">#return cls(**msgpack.unpack(encoded))</span>
         <span class="k">return</span> <span class="n">obj</span></div></div>
 
-
-<span class="k">class</span> <span class="nc">ImageType</span><span class="p">:</span>
-    <span class="n">Scene</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">DepthPlanar</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">DepthPerspective</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">DepthVis</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">DisparityNormalized</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">Segmentation</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">SurfaceNormals</span> <span class="o">=</span> <span class="mi">6</span>
-    <span class="n">Infrared</span> <span class="o">=</span> <span class="mi">7</span>
-
 <span class="k">class</span> <span class="nc">_ImageType</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Scene</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -205,7 +194,14 @@
             <span class="k">raise</span> <span class="ne">AttributeError</span>
 
 <div class="viewcode-block" id="ImageType"><a class="viewcode-back" href="../../index.html#airsim.types.ImageType">[docs]</a><span class="k">class</span> <span class="nc">ImageType</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">_ImageType</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+    <span class="n">Scene</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">DepthPlanar</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">DepthPerspective</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">DepthVis</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">DisparityNormalized</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">Segmentation</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">SurfaceNormals</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">Infrared</span> <span class="o">=</span> <span class="mi">7</span></div>
 
 <div class="viewcode-block" id="DrivetrainType"><a class="viewcode-back" href="../../index.html#airsim.types.DrivetrainType">[docs]</a><span class="k">class</span> <span class="nc">DrivetrainType</span><span class="p">:</span>
     <span class="n">MaxDegreeOfFreedom</span> <span class="o">=</span> <span class="mi">0</span>
