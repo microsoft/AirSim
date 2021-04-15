@@ -74,12 +74,8 @@
     <ClCompile Include="src\AdHocConnection.cpp" />
     <ClCompile Include="src\impl\UdpSocketImpl.cpp" />
     <ClCompile Include="src\UdpSocket.cpp" />
-    <ClCompile Include="mavlink_utils\FileSystem.cpp">
-      <Filter>mavlink_utils</Filter>
-    </ClCompile>
-    <ClCompile Include="mavlink_utils\ThreadUtils.cpp">
-      <Filter>mavlink_utils</Filter>
-    </ClCompile>
+    <ClCompile Include="common_utils\FileSystem.cpp" />
+    <ClCompile Include="common_utils\ThreadUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mavlink\checksum.h">
@@ -185,42 +181,20 @@
     <ClInclude Include="src\impl\AdHocConnectionImpl.hpp" />
     <ClInclude Include="include\UdpSocket.hpp" />
     <ClInclude Include="src\impl\UdpSocketImpl.hpp" />
-    <ClInclude Include="mavlink_utils\EnumFlags.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\ExceptionUtils.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\FileSystem.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\json.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\optional.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\prettyprint.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\sincos.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\StrictMode.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\ThreadUtils.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\type_utils.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
-    <ClInclude Include="mavlink_utils\Utils.hpp">
-      <Filter>mavlink_utils</Filter>
-    </ClInclude>
     <ClInclude Include="include\MavLinkDebugLog.hpp">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="common_utils\EnumFlags.hpp" />
+    <ClInclude Include="common_utils\ExceptionUtils.hpp" />
+    <ClInclude Include="common_utils\FileSystem.hpp" />
+    <ClInclude Include="common_utils\json.hpp" />
+    <ClInclude Include="common_utils\optional.hpp" />
+    <ClInclude Include="common_utils\prettyprint.hpp" />
+    <ClInclude Include="common_utils\sincos.hpp" />
+    <ClInclude Include="common_utils\StrictMode.hpp" />
+    <ClInclude Include="common_utils\ThreadUtils.hpp" />
+    <ClInclude Include="common_utils\type_utils.hpp" />
+    <ClInclude Include="common_utils\Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mavlink">
