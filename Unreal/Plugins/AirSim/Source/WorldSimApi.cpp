@@ -573,3 +573,8 @@ void WorldSimApi::setWind(const Vector3r& wind) const
 {
     simmode_->setWind(wind);
 }
+
+std::string WorldSimApi::getSettingsString() const
+{
+    return msr::airlib::AirSimSettings::singleton().settings_text_;
+}

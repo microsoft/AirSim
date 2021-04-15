@@ -470,6 +470,11 @@ void RpcLibClientBase::simSetWind(const Vector3r& wind) const
     pimpl_->client.call("simSetWind", conv_wind);
 }
 
+std::string RpcLibClientBase::getSettingsString() const
+{
+    return pimpl_->client.call("getSettingsString").as<std::string>();
+}
+
 void* RpcLibClientBase::getClient()
 {
     return &pimpl_->client;

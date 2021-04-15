@@ -113,6 +113,7 @@ nav:
     - "Building Point Clouds": 'point_clouds.md'
     - "Surveying Using Drone": 'drone_survey.md'
     - "Orbit Trajectory": "orbit.md"
+    - "Importing a custom multirotor mesh": 'https://youtu.be/Bp86WiLUC80'
   - "Misc":
     - "AirSim on Real Drones": 'custom_drone.md'
     - "Installing cmake on Linux": 'cmake_linux.md'

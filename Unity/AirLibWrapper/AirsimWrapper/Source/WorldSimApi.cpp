@@ -202,5 +202,10 @@ bool WorldSimApi::addVehicle(const std::string& vehicle_name, const std::string&
     return false;
 }
 
+std::string WorldSimApi::getSettingsString() const
+{
+    return msr::airlib::AirSimSettings::singleton().settings_text_;
+}
+
 
 #pragma endregion
