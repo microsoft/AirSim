@@ -40,7 +40,7 @@ catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=
  $ source PATH_TO/AirSim/ros/devel/setup.bash
  $ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch
  ```
- The above would start rviz with tf's, registered RGBD cloud using [depth_image_proc](https://wiki.ros.org/depth_image_proc) using the [`depth_to_pointcloud` launch file](https://github.com/microsoft/AirSim/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch), and the lidar point cloud. 
+ The above would start rviz with tf's, registered RGBD cloud using [depth_image_proc](https://wiki.ros.org/depth_image_proc) using the [`depth_to_pointcloud` launch file](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch), and the lidar point cloud. 
 
 
 ### Two drones, with cameras, lidar, IMU each
