@@ -142,10 +142,10 @@ protected:
         }
 
         Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port_, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
-        Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
+        Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port_local, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
 
         udpSocket_ = std::make_shared<mavlinkcom::UdpSocket>();
-        udpSocket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
+        udpSocket_->bind(connection_info_.local_host_ip, connection_info_.control_port_local);
     }
 
 private:

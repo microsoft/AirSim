@@ -86,7 +86,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std:
     return createConnection(nodeName, socket);
 }
 
-void MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort)
+std::string MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort)
 {
     std::string local = localAddr;
     close();
@@ -95,10 +95,13 @@ void MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent,
     port = socket; // this is so that a call to close() can cancel this blocking accept call.
     socket->accept(localAddr, listeningPort);
 
+    std::string remote = socket->remoteAddress();
+
     socket->setNonBlocking();
     socket->setNoDelay();
 
     parent->startListening(nodeName, socket);
+    return remote;
 }
 
 std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const std::string& nodeName, const std::string& portName, int baudRate, const std::string& initString)
@@ -144,6 +147,17 @@ void MavLinkConnectionImpl::stopLoggingSendMessage()
     sendLog_ = nullptr;
 }
 
+// log every message that is "sent" using sendMessage.
+void MavLinkConnectionImpl::startLoggingReceiveMessage(std::shared_ptr<MavLinkLog> log)
+{
+    receiveLog_ = log;
+}
+
+void MavLinkConnectionImpl::stopLoggingReceiveMessage()
+{
+    receiveLog_ = nullptr;
+}
+
 void MavLinkConnectionImpl::close()
 {
     closed = true;
@@ -159,7 +173,8 @@ void MavLinkConnectionImpl::close()
         msg_available_.post();
         publish_thread_.join();
     }
-    sendLog_ = nullptr;
+    sendLog_ = nullptr;    
+    receiveLog_ = nullptr;
 }
 
 bool MavLinkConnectionImpl::isOpen()
@@ -502,7 +517,12 @@ void MavLinkConnectionImpl::drainQueue()
         if (!hasMsg)
         {
             return;
+        }        
+        
+        if (receiveLog_ != nullptr) {
+            receiveLog_->write(message);
         }
+
         // publish the message from this thread, this is safer than publishing from the readPackets thread
         // as it ensures we don't lose messages if the listener is slow.
         if (snapshot_stale) {

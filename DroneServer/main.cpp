@@ -58,7 +58,9 @@ int main(int argc, const char* argv[])
         connection_info.qgc_ip_port = child.getInt("QgcPort", connection_info.qgc_ip_port);
 
         connection_info.control_ip_address = child.getString("ControlIp", connection_info.control_ip_address);
-        connection_info.control_port = child.getInt("ControlPort", connection_info.control_port);
+        connection_info.control_port_local = child.getInt("ControlPort", connection_info.control_port_local);
+        connection_info.control_port_local = child.getInt("ControlPortLocal", connection_info.control_port_local);
+        connection_info.control_port_remote = child.getInt("ControlPortRemote", connection_info.control_port_remote);
 
         connection_info.local_host_ip = child.getString("LocalHostIp", connection_info.local_host_ip);
 

@@ -30,7 +30,8 @@ namespace mavlinkcom {
 
         ~AsyncResultState() {
             complete();
-        }
+        }        
+        
         int getState() {
             return state_;
         }
@@ -81,6 +82,12 @@ namespace mavlinkcom {
         ~AsyncResult() 
         {
             state_ = nullptr;
+        }
+
+        static AsyncResult<T> Completed(T state) {
+            AsyncResult<T> r(nullptr);
+            r.setResult(state);
+            return r;
         }
 
         void then(ResultHandler handler)

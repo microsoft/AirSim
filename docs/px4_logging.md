@@ -4,7 +4,24 @@ Thanks to [Chris Lovett](https://github.com/clovett) for developing various tool
 
 ## Logging MavLink Messages
 
-The following command will connect MavLinkTest app to the Simulator and enable logging
+AirSim can capture mavlink log files if you add the following to the PX4 section of your `settings.json` file:
+
+```json
+{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+    "Vehicles": {
+        "PX4": {
+            ...,
+            "Logs": "c:/temp/mavlink"
+        }
+    }
+}
+```
+
+AirSim will create a timestamped log file in this folder for each "armed/disarmed" flight session.
+
+You can also create log files using the `MavLinkTest` app to the Simulator and enable logging
 of all mavlink commands to and from the PX4.
 ```
 MavLinkTest -server:127.0.0.1:14550 -logdir:d:\temp

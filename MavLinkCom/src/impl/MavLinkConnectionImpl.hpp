@@ -36,7 +36,7 @@ namespace mavlinkcom_impl {
         static std::shared_ptr<MavLinkConnection>  connectLocalUdp(const std::string& nodeName, const std::string& localAddr, int localPort);
         static std::shared_ptr<MavLinkConnection>  connectRemoteUdp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteAddr, int remotePort);
         static std::shared_ptr<MavLinkConnection>  connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort);
-        void acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort);
+        std::string acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort);
 
         std::string getName();
         int getTargetComponentId();
@@ -45,6 +45,8 @@ namespace mavlinkcom_impl {
         void startListening(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, std::shared_ptr<Port>  connectedPort);
         void startLoggingSendMessage(std::shared_ptr<MavLinkLog> log);
         void stopLoggingSendMessage();
+        void startLoggingReceiveMessage(std::shared_ptr<MavLinkLog> log);
+        void stopLoggingReceiveMessage();
         void close();
         bool isOpen();
         void sendMessage(const MavLinkMessageBase& msg);
@@ -74,6 +76,7 @@ namespace mavlinkcom_impl {
         std::string accept_node_name_;
         std::shared_ptr<TcpClientPort> server_;
         std::shared_ptr<MavLinkLog> sendLog_;
+        std::shared_ptr<MavLinkLog> receiveLog_;
 
         struct MessageHandlerEntry {
         public:

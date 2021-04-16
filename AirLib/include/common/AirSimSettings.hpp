@@ -280,10 +280,10 @@ public: //types
         int tcp_port = 4560;
 
         // The PX4 SITL app requires receiving drone commands over a different mavlink channel called
-        // the "ground control station" channel.
-        // So set this to empty string to disable this separate command channel.
+        // the "ground control station" (or GCS) channel.
         std::string control_ip_address = "127.0.0.1";
-        int control_port = 14580;
+        int control_port_local = 14540;
+        int control_port_remote = 14580;
 
         // The log viewer can be on a different machine, so you can configure it's ip address and port here.
         int logviewer_ip_port = 14388;
@@ -311,6 +311,7 @@ public: //types
         std::string model = "Generic";
 
         std::map<std::string, float> params;
+        std::string logs;
     };
 
     struct MavLinkVehicleSetting : public VehicleSetting {
@@ -714,7 +715,9 @@ private:
         connection_info.qgc_ip_port = settings_json.getInt("QgcPort", connection_info.qgc_ip_port);
 
         connection_info.control_ip_address = settings_json.getString("ControlIp", connection_info.control_ip_address);
-        connection_info.control_port = settings_json.getInt("ControlPort", connection_info.control_port);
+        connection_info.control_port_local = settings_json.getInt("ControlPort", connection_info.control_port_local); // legacy
+        connection_info.control_port_local = settings_json.getInt("ControlPortLocal", connection_info.control_port_local);
+        connection_info.control_port_remote = settings_json.getInt("ControlPortRemote", connection_info.control_port_remote);
 
         std::string sitlip = settings_json.getString("SitlIp", connection_info.control_ip_address);
         if (sitlip.size() > 0 && connection_info.control_ip_address.size() == 0)
@@ -725,7 +728,7 @@ private:
         if (settings_json.hasKey("SitlPort"))
         {
             // backwards compat
-            connection_info.control_port = settings_json.getInt("SitlPort", connection_info.control_port);
+            connection_info.control_port_local = settings_json.getInt("SitlPort", connection_info.control_port_local);
         }
 
         connection_info.local_host_ip = settings_json.getString("LocalHostIp", connection_info.local_host_ip);
@@ -738,6 +741,7 @@ private:
         connection_info.serial_port = settings_json.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = settings_json.getInt("SerialBaudRate", connection_info.baud_rate);
         connection_info.model = settings_json.getString("Model", connection_info.model);
+        connection_info.logs = settings_json.getString("Logs", connection_info.logs);
 
         Settings params;
         if (settings_json.getChild("Parameters", params)) {

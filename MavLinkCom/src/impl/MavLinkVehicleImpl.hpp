@@ -39,7 +39,7 @@ namespace mavlinkcom_impl {
 		AsyncResult<MavLinkHomePosition> waitForHomePosition();
 		AsyncResult<bool> allowFlightControlOverUsb();
 		AsyncResult<bool> waitForAltitude(float z, float dz, float dvz);
-        AsyncResult<bool>  setMode(int modeFlags, int customMode = 0, int customSubMode = 0);
+		AsyncResult<bool> setMode(int modeFlags, int customMode = 0, int customSubMode = 0, bool waitForAck = true);
 
 		// request OFFBOARD control.  
         void requestControl();

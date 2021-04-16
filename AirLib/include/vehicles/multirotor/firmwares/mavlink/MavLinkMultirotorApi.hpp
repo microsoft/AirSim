@@ -20,6 +20,7 @@
 #include <tuple>
 
 #include "common/Common.hpp"
+#include "common/common_utils/FileSystem.hpp"
 #include "common/common_utils/SmoothingFilter.hpp"
 #include "common/common_utils/Timer.hpp"
 #include "common/CommonStructs.hpp"
@@ -81,11 +82,30 @@ public: //methods
     //reset PX4 stack
     virtual void resetImplementation() override
     {
+        // note this is called AFTER "initialize" when we've connected to the drone
+        // so this method cannot reset any of that connection state.
         MultirotorApiBase::resetImplementation();
-
-        resetState();
         was_reset_ = true;
-        setNormalMode();
+    }
+
+    unsigned long long getSimTime() {
+        // This ensures HIL_SENSOR and HIL_GPS have matching clocks.
+        //if (lock_step_enabled_) {
+            if (sim_time_us_ == 0) {
+                sim_time_us_ = clock()->nowNanos() / 1000;
+            }
+            return sim_time_us_;
+        // }
+        //else {
+        //    return clock()->nowNanos() / 1000;
+        //}
+    }
+
+    void advanceTime() {
+        if (lock_step_enabled_) {
+            // sim_time_us_ += ticks_per_update_;
+        }
+        sim_time_us_ = clock()->nowNanos() / 1000;
     }
 
     //update sensors in PX4 stack
@@ -97,10 +117,16 @@ public: //methods
             if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
                 return;
 
-            if (send_params_) {
-                send_params_ = false;
-                sendParams();
-            }
+            //auto now = clock()->nowNanos() / 1000;
+
+            //if (last_hil_sensor_time_ != 0 && last_hil_sensor_time_ + ticks_per_update_ > now)
+            //{
+            //    // then update() is being called too often, so we just skip this one.
+            //    // TODO: I think this needs to be aware of AirSim ClockSpeed...
+            //    // return;
+            //}
+
+            advanceTime();
 
             //send sensor updates
             const auto& imu_output = getImuData("");
@@ -111,7 +137,8 @@ public: //methods
                 imu_output.angular_velocity,
                 mag_output.magnetic_field_body,
                 baro_output.pressure * 0.01f /*Pa to Millibar */, baro_output.altitude);
-
+            
+            sendSystemTime();
 
             const uint count_distance_sensors = getSensors().size(SensorBase::SensorType::Distance);
             if (count_distance_sensors != 0) {
@@ -146,7 +173,8 @@ public: //methods
                     sendHILGps(gps_output.gnss.geo_point, gps_velocity, gps_velocity_xy.norm(), gps_cog,
                         gps_output.gnss.eph, gps_output.gnss.epv, gps_output.gnss.fix_type, 10);
                 }
-            }
+            }            
+
         }
         catch (std::exception& e) {
             addStatusMessage("Exception sending messages to vehicle");
@@ -271,6 +299,48 @@ public: //methods
 
         mav_vehicle_->armDisarm(arm).wait(10000, &rc);
         return rc;
+    }
+
+    void onArmed() {
+        if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
+            auto con = mav_vehicle_->getConnection();
+            if (con != nullptr) {
+                if (log_ != nullptr) {
+                    log_->close();
+                }
+
+                std::time_t t = std::time(0);   // get time now
+                std::tm* now = std::localtime(&t);
+                auto folder = Utils::stringf("%04d-%02d-%02d", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
+                auto path = common_utils::FileSystem::ensureFolder(connection_info_.logs, folder);
+                auto filename = Utils::stringf("%02d-%02d-%02d.mavlink", now->tm_hour, now->tm_min, now->tm_sec);
+                auto fullpath = common_utils::FileSystem::combine(path, filename);
+                addStatusMessage(Utils::stringf("Opening log file: %s", fullpath.c_str()));
+                log_ = std::make_shared<mavlinkcom::MavLinkFileLog>();
+                log_->openForWriting(fullpath, false);
+                con->startLoggingSendMessage(log_);
+                con->startLoggingReceiveMessage(log_);
+                if (con != connection_) {
+                    // log the SITL channel also
+                    connection_->startLoggingSendMessage(log_);
+                    connection_->startLoggingReceiveMessage(log_);
+                }
+            }
+        }
+    }
+
+    void onDisarmed() {
+        if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
+            auto con = mav_vehicle_->getConnection();
+            if (con != nullptr) {
+                con->stopLoggingSendMessage();
+                addStatusMessage("Closing log file.");
+            }
+            connection_->stopLoggingSendMessage();
+            if (log_ != nullptr) {
+                log_->close();
+            }
+        }
     }
 
     void waitForHomeLocation(float timeout_sec)
@@ -712,7 +782,9 @@ protected: //methods
         if (qgc_proxy_ != nullptr) {
             qgc_proxy_->close();
             qgc_proxy_ = nullptr;
-        }
+        }       
+        
+        resetState();
     }
 
     void connect_thread()
@@ -724,8 +796,12 @@ protected: //methods
             connectToLogViewer();
             connectToQGC();
         }
-        connecting_ = false;
-        connected_ = true;
+
+        if (connecting_) {
+            // only set connected if we haven't already been told to disconnect.
+            connecting_ = false;
+            connected_ = true;
+        }
     }
 
     virtual void close()
@@ -743,9 +819,9 @@ private: //methods
 
     void openAllConnections()
     {
+        Utils::log("Opening mavlink connection");
         close(); //just in case if connections were open
         resetState(); //reset all variables we might have changed during last session
-
         connect();
     }
 
@@ -1034,11 +1110,8 @@ private: //methods
         close();
 
         connecting_ = true;
-        got_first_heartbeat_ = false;
-        is_hil_mode_set_ = false;
-        is_armed_ = false;
-        has_home_ = false;
-        is_controls_0_1_ = true;
+        is_controls_0_1_ = true;        
+        std::string remoteIpAddr;
         Utils::setValue(rotor_controls_, 0.0f);
 
         if (connection_info.use_tcp) {
@@ -1050,7 +1123,7 @@ private: //methods
             addStatusMessage(msg);
             try {
                 connection_ = std::make_shared<mavlinkcom::MavLinkConnection>();
-                connection_->acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
+                remoteIpAddr = connection_->acceptTcp("hil", connection_info_.local_host_ip, connection_info.tcp_port);
             }
             catch (std::exception& e) {
                 addStatusMessage("Accepting TCP socket failed, is another instance running?");
@@ -1088,26 +1161,50 @@ private: //methods
         mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
 
         if (connection_info_.control_ip_address != "") {
-            if (connection_info_.control_port == 0) {
-                throw std::invalid_argument("ControlPort setting has an invalid value.");
+            if (connection_info_.control_port_local == 0) {
+                throw std::invalid_argument("LocalControlPort setting has an invalid value.");
+            }
+            if (!connection_info.use_tcp || connection_info_.control_ip_address != "remote") {
+                remoteIpAddr = connection_info_.control_ip_address;
+            }
+            if (remoteIpAddr == "local" || remoteIpAddr == "localhost") {
+                remoteIpAddr = "127.0.0.1";
             }
 
             // The PX4 SITL mode app cannot receive commands to control the drone over the same HIL mavlink connection.
             // The HIL mavlink connection can only handle HIL_SENSOR messages.  This separate channel is needed for
             // everything else.
-            addStatusMessage(Utils::stringf("Connecting to PX4 Control UDP port %d, local IP %s, remote IP...",
-                connection_info_.control_port, connection_info_.local_host_ip.c_str(), connection_info_.control_ip_address.c_str()));
+            addStatusMessage(Utils::stringf("Connecting to PX4 Control UDP port %d, local IP %s, remote IP %s ...",
+                connection_info_.control_port_local, connection_info_.local_host_ip.c_str(), remoteIpAddr.c_str()));
 
             // if we try and connect the UDP port too quickly it doesn't work, bug in PX4 ?
             for (int retries = 60; retries >= 0 && connecting_; retries--) {
                 try {
-                    auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
-                        connection_info_.local_host_ip, connection_info_.control_ip_address, connection_info_.control_port);
+                    std::shared_ptr<mavlinkcom::MavLinkConnection> gcsConnection;
+                    if (remoteIpAddr == "127.0.0.1") {                        
+                        gcsConnection = mavlinkcom::MavLinkConnection::connectLocalUdp("gcs",
+                            connection_info_.local_host_ip,
+                            connection_info_.control_port_local);
+                    }
+                    else {
+                        gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
+                            connection_info_.local_host_ip,
+                            remoteIpAddr,
+                            connection_info_.control_port_remote);
+                    }
                     mav_vehicle_->connect(gcsConnection);
+                    // need to try and send something to make sure the connection is good.
+                    mav_vehicle_->setMessageInterval(mavlinkcom::MavLinkHomePosition::kMessageId, 1);
+                    break;
                 }
                 catch (std::exception&) {
                     std::this_thread::sleep_for(std::chrono::seconds(1));
                 }
+            }
+
+            if (mav_vehicle_ == nullptr) {
+                // play was stopped!
+                return;
             }
 
             if (mav_vehicle_->getConnection() != nullptr) {
@@ -1117,31 +1214,73 @@ private: //methods
                 addStatusMessage(std::string("Timeout trying to connect ground control over UDP."));
                 return;
             }
+        }        
+        try {
+            connectVehicle();
         }
+        catch (std::exception& e) {
+            addStatusMessage("Error connecting vehicle:");
+            addStatusMessage(e.what());
+        }
+    }
 
-        connectVehicle();
+    void processControlMessages(const mavlinkcom::MavLinkMessage& msg)
+    {
+        // Utils::log(Utils::stringf("Control msg %d", msg.msgid));
+        // PX4 usually sends the following on the control channel.
+        // If nothing is arriving here it means our control channel UDP connection isn't working.
+        // MAVLINK_MSG_ID_HIGHRES_IMU
+        // MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET
+        // MAVLINK_MSG_ID_SERVO_OUTPUT_RAW
+        // MAVLINK_MSG_ID_GPS_RAW_INT
+        // MAVLINK_MSG_ID_TIMESYNC
+        // MAVLINK_MSG_ID_ALTITUDE
+        // MAVLINK_MSG_ID_VFR_HUD
+        // MAVLINK_MSG_ID_ESTIMATOR_STATUS
+        // MAVLINK_MSG_ID_EXTENDED_SYS_STATE
+        // MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN
+        // MAVLINK_MSG_ID_PING
+        // MAVLINK_MSG_ID_SYS_STATUS
+        // MAVLINK_MSG_ID_SYSTEM_TIME
+        // MAVLINK_MSG_ID_LINK_NODE_STATUS
+        // MAVLINK_MSG_ID_AUTOPILOT_VERSION
+        // MAVLINK_MSG_ID_COMMAND_ACK
+        // MAVLINK_MSG_ID_STATUSTEXT
+        // MAVLINK_MSG_ID_PARAM_VALUE
+        processMavMessages(msg);
     }
 
     void connectVehicle()
     {
         // listen to this UDP mavlink connection also
         auto mavcon = mav_vehicle_->getConnection();
-        if (mavcon != connection_) {
+        if (mavcon != nullptr && mavcon != connection_) {
             mavcon->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
-                unused(connection);
-                processMavMessages(msg);
-                });
+                unused(connection);                
+                processControlMessages(msg);
+            });
         }
         else {
             mav_vehicle_->connect(connection_);
         }
 
         connected_ = true;
-        // now we can start our heartbeats.
-        mav_vehicle_->startHeartbeat();
 
         // Also request home position messages
         mav_vehicle_->setMessageInterval(mavlinkcom::MavLinkHomePosition::kMessageId, 1);
+
+        // now we can start our heartbeats.
+        mav_vehicle_->startHeartbeat();
+
+        // wait for px4 to connect so we can safely send any configured parameters
+        while (!send_params_ && connected_) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        if (connected_) {
+            sendParams();
+            send_params_ = false;
+        }
     }
 
     void createMavSerialConnection(const std::string& port_name, int baud_rate)
@@ -1184,15 +1323,15 @@ private: //methods
                 hil_node_->connect(connection_);
                 addStatusMessage(Utils::stringf("Connected to PX4 over serial port: %s", port_name_auto.c_str()));
 
-                mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
-                mav_vehicle_->connect(connection_); // in this case we can use the same connection.
-                mav_vehicle_->startHeartbeat();
                 // start listening to the HITL connection.
                 connection_->subscribe([=](std::shared_ptr<mavlinkcom::MavLinkConnection> connection, const mavlinkcom::MavLinkMessage& msg) {
                     unused(connection);
                     processMavMessages(msg);
                     });
 
+                mav_vehicle_ = std::make_shared<mavlinkcom::MavLinkVehicle>(connection_info_.vehicle_sysid, connection_info_.vehicle_compid);
+
+                connectVehicle();
                 return;
             }
             catch (std::exception& e) {
@@ -1228,24 +1367,41 @@ private: //methods
     void sendParams()
     {
         // send any mavlink parameters from settings.json through to the connected vehicle.
-        if (connection_info_.params.size() > 0) {
-            for (auto iter : connection_info_.params) {
-                auto key = iter.first;
-                auto value = iter.second;
-                mavlinkcom::MavLinkParameter p;
-                p.name = key;
-                p.value = value;
-                bool result = false;
-                mav_vehicle_->setParameter(p).wait(1000, &result);
-                if (!result) {
-                    Utils::log(Utils::stringf("Failed to set mavlink parameter '%s'", key.c_str()));
+        if (mav_vehicle_ != nullptr && connection_info_.params.size() > 0) {
+            try {
+                for (auto iter : connection_info_.params) {                
+                    auto key = iter.first;
+                    auto value = iter.second;
+                    mavlinkcom::MavLinkParameter p;
+                    p.name = key;
+                    p.value = value;
+                    bool result = false;
+                    mav_vehicle_->setParameter(p).wait(1000, &result);
+                    if (!result) {
+                        Utils::log(Utils::stringf("Failed to set mavlink parameter '%s'", key.c_str()));
+                    }               
                 }
+            }
+            catch (std::exception& ex) {
+                addStatusMessage("Exception sending parameters to vehicle");
+                addStatusMessage(ex.what());
             }
         }
     }
 
     void setArmed(bool armed)
     {
+        if (is_armed_) {
+            if (!armed) {
+                onDisarmed();
+            }
+        }
+        else {
+            if (armed) {
+                onArmed();
+            }
+        }
+
         is_armed_ = armed;
         if (!armed) {
             //reset motor controls
@@ -1296,8 +1452,6 @@ private: //methods
                     // and it scales multi rotor servo output to 0 to 1.
                     is_controls_0_1_ = false;
                 }
-
-                send_params_ = true;
             }
             else if (is_simulation_mode_ && !is_hil_mode_set_) {
                 setHILMode();
@@ -1376,7 +1530,7 @@ private: //methods
                 addStatusMessage("Got GPS Home Location");
                 has_home_ = true;
             }
-
+            send_params_ = true;
         }
         else if (msg.msgid == mavlinkcom::MavLinkLocalPositionNed::kMessageId) {
             // we are getting position information... so we can use this to check the stability of the z coordinate before takeoff.
@@ -1388,20 +1542,34 @@ private: //methods
         else if (msg.msgid == mavlinkcom::MavLinkExtendedSysState::kMessageId) {
             // check landed state.
             getLandedState();
+            send_params_ = true;
         }
         else if (msg.msgid == mavlinkcom::MavLinkHomePosition::kMessageId) {
             mavlinkcom::MavLinkHomePosition home;
             home.decode(msg);
+            // this is a good time to send the params
+            send_params_ = true;
         }
-        //else ignore message
+        else if (msg.msgid == mavlinkcom::MavLinkSysStatus::kMessageId) {
+            // this is a good time to send the params
+            send_params_ = true;
+        }
+        else if (msg.msgid == mavlinkcom::MavLinkAutopilotVersion::kMessageId) {
+            // this is a good time to send the params
+            send_params_ = true;
+        }
+        else {
+            // creates too much log output, only do this when debugging this issue specifically.
+            // Utils::log(Utils::stringf("Ignornig msg %d from %d,%d ", msg.msgid, msg.compid, msg.sysid));
+        }
     }
 
     void sendHILSensor(const Vector3r& acceleration, const Vector3r& gyro, const Vector3r& mag, float abs_pressure, float pressure_alt)
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
-
-        auto now = clock()->nowNanos() / 1000;
+        
+        auto now = getSimTime();
         if (lock_step_enabled_) {
             if (last_hil_sensor_time_ + 100000 < now) {
                 // if 100 ms passes then something is terribly wrong, reset lockstep mode
@@ -1457,14 +1625,28 @@ private: //methods
         last_sensor_message_ = hil_sensor;
     }
 
+    void sendSystemTime() {
+        // SYSTEM TIME from host
+        auto tu = getSimTime();
+        uint32_t ms = (uint32_t)(tu / 1000);
+        if (ms != last_sys_time_) {
+            last_sys_time_ = ms;
+            mavlinkcom::MavLinkSystemTime msg_system_time;
+            msg_system_time.time_unix_usec = tu;
+            msg_system_time.time_boot_ms = last_sys_time_;
+            if (hil_node_ != nullptr) {
+                hil_node_->sendMessage(msg_system_time);
+            }
+        }
+    }
+
     void sendDistanceSensor(float min_distance, float max_distance, float current_distance, float sensor_type, float sensor_id, Quaternionr orientation)
     {
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated distance sensor messages while not in simulation mode");
 
         mavlinkcom::MavLinkDistanceSensor distance_sensor;
-
-        distance_sensor.time_boot_ms = static_cast<uint32_t>(clock()->nowNanos() / 1000000);
+        distance_sensor.time_boot_ms = static_cast<uint32_t>(getSimTime() / 1000);
         distance_sensor.min_distance = static_cast<uint16_t>(min_distance);
         distance_sensor.max_distance = static_cast<uint16_t>(max_distance);
         distance_sensor.current_distance = static_cast<uint16_t>(current_distance);
@@ -1491,6 +1673,8 @@ private: //methods
     void sendHILGps(const GeoPoint& geo_point, const Vector3r& velocity, float velocity_xy, float cog,
         float eph, float epv, int fix_type, unsigned int satellites_visible)
     {
+        unused(satellites_visible);
+
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated GPS messages while not in simulation mode");
 
@@ -1529,10 +1713,17 @@ private: //methods
         is_controls_0_1_ = true;
         hil_state_freq_ = -1;
         actuators_message_supported_ = false;
-        last_gps_time_ = 0;
         state_version_ = 0;
         current_state_ = mavlinkcom::VehicleState();
         target_height_ = 0;
+        got_first_heartbeat_ = false;
+        is_armed_ = false;
+        has_home_ = false;
+        sim_time_us_ = 0;
+        last_sys_time_ = 0;
+        last_gps_time_ = 0;
+        last_hil_sensor_time_ = 0;
+        hil_sensor_clock_ = 0;
         is_api_control_enabled_ = false;
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
@@ -1607,15 +1798,12 @@ private: //variables
     std::mutex mocap_pose_mutex_, heartbeat_mutex_, set_mode_mutex_, status_text_mutex_, last_message_mutex_;
 
     //variables required for VehicleApiBase implementation
-    bool got_first_heartbeat_, is_hil_mode_set_, is_armed_;
+    bool got_first_heartbeat_ = false, is_hil_mode_set_ = false, is_armed_ = false;
     bool is_controls_0_1_; //Are motor controls specified in 0..1 or -1..1?
     bool send_params_ = false;
     std::queue<std::string> status_messages_;
     int hil_state_freq_;
     bool actuators_message_supported_ = false;
-    uint64_t last_gps_time_ = 0;
-    uint64_t last_hil_sensor_time_ = 0;
-    uint64_t hil_sensor_clock_ = 0;
     bool was_reset_ = false;
     bool has_home_ = false;
     bool is_ready_ = false;
@@ -1631,6 +1819,15 @@ private: //variables
     double ground_variance_ = 1;
     const double GroundTolerance = 0.1;
 
+    // variables for throttling HIL_SENSOR and SYSTEM_TIME messages
+    const int DEFAULT_SIM_RATE = 250; // Hz.
+    const unsigned long ticks_per_update_ = 1000000 / DEFAULT_SIM_RATE; // microseconds
+    uint32_t last_sys_time_ = 0;
+    unsigned long long sim_time_us_ = 0;
+    uint64_t last_gps_time_ = 0;
+    uint64_t last_hil_sensor_time_ = 0;
+    uint64_t hil_sensor_clock_ = 0;
+
     //additional variables required for MultirotorApiBase implementation
     //this is optional for methods that might not use vehicle commands
     std::shared_ptr<mavlinkcom::MavLinkVehicle> mav_vehicle_;
@@ -1639,6 +1836,7 @@ private: //variables
     PidController thrust_controller_;
     common_utils::Timer hil_message_timer_;
     common_utils::Timer gcs_message_timer_;
+    std::shared_ptr<mavlinkcom::MavLinkFileLog> log_;
 
     //every time we return status update, we need to check if we have new data
     //this is why below two variables are marked as mutable

@@ -380,6 +380,7 @@
     <ClInclude Include="common_utils\json.hpp" />
     <ClInclude Include="common_utils\StrictMode.hpp" />
     <ClInclude Include="common_utils\ThreadUtils.hpp" />
+    <ClInclude Include="include\MavLinkDebugLog.hpp" />
     <ClInclude Include="include\UdpSocket.hpp" />
     <ClInclude Include="include\AdHocConnection.hpp" />
     <ClInclude Include="include\AsyncResult.hpp" />

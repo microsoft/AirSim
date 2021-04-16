@@ -3,6 +3,9 @@
 The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux. If you are on Windows then you must
 use the [Cygwin Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) as the [Bash On Windows](https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html) toolchain no longer works for SITL.
 
+If you are using WSL2 please read these [additional
+instructions](px4_sitl_wsl2.md).
+
 **Note** that every time you stop the unreal app you have to restart the `px4` app.
 
 
@@ -135,6 +138,11 @@ Local position: x=-0.0326988, y=0.00656854, z=5.48506
 ```
 
 If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL and simulation should fix that problem.
+
+## WSL 2
+
+Windows Subsystem for Linux version 2 operates in a Virtual Machine.  This requires
+additional setup - see [additional instructions](px4_sitl_wsl2.md).
 
 ## No Remote Control
 

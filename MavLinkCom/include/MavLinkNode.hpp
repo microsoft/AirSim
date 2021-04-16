@@ -92,7 +92,7 @@ namespace mavlinkcom {
         // passing a message along).
         void sendMessage(MavLinkMessage& msg);
 
-        // send a command to the remote node
+        // send a command to the remote node        
         void sendCommand(MavLinkCommand& cmd);
 
         // send a command to the remote node and get async result that tells you whether it succeeded or not.

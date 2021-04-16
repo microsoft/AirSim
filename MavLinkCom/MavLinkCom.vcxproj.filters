@@ -218,6 +218,7 @@
     <ClInclude Include="src\impl\AdHocConnectionImpl.hpp" />
     <ClInclude Include="include\UdpSocket.hpp" />
     <ClInclude Include="src\impl\UdpSocketImpl.hpp" />
+    <ClInclude Include="include\MavLinkDebugLog.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mavlink">
