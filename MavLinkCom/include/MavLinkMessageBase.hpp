@@ -132,15 +132,19 @@ namespace mavlinkcom
     class MavLinkTelemetry : public MavLinkMessageBase {
     public:
         const static uint8_t kMessageId = 204; // in the user range 180-229.
-        MavLinkTelemetry() : wifiInterfaceName(nullptr) { msgid = kMessageId; }
-        uint32_t messagesSent;		 // number of messages sent since the last telemetry message
-        uint32_t messagesReceived;	 // number of messages received since the last telemetry message
-        uint32_t messagesHandled;	 // number of messages handled since the last telemetry message
-        uint32_t crcErrors;			 // # crc errors detected in mavlink stream since the last telemetry message
-        uint32_t handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
-        uint32_t renderTime;         // total time spent rendering frames since the last telemetry message
-        const char* wifiInterfaceName; // the name of the wifi interface we are measuring RSSI on.
-        int32_t wifiRssi;            // if this device is communicating over wifi this is the signal strength.
+        const static int MessageLength = 8 * 4;
+        MavLinkTelemetry() { msgid = kMessageId; }
+        uint32_t messagesSent = 0;		  // number of messages sent since the last telemetry message
+        uint32_t messagesReceived = 0;	  // number of messages received since the last telemetry message
+        uint32_t messagesHandled = 0;	  // number of messages handled since the last telemetry message
+        uint32_t crcErrors = 0;			  // # crc errors detected in mavlink stream since the last telemetry message
+        uint32_t handlerMicroseconds = 0; // total time spent in the handlers in microseconds since the last telemetry message
+        uint32_t renderTime = 0;          // total time spent rendering frames since the last telemetry message
+        int32_t wifiRssi = 0;             // if this device is communicating over wifi this is the signal strength.
+        uint32_t udpateRateHz = 0;        // HIL_SENSOR update rate in hertz
+ 
+        // not serialized
+        const char* wifiInterfaceName = nullptr; // the name of the wifi interface we are measuring RSSI on.
         virtual std::string toJSon() {
 
             std::ostringstream result;
@@ -152,6 +156,7 @@ namespace mavlinkcom
             result << "\"handlerMicroseconds\":" << this->handlerMicroseconds << ",";
             result << "\"renderTime\":" << this->renderTime;
             result << "\"wifiRssi\":" << this->wifiRssi;
+            result << "\"udpateRateHz\":" << this->udpateRateHz;
             result << "}";
             return result.str();
         }

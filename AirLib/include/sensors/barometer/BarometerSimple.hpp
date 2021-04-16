@@ -27,7 +27,7 @@ public:
         //GM process that would do random walk for pressure factor
         pressure_factor_.initialize(params_.pressure_factor_tau, params_.pressure_factor_sigma, 0);
 
-        uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
+        uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.uncorrelated_noise_sigma);
         //correlated_noise_.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
 
         //initialize frequency limiter
@@ -76,7 +76,7 @@ private: //methods
         auto altitude = ground_truth.environment->getState().geo_point.altitude;
         auto pressure = EarthUtils::getStandardPressure(altitude);
 
-        //add drift in pressure, about 10m change per hour
+        //add drift in pressure, about 10m change per hour using default settings.
         pressure_factor_.update();
         pressure += pressure * pressure_factor_.getOutput();
 

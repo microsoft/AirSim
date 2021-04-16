@@ -25,7 +25,7 @@ struct ImuSimpleParams {
     For Allan Variance/Deviation plots see http://www.invensense.com/wp-content/uploads/2015/02/MPU-3300-Datasheet.pdf
     */
     struct Gyroscope {
-        //angule random walk (ARW)
+        //angular random walk (ARW)
         real_T arw = 0.30f / sqrt(3600.0f) * M_PIf / 180; //deg/sqrt(hour) converted to rad/sqrt(sec)
         //Bias Stability (tau = 500s)
         real_T tau = 500;
@@ -46,7 +46,25 @@ struct ImuSimpleParams {
 
     void initializeFromSettings(const AirSimSettings::ImuSetting& settings)
     {
-        unused(settings);
+        const auto& json = settings.settings;
+        float arw = json.getFloat("AngularRandomWalk", Utils::nan<float>());
+        if (!std::isnan(arw)) {
+            gyro.arw = arw / sqrt(3600.0f) * M_PIf / 180; // //deg/sqrt(hour) converted to rad/sqrt(sec)
+        }
+        gyro.tau = json.getFloat("GyroBiasStabilityTau", gyro.tau);
+        float bias_stability = json.getFloat("GyroBiasStability", Utils::nan<float>());
+        if (!std::isnan(bias_stability)) {
+            gyro.bias_stability = bias_stability / 3600 * M_PIf / 180; //deg/hr converted to rad/sec
+        }
+        auto vrw = json.getFloat("VelocityRandomWalk", Utils::nan<float>());
+        if (!std::isnan(vrw)) {
+            accel.vrw = vrw * EarthUtils::Gravity / 1.0E3f; //mg converted to m/s^2 
+        }
+        accel.tau = json.getFloat("AccelBiasStabilityTau", accel.tau);
+        bias_stability = json.getFloat("AccelBiasStability", Utils::nan<float>());
+        if (!std::isnan(bias_stability)) {
+            accel.bias_stability = bias_stability * 1E-6f * 9.80665f; //ug converted to m/s^2
+        }
     }
 };
 

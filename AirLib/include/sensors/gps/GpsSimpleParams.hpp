@@ -21,7 +21,18 @@ struct GpsSimpleParams {
 
     void initializeFromSettings(const AirSimSettings::GpsSetting& settings)
     {
-        unused(settings);
+        const auto& json = settings.settings;
+        eph_time_constant = json.getFloat("EPH_TimeConstant", eph_time_constant);
+        epv_time_constant = json.getFloat("EPV_TimeConstant", epv_time_constant);
+        eph_initial = json.getFloat("EphInitial", eph_initial);
+        epv_initial = json.getFloat("EpvInitial", epv_initial);
+        eph_final = json.getFloat("EphFinal", eph_final);
+        epv_final = json.getFloat("EpvFinal", epv_final);
+        eph_min_3d = json.getFloat("EphMin3d", eph_min_3d);
+        eph_min_2d = json.getFloat("EphMin2d", eph_min_2d);
+        update_latency = json.getFloat("UpdateLatency", update_latency);
+        update_frequency = json.getFloat("UpdateFrequency", update_frequency);
+        startup_delay = json.getFloat("StartupDelay", startup_delay);
     }
 };
 

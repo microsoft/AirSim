@@ -59,7 +59,7 @@ public:
 
 private:
     //ground truth can be shared between many sensors
-    GroundTruth ground_truth_;
+    GroundTruth ground_truth_ = { nullptr, nullptr };
     std::string name_ = "";
 };
 

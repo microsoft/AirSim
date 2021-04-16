@@ -127,6 +127,15 @@ public: //methods
                 return;
             }
 
+            update_count_++;
+            if (last_fps_time_ == 0 || last_fps_time_ + 1000000 < now) {
+                // compute update rate once per second.
+                update_rate_ = update_count_;
+                update_count_ = 0;
+                last_fps_time_ = now;
+                sendTelemetry(1);
+            }
+
             if (lock_step_enabled_) {
                 if (last_hil_sensor_time_ + 100000 < now) {
                     // if 100 ms passes then something is terribly wrong, reset lockstep mode
@@ -556,7 +565,7 @@ public: //methods
 
     virtual void sendTelemetry(float last_interval = -1) override
     {
-        if (logviewer_proxy_ == nullptr || connection_ == nullptr || mav_vehicle_ == nullptr) {
+        if ((logviewer_proxy_ == nullptr && log_ == nullptr) || connection_ == nullptr || mav_vehicle_ == nullptr) {
             return;
         }
         mavlinkcom::MavLinkTelemetry data;
@@ -599,7 +608,17 @@ public: //methods
         }
 
         data.renderTime = static_cast<int64_t>(last_interval * 1000000);// microseconds
-        logviewer_proxy_->sendMessage(data);
+        data.udpateRateHz = update_rate_;
+
+        if (logviewer_proxy_ != nullptr) {
+            logviewer_proxy_->sendMessage(data);
+        }
+
+        if (log_ != nullptr) {
+            mavlinkcom::MavLinkMessage msg;
+            data.encode(msg);
+            log_->write(msg);
+        }
     }
 
     virtual float getCommandPeriod() const override
@@ -1722,6 +1741,9 @@ private: //methods
         last_sys_time_ = 0;
         last_gps_time_ = 0;
         last_hil_sensor_time_ = 0;
+        update_rate_ = 0;
+        update_count_ = 0;
+        last_fps_time_ = 0;
         is_api_control_enabled_ = false;
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
@@ -1824,6 +1846,9 @@ private: //variables
     unsigned long long sim_time_us_ = 0;
     uint64_t last_gps_time_ = 0;
     uint64_t last_hil_sensor_time_ = 0;
+    uint64_t last_fps_time_ = 0;
+    uint32_t update_count_ = 0;
+    uint32_t update_rate_ = 0;
 
     //additional variables required for MultirotorApiBase implementation
     //this is optional for methods that might not use vehicle commands

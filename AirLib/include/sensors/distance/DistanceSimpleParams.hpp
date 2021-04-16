@@ -31,13 +31,13 @@ struct DistanceSimpleParams {
 
      real_T correlated_noise_sigma = 0.27f;
      real_T correlated_noise_tau = 0.87f;
-     real_T unnorrelated_noise_sigma = 0.24f;
+     real_T uncorrelated_noise_sigma = 0.24f;
 
 */
     //TODO: update sigma based on documentation, maybe as a function increasing with measured distance
-    real_T unnorrelated_noise_sigma = 0.002f * 100;
+    real_T uncorrelated_noise_sigma = 0.002f * 100;
     //jMavSim uses below
-    //real_T unnorrelated_noise_sigma = 0.1f;
+    //real_T uncorrelated_noise_sigma = 0.1f;
 
     //see PX4 param reference for EKF: https://dev.px4.io/en/advanced/parameter_reference.html
     real_T update_latency = 0.0f;    //sec
@@ -46,14 +46,17 @@ struct DistanceSimpleParams {
 
     void initializeFromSettings(const AirSimSettings::DistanceSetting& settings)
     {
+        const auto& settings_json = settings.settings;
+        min_distance = settings_json.getFloat("MinDistance", min_distance);
+        max_distance = settings_json.getFloat("MaxDistance", max_distance);
+        draw_debug_points = settings_json.getBool("DrawDebugPoints", draw_debug_points);
+
+        auto position = AirSimSettings::createVectorSetting(settings_json, VectorMath::nanVector());
+        auto rotation = AirSimSettings::createRotationSetting(settings_json, AirSimSettings::Rotation::nanRotation());
+
         std::string simmode_name = AirSimSettings::singleton().simmode_name;
 
-        min_distance = settings.min_distance;
-        max_distance = settings.max_distance;
-
-        draw_debug_points = settings.draw_debug_points;
-
-        relative_pose.position = settings.position;
+        relative_pose.position = position;
         if (std::isnan(relative_pose.position.x()))
             relative_pose.position.x() = 0;
         if (std::isnan(relative_pose.position.y()))
@@ -66,9 +69,9 @@ struct DistanceSimpleParams {
         }
 
         float pitch, roll, yaw;
-        pitch = !std::isnan(settings.rotation.pitch) ? settings.rotation.pitch : 0;
-        roll = !std::isnan(settings.rotation.roll) ? settings.rotation.roll : 0;
-        yaw = !std::isnan(settings.rotation.yaw) ? settings.rotation.yaw : 0;
+        pitch = !std::isnan(rotation.pitch) ? rotation.pitch : 0;
+        roll = !std::isnan(rotation.roll) ? rotation.roll : 0;
+        yaw = !std::isnan(rotation.yaw) ? rotation.yaw : 0;
         relative_pose.orientation = VectorMath::toQuaternion(
             Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
             Utils::degreesToRadians(roll),    //roll  - rotation around X axis

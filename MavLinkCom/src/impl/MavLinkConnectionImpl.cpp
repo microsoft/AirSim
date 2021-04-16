@@ -290,7 +290,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
         msglen = entry->min_msg_len;
     }
     if (msg.msgid == MavLinkTelemetry::kMessageId) {
-        msglen = 28; // mavlink doesn't know about our custom telemetry message.
+        msglen = MavLinkTelemetry::MessageLength; // mavlink doesn't know about our custom telemetry message.
     }
 
     if (len != msglen) {
@@ -602,6 +602,7 @@ void MavLinkConnectionImpl::getTelemetry(MavLinkTelemetry& result)
     telemetry_.messagesReceived = 0;
     telemetry_.messagesSent = 0;
     telemetry_.renderTime = 0;
+    telemetry_.udpateRateHz = 0;
     if (telemetry_.wifiInterfaceName != nullptr) {
         telemetry_.wifiRssi = port->getRssi(telemetry_.wifiInterfaceName);
     }
