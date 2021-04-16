@@ -38,7 +38,9 @@ class Numbers:
         print("{}: min={}, max={}, mean={}, stddev={}".format(self.name, minimum, maximum, mean, stddev))
         return (maximum - minimum) > amount
 
+iteration = 0
 while True:
+    iteration  += 1
     x = Numbers("x")
     y = Numbers("y")
     z = Numbers("z")
@@ -51,9 +53,9 @@ while True:
         client.takeoffAsync().join()
         time.sleep(1)
 
-    # fly for a minute
+    # fly for 2 minutes
     start = time.time()
-    while time.time() < start + 20:
+    while time.time() < start + 120:
         state = client.getMultirotorState()
         x_val = state.kinematics_estimated.position.x_val
         y_val = state.kinematics_estimated.position.y_val
@@ -71,12 +73,14 @@ while True:
     client.armDisarm(False)
 
     # more than 50 centimeter drift is unacceptable.
+    print("Results for iteration {}".format(iteration))
     a = x.is_unstable(0.5)
     b = y.is_unstable(0.5)
     c = z.is_unstable(0.5)
 
     if a or b or c:
         play_sound(os.path.join(script_dir, "Error.wav"))
+        break
 
     time.sleep(5)
 
