@@ -524,7 +524,6 @@ namespace LogViewer.Controls
             PathGeometry g = new PathGeometry();            
             PathFigure f = new PathFigure();
             f.IsClosed = false;
-            f.IsFilled = true;
             g.Figures.Add(f);
 
             AddScaledValues(f, this.visibleStartIndex, this.visibleEndIndex);
@@ -532,7 +531,6 @@ namespace LogViewer.Controls
             Graph.Data = g;
             Graph.Stroke = this.Stroke;
             Graph.StrokeThickness = this.StrokeThickness;
-            Graph.Fill = this.Stroke;
 
             UpdatePointer(lastMousePosition);
             EnableMenuItems();
@@ -577,6 +575,7 @@ namespace LogViewer.Controls
                     visibleCount++;
                     if (!started)
                     {
+                        Debug.WriteLine(pt.ToString() + ",");
                         figure.StartPoint = pt;
                         started = true;
                         previousX = (int)rx;

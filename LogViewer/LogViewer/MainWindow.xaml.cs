@@ -532,7 +532,10 @@ namespace LogViewer
                 {
                     flight.Name = "Flight " + allFlights.Count;
                     allFlights.Add(flight);
-                    this.logs.Add(flight.Log);
+                    if (!this.logs.Contains(flight.Log))
+                    {
+                        this.logs.Add(flight.Log);
+                    }
                     AppendMessage("Motor started at {0} and ran for {1} ", flight.StartTime, flight.Duration);
                 }
 

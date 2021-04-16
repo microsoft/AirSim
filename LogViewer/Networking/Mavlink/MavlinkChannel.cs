@@ -126,7 +126,12 @@ namespace Microsoft.Networking.Mavlink
 
         private ushort crc_calculate(byte[] buffer, int len)
         {
-            byte crc_extra = MAVLink.MAVLINK_MESSAGE_CRCS[(int)this.MsgId];
+            int msgid = (int)this.MsgId;
+            byte crc_extra = 0;
+            if (msgid < MAVLink.MAVLINK_MESSAGE_CRCS.Length)
+            {
+                crc_extra = MAVLink.MAVLINK_MESSAGE_CRCS[msgid];
+            }
             ushort crcTmp = 0xffff; // X25_INIT_CRC;
             // Start with the MAVLINK_CORE_HEADER_LEN bytes.
             crcTmp = crc_accumulate((byte)this.Length, crcTmp);
