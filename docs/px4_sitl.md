@@ -52,7 +52,14 @@ The default ports have changed recently, so check them closely to make sure AirS
                 "UseSerial": false,
                 "UseTcp": true,
                 "TcpPort": 4560,
-                "ControlPort": 14580,
+                "ControlPort": 14580,,
+                "Sensors":{
+                    "Barometer":{
+                        "SensorType": 1,
+                        "Enabled": true,
+                        "PressureFactorSigma": 0.0001825
+                    }
+                },
                 "Parameters": {
                     "NAV_RCL_ACT": 0,
                     "NAV_DLL_ACT": 0,
@@ -65,6 +72,8 @@ The default ports have changed recently, so check them closely to make sure AirS
     }
     ```
     Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
+    The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
+    noise generation.  This setting clamps that down a bit.
 
 6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP.
 You should see a bunch of messages from the SITL PX4 window.
