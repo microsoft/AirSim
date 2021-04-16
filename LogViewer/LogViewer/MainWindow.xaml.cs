@@ -74,7 +74,7 @@ namespace LogViewer
                 total += chart.GetVisibleCount();
                 count++;
             }
-            ShowStatus(string.Format("zoom shwowing {0} data values", (int)(total / count)));
+            ShowStatus(string.Format("zoom showing {0} data values", (int)(total / count)));
         }
 
         private void OnWindowLocationChanged(object sender, EventArgs e)

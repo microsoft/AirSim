@@ -403,6 +403,7 @@ namespace LogViewer.Controls
                 m.OffsetX = -minX * xScale;
                 m.OffsetY = -minY * yScale;
                 scaleTransform = new MatrixTransform(m);
+                this.dirty = true;
             }
 
             return changed;
@@ -523,6 +524,7 @@ namespace LogViewer.Controls
             PathGeometry g = new PathGeometry();            
             PathFigure f = new PathFigure();
             f.IsClosed = false;
+            f.IsFilled = true;
             g.Figures.Add(f);
 
             AddScaledValues(f, this.visibleStartIndex, this.visibleEndIndex);
@@ -530,6 +532,7 @@ namespace LogViewer.Controls
             Graph.Data = g;
             Graph.Stroke = this.Stroke;
             Graph.StrokeThickness = this.StrokeThickness;
+            Graph.Fill = this.Stroke;
 
             UpdatePointer(lastMousePosition);
             EnableMenuItems();
@@ -588,7 +591,8 @@ namespace LogViewer.Controls
                         else if (count > 0)
                         {
                             // this helps WPF scale better.
-                            figure.Segments.Add(new LineSegment() { Point = new Point(pt.X, sum / count) });
+                            pt = new Point(pt.X, sum / count);
+                            figure.Segments.Add(new LineSegment() { Point = pt });
                             count = 0;
                             sum = 0;
                             previousX = (int)pt.X;
@@ -890,7 +894,7 @@ namespace LogViewer.Controls
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
-            if (arrangeBounds != layoutSize)
+            if (arrangeBounds != layoutSize || this.dirty)
             { 
                 this.dirty = true;
                 DelayedUpdate();
@@ -1040,7 +1044,7 @@ namespace LogViewer.Controls
                 // then it is a visible point.
                 if (first == null) first = d;
                 last = d;
-                points.Add(new Point(d.X, d.Y));
+                points.Add(GetScaledValue(d));
             }
             if (first == null)
             {
@@ -1049,41 +1053,33 @@ namespace LogViewer.Controls
             double a, b; //  y = a + b.x
             MathHelpers.LinearRegression(points, out a, out b);
 
-            Point start = new Point(first.X, a + (b * first.X));
-            Point end = new Point(last.X, a + (b * last.X));
+            Point point1 = points.First();
+            Point point2 = points.Last();
 
-            double height = this.ActualHeight - 1;
-            double availableHeight = height;
-            
-            // scale start point
-            Point point1 = scaleTransform.Transform(start);
-            double y1 = availableHeight - point1.Y;
-
-            // scale end point
-            Point point2 = scaleTransform.Transform(end);
-            double y2 = availableHeight - point2.Y;
+            Point start = new Point(point1.X, a + (b * point1.X));
+            Point end = new Point(point2.X, a + (b * point2.X));
 
             Line line = new Line() {
-                Stroke = Graph.Stroke, StrokeThickness = 1, X1 = point1.X, Y1 = y1, X2 = point2.X, Y2 = y2,            
+                Stroke = Graph.Stroke, StrokeThickness = 1, X1 = start.X, Y1 = start.Y, X2 = end.X, Y2 = end.Y,            
                 StrokeDashArray = new DoubleCollection(new double[] { 2, 2 })
             };
             AdornerCanvas.Children.Add(line);
 
             TextBlock startLabel = new TextBlock() {
-                Text = String.Format("{0:N3}", start.Y),
+                Text = String.Format("{0:N3}", first.Y),
                 Foreground = Brushes.White,
-                Margin = new Thickness(point1.X, y1 + 2, 0, 0)
+                Margin = new Thickness(start.X, start.Y + 2, 0, 0)
             };
             AdornerCanvas.Children.Add(startLabel);
 
             TextBlock endlabel = new TextBlock()
             {
-                Text = String.Format("{0:N3}", end.Y),
+                Text = String.Format("{0:N3}", last.Y),
                 Foreground = Brushes.White
             };
             endlabel.SizeChanged += (s, args) =>
             {
-                endlabel.Margin = new Thickness(point2.X - args.NewSize.Width - 10, y2 + 2, 0, 0);
+                endlabel.Margin = new Thickness(end.X - args.NewSize.Width - 10, end.Y + 2, 0, 0);
             };
 
             AdornerCanvas.Children.Add(endlabel);
@@ -1194,25 +1190,20 @@ namespace LogViewer.Controls
             Point start = new Point(first.X, mean);
             Point end = new Point(last.X, mean);
 
-            double height = this.ActualHeight - 1;
-            double availableHeight = height;
-
             // scale start point
-            Point point1 = scaleTransform.Transform(start);
-            double y1 = availableHeight - point1.Y;
+            Point point1 = GetScaledValue(new DataValue() { X = start.X, Y = start.Y });
 
             // scale end point
-            Point point2 = scaleTransform.Transform(end);
-            double y2 = availableHeight - point2.Y;
+            Point point2 = GetScaledValue(new DataValue() { X = end.X, Y = end.Y });
 
             Line line = new Line()
             {
                 Stroke = Brushes.White,
                 StrokeThickness = 1,
                 X1 = point1.X,
-                Y1 = y1,
+                Y1 = point1.Y,
                 X2 = point2.X,
-                Y2 = y2,
+                Y2 = point2.Y,
                 StrokeDashArray = new DoubleCollection(new double[] { 2, 2 })
             };
             AdornerCanvas.Children.Add(line);
@@ -1221,7 +1212,7 @@ namespace LogViewer.Controls
             {
                 Text = String.Format("{0:N3}", start.Y),
                 Foreground = Brushes.White,
-                Margin = new Thickness(point1.X, y1 + 2, 0, 0)
+                Margin = new Thickness(point1.X, point1.Y + 2, 0, 0)
             };
             AdornerCanvas.Children.Add(startLabel);
 
@@ -1232,7 +1223,7 @@ namespace LogViewer.Controls
             };
             endlabel.SizeChanged += (s, args) =>
             {
-                endlabel.Margin = new Thickness(point2.X - args.NewSize.Width - 10, y2 + 2, 0, 0);
+                endlabel.Margin = new Thickness(point2.X - args.NewSize.Width - 10, point2.Y + 2, 0, 0);
             };
 
             AdornerCanvas.Children.Add(endlabel);
