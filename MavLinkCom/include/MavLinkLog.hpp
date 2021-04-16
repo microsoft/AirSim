@@ -7,7 +7,10 @@
 #include <string>
 #include <stdio.h>
 #include <cstdint>
+#include <mutex>
 #include "MavLinkMessageBase.hpp"
+
+#define MAVLINK_STX_MAVLINK1 0xFE          // marker for old protocol
 
 namespace mavlinkcom
 {
@@ -27,6 +30,7 @@ namespace mavlinkcom
         bool reading_;
         bool writing_;
         bool json_;
+        std::mutex log_lock_;
     public:
         MavLinkFileLog();
         virtual ~MavLinkFileLog();

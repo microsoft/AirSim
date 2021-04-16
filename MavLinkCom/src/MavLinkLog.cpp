@@ -8,6 +8,8 @@
 using namespace mavlinkcom;
 using namespace mavlink_utils;
 
+#define MAVLINK_STX_MAVLINK1 0xFE          // marker for old protocol
+
 uint64_t MavLinkFileLog::getTimeStamp()
 {
     return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
@@ -101,7 +103,10 @@ void MavLinkFileLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t times
 			if (strongTypedMsg != nullptr) {
                 strongTypedMsg->timestamp = timestamp;
 				std::string line = strongTypedMsg->toJSon();
-				fprintf(ptr_, "    %s\n", line.c_str());
+				{
+					std::lock_guard<std::mutex> lock(log_lock_);
+					fprintf(ptr_, "    %s\n", line.c_str());
+				}
                 delete strongTypedMsg;
 			}
 		}
@@ -112,14 +117,29 @@ void MavLinkFileLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t times
 			// for compatibility with QGroundControl we have to save the time field in big endian.
             // todo: mavlink2 support?
             timestamp = FlipEndianness(timestamp);
+
+			std::lock_guard<std::mutex> lock(log_lock_);
 			fwrite(&timestamp, sizeof(uint64_t), 1, ptr_);
 			fwrite(&msg.magic, 1, 1, ptr_);
 			fwrite(&msg.len, 1, 1, ptr_);
 			fwrite(&msg.seq, 1, 1, ptr_);
 			fwrite(&msg.sysid, 1, 1, ptr_);
 			fwrite(&msg.compid, 1, 1, ptr_);
-            uint8_t msgid = msg.msgid & 0xff; // truncate to mavlink1 msgid
-			fwrite(&msgid, 1, 1, ptr_);
+
+			if (msg.magic == MAVLINK_STX_MAVLINK1) {
+				uint8_t msgid = msg.msgid & 0xff; // truncate to mavlink 2 msgid
+				fwrite(&msgid, 1, 1, ptr_);
+			}
+			else {
+				// 24 bits.
+				uint8_t msgid = msg.msgid & 0xFF;
+				fwrite(&msgid, 1, 1, ptr_);
+				msgid = (msg.msgid >> 8) & 0xFF;
+				fwrite(&msgid, 1, 1, ptr_);
+				msgid = (msg.msgid >> 16) & 0xFF;
+				fwrite(&msgid, 1, 1, ptr_);
+			}
+
 			fwrite(&msg.payload64, 1, msg.len, ptr_);
 			fwrite(&msg.checksum, sizeof(uint16_t), 1, ptr_);
 		}
@@ -162,9 +182,23 @@ bool MavLinkFileLog::read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp)
 		if (s == 0) {
 			return false;
 		}
-        uint8_t msgid = 0;
-		s = fread(&msgid, 1, 1, ptr_);
-        msg.msgid = msgid;
+
+		if (msg.magic == MAVLINK_STX_MAVLINK1) {
+			uint8_t msgid = 0;
+			s = fread(&msgid, 1, 1, ptr_);
+			msg.msgid = msgid;
+		}
+		else {
+			// 24 bits.
+			uint8_t msgid = 0;
+			s = fread(&msgid, 1, 1, ptr_);
+			msg.msgid = msgid;
+			s = fread(&msgid, 1, 1, ptr_);
+			msg.msgid |= (msgid << 8);
+			s = fread(&msgid, 1, 1, ptr_);
+			msg.msgid |= (msgid << 16);
+		}
+
 		if (s < 1) {
 			return false;
 		}
