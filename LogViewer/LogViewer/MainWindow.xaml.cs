@@ -532,6 +532,7 @@ namespace LogViewer
                 {
                     flight.Name = "Flight " + allFlights.Count;
                     allFlights.Add(flight);
+                    this.logs.Add(flight.Log);
                     AppendMessage("Motor started at {0} and ran for {1} ", flight.StartTime, flight.Duration);
                 }
 
@@ -1300,7 +1301,7 @@ namespace LogViewer
         {
             chart.SetData(new Model.DataSeries()
             {
-                Name = schema.Name,
+                Name = schema.GetFullName(),
                 Values = new List<DataValue>(values)
             });
         }

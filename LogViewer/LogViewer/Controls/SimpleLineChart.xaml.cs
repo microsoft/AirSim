@@ -102,7 +102,10 @@ namespace LogViewer.Controls
 
         void SimpleLineChart_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            UpdateChart();
+            if (e.NewSize != layoutSize)
+            {
+                UpdateChart();
+            }
         }
 
         /// <summary>
@@ -458,12 +461,16 @@ namespace LogViewer.Controls
             }
         }
 
+        Size layoutSize;
+
         void UpdateChart()
         {
             if (this.series == null)
             {
                 this.series = new DataSeries() { Name = "", Values = new List<DataValue>() };
             }
+
+            layoutSize = new Size(this.ActualWidth, this.ActualHeight);
             Canvas.SetLeft(Graph, 0);
             visibleCount = 0;
             this.smoothScrollIndex = 0;
@@ -513,8 +520,9 @@ namespace LogViewer.Controls
             }
 
             double count = series.Values.Count;
-            PathGeometry g = new PathGeometry();
+            PathGeometry g = new PathGeometry();            
             PathFigure f = new PathFigure();
+            f.IsClosed = false;
             g.Figures.Add(f);
 
             AddScaledValues(f, this.visibleStartIndex, this.visibleEndIndex);
@@ -525,6 +533,8 @@ namespace LogViewer.Controls
 
             UpdatePointer(lastMousePosition);
             EnableMenuItems();
+
+            _delayedUpdates.StartDelayedAction("RepositionTips", () => { RepositionTips(); }, TimeSpan.FromMilliseconds(30));
         }
 
         private void EnableMenuItems()
@@ -544,6 +554,9 @@ namespace LogViewer.Controls
             if (start < 0) start = 0;
 
             bool started = (figure.Segments.Count > 0);
+            double sum = 0;
+            double count = 0;
+            int previousX = -1;
             for (int i = start; i < end; i++)
             {
                 DataValue d = series.Values[i];
@@ -552,18 +565,39 @@ namespace LogViewer.Controls
                 Point pt = GetScaledValue(d);
 
                 double rx = pt.X + offset;
-
                 if (pt.X >= 0)
                 {
+                    if (visibleCount == 0)
+                    {
+                        previousX = (int)rx;
+                    }
                     visibleCount++;
                     if (!started)
                     {
                         figure.StartPoint = pt;
                         started = true;
+                        previousX = (int)rx;
                     }
                     else
                     {
-                        figure.Segments.Add(new LineSegment() { Point = pt });
+                        if (previousX == (int)rx)
+                        {
+                            sum += pt.Y;
+                            count++;
+                        }
+                        else if (count > 0)
+                        {
+                            // this helps WPF scale better.
+                            figure.Segments.Add(new LineSegment() { Point = new Point(pt.X, sum / count) });
+                            count = 0;
+                            sum = 0;
+                            previousX = (int)pt.X;
+                        } 
+                        else
+                        {
+                            previousX = (int)pt.X;
+                            figure.Segments.Add(new LineSegment() { Point = pt });
+                        }
                     }
                 }
             }
@@ -856,10 +890,12 @@ namespace LogViewer.Controls
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
-            this.dirty = true;
-            DelayedUpdate();
+            if (arrangeBounds != layoutSize)
+            { 
+                this.dirty = true;
+                DelayedUpdate();
+            }
             HidePointer();
-            _delayedUpdates.StartDelayedAction("RepositionTips", () => { RepositionTips(); }, TimeSpan.FromMilliseconds(30));
             return base.ArrangeOverride(arrangeBounds);
         }
 

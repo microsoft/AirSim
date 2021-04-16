@@ -24,6 +24,15 @@ namespace LogViewer.Model
         // the IDataLog implementor can use this field instead.
         public int Id { get; set; }
 
+        public string GetFullName()
+        {
+            if (Parent != null)
+            {
+                return Parent.GetFullName() + "." + Name;
+            }
+            return Name;
+        }
+
         public List<LogItemSchema> ChildItems { get; set; }
 
         public bool HasChildren
@@ -77,6 +86,10 @@ namespace LogViewer.Model
                     }
                     else
                     {
+                        if (this.ChildItems == null)
+                        {
+                            this.ChildItems = new List<LogItemSchema>();
+                        }
                         LogItemSchema copy = child.Clone();
                         copy.Parent = this;
                         this.ChildItems.Add(child);

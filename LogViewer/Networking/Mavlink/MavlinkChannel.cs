@@ -56,15 +56,48 @@ namespace Microsoft.Networking.Mavlink
             return fullMessage;
         }
 
+        const int MAVLINK_STX_MAVLINK1 = 0xFE;
+
         public void ReadHeader(BinaryReader reader)
         {
-            Time = ConvertBigEndian(reader.ReadUInt64());
-            Magic = reader.ReadByte();
-            Length = reader.ReadByte();
+            ulong time = reader.ReadUInt64();
+            time = ConvertBigEndian(time);
+            byte magic = reader.ReadByte();
+            byte len = reader.ReadByte();
+
+            while (true)
+            {
+                // 253 for Mavlink 2.0.
+                if ((magic == 254 || magic == 253) && len <= 255)
+                {
+                    // looks good.
+                    break;
+                }
+                // shift to next byte looking for valid header
+                time = (time << 8);
+                time += magic;
+                magic = len;
+                len = reader.ReadByte();
+            }
+
+            Time = time;
+            Magic = magic;
+            Length = len;
             SequenceNumber = reader.ReadByte();
             SystemId = reader.ReadByte();
             ComponentId = reader.ReadByte();
-            MsgId = (MAVLink.MAVLINK_MSG_ID)reader.ReadByte();
+            if (Magic == MAVLINK_STX_MAVLINK1)
+            {
+                MsgId = (MAVLink.MAVLINK_MSG_ID)reader.ReadUInt16();
+            }
+            else
+            {
+                // 24 bits
+                int a = reader.ReadByte();
+                int b = reader.ReadByte();
+                int c = reader.ReadByte();
+                MsgId = (MAVLink.MAVLINK_MSG_ID)(a + (b << 8) + (c << 16));
+            }
         }
 
         private ulong ConvertBigEndian(ulong v)
@@ -78,27 +111,6 @@ namespace Microsoft.Networking.Mavlink
                 shift >>= 8;
             }
             return result;
-        }
-
-        public bool IsValid()
-        {
-            return Magic == 254 && Length <= 255;
-        }
-
-        /// <summary>
-        /// Read 1 byte and shift left the whole structure until we find something that looks like a valid header.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ShiftHeader(BinaryReader reader)
-        {
-            Time = (Time << 8) + (ulong)(Crc << 8);
-            Crc = (UInt16)((Crc << 8) + Magic);
-            Magic = Length;
-            Length = SequenceNumber;
-            SequenceNumber = SystemId;
-            SystemId = ComponentId;
-            ComponentId = (byte)MsgId;
-            MsgId = (MAVLink.MAVLINK_MSG_ID)reader.ReadByte();
         }
 
         public bool IsValidCrc(byte[] msg, int len)
@@ -393,7 +405,12 @@ namespace Microsoft.Networking.Mavlink
                                 crc = (ushort)((b << 8) + crc);
                                 // ok, let's see if it's good.
                                 msg.Crc = crc;
-                                ushort found = msg.crc_calculate();
+                                ushort found = crc;
+                                if (msg.Payload != null)
+                                {
+                                    found = msg.crc_calculate();
+                                    
+                                }
                                 if (found != crc)
                                 {
                                     // bad crc!!

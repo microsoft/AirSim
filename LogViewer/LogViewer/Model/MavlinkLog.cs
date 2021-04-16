@@ -37,7 +37,6 @@ namespace LogViewer.Model
 
         public MavlinkLog()
         {
-            MaxSize = 1000000;
         }
 
         public LogItemSchema Schema
@@ -58,9 +57,19 @@ namespace LogViewer.Model
         {
             if (schema != null)
             {
+                bool first = true;
+                ulong startTicks = 0;
+                ulong previousTicks = 0;
                 foreach (var msg in GetMessages(startTime, duration))
                 {
-                    DataValue value = GetDataValue(schema, msg);
+                    if (first)
+                    {
+                        startTicks = previousTicks = msg.Ticks;
+                        first = false;
+                    }
+
+                    previousTicks = msg.Ticks;
+                    DataValue value = GetDataValue(schema, msg, startTicks);
                     if (value != null)
                     {
                         yield return value;
@@ -69,7 +78,7 @@ namespace LogViewer.Model
             }
         }
 
-        internal DataValue GetDataValue(LogItemSchema schema, Message msg)
+        internal DataValue GetDataValue(LogItemSchema schema, Message msg, ulong startTicks)
         {
             // we support 3 levels of nesting, so schema could be the row, the column or an array item.
             LogItemSchema rowSchema = schema;
@@ -94,7 +103,8 @@ namespace LogViewer.Model
                 if (fi != null)
                 {
                     object value = fi.GetValue(row);
-                    DataValue data = new DataValue() { X = msg.Timestamp.Ticks / 10, UserData = msg }; // microseconds (Ticks are in 100 nanoseconds).
+                    double x = (double)(msg.Ticks - startTicks);
+                    DataValue data = new DataValue() { X = x / 10, UserData = msg }; // microseconds (Ticks are in 100 nanoseconds).
                     
                     // byte array is special (we treat this like text).
                     if (value is byte[])
@@ -248,6 +258,7 @@ namespace LogViewer.Model
             private CancellationToken token;
             private bool disposed;
             private bool waiting;
+            private ulong startTicks;
             private System.Threading.Semaphore available = new System.Threading.Semaphore(0, 1);
 
             internal MavlinkQueryEnumerator(MavlinkLog log, LogItemSchema schema, CancellationToken token)
@@ -260,7 +271,12 @@ namespace LogViewer.Model
 
             internal void Add(Message msg)
             {
-                DataValue d = this.log.GetDataValue(schema, msg);
+                if (next == null)
+                {
+                    startTicks = msg.Ticks;
+                }
+
+                DataValue d = this.log.GetDataValue(schema, msg, startTicks);
                 if (d != null)
                 {
                     next = d;
@@ -405,10 +421,7 @@ namespace LogViewer.Model
             lock (data)
             {
                 this.data.Add(msg);
-                if (this.data.Count > MaxSize)
-                {
-                    this.data.RemoveAt(0);
-                }
+                
                 if (msg.TypedValue is MAVLink.mavlink_param_value_t)
                 {
                     MAVLink.mavlink_param_value_t param = (MAVLink.mavlink_param_value_t)msg.TypedValue;
@@ -431,8 +444,6 @@ namespace LogViewer.Model
             }
             return msg;
         }
-
-        public int MaxSize { get; set; }
 
         public DateTime GetTime(ulong timeMs)
         {
@@ -594,12 +605,6 @@ namespace LogViewer.Model
                         {
                             MavLinkMessage header = new MavLinkMessage();
                             header.ReadHeader(reader);
-
-                            while (!header.IsValid())
-                            {
-                                // hmm. looks like a bad record, so now what?
-                                header.ShiftHeader(reader);
-                            }
 
                             int read = s.Read(msgBuf, 0, header.Length);
                             if (read == header.Length)
