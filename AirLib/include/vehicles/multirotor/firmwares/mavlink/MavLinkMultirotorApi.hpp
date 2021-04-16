@@ -90,22 +90,24 @@ public: //methods
 
     unsigned long long getSimTime() {
         // This ensures HIL_SENSOR and HIL_GPS have matching clocks.
-        //if (lock_step_enabled_) {
+        if (lock_step_enabled_) {
             if (sim_time_us_ == 0) {
                 sim_time_us_ = clock()->nowNanos() / 1000;
             }
             return sim_time_us_;
-        // }
-        //else {
-        //    return clock()->nowNanos() / 1000;
-        //}
+        }
+        else {
+            return clock()->nowNanos() / 1000;
+        }
     }
 
     void advanceTime() {
         if (lock_step_enabled_) {
-            // sim_time_us_ += ticks_per_update_;
+            sim_time_us_ += ticks_per_update_;
         }
-        sim_time_us_ = clock()->nowNanos() / 1000;
+        else {
+            sim_time_us_ = clock()->nowNanos() / 1000;
+        }
     }
 
     //update sensors in PX4 stack
@@ -117,14 +119,28 @@ public: //methods
             if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
                 return;
 
-            //auto now = clock()->nowNanos() / 1000;
+            auto now = clock()->nowNanos() / 1000;
+            if (last_hil_sensor_time_ != 0 && last_hil_sensor_time_ + ticks_per_update_ > now)
+            {
+                // then update() is being called too often, so we just skip this one.
+                // TODO: I think this needs to be aware of AirSim ClockSpeed...but perhasp clock() has already taken that into account?
+                return;
+            }
 
-            //if (last_hil_sensor_time_ != 0 && last_hil_sensor_time_ + ticks_per_update_ > now)
-            //{
-            //    // then update() is being called too often, so we just skip this one.
-            //    // TODO: I think this needs to be aware of AirSim ClockSpeed...
-            //    // return;
-            //}
+            if (lock_step_enabled_) {
+                if (last_hil_sensor_time_ + 100000 < now) {
+                    // if 100 ms passes then something is terribly wrong, reset lockstep mode
+                    lock_step_enabled_ = false;
+                    addStatusMessage("timeout on HilActuatorControlsMessage, resetting lock step mode");
+                }
+
+                if (!received_actuator_controls_) {
+                    // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
+                    return;
+                }
+            }
+
+            last_hil_sensor_time_ = now;
 
             advanceTime();
 
@@ -1511,7 +1527,7 @@ private: //methods
             // if the timestamps match then it means we are in lockstep mode.
             if (!lock_step_enabled_) {
                 // && (HilActuatorControlsMessage.flags & 0x1))    // todo: enable this check when this flag is widely available...
-                if (hil_sensor_clock_ == HilActuatorControlsMessage.time_usec) {
+                if (getSimTime() == HilActuatorControlsMessage.time_usec) {
                     addStatusMessage("Enabling lockstep mode");
                     lock_step_enabled_ = true;
                 }
@@ -1569,25 +1585,8 @@ private: //methods
         if (!is_simulation_mode_)
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
         
-        auto now = getSimTime();
-        if (lock_step_enabled_) {
-            if (last_hil_sensor_time_ + 100000 < now) {
-                // if 100 ms passes then something is terribly wrong, reset lockstep mode
-                lock_step_enabled_ = false;
-                addStatusMessage("timeout on HilActuatorControlsMessage, resetting lock step mode");
-            }
-
-            if (!received_actuator_controls_) {
-                // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
-                return;
-            }
-        }
-
-        hil_sensor_clock_ = now;
-
         mavlinkcom::MavLinkHilSensor hil_sensor;
-        last_hil_sensor_time_ = now;
-        hil_sensor.time_usec = hil_sensor_clock_;
+        hil_sensor.time_usec = getSimTime();
 
         hil_sensor.xacc = acceleration.x();
         hil_sensor.yacc = acceleration.y();
@@ -1679,7 +1678,7 @@ private: //methods
             throw std::logic_error("Attempt to send simulated GPS messages while not in simulation mode");
 
         mavlinkcom::MavLinkHilGps hil_gps;
-        hil_gps.time_usec = hil_sensor_clock_;
+        hil_gps.time_usec = getSimTime();
         hil_gps.lat = static_cast<int32_t>(geo_point.latitude * 1E7);
         hil_gps.lon = static_cast<int32_t>(geo_point.longitude * 1E7);
         hil_gps.alt = static_cast<int32_t>(geo_point.altitude * 1000);
@@ -1723,7 +1722,6 @@ private: //methods
         last_sys_time_ = 0;
         last_gps_time_ = 0;
         last_hil_sensor_time_ = 0;
-        hil_sensor_clock_ = 0;
         is_api_control_enabled_ = false;
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
@@ -1826,7 +1824,6 @@ private: //variables
     unsigned long long sim_time_us_ = 0;
     uint64_t last_gps_time_ = 0;
     uint64_t last_hil_sensor_time_ = 0;
-    uint64_t hil_sensor_clock_ = 0;
 
     //additional variables required for MultirotorApiBase implementation
     //this is optional for methods that might not use vehicle commands
