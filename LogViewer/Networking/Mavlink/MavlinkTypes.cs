@@ -232,7 +232,7 @@ namespace Microsoft.Networking.Mavlink
             typeof(mavlink_gimbal_control_t),                                    // 201
             null,                                                                // 202
             null,                                                                // 203
-            null,                                                                // 204
+            typeof(mavlink_telemetry),                                           // 204
             null,                                                                // 205
             null,                                                                // 206
             null,                                                                // 207
@@ -6113,7 +6113,7 @@ namespace Microsoft.Networking.Mavlink
 
 
         // custom message from the simulator 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 24)]
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8*4)]
         public struct mavlink_telemetry
         {
             public const int MessageId = 204;
@@ -6124,6 +6124,7 @@ namespace Microsoft.Networking.Mavlink
             public int handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
             public int renderTime;          // total time spent rendering frames since the last message
             public int wifiRssi;            // if this device is communicating over wifi this is the signal strength.
+            public int udpateRateHz;        // HIL_SENSOR update rate in hertz
         };
 
 

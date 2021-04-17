@@ -178,6 +178,10 @@ namespace Microsoft.Networking.Mavlink
         {
             GCHandle handle = GCHandle.Alloc(this.Payload, GCHandleType.Pinned);
             IntPtr ptr = handle.AddrOfPinnedObject();
+            if ((int)this.MsgId >= MAVLink.MAVLINK_MESSAGE_INFO.Length)
+            {
+                return;
+            }
             Type msgType = MAVLink.MAVLINK_MESSAGE_INFO[(int)this.MsgId];
             if (msgType != null)
             {
@@ -416,9 +420,11 @@ namespace Microsoft.Networking.Mavlink
                                     found = msg.crc_calculate();
                                     
                                 }
-                                if (found != crc)
+                                if (found != crc && crc != 0)
                                 {
                                     // bad crc!!
+                                    // reset for next message.
+                                    state = ReadState.Init;
                                 }
                                 else
                                 {

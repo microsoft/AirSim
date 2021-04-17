@@ -605,13 +605,22 @@ namespace LogViewer.Model
                         {
                             MavLinkMessage header = new MavLinkMessage();
                             header.ReadHeader(reader);
-
                             int read = s.Read(msgBuf, 0, header.Length);
                             if (read == header.Length)
                             {
                                 header.Crc = reader.ReadUInt16();
 
-                                if (!header.IsValidCrc(msgBuf, read))
+                                bool checkCrc = true;
+                                if ((int)header.MsgId == MAVLink.mavlink_telemetry.MessageId)
+                                {
+                                    if (header.Crc == 0)  // telemetry has no crc.
+                                    {
+                                        checkCrc = false;
+                                        continue;
+                                    }                                     
+                                }
+
+                                if (checkCrc && !header.IsValidCrc(msgBuf, read))
                                 {
                                     continue;
                                 }
