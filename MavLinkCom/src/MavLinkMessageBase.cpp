@@ -20,6 +20,76 @@ STRICT_MODE_ON
 using namespace mavlink_utils;
 using namespace mavlinkcom;
 
+int MavLinkMessage::update_checksum()
+{
+    bool mavlink1 = protocol_version != 2;    
+    uint8_t header_len = MAVLINK_CORE_HEADER_LEN + 1;
+    uint8_t buf[MAVLINK_CORE_HEADER_LEN + 1];
+    if (mavlink1) {
+        magic = MAVLINK_STX_MAVLINK1;
+        header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN + 1;
+    }
+    else {
+        magic = MAVLINK_STX;
+    }
+
+    incompat_flags = 0;
+    compat_flags = 0;
+
+    // pack the payload buffer.
+    char* payload = reinterpret_cast<char*>(&payload64[0]);
+    int len = this->len;
+
+    // calculate checksum
+    const mavlink_msg_entry_t* entry = mavlink_get_msg_entry(msgid);
+    uint8_t crc_extra = 0;
+    int msglen = 0;
+    if (entry != nullptr) {
+        crc_extra = entry->crc_extra;
+        msglen = entry->min_msg_len;
+    }
+    if (msgid == MavLinkTelemetry::kMessageId) {
+        msglen = MavLinkTelemetry::MessageLength; // mavlink doesn't know about our custom telemetry message.
+    }
+
+    if (len != msglen) {
+        if (mavlink1) {
+            throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
+        }
+        else {
+            // mavlink2 supports trimming the payload of trailing zeros so the messages
+            // are variable length as a result.
+        }
+    }
+    len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
+    this->len = len;
+
+    // form the header as a byte array for the crc
+    buf[0] = this->magic;
+    buf[1] = this->len;
+    if (mavlink1) {
+        buf[2] = this->seq;
+        buf[3] = this->sysid;
+        buf[4] = this->compid;
+        buf[5] = this->msgid & 0xFF;
+    }
+    else {
+        buf[2] = this->incompat_flags;
+        buf[3] = this->compat_flags;
+        buf[4] = this->seq;
+        buf[5] = this->sysid;
+        buf[6] = this->compid;
+        buf[7] = this->msgid & 0xFF;
+        buf[8] = (this->msgid >> 8) & 0xFF;
+        buf[9] = (this->msgid >> 16) & 0xFF;
+    }
+
+    this->checksum = crc_calculate(&buf[1], header_len - 1);
+    crc_accumulate_buffer(&this->checksum, payload, len);
+    crc_accumulate(crc_extra, &this->checksum);
+
+    return len + header_len + 2;
+}
 void MavLinkMessageBase::decode(const MavLinkMessage& msg)
 {
     // unpack the message...

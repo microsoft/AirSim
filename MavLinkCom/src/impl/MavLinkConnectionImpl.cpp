@@ -272,7 +272,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
 
     msg.seq = seqno;
     msg.incompat_flags = 0;
-    if (signing_) {
+    if (signing) {
         msg.incompat_flags |= MAVLINK_IFLAG_SIGNED;
     }
     msg.compat_flags = 0;
@@ -301,7 +301,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
             // mavlink2 supports trimming the payload of trailing zeros so the messages
             // are variable length as a result.
         }
-    }    
+    }
     len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
     msg.len = len;
 
@@ -335,12 +335,12 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
     mavlink_ck_b(&msg) = (uint8_t)(msg.checksum >> 8);
     STRICT_MODE_ON
 
-    if (signing_) {
+    if (signing) {
         mavlink_sign_packet(mavlink_status_.signing,
-            reinterpret_cast<uint8_t *>(msg.signature),
-            reinterpret_cast<const uint8_t *>(message_buf), header_len,
-            reinterpret_cast<const uint8_t *>(payload), msg.len,
-            reinterpret_cast<const uint8_t *>(payload) + msg.len);
+            reinterpret_cast<uint8_t*>(msg.signature),
+            reinterpret_cast<const uint8_t*>(message_buf), header_len,
+            reinterpret_cast<const uint8_t*>(payload), msg.len,
+            reinterpret_cast<const uint8_t*>(payload) + msg.len);
     }
 
     return msg.len + header_len + 2 + signature_len;

@@ -41,6 +41,9 @@ namespace mavlinkcom
         uint8_t ck[2];          ///< incoming checksum bytes
         uint8_t signature[13];
         uint8_t protocol_version;
+
+        // initialize checksum
+        int update_checksum();
     };
 
     // This is the base class for all the strongly typed messages define in MavLinkMessages.hpp

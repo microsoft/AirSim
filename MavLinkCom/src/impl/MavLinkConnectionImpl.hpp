@@ -97,7 +97,6 @@ namespace mavlinkcom_impl {
         bool waiting_for_msg_ = false;
         bool supports_mavlink2_ = false;
         std::thread::id publish_thread_id_;
-        bool signing_ = false;
         mavlink_status_t mavlink_intermediate_status_;
         mavlink_status_t mavlink_status_;
         std::mutex telemetry_mutex_;

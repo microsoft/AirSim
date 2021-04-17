@@ -120,22 +120,6 @@ public: //methods
                 return;
 
             auto now = clock()->nowNanos() / 1000;
-            if (last_hil_sensor_time_ != 0 && last_hil_sensor_time_ + ticks_per_update_ > now)
-            {
-                // then update() is being called too often, so we just skip this one.
-                // TODO: I think this needs to be aware of AirSim ClockSpeed...but perhasp clock() has already taken that into account?
-                return;
-            }
-
-            update_count_++;
-            if (last_fps_time_ == 0 || last_fps_time_ + 1000000 < now) {
-                // compute update rate once per second.
-                update_rate_ = update_count_;
-                update_count_ = 0;
-                last_fps_time_ = now;
-                sendTelemetry(1);
-            }
-
             if (lock_step_enabled_) {
                 if (last_hil_sensor_time_ + 100000 < now) {
                     // if 100 ms passes then something is terribly wrong, reset lockstep mode
@@ -149,7 +133,23 @@ public: //methods
                 }
             }
 
+            if (last_hil_sensor_time_ != 0 && last_hil_sensor_time_ + ticks_per_update_ > now)
+            {
+                // then update() is being called too often, so we just skip this one.
+                // TODO: I think this needs to be aware of AirSim ClockSpeed...but perhasp clock() has already taken that into account?
+                return;
+            }
+
             last_hil_sensor_time_ = now;
+
+            update_count_++;
+            if (last_fps_time_ == 0 || last_fps_time_ + 1000000 < now) {
+                // compute update rate once per second.
+                update_rate_ = update_count_;
+                update_count_ = 0;
+                last_fps_time_ = now;
+                sendTelemetry(1);
+            }
 
             advanceTime();
 
@@ -616,7 +616,9 @@ public: //methods
 
         if (log_ != nullptr) {
             mavlinkcom::MavLinkMessage msg;
+            msg.magic = MAVLINK_STX_MAVLINK1;
             data.encode(msg);
+            msg.update_checksum();
             log_->write(msg);
         }
     }

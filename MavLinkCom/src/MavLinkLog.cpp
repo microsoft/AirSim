@@ -9,6 +9,7 @@ using namespace mavlinkcom;
 using namespace mavlink_utils;
 
 #define MAVLINK_STX_MAVLINK1 0xFE          // marker for old protocol
+#define MAVLINK_STX 253					// marker for mavlink 2
 
 uint64_t MavLinkFileLog::getTimeStamp()
 {
@@ -118,15 +119,21 @@ void MavLinkFileLog::write(const mavlinkcom::MavLinkMessage& msg, uint64_t times
             // todo: mavlink2 support?
             timestamp = FlipEndianness(timestamp);
 
+			uint8_t magic = msg.magic;
+			if (magic != MAVLINK_STX_MAVLINK1) {
+				// has to be one or the other!
+				magic = MAVLINK_STX;
+			}
+
 			std::lock_guard<std::mutex> lock(log_lock_);
 			fwrite(&timestamp, sizeof(uint64_t), 1, ptr_);
-			fwrite(&msg.magic, 1, 1, ptr_);
+			fwrite(&magic, 1, 1, ptr_);
 			fwrite(&msg.len, 1, 1, ptr_);
 			fwrite(&msg.seq, 1, 1, ptr_);
 			fwrite(&msg.sysid, 1, 1, ptr_);
 			fwrite(&msg.compid, 1, 1, ptr_);
 
-			if (msg.magic == MAVLINK_STX_MAVLINK1) {
+			if (magic == MAVLINK_STX_MAVLINK1) {
 				uint8_t msgid = msg.msgid & 0xff; // truncate to mavlink 2 msgid
 				fwrite(&msgid, 1, 1, ptr_);
 			}
