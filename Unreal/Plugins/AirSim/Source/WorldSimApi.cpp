@@ -180,8 +180,8 @@ bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
         for (float k = 0; k < ncells_z; k++) {
             for (float j = 0; j < ncells_y; j++) {
                 int idx = i + ncells_x * (k + ncells_z * j);
-                FVector position = FVector((i - ncells_x /2) * scale_cm, (j - ncells_y /2) * scale_cm, (k - ncells_z /2) * scale_cm) + position_in_UE_frame;
-                voxel_grid_[idx] = simmode_->GetWorld()->OverlapBlockingTestByChannel(position, FQuat::Identity, ECollisionChannel::ECC_Pawn, FCollisionShape::MakeBox(FVector(scale_cm /2)), params);
+                FVector vposition = FVector((i - ncells_x /2) * scale_cm, (j - ncells_y /2) * scale_cm, (k - ncells_z /2) * scale_cm) + position_in_UE_frame;
+                voxel_grid_[idx] = simmode_->GetWorld()->OverlapBlockingTestByChannel(vposition, FQuat::Identity, ECollisionChannel::ECC_Pawn, FCollisionShape::MakeBox(FVector(scale_cm /2)), params);
             }
         }
     }
