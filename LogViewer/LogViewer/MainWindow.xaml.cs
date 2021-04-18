@@ -335,7 +335,7 @@ namespace LogViewer
             OpenButton.IsEnabled = false;
 
             Microsoft.Win32.OpenFileDialog fo = new Microsoft.Win32.OpenFileDialog();
-            fo.Filter = "PX4 Log Files (*.px4log)|*.px4log|PX4 ulog Files (*.ulg)|*.ulg|CSV Files (*.csv)|*.csv|bin files (*.bin)|*.bin|mavlink files (*.mavlink)|*.mavlink|JSON files (*.json)|*.json|KML files (*.kml)|*.kml";
+            fo.Filter = "mavlink files (*.mavlink)|*.mavlink|PX4 ulog Files (*.ulg)|*.ulg|CSV Files (*.csv)|*.csv|bin files (*.bin)|*.bin|JSON files (*.json)|*.json|KML files (*.kml)|*.kml";
             fo.CheckFileExists = true;
             fo.Multiselect = true;
             if (fo.ShowDialog() == true)

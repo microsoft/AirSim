@@ -104,7 +104,7 @@ namespace LogViewer.Model
                 {
                     object value = fi.GetValue(row);
                     double x = (double)(msg.Ticks - startTicks);
-                    DataValue data = new DataValue() { X = x / 10, UserData = msg }; // microseconds (Ticks are in 100 nanoseconds).
+                    DataValue data = new DataValue() { X = x, UserData = msg }; // microseconds.
                     
                     // byte array is special (we treat this like text).
                     if (value is byte[])
