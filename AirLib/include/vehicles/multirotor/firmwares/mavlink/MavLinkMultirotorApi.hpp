@@ -117,25 +117,34 @@ namespace msr { namespace airlib {
                 if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
                     return;
 
-                update_count_++;
+                {
+                    std::lock_guard<std::mutex> guard(telemetry_mutex_);
+                    update_count_++;
+                }
 
                 auto now = clock()->nowNanos() / 1000;
                 if (lock_step_enabled_) {
                     if (last_update_time_ + 100000 < now) {
                         // if 100 ms passes then something is terribly wrong, reset lockstep mode
                         lock_step_enabled_ = false;
-                        lock_step_resets_++;
+                        {
+                            std::lock_guard<std::mutex> guard(telemetry_mutex_);
+                            lock_step_resets_++;
+                        }
                         addStatusMessage("timeout on HilActuatorControlsMessage, resetting lock step mode");
                     }
-
-                    if (!received_actuator_controls_) {
+                    else if (!received_actuator_controls_) {
                         // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
                         return;
                     }
                 }
 
                 last_update_time_ = now;
-                hil_sensor_count_++;
+
+                {
+                    std::lock_guard<std::mutex> guard(telemetry_mutex_);
+                    hil_sensor_count_++;
+                }
                 advanceTime();
 
                 //send sensor updates
@@ -563,6 +572,8 @@ namespace msr { namespace airlib {
             if (connection_ == nullptr || mav_vehicle_ == nullptr) {
                 return;
             }
+
+            // This method is called at high frequence from MultirotorPawnSimApi::updateRendering.
             mavlinkcom::MavLinkTelemetry data;
             connection_->getTelemetry(data);
             if (data.messages_received == 0) {
@@ -576,10 +587,19 @@ namespace msr { namespace airlib {
             else {
                 hil_message_timer_.stop();
             }
+        }
+
+        void writeTelemetry(float last_interval = -1)
+        {
+            auto proxy = logviewer_proxy_;
+            auto log = log_;
 
             if ((logviewer_proxy_ == nullptr && log_ == nullptr)) {
                 return;
             }
+
+            mavlinkcom::MavLinkTelemetry data;
+            connection_->getTelemetry(data);
 
             // listen to the other mavlink connection also
             auto mavcon = mav_vehicle_->getConnection();
@@ -607,32 +627,35 @@ namespace msr { namespace airlib {
             }
 
             data.render_time = static_cast<int64_t>(last_interval * 1000000);// microseconds
-            data.udpate_rate = update_count_;
-            data.sensor_rate = hil_sensor_count_;
-            data.actuation_delay = actuator_delay_;
-            data.lock_step_resets = lock_step_resets_;
 
-            // reset the counters we just captured.
-            update_count_ = 0;
-            hil_sensor_count_ = 0;
-            actuator_delay_ = 0;
-
-            if (logviewer_proxy_ != nullptr) {
-                logviewer_proxy_->sendMessage(data);
+            {
+                std::lock_guard<std::mutex> guard(telemetry_mutex_);
+                data.udpate_rate = update_count_;
+                data.sensor_rate = hil_sensor_count_;
+                data.actuation_delay = actuator_delay_;
+                data.lock_step_resets = lock_step_resets_;
+                // reset the counters we just captured.
+                update_count_ = 0;
+                hil_sensor_count_ = 0;
+                actuator_delay_ = 0;
             }
 
-            if (log_ != nullptr) {
+            if (proxy != nullptr) {
+                proxy->sendMessage(data);
+            }
+
+            if (log != nullptr) {
                 mavlinkcom::MavLinkMessage msg;
                 msg.magic = MAVLINK_STX_MAVLINK1;
                 data.encode(msg);
                 msg.update_checksum();
                 // disk I/O is unpredictable, so we have to get it out of the update loop
                 // which is why this thread exists.
-                log_->write(msg);
+                log->write(msg);
             }
         }
 
-    void start_telemtry_thread() {
+        void start_telemtry_thread() {
 
         if (this->telemetry_thread_.joinable())
         {
@@ -651,9 +674,7 @@ namespace msr { namespace airlib {
         while (log_ != nullptr) {
 
             std::this_thread::sleep_for(std::chrono::seconds(1));
-
-            Utils::log(Utils::stringf("sending telemetry, update_count_ is %d...", update_count_));
-            sendTelemetry(1);
+            writeTelemetry(1);
         }
     }
 
@@ -1426,7 +1447,7 @@ private: //methods
 
     mavlinkcom::MavLinkHilSensor getLastSensorMessage()
     {
-        std::lock_guard<std::mutex> guard(last_message_mutex_);
+        std::lock_guard<std::mutex> guard(last_message_mutex_);       
         return last_sensor_message_;
     }
 
@@ -1525,6 +1546,8 @@ private: //methods
         {
             auto now = clock()->nowNanos() / 1000;
             auto delay = static_cast<uint32_t>(now - last_update_time_);
+
+            std::lock_guard<std::mutex> guard(telemetry_mutex_);
             actuator_delay_ += delay;
         }
     }
@@ -1871,7 +1894,7 @@ private: //variables
     mavlinkcom::MavLinkDistanceSensor last_distance_message_;
     mavlinkcom::MavLinkHilGps last_gps_message_;
 
-    std::mutex mocap_pose_mutex_, heartbeat_mutex_, set_mode_mutex_, status_text_mutex_, last_message_mutex_;
+    std::mutex mocap_pose_mutex_, heartbeat_mutex_, set_mode_mutex_, status_text_mutex_, last_message_mutex_, telemetry_mutex_;
 
     //variables required for VehicleApiBase implementation
     bool got_first_heartbeat_ = false, is_hil_mode_set_ = false, is_armed_ = false;
