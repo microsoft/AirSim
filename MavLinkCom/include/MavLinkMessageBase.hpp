@@ -135,7 +135,7 @@ namespace mavlinkcom
     class MavLinkTelemetry : public MavLinkMessageBase {
     public:
         const static uint8_t kMessageId = 204; // in the user range 180-229.
-        const static int MessageLength = 11 * 4;
+        const static int MessageLength = 12 * 4;
         MavLinkTelemetry() { msgid = kMessageId; }
         uint32_t messages_sent = 0;		   // number of messages sent since the last telemetry message
         uint32_t messages_received = 0;	   // number of messages received since the last telemetry message
@@ -148,6 +148,7 @@ namespace mavlinkcom
         uint32_t actuation_delay = 0;      // delay from HIL_SENSOR to HIL_ACTUATORCONTROLS response
         uint32_t sensor_rate = 0;          // rate we are sending HIL_SENSOR messages
         uint32_t lock_step_resets = 0;     // total number of lock_step resets
+        uint32_t update_time = 0;          // time inside MavLinkMultiRotorApi::update() method
  
         // not serialized
         const char* wifiInterfaceName = nullptr; // the name of the wifi interface we are measuring RSSI on.
@@ -166,6 +167,7 @@ namespace mavlinkcom
             result << "\"actuation_delay\":" << this->actuation_delay;
             result << "\"sensor_rate\":" << this->sensor_rate;
             result << "\"lock_step_resets\":" << this->lock_step_resets;
+            result << "\"udpate_time\":" << this->update_time;
             result << "}";
             return result.str();
         }

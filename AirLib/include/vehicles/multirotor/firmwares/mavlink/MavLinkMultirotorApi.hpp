@@ -112,6 +112,7 @@ namespace msr { namespace airlib {
         virtual void update() override
         {
             try {
+                auto now = clock()->nowNanos() / 1000;
                 MultirotorApiBase::update();
 
                 if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
@@ -122,7 +123,6 @@ namespace msr { namespace airlib {
                     update_count_++;
                 }
 
-                auto now = clock()->nowNanos() / 1000;
                 if (lock_step_enabled_) {
                     if (last_update_time_ + 100000 < now) {
                         // if 100 ms passes then something is terribly wrong, reset lockstep mode
@@ -194,6 +194,11 @@ namespace msr { namespace airlib {
                     }
                 }
 
+                auto end = clock()->nowNanos() / 1000;
+                {
+                    std::lock_guard<std::mutex> guard(telemetry_mutex_);
+                    update_time_ += (end - now);
+                }
             }
             catch (std::exception& e) {
                 addStatusMessage("Exception sending messages to vehicle");
@@ -201,6 +206,7 @@ namespace msr { namespace airlib {
                 disconnect();
                 connect(); // re-start a new connection so PX4 can be restarted and AirSim will happily continue on.
             }
+
 
             //must be done at the end
             if (was_reset_)
@@ -630,14 +636,23 @@ namespace msr { namespace airlib {
 
             {
                 std::lock_guard<std::mutex> guard(telemetry_mutex_);
+                uint32_t average_delay = 0;
+                uint32_t average_update = 0;
+                if (hil_sensor_count_ != 0) {
+                    average_delay = actuator_delay_ / hil_sensor_count_;
+                    average_update = static_cast<uint32_t>(update_time_ / hil_sensor_count_);
+                }
+
                 data.udpate_rate = update_count_;
                 data.sensor_rate = hil_sensor_count_;
-                data.actuation_delay = hil_sensor_count_ == 0 ? actuator_delay_ : actuator_delay_  / hil_sensor_count_;
+                data.actuation_delay = average_delay;
                 data.lock_step_resets = lock_step_resets_;
+                data.update_time = average_update;
                 // reset the counters we just captured.
                 update_count_ = 0;
                 hil_sensor_count_ = 0;
                 actuator_delay_ = 0;
+                update_time_ = 0;
             }
 
             if (proxy != nullptr) {
@@ -1926,6 +1941,7 @@ private: //variables
     uint64_t last_hil_sensor_time_ = 0;
 
     // variables accumulated for MavLinkTelemetry messages.
+    uint64_t update_time_ = 0;
     uint32_t update_count_ = 0;
     uint32_t hil_sensor_count_ = 0;
     uint32_t lock_step_resets_ = 0;

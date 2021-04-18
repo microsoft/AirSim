@@ -316,6 +316,7 @@ int MavLinkTelemetry::pack(char* buffer) const {
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->actuation_delay), 32);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->sensor_rate), 36);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->lock_step_resets), 40);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->update_time), 44);
     return MavLinkTelemetry::MessageLength;
 }
 
@@ -331,9 +332,9 @@ int MavLinkTelemetry::unpack(const char* buffer) {
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->actuation_delay), 32);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->sensor_rate), 36);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->lock_step_resets), 40);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->update_time), 44);
     return MavLinkTelemetry::MessageLength;
 }
-
 
 std::string MavLinkMessageBase::char_array_tostring(int len, const char* field)
 {
