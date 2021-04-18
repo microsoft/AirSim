@@ -782,7 +782,8 @@ namespace LogViewer.Controls
                 double offset = Canvas.GetLeft(Graph);
                 double x = pt.X + offset;
                 double y = pt.Y;
-                ShowTip(series.Name + " = " + (!string.IsNullOrEmpty(found.Label) ? found.Label : found.Y.ToString()), new Point(x, y), found);
+                ShowTip(series.Name + " = " + (!string.IsNullOrEmpty(found.Label) ? found.Label : found.Y.ToString() + "\n" +
+                    "time = " + found.X.ToString()), new Point(x, y), found);
             }
             else
             {

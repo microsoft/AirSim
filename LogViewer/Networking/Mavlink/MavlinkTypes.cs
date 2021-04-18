@@ -6113,7 +6113,7 @@ namespace Microsoft.Networking.Mavlink
 
 
         // custom message from the simulator 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 11*4)]
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12*4)]
         public struct mavlink_telemetry
         {
             public const int MessageId = 204;
@@ -6128,6 +6128,7 @@ namespace Microsoft.Networking.Mavlink
             public int actuation_delay;      // delay from HIL_SENSOR to HIL_ACTUATORCONTROLS response
             public int sensor_rate;          // rate we are sending HIL_SENSOR messages
             public int lock_step_resets;     // total number of lock_step resets
+            public int update_time;          // avg time spent inside MavLinkMultiRotorApi::update method.
         };
 
 
