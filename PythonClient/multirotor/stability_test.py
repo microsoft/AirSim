@@ -55,7 +55,7 @@ while True:
 
     # fly for 2 minutes
     start = time.time()
-    while time.time() < start + 120:
+    while time.time() < start + 300:
         state = client.getMultirotorState()
         x_val = state.kinematics_estimated.position.x_val
         y_val = state.kinematics_estimated.position.y_val
