@@ -593,19 +593,21 @@ namespace LogViewer.Model
 
             await Task.Run(() =>
             {
+                long length = 0;
                 // MAVLINK_MSG_ID
                 using (Stream s = File.OpenRead(file))
                 {
+                    length = s.Length;
                     BinaryReader reader = new BinaryReader(s);
-                    while (s.Position < s.Length)
+                    while (s.Position < length)
                     {
-                        progress.ShowProgress(0, s.Length, s.Position);
-
+                        progress.ShowProgress(0, length, s.Position);
                         try
                         {
                             MavLinkMessage header = new MavLinkMessage();
                             header.ReadHeader(reader);
                             int read = s.Read(msgBuf, 0, header.Length);
+
                             if (read == header.Length)
                             {
                                 header.Crc = reader.ReadUInt16();
@@ -646,6 +648,7 @@ namespace LogViewer.Model
                         }
                     }
                 }
+                progress.ShowProgress(0, length, length);
                 handle.Free();
             });
             this.duration = lastTime - startTime;

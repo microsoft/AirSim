@@ -804,7 +804,7 @@ namespace LogViewer.Controls
                     DataValue endData = series.Values[e];
                     Point tipPosition = this.TransformToDescendant(Graph).Transform(localEndPos);
                     double microseconds = endData.X - startData.X;
-                    TimeSpan span = new TimeSpan((long)microseconds * 10);
+                    TimeSpan span = TimeSpan.FromMilliseconds((double)microseconds / 1000.0);
                     double seconds = span.TotalSeconds;
                     double diff = endData.Y - startData.Y;
                     double sum = 0;

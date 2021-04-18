@@ -88,7 +88,7 @@ namespace Microsoft.Networking.Mavlink
             ComponentId = reader.ReadByte();
             if (Magic == MAVLINK_STX_MAVLINK1)
             {
-                MsgId = (MAVLink.MAVLINK_MSG_ID)reader.ReadUInt16();
+                MsgId = (MAVLink.MAVLINK_MSG_ID)reader.ReadByte();
             }
             else
             {
