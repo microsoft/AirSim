@@ -39,587 +39,621 @@
 
 namespace msr { namespace airlib {
 
-class MavLinkMultirotorApi : public MultirotorApiBase
-{
-public: //methods
-    virtual ~MavLinkMultirotorApi()
+    class MavLinkMultirotorApi : public MultirotorApiBase
     {
-        closeAllConnection();
-        if (this->connect_thread_.joinable())
+    public: //methods
+        virtual ~MavLinkMultirotorApi()
         {
-            this->connect_thread_.join();
-        }
-    }
-
-    //non-base interface specific to MavLinKDroneController
-    void initialize(const AirSimSettings::MavLinkConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
-    {
-        connection_info_ = connection_info;
-        sensors_ = sensors;
-        is_simulation_mode_ = is_simulation;
-
-        try {
-            openAllConnections();
-            is_ready_ = true;
-        }
-        catch (std::exception& ex) {
-            is_ready_ = false;
-            is_ready_message_ = Utils::stringf("Failed to connect: %s", ex.what());
-        }
-    }
-
-    Pose getMocapPose()
-    {
-        std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
-        return mocap_pose_;
-    }
-
-    virtual const SensorCollection& getSensors() const override
-    {
-        return *sensors_;
-    }
-
-    //reset PX4 stack
-    virtual void resetImplementation() override
-    {
-        // note this is called AFTER "initialize" when we've connected to the drone
-        // so this method cannot reset any of that connection state.
-        MultirotorApiBase::resetImplementation();
-        was_reset_ = true;
-    }
-
-    unsigned long long getSimTime() {
-        // This ensures HIL_SENSOR and HIL_GPS have matching clocks.
-        if (lock_step_enabled_) {
-            if (sim_time_us_ == 0) {
-                sim_time_us_ = clock()->nowNanos() / 1000;
+            closeAllConnection();
+            if (this->connect_thread_.joinable())
+            {
+                this->connect_thread_.join();
             }
-            return sim_time_us_;
+            if (this->telemetry_thread_.joinable()) {
+                this->telemetry_thread_.join();
+            }
         }
-        else {
-            return clock()->nowNanos() / 1000;
-        }
-    }
 
-    void advanceTime() {
-        if (lock_step_enabled_) {
-            sim_time_us_ += ticks_per_update_;
+        //non-base interface specific to MavLinKDroneController
+        void initialize(const AirSimSettings::MavLinkConnectionInfo& connection_info, const SensorCollection* sensors, bool is_simulation)
+        {
+            connection_info_ = connection_info;
+            sensors_ = sensors;
+            is_simulation_mode_ = is_simulation;
+
+            try {
+                openAllConnections();
+                is_ready_ = true;
+            }
+            catch (std::exception& ex) {
+                is_ready_ = false;
+                is_ready_message_ = Utils::stringf("Failed to connect: %s", ex.what());
+            }
         }
-        else {
+
+        Pose getMocapPose()
+        {
+            std::lock_guard<std::mutex> guard(mocap_pose_mutex_);
+            return mocap_pose_;
+        }
+
+        virtual const SensorCollection& getSensors() const override
+        {
+            return *sensors_;
+        }
+
+        //reset PX4 stack
+        virtual void resetImplementation() override
+        {
+            // note this is called AFTER "initialize" when we've connected to the drone
+            // so this method cannot reset any of that connection state.
+            MultirotorApiBase::resetImplementation();
+            was_reset_ = true;
+        }
+
+        unsigned long long getSimTime() {
+            // This ensures HIL_SENSOR and HIL_GPS have matching clocks.
+            if (lock_step_enabled_) {
+                if (sim_time_us_ == 0) {
+                    sim_time_us_ = clock()->nowNanos() / 1000;
+                }
+                return sim_time_us_;
+            }
+            else {
+                return clock()->nowNanos() / 1000;
+            }
+        }
+
+        void advanceTime() {
             sim_time_us_ = clock()->nowNanos() / 1000;
         }
-    }
 
-    //update sensors in PX4 stack
-    virtual void update() override
-    {
-        try {
-            MultirotorApiBase::update();
+        //update sensors in PX4 stack
+        virtual void update() override
+        {
+            try {
+                MultirotorApiBase::update();
 
-            if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
-                return;
-
-            auto now = clock()->nowNanos() / 1000;
-            if (lock_step_enabled_) {
-                if (last_hil_sensor_time_ + 100000 < now) {
-                    // if 100 ms passes then something is terribly wrong, reset lockstep mode
-                    lock_step_enabled_ = false;
-                    addStatusMessage("timeout on HilActuatorControlsMessage, resetting lock step mode");
-                }
-
-                if (!received_actuator_controls_) {
-                    // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
+                if (sensors_ == nullptr || !connected_ || connection_ == nullptr || !connection_->isOpen() || !got_first_heartbeat_)
                     return;
-                }
-            }
 
-            if (last_hil_sensor_time_ != 0 && last_hil_sensor_time_ + ticks_per_update_ > now)
-            {
-                // then update() is being called too often, so we just skip this one.
-                // TODO: I think this needs to be aware of AirSim ClockSpeed...but perhasp clock() has already taken that into account?
-                return;
-            }
+                update_count_++;
 
-            last_hil_sensor_time_ = now;
+                auto now = clock()->nowNanos() / 1000;
+                if (lock_step_enabled_) {
+                    if (last_update_time_ + 100000 < now) {
+                        // if 100 ms passes then something is terribly wrong, reset lockstep mode
+                        lock_step_enabled_ = false;
+                        lock_step_resets_++;
+                        addStatusMessage("timeout on HilActuatorControlsMessage, resetting lock step mode");
+                    }
 
-            update_count_++;
-            if (last_fps_time_ == 0 || last_fps_time_ + 1000000 < now) {
-                // compute update rate once per second.
-                update_rate_ = update_count_;
-                update_count_ = 0;
-                last_fps_time_ = now;
-                sendTelemetry(1);
-            }
-
-            advanceTime();
-
-            //send sensor updates
-            const auto& imu_output = getImuData("");
-            const auto& mag_output = getMagnetometerData("");
-            const auto& baro_output = getBarometerData("");
-
-            sendHILSensor(imu_output.linear_acceleration,
-                imu_output.angular_velocity,
-                mag_output.magnetic_field_body,
-                baro_output.pressure * 0.01f /*Pa to Millibar */, baro_output.altitude);
-            
-            sendSystemTime();
-
-            const uint count_distance_sensors = getSensors().size(SensorBase::SensorType::Distance);
-            if (count_distance_sensors != 0) {
-                const auto& distance_output = getDistanceSensorData("");
-
-                sendDistanceSensor(distance_output.min_distance * 100, //m -> cm
-                    distance_output.max_distance * 100, //m -> cm
-                    distance_output.distance * 100, //m-> cm
-                    0, //sensor type: //TODO: allow changing in settings?
-                    77, //sensor id, //TODO: should this be something real?
-                    distance_output.relative_pose.orientation); //TODO: convert from radians to degrees?
-            }
-
-            const uint count_gps_sensors = getSensors().size(SensorBase::SensorType::Gps);
-            if (count_gps_sensors != 0) {
-                const auto& gps_output = getGpsData("");
-
-                //send GPS
-                if (gps_output.is_valid && gps_output.gnss.time_utc > last_gps_time_) {
-                    last_gps_time_ = gps_output.gnss.time_utc;
-                    Vector3r gps_velocity = gps_output.gnss.velocity;
-                    Vector3r gps_velocity_xy = gps_velocity;
-                    gps_velocity_xy.z() = 0;
-                    float gps_cog;
-                    if (Utils::isApproximatelyZero(gps_velocity.y(), 1E-2f) && Utils::isApproximatelyZero(gps_velocity.x(), 1E-2f))
-                        gps_cog = 0;
-                    else
-                        gps_cog = Utils::radiansToDegrees(atan2(gps_velocity.y(), gps_velocity.x()));
-                    if (gps_cog < 0)
-                        gps_cog += 360;
-
-                    sendHILGps(gps_output.gnss.geo_point, gps_velocity, gps_velocity_xy.norm(), gps_cog,
-                        gps_output.gnss.eph, gps_output.gnss.epv, gps_output.gnss.fix_type, 10);
-                }
-            }            
-
-        }
-        catch (std::exception& e) {
-            addStatusMessage("Exception sending messages to vehicle");
-            addStatusMessage(e.what());
-            disconnect();
-            connect(); // re-start a new connection so PX4 can be restarted and AirSim will happily continue on.
-        }
-
-        //must be done at the end
-        if (was_reset_)
-            was_reset_ = false;
-    }
-
-    virtual bool isReady(std::string& message) const override
-    {
-        if (!is_ready_ && is_ready_message_.size() > 0) {
-            message = is_ready_message_;
-        }
-        return is_ready_;
-    }
-
-    virtual bool canArm() const override
-    {
-        return is_ready_ && has_gps_lock_;
-    }
-
-    //TODO: this method can't be const yet because it clears previous messages
-    virtual void getStatusMessages(std::vector<std::string>& messages) override
-    {
-        updateState();
-
-        //clear param
-        messages.clear();
-
-        //move messages from private vars to param
-        std::lock_guard<std::mutex> guard(status_text_mutex_);
-        while (!status_messages_.empty()) {
-            messages.push_back(status_messages_.front());
-            status_messages_.pop();
-        }
-    }
-
-    virtual Kinematics::State getKinematicsEstimated() const override
-    {
-        updateState();
-        Kinematics::State state;
-        //TODO: reduce code duplication in getPosition() etc methods?
-        state.pose.position = Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
-        state.pose.orientation = VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
-        state.twist.linear = Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
-        state.twist.angular = Vector3r(current_state_.attitude.roll_rate, current_state_.attitude.pitch_rate, current_state_.attitude.yaw_rate);
-        state.accelerations.linear = Vector3r(current_state_.local_est.acc.x, current_state_.local_est.acc.y, current_state_.local_est.acc.z);
-        //TODO: how do we get angular acceleration?
-        return state;
-    }
-
-    virtual bool isApiControlEnabled() const override
-    {
-        return is_api_control_enabled_;
-    }
-
-    virtual void enableApiControl(bool is_enabled) override
-    {
-        checkValidVehicle();
-        if (is_enabled) {
-            mav_vehicle_->requestControl();
-            is_api_control_enabled_ = true;
-        }
-        else {
-            mav_vehicle_->releaseControl();
-            is_api_control_enabled_ = false;
-        }
-    }
-
-    virtual Vector3r getPosition() const override
-    {
-        updateState();
-        return Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
-    }
-    virtual Vector3r getVelocity() const override
-    {
-        updateState();
-        return Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
-    }
-
-    virtual Quaternionr getOrientation() const override
-    {
-        updateState();
-        return VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
-    }
-
-    virtual LandedState getLandedState() const override
-    {
-        updateState();
-        return current_state_.controls.landed ? LandedState::Landed : LandedState::Flying;
-    }
-
-    virtual real_T getActuation(unsigned int rotor_index) const override
-    {
-        if (!is_simulation_mode_)
-            throw std::logic_error("Attempt to read motor controls while not in simulation mode");
-
-        std::lock_guard<std::mutex> guard(hil_controls_mutex_);
-        return rotor_controls_[rotor_index];
-    }
-    virtual size_t getActuatorCount() const override
-    {
-        return RotorControlsCount;
-    }
-
-    virtual bool armDisarm(bool arm) override
-    {
-        SingleCall lock(this);
-
-        checkValidVehicle();
-        bool rc = false;
-        if (arm) {
-            float timeout_sec = 10;
-            waitForHomeLocation(timeout_sec);
-            waitForStableGroundPosition(timeout_sec);
-        }
-
-        mav_vehicle_->armDisarm(arm).wait(10000, &rc);
-        return rc;
-    }
-
-    void onArmed() {
-        if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
-            auto con = mav_vehicle_->getConnection();
-            if (con != nullptr) {
-                if (log_ != nullptr) {
-                    log_->close();
+                    if (!received_actuator_controls_) {
+                        // drop this one since we are in LOCKSTEP mode and we have not yet received the HilActuatorControlsMessage.
+                        return;
+                    }
                 }
 
-                std::time_t t = std::time(0);   // get time now
-                std::tm* now = std::localtime(&t);
-                auto folder = Utils::stringf("%04d-%02d-%02d", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
-                auto path = common_utils::FileSystem::ensureFolder(connection_info_.logs, folder);
-                auto filename = Utils::stringf("%02d-%02d-%02d.mavlink", now->tm_hour, now->tm_min, now->tm_sec);
-                auto fullpath = common_utils::FileSystem::combine(path, filename);
-                addStatusMessage(Utils::stringf("Opening log file: %s", fullpath.c_str()));
-                log_ = std::make_shared<mavlinkcom::MavLinkFileLog>();
-                log_->openForWriting(fullpath, false);
-                con->startLoggingSendMessage(log_);
-                con->startLoggingReceiveMessage(log_);
-                if (con != connection_) {
-                    // log the SITL channel also
-                    connection_->startLoggingSendMessage(log_);
-                    connection_->startLoggingReceiveMessage(log_);
+                last_update_time_ = now;
+                hil_sensor_count_++;
+                advanceTime();
+
+                //send sensor updates
+                const auto& imu_output = getImuData("");
+                const auto& mag_output = getMagnetometerData("");
+                const auto& baro_output = getBarometerData("");
+
+                sendHILSensor(imu_output.linear_acceleration,
+                    imu_output.angular_velocity,
+                    mag_output.magnetic_field_body,
+                    baro_output.pressure * 0.01f /*Pa to Millibar */, baro_output.altitude);
+
+                sendSystemTime();
+
+                const uint count_distance_sensors = getSensors().size(SensorBase::SensorType::Distance);
+                if (count_distance_sensors != 0) {
+                    const auto& distance_output = getDistanceSensorData("");
+
+                    sendDistanceSensor(distance_output.min_distance * 100, //m -> cm
+                        distance_output.max_distance * 100, //m -> cm
+                        distance_output.distance * 100, //m-> cm
+                        0, //sensor type: //TODO: allow changing in settings?
+                        77, //sensor id, //TODO: should this be something real?
+                        distance_output.relative_pose.orientation); //TODO: convert from radians to degrees?
+                }
+
+                const uint count_gps_sensors = getSensors().size(SensorBase::SensorType::Gps);
+                if (count_gps_sensors != 0) {
+                    const auto& gps_output = getGpsData("");
+
+                    //send GPS
+                    if (gps_output.is_valid && gps_output.gnss.time_utc > last_gps_time_) {
+                        last_gps_time_ = gps_output.gnss.time_utc;
+                        Vector3r gps_velocity = gps_output.gnss.velocity;
+                        Vector3r gps_velocity_xy = gps_velocity;
+                        gps_velocity_xy.z() = 0;
+                        float gps_cog;
+                        if (Utils::isApproximatelyZero(gps_velocity.y(), 1E-2f) && Utils::isApproximatelyZero(gps_velocity.x(), 1E-2f))
+                            gps_cog = 0;
+                        else
+                            gps_cog = Utils::radiansToDegrees(atan2(gps_velocity.y(), gps_velocity.x()));
+                        if (gps_cog < 0)
+                            gps_cog += 360;
+
+                        sendHILGps(gps_output.gnss.geo_point, gps_velocity, gps_velocity_xy.norm(), gps_cog,
+                            gps_output.gnss.eph, gps_output.gnss.epv, gps_output.gnss.fix_type, 10);
+                    }
+                }
+
+            }
+            catch (std::exception& e) {
+                addStatusMessage("Exception sending messages to vehicle");
+                addStatusMessage(e.what());
+                disconnect();
+                connect(); // re-start a new connection so PX4 can be restarted and AirSim will happily continue on.
+            }
+
+            //must be done at the end
+            if (was_reset_)
+                was_reset_ = false;
+        }
+
+        virtual bool isReady(std::string& message) const override
+        {
+            if (!is_ready_ && is_ready_message_.size() > 0) {
+                message = is_ready_message_;
+            }
+            return is_ready_;
+        }
+
+        virtual bool canArm() const override
+        {
+            return is_ready_ && has_gps_lock_;
+        }
+
+        //TODO: this method can't be const yet because it clears previous messages
+        virtual void getStatusMessages(std::vector<std::string>& messages) override
+        {
+            updateState();
+
+            //clear param
+            messages.clear();
+
+            //move messages from private vars to param
+            std::lock_guard<std::mutex> guard(status_text_mutex_);
+            while (!status_messages_.empty()) {
+                messages.push_back(status_messages_.front());
+                status_messages_.pop();
+            }
+        }
+
+        virtual Kinematics::State getKinematicsEstimated() const override
+        {
+            updateState();
+            Kinematics::State state;
+            //TODO: reduce code duplication in getPosition() etc methods?
+            state.pose.position = Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
+            state.pose.orientation = VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
+            state.twist.linear = Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
+            state.twist.angular = Vector3r(current_state_.attitude.roll_rate, current_state_.attitude.pitch_rate, current_state_.attitude.yaw_rate);
+            state.accelerations.linear = Vector3r(current_state_.local_est.acc.x, current_state_.local_est.acc.y, current_state_.local_est.acc.z);
+            //TODO: how do we get angular acceleration?
+            return state;
+        }
+
+        virtual bool isApiControlEnabled() const override
+        {
+            return is_api_control_enabled_;
+        }
+
+        virtual void enableApiControl(bool is_enabled) override
+        {
+            checkValidVehicle();
+            if (is_enabled) {
+                mav_vehicle_->requestControl();
+                is_api_control_enabled_ = true;
+            }
+            else {
+                mav_vehicle_->releaseControl();
+                is_api_control_enabled_ = false;
+            }
+        }
+
+        virtual Vector3r getPosition() const override
+        {
+            updateState();
+            return Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
+        }
+        virtual Vector3r getVelocity() const override
+        {
+            updateState();
+            return Vector3r(current_state_.local_est.lin_vel.x, current_state_.local_est.lin_vel.y, current_state_.local_est.lin_vel.z);
+        }
+
+        virtual Quaternionr getOrientation() const override
+        {
+            updateState();
+            return VectorMath::toQuaternion(current_state_.attitude.pitch, current_state_.attitude.roll, current_state_.attitude.yaw);
+        }
+
+        virtual LandedState getLandedState() const override
+        {
+            updateState();
+            return current_state_.controls.landed ? LandedState::Landed : LandedState::Flying;
+        }
+
+        virtual real_T getActuation(unsigned int rotor_index) const override
+        {
+            if (!is_simulation_mode_)
+                throw std::logic_error("Attempt to read motor controls while not in simulation mode");
+
+            std::lock_guard<std::mutex> guard(hil_controls_mutex_);
+            return rotor_controls_[rotor_index];
+        }
+        virtual size_t getActuatorCount() const override
+        {
+            return RotorControlsCount;
+        }
+
+        virtual bool armDisarm(bool arm) override
+        {
+            SingleCall lock(this);
+
+            checkValidVehicle();
+            bool rc = false;
+            if (arm) {
+                float timeout_sec = 10;
+                waitForHomeLocation(timeout_sec);
+                waitForStableGroundPosition(timeout_sec);
+            }
+
+            mav_vehicle_->armDisarm(arm).wait(10000, &rc);
+            return rc;
+        }
+
+        void onArmed() {
+            if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
+                auto con = mav_vehicle_->getConnection();
+                if (con != nullptr) {
+                    if (log_ != nullptr) {
+                        log_->close();
+                        log_ = nullptr;
+                    }
+
+                    try
+                    {
+                        std::time_t t = std::time(0);   // get time now
+                        std::tm* now = std::localtime(&t);
+                        auto folder = Utils::stringf("%04d-%02d-%02d", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
+                        auto path = common_utils::FileSystem::ensureFolder(connection_info_.logs, folder);
+                        auto filename = Utils::stringf("%02d-%02d-%02d.mavlink", now->tm_hour, now->tm_min, now->tm_sec);
+                        auto fullpath = common_utils::FileSystem::combine(path, filename);
+                        addStatusMessage(Utils::stringf("Opening log file: %s", fullpath.c_str()));
+                        log_file_name_ = fullpath;
+                        log_ = std::make_shared<mavlinkcom::MavLinkFileLog>();
+                        log_->openForWriting(fullpath, false);
+                        con->startLoggingSendMessage(log_);
+                        con->startLoggingReceiveMessage(log_);
+                        if (con != connection_) {
+                            // log the SITL channel also
+                            connection_->startLoggingSendMessage(log_);
+                            connection_->startLoggingReceiveMessage(log_);
+                        }
+                        start_telemtry_thread();
+                    }
+                    catch (std::exception& ex) {
+                        addStatusMessage(std::string("Opening log file failed: ") + ex.what());
+                    }
                 }
             }
         }
-    }
 
-    void onDisarmed() {
-        if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
-            auto con = mav_vehicle_->getConnection();
-            if (con != nullptr) {
-                con->stopLoggingSendMessage();
-                addStatusMessage("Closing log file.");
+        void onDisarmed() {
+            if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
+                auto con = mav_vehicle_->getConnection();
+                if (con != nullptr) {
+                    con->stopLoggingSendMessage();
+                    addStatusMessage(Utils::stringf("Closing log file: %s", log_file_name_.c_str()));
+                }
+                connection_->stopLoggingSendMessage();
             }
-            connection_->stopLoggingSendMessage();
             if (log_ != nullptr) {
                 log_->close();
+                log_ = nullptr;
             }
         }
-    }
 
-    void waitForHomeLocation(float timeout_sec)
-    {
-        if (!current_state_.home.is_set) {
-            addStatusMessage("Waiting for valid GPS home location...");
-            if (!waitForFunction([&]() {
-                return current_state_.home.is_set;
-                }, timeout_sec).isComplete()) {
-                throw VehicleMoveException("Vehicle does not have a valid GPS home location");
+        void waitForHomeLocation(float timeout_sec)
+        {
+            if (!current_state_.home.is_set) {
+                addStatusMessage("Waiting for valid GPS home location...");
+                if (!waitForFunction([&]() {
+                    return current_state_.home.is_set;
+                    }, timeout_sec).isComplete()) {
+                    throw VehicleMoveException("Vehicle does not have a valid GPS home location");
+                }
             }
         }
-    }
 
-    void waitForStableGroundPosition(float timeout_sec)
-    {
-        // wait for ground stabilization
-        if (ground_variance_ > GroundTolerance) {
-            addStatusMessage("Waiting for z-position to stabilize...");
-            if (!waitForFunction([&]() {
-                return ground_variance_ <= GroundTolerance;
-                }, timeout_sec).isComplete())
-            {
-                auto msg = Utils::stringf("Ground is not stable, variance is %f", ground_variance_);
-                throw VehicleMoveException(msg);
+        void waitForStableGroundPosition(float timeout_sec)
+        {
+            // wait for ground stabilization
+            if (ground_variance_ > GroundTolerance) {
+                addStatusMessage("Waiting for z-position to stabilize...");
+                if (!waitForFunction([&]() {
+                    return ground_variance_ <= GroundTolerance;
+                    }, timeout_sec).isComplete())
+                {
+                    auto msg = Utils::stringf("Ground is not stable, variance is %f", ground_variance_);
+                    throw VehicleMoveException(msg);
+                }
             }
         }
-    }
 
-    virtual bool takeoff(float timeout_sec) override
-    {
-        SingleCall lock(this);
+        virtual bool takeoff(float timeout_sec) override
+        {
+            SingleCall lock(this);
 
-        checkValidVehicle();
+            checkValidVehicle();
 
-        waitForHomeLocation(timeout_sec);
-        waitForStableGroundPosition(timeout_sec);
+            waitForHomeLocation(timeout_sec);
+            waitForStableGroundPosition(timeout_sec);
 
-        bool rc = false;
-        auto vec = getPosition();
-        auto yaw = current_state_.attitude.yaw;
-        float z = vec.z() + getTakeoffZ();
-        if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, yaw).wait(static_cast<int>(timeout_sec * 1000), &rc)) {
-            throw VehicleMoveException("TakeOff command - timeout waiting for response");
-        }
-        if (!rc) {
-            throw VehicleMoveException("TakeOff command rejected by drone");
-        }
-        if (timeout_sec <= 0)
-            return true; // client doesn't want to wait.
-
-        return waitForZ(timeout_sec, z, getDistanceAccuracy());
-    }
-
-    virtual bool land(float timeout_sec) override
-    {
-        SingleCall lock(this);
-
-        //TODO: bugbug: really need a downward pointing distance to ground sensor to do this properly, for now
-        //we assume the ground is relatively flat an we are landing roughly at the home altitude.
-        updateState();
-        checkValidVehicle();
-        if (current_state_.home.is_set) {
             bool rc = false;
-            if (!mav_vehicle_->land(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.home.global_pos.alt).wait(10000, &rc))
-            {
-                throw VehicleMoveException("Landing command - timeout waiting for response from drone");
+            auto vec = getPosition();
+            auto yaw = current_state_.attitude.yaw;
+            float z = vec.z() + getTakeoffZ();
+            if (!mav_vehicle_->takeoff(z, 0.0f /* pitch */, yaw).wait(static_cast<int>(timeout_sec * 1000), &rc)) {
+                throw VehicleMoveException("TakeOff command - timeout waiting for response");
             }
-            else if (!rc) {
-                throw VehicleMoveException("Landing command rejected by drone");
+            if (!rc) {
+                throw VehicleMoveException("TakeOff command rejected by drone");
             }
-        }
-        else {
-            throw VehicleMoveException("Cannot land safely with out a home position that tells us the home altitude.  Could fix this if we hook up a distance to ground sensor...");
+            if (timeout_sec <= 0)
+                return true; // client doesn't want to wait.
+
+            return waitForZ(timeout_sec, z, getDistanceAccuracy());
         }
 
-        const auto& waiter = waitForFunction([&]() {
+        virtual bool land(float timeout_sec) override
+        {
+            SingleCall lock(this);
+
+            //TODO: bugbug: really need a downward pointing distance to ground sensor to do this properly, for now
+            //we assume the ground is relatively flat an we are landing roughly at the home altitude.
             updateState();
-            return current_state_.controls.landed;
-            }, timeout_sec);
-
-        // Wait for landed state (or user cancellation)
-        if (!waiter.isComplete())
-        {
-            throw VehicleMoveException("Drone hasn't reported a landing state");
-        }
-        return waiter.isComplete();
-    }
-
-    virtual bool goHome(float timeout_sec) override
-    {
-        SingleCall lock(this);
-
-        checkValidVehicle();
-        bool rc = false;
-        if (mav_vehicle_ != nullptr && !mav_vehicle_->returnToHome().wait(
-            static_cast<int>(timeout_sec) * 1000, &rc)) {
-            throw VehicleMoveException("goHome - timeout waiting for response from drone");
-        }
-        return rc;
-    }
-
-    virtual bool moveToPosition(float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
-        const YawMode& yaw_mode, float lookahead, float adaptive_lookahead) override
-    {
-        SingleTaskCall lock(this);
-
-        unused(adaptive_lookahead);
-        unused(lookahead);
-        unused(drivetrain);
-
-        // save current manual, cruise, and max velocity parameters
-        bool result = false;
-        mavlinkcom::MavLinkParameter manual_velocity_parameter, cruise_velocity_parameter, max_velocity_parameter;
-        result = mav_vehicle_->getParameter("MPC_VEL_MANUAL").wait(1000, &manual_velocity_parameter);
-        result = result && mav_vehicle_->getParameter("MPC_XY_CRUISE").wait(1000, &cruise_velocity_parameter);
-        result = result && mav_vehicle_->getParameter("MPC_XY_VEL_MAX").wait(1000, &max_velocity_parameter);
-
-        if (result) {
-            // set max velocity parameter
-            mavlinkcom::MavLinkParameter p;
-            p.name = "MPC_XY_VEL_MAX";
-            p.value = velocity;
-            mav_vehicle_->setParameter(p).wait(1000, &result);
-
-            if (result) {
-                const Vector3r& goal_pos = Vector3r(x, y, z);
-                Vector3r goal_dist_vect;
-                float goal_dist;
-
-                Waiter waiter(getCommandPeriod(), timeout_sec, getCancelToken());
-
-                while (!waiter.isComplete()) {
-                    goal_dist_vect = getPosition() - goal_pos;
-                    const Vector3r& goal_normalized = goal_dist_vect.normalized();
-                    goal_dist = goal_dist_vect.dot(goal_normalized);
-
-                    if (goal_dist > getDistanceAccuracy()) {
-                        moveToPositionInternal(goal_pos, yaw_mode);
-
-                        //sleep for rest of the cycle
-                        if (!waiter.sleep())
-                            return false;
-                    }
-                    else {
-                        waiter.complete();
-                    }
+            checkValidVehicle();
+            if (current_state_.home.is_set) {
+                bool rc = false;
+                if (!mav_vehicle_->land(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.home.global_pos.alt).wait(10000, &rc))
+                {
+                    throw VehicleMoveException("Landing command - timeout waiting for response from drone");
                 }
-
-                // reset manual, cruise, and max velocity parameters
-                bool result_temp = false;
-                mav_vehicle_->setParameter(manual_velocity_parameter).wait(1000, &result);
-                mav_vehicle_->setParameter(cruise_velocity_parameter).wait(1000, &result_temp);
-                result = result && result_temp;
-                mav_vehicle_->setParameter(max_velocity_parameter).wait(1000, &result_temp);
-                result = result && result_temp;
-
-                return result && waiter.isComplete();
-            }
-        }
-
-        return result;
-    }
-
-    virtual bool hover() override
-    {
-        SingleCall lock(this);
-
-        bool rc = false;
-        checkValidVehicle();
-        mavlinkcom::AsyncResult<bool> result = mav_vehicle_->loiter();
-        //auto start_time = std::chrono::system_clock::now();
-        while (!getCancelToken().isCancelled())
-        {
-            if (result.wait(100, &rc))
-            {
-                break;
-            }
-        }
-        return rc;
-    }
-
-    virtual GeoPoint getHomeGeoPoint() const override
-    {
-        updateState();
-        if (current_state_.home.is_set)
-            return GeoPoint(current_state_.home.global_pos.lat, current_state_.home.global_pos.lon, current_state_.home.global_pos.alt);
-        else
-            return GeoPoint(Utils::nan<double>(), Utils::nan<double>(), Utils::nan<float>());
-    }
-
-    virtual GeoPoint getGpsLocation() const override
-    {
-        updateState();
-        return GeoPoint(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.global_est.pos.alt);
-    }
-
-    virtual void sendTelemetry(float last_interval = -1) override
-    {
-        if ((logviewer_proxy_ == nullptr && log_ == nullptr) || connection_ == nullptr || mav_vehicle_ == nullptr) {
-            return;
-        }
-        mavlinkcom::MavLinkTelemetry data;
-        connection_->getTelemetry(data);
-        if (data.messagesReceived == 0) {
-            if (!hil_message_timer_.started()) {
-                hil_message_timer_.start();
-            }
-            else if (hil_message_timer_.seconds() > messageReceivedTimeout) {
-                addStatusMessage("not receiving any messages from HIL, please restart your HIL node and try again");
-            }
-        }
-        else {
-            hil_message_timer_.stop();
-        }
-
-        // listen to the other mavlink connection also
-        auto mavcon = mav_vehicle_->getConnection();
-        if (mavcon != connection_) {
-            mavlinkcom::MavLinkTelemetry gcs;
-            mavcon->getTelemetry(gcs);
-
-            data.handlerMicroseconds += gcs.handlerMicroseconds;
-            data.messagesHandled += gcs.messagesHandled;
-            data.messagesReceived += gcs.messagesReceived;
-            data.messagesSent += gcs.messagesSent;
-
-            if (gcs.messagesReceived == 0)
-            {
-                if (!gcs_message_timer_.started()) {
-                    gcs_message_timer_.start();
-                }
-                else if (gcs_message_timer_.seconds() > messageReceivedTimeout) {
-                    addStatusMessage("not receiving any messages from GCS port, please restart your SITL node and try again");
+                else if (!rc) {
+                    throw VehicleMoveException("Landing command rejected by drone");
                 }
             }
             else {
-                gcs_message_timer_.stop();
+                throw VehicleMoveException("Cannot land safely with out a home position that tells us the home altitude.  Could fix this if we hook up a distance to ground sensor...");
+            }
+
+            const auto& waiter = waitForFunction([&]() {
+                updateState();
+                return current_state_.controls.landed;
+                }, timeout_sec);
+
+            // Wait for landed state (or user cancellation)
+            if (!waiter.isComplete())
+            {
+                throw VehicleMoveException("Drone hasn't reported a landing state");
+            }
+            return waiter.isComplete();
+        }
+
+        virtual bool goHome(float timeout_sec) override
+        {
+            SingleCall lock(this);
+
+            checkValidVehicle();
+            bool rc = false;
+            if (mav_vehicle_ != nullptr && !mav_vehicle_->returnToHome().wait(
+                static_cast<int>(timeout_sec) * 1000, &rc)) {
+                throw VehicleMoveException("goHome - timeout waiting for response from drone");
+            }
+            return rc;
+        }
+
+        virtual bool moveToPosition(float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
+            const YawMode& yaw_mode, float lookahead, float adaptive_lookahead) override
+        {
+            SingleTaskCall lock(this);
+
+            unused(adaptive_lookahead);
+            unused(lookahead);
+            unused(drivetrain);
+
+            // save current manual, cruise, and max velocity parameters
+            bool result = false;
+            mavlinkcom::MavLinkParameter manual_velocity_parameter, cruise_velocity_parameter, max_velocity_parameter;
+            result = mav_vehicle_->getParameter("MPC_VEL_MANUAL").wait(1000, &manual_velocity_parameter);
+            result = result && mav_vehicle_->getParameter("MPC_XY_CRUISE").wait(1000, &cruise_velocity_parameter);
+            result = result && mav_vehicle_->getParameter("MPC_XY_VEL_MAX").wait(1000, &max_velocity_parameter);
+
+            if (result) {
+                // set max velocity parameter
+                mavlinkcom::MavLinkParameter p;
+                p.name = "MPC_XY_VEL_MAX";
+                p.value = velocity;
+                mav_vehicle_->setParameter(p).wait(1000, &result);
+
+                if (result) {
+                    const Vector3r& goal_pos = Vector3r(x, y, z);
+                    Vector3r goal_dist_vect;
+                    float goal_dist;
+
+                    Waiter waiter(getCommandPeriod(), timeout_sec, getCancelToken());
+
+                    while (!waiter.isComplete()) {
+                        goal_dist_vect = getPosition() - goal_pos;
+                        const Vector3r& goal_normalized = goal_dist_vect.normalized();
+                        goal_dist = goal_dist_vect.dot(goal_normalized);
+
+                        if (goal_dist > getDistanceAccuracy()) {
+                            moveToPositionInternal(goal_pos, yaw_mode);
+
+                            //sleep for rest of the cycle
+                            if (!waiter.sleep())
+                                return false;
+                        }
+                        else {
+                            waiter.complete();
+                        }
+                    }
+
+                    // reset manual, cruise, and max velocity parameters
+                    bool result_temp = false;
+                    mav_vehicle_->setParameter(manual_velocity_parameter).wait(1000, &result);
+                    mav_vehicle_->setParameter(cruise_velocity_parameter).wait(1000, &result_temp);
+                    result = result && result_temp;
+                    mav_vehicle_->setParameter(max_velocity_parameter).wait(1000, &result_temp);
+                    result = result && result_temp;
+
+                    return result && waiter.isComplete();
+                }
+            }
+
+            return result;
+        }
+
+        virtual bool hover() override
+        {
+            SingleCall lock(this);
+
+            bool rc = false;
+            checkValidVehicle();
+            mavlinkcom::AsyncResult<bool> result = mav_vehicle_->loiter();
+            //auto start_time = std::chrono::system_clock::now();
+            while (!getCancelToken().isCancelled())
+            {
+                if (result.wait(100, &rc))
+                {
+                    break;
+                }
+            }
+            return rc;
+        }
+
+        virtual GeoPoint getHomeGeoPoint() const override
+        {
+            updateState();
+            if (current_state_.home.is_set)
+                return GeoPoint(current_state_.home.global_pos.lat, current_state_.home.global_pos.lon, current_state_.home.global_pos.alt);
+            else
+                return GeoPoint(Utils::nan<double>(), Utils::nan<double>(), Utils::nan<float>());
+        }
+
+        virtual GeoPoint getGpsLocation() const override
+        {
+            updateState();
+            return GeoPoint(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.global_est.pos.alt);
+        }
+
+        virtual void sendTelemetry(float last_interval = -1) override
+        {
+            if (connection_ == nullptr || mav_vehicle_ == nullptr) {
+                return;
+            }
+            mavlinkcom::MavLinkTelemetry data;
+            connection_->getTelemetry(data);
+            if (data.messages_received == 0) {
+                if (!hil_message_timer_.started()) {
+                    hil_message_timer_.start();
+                }
+                else if (hil_message_timer_.seconds() > messageReceivedTimeout) {
+                    addStatusMessage("not receiving any messages from HIL, please restart your HIL node and try again");
+                }
+            }
+            else {
+                hil_message_timer_.stop();
+            }
+
+            if ((logviewer_proxy_ == nullptr && log_ == nullptr)) {
+                return;
+            }
+
+            // listen to the other mavlink connection also
+            auto mavcon = mav_vehicle_->getConnection();
+            if (mavcon != connection_) {
+                mavlinkcom::MavLinkTelemetry gcs;
+                mavcon->getTelemetry(gcs);
+
+                data.handler_microseconds += gcs.handler_microseconds;
+                data.messages_handled += gcs.messages_handled;
+                data.messages_received += gcs.messages_received;
+                data.messages_sent += gcs.messages_sent;
+
+                if (gcs.messages_received == 0)
+                {
+                    if (!gcs_message_timer_.started()) {
+                        gcs_message_timer_.start();
+                    }
+                    else if (gcs_message_timer_.seconds() > messageReceivedTimeout) {
+                        addStatusMessage("not receiving any messages from GCS port, please restart your SITL node and try again");
+                    }
+                }
+                else {
+                    gcs_message_timer_.stop();
+                }
+            }
+
+            data.render_time = static_cast<int64_t>(last_interval * 1000000);// microseconds
+            data.udpate_rate = update_count_;
+            data.sensor_rate = hil_sensor_count_;
+            data.actuation_delay = actuator_delay_;
+            data.lock_step_resets = lock_step_resets_;
+
+            // reset the counters we just captured.
+            update_count_ = 0;
+            hil_sensor_count_ = 0;
+            actuator_delay_ = 0;
+
+            if (logviewer_proxy_ != nullptr) {
+                logviewer_proxy_->sendMessage(data);
+            }
+
+            if (log_ != nullptr) {
+                mavlinkcom::MavLinkMessage msg;
+                msg.magic = MAVLINK_STX_MAVLINK1;
+                data.encode(msg);
+                msg.update_checksum();
+                // disk I/O is unpredictable, so we have to get it out of the update loop
+                // which is why this thread exists.
+                log_->write(msg);
             }
         }
 
-        data.renderTime = static_cast<int64_t>(last_interval * 1000000);// microseconds
-        data.udpateRateHz = update_rate_;
+    void start_telemtry_thread() {
 
-        if (logviewer_proxy_ != nullptr) {
-            logviewer_proxy_->sendMessage(data);
+        if (this->telemetry_thread_.joinable())
+        {
+            this->telemetry_thread_.join();
         }
 
-        if (log_ != nullptr) {
-            mavlinkcom::MavLinkMessage msg;
-            msg.magic = MAVLINK_STX_MAVLINK1;
-            data.encode(msg);
-            msg.update_checksum();
-            log_->write(msg);
+        // reset the counters we use for telemetry.
+        update_count_ = 0;
+        hil_sensor_count_ = 0;
+        actuator_delay_ = 0;
+
+        this->telemetry_thread_ = std::thread(&MavLinkMultirotorApi::telemtry_thread, this);
+    }
+
+    void telemtry_thread() {
+        while (log_ != nullptr) {
+
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+
+            Utils::log(Utils::stringf("sending telemetry, update_count_ is %d...", update_count_));
+            sendTelemetry(1);
         }
     }
 
@@ -782,6 +816,13 @@ protected: //methods
         addStatusMessage("Disconnecting mavlink vehicle");
         connected_ = false;
         connecting_ = false;
+
+        if (is_armed_) {
+            // close the telemetry log.
+            is_armed_ = false;
+            onDisarmed();
+        }
+
         if (connection_ != nullptr) {
             if (is_hil_mode_set_ && mav_vehicle_ != nullptr) {
                 setNormalMode();
@@ -1470,6 +1511,24 @@ private: //methods
         }
     }
 
+    void handleLockStep() {
+        received_actuator_controls_ = true;
+        // if the timestamps match then it means we are in lockstep mode.
+        if (!lock_step_enabled_) {
+            // && (HilActuatorControlsMessage.flags & 0x1))    // todo: enable this check when this flag is widely available...
+            if (last_hil_sensor_time_ == HilActuatorControlsMessage.time_usec) {
+                addStatusMessage("Enabling lockstep mode");
+                lock_step_enabled_ = true;
+            }
+        }
+        else
+        {
+            auto now = clock()->nowNanos() / 1000;
+            auto delay = static_cast<uint32_t>(now - last_update_time_);
+            actuator_delay_ += delay;
+        }
+    }
+
     void processMavMessages(const mavlinkcom::MavLinkMessage& msg)
     {
         if (msg.msgid == HeartbeatMessage.msgid) {
@@ -1523,7 +1582,7 @@ private: //methods
                 rotor_controls_[7] = HilControlsMessage.aux4;
 
                 normalizeRotorControls();
-                received_actuator_controls_ = true;
+                handleLockStep();
             }
         }
         else if (msg.msgid == HilActuatorControlsMessage.msgid) {
@@ -1544,15 +1603,8 @@ private: //methods
             if (isarmed) {
                 normalizeRotorControls();
             }
-            received_actuator_controls_ = true;
-            // if the timestamps match then it means we are in lockstep mode.
-            if (!lock_step_enabled_) {
-                // && (HilActuatorControlsMessage.flags & 0x1))    // todo: enable this check when this flag is widely available...
-                if (getSimTime() == HilActuatorControlsMessage.time_usec) {
-                    addStatusMessage("Enabling lockstep mode");
-                    lock_step_enabled_ = true;
-                }
-            }
+            
+            handleLockStep();
         }
         else if (msg.msgid == MavLinkGpsRawInt.msgid) {
             MavLinkGpsRawInt.decode(msg);
@@ -1607,7 +1659,7 @@ private: //methods
             throw std::logic_error("Attempt to send simulated sensor messages while not in simulation mode");
         
         mavlinkcom::MavLinkHilSensor hil_sensor;
-        hil_sensor.time_usec = getSimTime();
+        hil_sensor.time_usec = last_hil_sensor_time_ = getSimTime();
 
         hil_sensor.xacc = acceleration.x();
         hil_sensor.yacc = acceleration.y();
@@ -1742,10 +1794,12 @@ private: //methods
         sim_time_us_ = 0;
         last_sys_time_ = 0;
         last_gps_time_ = 0;
+        last_update_time_ = 0;
         last_hil_sensor_time_ = 0;
-        update_rate_ = 0;
         update_count_ = 0;
-        last_fps_time_ = 0;
+        hil_sensor_count_ = 0;
+        lock_step_resets_ = 0;
+        actuator_delay_ = 0;
         is_api_control_enabled_ = false;
         thrust_controller_ = PidController();
         Utils::setValue(rotor_controls_, 0.0f);
@@ -1842,15 +1896,18 @@ private: //variables
     const double GroundTolerance = 0.1;
 
     // variables for throttling HIL_SENSOR and SYSTEM_TIME messages
-    const int DEFAULT_SIM_RATE = 250; // Hz.
-    const unsigned long ticks_per_update_ = 1000000 / DEFAULT_SIM_RATE; // microseconds
     uint32_t last_sys_time_ = 0;
     unsigned long long sim_time_us_ = 0;
     uint64_t last_gps_time_ = 0;
+    uint64_t last_update_time_ = 0;
     uint64_t last_hil_sensor_time_ = 0;
-    uint64_t last_fps_time_ = 0;
+
+    // variables accumulated for MavLinkTelemetry messages.
     uint32_t update_count_ = 0;
-    uint32_t update_rate_ = 0;
+    uint32_t hil_sensor_count_ = 0;
+    uint32_t lock_step_resets_ = 0;
+    uint32_t actuator_delay_ = 0;
+    std::thread telemetry_thread_;
 
     //additional variables required for MultirotorApiBase implementation
     //this is optional for methods that might not use vehicle commands
@@ -1861,6 +1918,7 @@ private: //variables
     common_utils::Timer hil_message_timer_;
     common_utils::Timer gcs_message_timer_;
     std::shared_ptr<mavlinkcom::MavLinkFileLog> log_;
+    std::string log_file_name_;
 
     //every time we return status update, we need to check if we have new data
     //this is why below two variables are marked as mutable

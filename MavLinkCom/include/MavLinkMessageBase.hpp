@@ -135,16 +135,19 @@ namespace mavlinkcom
     class MavLinkTelemetry : public MavLinkMessageBase {
     public:
         const static uint8_t kMessageId = 204; // in the user range 180-229.
-        const static int MessageLength = 8 * 4;
+        const static int MessageLength = 11 * 4;
         MavLinkTelemetry() { msgid = kMessageId; }
-        uint32_t messagesSent = 0;		  // number of messages sent since the last telemetry message
-        uint32_t messagesReceived = 0;	  // number of messages received since the last telemetry message
-        uint32_t messagesHandled = 0;	  // number of messages handled since the last telemetry message
-        uint32_t crcErrors = 0;			  // # crc errors detected in mavlink stream since the last telemetry message
-        uint32_t handlerMicroseconds = 0; // total time spent in the handlers in microseconds since the last telemetry message
-        uint32_t renderTime = 0;          // total time spent rendering frames since the last telemetry message
-        int32_t wifiRssi = 0;             // if this device is communicating over wifi this is the signal strength.
-        uint32_t udpateRateHz = 0;        // HIL_SENSOR update rate in hertz
+        uint32_t messages_sent = 0;		   // number of messages sent since the last telemetry message
+        uint32_t messages_received = 0;	   // number of messages received since the last telemetry message
+        uint32_t messages_handled = 0;	   // number of messages handled since the last telemetry message
+        uint32_t crc_errors = 0;		   // # crc errors detected in mavlink stream since the last telemetry message
+        uint32_t handler_microseconds = 0; // total time spent in the handlers in microseconds since the last telemetry message
+        uint32_t render_time = 0;          // total time spent rendering frames since the last telemetry message
+        int32_t wifi_rssi = 0;             // if this device is communicating over wifi this is the signal strength.
+        uint32_t udpate_rate = 0;          // rate at which update() is being called on MavLinkMultiRotorApi
+        uint32_t actuation_delay = 0;      // delay from HIL_SENSOR to HIL_ACTUATORCONTROLS response
+        uint32_t sensor_rate = 0;          // rate we are sending HIL_SENSOR messages
+        uint32_t lock_step_resets = 0;     // total number of lock_step resets
  
         // not serialized
         const char* wifiInterfaceName = nullptr; // the name of the wifi interface we are measuring RSSI on.
@@ -152,14 +155,17 @@ namespace mavlinkcom
 
             std::ostringstream result;
             result << "\"MavLinkTelemetry\"" << " : { ";
-            result << "\"messagesSent\":" << this->messagesSent << ",";
-            result << "\"messagesReceived\":" << this->messagesReceived << ",";
-            result << "\"messagesHandled\":" << this->messagesHandled << ",";
-            result << "\"crcErrors\":" << this->crcErrors << ",";
-            result << "\"handlerMicroseconds\":" << this->handlerMicroseconds << ",";
-            result << "\"renderTime\":" << this->renderTime;
-            result << "\"wifiRssi\":" << this->wifiRssi;
-            result << "\"udpateRateHz\":" << this->udpateRateHz;
+            result << "\"messages_sent\":" << this->messages_sent << ",";
+            result << "\"messages_received\":" << this->messages_received << ",";
+            result << "\"messages_handled\":" << this->messages_handled << ",";
+            result << "\"crc_errors\":" << this->crc_errors << ",";
+            result << "\"handler_microseconds\":" << this->handler_microseconds << ",";
+            result << "\"render_time\":" << this->render_time;
+            result << "\"wifi_rssi\":" << this->wifi_rssi;
+            result << "\"udpate_rate\":" << this->udpate_rate;
+            result << "\"actuation_delay\":" << this->actuation_delay;
+            result << "\"sensor_rate\":" << this->sensor_rate;
+            result << "\"lock_step_resets\":" << this->lock_step_resets;
             result << "}";
             return result.str();
         }
