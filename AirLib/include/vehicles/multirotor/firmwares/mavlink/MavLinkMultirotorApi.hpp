@@ -632,7 +632,7 @@ namespace msr { namespace airlib {
                 std::lock_guard<std::mutex> guard(telemetry_mutex_);
                 data.udpate_rate = update_count_;
                 data.sensor_rate = hil_sensor_count_;
-                data.actuation_delay = actuator_delay_;
+                data.actuation_delay = hil_sensor_count_ == 0 ? actuator_delay_ : actuator_delay_  / hil_sensor_count_;
                 data.lock_step_resets = lock_step_resets_;
                 // reset the counters we just captured.
                 update_count_ = 0;
