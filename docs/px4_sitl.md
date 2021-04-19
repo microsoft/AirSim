@@ -71,9 +71,7 @@ The default ports have changed recently, so check them closely to make sure AirS
         }
     }
     ```
-    Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`. The
-    "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
-    noise generation.  This setting clamps that down a bit.
+    Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
 
 6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
    a bunch of messages from the SITL PX4 window. Specifically, the following messages tell you that
@@ -202,4 +200,4 @@ LocalIpAddress to the address of your host machine running the Unreal engine.
 ## Remote Controller
 
 There are several options for flying the simulated drone using a remote control or joystick like
-xbox gamepad. See [remote controllers](remote_control.md#RC_Setup_for_PX4)
+xbox gamepad. See [remote controllers](remote_control.md#rc-setup-for-px4)
