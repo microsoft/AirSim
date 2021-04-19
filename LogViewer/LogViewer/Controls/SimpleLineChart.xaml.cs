@@ -687,9 +687,8 @@ namespace LogViewer.Controls
                 this.Stroke = new SolidColorBrush(value);
 
                 HlsColor darker = new HlsColor(value);
-                darker.Darken(0.33f);
+                darker.Darken(0.25f);
                 PointerBorder.BorderBrush = Pointer.Fill = PointerLabel.Foreground = new SolidColorBrush(darker.Color);
-
             }
         }
 

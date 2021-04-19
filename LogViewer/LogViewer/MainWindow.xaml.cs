@@ -989,7 +989,7 @@ namespace LogViewer
 
         Color GetRandomColor()
         {
-            return new HlsColor((float)(rand.NextDouble() * 360), 0.7f, 0.95f).Color;
+            return new HlsColor((float)(rand.NextDouble() * 360), 0.85f, 0.85f).Color;
         }
 
         Random rand = new Random();
