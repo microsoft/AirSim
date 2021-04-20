@@ -588,8 +588,7 @@ or
    e.g.
    <code>\\wsl$\Ubuntu-18.04</code></p>
 <h4 id="how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl">How to run Airsim on Windows and ROS wrapper on WSL<a class="headerlink" href="#how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl" title="Permanent link">#</a></h4>
-<p>You need to have the same setting.json content for the simulator and WSL (e.g., in each Documents\Airsim folder).
-For WSL 1 execute:<br />
+<p>For WSL 1 execute:<br />
 <code>export WSL_HOST_IP=127.0.0.1</code><br />
 and for WSL 2:<br />
 <code>export WSL_HOST_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')</code><br />
