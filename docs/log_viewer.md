@@ -25,3 +25,6 @@ If you can't build the LogViewer.sln, there is also a [click once installer](htt
 
 The magic port number 14388 can be configured in the simulator by editing the [settings.json file](settings.md).
 
+### Debugging
+
+See [PX4 Logging](px4_logging.md) for more information on how to use the LogViewer to debug situations you are setting.
