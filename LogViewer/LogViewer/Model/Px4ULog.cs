@@ -929,13 +929,13 @@ namespace LogViewer.Model.ULog
 
         private void CreateSchema()
         {
-            LogItemSchema schema = new LogItemSchema() { Name = "Px4ULog", Type = "Root", ChildItems = new List<Model.LogItemSchema>() };
+            LogItemSchema schema = new LogItemSchema() { Name = "Px4ULog", Type = "Root" };
             // only need to show formats that we actually have subscriptions on.
             foreach (var sub in this.subscriptions.Values)
             {
                 // we can have "multi_id" subscriptions on the same format.
                 var element = CreateSchemaItem(sub, sub.format);
-                schema.ChildItems.Add(element);
+                schema.AddChild(element);
             }
 
             this.schema = schema;
@@ -943,31 +943,29 @@ namespace LogViewer.Model.ULog
 
         LogItemSchema CreateSchemaItem(MessageSubscription sub, MessageFormat fmt)
         {
-            LogItemSchema element = new LogItemSchema() { Name = fmt.name, Parent = schema, Id = sub.id };
+            LogItemSchema element = new LogItemSchema() { Name = fmt.name, Id = sub.id };
             foreach (var f in fmt.fields)
             {
-                LogItemSchema column = new LogItemSchema() { Name = f.name, Parent = element, Type = f.typeName + (f.arraySize > 0 ? "[" + f.arraySize + "]" : ""), Id = sub.id };
+                LogItemSchema column = new LogItemSchema() { Name = f.name, Type = f.typeName + (f.arraySize > 0 ? "[" + f.arraySize + "]" : ""), Id = sub.id };
                 if (f.type == FieldType.Struct)
                 {
                     // nested
                     var child = CreateSchemaItem(sub, f.structType);
-                    column.ChildItems = child.ChildItems;
+                    foreach (var item in child.CopyChildren())
+                    {
+                        column.AddChild(item);
+                    }
                 }
                 else if (f.arraySize > 0)
                 {
-                    List<LogItemSchema> arrayItems = new List<LogItemSchema>();
+                    column.IsArray = true;
                     // break out the elements of the array as separate items.
                     for (int i = 0; i < f.arraySize; i++)
                     {
-                        arrayItems.Add(new LogItemSchema() { Name = i.ToString(), Parent = column, Type = f.typeName, Id = sub.id });
+                        column.AddChild(new LogItemSchema() { Name = i.ToString(), Type = f.typeName, Id = sub.id });
                     }
-                    column.ChildItems = arrayItems;
                 }
-                if (element.ChildItems == null)
-                {
-                    element.ChildItems = new List<Model.LogItemSchema>();
-                }
-                element.ChildItems.Add(column);
+                element.AddChild(column);
             }
             return element;
         }

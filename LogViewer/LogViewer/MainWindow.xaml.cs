@@ -645,6 +645,7 @@ namespace LogViewer
                 {
                     schema = currentFlightLog.Schema;
                 }
+
                 foreach (var log in this.logs)
                 {
                     var s = log.Schema;
@@ -657,13 +658,13 @@ namespace LogViewer
                         schema.Combine(s);
                     }
                 }
-                if (schema == null || schema.ChildItems == null || schema.ChildItems.Count == 0)
+                if (schema == null || !schema.HasChildren)
                 {
                     CategoryList.ItemsSource = null;
                 }
                 else 
                 {
-                    List<LogItemSchema> list = new List<Model.LogItemSchema>(schema.ChildItems);
+                    List<LogItemSchema> list = schema.CopyChildren();
                     list.Sort((a, b) => { return string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase); });
                     CategoryList.ItemsSource = list;
                 }
@@ -683,7 +684,7 @@ namespace LogViewer
             if (e.AddedItems != null && e.AddedItems.Count > 0)
             {
                 LogItemSchema item = (LogItemSchema)e.AddedItems[0];
-                if (sender == CategoryList && item.ChildItems != null)
+                if (sender == CategoryList && item.HasChildren)
                 {
                     ListViewItem listItem = CategoryList.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
                     if (listItem != null)
@@ -693,7 +694,7 @@ namespace LogViewer
                         expander.IsExpanded = true;
                     }
                 }
-                else if (item.ChildItems == null || item.ChildItems.Count == 0)
+                else if (!item.HasChildren)
                 {
                     if (item.Parent == null)
                     {
@@ -705,7 +706,7 @@ namespace LogViewer
             if (e.RemovedItems != null && e.RemovedItems.Count > 0)
             {
                 LogItemSchema item = (LogItemSchema)e.RemovedItems[0];
-                if (sender == CategoryList && item.ChildItems != null)
+                if (sender == CategoryList && item.HasChildren)
                 {
                     ListViewItem listItem = CategoryList.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
                     if (listItem != null)
@@ -1459,7 +1460,7 @@ namespace LogViewer
                     // todo: show sensor data pruned to this flight time...
                     foreach (LogItemSchema item in CategoryList.SelectedItems)
                     {
-                        if (item.ChildItems == null || item.ChildItems.Count == 0)
+                        if (!item.HasChildren)
                         {
                             GraphItem(item);
                         }
@@ -1480,10 +1481,15 @@ namespace LogViewer
         {
             Expander expander = (Expander)sender;
             ListView childView = expander.Content as ListView;
-            if (childView != null)
+            if (childView != null && childView.ItemsSource == null)
             {
                 LogItemSchema item = (LogItemSchema)expander.DataContext;
-                childView.ItemsSource = item.ChildItems;
+                List<LogItemSchema> list = item.CopyChildren();
+                if (!item.IsArray)
+                {
+                    list.Sort((a, b) => { return string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase); });
+                }
+                childView.ItemsSource = list;
             }
         }
 

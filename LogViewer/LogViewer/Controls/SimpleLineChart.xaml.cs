@@ -44,6 +44,11 @@ namespace LogViewer.Controls
             minY = Math.Min(minY, y);
             maxY = Math.Max(maxY, y);
         }
+
+        public override string ToString()
+        {
+            return string.Format("X: {0}, {1}, Y: {2}, {3}", minX, maxX, minY, maxY);
+        }
     }
 
     public static class SimpleLineChartCommands
@@ -133,14 +138,18 @@ namespace LogViewer.Controls
             get { return liveScrolling; }
             set
             {
-                liveScrolling = value;
-                if (value)
+                if (value != liveScrolling)
                 {
-                    StartUpdateTimer();
-                }
-                else
-                {
-                    StopUpdateTimer();
+                    liveScrolling = value;
+                    if (value)
+                    {
+                        TrimToLiveScroll();
+                        StartUpdateTimer();
+                    }
+                    else
+                    {
+                        StopUpdateTimer();
+                    }
                 }
             }
         }
@@ -219,6 +228,10 @@ namespace LogViewer.Controls
 
         internal void ZoomTo(double x, double width)
         {
+            if (this.liveScrolling)
+            {
+                return;
+            }
             int i = GetIndexFromX(x);
             if (i == -1)
             {
@@ -227,7 +240,7 @@ namespace LogViewer.Controls
             }
             this.visibleStartIndex = i;
             this.visibleEndIndex = GetIndexFromX(x + width);
-            
+            this.dirty = true;
             var info = ComputeScaleSelf();
             ApplyScale(info);
 
@@ -236,10 +249,17 @@ namespace LogViewer.Controls
 
         internal void ResetZoom()
         {
+            if (this.liveScrolling)
+            {
+                return;
+            }
+            this.dirty = true;
             this.visibleStartIndex = 0;
             this.visibleEndIndex = -1;
             this.smoothScrollScaleIndex = 0;
             this.scaleSelf = new ChartScaleInfo();
+            var info = ComputeScaleSelf();
+            ApplyScale(info);
             InvalidateArrange();
         }
         
@@ -295,7 +315,7 @@ namespace LogViewer.Controls
             int startIndex = this.visibleStartIndex;
             int endIndex = this.visibleEndIndex;
 
-            if (!dirty && scaleSelf != null)
+            if (!dirty && scaleSelf != null && !this.liveScrolling)
             {
                 return scaleSelf;
             }
@@ -332,6 +352,7 @@ namespace LogViewer.Controls
                 scaleSelf.Add(x, y);
             }
             this.smoothScrollScaleIndex = endIndex;
+
             return scaleSelf;
         }
 
@@ -425,10 +446,9 @@ namespace LogViewer.Controls
             this.series.Values.Add(copy);
 
             PathGeometry g = Graph.Data as PathGeometry;
-            if (g == null)
+            if (g == null || this.dirty)
             {
                 UpdateChart();
-                return;
             }
             PathFigure f = g.Figures[0];
 
@@ -462,6 +482,40 @@ namespace LogViewer.Controls
             }
         }
 
+        private void TrimToLiveScroll()
+        {
+            double scaleX = this.liveScrollingXScale;
+
+            this.visibleEndIndex = series.Values.Count;
+            this.visibleStartIndex = this.visibleEndIndex;
+            var width = this.ActualWidth;
+
+            // find the data value that starts the chart on the left side of the scrolling window
+            // and make this the visibleStartIndex from which smooth scrolling will resume.
+            if (series.Values.Count > 0)
+            {
+                // walk back until the scaled values fill one screen width.
+                this.visibleStartIndex = this.visibleEndIndex - 1;
+                var dv = series.Values[this.visibleStartIndex];
+                double endX = dv.X * scaleX;
+
+                while (--this.visibleStartIndex > 0)
+                {
+                    dv = series.Values[this.visibleStartIndex];
+                    double startX = dv.X * scaleX;
+
+                    if (endX - startX > width)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            this.scaleSelf = null;
+            this.dirty = true;
+        }
+
+
         Size layoutSize;
 
         void UpdateChart()
@@ -471,6 +525,7 @@ namespace LogViewer.Controls
                 this.series = new DataSeries() { Name = "", Values = new List<DataValue>() };
             }
 
+            this.dirty = false;
             layoutSize = new Size(this.ActualWidth, this.ActualHeight);
             Canvas.SetLeft(Graph, 0);
             visibleCount = 0;
@@ -575,7 +630,6 @@ namespace LogViewer.Controls
                     visibleCount++;
                     if (!started)
                     {
-                        Debug.WriteLine(pt.ToString() + ",");
                         figure.StartPoint = pt;
                         started = true;
                         previousX = (int)rx;

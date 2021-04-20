@@ -174,15 +174,20 @@ namespace Microsoft.Networking.Mavlink
             return (ushort)((crcAccum >> 8) ^ (tmp << 8) ^ (tmp << 3) ^ (tmp >> 4));
         }
 
+        public static Type GetMavlinkType(uint msgid)
+        {
+            if (msgid < MAVLink.MAVLINK_MESSAGE_INFO.Length)
+            {
+                return MAVLink.MAVLINK_MESSAGE_INFO[msgid];
+            }
+            return null;
+        }
+
         public void Deserialize()
         {
             GCHandle handle = GCHandle.Alloc(this.Payload, GCHandleType.Pinned);
             IntPtr ptr = handle.AddrOfPinnedObject();
-            if ((int)this.MsgId >= MAVLink.MAVLINK_MESSAGE_INFO.Length)
-            {
-                return;
-            }
-            Type msgType = MAVLink.MAVLINK_MESSAGE_INFO[(int)this.MsgId];
+            var msgType = GetMavlinkType((uint)this.MsgId);
             if (msgType != null)
             {
                 object typed = Marshal.PtrToStructure(ptr, msgType);
@@ -226,7 +231,7 @@ namespace Microsoft.Networking.Mavlink
         {
             // plug in our custom mavlink_simulator_telemetry message
             int id = MAVLink.mavlink_telemetry.MessageId;
-            Type info = MAVLink.MAVLINK_MESSAGE_INFO[id];
+            Type info = MavLinkMessage.GetMavlinkType((uint)id);
             if (info != null && typeof(MAVLink.mavlink_telemetry) != info)
             {
                 throw new Exception("The custom messageid " + id + " is already defined, so we can't use it for mavlink_simulator_telemetry");

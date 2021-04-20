@@ -20,6 +20,7 @@ namespace LogViewer.Model
     class MavlinkLog : IDataLog
     {
         string file;
+        ulong startTicks = 0;
         DateTime startTime;
         TimeSpan duration;
         List<Message> data = new List<Message>();
@@ -52,6 +53,8 @@ namespace LogViewer.Model
         {
             get { return duration; }
         }
+
+        public ulong StartTicks { get; private set; }
 
         public IEnumerable<DataValue> GetDataValues(LogItemSchema schema, DateTime startTime, TimeSpan duration)
         {
@@ -266,16 +269,12 @@ namespace LogViewer.Model
                 this.log = log;
                 this.schema = schema;
                 this.token = token;
+                this.startTicks = log.StartTicks;
                 this.log.AddQuery(this);
             }
 
             internal void Add(Message msg)
             {
-                if (next == null)
-                {
-                    startTicks = msg.Ticks;
-                }
-
                 DataValue d = this.log.GetDataValue(schema, msg, startTicks);
                 if (d != null)
                 {
@@ -400,7 +399,7 @@ namespace LogViewer.Model
             };
 
             if (e.TypedPayload == null) {
-                Type msgType = MAVLink.MAVLINK_MESSAGE_INFO[(int)e.MsgId];
+                Type msgType = MavLinkMessage.GetMavlinkType((uint)e.MsgId);
                 if (msgType != null)
                 {
                     byte[] msgBuf = new byte[256];
@@ -627,7 +626,7 @@ namespace LogViewer.Model
                                     continue;
                                 }
 
-                                Type msgType = MAVLink.MAVLINK_MESSAGE_INFO[(int)header.MsgId];
+                                Type msgType = MavLinkMessage.GetMavlinkType((uint)header.MsgId);
                                 if (msgType != null)
                                 {
                                     // convert to proper mavlink structure.
@@ -637,7 +636,8 @@ namespace LogViewer.Model
                                 Message message = AddMessage(header);
                                 if (first)
                                 {
-                                    startTime = message.Timestamp; 
+                                    startTime = message.Timestamp;
+                                    startTicks = message.Ticks;
                                     first = false;
                                 }
                             }
@@ -672,33 +672,29 @@ namespace LogViewer.Model
                 name = name.Substring(7);
             }
 
-            LogItemSchema item = new LogItemSchema() { Name = name, Type = t.Name, ChildItems = new List<LogItemSchema>(), Parent = this.schema };
+            LogItemSchema item = new LogItemSchema() { Name = name, Type = t.Name };
 
             foreach (FieldInfo fi in t.GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
-                var field = new LogItemSchema() { Name = fi.Name, Type = fi.FieldType.Name, Parent = item };
-                item.ChildItems.Add(field);
+                var field = new LogItemSchema() { Name = fi.Name, Type = fi.FieldType.Name };
+                item.AddChild(field);
 
                 object value = fi.GetValue(message);
                 // byte[] array is special, we return that as binhex encoded binary data.
                 if (fi.FieldType.IsArray && fi.FieldType != typeof(byte[]))
                 {
-                    field.ChildItems = new List<Model.LogItemSchema>();
+                    field.IsArray = true;
                     Type itemType = fi.FieldType.GetElementType();
                     Array a = (Array)value;
                     for (int i = 0, n = a.Length; i < n; i++)
                     {
-                        field.ChildItems.Add(new LogItemSchema() { Name = i.ToString(), Type = itemType.Name, Parent = field });
+                        field.AddChild(new LogItemSchema() { Name = i.ToString(), Type = itemType.Name });
                     }
                 }
             }
             schemaCache[t] = item;
 
-            if (schema.ChildItems == null)
-            {
-                schema.ChildItems = new List<LogItemSchema>();
-            }
-            schema.ChildItems.Add(item);
+            schema.AddChild(item);
 
             if (SchemaChanged != null)
             {
