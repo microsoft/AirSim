@@ -31,7 +31,7 @@ public:
         callback_ = callback;
         period_nanos_ = period_nanos;
         started_ = false;
-
+        frame_countdown_enabled_ = false;
     }
 
     void start()
