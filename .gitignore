@@ -386,3 +386,4 @@ build_docs/
 
 # api docs
 PythonClient/docs/_build
+/LogViewer/LogViewer/publish.cmd
