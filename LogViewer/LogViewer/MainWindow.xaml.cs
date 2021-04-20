@@ -74,7 +74,7 @@ namespace LogViewer
                 total += chart.GetVisibleCount();
                 count++;
             }
-            ShowStatus(string.Format("zoom shwowing {0} data values", (int)(total / count)));
+            ShowStatus(string.Format("zoom showing {0} data values", (int)(total / count)));
         }
 
         private void OnWindowLocationChanged(object sender, EventArgs e)
@@ -335,7 +335,7 @@ namespace LogViewer
             OpenButton.IsEnabled = false;
 
             Microsoft.Win32.OpenFileDialog fo = new Microsoft.Win32.OpenFileDialog();
-            fo.Filter = "PX4 Log Files (*.px4log)|*.px4log|PX4 ulog Files (*.ulg)|*.ulg|CSV Files (*.csv)|*.csv|bin files (*.bin)|*.bin|mavlink files (*.mavlink)|*.mavlink|JSON files (*.json)|*.json|KML files (*.kml)|*.kml";
+            fo.Filter = "mavlink files (*.mavlink)|*.mavlink|PX4 ulog Files (*.ulg)|*.ulg|CSV Files (*.csv)|*.csv|bin files (*.bin)|*.bin|JSON files (*.json)|*.json|KML files (*.kml)|*.kml";
             fo.CheckFileExists = true;
             fo.Multiselect = true;
             if (fo.ShowDialog() == true)
@@ -532,6 +532,10 @@ namespace LogViewer
                 {
                     flight.Name = "Flight " + allFlights.Count;
                     allFlights.Add(flight);
+                    if (!this.logs.Contains(flight.Log))
+                    {
+                        this.logs.Add(flight.Log);
+                    }
                     AppendMessage("Motor started at {0} and ran for {1} ", flight.StartTime, flight.Duration);
                 }
 
@@ -641,6 +645,7 @@ namespace LogViewer
                 {
                     schema = currentFlightLog.Schema;
                 }
+
                 foreach (var log in this.logs)
                 {
                     var s = log.Schema;
@@ -653,13 +658,13 @@ namespace LogViewer
                         schema.Combine(s);
                     }
                 }
-                if (schema == null || schema.ChildItems == null || schema.ChildItems.Count == 0)
+                if (schema == null || !schema.HasChildren)
                 {
                     CategoryList.ItemsSource = null;
                 }
                 else 
                 {
-                    List<LogItemSchema> list = new List<Model.LogItemSchema>(schema.ChildItems);
+                    List<LogItemSchema> list = schema.CopyChildren();
                     list.Sort((a, b) => { return string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase); });
                     CategoryList.ItemsSource = list;
                 }
@@ -679,7 +684,7 @@ namespace LogViewer
             if (e.AddedItems != null && e.AddedItems.Count > 0)
             {
                 LogItemSchema item = (LogItemSchema)e.AddedItems[0];
-                if (sender == CategoryList && item.ChildItems != null)
+                if (sender == CategoryList && item.HasChildren)
                 {
                     ListViewItem listItem = CategoryList.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
                     if (listItem != null)
@@ -689,7 +694,7 @@ namespace LogViewer
                         expander.IsExpanded = true;
                     }
                 }
-                else if (item.ChildItems == null || item.ChildItems.Count == 0)
+                else if (!item.HasChildren)
                 {
                     if (item.Parent == null)
                     {
@@ -701,7 +706,7 @@ namespace LogViewer
             if (e.RemovedItems != null && e.RemovedItems.Count > 0)
             {
                 LogItemSchema item = (LogItemSchema)e.RemovedItems[0];
-                if (sender == CategoryList && item.ChildItems != null)
+                if (sender == CategoryList && item.HasChildren)
                 {
                     ListViewItem listItem = CategoryList.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
                     if (listItem != null)
@@ -985,7 +990,7 @@ namespace LogViewer
 
         Color GetRandomColor()
         {
-            return new HlsColor((float)(rand.NextDouble() * 360), 0.7f, 0.95f).Color;
+            return new HlsColor((float)(rand.NextDouble() * 360), 0.85f, 0.85f).Color;
         }
 
         Random rand = new Random();
@@ -1300,7 +1305,7 @@ namespace LogViewer
         {
             chart.SetData(new Model.DataSeries()
             {
-                Name = schema.Name,
+                Name = schema.GetFullName(),
                 Values = new List<DataValue>(values)
             });
         }
@@ -1455,7 +1460,7 @@ namespace LogViewer
                     // todo: show sensor data pruned to this flight time...
                     foreach (LogItemSchema item in CategoryList.SelectedItems)
                     {
-                        if (item.ChildItems == null || item.ChildItems.Count == 0)
+                        if (!item.HasChildren)
                         {
                             GraphItem(item);
                         }
@@ -1476,10 +1481,15 @@ namespace LogViewer
         {
             Expander expander = (Expander)sender;
             ListView childView = expander.Content as ListView;
-            if (childView != null)
+            if (childView != null && childView.ItemsSource == null)
             {
                 LogItemSchema item = (LogItemSchema)expander.DataContext;
-                childView.ItemsSource = item.ChildItems;
+                List<LogItemSchema> list = item.CopyChildren();
+                if (!item.IsArray)
+                {
+                    list.Sort((a, b) => { return string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase); });
+                }
+                childView.ItemsSource = list;
             }
         }
 

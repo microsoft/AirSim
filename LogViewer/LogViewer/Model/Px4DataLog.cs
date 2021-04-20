@@ -554,28 +554,24 @@ namespace LogViewer.Model
 
         private void CreateSchema(PX4BinaryLog log)
         {
-            LogItemSchema schema = new LogItemSchema() { Name = "Px4DataLog", Type = "Root", ChildItems = new List<Model.LogItemSchema>() };
+            LogItemSchema schema = new LogItemSchema() { Name = "Px4DataLog", Type = "Root" };
 
             foreach (var fmt in log.GetFormats())
             {
-                LogItemSchema element = new LogItemSchema() { Name = fmt.Name, Parent = schema };
+                LogItemSchema element = new LogItemSchema() { Name = fmt.Name };
 
                 int i = 0;
                 foreach (var c in fmt.Columns)
                 {
-                    LogItemSchema column = new LogItemSchema() { Name = c, Parent = element };
+                    LogItemSchema column = new LogItemSchema() { Name = c };
                     if (i < fmt.FormatString.Length)
                     {
                         column.Type = GetTypeName(fmt.FormatString[i]);
                     }
                     i++;
-                    if (element.ChildItems == null)
-                    {
-                        element.ChildItems = new List<Model.LogItemSchema>();
-                    }
-                    element.ChildItems.Add(column);
+                    element.AddChild(column);
                 }
-                schema.ChildItems.Add(element);
+                schema.AddChild(element);
             }
 
             this.schema = schema;
