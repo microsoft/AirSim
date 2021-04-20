@@ -38,8 +38,11 @@ class Numbers:
         print("{}: min={}, max={}, mean={}, stddev={}".format(self.name, minimum, maximum, mean, stddev))
         return (maximum - minimum) > amount
 
+print("### TEST STARTED ###")
+print("This test takes 20 minutes.")
+
 iteration = 0
-while True:
+while iteration < 10:
     iteration  += 1
     x = Numbers("x")
     y = Numbers("y")
@@ -55,7 +58,7 @@ while True:
 
     # fly for 2 minutes
     start = time.time()
-    while time.time() < start + 300:
+    while time.time() < start + 120:
         state = client.getMultirotorState()
         x_val = state.kinematics_estimated.position.x_val
         y_val = state.kinematics_estimated.position.y_val
@@ -84,4 +87,4 @@ while True:
 
     time.sleep(5)
 
-    
+print("### Test Passed ###")

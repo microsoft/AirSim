@@ -19,7 +19,7 @@ estimation catches up with reality, this is more visible after a bad crash.
 
 ### Installation
 
-If you can't build the LogViewer.sln, there is also a [click once installer](http://www.lovettsoftware.com/LovettSoftware/Downloads/Px4LogViewer/Px4LogViewer.application).
+If you can't build the LogViewer.sln, there is also a [click once installer](http://www.lovettsoftware.com/Downloads/Px4LogViewer/Px4LogViewer.application).
 
 ### Configuration
 
