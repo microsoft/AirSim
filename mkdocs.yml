@@ -63,9 +63,11 @@ nav:
     - "XBox Controller": 'xbox_controller.md'
     - "Steering Wheel": 'steering_wheel_installation.md'
     - "Multiple Vehicles": 'multi_vehicle.md'
-    - "Sensors": 'sensors.md'
-    - "LIDAR": 'lidar.md'
-    - "Infrared Camera": "InfraredCamera.md"
+    - "Sensors":
+      - "Sensors": 'sensors.md'
+      - "LIDAR": 'lidar.md'
+      - "Distance Sensor": 'distance_sensor.md'
+      - "Infrared Camera": "InfraredCamera.md"
     - "ROS: AirSim ROS Wrapper": "airsim_ros_pkgs.md"
     - "ROS: AirSim Tutorial Packages": "airsim_tutorial_pkgs.md"
     - "Domain Randomization": "retexturing.md"
