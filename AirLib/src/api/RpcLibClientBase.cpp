@@ -483,6 +483,11 @@ __pragma(warning(disable : 4239))
             pimpl_->client.call("simSetWind", conv_wind);
         }
 
+        vector<string> RpcLibClientBase::listVehicles()
+        {
+            return pimpl_->client.call("listVehicles").as<vector<string>>();
+        }
+
         std::string RpcLibClientBase::getSettingsString() const
         {
             return pimpl_->client.call("getSettingsString").as<std::string>();

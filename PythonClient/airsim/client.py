@@ -851,12 +851,21 @@ class VehicleClient:
             vehicle_name (str): Name of the vehicle being created
             vehicle_type (str): Type of vehicle, e.g. "simpleflight"
             pose (Pose): Initial pose of the vehicle
-            pawn_path (str): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type
+            pawn_path (str, optional): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type
 
         Returns:
             bool: Whether vehicle was created
         """
         return self.client.call('simAddVehicle', vehicle_name, vehicle_type, pose, pawn_path)
+
+    def listVehicles(self):
+        """
+        Lists the names of current vehicles
+
+        Returns:
+            list[str]: List containing names of all vehicles
+        """
+        return self.client.call('listVehicles')
 
     def getSettingsString(self):
         """
