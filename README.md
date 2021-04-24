@@ -118,7 +118,9 @@ We are maintaining a [list](https://microsoft.github.io/AirSim/who_is_using) of 
 
 ## Contact
 
-Join the AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
+Join our [GitHub Discussions group](https://github.com/microsoft/AirSim/discussions) to stay up to date or ask any questions.
+
+We also have an AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/). 
 
 
 ## What's New
