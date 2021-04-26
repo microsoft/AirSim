@@ -49,6 +49,13 @@ public:
         std::cout << " ------------------------------------------------" << std::endl;
     }
 
+    virtual void updateKinematics() override
+    {
+        PhysicsBody::updateKinematics();
+    }
+
+
+
     virtual real_T getRestitution() const override 
     {
         return restitution_;
