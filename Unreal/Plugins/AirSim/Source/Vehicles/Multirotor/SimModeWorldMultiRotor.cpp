@@ -14,6 +14,7 @@
 #include "common/ClockFactory.hpp"
 #include <memory>
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
+#include "common/SteppableClock.hpp"
 
 
 void ASimModeWorldMultiRotor::BeginPlay()
