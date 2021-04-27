@@ -103,11 +103,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -306,21 +312,30 @@
             <div class="section">
               
                 <h1 id="setting-up-px4-software-in-loop">Setting up PX4 Software-in-Loop<a class="headerlink" href="#setting-up-px4-software-in-loop" title="Permanent link">#</a></h1>
-<p>The <a href="http://dev.px4.io">PX4</a> software provides a "software-in-loop" simulation (SITL) version of their stack that runs in Linux. If you are on Windows then you must
-use the <a href="https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html">Cygwin Toolchain</a> as the <a href="https://dev.px4.io/master/en/setup/dev_env_windows_bash_on_win.html">Bash On Windows</a> toolchain no longer works for SITL.</p>
+<p>The <a href="http://dev.px4.io">PX4</a> software provides a "software-in-loop" simulation (SITL) version of
+their stack that runs in Linux. If you are on Windows then you can use the <a href="https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html">Cygwin
+Toolchain</a> or you can use the
+<a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows subsystem for Linux</a> and follow
+the PX4 Linux toolchain setup. </p>
 <p><strong>Note</strong> that every time you stop the unreal app you have to restart the <code>px4</code> app.</p>
 <ol>
 <li>
-<p>From your bash terminal follow <a href="https://docs.px4.io/master/en/dev_setup/dev_env_linux.html">these steps for Linux</a> and follow <strong>all</strong> the instructions under <code>NuttX based hardware</code> to install prerequisites. We've also included our own copy of the <a href="../px4_build/">PX4 build instructions</a> which is a bit more concise about what we need exactly.</p>
+<p>From your bash terminal follow <a href="https://docs.px4.io/master/en/dev_setup/dev_env_linux.html">these steps for
+   Linux</a> and follow <strong>all</strong> the
+   instructions under <code>NuttX based hardware</code> to install prerequisites. We've also included our own
+   copy of the <a href="../px4_build/">PX4 build instructions</a> which is a bit more concise about what we need
+   exactly.</p>
 </li>
 <li>
 <p>Get the PX4 source code and build the posix SITL version of PX4:
     <pre class="highlight"><code>mkdir -p PX4
 cd PX4
-git clone https://github.com/PX4/Firmware.git
-cd Firmware
-git checkout v1.10.1 # recommended version </code></pre>
-    <strong>Note</strong>: <strong>Cygwin version <a href="https://github.com/PX4/PX4-windows-toolchain/releases/download/v0.8/PX4.Windows.Cygwin.Toolchain.0.8.msi">0.8</a> is recommended for PX4 v1.10.1</strong></p>
+git clone https://github.com/PX4/PX4-Autopilot.git --recursive
+bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools 
+cd PX4-Autopilot</code></pre>
+    And find the latest stable release from <a href="https://github.com/PX4/PX4-Autopilot/releases">https://github.com/PX4/PX4-Autopilot/releases</a>
+    and checkout the source code matching that release, for example:
+    <pre class="highlight"><code>git checkout v1.11.3</code></pre></p>
 </li>
 <li>
 <p>Use following command to build and start PX4 firmware in SITL mode:
@@ -354,9 +369,9 @@ commands, but some of them can be useful for debugging.</p>
             "Parameters": {
                 "NAV_RCL_ACT": 0,
                 "NAV_DLL_ACT": 0,
+                "COM_OBL_ACT": 1,
                 "LPE_LAT": 47.641468,
-                "LPE_LON": -122.140165,
-                "COM_OBL_ACT": 1
+                "LPE_LON": -122.140165
             }
         }
     }
@@ -364,9 +379,9 @@ commands, but some of them can be useful for debugging.</p>
     Notice the PX4 <code>[simulator]</code> is using TCP, which is why we need to add: <code>"UseTcp": true,</code>.</p>
 </li>
 <li>
-<p>Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP.
-You should see a bunch of messages from the SITL PX4 window.
-Specifically, the following messages tell you that AirSim is connected properly and GPS fusion is stable:
+<p>Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
+   a bunch of messages from the SITL PX4 window. Specifically, the following messages tell you that
+   AirSim is connected properly and GPS fusion is stable:
     <pre class="highlight"><code>INFO  [simulator] Simulator connected on UDP port 14560
 INFO  [mavlink] partner IP: 127.0.0.1
 INFO  [ecl/EKF] EKF GPS checks passed (WGS-84 origin set)
@@ -374,10 +389,14 @@ INFO  [ecl/EKF] EKF commencing GPS fusion</code></pre></p>
 <p>If you do not see these messages then check your port settings.</p>
 </li>
 <li>
-<p>You should also be able to use QGroundControl with SITL mode.  Make sure
-there is no Pixhawk hardware plugged in, otherwise QGroundControl will choose
-to use that instead.  Note that as we don't have a physical board, an RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to your PC. This makes your RC look like a joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.  You do not need to do this unless you plan to fly a drone manually in AirSim.  Autonomous flight using the Python
-API does not require RC, see <code>No Remote Control</code> below.</p>
+<p>You should also be able to use QGroundControl with SITL mode.  Make sure there is no Pixhawk
+   hardware plugged in, otherwise QGroundControl will choose to use that instead.  Note that as we
+   don't have a physical board, an RC cannot be connected directly to it. So the alternatives are
+   either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky
+   Taranis X9D Plus) or using trainer USB cable to your PC. This makes your RC look like a joystick.
+   You will need to do extra set up in QGroundControl to use virtual joystick for RC control.  You
+   do not need to do this unless you plan to fly a drone manually in AirSim.  Autonomous flight
+   using the Python API does not require RC, see <code>No Remote Control</code> below.</p>
 </li>
 </ol>
 <h2 id="setting-gps-origin">Setting GPS origin<a class="headerlink" href="#setting-gps-origin" title="Permanent link">#</a></h2>
@@ -393,40 +412,50 @@ param show LPE_LON</code></pre>
 <h2 id="smooth-offboard-transitions">Smooth Offboard Transitions<a class="headerlink" href="#smooth-offboard-transitions" title="Permanent link">#</a></h2>
 <p>Notice the above setting is provided in the <code>params</code> section of the <code>settings.json</code> file:
 <pre class="highlight"><code>    "COM_OBL_ACT": 1</code></pre></p>
-<p>This tells the drone automatically hover after each offboard control command finishes (the default setting is to land).  Hovering is a smoother transition between multiple offboard commands.  You can check this setting
-by running the following PX4 console command:</p>
+<p>This tells the drone automatically hover after each offboard control command finishes (the default
+setting is to land).  Hovering is a smoother transition between multiple offboard commands.  You can
+check this setting by running the following PX4 console command:</p>
 <pre class="highlight"><code>param show COM_OBL_ACT</code></pre>
 <h2 id="check-the-home-position">Check the Home Position<a class="headerlink" href="#check-the-home-position" title="Permanent link">#</a></h2>
-<p>If you are using DroneShell to execute commands (arm, takeoff, etc) then you should wait until the Home position is set. You will see the PX4 SITL console output this message:</p>
+<p>If you are using DroneShell to execute commands (arm, takeoff, etc) then you should wait until the
+Home position is set. You will see the PX4 SITL console output this message:</p>
 <pre class="highlight"><code>INFO  [commander] home: 47.6414680, -122.1401672, 119.99
 INFO  [tone_alarm] home_set</code></pre>
-<p>Now DroneShell 'pos' command should report this position and the commands should be accepted by PX4.  If you attempt to takeoff without a home position you will see the message:</p>
+<p>Now DroneShell 'pos' command should report this position and the commands should be accepted by PX4.
+If you attempt to takeoff without a home position you will see the message:</p>
 <pre class="highlight"><code>WARN  [commander] Takeoff denied, disarm and re-try</code></pre>
 <p>After home position is set check the local position reported by 'pos' command :</p>
 <pre class="highlight"><code>Local position: x=-0.0326988, y=0.00656854, z=5.48506</code></pre>
-<p>If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL and simulation should fix that problem.</p>
+<p>If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL
+and simulation should fix that problem.</p>
 <h2 id="no-remote-control">No Remote Control<a class="headerlink" href="#no-remote-control" title="Permanent link">#</a></h2>
 <p>Notice the above setting is provided in the <code>params</code> section of the <code>settings.json</code> file:
 <pre class="highlight"><code>    "NAV_RCL_ACT": 0,
     "NAV_DLL_ACT": 0,</code></pre></p>
-<p>This is required if you plan to fly the SITL mode PX4 with no remote control, just using python scripts, for example.  These parameters stop the PX4 from triggering "failsafe mode on" every time a move command is finished.  You can use the following PX4 command to check these values are set correctly:</p>
+<p>This is required if you plan to fly the SITL mode PX4 with no remote control, just using python
+scripts, for example.  These parameters stop the PX4 from triggering "failsafe mode on" every time a
+move command is finished.  You can use the following PX4 command to check these values are set
+correctly:</p>
 <pre class="highlight"><code>param show NAV_RCL_ACT
 param show NAV_DLL_ACT</code></pre>
 <p>NOTE: Do <code>NOT</code> do this on a real drone as it is too dangerous to fly without these failsafe measures.</p>
 <h2 id="manually-set-parameters">Manually set parameters<a class="headerlink" href="#manually-set-parameters" title="Permanent link">#</a></h2>
-<p>You can also run the following in the PX4 console to set all these parameters:</p>
-<pre class="highlight"><code>param set LPE_LAT 47.641468
-param set LPE_LON -122.140165
-param set COM_OBL_ACT 1
-param set NAV_RCL_ACT 0
+<p>You can also run the following in the PX4 console to set all these parameters manually:</p>
+<pre class="highlight"><code>param set NAV_RCL_ACT 0
 param set NAV_DLL_ACT 0</code></pre>
 <h2 id="setting-up-multi-vehicle-simulation">Setting up multi-vehicle simulation<a class="headerlink" href="#setting-up-multi-vehicle-simulation" title="Permanent link">#</a></h2>
-<p>You can simulate multiple drones in SITL mode using AirSim. However, this requires setting up multiple instances of the PX4 firmware simulator to be able to listen for each vehicle's connection on a separate TCP port (4560, 4561, etc). Please see <a href="../px4_multi_vehicle/">this dedicated page</a> for instructions on setting up multiple instances of PX4 in SITL mode.</p>
+<p>You can simulate multiple drones in SITL mode using AirSim. However, this requires setting up
+multiple instances of the PX4 firmware simulator to be able to listen for each vehicle's connection
+on a separate TCP port (4560, 4561, etc). Please see <a href="../px4_multi_vehicle/">this dedicated page</a> for
+instructions on setting up multiple instances of PX4 in SITL mode.</p>
 <h2 id="using-virtualbox-ubuntu">Using VirtualBox Ubuntu<a class="headerlink" href="#using-virtualbox-ubuntu" title="Permanent link">#</a></h2>
-<p>If you want to run the above posix_sitl in a <code>VirtualBox Ubuntu</code> machine then it will have a different ip address from localhost. So in this case you need to edit the <a href="../settings/">settings file</a> and change the UdpIp and SitlIp to the ip address of your virtual machine
-set the  LocalIpAddress to the address of your host machine running the Unreal engine.</p>
+<p>If you want to run the above posix_sitl in a <code>VirtualBox Ubuntu</code> machine then it will have a
+different ip address from localhost. So in this case you need to edit the <a href="../settings/">settings
+file</a> and change the UdpIp and SitlIp to the ip address of your virtual machine set the
+LocalIpAddress to the address of your host machine running the Unreal engine.</p>
 <h2 id="remote-controller">Remote Controller<a class="headerlink" href="#remote-controller" title="Permanent link">#</a></h2>
-<p>There are several options for flying the simulated drone using a remote control or joystick like xbox gamepad. See <a href="../remote_control/#RC_Setup_for_PX4">remote controllers</a></p>
+<p>There are several options for flying the simulated drone using a remote control or joystick like
+xbox gamepad. See <a href="../remote_control/#rc-setup-for-px4">remote controllers</a></p>
               
             </div>
           </div>
@@ -447,7 +476,7 @@ set the  LocalIpAddress to the address of your host machine running the Unreal e
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -476,7 +505,6 @@ set the  LocalIpAddress to the address of your host machine running the Unreal e
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

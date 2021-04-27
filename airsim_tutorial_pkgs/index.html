@@ -103,11 +103,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -325,7 +331,7 @@ $ roslaunch airsim_ros_pkgs airsim_node.launch;
 # in a new pane / terminal
 $ source PATH_TO/AirSim/ros/devel/setup.bash
 $ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch</code></pre>
- The above would start rviz with tf's, registered RGBD cloud using <a href="https://wiki.ros.org/depth_image_proc">depth_image_proc</a> using the <a href="https://github.com/microsoft/AirSim/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch"><code>depth_to_pointcloud</code> launch file</a>, and the lidar point cloud. </li>
+ The above would start rviz with tf's, registered RGBD cloud using <a href="https://wiki.ros.org/depth_image_proc">depth_image_proc</a> using the <a href="https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch"><code>depth_to_pointcloud</code> launch file</a>, and the lidar point cloud. </li>
 </ul>
 <h3 id="two-drones-with-cameras-lidar-imu-each">Two drones, with cameras, lidar, IMU each<a class="headerlink" href="#two-drones-with-cameras-lidar-imu-each" title="Permanent link">#</a></h3>
 <ul>
@@ -373,7 +379,7 @@ You can view the tfs in rviz. And do a <code>rostopic list</code> and <code>ross
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -402,7 +408,6 @@ You can view the tfs in rviz. And do a <code>rostopic list</code> and <code>ross
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

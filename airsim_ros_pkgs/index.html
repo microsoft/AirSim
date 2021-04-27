@@ -103,11 +103,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">ROS: AirSim ROS Wrapper</a>
     <ul class="current">
@@ -521,7 +527,7 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
 </ul>
 <h4 id="publishers_1">Publishers:<a class="headerlink" href="#publishers_1" title="Permanent link">#</a></h4>
 <ul>
-<li><code>/vel_cmd_world_frame</code> <a href="airsim_ros_pkgs/VelCmd">airsim_ros_pkgs/VelCmd</a> <br />
+<li><code>/vel_cmd_world_frame</code> <a href="https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/VelCmd.msg">airsim_ros_pkgs/VelCmd</a> <br />
   Sends velocity command to <code>airsim_node</code></li>
 </ul>
 <h3 id="global-params">Global params<a class="headerlink" href="#global-params" title="Permanent link">#</a></h3>
@@ -550,7 +556,8 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
 <p>It involves enabling the built-in Windows Linux environment (WSL) in Windows10, installing a compatible Linux OS image, and finally installing the build environment as if it were a normal Linux system.</p>
 <p>Upon completion, you will be able to build and run the ros wrapper as in a native linux machine.</p>
 <h5 id="wsl1-vs-wsl2">WSL1 vs WSL2<a class="headerlink" href="#wsl1-vs-wsl2" title="Permanent link">#</a></h5>
-<p>WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 and is therefore much preferred  for building the code in terms of speed. </p>
+<p>WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 (if you use the native file system in <code>/home/...</code> rather
+than Windows mounted folders under <code>/mnt/...</code>) and is therefore much preferred for building the code in terms of speed. </p>
 <p>Once installed, you can switch between WSL1 or WSL2 versions as you prefer.</p>
 <h5 id="wsl-setup-steps">WSL Setup steps<a class="headerlink" href="#wsl-setup-steps" title="Permanent link">#</a></h5>
 <ol>
@@ -616,7 +623,7 @@ roslaunch airsim_ros_pkgs rviz.launch</code></pre></p>
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -645,7 +652,6 @@ roslaunch airsim_ros_pkgs rviz.launch</code></pre></p>
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

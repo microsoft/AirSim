@@ -139,11 +139,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -431,7 +437,7 @@
 <li>Added <a href="../apis/#time-of-day-api">Time of Day API</a></li>
 <li>An experimental integration of <a href="https://github.com/Microsoft/AirSim/tree/master/Unity">AirSim on Unity</a> is now available. Learn more in <a href="https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation">Unity blog post</a>. </li>
 <li><a href="https://github.com/Microsoft/AirSim/releases/tag/v1.2.1">New environments</a>: Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)</li>
-<li>Highly efficient <a href="https://github.com/Microsoft/AirSim/blob/master/docs/settings.md#viewmode">NoDisplay view mode</a> to turn off main screen rendering so you can capture images at high rate</li>
+<li>Highly efficient <a href="../settings/#viewmode">NoDisplay view mode</a> to turn off main screen rendering so you can capture images at high rate</li>
 <li><a href="https://github.com/Microsoft/AirSim/pull/1479">Enable/disable sensors</a> via settings</li>
 <li><a href="../lidar/">Lidar Sensor</a></li>
 <li><a href="https://github.com/Microsoft/AirSim/commit/474214364676b6631c01b3ed79d00c83ba5bccf5">Support for Flysky FS-SM100 RC</a> USB adapter</li>
@@ -561,7 +567,7 @@
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -590,7 +596,6 @@
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

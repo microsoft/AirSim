@@ -103,11 +103,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -372,21 +378,19 @@ will generate the right MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE and MAVLINK_M
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
 <p>The following code from the UnitTest project shows how to connect to a <a href="http://www.pixhawk.org/">Pixhawk</a> flight controller over USB serial port, 
 then wait for the first heartbeat message to be received:</p>
-<pre><code>auto connection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
+<pre class="highlight"><code class="language-c++">auto connection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
 MavLinkHeartbeat heartbeat;
 if (!waitForHeartbeat(10000, heartbeat)) {
     throw std::runtime_error("Received no heartbeat from PX4 after 10 seconds");
-}
-</code></pre>
+}</code></pre>
 <p>The following code connects to serial port, and then forwards all messages to and from QGroundControl to that drone using another connection
-that is joined to the drone stream.</p>
-<pre><code>auto droneConnection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
+that is joined to the drone stream.
+<pre class="highlight"><code class="language-c++">auto droneConnection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
 auto proxyConnection = MavLinkConnection::connectRemoteUdp("qgc", "127.0.0.1", "127.0.0.1", 14550);
-droneConnection-&gt;join(proxyConnection);
-</code></pre>
-<p>The following code then takes that connection and turns on heartBeats and starts tracking vehicle information using local
-system id 166 and component id 1.</p>
-<pre><code>auto vehicle = std::make_shared&lt;MavLinkVehicle&gt;(166, 1);
+droneConnection-&gt;join(proxyConnection);</code></pre>
+The following code then takes that connection and turns on heartBeats and starts tracking vehicle information using local
+system id 166 and component id 1.
+<pre class="highlight"><code class="language-c++">auto vehicle = std::make_shared&lt;MavLinkVehicle&gt;(166, 1);
 vehicle-&gt;connect(connection);
 vehicle-&gt;startHeartbeat();
 
@@ -394,10 +398,9 @@ std::this_thread::sleep_for(std::chrono::seconds(5));
 
 VehicleState state = vehicle-&gt;getVehicleState();
 printf("Home position is %s, %f,%f,%f\n", state.home.is_set ? "set" : "not set", 
-    state.home.global_pos.lat, state.home.global_pos.lon, state.home.global_pos.alt);
-</code></pre>
-<p>The following code uses the vehicle object to arm the drone and take off and wait for the takeoff altitude to be reached:</p>
-<pre><code>bool rc = false;
+    state.home.global_pos.lat, state.home.global_pos.lon, state.home.global_pos.alt);</code></pre>
+The following code uses the vehicle object to arm the drone and take off and wait for the takeoff altitude to be reached:
+<pre class="highlight"><code class="language-c++">bool rc = false;
 if (!vehicle-&gt;armDisarm(true).wait(3000, &amp;rc) || !rc) {
     printf("arm command failed\n");
     return;
@@ -421,18 +424,20 @@ while (true) {
     } else {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-}
-</code></pre>
-<p>The following code uses offboard control to make the drone fly in a circle with camera pointed at the center.
+}</code></pre>
+The following code uses offboard control to make the drone fly in a circle with camera pointed at the center.
 Here we use the subscribe method to check each new local position message to indicate so we can compute the new 
 velocity vector as soon as that new position is received.  We request a high rate for those messages using 
-setMessageInterval to ensure smooth circular orbit.</p>
-<pre><code>vehicle-&gt;setMessageInterval((int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED, 30);
+setMessageInterval to ensure smooth circular orbit.
+<pre class="highlight"><code class="language-c++">vehicle-&gt;setMessageInterval((int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED, 30);
 vehicle-&gt;requestControl();
 int subscription = vehicle-&gt;getConnection()-&gt;subscribe(
     [&amp;](std::shared_ptr&lt;MavLinkConnection&gt; connection, const MavLinkMessage&amp; m) {
         if (m.msgid == (int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED)
         {
+            // convert generic msg to strongly typed message.
+            MavLinkLocalPositionNed localPos;
+            localPos.decode(msg); 
             float x = localPos.x;
             float y = localPos.y;
             float dx = x - cx;
@@ -445,41 +450,37 @@ int subscription = vehicle-&gt;getConnection()-&gt;subscribe(
             float heading = angle + M_PI;
             vehicle-&gt;moveByLocalVelocityWithAltHold(newvx, newvy, altitude, true, heading);
         }
-    });
-</code></pre>
-<p>The following code stops flying the drone in offboard mode and tells the drone to loiter at its current location.
-This version of the code shows how to use the AsyncResult without blocking on a wait call.</p>
-<pre><code>vehicle-&gt;releaseControl();
-if (vehicle-&gt;loiter().then([=](bool rc) {
-    printf("loiter command %s\n", rc ? "succeeded" : "failed");
-}
-</code></pre>
+    });</code></pre>
+The following code stops flying the drone in offboard mode and tells the drone to loiter at its current location.
+This version of the code shows how to use the AsyncResult without blocking on a wait call.
+<pre class="highlight"><code class="language-c++">    vehicle-&gt;releaseControl();
+    if (vehicle-&gt;loiter().then([=](bool rc) {
+        printf("loiter command %s\n", rc ? "succeeded" : "failed");
+    }</code></pre></p>
 <p>The following code gets all configurable parameters from the drone and prints them:</p>
-<pre><code>auto list = vehicle-&gt;getParamList();
-auto end = list.end();
-int count = 0;
-for (auto iter = list.begin(); iter &lt; end; iter++)
-{
-    count++;
-    MavLinkParameter p = *iter;
-    if (p.type == MAV_PARAM_TYPE_REAL32 || p.type == MAV_PARAM_TYPE_REAL64) {
-        printf("%s=%f\n", p.name.c_str(), p.value);
-    }
-    else {
-        printf("%s=%d\n", p.name.c_str(), static_cast&lt;int&gt;(p.value));
-    }
-}
-</code></pre>
-<p>The following code sets a parameter on the Pixhawk to disable the USB safety check (this is handy if you are controlling
+<p><pre class="highlight"><code class="language-c++">    auto list = vehicle-&gt;getParamList();
+    auto end = list.end();
+    int count = 0;
+    for (auto iter = list.begin(); iter &lt; end; iter++)
+    {
+        count++;
+        MavLinkParameter p = *iter;
+        if (p.type == MAV_PARAM_TYPE_REAL32 || p.type == MAV_PARAM_TYPE_REAL64) {
+            printf("%s=%f\n", p.name.c_str(), p.value);
+        }
+        else {
+            printf("%s=%d\n", p.name.c_str(), static_cast&lt;int&gt;(p.value));
+        }
+    }</code></pre>
+The following code sets a parameter on the Pixhawk to disable the USB safety check (this is handy if you are controlling
 the Pixhawk over USB using another onboard computer that is part of the drone itself).  You should NOT do this if you
 are connecting your PC or laptop to the drone over USB.</p>
-<pre><code>MavLinkParameter  p;
-p.name = "CBRK_USB_CHK";
-p.value = 197848;
-if (!vehicle-&gt;setParameter(p).wait(3000,&amp;rc) || !rc) {
-    printf("Setting the CBRK_USB_CHK failed");
-}
-</code></pre>
+<pre class="highlight"><code class="language-c++">    MavLinkParameter  p;
+    p.name = "CBRK_USB_CHK";
+    p.value = 197848;
+    if (!vehicle-&gt;setParameter(p).wait(3000,&amp;rc) || !rc) {
+        printf("Setting the CBRK_USB_CHK failed");
+    }</code></pre>
 <p>MavLinkVehicle actually has a helper method for this called allowFlightControlOverUsb, so now you know how it is implemented :-) </p>
 <h2 id="advanced-connections">Advanced Connections<a class="headerlink" href="#advanced-connections" title="Permanent link">#</a></h2>
 <p>You can wire up different configurations of mavlink pipelines using the MavLinkConnection class "join" method as shown below.</p>
@@ -512,7 +513,7 @@ Another MavLinkConnection can be joined to proxy connections that jMavSim doesn'
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -541,7 +542,6 @@ Another MavLinkConnection can be joined to proxy connections that jMavSim doesn'
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

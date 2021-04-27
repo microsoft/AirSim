@@ -117,11 +117,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -374,9 +380,9 @@ int main()
 }</code></pre>
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">#</a></h2>
 <ul>
-<li><a href="../Examples">Examples</a> of how to use internal infrastructure in AirSim in your other projects</li>
-<li><a href="../DroneShell">DroneShell</a> app shows how to make simple interface using C++ APIs to control drones</li>
-<li><a href="../HelloSpawnedDrones">HelloSpawnedDrones</a> app shows how to make additional vehicles on the fly</li>
+<li><a href="https://github.com/microsoft/AirSim/tree/master/Examples">Examples</a> of how to use internal infrastructure in AirSim in your other projects</li>
+<li><a href="https://github.com/microsoft/AirSim/tree/master/DroneShell">DroneShell</a> app shows how to make simple interface using C++ APIs to control drones</li>
+<li><a href="https://github.com/microsoft/AirSim/tree/master/HelloSpawnedDrones">HelloSpawnedDrones</a> app shows how to make additional vehicles on the fly</li>
 <li><a href="../apis/">Python APIs</a></li>
 </ul>
               
@@ -399,7 +405,7 @@ int main()
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -428,7 +434,6 @@ int main()
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

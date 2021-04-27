@@ -139,11 +139,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -362,7 +368,7 @@ build.cmd</code></pre>
 <h4 id="i-have-multiple-unreal-projects-with-airsim-plugin-how-do-i-update-them-easily">I have multiple Unreal projects with AirSim plugin. How do I update them easily?<a class="headerlink" href="#i-have-multiple-unreal-projects-with-airsim-plugin-how-do-i-update-them-easily" title="Permanent link">#</a></h4>
 <p>You are in luck! We have <code>build_all_ue_projects.bat</code> which exactly does that. Don't treat it as black box (at least not yet), open it up and see what it does.  It has 4 variables that are being set from command line args. If these args is not supplied they are set to default values in next set of statements. You might want to change default values for the paths. This batch file builds AirSim plugin, deploys it to all listed projects (see CALL statements later in the batch file), runs packaging for those projects and puts final binaries in specified folder - all in one step! This is what we use to create our own binary releases.</p>
 <h4 id="how-do-i-contribute-back-to-airsim">How do I contribute back to AirSim?<a class="headerlink" href="#how-do-i-contribute-back-to-airsim" title="Permanent link">#</a></h4>
-<p>Before making any changes make sure you have created your feature branch. After you test your code changes in Blocks environment, follow the <a href="https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/">usual steps</a> to make contributions just like any other GitHub projects. If you are not familiar with Git Branch-Rebase-Merge workflow, please <a href="http://shitalshah.com/p/git-workflow-branch-rebase-squash-merge/">read this first</a>.</p>
+<p>Before making any changes make sure you have created your feature branch. After you test your code changes in Blocks environment, follow the <a href="https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/">usual steps</a> to make contributions just like any other GitHub projects. Please use rebase and squash merge, for more information see <a href="https://www.freecodecamp.org/news/an-introduction-to-git-merge-and-rebase-what-they-are-and-how-to-use-them-131b863785f/">An introduction to Git merge and rebase: what they are, and how to use them</a>.</p>
               
             </div>
           </div>
@@ -383,7 +389,7 @@ build.cmd</code></pre>
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -412,7 +418,6 @@ build.cmd</code></pre>
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

@@ -103,11 +103,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -317,8 +323,6 @@
 <h2 id="supported-hardware">Supported Hardware<a class="headerlink" href="#supported-hardware" title="Permanent link">#</a></h2>
 <p>The following Pixhawk hardware has been tested with AirSim:</p>
 <ol>
-<li><a href="https://3dr.com/support/pixhawk/">3DR Pixhawk v2</a></li>
-<li><a href="https://store.3dr.com/products/3dr-pixhawk">3DR Pixhawk mini</a></li>
 <li><a href="http://www.banggood.com/Pixhawk-PX4-2_4_8-Flight-Controller-32-Bit-ARM-PX4FMU-PX4IO-Combo-for-Multicopters-p-1040416.html">Pixhawk PX4 2.4.8</a></li>
 <li><a href="https://hobbyking.com/en_us/pixfalcon-micro-px4-autopilot.html?___store=en_us">PixFalcon</a></li>
 <li><a href="https://www.banggood.com/Pixracer-Autopilot-Xracer-V1_0-Flight-Controller-Mini-PX4-Built-in-Wifi-For-FPV-Racing-RC-Multirotor-p-1056428.html?utm_source=google&amp;utm_medium=cpc_ods&amp;utm_content=starr&amp;utm_campaign=Smlrfpv-ds-FPVracer&amp;gclid=CjwKEAjw9MrIBRCr2LPek5-h8U0SJAD3jfhtbEfqhX4Lu94kPe88Zrr62A5qVgx-wRDBuUulGzHELRoCRVTw_wcB">PixRacer</a></li>
@@ -333,7 +337,7 @@
 <li>Make sure your RC receiver is bound with its RC transmitter. Connect the RC transmitter to the flight controller's RC port. Refer to your RC manual and <a href="https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html">PX4 docs</a> for more information.</li>
 <li>Download <a href="http://qgroundcontrol.com/">QGroundControl</a>, launch it and connect your flight controller to the USB port.</li>
 <li>Use QGroundControl to flash the latest PX4 Flight Stack.
-See also <a href="https://dev.px4.io/starting-initial-config.html">initial firmware setup video</a>.</li>
+See also <a href="https://docs.px4.io/master/en/config/">initial firmware setup video</a>.</li>
 <li>In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected.</li>
 <li>In QGroundControl, go to Radio tab and calibrate (make sure the remote control is on and the receiver is showing the indicator for the binding). </li>
 <li>Go to the Flight Mode tab and chose one of the remote control switches as "Mode Channel". Then set (for example) Stabilized and Attitude flight modes for two positions of the switch.</li>
@@ -349,9 +353,9 @@ See also <a href="https://dev.px4.io/starting-initial-config.html">initial firmw
                 "Parameters": {
                     "NAV_RCL_ACT": 0,
                     "NAV_DLL_ACT": 0,
+                    "COM_OBL_ACT": 1,
                     "LPE_LAT": 47.641468,
-                    "LPE_LON": -122.140165,
-                    "COM_OBL_ACT": 1
+                    "LPE_LON": -122.140165
                 }
             }
         }
@@ -416,7 +420,7 @@ set this PX4 parameter:
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -445,7 +449,6 @@ set this PX4 parameter:
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

@@ -103,11 +103,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -301,8 +307,7 @@ However, the provided script does not let us view the PX4 console. If you want t
 <ol>
 <li>
 <p>From your bash (or Cygwin) terminal go to the PX4 Firmware directory and run the <code>sitl_multiple_run.sh</code> script while specifying the number of vehicles you need
-    <pre class="highlight"><code>cd PX4
-cd Firmware
+    <pre class="highlight"><code>cd PX4-Autopilot
 ./Tools/sitl_multiple_run.sh 2    # 2 here is the number of vehicles/instances </code></pre>
     This starts multiple instances that listen to TCP ports 4560 to 4560+i where 'i' is the number of vehicles/instances specified</p>
 </li>
@@ -357,7 +362,7 @@ API does not require RC, see <a href="../px4_sitl/#No-Remote-Control"><code>No R
 </li>
 </ol>
 <h2 id="starting-sitl-instances-with-px4-console">Starting SITL instances with PX4 console<a class="headerlink" href="#starting-sitl-instances-with-px4-console" title="Permanent link">#</a></h2>
-<p>If you want to start your SITL instances while being able to view the PX4 console, you will need to run the shell scripts found <a href="/PX4Scripts">here</a> rather than <code>sitl_multiple_run.sh</code>.
+<p>If you want to start your SITL instances while being able to view the PX4 console, you will need to run the shell scripts found <a href="https://github.com/microsoft/AirSim/tree/master/PX4Scripts">here</a> rather than <code>sitl_multiple_run.sh</code>.
 Here is how you would do so:</p>
 <p><strong>Note</strong> This script also assumes PX4 is built with <code>make px4_sitl_default none_iris</code> as shown <a href="../px4_sitl/#setting-up-px4-software-in-loop">here</a> before trying to run multiple PX4 instances.</p>
 <ol>
@@ -365,8 +370,8 @@ Here is how you would do so:</p>
     <pre class="highlight"><code>cd PX4
 mkdir -p Scripts
 cd Scripts
-wget https://raw.githubusercontent.com/microsoft/AirSim/master/PX4Scripts/sitl_kill.sh
-wget https://raw.githubusercontent.com/microsoft/AirSim/master/PX4Scripts/run_airsim_sitl.sh</code></pre>
+wget https://github.com/microsoft/AirSim/raw/master/PX4Scripts/sitl_kill.sh
+wget https://github.com/microsoft/AirSim/raw/master/PX4Scripts/run_airsim_sitl.sh</code></pre>
     <strong>Note</strong> the shell scripts expect the <code>Scripts</code> and <code>Firmware</code> directories to be within the same parent directory. Also, you may need to make the scripts executable by running <code>chmod +x sitl_kill.sh</code> and <code>chmod +x run_airsim_sitl.sh</code>.</li>
 <li>
 <p>Run the <code>sitl_kill.sh</code> script to kill all active PX4 SITL instances 
@@ -419,7 +424,7 @@ cd Scripts
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -448,7 +453,6 @@ cd Scripts
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

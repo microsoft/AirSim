@@ -135,11 +135,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -320,13 +326,13 @@
 <p>Only macOS <strong>Catalina (10.15)</strong> is supported.</p>
 <p>We've two options - you can either build inside docker containers or your host machine.</p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
-<p>Please see instructions <a href="https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md">here</a></p>
+<p>Please see instructions <a href="../docker_ubuntu/">here</a></p>
 <h2 id="host-machine">Host machine<a class="headerlink" href="#host-machine" title="Permanent link">#</a></h2>
 <h3 id="pre-build-setup">Pre-build Setup<a class="headerlink" href="#pre-build-setup" title="Permanent link">#</a></h3>
 <h4 id="linux-build-unreal-engine">Linux - Build Unreal Engine<a class="headerlink" href="#linux-build-unreal-engine" title="Permanent link">#</a></h4>
 <ul>
 <li>
-<p>Make sure you are <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html">registered with Epic Games</a>. This is required to get source code access for Unreal Engine.</p>
+<p>Make sure you are <a href="https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html">registered with Epic Games</a>. This is required to get source code access for Unreal Engine.</p>
 </li>
 <li>
 <p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal &gt;= 4.24 at present. We recommend using 4.25.</p>
@@ -409,7 +415,7 @@ You can also take a look at the <code>Diagnostics.txt</code> file.</li>
 <li>
 <p>How do I use an IDE on Linux?</p>
 <ul>
-<li>You can use Qt Creator or CodeLite. Instructions for Qt Creator are available <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnIDE/index.html">here</a>.</li>
+<li>You can use Qt Creator or CodeLite. Instructions for Qt Creator are available <a href="https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpQtCreator/index.html">here</a>.</li>
 </ul>
 </li>
 <li>
@@ -469,7 +475,7 @@ Also, don't invoke <code>bash</code> from <code>Visual Studio Command Prompt</co
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -498,7 +504,6 @@ Also, don't invoke <code>bash</code> from <code>Visual Studio Command Prompt</co
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

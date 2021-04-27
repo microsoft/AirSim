@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>AirSim on Real Drones - AirSim</title>
+  <title>Distance Sensor - AirSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "AirSim on Real Drones";
-    var mkdocs_page_input_path = "custom_drone.md";
+    var mkdocs_page_name = "Distance Sensor";
+    var mkdocs_page_input_path = "distance_sensor.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -78,7 +78,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Using AirSim</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../apis/">Core APIs</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../image_apis/">Image APIs</a>
@@ -103,13 +103,15 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
-    <ul>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">Sensors</a>
+    <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">Distance Sensor</a>
+    <ul class="current">
+    </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
                 </li>
@@ -219,10 +221,8 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Misc</span></p>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">AirSim on Real Drones</a>
-    <ul class="current">
-    </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../custom_drone/">AirSim on Real Drones</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../cmake_linux/">Installing cmake on Linux</a>
                     </li>
@@ -273,14 +273,18 @@
     
       
         
-          <li>Misc &raquo;</li>
+          <li>Sensors &raquo;</li>
+        
+      
+        
+          <li>Using AirSim &raquo;</li>
         
       
     
-    <li>AirSim on Real Drones</li>
+    <li>Distance Sensor</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/custom_drone.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/distance_sensor.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -291,46 +295,42 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="airlib-on-a-real-drone">AirLib on a Real Drone<a class="headerlink" href="#airlib-on-a-real-drone" title="Permanent link">#</a></h1>
-<p>The AirLib library can be compiled and deployed on the companion computer on a real drone. For our testing, we mounted a Gigabyte Brix BXi7-5500 ultra compact PC on the drone connected to the Pixhawk flight controller over USB. The Gigabyte PC is running Ubuntu, so we are able to SSH into it over Wi-Fi: </p>
-<p><img alt="Flamewheel" src="../images/Flamewheel.png" /></p>
-<p>Once connected you can run MavLinkTest with this command line:
-<pre class="highlight"><code>MavLinkTest -serial:/dev/ttyACM0,115200 -logdir:. </code></pre>
-And this will produce a log file of the flight which can then be used for <a href="../playback/">playback in the simulator</a>.</p>
-<p>You can also add <code>-proxy:192.168.1.100:14550</code> to connect MavLinkTest to a remote computer where you can run QGroundControl or our 
-<a href="../log_viewer/">PX4 Log Viewer</a> which is another handy way to see what is going on with your drone.</p>
-<p>MavLinkTest then has some simple commands for testing your drone, here's a simple example of some commands:</p>
-<pre class="highlight"><code>arm
-takeoff 5
-orbit 10 2</code></pre>
-<p>This will arm the drone, takeoff of 5 meters, then do an orbit pattern radius 10 meters, at 2 m/s.
-Type '?' to find all available commands.</p>
-<p><strong>Note:</strong> Some commands (for example, <code>orbit</code>) are named differently and have different syntax in MavLinkTest and DroneShell (for example, <code>circlebypath -radius 10 -velocity 21</code>).</p>
-<p>When you land the drone you can stop MavLinkTest and copy the *.mavlink log file that was generated.</p>
-<h1 id="droneserver-and-droneshell">DroneServer and DroneShell<a class="headerlink" href="#droneserver-and-droneshell" title="Permanent link">#</a></h1>
-<p>Once you are happy that the MavLinkTest is working, you can also run DroneServer and DroneShell as follows. First, run MavLinkTest with a local proxy to send everything to DroneServer:</p>
-<p><pre class="highlight"><code>MavLinkTest -serial:/dev/ttyACM0,115200 -logdir:. -proxy:127.0.0.1:14560</code></pre>
-Change ~/Documents/AirSim/settings.json to say "serial":false, because we want DroneServer to look for this UDP connection.</p>
-<pre class="highlight"><code>DroneServer 0</code></pre>
-<p>Lastly, you can now connect DroneShell to this instance of DroneServer and use the DroneShell commands to fly your drone:</p>
-<pre class="highlight"><code>DroneShell
-==||=&gt;
-        Welcome to DroneShell 1.0.
-        Type ? for help.
-        Microsoft Research (c) 2016.
-
-Waiting for drone to report a valid GPS location...
-==||=&gt; requestcontrol
-==||=&gt; arm
-==||=&gt; takeoff
-==||=&gt; circlebypath -radius 10 -velocity 2</code></pre>
-<h2 id="px4-specific-tools">PX4 Specific Tools<a class="headerlink" href="#px4-specific-tools" title="Permanent link">#</a></h2>
-<p>You can run the MavlinkCom library and MavLinkTest app to test the connection
-between your companion computer and flight controller.  </p>
-<h2 id="how-does-this-work">How Does This Work?<a class="headerlink" href="#how-does-this-work" title="Permanent link">#</a></h2>
-<p>AirSim uses MavLinkCom component developed by @lovettchris. The MavLinkCom has a proxy architecture where you can open a connection to PX4 either using serial or UDP and then other components share this connection. When PX4 sends MavLink message, all components receive that message. If any component sends a message then it's received by PX4 only. This allows you to connect any number of components to PX4 <a href="https://github.com/microsoft/AirSim/blob/master/AirLib/include/vehicles/multirotor/firmwares/mavlink/MavLinkMultirotorApi.hpp#L600">This code</a> opens a connection for LogViewer and QGC. You can add something more if you like.</p>
-<p>If you want to use QGC + AirSim together than you will need QGC to let own the serial port. QGC opens up TCP connection that acts as a proxy so any other component can connect to QGC and send MavLinkMessage to QGC and then QGC forwards that message to PX4. So you tell AirSim to connect to QGC and let QGC own serial port.</p>
-<p>For companion board, the way we did it earlier was to have Gigabyte Brix on the drone. This x86 full-fledged computer that will connect to PX4 through USB. We had Ubuntu on Brix and ran <a href="https://github.com/Microsoft/AirSim/tree/master/DroneServer">DroneServer</a>. The DroneServer created an API endpoint that we can talk to via C++ client code (or Python code) and it translated API calls to MavLink messages. That way you can write your code against the same API, test it in the simulator and then run the same code on an actual vehicle. So the companion computer has DroneServer running along with client code. </p>
+                <h2 id="distance-sensor">Distance Sensor<a class="headerlink" href="#distance-sensor" title="Permanent link">#</a></h2>
+<p>By default, Distance Sensor points to the front of the vehicle. It can be pointed in any direction by modifying the settings</p>
+<p>Configurable Parameters -</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X Y Z</td>
+<td>Position of the sensor relative to the vehicle (in NED, in meters) (Default (0,0,0)-Multirotor, (0,0,-1)-Car)</td>
+</tr>
+<tr>
+<td>Yaw Pitch Roll</td>
+<td>Orientation of the sensor relative to the vehicle (degrees) (Default (0,0,0))</td>
+</tr>
+<tr>
+<td>MinDistance</td>
+<td>Minimum distance measured by distance sensor (metres, only used to fill Mavlink message for PX4) (Default 0.2m)</td>
+</tr>
+<tr>
+<td>MaxDistance</td>
+<td>Maximum distance measured by distance sensor (metres) (Default 40.0m)</td>
+</tr>
+</tbody>
+</table>
+<p>For example, to make the sensor point towards the ground (for altitude measurement similar to barometer), the orientation can be modified as follows -</p>
+<pre class="highlight"><code class="language-json">"Distance": {
+    "SensorType": 5,
+    "Enabled" : true,
+    "Yaw": 0, "Pitch": -90, "Roll": 0
+}</code></pre>
+<p><strong>Note:</strong> For Cars, the sensor is placed 1 meter above the vehicle center by default. This is required since otherwise the sensor gives strange data due it being inside the vehicle. This doesn't affect the sensor values say when measuring the distance between 2 cars. See <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/distance_sensor_multi.py"><code>PythonClient/car/distance_sensor_multi.py</code></a> for an example usage.</p>
               
             </div>
           </div>
@@ -338,10 +338,10 @@ between your companion computer and flight controller.  </p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../cmake_linux/" class="btn btn-neutral float-right" title="Installing cmake on Linux">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../InfraredCamera/" class="btn btn-neutral float-right" title="Infrared Camera">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../orbit/" class="btn btn-neutral" title="Orbit Trajectory"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../lidar/" class="btn btn-neutral" title="LIDAR"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -371,10 +371,10 @@ between your companion computer and flight controller.  </p>
           <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../orbit/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../lidar/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../cmake_linux/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../InfraredCamera/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

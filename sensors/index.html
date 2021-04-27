@@ -103,51 +103,53 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Sensors</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">Sensors</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#default-sensors">Default sensors</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">Sensors</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#default-sensors">Default sensors</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#multirotor">Multirotor</a>
+    <li class="toctree-l4"><a class="reference internal" href="#multirotor">Multirotor</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#car">Car</a>
+    <li class="toctree-l4"><a class="reference internal" href="#car">Car</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#computervision">ComputerVision</a>
+    <li class="toctree-l4"><a class="reference internal" href="#computervision">ComputerVision</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#configuring-the-default-sensor-list">Configuring the default sensor list</a>
+    <li class="toctree-l3"><a class="reference internal" href="#configuring-the-default-sensor-list">Configuring the default sensor list</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#configuring-vehicle-specific-sensor-list">Configuring vehicle-specific sensor list</a>
+    <li class="toctree-l3"><a class="reference internal" href="#configuring-vehicle-specific-sensor-list">Configuring vehicle-specific sensor list</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#sensor-specific-settings">Sensor specific settings</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#distance-sensor">Distance Sensor</a>
+    <li class="toctree-l4"><a class="reference internal" href="#sensor-specific-settings">Sensor specific settings</a>
     </li>
         </ul>
     </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#sensor-apis">Sensor APIs</a>
+    <li class="toctree-l3"><a class="reference internal" href="#sensor-apis">Sensor APIs</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#barometer">Barometer</a>
+    <li class="toctree-l4"><a class="reference internal" href="#barometer">Barometer</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#imu">IMU</a>
+    <li class="toctree-l4"><a class="reference internal" href="#imu">IMU</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#gps">GPS</a>
+    <li class="toctree-l4"><a class="reference internal" href="#gps">GPS</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#magnetometer">Magnetometer</a>
+    <li class="toctree-l4"><a class="reference internal" href="#magnetometer">Magnetometer</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#distance-sensor_1">Distance sensor</a>
+    <li class="toctree-l4"><a class="reference internal" href="#distance-sensor">Distance sensor</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#lidar">Lidar</a>
+    <li class="toctree-l4"><a class="reference internal" href="#lidar">Lidar</a>
     </li>
         </ul>
     </li>
     </ul>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -305,6 +307,10 @@
     
       
         
+          <li>Sensors &raquo;</li>
+        
+      
+        
           <li>Using AirSim &raquo;</li>
         
       
@@ -415,44 +421,12 @@ e.g.,</p>
     }
 }</code></pre>
 <h3 id="sensor-specific-settings">Sensor specific settings<a class="headerlink" href="#sensor-specific-settings" title="Permanent link">#</a></h3>
-<p>Each sensor-type has its own set of settings as well.
-Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.</p>
-<h4 id="distance-sensor">Distance Sensor<a class="headerlink" href="#distance-sensor" title="Permanent link">#</a></h4>
-<p>By default, Distance Sensor points to the front of the vehicle. It can be pointed in any direction by modifying the settings</p>
-<p>Configurable Parameters -</p>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>X Y Z</td>
-<td>Position of the sensor relative to the vehicle (in NED, in meters) (Default (0,0,0)-Multirotor, (0,0,-1)-Car)</td>
-</tr>
-<tr>
-<td>Yaw Pitch Roll</td>
-<td>Orientation of the sensor relative to the vehicle (degrees) (Default (0,0,0))</td>
-</tr>
-<tr>
-<td>MinDistance</td>
-<td>Minimum distance measured by distance sensor (metres, only used to fill Mavlink message for PX4) (Default 0.2m)</td>
-</tr>
-<tr>
-<td>MaxDistance</td>
-<td>Maximum distance measured by distance sensor (metres) (Default 40.0m)</td>
-</tr>
-</tbody>
-</table>
-<p>For example, to make the sensor point towards the ground (for altitude measurement similar to barometer), the orientation can be modified as follows -</p>
-<pre class="highlight"><code class="language-json">"Distance": {
-    "SensorType": 5,
-    "Enabled" : true,
-    "Yaw": 0, "Pitch": -90, "Roll": 0
-}</code></pre>
-<p><strong>Note:</strong> For Cars, the sensor is placed 1 meter above the vehicle center by default. This is required since otherwise the sensor gives strange data due it being inside the vehicle. This doesn't affect the sensor values say when measuring the distance between 2 cars. See <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/distance_sensor_multi.py"><code>PythonClient/car/distance_sensor_multi.py</code></a> for an example usage.</p>
+<p>For detailed information on the meaning of these sensor settings
+see the following pages:</p>
+<ul>
+<li><a href="../lidar/">Lidar sensor settings</a></li>
+<li><a href="../distance_sensor/">Distance sensor settings</a></li>
+</ul>
 <h5 id="server-side-visualization-for-debugging">Server side visualization for debugging<a class="headerlink" href="#server-side-visualization-for-debugging" title="Permanent link">#</a></h5>
 <p>Be default, the points hit by distance sensor are not drawn on the viewport. To enable the drawing of hit points on the viewport, please enable setting <code>DrawDebugPoints</code> via settings json. E.g. -</p>
 <pre class="highlight"><code class="language-json">"Distance": {
@@ -475,7 +449,7 @@ Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.
 <h5 id="magnetometer">Magnetometer<a class="headerlink" href="#magnetometer" title="Permanent link">#</a></h5>
 <p><pre class="highlight"><code class="language-cpp">msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string&amp; magnetometer_name = "", const std::string&amp; vehicle_name = "");</code></pre>
 <pre class="highlight"><code class="language-python">magnetometer_data = client.getMagnetometerData(magnetometer_name = "", vehicle_name = "")</code></pre></p>
-<h5 id="distance-sensor_1">Distance sensor<a class="headerlink" href="#distance-sensor_1" title="Permanent link">#</a></h5>
+<h5 id="distance-sensor">Distance sensor<a class="headerlink" href="#distance-sensor" title="Permanent link">#</a></h5>
 <p><pre class="highlight"><code class="language-cpp">msr::airlib::DistanceSensorData getDistanceSensorData(const std::string&amp; distance_sensor_name = "", const std::string&amp; vehicle_name = "");</code></pre>
 <pre class="highlight"><code class="language-python">distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")</code></pre></p>
 <h5 id="lidar">Lidar<a class="headerlink" href="#lidar" title="Permanent link">#</a></h5>
@@ -500,7 +474,7 @@ Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -529,7 +503,6 @@ Please see <a href="../lidar/">lidar</a> for example of Lidar specific settings.
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>

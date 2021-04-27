@@ -103,11 +103,17 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../sensors/">Sensors</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../lidar/">LIDAR</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
                     </li>
@@ -306,23 +312,30 @@
                 <h1 id="building-px4">Building PX4<a class="headerlink" href="#building-px4" title="Permanent link">#</a></h1>
 <h2 id="source-code">Source code<a class="headerlink" href="#source-code" title="Permanent link">#</a></h2>
 <p>Getting the PX4 source code is easy:
-<pre class="highlight"><code>git clone https://github.com/PX4/Firmware.git
-cd Firmware</code></pre></p>
-<p>Oh, and if you don't have git yet just run this:</p>
-<pre class="highlight"><code>sudo apt-get install git</code></pre>
-<p>We are currently testing using the 1.6.0rc1 version, but the latest master branch should be ok too.
-Now to build it you will need the right tools.</p>
+<pre class="highlight"><code>sudo apt-get install git
+git clone https://github.com/PX4/PX4-Autopilot.git --recursive
+bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-sim-tools
+cd PX4-Autopilot</code></pre></p>
+<p>Now to build it you will need the right tools.</p>
 <h2 id="px4-build-tools">PX4 Build tools<a class="headerlink" href="#px4-build-tools" title="Permanent link">#</a></h2>
-<p>The full instructions are available on the <a href="http://dev.px4.io/starting-installing-linux.html">dev.px4.io</a> website,
+<p>The full instructions are available on the <a href="https://docs.px4.io/master/en/dev_setup/building_px4.html">dev.px4.io</a> website,
 but we've copied the relevant subset of those instructions here for your convenience.</p>
 <p>(Note that <a href="https://msdn.microsoft.com/en-us/commandline/wsl/install_guide">BashOnWindows</a>) can be used to build
-the PX4 firmware, just follow the BashOnWindows instructions at the bottom of this page).</p>
+the PX4 firmware, just follow the BashOnWindows instructions at the bottom of this page) then proceed with the 
+Ubuntu setup for PX4.</p>
 <h2 id="build-sitl-version">Build SITL version<a class="headerlink" href="#build-sitl-version" title="Permanent link">#</a></h2>
 <p>Now you can make the SITL version that runs in posix, from the Firmware folder you created above:
 <pre class="highlight"><code>make px4_sitl_default none_iris</code></pre></p>
 <p>Note: this build system is quite special, it knows how to update git submodules (and there's a lot
 of them), then it runs cmake (if necessary), then it runs the build itself. So in a way the root
-Makefile is a meta-meta makefile :-)</p>
+Makefile is a meta-meta makefile :-)   You might see prompts like this:</p>
+<p><pre class="highlight"><code class="language-shell"> *******************************************************************************
+ *   IF YOU DID NOT CHANGE THIS FILE (OR YOU DON'T KNOW WHAT A SUBMODULE IS):  *
+ *   Hit 'u' and &lt;ENTER&gt; to update ALL submodules and resolve this.            *
+ *   (performs git submodule sync --recursive                                  *
+ *    and git submodule update --init --recursive )                            *
+ *******************************************************************************</code></pre>
+Every time you see this prompt type 'u' on your keyboard.</p>
 <p>It shouldn't take long, about 2 minutes. If all succeeds, the last line will link the <code>px4</code> app,
 which you can then run using the following:</p>
 <pre class="highlight"><code>make px4_sitl_default none_iris</code></pre>
@@ -413,7 +426,7 @@ param set SYS_LOGGER 1</code></pre>
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright &copy; 2018 Microsoft Research</p>
+      <p>Copyright &copy; 2021 Microsoft Research</p>
     
   </div>
 
@@ -442,7 +455,6 @@ param set SYS_LOGGER 1</code></pre>
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="../javascripts/config.js" defer></script>
       <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>
