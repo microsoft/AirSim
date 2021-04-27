@@ -213,24 +213,6 @@ public: //types
     };
 
     struct LidarSetting : SensorSetting {
-        // TODO: move this to use the "Settings settings" instead.
-
-        // shared defaults
-        uint number_of_channels = 16;
-        real_T range = 10000.0f / 100;                    // meters
-        uint points_per_second = 100000;
-        uint horizontal_rotation_frequency = 10;          // rotations/sec
-        float horizontal_FOV_start = 0;                   // degrees
-        float horizontal_FOV_end = 359;                   // degrees
-
-        // defaults specific to a mode
-        float vertical_FOV_upper = Utils::nan<float>();   // drones -15, car +10
-        float vertical_FOV_lower = Utils::nan<float>();   // drones -45, car -10
-        Vector3r position = VectorMath::nanVector();
-        Rotation rotation = Rotation::nanRotation();
-
-        bool draw_debug_points = false;
-        std::string data_frame = AirSimSettings::kVehicleInertialFrame;
     };
 
     struct VehicleSetting {
@@ -1202,24 +1184,6 @@ private:
         clock_speed = settings_json.getFloat("ClockSpeed", 1.0f);
     }
 
-    static void initializeLidarSetting(LidarSetting& lidar_setting, const Settings& settings_json)
-    {
-        lidar_setting.number_of_channels = settings_json.getInt("NumberOfChannels", lidar_setting.number_of_channels);
-        lidar_setting.range = settings_json.getFloat("Range", lidar_setting.range);
-        lidar_setting.points_per_second = settings_json.getInt("PointsPerSecond", lidar_setting.points_per_second);
-        lidar_setting.horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", lidar_setting.horizontal_rotation_frequency);
-        lidar_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", lidar_setting.draw_debug_points);
-        lidar_setting.data_frame = settings_json.getString("DataFrame", lidar_setting.data_frame);
-
-        lidar_setting.vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", lidar_setting.vertical_FOV_upper);
-        lidar_setting.vertical_FOV_lower = settings_json.getFloat("VerticalFOVLower", lidar_setting.vertical_FOV_lower);
-        lidar_setting.horizontal_FOV_start = settings_json.getFloat("HorizontalFOVStart", lidar_setting.horizontal_FOV_start);
-        lidar_setting.horizontal_FOV_end = settings_json.getFloat("HorizontalFOVEnd", lidar_setting.horizontal_FOV_end);
-
-        lidar_setting.position = createVectorSetting(settings_json, lidar_setting.position);
-        lidar_setting.rotation = createRotationSetting(settings_json, lidar_setting.rotation);
-    }
-
     static std::shared_ptr<SensorSetting> createSensorSetting(
         SensorBase::SensorType sensor_type, const std::string& sensor_name,
         bool enabled)
@@ -1264,13 +1228,6 @@ private:
         // extracted there.  This way default values can be kept in one place.  For example, see the 
         // BarometerSimpleParams::initializeFromSettings method.
         sensor_setting->settings = settings_json;
-
-        // TODO: delete this when we move initializeLidarSetting to LidarSimpleParams.hpp 
-        switch (sensor_setting->sensor_type) {
-        case SensorBase::SensorType::Lidar:
-            initializeLidarSetting(*static_cast<LidarSetting*>(sensor_setting), settings_json);
-            break;
-        }
     }
 
     // creates and intializes sensor settings from json
