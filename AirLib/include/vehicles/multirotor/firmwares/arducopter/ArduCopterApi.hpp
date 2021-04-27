@@ -348,9 +348,9 @@ private:
             oss << ","
                    "\"gps\": {"
                 << std::fixed << std::setprecision(7)
-                << "\"lat\":" << gps_output.gnss.geo_point.latitude << ","
-                << "\"lon\":" << gps_output.gnss.geo_point.longitude << ","
-                << std::setprecision(3) << "\"alt\":" << gps_output.gnss.geo_point.altitude
+                << "\"lat\": " << gps_output.gnss.geo_point.latitude << ","
+                << "\"lon\": " << gps_output.gnss.geo_point.longitude << ","
+                << std::setprecision(3) << "\"alt\": " << gps_output.gnss.geo_point.altitude
                 << "},"
 
                 << "\"velocity\": {"
