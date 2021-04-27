@@ -9,6 +9,7 @@ STRICT_MODE_ON
 #include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
 #include "common/common_utils/FileSystem.hpp"
+#include "sensors/lidar/LidarSimpleParams.hpp"
 #include "ros/ros.h"
 #include "sensors/imu/ImuBase.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
@@ -93,18 +94,18 @@ struct VelCmd
     msr::airlib::YawMode yaw_mode;
     std::string vehicle_name;
 
-    // VelCmd() : 
-    //     x(0), y(0), z(0), 
+    // VelCmd() :
+    //     x(0), y(0), z(0),
     //     vehicle_name("") {drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
     //             yaw_mode = msr::airlib::YawMode();};
 
-    // VelCmd(const double& x, const double& y, const double& z, 
-    //         msr::airlib::DrivetrainType drivetrain, 
+    // VelCmd(const double& x, const double& y, const double& z,
+    //         msr::airlib::DrivetrainType drivetrain,
     //         const msr::airlib::YawMode& yaw_mode,
-    //         const std::string& vehicle_name) : 
-    //     x(x), y(y), z(z), 
-    //     drivetrain(drivetrain), 
-    //     yaw_mode(yaw_mode), 
+    //         const std::string& vehicle_name) :
+    //     x(x), y(y), z(z),
+    //     drivetrain(drivetrain),
+    //     yaw_mode(yaw_mode),
     //     vehicle_name(vehicle_name) {};
 };
 
@@ -116,9 +117,9 @@ struct GimbalCmd
 
     // GimbalCmd() : vehicle_name(vehicle_name), camera_name(camera_name), target_quat(msr::airlib::Quaternionr(1,0,0,0)) {}
 
-    // GimbalCmd(const std::string& vehicle_name, 
-    //         const std::string& camera_name, 
-    //         const msr::airlib::Quaternionr& target_quat) : 
+    // GimbalCmd(const std::string& vehicle_name,
+    //         const std::string& camera_name,
+    //         const msr::airlib::Quaternionr& target_quat) :
     //         vehicle_name(vehicle_name), camera_name(camera_name), target_quat(target_quat) {};
 };
 
@@ -132,7 +133,7 @@ public:
     };
 
     AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string & host_ip);
-    ~AirsimROSWrapper() {}; 
+    ~AirsimROSWrapper() {};
 
     void initialize_airsim();
     void initialize_ros();
@@ -163,17 +164,17 @@ private:
         ros::Publisher global_gps_pub;
         ros::Publisher env_pub;
         airsim_ros_pkgs::Environment env_msg;
-        std::vector<SensorPublisher> sensor_pubs; 
+        std::vector<SensorPublisher> sensor_pubs;
         // handle lidar seperately for max performance as data is collected on its own thread/callback
         std::vector<SensorPublisher> lidar_pubs;
-        
+
         nav_msgs::Odometry curr_odom;
         sensor_msgs::NavSatFix gps_sensor_msg;
 
         std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec;
 
         ros::Time stamp;
-        
+
 
         std::string odom_frame_id;
         /// Status
@@ -261,13 +262,13 @@ private:
 
     sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
     sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
-    
+
     void process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name);
 
     // methods which parse setting json ang generate ros pubsubsrv
     void create_ros_pubs_from_settings_json();
     void append_static_camera_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting);
-    void append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const LidarSetting& lidar_setting);
+    void append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const msr::airlib::LidarSimpleParams& lidar_setting);
     void append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting);
     void set_nans_to_zeros_in_pose(VehicleSetting& vehicle_setting) const;
     void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, CameraSetting& camera_setting) const;
@@ -316,7 +317,7 @@ private:
 
     ros::ServiceServer reset_srvr_;
     ros::Publisher origin_geo_point_pub_; // home geo coord of drones
-    msr::airlib::GeoPoint origin_geo_point_;// gps coord of unreal origin 
+    msr::airlib::GeoPoint origin_geo_point_;// gps coord of unreal origin
     airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
 
     AirSimSettingsParser airsim_settings_parser_;
@@ -343,7 +344,7 @@ private:
 
     // gimbal control
     bool has_gimbal_cmd_;
-    GimbalCmd gimbal_cmd_; 
+    GimbalCmd gimbal_cmd_;
 
     /// ROS tf
     const std::string AIRSIM_FRAME_ID = "world_ned";
@@ -353,7 +354,7 @@ private:
     std::string odom_frame_id_ = AIRSIM_ODOM_FRAME_ID;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     tf2_ros::StaticTransformBroadcaster static_tf_pub_;
-    
+
     bool isENU_ = false;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
@@ -368,7 +369,7 @@ private:
 
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
-    std::vector<image_transport::Publisher> image_pub_vec_; 
+    std::vector<image_transport::Publisher> image_pub_vec_;
     std::vector<ros::Publisher> cam_info_pub_vec_;
 
     std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
