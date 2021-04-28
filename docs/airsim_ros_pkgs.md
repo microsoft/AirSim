@@ -184,7 +184,7 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
   Listens to odometry published by `airsim_node`
 
 #### Publishers:
-- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](airsim_ros_pkgs/VelCmd)   
+- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/VelCmd.msg)   
   Sends velocity command to `airsim_node`
 
 ### Global params
@@ -212,7 +212,8 @@ Upon completion, you will be able to build and run the ros wrapper as in a nativ
 
 ##### WSL1 vs WSL2
 
-WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 and is therefore much preferred  for building the code in terms of speed. 
+WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 (if you use the native file system in `/home/...` rather
+than Windows mounted folders under `/mnt/...`) and is therefore much preferred for building the code in terms of speed. 
 
 Once installed, you can switch between WSL1 or WSL2 versions as you prefer.
 

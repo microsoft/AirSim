@@ -47,7 +47,7 @@ Once AirSim is set up by following above steps, you can,
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available.
 
 # AirSim on Unity (Experimental)
-[Unity](https://unity3d.com/) is another great game engine platform and we have an **experimental** integration of [AirSim with Unity](https://microsoft.github.com/AirSim/Unity). Please note that this is work in progress and all features may not work yet.
+[Unity](https://unity3d.com/) is another great game engine platform and we have an **experimental** integration of [AirSim with Unity](Unity.md). Please note that this is work in progress and all features may not work yet.
 
 # FAQ
 

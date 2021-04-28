@@ -8,7 +8,7 @@ We've two options - you can either build inside docker containers or your host m
 
 ## Docker
 
-Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md)
+Please see instructions [here](docker_ubuntu.md)
 
 ## Host machine
 
@@ -16,7 +16,7 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
 
 #### Linux - Build Unreal Engine
 
-- Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required to get source code access for Unreal Engine.
+- Make sure you are [registered with Epic Games](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html). This is required to get source code access for Unreal Engine.
 
 - Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.24 at present. We recommend using 4.25.
 
@@ -106,7 +106,7 @@ Alternatively, you can use [APIs](apis.md) for programmatic control or use the s
     You can also take a look at the `Diagnostics.txt` file.
 
 - How do I use an IDE on Linux?
-    * You can use Qt Creator or CodeLite. Instructions for Qt Creator are available [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnIDE/index.html).
+    * You can use Qt Creator or CodeLite. Instructions for Qt Creator are available [here](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpQtCreator/index.html).
 
 - Can I cross compile for Linux from a Windows machine?
     * Yes, you can, but we haven't tested it. You can find the instructions [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html).
