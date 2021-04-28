@@ -18,7 +18,8 @@
 #include "sensors/gps/GpsBase.hpp"
 #include "sensors/magnetometer/MagnetometerBase.hpp"
 #include "sensors/barometer/BarometerBase.hpp"
-#include "sensors/lidar/LidarBase.hpp"
+#include "sensors/distance/DistanceSimple.hpp"
+#include "sensors/lidar/LidarSimple.hpp"
 
 #include "UdpSocket.hpp"
 
@@ -299,8 +300,8 @@ protected:
 protected:
     void closeConnections()
     {
-        if (udpSocket_ != nullptr)
-            udpSocket_->close();
+        if (udp_socket_ != nullptr)
+            udp_socket_->close();
     }
 
     void connect()
@@ -320,8 +321,8 @@ protected:
         Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port_, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
         Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
 
-        udpSocket_ = std::make_shared<mavlinkcom::UdpSocket>();
-        udpSocket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
+        udp_socket_ = std::make_unique<mavlinkcom::UdpSocket>();
+        udp_socket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
     }
 
 private:
@@ -338,10 +339,29 @@ private:
         if (sensors_ == nullptr)
             return;
 
-        const auto& gps_output = getGpsData("");
-        const auto& imu_output = getImuData("");
-
         std::ostringstream oss;
+
+        const uint count_gps_sensors = sensors_->size(SensorBase::SensorType::Gps);
+        if (count_gps_sensors != 0) {
+            const auto& gps_output = getGpsData("");
+
+            oss << ","
+                   "\"gps\": {"
+                << std::fixed << std::setprecision(7)
+                << "\"lat\": " << gps_output.gnss.geo_point.latitude << ","
+                << "\"lon\": " << gps_output.gnss.geo_point.longitude << ","
+                << std::setprecision(3) << "\"alt\": " << gps_output.gnss.geo_point.altitude
+                << "},"
+
+                << "\"velocity\": {"
+                << std::setprecision(12)
+                << "\"world_linear_velocity\": [" 
+                << gps_output.gnss.velocity[0] << ","
+                << gps_output.gnss.velocity[1] << ","
+                << gps_output.gnss.velocity[2] << "]"
+                "}";
+        }
+
 
         // Send RC channels to Ardupilot if present
         if (is_rc_connected_ && last_rcData_.is_valid) {
@@ -351,51 +371,83 @@ private:
                 << (last_rcData_.roll + 1) * 0.5f << ","
                 << (last_rcData_.yaw + 1) * 0.5f << ","
                 << (last_rcData_.throttle + 1) * 0.5f << ","
-                << (-last_rcData_.pitch + 1) * 0.5f << ","
-                << static_cast<float>(last_rcData_.getSwitch(0)) << ","
-                << static_cast<float>(last_rcData_.getSwitch(1)) << ","
-                << static_cast<float>(last_rcData_.getSwitch(2)) << ","
-                << static_cast<float>(last_rcData_.getSwitch(3))
-                << "]}";
+                << (-last_rcData_.pitch + 1) * 0.5f;
+
+            // Add switches to RC channels array, 8 switches
+            for (uint8_t i=0; i<8; ++i) {
+                oss << "," << static_cast<float>(last_rcData_.getSwitch(i));
+            }
+
+            // Close JSON array & element
+            oss << "]}";
         }
 
-        const uint count_lidars = getSensors().size(SensorBase::SensorType::Lidar);
-        // TODO: Add bool value in settings to check whether to send lidar data or not
-        // Since it's possible that we don't want to send the lidar data to Ardupilot but still have the lidar (maybe as a ROS topic)
+        // Send Distance Sensors data if present
+        const uint count_distance_sensors = sensors_->size(SensorBase::SensorType::Distance);
+        if (count_distance_sensors != 0) {
+            // Start JSON element
+            oss << ","
+                    "\"rng\": {"
+                    "\"distances\": [";
+
+            // Used to avoid trailing comma
+            std::string sep = "";
+
+            // Add sensor outputs in the array
+            for (uint i=0; i<count_distance_sensors; ++i) {
+                const auto* distance_sensor = static_cast<const DistanceSimple*>(
+                                                sensors_->getByType(SensorBase::SensorType::Distance, i));
+                // Don't send the data if sending to external controller is disabled in settings
+                if (distance_sensor && distance_sensor->getParams().external_controller) {
+                    const auto& distance_output = distance_sensor->getOutput();
+                    // AP uses meters so no need to convert here
+                    oss << sep << distance_output.distance;
+                    sep = ",";
+                }
+            }
+
+            // Close JSON array & element
+            oss << "]}";
+        }
+
+        const uint count_lidars = sensors_->size(SensorBase::SensorType::Lidar);
         if (count_lidars != 0) {
-            const auto& lidar_output = getLidarData("");
             oss << ","
                    "\"lidar\": {"
                    "\"point_cloud\": [";
 
-            std::copy(lidar_output.point_cloud.begin(), lidar_output.point_cloud.end(), std::ostream_iterator<real_T>(oss, ","));
+            // Add sensor outputs in the array
+            for (uint i=0; i<count_lidars; ++i) {
+                const auto* lidar = static_cast<const LidarSimple*>(sensors_->getByType(SensorBase::SensorType::Lidar, i));
+
+                if (lidar && lidar->getParams().external_controller) {
+                    const auto& lidar_output = lidar->getOutput();
+                    std::copy(lidar_output.point_cloud.begin(), lidar_output.point_cloud.end(), std::ostream_iterator<real_T>(oss, ","));
+                    // AP backend only takes in a single Lidar sensor data currently
+                    break;
+                }
+            }
+
+            // Close JSON array & element
             oss << "]}";
         }
+
+        const auto& imu_output = getImuData("");
 
         float yaw;
         float pitch;
         float roll;
         VectorMath::toEulerianAngle(imu_output.orientation, pitch, roll, yaw);
 
+        // UDP packets have a maximum size limit of 65kB
         char buf[65000];
 
-        // TODO: Split the following sensor packet formation into different parts for individual sensors
-
-        // UDP packets have a maximum size limit of 65kB
         int ret = snprintf(buf, sizeof(buf),
                            "{"
                            "\"timestamp\": %" PRIu64 ","
                            "\"imu\": {"
                            "\"angular_velocity\": [%.12f, %.12f, %.12f],"
                            "\"linear_acceleration\": [%.12f, %.12f, %.12f]"
-                           "},"
-                           "\"gps\": {"
-                           "\"lat\": %.7f,"
-                           "\"lon\": %.7f,"
-                           "\"alt\": %.3f"
-                           "},"
-                           "\"velocity\": {"
-                           "\"world_linear_velocity\": [%.12f, %.12f, %.12f]"
                            "},"
                            "\"pose\": {"
                            "\"roll\": %.12f,"
@@ -404,33 +456,27 @@ private:
                            "}"
                            "%s"
                            "}\n",
-                           static_cast<uint64_t>(msr::airlib::ClockFactory::get()->nowNanos() / 1.0E3),
+                           static_cast<uint64_t>(ClockFactory::get()->nowNanos() / 1.0E3),
                            imu_output.angular_velocity[0],
                            imu_output.angular_velocity[1],
                            imu_output.angular_velocity[2],
                            imu_output.linear_acceleration[0],
                            imu_output.linear_acceleration[1],
                            imu_output.linear_acceleration[2],
-                           gps_output.gnss.geo_point.latitude,
-                           gps_output.gnss.geo_point.longitude,
-                           gps_output.gnss.geo_point.altitude,
-                           gps_output.gnss.velocity[0],
-                           gps_output.gnss.velocity[1],
-                           gps_output.gnss.velocity[2],
                            roll, pitch, yaw,
                            oss.str().c_str());
 
         if (ret < 0) {
-            Utils::log("Encoding error while forming sensor message", Utils::kLogLevelInfo);
+            Utils::log("Encoding error while forming sensor message", Utils::kLogLevelError);
             return;
         }
         else if (static_cast<uint>(ret) >= sizeof(buf)) {
-            Utils::log(Utils::stringf("Sensor message truncated, lost %d bytes", ret - sizeof(buf)), Utils::kLogLevelInfo);
+            Utils::log(Utils::stringf("Sensor message truncated, lost %d bytes", ret - sizeof(buf)), Utils::kLogLevelWarn);
         }
 
         // Send data
-        if (udpSocket_ != nullptr) {
-            udpSocket_->sendto(buf, strlen(buf), ip_, port_);
+        if (udp_socket_ != nullptr) {
+            udp_socket_->sendto(buf, strlen(buf), ip_, port_);
         }
     }
 
@@ -438,7 +484,7 @@ private:
     {
         // Receive motor data
         RotorControlMessage pkt;
-        int recv_ret = udpSocket_->recv(&pkt, sizeof(pkt), 100);
+        int recv_ret = udp_socket_->recv(&pkt, sizeof(pkt), 100);
         while (recv_ret != sizeof(pkt)) {
             if (recv_ret <= 0) {
                 Utils::log(Utils::stringf("Error while receiving rotor control data - ErrorNo: %d", recv_ret), Utils::kLogLevelInfo);
@@ -446,7 +492,7 @@ private:
                 Utils::log(Utils::stringf("Received %d bytes instead of %zu bytes", recv_ret, sizeof(pkt)), Utils::kLogLevelInfo);
             }
 
-            recv_ret = udpSocket_->recv(&pkt, sizeof(pkt), 100);
+            recv_ret = udp_socket_->recv(&pkt, sizeof(pkt), 100);
         }
 
         for (auto i = 0; i < kArduCopterRotorControlCount; ++i) {
@@ -463,7 +509,7 @@ private:
         uint16_t pwm[kArduCopterRotorControlCount];
     };
 
-    std::shared_ptr<mavlinkcom::UdpSocket> udpSocket_;
+    std::unique_ptr<mavlinkcom::UdpSocket> udp_socket_;
 
     AirSimSettings::MavLinkConnectionInfo connection_info_;
     uint16_t port_;

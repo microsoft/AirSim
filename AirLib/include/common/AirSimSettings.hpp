@@ -215,6 +215,7 @@ public: //types
         Vector3r position = VectorMath::nanVector();
         Rotation rotation = Rotation::nanRotation();
         bool draw_debug_points = false;
+        bool external_controller = true;
     };
 
     struct LidarSetting : SensorSetting {
@@ -235,6 +236,8 @@ public: //types
 
         bool draw_debug_points = false;
         std::string data_frame = AirSimSettings::kVehicleInertialFrame;
+
+        bool external_controller = true;
     };
 
     struct VehicleSetting {
@@ -1237,6 +1240,7 @@ private:
         distance_setting.min_distance = settings_json.getFloat("MinDistance", distance_setting.min_distance);
         distance_setting.max_distance = settings_json.getFloat("MaxDistance", distance_setting.max_distance);
         distance_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", distance_setting.draw_debug_points);
+        distance_setting.external_controller = settings_json.getBool("ExternalController", distance_setting.external_controller);
 
         distance_setting.position = createVectorSetting(settings_json, distance_setting.position);
         distance_setting.rotation = createRotationSetting(settings_json, distance_setting.rotation);
@@ -1250,6 +1254,7 @@ private:
         lidar_setting.horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", lidar_setting.horizontal_rotation_frequency);
         lidar_setting.draw_debug_points = settings_json.getBool("DrawDebugPoints", lidar_setting.draw_debug_points);
         lidar_setting.data_frame = settings_json.getString("DataFrame", lidar_setting.data_frame);
+        lidar_setting.external_controller = settings_json.getBool("ExternalController", lidar_setting.external_controller);
 
         lidar_setting.vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", lidar_setting.vertical_FOV_upper);
         lidar_setting.vertical_FOV_lower = settings_json.getFloat("VerticalFOVLower", lidar_setting.vertical_FOV_lower);
