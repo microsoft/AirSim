@@ -22,6 +22,8 @@ public:
         Kinematics* kinematics, Environment* environment)
         : params_(params), vehicle_api_(vehicle_api)
     {
+        setName("MultiRotorPhysicsBody");
+        vehicle_api_->setParent(this);
         initialize(kinematics, environment);
     }
 

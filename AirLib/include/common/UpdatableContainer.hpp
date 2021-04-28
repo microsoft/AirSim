@@ -24,10 +24,21 @@ public: //limited container interface
     const TUpdatableObjectPtr& at(uint index) const { members_.at(index);  }
     TUpdatableObjectPtr& at(uint index) { return members_.at(index);  }
     //allow to override membership modifications
-    virtual void clear() { members_.clear(); }
-    virtual void insert(TUpdatableObjectPtr member) { members_.push_back(member);  }
-    virtual void erase_remove(TUpdatableObjectPtr obj) { 
-        members_.erase(std::remove(members_.begin(), members_.end(), obj), members_.end()); }
+    virtual void clear() {
+        for (auto m : members_) {
+            m->setParent(nullptr);
+        }
+        members_.clear();
+    }
+    virtual void insert(TUpdatableObjectPtr member) {
+        member->setParent(this);
+        members_.push_back(member);
+    }
+    virtual void erase_remove(TUpdatableObjectPtr member) {
+        member->setParent(nullptr);
+        members_.erase(std::remove(members_.begin(), members_.end(), member), members_.end());
+    }
+
 
 public:
     //*** Start: UpdatableState implementation ***//

@@ -84,7 +84,9 @@ public: //methods
         inertia_ = inertia;
         inertia_inv_ = inertia_.inverse();
         environment_ = environment;
+        environment_->setParent(this);
         kinematics_ = kinematics;
+        kinematics_->setParent(this);
     }
 
     //enable physics body detection

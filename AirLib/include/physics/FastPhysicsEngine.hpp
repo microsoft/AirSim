@@ -20,7 +20,8 @@ class FastPhysicsEngine : public PhysicsEngineBase {
 public:
     FastPhysicsEngine(bool enable_ground_lock = true, Vector3r wind = Vector3r::Zero())
         : enable_ground_lock_(enable_ground_lock), wind_(wind)
-    { 
+    {
+        setName("FastPhysicsEngine");
     }
 
     //*** Start: UpdatableState implementation ***//

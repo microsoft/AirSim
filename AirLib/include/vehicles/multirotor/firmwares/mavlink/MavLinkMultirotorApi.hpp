@@ -29,6 +29,7 @@
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 #include "common/PidController.hpp"
 #include "sensors/SensorCollection.hpp"
+#include "physics/World.hpp"
 
 //sensors
 #include "sensors/barometer/BarometerBase.hpp"
@@ -87,6 +88,15 @@ public: //methods
     {
         // note this is called AFTER "initialize" when we've connected to the drone
         // so this method cannot reset any of that connection state.
+        world_ = nullptr;
+
+        for (UpdatableObject* container = this->getParent(); container != nullptr; container = container->getParent()) {
+            if (container->getName() == "World") {
+                // cool beans!
+                // note: cannot use dynamic_cast because Unreal builds with /GR- for some unknown reason...
+                world_ = static_cast<World*>(container);
+            }
+        }
         MultirotorApiBase::resetImplementation();
         was_reset_ = true;
     }
@@ -1598,6 +1608,9 @@ private: //methods
             std::lock_guard<std::mutex> guard(telemetry_mutex_);
             actuator_delay_ += delay;
         }
+        if (world_ != nullptr) {
+            world_->pause(false);
+        }
     }
 
     void processMavMessages(const mavlinkcom::MavLinkMessage& msg)
@@ -1762,6 +1775,9 @@ private: //methods
         if (hil_node_ != nullptr) {
             hil_node_->sendMessage(hil_sensor);
             received_actuator_controls_ = false;
+            if (lock_step_enabled_ && world_ != nullptr) {
+                world_->pauseForTime(0.1); // 100 millisecond delay max waiting for actuator controls.
+            }
         }
 
         std::lock_guard<std::mutex> guard(last_message_mutex_);
@@ -1992,6 +2008,7 @@ private: //variables
     common_utils::Timer gcs_message_timer_;
     std::shared_ptr<mavlinkcom::MavLinkFileLog> log_;
     std::string log_file_name_;
+    World* world_;
 
     //every time we return status update, we need to check if we have new data
     //this is why below two variables are marked as mutable

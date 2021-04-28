@@ -20,7 +20,8 @@ public:
         : physics_engine_(std::move(physics_engine))
     { 
         World::clear();
-
+        setName("World");
+        physics_engine_->setParent(this);
         if (physics_engine)
             physics_engine_->clear();
     }
@@ -116,6 +117,11 @@ public:
     bool isPaused() const
     {
         return executor_.isPaused();
+    }
+
+    void pauseForTime(double seconds)
+    {
+        executor_.pauseForTime(seconds);
     }
 
     void continueForTime(double seconds)
