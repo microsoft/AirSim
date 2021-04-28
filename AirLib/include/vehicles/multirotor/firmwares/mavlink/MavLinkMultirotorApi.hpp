@@ -368,11 +368,15 @@ namespace msr { namespace airlib {
                 auto con = mav_vehicle_->getConnection();
                 if (con != nullptr) {
                     con->stopLoggingSendMessage();
-                    addStatusMessage(Utils::stringf("Closing log file: %s", log_file_name_.c_str()));
+                    con->stopLoggingReceiveMessage();
                 }
-                connection_->stopLoggingSendMessage();
+                if (connection_ != nullptr) {
+                    connection_->stopLoggingSendMessage();
+                    connection_->stopLoggingReceiveMessage();
+                }
             }
             if (log_ != nullptr) {
+                addStatusMessage(Utils::stringf("Closing log file: %s", log_file_name_.c_str()));
                 log_->close();
                 log_ = nullptr;
             }
