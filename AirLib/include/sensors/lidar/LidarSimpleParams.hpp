@@ -34,6 +34,8 @@ struct LidarSimpleParams {
     bool draw_debug_points = false;
     std::string data_frame = AirSimSettings::kVehicleInertialFrame;
 
+    bool external_controller = true;
+
     real_T update_frequency = 10;             // Hz
     real_T startup_delay = 0;                 // sec
 
@@ -48,6 +50,7 @@ struct LidarSimpleParams {
         horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", horizontal_rotation_frequency);
         draw_debug_points = settings_json.getBool("DrawDebugPoints", draw_debug_points);
         data_frame = settings_json.getString("DataFrame", data_frame);
+        external_controller = settings_json.getBool("ExternalController", external_controller);
 
         vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", Utils::nan<float>());
 

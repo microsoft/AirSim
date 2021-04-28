@@ -21,6 +21,7 @@ struct DistanceSimpleParams {
     };
 
     bool draw_debug_points = false;
+    bool external_controller = true;
 
 /*
     Ref: A Stochastic Approach to Noise Modeling for Barometric Altimeters
@@ -50,6 +51,7 @@ struct DistanceSimpleParams {
         min_distance = settings_json.getFloat("MinDistance", min_distance);
         max_distance = settings_json.getFloat("MaxDistance", max_distance);
         draw_debug_points = settings_json.getBool("DrawDebugPoints", draw_debug_points);
+        external_controller = settings_json.getBool("ExternalController", external_controller);
 
         auto position = AirSimSettings::createVectorSetting(settings_json, VectorMath::nanVector());
         auto rotation = AirSimSettings::createRotationSetting(settings_json, AirSimSettings::Rotation::nanRotation());

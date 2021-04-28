@@ -33,6 +33,7 @@ VerticalFOVLower          | Vertical FOV lower limit for the lidar, in degrees
 X Y Z                     | Position of the lidar relative to the vehicle (in NED, in meters)
 Roll Pitch Yaw            | Orientation of the lidar relative to the vehicle  (in degrees, yaw-pitch-roll order to front vector +X)
 DataFrame                 | Frame for the points in output ("VehicleInertialFrame" or "SensorLocalFrame")
+ExternalController        | Whether data is to be sent to external controller such as ArduPilot or PX4 if being used (default `true`) (PX4 doesn't send Lidar data currently)
 
 e.g.
 
