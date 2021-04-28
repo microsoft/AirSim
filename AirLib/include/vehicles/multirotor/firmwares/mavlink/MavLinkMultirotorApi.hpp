@@ -832,15 +832,30 @@ public:
         MavLinkLogViewerLog(std::shared_ptr<mavlinkcom::MavLinkNode> proxy) {
             proxy_ = proxy;
         }
+        ~MavLinkLogViewerLog() {
+            proxy_ = nullptr;
+        }
         void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override {
-            unused(timestamp);
-            mavlinkcom::MavLinkMessage copy;
-            ::memcpy(&copy, &msg, sizeof(mavlinkcom::MavLinkMessage));
-            proxy_->sendMessage(copy);
+            if (proxy_ != nullptr) {
+                unused(timestamp);
+                mavlinkcom::MavLinkMessage copy;
+                ::memcpy(&copy, &msg, sizeof(mavlinkcom::MavLinkMessage));
+                try {
+                    proxy_->sendMessage(copy);
+                }
+                catch (std::exception&) {
+                    failures++;
+                    if (failures == 100) {
+                        // hmmm, doesn't like the proxy, bad socket perhaps, so stop trying...
+                        proxy_ = nullptr;
+                    }
+                }
+            }
         }
 
     private:
         std::shared_ptr<mavlinkcom::MavLinkNode> proxy_;
+        int failures = 0;
     };
 
 
@@ -873,6 +888,8 @@ protected: //methods
                 setNormalMode();
             }
 
+            connection_->stopLoggingSendMessage();
+            connection_->stopLoggingReceiveMessage();
             connection_->close();
         }
 
@@ -884,6 +901,7 @@ protected: //methods
             auto c = mav_vehicle_->getConnection();
             if (c != nullptr) {
                 c->stopLoggingSendMessage();
+                c->stopLoggingReceiveMessage();
             }
             mav_vehicle_->close();
             mav_vehicle_ = nullptr;
@@ -1139,7 +1157,13 @@ private: //methods
                 logviewer_out_proxy_ = nullptr;
             }
             else if (mav_vehicle_ != nullptr) {
-                mav_vehicle_->getConnection()->startLoggingSendMessage(std::make_shared<MavLinkLogViewerLog>(logviewer_out_proxy_));
+                auto proxylog = std::make_shared<MavLinkLogViewerLog>(logviewer_out_proxy_);
+                mav_vehicle_->getConnection()->startLoggingSendMessage(proxylog);
+                mav_vehicle_->getConnection()->startLoggingReceiveMessage(proxylog);
+                if (connection_ != nullptr) {
+                    connection_->startLoggingSendMessage(proxylog);
+                    connection_->startLoggingReceiveMessage(proxylog);
+                }
             }
         }
         return logviewer_proxy_ != nullptr;

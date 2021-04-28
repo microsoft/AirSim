@@ -25,10 +25,12 @@ You will then see log files organized by date in d:\temp\logs, specifically *inp
 
 ## MavLink LogViewer
 For MavLink enabled drones, you can also use our [Log Viewer](log_viewer.md) to visualize the streams of data.
+If you enable this form of realtime logging you should not use the "Logs" setting above, these two forms of logging
+are mutually exclusive.
 
 ## PX4 Log in SITL Mode
 
-In SITL mode, please a log file is produced when drone is armed. The SITL terminal will contain the path to the log file, it should look something like this 
+In SITL mode, please a log file is produced when drone is armed. The SITL terminal will contain the path to the log file, it should look something like this
 ```
 INFO  [logger] Opened log file: rootfs/fs/microsd/log/2017-03-27/20_02_49.ulg
 ```
