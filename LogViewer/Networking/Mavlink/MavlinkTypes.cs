@@ -232,7 +232,7 @@ namespace Microsoft.Networking.Mavlink
             typeof(mavlink_gimbal_control_t),                                    // 201
             null,                                                                // 202
             null,                                                                // 203
-            null,                                                                // 204
+            typeof(mavlink_telemetry),                                           // 204
             null,                                                                // 205
             null,                                                                // 206
             null,                                                                // 207
@@ -6110,22 +6110,23 @@ namespace Microsoft.Networking.Mavlink
 
         };
 
-
-
         // custom message from the simulator 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 24)]
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12*4)]
         public struct mavlink_telemetry
         {
             public const int MessageId = 204;
-            public int messagesSent;       // number of messages sent since the last telemetry message
-            public int messagesReceived;   // number of messages received since the last telemetry message
-            public int messagesHandled;    // number of messages handled since the last telemetry message
-            public int crcErrors;          // # crc errors detected in mavlink stream since the last telemetry message
-            public int handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
-            public int renderTime;          // total time spent rendering frames since the last message
-            public int wifiRssi;            // if this device is communicating over wifi this is the signal strength.
+            public int messages_sent;        // number of messages sent since the last telemetry message
+            public int messages_received;    // number of messages received since the last telemetry message
+            public int messages_handled;     // number of messages handled since the last telemetry message
+            public int crc_errors;           // # crc errors detected in mavlink stream since the last telemetry message
+            public int handler_microseconds; // total time spent in the handlers in microseconds since the last telemetry message
+            public int render_time;          // total time spent rendering frames since the last telemetry message
+            public int wifi_rssi;            // if this device is communicating over wifi this is the signal strength.
+            public int udpate_rate;          // rate at which update() is being called on MavLinkMultiRotorApi
+            public int actuation_delay;      // delay from HIL_SENSOR to HIL_ACTUATORCONTROLS response
+            public int sensor_rate;          // rate we are sending HIL_SENSOR messages
+            public int lock_step_resets;     // total number of lock_step resets
+            public int update_time;          // avg time spent inside MavLinkMultiRotorApi::update method.
         };
-
-
     }
 }

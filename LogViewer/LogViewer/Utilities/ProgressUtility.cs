@@ -75,7 +75,7 @@ namespace LogViewer.Utilities
 
         private void OnProgressTick(object sender, object e)
         {
-            if (min == max)
+            if (min == max || max == current)
             {
                 this.bar.Visibility = Visibility.Collapsed;
             }
