@@ -39,7 +39,7 @@ e.g.
 
 ```json
 {
-    "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md",
+    "SeeDocsAt": "https://microsoft.github.io/AirSim/settings/",
     "SettingsVersion": 1.2,
 
     "SimMode": "Multirotor",

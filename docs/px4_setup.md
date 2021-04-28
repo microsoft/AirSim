@@ -8,14 +8,12 @@ The [PX4 software stack](http://github.com/px4/firmware) is an open source very 
 
 The following Pixhawk hardware has been tested with AirSim:
 
-1. [3DR Pixhawk v2](https://3dr.com/support/pixhawk/)
-2. [3DR Pixhawk mini](https://store.3dr.com/products/3dr-pixhawk)
-2. [Pixhawk PX4 2.4.8](http://www.banggood.com/Pixhawk-PX4-2_4_8-Flight-Controller-32-Bit-ARM-PX4FMU-PX4IO-Combo-for-Multicopters-p-1040416.html)
-3. [PixFalcon](https://hobbyking.com/en_us/pixfalcon-micro-px4-autopilot.html?___store=en_us)
-4. [PixRacer](https://www.banggood.com/Pixracer-Autopilot-Xracer-V1_0-Flight-Controller-Mini-PX4-Built-in-Wifi-For-FPV-Racing-RC-Multirotor-p-1056428.html?utm_source=google&utm_medium=cpc_ods&utm_content=starr&utm_campaign=Smlrfpv-ds-FPVracer&gclid=CjwKEAjw9MrIBRCr2LPek5-h8U0SJAD3jfhtbEfqhX4Lu94kPe88Zrr62A5qVgx-wRDBuUulGzHELRoCRVTw_wcB)
-5. [Pixhawk 2.1](http://www.proficnc.com/)
-6. [Pixhawk 4 mini from Holybro](https://shop.holybro.com/pixhawk4-mini_p1120.html)
-7. [Pixhawk 4 from Holybro](https://shop.holybro.com/pixhawk-4beta-launch_p1089.html)
+1. [Pixhawk PX4 2.4.8](http://www.banggood.com/Pixhawk-PX4-2_4_8-Flight-Controller-32-Bit-ARM-PX4FMU-PX4IO-Combo-for-Multicopters-p-1040416.html)
+1. [PixFalcon](https://hobbyking.com/en_us/pixfalcon-micro-px4-autopilot.html?___store=en_us)
+1. [PixRacer](https://www.banggood.com/Pixracer-Autopilot-Xracer-V1_0-Flight-Controller-Mini-PX4-Built-in-Wifi-For-FPV-Racing-RC-Multirotor-p-1056428.html?utm_source=google&utm_medium=cpc_ods&utm_content=starr&utm_campaign=Smlrfpv-ds-FPVracer&gclid=CjwKEAjw9MrIBRCr2LPek5-h8U0SJAD3jfhtbEfqhX4Lu94kPe88Zrr62A5qVgx-wRDBuUulGzHELRoCRVTw_wcB)
+1. [Pixhawk 2.1](http://www.proficnc.com/)
+1. [Pixhawk 4 mini from Holybro](https://shop.holybro.com/pixhawk4-mini_p1120.html)
+1. [Pixhawk 4 from Holybro](https://shop.holybro.com/pixhawk-4beta-launch_p1089.html)
 
 Version 1.11.2 of the PX4 firmware also works on the Pixhawk 4 devices.
 
@@ -26,7 +24,7 @@ For this you will need one of the supported device listed above. For manual flig
 1. Make sure your RC receiver is bound with its RC transmitter. Connect the RC transmitter to the flight controller's RC port. Refer to your RC manual and [PX4 docs](https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html) for more information.
 2. Download [QGroundControl](http://qgroundcontrol.com/), launch it and connect your flight controller to the USB port.
 3. Use QGroundControl to flash the latest PX4 Flight Stack.
-See also [initial firmware setup video](https://dev.px4.io/starting-initial-config.html).
+See also [initial firmware setup video](https://docs.px4.io/master/en/config/).
 4. In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected.
 5. In QGroundControl, go to Radio tab and calibrate (make sure the remote control is on and the receiver is showing the indicator for the binding). 
 6. Go to the Flight Mode tab and chose one of the remote control switches as "Mode Channel". Then set (for example) Stabilized and Attitude flight modes for two positions of the switch.
@@ -43,9 +41,9 @@ See also [initial firmware setup video](https://dev.px4.io/starting-initial-conf
                 "Parameters": {
                     "NAV_RCL_ACT": 0,
                     "NAV_DLL_ACT": 0,
+                    "COM_OBL_ACT": 1,
                     "LPE_LAT": 47.641468,
-                    "LPE_LON": -122.140165,
-                    "COM_OBL_ACT": 1
+                    "LPE_LON": -122.140165
                 }
             }
         }

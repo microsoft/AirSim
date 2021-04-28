@@ -4,26 +4,22 @@
 
 Getting the PX4 source code is easy:
 ```
-git clone https://github.com/PX4/Firmware.git
-cd Firmware
-```
-
-Oh, and if you don't have git yet just run this:
-
-```
 sudo apt-get install git
+git clone https://github.com/PX4/PX4-Autopilot.git --recursive
+bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-sim-tools
+cd PX4-Autopilot
 ```
 
-We are currently testing using the 1.6.0rc1 version, but the latest master branch should be ok too.
 Now to build it you will need the right tools.
 
 ## PX4 Build tools
 
-The full instructions are available on the [dev.px4.io](http://dev.px4.io/starting-installing-linux.html) website,
+The full instructions are available on the [dev.px4.io](https://docs.px4.io/master/en/dev_setup/building_px4.html) website,
 but we've copied the relevant subset of those instructions here for your convenience.
 
 (Note that [BashOnWindows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide)) can be used to build
-the PX4 firmware, just follow the BashOnWindows instructions at the bottom of this page).
+the PX4 firmware, just follow the BashOnWindows instructions at the bottom of this page) then proceed with the 
+Ubuntu setup for PX4.
 
 ## Build SITL version
 
@@ -34,7 +30,17 @@ make px4_sitl_default none_iris
 
 Note: this build system is quite special, it knows how to update git submodules (and there's a lot
 of them), then it runs cmake (if necessary), then it runs the build itself. So in a way the root
-Makefile is a meta-meta makefile :-)
+Makefile is a meta-meta makefile :-)   You might see prompts like this:
+
+```shell
+ *******************************************************************************
+ *   IF YOU DID NOT CHANGE THIS FILE (OR YOU DON'T KNOW WHAT A SUBMODULE IS):  *
+ *   Hit 'u' and <ENTER> to update ALL submodules and resolve this.            *
+ *   (performs git submodule sync --recursive                                  *
+ *    and git submodule update --init --recursive )                            *
+ *******************************************************************************
+```
+Every time you see this prompt type 'u' on your keyboard.
 
 It shouldn't take long, about 2 minutes. If all succeeds, the last line will link the `px4` app,
 which you can then run using the following:
