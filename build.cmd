@@ -65,33 +65,33 @@ if ERRORLEVEL 1 (
 REM //---------- get rpclib ----------
 IF NOT EXIST external\rpclib mkdir external\rpclib
 IF NOT EXIST external\rpclib\rpclib-2.2.1 (
-	REM //leave some blank lines because %powershell% shows download banner at top of console
-	ECHO(
-	ECHO(   
-	ECHO(   
-	ECHO *****************************************************************************************
-	ECHO Downloading rpclib
-	ECHO *****************************************************************************************
-	@echo on
+    REM //leave some blank lines because %powershell% shows download banner at top of console
+    ECHO(
+    ECHO(   
+    ECHO(   
+    ECHO *****************************************************************************************
+    ECHO Downloading rpclib
+    ECHO *****************************************************************************************
+    @echo on
     if "%PWSHV7%" == "" (
         %powershell% -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/madratman/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip }"
     ) else (
-	    %powershell% -command "iwr https://github.com/madratman/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip"
+        %powershell% -command "iwr https://github.com/madratman/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip"
     )
-	@echo off
-	
-	REM //remove any previous versions
-	rmdir external\rpclib /q /s
+    @echo off
+    
+    REM //remove any previous versions
+    rmdir external\rpclib /q /s
 
-	%powershell% -command "Expand-Archive -Path external\rpclib.zip -DestinationPath external\rpclib"
-	del external\rpclib.zip /q
-	
-	REM //Don't fail the build if the high-poly car is unable to be downloaded
-	REM //Instead, just notify users that the gokart will be used.
-	IF NOT EXIST external\rpclib\rpclib-2.2.1 (
-		ECHO Unable to download high-polycount SUV. Your AirSim build will use the default vehicle.
-		goto :buildfailed
-	)
+    %powershell% -command "Expand-Archive -Path external\rpclib.zip -DestinationPath external\rpclib"
+    del external\rpclib.zip /q
+    
+    REM //Don't fail the build if the high-poly car is unable to be downloaded
+    REM //Instead, just notify users that the gokart will be used.
+    IF NOT EXIST external\rpclib\rpclib-2.2.1 (
+        ECHO Unable to download high-polycount SUV. Your AirSim build will use the default vehicle.
+        goto :buildfailed
+    )
 )
 
 REM //---------- Build rpclib ------------
@@ -148,7 +148,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.2.0 (
             %powershell% -command "iwr https://github.com/Microsoft/AirSim/releases/download/v1.2.0/car_assets.zip -OutFile suv_download_tmp\car_assets.zip"
         )
         @echo off
-		rmdir /S /Q Unreal\Plugins\AirSim\Content\VehicleAdv\SUV
+        rmdir /S /Q Unreal\Plugins\AirSim\Content\VehicleAdv\SUV
         %powershell% -command "Expand-Archive -Path suv_download_tmp\car_assets.zip -DestinationPath Unreal\Plugins\AirSim\Content\VehicleAdv"
         rmdir suv_download_tmp /q /s
         

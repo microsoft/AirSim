@@ -1744,7 +1744,7 @@ private: //methods
         }
         else {
             // creates too much log output, only do this when debugging this issue specifically.
-            // Utils::log(Utils::stringf("Ignornig msg %d from %d,%d ", msg.msgid, msg.compid, msg.sysid));
+            // Utils::log(Utils::stringf("Ignoring msg %d from %d,%d ", msg.msgid, msg.compid, msg.sysid));
         }
     }
 
