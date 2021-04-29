@@ -309,7 +309,7 @@ int MavLinkTelemetry::pack(char* buffer) const {
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->handler_microseconds), 16);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->render_time), 20);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->wifi_rssi), 24);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->udpate_rate), 28);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->update_rate), 28);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->actuation_delay), 32);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->sensor_rate), 36);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->lock_step_resets), 40);
@@ -325,7 +325,7 @@ int MavLinkTelemetry::unpack(const char* buffer) {
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->handler_microseconds), 16);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->render_time), 20);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->wifi_rssi), 24);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->udpate_rate), 28);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->update_rate), 28);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->actuation_delay), 32);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->sensor_rate), 36);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->lock_step_resets), 40);

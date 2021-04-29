@@ -147,7 +147,7 @@ public:
     uint32_t handler_microseconds = 0; // total time spent in the handlers in microseconds since the last telemetry message
     uint32_t render_time = 0;          // total time spent rendering frames since the last telemetry message
     int32_t wifi_rssi = 0;             // if this device is communicating over wifi this is the signal strength.
-    uint32_t udpate_rate = 0;          // rate at which update() is being called on MavLinkMultiRotorApi
+    uint32_t update_rate = 0;          // rate at which update() is being called on MavLinkMultiRotorApi
     uint32_t actuation_delay = 0;      // delay from HIL_SENSOR to HIL_ACTUATORCONTROLS response
     uint32_t sensor_rate = 0;          // rate we are sending HIL_SENSOR messages
     uint32_t lock_step_resets = 0;     // total number of lock_step resets
@@ -166,7 +166,7 @@ public:
         result << "\"handler_microseconds\":" << this->handler_microseconds << ",";
         result << "\"render_time\":" << this->render_time;
         result << "\"wifi_rssi\":" << this->wifi_rssi;
-        result << "\"udpate_rate\":" << this->udpate_rate;
+        result << "\"update_rate\":" << this->update_rate;
         result << "\"actuation_delay\":" << this->actuation_delay;
         result << "\"sensor_rate\":" << this->sensor_rate;
         result << "\"lock_step_resets\":" << this->lock_step_resets;

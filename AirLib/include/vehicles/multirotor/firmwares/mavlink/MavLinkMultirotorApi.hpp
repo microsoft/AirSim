@@ -660,7 +660,7 @@ public: //methods
                 average_update = static_cast<uint32_t>(update_time_ / hil_sensor_count_);
             }
 
-            data.udpate_rate = update_count_;
+            data.update_rate = update_count_;
             data.sensor_rate = hil_sensor_count_;
             data.actuation_delay = average_delay;
             data.lock_step_resets = lock_step_resets_;
