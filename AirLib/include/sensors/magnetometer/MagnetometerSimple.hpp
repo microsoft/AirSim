@@ -15,7 +15,8 @@
 
 namespace msr { namespace airlib {
 
-class MagnetometerSimple : public MagnetometerBase {
+class MagnetometerSimple : public MagnetometerBase
+{
 public: 
     MagnetometerSimple(const AirSimSettings::MagnetometerSetting& setting = AirSimSettings::MagnetometerSetting())
         : MagnetometerBase(setting.sensor_name)
@@ -66,8 +67,7 @@ public:
 private: //methods
     void updateReference(const GroundTruth& ground_truth)
     {
-        switch (params_.ref_source)
-        {
+        switch (params_.ref_source) {
         case MagnetometerSimpleParams::ReferenceSource::ReferenceSource_Constant:
             // Constant magnetic field for Seattle
             magnetic_field_true_ = Vector3r(0.34252f, 0.09805f, 0.93438f);

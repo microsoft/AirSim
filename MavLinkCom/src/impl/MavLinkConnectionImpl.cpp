@@ -215,8 +215,7 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& m)
         ::memcpy(&msg, &m, sizeof(MavLinkMessage));
         prepareForSending(msg);
 
-        if (sendLog_ != nullptr)
-        {
+        if (sendLog_ != nullptr) {
             sendLog_->write(msg);
         }
 
@@ -364,10 +363,8 @@ int MavLinkConnectionImpl::subscribe(MessageHandler handler)
 void MavLinkConnectionImpl::unsubscribe(int id)
 {
     std::lock_guard<std::mutex> guard(listener_mutex);
-    for (auto ptr = listeners.begin(), end = listeners.end(); ptr != end; ptr++)
-    {
-        if ((*ptr).id == id)
-        {
+    for (auto ptr = listeners.begin(), end = listeners.end(); ptr != end; ptr++) {
+        if ((*ptr).id == id) {
             listeners.erase(ptr);
             snapshot_stale = true;
             break;
@@ -379,8 +376,7 @@ void MavLinkConnectionImpl::joinLeftSubscriber(std::shared_ptr<MavLinkConnection
 {
     unused(connection);
     // forward messages from our connected node to the remote proxy.
-    if (supports_mavlink2_)
-    {
+    if (supports_mavlink2_) {
         // tell the remote connection to expect mavlink2 messages.
         remote->pImpl->supports_mavlink2_ = true;
     }
@@ -415,11 +411,9 @@ void MavLinkConnectionImpl::readPackets()
     mavlink_intermediate_status_.parse_state = MAVLINK_PARSE_STATE_IDLE;
     int channel = 0;
     int hr = 0;
-    while (hr == 0 && con_ != nullptr && !closed)
-    {
+    while (hr == 0 && con_ != nullptr && !closed) {
         int read = 0;
-        if (safePort->isClosed())
-        {
+        if (safePort->isClosed()) {
             // hmmm, wait till it is opened?
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
@@ -431,8 +425,7 @@ void MavLinkConnectionImpl::readPackets()
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             uint8_t frame_state = mavlink_frame_char_buffer(&msgBuffer, &mavlink_intermediate_status_, buffer[i], &msg, &mavlink_status_);
 
             if (frame_state == MAVLINK_FRAMING_INCOMPLETE) {
@@ -442,24 +435,21 @@ void MavLinkConnectionImpl::readPackets()
                 std::lock_guard<std::mutex> guard(telemetry_mutex_);
                 telemetry_.crc_errors++;
             }
-            else if (frame_state == MAVLINK_FRAMING_OK)
-            {
+            else if (frame_state == MAVLINK_FRAMING_OK) {
                 // pick up the sysid/compid of the remote node we are connected to.
                 if (other_system_id == -1) {
                     other_system_id = msg.sysid;
                     other_component_id = msg.compid;
                 }
 
-                if (mavlink_intermediate_status_.flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
-                {
+                if (mavlink_intermediate_status_.flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
                     // then this is a mavlink 1 message
                 } else if (!supports_mavlink2_) {
                     // then this mavlink sender supports mavlink 2
                     supports_mavlink2_ = true;
                 }
 
-                if (con_ != nullptr && !closed)
-                {
+                if (con_ != nullptr && !closed) {
                     {
                         std::lock_guard<std::mutex> guard(telemetry_mutex_);
                         telemetry_.messages_received++;
@@ -513,8 +503,7 @@ void MavLinkConnectionImpl::drainQueue()
                 hasMsg = true;
             }
         }
-        if (!hasMsg)
-        {
+        if (!hasMsg) {
             return;
         }        
         
@@ -536,20 +525,17 @@ void MavLinkConnectionImpl::drainQueue()
         }
         auto end = snapshot.end();
 
-        if (message.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION))
-        {
+        if (message.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION)) {
             MavLinkAutopilotVersion cap;
             cap.decode(message);
-            if ((cap.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2) != 0)
-            {
+            if ((cap.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2) != 0) {
                 this->supports_mavlink2_ = true;
             }
         }
 
         auto startTime = std::chrono::system_clock::now();
         std::shared_ptr<MavLinkConnection> sharedPtr = std::shared_ptr<MavLinkConnection>(this->con_);
-        for (auto ptr = snapshot.begin(); ptr != end; ptr++)
-        {
+        for (auto ptr = snapshot.begin(); ptr != end; ptr++) {
             try {
                 (*ptr).handler(sharedPtr, message);
             }

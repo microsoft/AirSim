@@ -15,7 +15,8 @@ namespace msr { namespace airlib {
 
 // A description of the parameters:
 // https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model-and-Intrinsics
-struct ImuSimpleParams {
+struct ImuSimpleParams 
+{
     /* ref: Parameter values are for MPU 6000 IMU from InvenSense 
     Design and Characterization of a Low Cost MEMS IMU Cluster for Precision Navigation
     Daniel R. Greenheck, 2009, sec 2.2, pp 17
@@ -24,7 +25,8 @@ struct ImuSimpleParams {
     https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf
     For Allan Variance/Deviation plots see http://www.invensense.com/wp-content/uploads/2015/02/MPU-3300-Datasheet.pdf
     */
-    struct Gyroscope {
+    struct Gyroscope 
+    {
         //angular random walk (ARW)
         real_T arw = 0.30f / sqrt(3600.0f) * M_PIf / 180; //deg/sqrt(hour) converted to rad/sqrt(sec)
         //Bias Stability (tau = 500s)
@@ -33,7 +35,8 @@ struct ImuSimpleParams {
         Vector3r turn_on_bias = Vector3r::Zero(); //assume calibration is done
     } gyro;
 
-    struct Accelerometer {
+    struct Accelerometer 
+    {
         //velocity random walk (ARW)
         real_T vrw = 0.24f * EarthUtils::Gravity / 1.0E3f; //mg converted to m/s^2 
         //Bias Stability (tau = 800s)

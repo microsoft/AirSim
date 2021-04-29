@@ -10,7 +10,8 @@
 namespace msr { namespace airlib {
 
 
-struct MagnetometerSimpleParams {
+struct MagnetometerSimpleParams 
+{
     enum ReferenceSource {
         ReferenceSource_Constant,
         ReferenceSource_DipoleModel

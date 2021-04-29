@@ -16,7 +16,8 @@
 
 namespace msr { namespace airlib {
 
-class FastPhysicsEngine : public PhysicsEngineBase {
+class FastPhysicsEngine : public PhysicsEngineBase 
+{
 public:
     FastPhysicsEngine(bool enable_ground_lock = true, Vector3r wind = Vector3r::Zero())
         : enable_ground_lock_(enable_ground_lock), wind_(wind)
@@ -51,8 +52,8 @@ public:
     {
         for (PhysicsBody* body_ptr : *this) {
             reporter.writeValue("Phys", debug_string_.str());
-			reporter.writeValue("Is Grounded", body_ptr->isGrounded());
-			reporter.writeValue("Force (world)", body_ptr->getWrench().force);
+            reporter.writeValue("Is Grounded", body_ptr->isGrounded());
+            reporter.writeValue("Force (world)", body_ptr->getWrench().force);
             reporter.writeValue("Torque (body)", body_ptr->getWrench().torque);
         }
         //call base
@@ -106,12 +107,12 @@ private:
         body.unlock();
 
 
-		//TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence
+        //TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence
         //with below commented out - Arducopter GPS may not work.
-		//body.getEnvironment().setPosition(next.pose.position);
-		//body.getEnvironment().update();
-		
-	}
+        //body.getEnvironment().setPosition(next.pose.position);
+        //body.getEnvironment().update();
+        
+    }
 
     static void updateCollisionResponseInfo(const CollisionInfo& collision_info, const Kinematics::State& next, 
         bool is_collision_response, CollisionResponse& collision_response)
@@ -232,7 +233,7 @@ private:
             // also eliminate any linear velocity due to twist - since we are sitting on the ground there shouldn't be any.
             next.twist.linear = Vector3r::Zero();
             next.pose.position = collision_info.position;
-			body.setGrounded(true);
+            body.setGrounded(true);
 
             // but we do want to "feel" the ground when we hit it (we should see a small z-acc bump)
             // equal and opposite our downward velocity.
@@ -240,8 +241,7 @@ private:
 
             //throttledLogOutput("*** Triggering ground lock", 0.1);
         }
-        else
-        {
+        else {
             //else keep the orientation
             next.pose.position = collision_info.position + (collision_info.normal * collision_info.penetration_depth) + next.twist.linear * (dt_real * kCollisionResponseCycles);
         }
@@ -256,8 +256,7 @@ private:
     {
         TTimeDelta dt = clock()->elapsedSince(last_message_time);
         const real_T dt_real = static_cast<real_T>(dt);
-        if (dt_real > seconds)
-        {
+        if (dt_real > seconds) {
             Utils::log(msg);
             last_message_time = clock()->nowNanos();
         }
@@ -341,10 +340,9 @@ private:
             float external_force_magnitude = body_wrench.force.squaredNorm();
             Vector3r weight = body.getMass() * body.getEnvironment().getState().gravity;
             float weight_magnitude = weight.squaredNorm();
-            if (external_force_magnitude >= weight_magnitude)
-            {
+            if (external_force_magnitude >= weight_magnitude) {
                 //throttledLogOutput("*** Losing ground lock due to body_wrench " + VectorMath::toString(body_wrench.force), 0.1);
-				body.setGrounded(false);
+                body.setGrounded(false);
             }
             next_wrench.force = Vector3r::Zero();
             next_wrench.torque = Vector3r::Zero();

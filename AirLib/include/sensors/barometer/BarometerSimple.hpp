@@ -16,7 +16,8 @@
 
 namespace msr { namespace airlib {
 
-class BarometerSimple  : public BarometerBase {
+class BarometerSimple  : public BarometerBase
+{
 public:
     BarometerSimple(const AirSimSettings::BarometerSetting& setting = AirSimSettings::BarometerSetting())
         : BarometerBase(setting.sensor_name)

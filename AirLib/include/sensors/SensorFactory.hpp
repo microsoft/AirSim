@@ -15,7 +15,8 @@
 namespace msr { namespace airlib {
 
 
-class SensorFactory {
+class SensorFactory
+{
 public:
 
     // creates one sensor from settings

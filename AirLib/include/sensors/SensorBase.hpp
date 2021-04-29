@@ -18,7 +18,8 @@ namespace msr { namespace airlib {
     After construction of the derived class an initialize(...) must be made which would
     set the sensor in good-to-use state by call to reset.
 */
-class SensorBase : public UpdatableObject  {
+class SensorBase : public UpdatableObject
+{
 public:
     enum class SensorType : uint {
         Barometer = 1,

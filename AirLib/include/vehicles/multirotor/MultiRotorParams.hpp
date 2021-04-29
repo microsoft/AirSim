@@ -12,7 +12,8 @@
 
 namespace msr { namespace airlib {
 
-class MultiRotorParams {
+class MultiRotorParams
+{
 //All units are SI
 public: //types
     struct RotorPose {

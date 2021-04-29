@@ -71,8 +71,7 @@ public:
 
             packet.magic = 0x4c56414f;
 
-            if (udpSocket_ != nullptr)
-            {
+            if (udpSocket_ != nullptr) {
                 std::vector<uint8_t> msg(sizeof(packet));
                 memcpy(msg.data(), &packet, sizeof(packet));
                 udpSocket_->sendMessage(msg);
@@ -170,8 +169,7 @@ private:
 
     void rotorPowerMessageHandler(std::shared_ptr<mavlinkcom::AdHocConnection> connection, const std::vector<uint8_t> &msg)
     {
-        if (msg.size() != sizeof(RotorControlMessage))
-        {
+        if (msg.size() != sizeof(RotorControlMessage)) {
             Utils::log("Got rotor control message of size " + std::to_string(msg.size()) + " when we were expecting size " + std::to_string(sizeof(RotorControlMessage)), Utils::kLogLevelError);
             return;
         }
@@ -201,8 +199,7 @@ private:
         float phiDot = p + tan(theta)*(q*sin(phi) + r * cos(phi));
 
         float thetaDot = q * cos(phi) - r * sin(phi);
-        if (fabs(cos(theta)) < 1.0e-20)
-        {
+        if (fabs(cos(theta)) < 1.0e-20) {
             theta += 1.0e-10f;
         }
 

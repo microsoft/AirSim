@@ -4,7 +4,7 @@ The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (
 their stack that runs in Linux. If you are on Windows then you can use the [Cygwin
 Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) or you can use the
 [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) and follow
-the PX4 Linux toolchain setup. 
+the PX4 Linux toolchain setup.
 
 If you are using WSL2 please read these [additional
 instructions](px4_sitl_wsl2.md).
@@ -22,7 +22,7 @@ instructions](px4_sitl_wsl2.md).
     mkdir -p PX4
     cd PX4
     git clone https://github.com/PX4/PX4-Autopilot.git --recursive
-    bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools 
+    bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
     cd PX4-Autopilot
     ```
     And find the latest stable release from [https://github.com/PX4/PX4-Autopilot/releases](https://github.com/PX4/PX4-Autopilot/releases)
@@ -62,7 +62,7 @@ The default ports have changed recently, so check them closely to make sure AirS
                 "UseSerial": false,
                 "UseTcp": true,
                 "TcpPort": 4560,
-                "ControlPort": 14580,,
+                "ControlPort": 14580,
                 "Sensors":{
                     "Barometer":{
                         "SensorType": 1,

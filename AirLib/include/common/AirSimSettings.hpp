@@ -17,7 +17,8 @@
 
 namespace msr { namespace airlib {
 
-struct AirSimSettings {
+struct AirSimSettings 
+{
 private:
     typedef common_utils::Utils Utils;
     typedef ImageCaptureBase::ImageType ImageType;
@@ -39,7 +40,8 @@ public: //types
     static constexpr char const * kSimModeTypeCar = "Car";
     static constexpr char const * kSimModeTypeComputerVision = "ComputerVision";
 
-    struct SubwindowSetting {
+    struct SubwindowSetting 
+    {
         int window_index;
         ImageType image_type;
         bool visible;
@@ -54,7 +56,8 @@ public: //types
         }
     };
 
-    struct RecordingSetting {
+    struct RecordingSetting 
+    {
         bool record_on_move = false;
         float record_interval = 0.05f;
         std::string folder = "";
@@ -73,7 +76,8 @@ public: //types
         }
     };
 
-    struct PawnPath {
+    struct PawnPath 
+    {
         std::string pawn_bp;
         std::string slippery_mat;
         std::string non_slippery_mat;
@@ -86,12 +90,14 @@ public: //types
         }
     };
 
-    struct RCSettings {
+    struct RCSettings 
+    {
         int remote_control_id = -1;
         bool allow_api_when_disconnected = false;
     };
 
-    struct Rotation {
+    struct Rotation
+    {
         float yaw = 0;
         float pitch = 0;
         float roll = 0;
@@ -113,13 +119,15 @@ public: //types
     };
 
 
-    struct GimbalSetting {
+    struct GimbalSetting 
+    {
         float stabilization = 0;
         //bool is_world_frame = false;
         Rotation rotation = Rotation::nanRotation();
     };
 
-    struct CaptureSetting {
+    struct CaptureSetting 
+    {
         //below settings_json are obtained by using Unreal console command (press ~):
         // ShowFlag.VisualizeHDR 1.
         //to replicate camera settings_json to SceneCapture2D
@@ -145,7 +153,8 @@ public: //types
         float ortho_width = Utils::nan<float>();
     };
 
-    struct NoiseSetting {
+    struct NoiseSetting 
+    {
         int ImageType = 0;
 
         bool Enabled = false;
@@ -168,7 +177,8 @@ public: //types
         float HorzDistortionStrength = 0.002f;
     };
 
-    struct CameraSetting {
+    struct CameraSetting 
+    {
         //nan means keep the default values set in components
         Vector3r position = VectorMath::nanVector();
         Rotation rotation = Rotation::nanRotation();
@@ -184,38 +194,47 @@ public: //types
         }
     };
 
-    struct CameraDirectorSetting {
+    struct CameraDirectorSetting 
+    {
         Vector3r position = VectorMath::nanVector();
         Rotation rotation = Rotation::nanRotation();
         float follow_distance = Utils::nan<float>();
     };
 
-    struct SensorSetting {
+    struct SensorSetting 
+    {
         SensorBase::SensorType sensor_type;
         std::string sensor_name;
         bool enabled = true;
         Settings settings; // imported json data that needs to be parsed by specific sensors.
     };
 
-    struct BarometerSetting : SensorSetting {
+    struct BarometerSetting : SensorSetting 
+    {
     };
 
-    struct ImuSetting : SensorSetting {
+    struct ImuSetting : SensorSetting 
+    {
     };
 
-    struct GpsSetting : SensorSetting {
+    struct GpsSetting : SensorSetting 
+    {
     };
 
-    struct MagnetometerSetting : SensorSetting {
+    struct MagnetometerSetting : SensorSetting 
+    {
     };
 
-    struct DistanceSetting : SensorSetting {
+    struct DistanceSetting : SensorSetting 
+    {
     };
 
-    struct LidarSetting : SensorSetting {
+    struct LidarSetting : SensorSetting 
+    {
     };
 
-    struct VehicleSetting {
+    struct VehicleSetting 
+    {
         //required
         std::string vehicle_name;
         std::string vehicle_type;
@@ -240,7 +259,8 @@ public: //types
         RCSettings rc;
     };
 
-    struct MavLinkConnectionInfo {
+    struct MavLinkConnectionInfo 
+    {
         /* Default values are requires so uninitialized instance doesn't have random values */
 
         bool use_serial = true; // false means use UDP or TCP instead
@@ -292,11 +312,13 @@ public: //types
         std::string logs;
     };
 
-    struct MavLinkVehicleSetting : public VehicleSetting {
+    struct MavLinkVehicleSetting : public VehicleSetting 
+    {
         MavLinkConnectionInfo connection_info;
     };
 
-    struct SegmentationSetting {
+    struct SegmentationSetting 
+    {
         enum class InitMethodType {
             None, CommonObjectsRandomIDs
         };
@@ -310,7 +332,8 @@ public: //types
         MeshNamingMethodType mesh_naming_method = MeshNamingMethodType::OwnerName;
     };
 
-    struct TimeOfDaySetting {
+    struct TimeOfDaySetting 
+    {
         bool enabled = false;
         std::string start_datetime = "";    //format: %Y-%m-%d %H:%M:%S
         bool is_start_datetime_dst = false;
@@ -711,13 +734,11 @@ private:
         connection_info.control_port_remote = settings_json.getInt("ControlPortRemote", connection_info.control_port_remote);
 
         std::string sitlip = settings_json.getString("SitlIp", connection_info.control_ip_address);
-        if (sitlip.size() > 0 && connection_info.control_ip_address.size() == 0)
-        {
+        if (sitlip.size() > 0 && connection_info.control_ip_address.size() == 0) {
             // backwards compat
             connection_info.control_ip_address = sitlip;
         }
-        if (settings_json.hasKey("SitlPort"))
-        {
+        if (settings_json.hasKey("SitlPort")) {
             // backwards compat
             connection_info.control_port_local = settings_json.getInt("SitlPort", connection_info.control_port_local);
         }
@@ -738,8 +759,7 @@ private:
         if (settings_json.getChild("Parameters", params)) {
             std::vector<std::string> keys;
             params.getChildNames(keys);
-            for (auto key: keys)
-            {
+            for (auto key: keys) {
                 connection_info.params[key] = params.getFloat(key, 0);
             }
         }
@@ -1170,8 +1190,7 @@ private:
                 //for multirotors we select steppable fixed interval clock unless we have
                 //PX4 enabled vehicle
                 clock_type = "SteppableClock";
-                for (auto const& vehicle : vehicles)
-                {
+                for (auto const& vehicle : vehicles) {
                     if (vehicle.second->auto_create &&
                         vehicle.second->vehicle_type == kVehicleTypePX4) {
                         clock_type = "ScalableClock";

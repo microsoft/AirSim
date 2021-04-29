@@ -278,8 +278,7 @@ void MavLinkMessageBase::unpack_int8_t_array(int len, const char* buffer, int8_t
 }
 void MavLinkMessageBase::unpack_uint16_t_array(int len, const char* buffer, uint16_t* field, int offset)
 {
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
         _mav_get_uint16_t(buffer, offset, field);
         offset += sizeof(uint16_t);
         field++;
@@ -287,8 +286,7 @@ void MavLinkMessageBase::unpack_uint16_t_array(int len, const char* buffer, uint
 }
 void MavLinkMessageBase::unpack_int16_t_array(int len, const char* buffer, int16_t* field, int offset)
 {
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
         _mav_get_int16_t(buffer, offset, field);
         offset += sizeof(int16_t);
         field++;
@@ -296,8 +294,7 @@ void MavLinkMessageBase::unpack_int16_t_array(int len, const char* buffer, int16
 }
 void MavLinkMessageBase::unpack_float_array(int len, const char* buffer, float* field, int offset)
 {
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
         _mav_get_float(buffer, offset, field);
         offset += sizeof(float);
         field++;
@@ -339,8 +336,7 @@ int MavLinkTelemetry::unpack(const char* buffer) {
 std::string MavLinkMessageBase::char_array_tostring(int len, const char* field)
 {
     int i = 0;
-    for (i= 0; i < len; i++)
-    {
+    for (i= 0; i < len; i++) {
         if (field[i] == '\0')
             break;
     }

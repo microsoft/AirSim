@@ -14,7 +14,8 @@
 
 namespace msr { namespace airlib {
 
-class CarApiBase : public VehicleApiBase  {
+class CarApiBase : public VehicleApiBase
+{
 public:
     struct CarControls {
         float throttle = 0; /* 1 to -1 */
@@ -83,7 +84,7 @@ public:
 public:
 
     // TODO: Temporary constructor for the Unity implementation which does not use the new Sensor Configuration Settings implementation.
-	//CarApiBase() {}
+    //CarApiBase() {}
 
     CarApiBase(const AirSimSettings::VehicleSetting* vehicle_setting, 
         std::shared_ptr<SensorFactory> sensor_factory, 

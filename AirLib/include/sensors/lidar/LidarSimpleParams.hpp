@@ -9,7 +9,8 @@
 
 namespace msr { namespace airlib {
 
-struct LidarSimpleParams {
+struct LidarSimpleParams 
+{
 
     // Velodyne VLP-16 Puck config
     // https://velodynelidar.com/vlp-16.html

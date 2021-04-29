@@ -10,7 +10,8 @@
 
 namespace msr { namespace airlib {
 
-class PhysicsEngineBase : public UpdatableContainer<PhysicsBody*> {
+class PhysicsEngineBase : public UpdatableContainer<PhysicsBody*>
+{
 public:
     virtual void update() override
     {

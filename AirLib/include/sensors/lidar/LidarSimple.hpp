@@ -13,7 +13,8 @@
 
 namespace msr { namespace airlib {
 
-class LidarSimple : public LidarBase {
+class LidarSimple : public LidarBase
+{
 public:
     LidarSimple(const AirSimSettings::LidarSetting& setting = AirSimSettings::LidarSetting())
         : LidarBase(setting.sensor_name)

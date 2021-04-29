@@ -11,7 +11,8 @@
 namespace msr { namespace airlib {
 
 
-struct BarometerSimpleParams {
+struct BarometerSimpleParams 
+{
     //user specified sea level pressure is specified in hPa units
     real_T qnh = EarthUtils::SeaLevelPressure / 100.0f; // hPa
 

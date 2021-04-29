@@ -28,7 +28,8 @@
 
 namespace msr { namespace airlib {
 
-class ArduRoverApi : public CarApiBase {
+class ArduRoverApi : public CarApiBase
+{
 
 public:
     ArduRoverApi(const AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<SensorFactory> sensor_factory,

@@ -435,8 +435,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         // but we do want to know when we get the ack.  So this is async ACK processing!
         MavLinkCommandAck ack;
         ack.decode(msg);
-        if (ack.command == MavCmdNavGuidedEnable::kCommandId)
-        {
+        if (ack.command == MavCmdNavGuidedEnable::kCommandId) {
             MAV_RESULT ackResult = static_cast<MAV_RESULT>(ack.result);
             if (ackResult == MAV_RESULT::MAV_RESULT_TEMPORARILY_REJECTED) {
                 Utils::log("### command MavCmdNavGuidedEnable result: MAV_RESULT_TEMPORARILY_REJECTED");
@@ -591,13 +590,11 @@ void MavLinkVehicleImpl::releaseControl()
 
 void MavLinkVehicleImpl::checkOffboard()
 {
-    if (!control_requested_)
-    {
+    if (!control_requested_) {
         throw std::runtime_error("You must call requestControl first.");
     }
 
-    if (control_requested_ && !vehicle_state_.controls.offboard)
-    {
+    if (control_requested_ && !vehicle_state_.controls.offboard) {
         // Ok, now's the time to actually request it since the caller is about to send MavLinkSetPositionTargetGlobalInt, but
         // PX4 will reject this thinking 'offboard_control_loss_timeout' because we haven't actually sent any offboard messages
         // yet.  I know the PX4 protocol is kind of weird.  So we prime the pump here with some dummy messages that tell the 
@@ -656,14 +653,12 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
     msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY |
         MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
 
-    if (isYaw)
-    {
+    if (isYaw) {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;
@@ -803,8 +798,7 @@ void MavLinkVehicleImpl::moveByLocalVelocityWithAltHold(float vx, float vy, floa
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;
@@ -833,8 +827,7 @@ void MavLinkVehicleImpl::moveToLocalPosition(float x, float y, float z, bool isY
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;

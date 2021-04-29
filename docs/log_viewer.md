@@ -40,7 +40,7 @@ For this to work you need to configure the `settings.json` with the following se
 ```
 
 Note: do not use the "Logs" setting when you want realtime LogViewer logging.  Logging to
-a file using "Logs" is mutually exclusive. with LogViewer logging.
+a file using "Logs" is mutually exclusive with LogViewer logging.
 
 Simply press the blue connector button on the top right corner of the window, select the Socket
 `tab`, enter the port number `14388`, and your `localhost` network.  If you are using WSL 2 on

@@ -46,8 +46,7 @@ public: //methods
     virtual ~MavLinkMultirotorApi()
     {
         closeAllConnection();
-        if (this->connect_thread_.joinable())
-        {
+        if (this->connect_thread_.joinable()) {
             this->connect_thread_.join();
         }
         if (this->telemetry_thread_.joinable()) {
@@ -101,7 +100,8 @@ public: //methods
         was_reset_ = true;
     }
 
-    unsigned long long getSimTime() {
+    unsigned long long getSimTime() 
+    {
         // This ensures HIL_SENSOR and HIL_GPS have matching clocks.
         if (lock_step_enabled_) {
             if (sim_time_us_ == 0) {
@@ -114,7 +114,8 @@ public: //methods
         }
     }
 
-    void advanceTime() {
+    void advanceTime() 
+    {
         sim_time_us_ = clock()->nowNanos() / 1000;
     }
 
@@ -294,6 +295,7 @@ public: //methods
         updateState();
         return Vector3r(current_state_.local_est.pos.x, current_state_.local_est.pos.y, current_state_.local_est.pos.z);
     }
+
     virtual Vector3r getVelocity() const override
     {
         updateState();
@@ -320,6 +322,7 @@ public: //methods
         std::lock_guard<std::mutex> guard(hil_controls_mutex_);
         return rotor_controls_[rotor_index];
     }
+
     virtual size_t getActuatorCount() const override
     {
         return RotorControlsCount;
@@ -341,7 +344,8 @@ public: //methods
         return rc;
     }
 
-    void onArmed() {
+    void onArmed() 
+    {
         if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
             auto con = mav_vehicle_->getConnection();
             if (con != nullptr) {
@@ -350,8 +354,7 @@ public: //methods
                     log_ = nullptr;
                 }
 
-                try
-                {
+                try {
                     std::time_t t = std::time(0);   // get time now
                     std::tm* now = std::localtime(&t);
                     auto folder = Utils::stringf("%04d-%02d-%02d", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
@@ -378,7 +381,8 @@ public: //methods
         }
     }
 
-    void onDisarmed() {
+    void onDisarmed() 
+    {
         if (connection_info_.logs.size() > 0 && mav_vehicle_ != nullptr) {
             auto con = mav_vehicle_->getConnection();
             if (con != nullptr) {
@@ -416,8 +420,7 @@ public: //methods
             addStatusMessage("Waiting for z-position to stabilize...");
             if (!waitForFunction([&]() {
                 return ground_variance_ <= GroundTolerance;
-                }, timeout_sec).isComplete())
-            {
+                }, timeout_sec).isComplete()) {
                 auto msg = Utils::stringf("Ground is not stable, variance is %f", ground_variance_);
                 throw VehicleMoveException(msg);
             }
@@ -459,8 +462,7 @@ public: //methods
         checkValidVehicle();
         if (current_state_.home.is_set) {
             bool rc = false;
-            if (!mav_vehicle_->land(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.home.global_pos.alt).wait(10000, &rc))
-            {
+            if (!mav_vehicle_->land(current_state_.global_est.pos.lat, current_state_.global_est.pos.lon, current_state_.home.global_pos.alt).wait(10000, &rc)) {
                 throw VehicleMoveException("Landing command - timeout waiting for response from drone");
             }
             else if (!rc) {
@@ -477,8 +479,7 @@ public: //methods
             }, timeout_sec);
 
         // Wait for landed state (or user cancellation)
-        if (!waiter.isComplete())
-        {
+        if (!waiter.isComplete()) {
             throw VehicleMoveException("Drone hasn't reported a landing state");
         }
         return waiter.isComplete();
@@ -567,10 +568,8 @@ public: //methods
         checkValidVehicle();
         mavlinkcom::AsyncResult<bool> result = mav_vehicle_->loiter();
         //auto start_time = std::chrono::system_clock::now();
-        while (!getCancelToken().isCancelled())
-        {
-            if (result.wait(100, &rc))
-            {
+        while (!getCancelToken().isCancelled()) {
+            if (result.wait(100, &rc)) {
                 break;
             }
         }
@@ -637,8 +636,7 @@ public: //methods
             data.messages_received += gcs.messages_received;
             data.messages_sent += gcs.messages_sent;
 
-            if (gcs.messages_received == 0)
-            {
+            if (gcs.messages_received == 0) {
                 if (!gcs_message_timer_.started()) {
                     gcs_message_timer_.start();
                 }
@@ -689,10 +687,9 @@ public: //methods
         }
     }
 
-    void start_telemtry_thread() {
-
-        if (this->telemetry_thread_.joinable())
-        {
+    void start_telemtry_thread()
+    {
+        if (this->telemetry_thread_.joinable()) {
             this->telemetry_thread_.join();
         }
 
@@ -704,9 +701,9 @@ public: //methods
         this->telemetry_thread_ = std::thread(&MavLinkMultirotorApi::telemtry_thread, this);
     }
 
-    void telemtry_thread() {
+    void telemtry_thread()
+    {
         while (log_ != nullptr) {
-
             std::this_thread::sleep_for(std::chrono::seconds(1));
             writeTelemetry(1);
         }
@@ -716,12 +713,14 @@ public: //methods
     {
         return 1.0f / 50; //1 period of 50hz
     }
+
     virtual float getTakeoffZ() const override
     {
         // pick a number, PX4 doesn't have a fixed limit here, but 3 meters is probably safe
         // enough to get out of the backwash turbulence.  Negative due to NED coordinate system.
         return -3.0f;
     }
+
     virtual float getDistanceAccuracy() const override
     {
         return 0.5f;    //measured in simulator by firing commands "MoveToLocation -x 0 -y 0" multiple times and looking at distance traveled
@@ -771,16 +770,19 @@ protected: //methods
         float thrust = 0.21f + thrust_controller_.control(-state.local_est.pos.z);
         mav_vehicle_->moveByAttitude(roll, pitch, 0, 0, 0, yaw_rate, thrust);
     }
+    
     virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) override
     {
         checkValidVehicle();
         mav_vehicle_->moveByAttitude(roll, pitch, yaw, 0, 0, 0, throttle);
     }
+
     virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) override
     {
         checkValidVehicle();
         mav_vehicle_->moveByAttitude(roll, pitch, 0, 0, 0, yaw_rate, throttle);
     }
+    
     virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) override
     {
         if (target_height_ != -z) {
@@ -792,6 +794,7 @@ protected: //methods
         float thrust = 0.21f + thrust_controller_.control(-state.local_est.pos.z);
         mav_vehicle_->moveByAttitude(0, 0, 0, roll_rate, pitch_rate, yaw_rate, thrust);
     }
+
     virtual void commandAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle) override
     {
         checkValidVehicle();
@@ -804,12 +807,14 @@ protected: //methods
         float yaw = yaw_mode.yaw_or_rate * M_PIf / 180;
         mav_vehicle_->moveByLocalVelocity(vx, vy, vz, !yaw_mode.is_rate, yaw);
     }
+
     virtual void commandVelocityZ(float vx, float vy, float z, const YawMode& yaw_mode) override
     {
         checkValidVehicle();
         float yaw = yaw_mode.yaw_or_rate * M_PIf / 180;
         mav_vehicle_->moveByLocalVelocityWithAltHold(vx, vy, z, !yaw_mode.is_rate, yaw);
     }
+
     virtual void commandPosition(float x, float y, float z, const YawMode& yaw_mode) override
     {
         checkValidVehicle();
@@ -829,6 +834,7 @@ protected: //methods
     {
         startOffboardMode();
     }
+
     virtual void afterTask() override
     {
         endOffboardMode();
@@ -839,13 +845,18 @@ public:
     class MavLinkLogViewerLog : public mavlinkcom::MavLinkLog
     {
     public:
-        MavLinkLogViewerLog(std::shared_ptr<mavlinkcom::MavLinkNode> proxy) {
+        MavLinkLogViewerLog(std::shared_ptr<mavlinkcom::MavLinkNode> proxy) 
+        {
             proxy_ = proxy;
         }
-        ~MavLinkLogViewerLog() {
+
+        ~MavLinkLogViewerLog() 
+        {
             proxy_ = nullptr;
         }
-        void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override {
+
+        void write(const mavlinkcom::MavLinkMessage& msg, uint64_t timestamp = 0) override 
+        {
             if (proxy_ != nullptr) {
                 unused(timestamp);
                 mavlinkcom::MavLinkMessage copy;
@@ -874,15 +885,15 @@ protected: //methods
     {
         if (!connecting_) {
             connecting_ = true;
-            if (this->connect_thread_.joinable())
-            {
+            if (this->connect_thread_.joinable()) {
                 this->connect_thread_.join();
             }
             this->connect_thread_ = std::thread(&MavLinkMultirotorApi::connect_thread, this);
         }
     }
 
-    virtual void disconnect() {
+    virtual void disconnect() 
+    {
         addStatusMessage("Disconnecting mavlink vehicle");
         connected_ = false;
         connecting_ = false;
@@ -1088,7 +1099,8 @@ private: //methods
         }
     }
 
-    void checkValidVehicle() {
+    void checkValidVehicle()
+    {
         if (mav_vehicle_ == nullptr || connection_ == nullptr || !connection_->isOpen() || !connected_) {
             throw std::logic_error("Cannot perform operation when no vehicle is connected or vehicle is not responding");
         }
@@ -1100,8 +1112,7 @@ private: //methods
         StatusLock lock(this);
         if (mav_vehicle_ != nullptr) {
             int version = mav_vehicle_->getVehicleStateVersion();
-            if (version != state_version_)
-            {
+            if (version != state_version_) {
                 current_state_ = mav_vehicle_->getVehicleState();
                 state_version_ = version;
             }
@@ -1127,7 +1138,8 @@ private: //methods
         }
     }
 
-    bool sendTestMessage(std::shared_ptr<mavlinkcom::MavLinkNode> node) {
+    bool sendTestMessage(std::shared_ptr<mavlinkcom::MavLinkNode> node)
+    {
         try {
             // try and send a test message.
             mavlinkcom::MavLinkHeartbeat test;
@@ -1239,8 +1251,7 @@ private: //methods
 
                 std::string portName_str;
 
-                for (wchar_t ch : info.portName)
-                {
+                for (wchar_t ch : info.portName) {
                     portName_str.push_back(static_cast<char>(ch));
                 }
                 return portName_str;
@@ -1590,7 +1601,8 @@ private: //methods
         }
     }
 
-    void handleLockStep() {
+    void handleLockStep()
+    {
         received_actuator_controls_ = true;
         // if the timestamps match then it means we are in lockstep mode.
         if (!lock_step_enabled_) {
@@ -1707,8 +1719,7 @@ private: //methods
         }
         else if (msg.msgid == mavlinkcom::MavLinkLocalPositionNed::kMessageId) {
             // we are getting position information... so we can use this to check the stability of the z coordinate before takeoff.
-            if (current_state_.controls.landed)
-            {
+            if (current_state_.controls.landed) {
                 monitorGroundAltitude();
             }
         }
@@ -1784,7 +1795,8 @@ private: //methods
         last_sensor_message_ = hil_sensor;
     }
 
-    void sendSystemTime() {
+    void sendSystemTime()
+    {
         // SYSTEM TIME from host
         auto tu = getSimTime();
         uint32_t ms = (uint32_t)(tu / 1000);

@@ -14,18 +14,22 @@
 
 namespace common_utils {
 
-class ScheduledExecutor {
+class ScheduledExecutor 
+{
 public:
     ScheduledExecutor()
     {}
+
     ScheduledExecutor(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
         initialize(callback, period_nanos);
     }
+
     ~ScheduledExecutor()
     {
         stop();
     }
+
     void initialize(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
         callback_ = callback;
@@ -95,8 +99,8 @@ public:
                     th_.join();
                 }
             }
-            catch(const std::system_error& /* e */)
-            { }
+            catch(const std::system_error& /* e */) {
+            }
         }
     }
 

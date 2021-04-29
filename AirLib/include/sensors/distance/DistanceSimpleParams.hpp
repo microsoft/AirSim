@@ -11,7 +11,8 @@
 namespace msr { namespace airlib {
 
 
-struct DistanceSimpleParams {
+struct DistanceSimpleParams 
+{
     real_T min_distance = 20.0f / 100; //m
     real_T max_distance = 4000.0f / 100; //m
 

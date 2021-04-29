@@ -31,7 +31,8 @@
 
 namespace msr { namespace airlib {
 
-class ArduCopterApi : public MultirotorApiBase {
+class ArduCopterApi : public MultirotorApiBase
+{
 
 public:
     ArduCopterApi(const MultiRotorParams* vehicle_params, const AirSimSettings::MavLinkConnectionInfo& connection_info)
