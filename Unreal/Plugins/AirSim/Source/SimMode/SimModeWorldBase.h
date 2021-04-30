@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include "api/VehicleSimApiBase.hpp"
-#include "physics/FastPhysicsEngine.hpp"
+#include "physics/PhysicsEngineBase.hpp"
 #include "physics/World.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "common/StateReporterWrapper.hpp"
