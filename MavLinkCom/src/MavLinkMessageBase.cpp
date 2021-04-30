@@ -53,12 +53,10 @@ int MavLinkMessage::update_checksum()
     }
 
     if (len != msglen) {
+        // mavlink2 supports trimming the payload of trailing zeros so the messages
+        // are variable length as a result.
         if (mavlink1) {
             throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
-        }
-        else {
-            // mavlink2 supports trimming the payload of trailing zeros so the messages
-            // are variable length as a result.
         }
     }
     len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
