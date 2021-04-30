@@ -54,12 +54,11 @@ public:
         PhysicsBody::updateKinematics();
     }
 
-
-
     virtual real_T getRestitution() const override 
     {
         return restitution_;
     }
+    
     virtual real_T getFriction() const override
     {
         return friction_;

@@ -15,17 +15,17 @@ import time
 
 client = airsim.VehicleClient()
 client.confirmConnection()
-pose1 = client.simGetVehiclePose()
+pose = client.simGetVehiclePose()
 
-pose1.orientation = airsim.to_quaternion(0.1, 0.1, 0.1)
-client.simSetVehiclePose( pose1, False )
+pose.orientation = airsim.to_quaternion(0.1, 0.1, 0.1)
+client.simSetVehiclePose( pose, False )
 
 for i in range(900):
     print(i)
-    pose1 = client.simGetVehiclePose()
-    pose1.position = pose1.position + airsim.Vector3r(0.03, 0, 0)
-    pose1.orientation = pose1.orientation + airsim.to_quaternion(0.1, 0.1, 0.1)
-    client.simSetVehiclePose( pose1, False )
+    pose = client.simGetVehiclePose()
+    pose.position = pose.position + airsim.Vector3r(0.03, 0, 0)
+    pose.orientation = pose.orientation + airsim.to_quaternion(0.1, 0.1, 0.1)
+    client.simSetVehiclePose( pose, False )
     time.sleep(0.003)
     collision = client.simGetCollisionInfo()
     if collision.has_collided:

@@ -14,7 +14,10 @@
 #include "common/SteppableClock.hpp"
 #include <cinttypes>
 
-namespace msr { namespace airlib {
+namespace msr 
+{ 
+namespace airlib 
+{
 
 class ExternalPhysicsEngine : public PhysicsEngineBase {
 public:
@@ -51,5 +54,6 @@ public:
 
 };
 
-}} //namespace
+} //namespace
+} //namespace
 #endif
