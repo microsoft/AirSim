@@ -35,7 +35,7 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
     bool bMatchesComponentClass = false;
     bool bMatchesComponentTag = false;
     
-    if (!WildcardMeshNames.Num() == 0 && IsMatchAnyWildcard(Actor->GetName()))
+    if (WildcardMeshNames.Num() != 0 && IsMatchAnyWildcard(Actor->GetName()))
     {
         //bMatchesActorName = true;
         return true;
