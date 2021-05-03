@@ -66,6 +66,13 @@ public: //interface
         kinematics_->setState(state);
         kinematics_->update();
     }
+    /**
+     * Update kinematics without a state
+     */
+    virtual void updateKinematics()
+    {
+        kinematics_->update();
+    }
 
 
 public: //methods
