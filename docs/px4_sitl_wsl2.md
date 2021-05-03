@@ -47,10 +47,12 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
 {
     "SettingsVersion": 1.2,
     "SimMode": "Multirotor",
+    "ClockType": "SteppableClock",
     "Vehicles": {
         "PX4": {
             "VehicleType": "PX4Multirotor",
             "UseSerial": false,
+            "LockStep": true,
             "UseTcp": true,
             "TcpPort": 4560,
             "ControlIp": "remote",
@@ -74,7 +76,7 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
     }
 }
 ```
-
+See [PX4 LockStep](px4_lockstep.md) for more information.
 The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
 noise generation.  This setting clamps that down a bit.
 
@@ -89,7 +91,7 @@ if [ -z "${PX4_SIM_HOST_ADDR}" ]; then
     simulator start -c $simulator_tcp_port
 else
     echo "PX4 SIM HOST: $PX4_SIM_HOST_ADDR"
-    simulator start -t $PX4_SIM_HOST_ADDR $simulator_tcp_port 
+    simulator start -t $PX4_SIM_HOST_ADDR $simulator_tcp_port
 fi
 ```
 

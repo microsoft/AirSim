@@ -56,10 +56,12 @@ The default ports have changed recently, so check them closely to make sure AirS
     {
         "SettingsVersion": 1.2,
         "SimMode": "Multirotor",
+        "ClockType": "SteppableClock",
         "Vehicles": {
             "PX4": {
                 "VehicleType": "PX4Multirotor",
                 "UseSerial": false,
+                "LockStep": true,
                 "UseTcp": true,
                 "TcpPort": 4560,
                 "ControlPort": 14580,
@@ -82,6 +84,7 @@ The default ports have changed recently, so check them closely to make sure AirS
     }
     ```
     Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
+    See [PX4 LockStep](px4_lockstep.md) for more information.
     The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
     noise generation.  This setting clamps that down a bit.
 

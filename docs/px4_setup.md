@@ -34,10 +34,12 @@ See also [initial firmware setup video](https://docs.px4.io/master/en/config/).
     {
         "SettingsVersion": 1.2,
         "SimMode": "Multirotor",
+        "ClockType": "SteppableClock",
         "Vehicles": {
             "PX4": {
                 "VehicleType": "PX4Multirotor",
                 "UseSerial": true,
+                "LockStep": true,
                 "Sensors":{
                     "Barometer":{
                         "SensorType": 1,
@@ -56,6 +58,8 @@ See also [initial firmware setup video](https://docs.px4.io/master/en/config/).
         }
     }
 ```
+
+See [PX4 LockStep](px4_lockstep.md) for more information.
 
 The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
 noise generation.  This setting clamps that down a bit.

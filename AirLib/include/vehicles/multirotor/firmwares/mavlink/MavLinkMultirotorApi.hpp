@@ -63,7 +63,7 @@ namespace airlib
             connection_info_ = connection_info;
             sensors_ = sensors;
             is_simulation_mode_ = is_simulation;
-
+            lock_step_enabled_ = connection_info.lock_step;
             try {
                 openAllConnections();
                 is_ready_ = true;
@@ -106,7 +106,7 @@ namespace airlib
         unsigned long long getSimTime()
         {
             // This ensures HIL_SENSOR and HIL_GPS have matching clocks.
-            if (lock_step_enabled_) {
+            if (lock_step_active_) {
                 if (sim_time_us_ == 0) {
                     sim_time_us_ = clock()->nowNanos() / 1000;
                 }
@@ -137,10 +137,10 @@ namespace airlib
                     update_count_++;
                 }
 
-                if (lock_step_enabled_) {
-                    if (last_update_time_ + 100000 < now) {
-                        // if 100 ms passes then something is terribly wrong, reset lockstep mode
-                        lock_step_enabled_ = false;
+                if (lock_step_active_) {
+                    if (last_update_time_ + 1000000 < now) {
+                        // if 1 second passes then something is terribly wrong, reset lockstep mode
+                        lock_step_active_ = false;
                         {
                             std::lock_guard<std::mutex> guard(telemetry_mutex_);
                             lock_step_resets_++;
@@ -613,6 +613,7 @@ namespace airlib
                 }
                 else if (hil_message_timer_.seconds() > messageReceivedTimeout) {
                     addStatusMessage("not receiving any messages from HIL, please restart your HIL node and try again");
+                    hil_message_timer_.stop();
                 }
             }
             else {
@@ -1607,11 +1608,11 @@ namespace airlib
         {
             received_actuator_controls_ = true;
             // if the timestamps match then it means we are in lockstep mode.
-            if (!lock_step_enabled_) {
+            if (!lock_step_active_ && lock_step_enabled_) {
                 // && (HilActuatorControlsMessage.flags & 0x1))    // todo: enable this check when this flag is widely available...
                 if (last_hil_sensor_time_ == HilActuatorControlsMessage.time_usec) {
                     addStatusMessage("Enabling lockstep mode");
-                    lock_step_enabled_ = true;
+                    lock_step_active_ = true;
                 }
             }
             else {
@@ -1787,8 +1788,8 @@ namespace airlib
             if (hil_node_ != nullptr) {
                 hil_node_->sendMessage(hil_sensor);
                 received_actuator_controls_ = false;
-                if (lock_step_enabled_ && world_ != nullptr) {
-                    world_->pauseForTime(0.1); // 100 millisecond delay max waiting for actuator controls.
+                if (lock_step_active_ && world_ != nullptr) {
+                    world_->pauseForTime(1); // 1 second delay max waiting for actuator controls.
                 }
             }
 
@@ -1834,10 +1835,13 @@ namespace airlib
             distance_sensor.quaternion[3] = orientation.z();
 
             //TODO: use covariance parameter?
-
-            if (hil_node_ != nullptr) {
-                hil_node_->sendMessage(distance_sensor);
-            }
+            // PX4 doesn't support receiving simulated distance sensor messages this way.
+            // It results in lots of error messages from PX4.  This code is still useful in that
+            // it sets last_distance_message_ and that is returned via Python API.
+            //
+            // if (hil_node_ != nullptr) {
+            //    hil_node_->sendMessage(distance_sensor);
+            // }
 
             std::lock_guard<std::mutex> guard(last_message_mutex_);
             last_distance_message_ = distance_sensor;
@@ -1906,6 +1910,7 @@ namespace airlib
             Utils::setValue(rotor_controls_, 0.0f);
             was_reset_ = false;
             received_actuator_controls_ = false;
+            lock_step_active_ = false;
             lock_step_enabled_ = false;
             has_gps_lock_ = false;
             send_params_ = false;
@@ -1982,6 +1987,7 @@ namespace airlib
         bool has_home_ = false;
         bool is_ready_ = false;
         bool has_gps_lock_ = false;
+        bool lock_step_active_ = false;
         bool lock_step_enabled_ = false;
         bool received_actuator_controls_ = false;
         std::string is_ready_message_;
