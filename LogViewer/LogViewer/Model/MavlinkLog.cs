@@ -584,7 +584,8 @@ namespace LogViewer.Model
             this.duration = TimeSpan.Zero;
             bool first = true;
             // QT time is milliseconds from the following epoch.
-            byte[] msgBuf = new byte[256];
+            const int BUFFER_SIZE = 8000;
+            byte[] msgBuf = new byte[BUFFER_SIZE];
             GCHandle handle = GCHandle.Alloc(msgBuf, GCHandleType.Pinned);
             IntPtr ptr = handle.AddrOfPinnedObject();
             
@@ -605,14 +606,17 @@ namespace LogViewer.Model
                         {
                             MavLinkMessage header = new MavLinkMessage();
                             header.ReadHeader(reader);
+
+                            Array.Clear(msgBuf, 0, BUFFER_SIZE);
                             int read = s.Read(msgBuf, 0, header.Length);
 
                             if (read == header.Length)
                             {
+                                int id = (int)header.MsgId;
                                 header.Crc = reader.ReadUInt16();
 
                                 bool checkCrc = true;
-                                if ((int)header.MsgId == MAVLink.mavlink_telemetry.MessageId)
+                                if (id == MAVLink.mavlink_telemetry.MessageId)
                                 {
                                     if (header.Crc == 0)  // telemetry has no crc.
                                     {
