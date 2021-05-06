@@ -38,7 +38,14 @@ int main(int argc, const char* argv[])
     Settings& settings = Settings::singleton().loadJSonFile(settings_full_filepath);
     Settings child;
     if (settings.isLoadSuccess()) {
-        settings.getChild("PX4", child);
+        Settings vehicles;
+        if (settings.hasKey("Vehicles")) {
+            settings.getChild("Vehicles", vehicles);
+            vehicles.getChild("PX4", child);
+        }
+        else {
+            settings.getChild("PX4", child);
+        }
 
         // allow json overrides on a per-vehicle basis.
         connection_info.sim_sysid = static_cast<uint8_t>(child.getInt("SimSysID", connection_info.sim_sysid));
@@ -58,7 +65,9 @@ int main(int argc, const char* argv[])
         connection_info.qgc_ip_port = child.getInt("QgcPort", connection_info.qgc_ip_port);
 
         connection_info.control_ip_address = child.getString("ControlIp", connection_info.control_ip_address);
-        connection_info.control_port = child.getInt("ControlPort", connection_info.control_port);
+        connection_info.control_port_local = child.getInt("ControlPort", connection_info.control_port_local);
+        connection_info.control_port_local = child.getInt("ControlPortLocal", connection_info.control_port_local);
+        connection_info.control_port_remote = child.getInt("ControlPortRemote", connection_info.control_port_remote);
 
         connection_info.local_host_ip = child.getString("LocalHostIp", connection_info.local_host_ip);
 
@@ -69,6 +78,8 @@ int main(int argc, const char* argv[])
         connection_info.tcp_port = child.getInt("TcpPort", connection_info.tcp_port);
         connection_info.serial_port = child.getString("SerialPort", connection_info.serial_port);
         connection_info.baud_rate = child.getInt("SerialBaudRate", connection_info.baud_rate);
+        connection_info.model = child.getString("Model", connection_info.model);
+        connection_info.logs = child.getString("Logs", connection_info.logs);
 
     }
     else {

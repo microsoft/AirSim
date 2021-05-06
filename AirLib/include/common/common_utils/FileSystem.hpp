@@ -50,23 +50,27 @@ public:
 
     static std::string getUserDocumentsFolder();
 
-	static std::string getExecutableFolder();
+    static std::string getExecutableFolder();
 
-    static std::string getAppDataFolder() {
+    static std::string getAppDataFolder()
+    {
         return ensureFolder(combine(getUserDocumentsFolder(), ProductFolderName));
     }
 
-    static std::string ensureFolder(const std::string& fullpath) {
+    static std::string ensureFolder(const std::string& fullpath)
+    {
         // make sure this directory exists.
         return createDirectory(fullpath);
     }
 
-    static std::string ensureFolder(const std::string& parentFolder, const std::string& child) {
+    static std::string ensureFolder(const std::string& parentFolder, const std::string& child)
+    {
         // make sure this directory exists.
         return createDirectory(combine(parentFolder, child));
     }
 
-    static std::string combine(const std::string& parentFolder, const std::string& child) {
+    static std::string combine(const std::string& parentFolder, const std::string& child)
+    {
         if (child.size() == 0)
             return parentFolder;
 
@@ -83,7 +87,8 @@ public:
         return parentFolder + kPathSeparator + child;
     }
 
-    static void removeLeaf(std::string& path) {
+    static void removeLeaf(std::string& path)
+    {
         size_t size = path.size();
         size_t pos = path.find_last_of('/');
         if (pos != std::string::npos) {
@@ -98,14 +103,12 @@ public:
         int len = static_cast<int>(str.size());
         const char* ptr = str.c_str();
         int i = 0;
-        for (i = len - 1; i >= 0; i--)
-        {
+        for (i = len - 1; i >= 0; i--) {
             if (ptr[i] == '.')
                 break;
         }
         if (i < 0) return "";
-        auto ui = static_cast<uint>(i);
-        return str.substr(ui, len - ui);
+        return str.substr(i, len - i);
     }
 
     static std::string getLogFolderPath(bool folder_timestamp, const std::string& parent = "")
@@ -139,8 +142,8 @@ public:
         //return filename_ss.str();
     }
 
-    static void openTextFile(const std::string& filepath, std::ifstream& file){
-        
+    static void openTextFile(const std::string& filepath, std::ifstream& file)
+    {        
 #ifdef _WIN32
         // WIN32 will create the wrong file names if we don't first convert them to UTF-16.
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -151,8 +154,8 @@ public:
 #endif
     }
     
-    static void createBinaryFile(const std::string& filepath, std::ofstream& file){
-        
+    static void createBinaryFile(const std::string& filepath, std::ofstream& file)
+    {        
 #ifdef _WIN32
         // WIN32 will create the wrong file names if we don't first convert them to UTF-16.
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -163,8 +166,8 @@ public:
 #endif
     }
     
-    static void createTextFile(const std::string& filepath, std::ofstream& file){
-        
+    static void createTextFile(const std::string& filepath, std::ofstream& file)
+    {        
 #ifdef _WIN32
         // WIN32 will create the wrong file names if we don't first convert them to UTF-16.
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;

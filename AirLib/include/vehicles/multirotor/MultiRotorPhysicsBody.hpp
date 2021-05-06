@@ -16,12 +16,15 @@
 
 namespace msr { namespace airlib {
 
-class MultiRotorPhysicsBody : public PhysicsBody {
+class MultiRotorPhysicsBody : public PhysicsBody
+{
 public:
     MultiRotorPhysicsBody(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
         Kinematics* kinematics, Environment* environment)
         : params_(params), vehicle_api_(vehicle_api)
     {
+        setName("MultiRotorPhysicsBody");
+        vehicle_api_->setParent(this);
         initialize(kinematics, environment);
     }
 

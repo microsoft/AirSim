@@ -10,7 +10,8 @@
 namespace msr { namespace airlib {
 
 
-struct MagnetometerSimpleParams {
+struct MagnetometerSimpleParams 
+{
     enum ReferenceSource {
         ReferenceSource_Constant,
         ReferenceSource_DipoleModel
@@ -34,7 +35,15 @@ struct MagnetometerSimpleParams {
 
     void initializeFromSettings(const AirSimSettings::MagnetometerSetting& settings)
     {
-        unused(settings);
+        const auto& json = settings.settings;
+        float noise = json.getFloat("NoiseSigma", noise_sigma.x());
+        noise_sigma = Vector3r(noise, noise, noise);
+        scale_factor = json.getFloat("ScaleFactor", scale_factor);
+        float bias = json.getFloat("NoiseBias", noise_bias.x());
+        noise_bias = Vector3r(bias, bias, bias);
+        update_latency = json.getFloat("UpdateLatency", update_latency);
+        update_frequency = json.getFloat("UpdateFrequency", update_frequency);
+        startup_delay = json.getFloat("StartupDelay", startup_delay);
     }
 };
 

@@ -435,8 +435,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         // but we do want to know when we get the ack.  So this is async ACK processing!
         MavLinkCommandAck ack;
         ack.decode(msg);
-        if (ack.command == MavCmdNavGuidedEnable::kCommandId)
-        {
+        if (ack.command == MavCmdNavGuidedEnable::kCommandId) {
             MAV_RESULT ackResult = static_cast<MAV_RESULT>(ack.result);
             if (ackResult == MAV_RESULT::MAV_RESULT_TEMPORARILY_REJECTED) {
                 Utils::log("### command MavCmdNavGuidedEnable result: MAV_RESULT_TEMPORARILY_REJECTED");
@@ -585,20 +584,17 @@ void MavLinkVehicleImpl::releaseControl()
     control_requested_ = false;
     control_request_sent_ = false;
     vehicle_state_.controls.offboard = false;
-    MavCmdNavGuidedEnable cmd{};
-    cmd.Enable = 0;
-    sendCommand(cmd);
+    setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
+        static_cast<int>(PX4_CUSTOM_MAIN_MODE_POSCTL), 0, false);
 }
 
 void MavLinkVehicleImpl::checkOffboard()
 {
-    if (!control_requested_)
-    {
+    if (!control_requested_) {
         throw std::runtime_error("You must call requestControl first.");
     }
 
-    if (control_requested_ && !vehicle_state_.controls.offboard)
-    {
+    if (control_requested_ && !vehicle_state_.controls.offboard) {
         // Ok, now's the time to actually request it since the caller is about to send MavLinkSetPositionTargetGlobalInt, but
         // PX4 will reject this thinking 'offboard_control_loss_timeout' because we haven't actually sent any offboard messages
         // yet.  I know the PX4 protocol is kind of weird.  So we prime the pump here with some dummy messages that tell the 
@@ -609,15 +605,14 @@ void MavLinkVehicleImpl::checkOffboard()
             offboardIdle();
         }
 
-        Utils::log("MavLinkVehicleImpl::checkOffboard: sending MavCmdNavGuidedEnable \n");		
-        // now the command should succeed.
-        bool r = false;
-        MavCmdNavGuidedEnable cmd{};
-        cmd.Enable = 1;
+        Utils::log("MavLinkVehicleImpl::checkOffboard: sending MavCmdNavGuidedEnable \n");
         // Note: we can't wait for ACK here, I've tried it.  The ACK takes too long to get back to
         // us by which time the PX4 times out offboard mode!!
-        sendCommand(cmd);
-        control_request_sent_ = true;
+        setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
+            static_cast<int>(PX4_CUSTOM_MAIN_MODE_OFFBOARD), 0, false);
+        control_request_sent_ = true;        
+        // assume this was successful, we'll find out if so in the next heartbeat.
+        vehicle_state_.controls.offboard = true;
     }
 }
 
@@ -658,14 +653,12 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
     msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY |
         MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
 
-    if (isYaw)
-    {
+    if (isYaw) {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;
@@ -679,11 +672,13 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
     writeMessage(msg);
 }
 
-AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int customSubMode)
+AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int customSubMode, bool waitForAck)
 {
     // this mode change take precedence over offboard mode.
-    control_requested_ = false;
-    control_request_sent_ = false;
+    if (customMode != static_cast<int>(PX4_CUSTOM_MAIN_MODE_OFFBOARD)) {
+        control_requested_ = false;
+        control_request_sent_ = false;
+    }
 
     if ((vehicle_state_.mode & static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED)) != 0) {
         mode |= static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED); // must preserve this flag.
@@ -696,7 +691,13 @@ AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int cust
     cmd.Mode = static_cast<float>(mode);
     cmd.CustomMode = static_cast<float>(customMode);
     cmd.CustomSubmode = static_cast<float>(customSubMode);
-    return sendCommandAndWaitForAck(cmd);
+    if (waitForAck) {
+        return sendCommandAndWaitForAck(cmd);
+    }
+    else {
+        sendCommand(cmd);
+        return AsyncResult<bool>::Completed(true);
+    }
 }
 
 AsyncResult<bool>  MavLinkVehicleImpl::setPositionHoldMode()
@@ -797,8 +798,7 @@ void MavLinkVehicleImpl::moveByLocalVelocityWithAltHold(float vx, float vy, floa
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;
@@ -827,8 +827,7 @@ void MavLinkVehicleImpl::moveToLocalPosition(float x, float y, float z, bool isY
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;

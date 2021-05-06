@@ -22,6 +22,7 @@
 #include <limits>
 #include <queue>
 #include "type_utils.hpp"
+#include "MavLinkDebugLog.hpp"
 
 #ifndef _WIN32
 #include <limits.h> // needed for CHAR_BIT used below
@@ -85,7 +86,8 @@ void unused(T const & result) { static_cast<void>(result); }
 
 namespace mavlink_utils {
 
-class Utils {
+class Utils
+{
 private:
     typedef std::chrono::system_clock system_clock;
     typedef std::chrono::steady_clock steady_clock;
@@ -98,18 +100,8 @@ private:
 
 
 public:
-    class Logger {
-    public:
-        virtual void log(int level, const std::string& message)
-        {
-            if (level >= 0)
-                std::cout << message;
-            else
-                std::cerr << message;
-        }
-    };
-    
-    static void enableImmediateConsoleFlush() {
+    static void enableImmediateConsoleFlush()
+    {
         //disable buffering
         setbuf(stdout, NULL);
     }
@@ -123,30 +115,21 @@ public:
         return gaussian_dist(random_gen) * stddev + mean;
     }
     
-    static constexpr double degreesToRadians(double degrees) {
+    static constexpr double degreesToRadians(double degrees) 
+    {
         return static_cast<double>(M_PIl * degrees / 180.0);
     }
-    static constexpr float degreesToRadians(float degrees) {
+    static constexpr float degreesToRadians(float degrees) 
+    {
         return static_cast<float>(M_PIf * degrees / 180.0f);
     }
-    static constexpr double radiansToDegrees(double radians) {
+    static constexpr double radiansToDegrees(double radians) 
+    {
         return static_cast<double>(radians * 180.0 / M_PIl);
     }
-    static constexpr float radiansToDegrees(float radians) {
-        return static_cast<float>(radians * 180.0f / M_PIf);
-    }
-
-    static Logger* getSetLogger(Logger* logger = nullptr)
+    static constexpr float radiansToDegrees(float radians) 
     {
-        static Logger logger_default_;
-        static Logger* logger_;
-
-        if (logger != nullptr)
-            logger_ = logger;
-        else if (logger_ == nullptr)
-            logger_ = &logger_default_;
-
-        return logger_;
+        return static_cast<float>(radians * 180.0f / M_PIf);
     }
 
     static constexpr int kLogLevelInfo = 0;
@@ -154,17 +137,19 @@ public:
     static constexpr int kLogLevelError = -2;
     static void log(std::string message, int level = kLogLevelInfo)
     {
-        getSetLogger()->log(level, message);
+        mavlinkcom::MavLinkDebugLog::getSetLogger()->log(level, message);
     }
 
     template <typename T>
-    static int sign(T val) {
+    static int sign(T val)
+    {
         return T(0) < val ? 1 : (T(0) > val ? -1 : 0);
     }   
 
     /// Limits absolute value whole preserving sign
     template <typename T> 
-    static T limitAbsValue(T val, T min_value, T max_value) {
+    static T limitAbsValue(T val, T min_value, T max_value)
+    {
         T val_abs = std::abs(val);
         T val_limited = std::max(val_abs, min_value);
         val_limited = std::min(val_limited, max_value);
@@ -173,7 +158,8 @@ public:
     
     /// Limits absolute value whole preserving sign
     template <typename T> 
-    static T clip(T val, T min_value, T max_value) {
+    static T clip(T val, T min_value, T max_value)
+    {
         return std::max(min_value, std::min(val, max_value));
     }
 
@@ -190,8 +176,7 @@ public:
         stringstream ss;
         ss << prefix;
 
-        for (Iterator i = start; i != last; ++i)
-        {
+        for (Iterator i = start; i != last; ++i) {
             if (i != start)
                 ss << delim;
             ss << *i;
@@ -206,8 +191,7 @@ public:
         int len = static_cast<int>(str.size());
         const char* ptr = str.c_str();
         int i = 0;
-        for (i = len - 1; i >= 0; i--)
-        {
+        for (i = len - 1; i >= 0; i--) {
             if (ptr[i] == '.')
                 break;
         }
@@ -246,14 +230,12 @@ public:
         int len = static_cast<int>(str.size());
         const char* ptr = str.c_str();
         int i = 0;
-        for (i = 0; i < len; i++)
-        {
+        for (i = 0; i < len; i++) {
             if (ptr[i] != ch)
                 break;
         }
         int j = 0;
-        for (j = len - 1; j >= i; j--)
-        {
+        for (j = len - 1; j >= i; j--) {
             if (ptr[j] != ch)
                 break;
         }
@@ -264,29 +246,24 @@ public:
     {
         auto start = s.begin();
         std::vector<string> result;
-        for (auto it = s.begin(); it != s.end(); it++)
-        {
+        for (auto it = s.begin(); it != s.end(); it++) {
             char ch = *it;
             bool split = false;
-            for (int i = 0; i < numSplitChars; i++)
-            {
+            for (int i = 0; i < numSplitChars; i++) {
                 if (ch == splitChars[i]) {
                     split = true;
                     break;
                 }
             }
-            if (split)
-            {
-                if (start < it)
-                {
+            if (split) {
+                if (start < it) {
                     result.push_back(string(start, it));
                 }
                 start = it;
                 start++;
             }
         }
-        if (start < s.end())
-        {
+        if (start < s.end()) {
             result.push_back(string(start, s.end()));
         }
         return result;
@@ -300,14 +277,12 @@ public:
         auto start = line.begin();
         std::vector<std::string> result;
         auto end = line.end();
-        for (auto it = line.begin(); it != end; )
-        {
+        for (auto it = line.begin(); it != end; ) {
             bool split = false;
             char ch = *it;
             if (ch == '\'' || ch == '"') {
                 // skip quoted literal
-                if (start < it)
-                {
+                if (start < it) {
                     result.push_back(string(start, it));
                 }
                 it++;
@@ -326,10 +301,8 @@ public:
                     }
                 }
             }
-            if (split)
-            {
-                if (start < it)
-                {
+            if (split) {
+                if (start < it) {
                     result.push_back(string(start, it));
                 }
                 start = it;
@@ -339,8 +312,7 @@ public:
                 it++;
             }
         }
-        if (start < end)
-        {
+        if (start < end) {
             result.push_back(string(start, end));
         }
         return result;
@@ -356,8 +328,7 @@ public:
         _strlwr_s(buf.get(), len + 1U);
 #else
         char* p = buf.get();
-        for (int i = len; i > 0; i--)
-        {
+        for (int i = len; i > 0; i--) {
             *p = tolower(*p);
             p++;
         }
@@ -391,15 +362,18 @@ public:
     }
 
     template<typename T>
-    static constexpr T nan() {
+    static constexpr T nan()
+    {
         return std::numeric_limits<T>::quiet_NaN();
     }
     template<typename T>
-    static constexpr T max() {
+    static constexpr T max()
+    {
         return std::numeric_limits<T>::max();
     }
     template<typename T>
-    static constexpr T min() {
+    static constexpr T min()
+    {
         return std::numeric_limits<T>::min();
     }
 

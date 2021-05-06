@@ -11,7 +11,8 @@
 
 namespace msr { namespace airlib {
 
-class ImuSimple : public ImuBase {
+class ImuSimple : public ImuBase
+{
 public:
     //constructors
     ImuSimple(const AirSimSettings::ImuSetting& setting = AirSimSettings::ImuSetting())

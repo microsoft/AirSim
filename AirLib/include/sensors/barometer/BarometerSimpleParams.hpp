@@ -5,12 +5,14 @@
 #define msr_airlib_BarometerSimpleParams_hpp
 
 #include "common/Common.hpp"
+#include "common/AirSimSettings.hpp"
 
 
 namespace msr { namespace airlib {
 
 
-struct BarometerSimpleParams {
+struct BarometerSimpleParams 
+{
     //user specified sea level pressure is specified in hPa units
     real_T qnh = EarthUtils::SeaLevelPressure / 100.0f; // hPa
 
@@ -33,14 +35,14 @@ struct BarometerSimpleParams {
 
          real_T correlated_noise_sigma = 0.27f;
          real_T correlated_noise_tau = 0.87f;
-         real_T unnorrelated_noise_sigma = 0.24f;
+         real_T uncorrelated_noise_sigma = 0.24f;
     */
 
     //Experiments for MEAS MS56112 sensor shows 0.021mbar, datasheet has resoultion of 0.027mbar @ 1024
     //http://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5611-01BA03&DocType=Data+Sheet&DocLang=English
-    real_T unnorrelated_noise_sigma = 0.027f * 100;
+    real_T uncorrelated_noise_sigma = 0.027f * 100;
     //jMavSim uses below
-    //real_T unnorrelated_noise_sigma = 0.1f;
+    //real_T uncorrelated_noise_sigma = 0.1f;
 
     //see PX4 param reference for EKF: https://dev.px4.io/en/advanced/parameter_reference.html
     real_T update_latency = 0.0f;    //sec
@@ -49,7 +51,13 @@ struct BarometerSimpleParams {
 
     void initializeFromSettings(const AirSimSettings::BarometerSetting& settings)
     {
-        unused(settings);
+        const auto& json = settings.settings;
+        pressure_factor_sigma = json.getFloat("PressureFactorSigma", pressure_factor_sigma);
+        pressure_factor_tau = json.getFloat("PressureFactorTau", pressure_factor_tau);
+        uncorrelated_noise_sigma = json.getFloat("UncorrelatedNoiseSigma", uncorrelated_noise_sigma);
+        update_latency = json.getFloat("UpdateLatency", update_latency);
+        update_frequency = json.getFloat("UpdateFrequency", update_frequency);
+        startup_delay = json.getFloat("StartupDelay", startup_delay);
     }
 };
 

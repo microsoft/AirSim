@@ -28,7 +28,8 @@
 
 namespace msr { namespace airlib {
 
-class ArduRoverApi : public CarApiBase {
+class ArduRoverApi : public CarApiBase
+{
 
 public:
     ArduRoverApi(const AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<SensorFactory> sensor_factory,
@@ -143,10 +144,10 @@ protected:
         }
 
         Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port_, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
-        Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
+        Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port_local, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
 
         udp_socket_ = std::make_unique<mavlinkcom::UdpSocket>();
-        udp_socket_->bind(connection_info_.local_host_ip, connection_info_.control_port);
+        udp_socket_->bind(connection_info_.local_host_ip, connection_info_.control_port_local);
     }
 
 private:

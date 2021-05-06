@@ -33,14 +33,6 @@
         <Canvas Grid.Row="0" VerticalAlignment="Top">
             <Path x:Name="Graph" StrokeThickness="5" VerticalAlignment="Top" SnapsToDevicePixels="True" StrokeLineJoin="Bevel">
             </Path>
-            <Path x:Name="Pointer" Fill="{StaticResource TooltipForeground}" Data="M0,-5 L 5,0 0,5 -5 0z" Visibility="Collapsed"/>
-            <local:PointerBorder x:Name="PointerBorder"  Visibility="Collapsed" Padding="2" HorizontalAlignment="Left" VerticalAlignment="Top" BorderThickness="1"
-                    CornerRadius="3" BorderBrush="{StaticResource TooltipForeground}" Background="#80303030">
-                <TextBlock x:Name="PointerLabel" Foreground="{StaticResource TooltipForeground}"/>
-            </local:PointerBorder>
-            <Canvas x:Name="AdornerCanvas">
-                
-            </Canvas>
         </Canvas>
 
         <Grid>
@@ -54,5 +46,16 @@
         </Grid>
 
         <local:CloseBox HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Click="CloseBoxClick"/>
+        
+        <Canvas Grid.Row="0" VerticalAlignment="Top">
+            <Path x:Name="Pointer" Fill="{StaticResource TooltipForeground}" Data="M0,-5 L 5,0 0,5 -5 0z" Visibility="Collapsed"/>
+            <local:PointerBorder x:Name="PointerBorder"  Visibility="Collapsed" Padding="2" HorizontalAlignment="Left" VerticalAlignment="Top" BorderThickness="1"
+                    CornerRadius="3" BorderBrush="{StaticResource TooltipForeground}" Background="#80303030">
+                <TextBlock x:Name="PointerLabel" Foreground="{StaticResource TooltipForeground}"/>
+            </local:PointerBorder>
+            <Canvas x:Name="AdornerCanvas">
+
+            </Canvas>
+        </Canvas>
     </Grid>
 </UserControl>

@@ -15,7 +15,8 @@
 
 namespace msr { namespace airlib {
 
-class PhysicsBody : public UpdatableObject {
+class PhysicsBody : public UpdatableObject 
+{
 public: //interface
     virtual real_T getRestitution() const = 0;
     virtual real_T getFriction() const = 0;
@@ -91,7 +92,9 @@ public: //methods
         inertia_ = inertia;
         inertia_inv_ = inertia_.inverse();
         environment_ = environment;
+        environment_->setParent(this);
         kinematics_ = kinematics;
+        kinematics_->setParent(this);
     }
 
     //enable physics body detection
@@ -109,7 +112,7 @@ public: //methods
         wrench_ = Wrench::zero();
         collision_info_ = CollisionInfo();
         collision_response_ = CollisionResponse();
-		grounded_ = false;
+        grounded_ = false;
 
         //update individual vertices
         for (uint vertex_index = 0; vertex_index < wrenchVertexCount(); ++vertex_index) {
@@ -223,24 +226,24 @@ public: //methods
         return collision_response_;
     }
 
-	bool isGrounded() const
-	{
-		return grounded_;
-	}
-	void setGrounded(bool grounded)
-	{
-		grounded_ = grounded;
-	}
+    bool isGrounded() const
+    {
+        return grounded_;
+    }
+    void setGrounded(bool grounded)
+    {
+        grounded_ = grounded;
+    }
 
-	void lock()
-	{
-		mutex_.lock();
-	}
+    void lock()
+    {
+        mutex_.lock();
+    }
 
-	void unlock()
-	{
-		mutex_.unlock();
-	}
+    void unlock()
+    {
+        mutex_.unlock();
+    }
 
 public:
     //for use in physics engine: //TODO: use getter/setter or friend method?
@@ -259,8 +262,8 @@ private:
     CollisionInfo collision_info_;
     CollisionResponse collision_response_;
 
-	bool grounded_ = false;
-	std::mutex mutex_;
+    bool grounded_ = false;
+    std::mutex mutex_;
 };
 
 }} //namespace

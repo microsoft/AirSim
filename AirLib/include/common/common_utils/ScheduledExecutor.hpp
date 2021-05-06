@@ -14,18 +14,22 @@
 
 namespace common_utils {
 
-class ScheduledExecutor {
+class ScheduledExecutor 
+{
 public:
     ScheduledExecutor()
     {}
+
     ScheduledExecutor(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
         initialize(callback, period_nanos);
     }
+
     ~ScheduledExecutor()
     {
         stop();
     }
+
     void initialize(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
         callback_ = callback;
@@ -49,11 +53,19 @@ public:
     void pause(bool is_paused)
     {
         paused_ = is_paused;
+        pause_period_start_ = 0; // cancel any pause period.
     }
 
     bool isPaused() const
     {
         return paused_;
+    }
+
+    void pauseForTime(double seconds)
+    {
+        pause_period_start_ = nanos();
+        pause_period_ = static_cast<TTimeDelta>(1E9 * seconds);
+        paused_ = true;
     }
 
     void continueForTime(double seconds)
@@ -65,6 +77,7 @@ public:
 
     void continueForFrames(uint32_t frames)
     {
+        pause_period_start_ = 0; // cancel any pause period.
         frame_countdown_enabled_ = true;
         targetFrameNumber_ = frames + currentFrameNumber_;
         paused_ = false;
@@ -86,8 +99,8 @@ public:
                     th_.join();
                 }
             }
-            catch(const std::system_error& /* e */)
-            { }
+            catch(const std::system_error& /* e */) {
+            }
         }
     }
 
@@ -174,9 +187,7 @@ private:
             
             if (pause_period_start_ > 0) {
                 if (nanos() - pause_period_start_ >= pause_period_) {
-                    if (! isPaused())
-                        pause(true);
-
+                    pause(!isPaused());
                     pause_period_start_ = 0;
                 }
             }

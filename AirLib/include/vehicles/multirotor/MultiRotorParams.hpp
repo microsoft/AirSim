@@ -12,7 +12,8 @@
 
 namespace msr { namespace airlib {
 
-class MultiRotorParams {
+class MultiRotorParams
+{
 //All units are SI
 public: //types
     struct RotorPose {
@@ -85,11 +86,7 @@ public: //interface
 
     void addSensorsFromSettings(const AirSimSettings::VehicleSetting* vehicle_setting)
     {
-        // use sensors from vehicle settings; if empty list, use default sensors.
-        // note that the vehicle settings completely override the default sensor "list";
-        // there is no piecemeal add/remove/update per sensor.
-        const std::map<std::string, std::unique_ptr<AirSimSettings::SensorSetting>>& sensor_settings
-            = vehicle_setting->sensors.size() > 0 ? vehicle_setting->sensors : AirSimSettings::AirSimSettings::singleton().sensor_defaults;
+        const auto& sensor_settings = vehicle_setting->sensors;
 
         getSensorFactory()->createSensorsFromSettings(sensor_settings, sensors_, sensor_storage_);
     }
@@ -412,7 +409,7 @@ protected: //static utility functions for derived classes to use
 private:
     Params params_;
     SensorCollection sensors_; //maintains sensor type indexed collection of sensors
-    vector<unique_ptr<SensorBase>> sensor_storage_; //RAII for created sensors
+    vector<shared_ptr<SensorBase>> sensor_storage_; //RAII for created sensors
 };
 
 }} //namespace

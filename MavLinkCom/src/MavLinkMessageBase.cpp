@@ -20,6 +20,74 @@ STRICT_MODE_ON
 using namespace mavlink_utils;
 using namespace mavlinkcom;
 
+int MavLinkMessage::update_checksum()
+{
+    bool mavlink1 = protocol_version != 2;    
+    uint8_t header_len = MAVLINK_CORE_HEADER_LEN + 1;
+    uint8_t buf[MAVLINK_CORE_HEADER_LEN + 1];
+    if (mavlink1) {
+        magic = MAVLINK_STX_MAVLINK1;
+        header_len = MAVLINK_CORE_HEADER_MAVLINK1_LEN + 1;
+    }
+    else {
+        magic = MAVLINK_STX;
+    }
+
+    incompat_flags = 0;
+    compat_flags = 0;
+
+    // pack the payload buffer.
+    char* payload = reinterpret_cast<char*>(&payload64[0]);
+    int len = this->len;
+
+    // calculate checksum
+    const mavlink_msg_entry_t* entry = mavlink_get_msg_entry(msgid);
+    uint8_t crc_extra = 0;
+    int msglen = 0;
+    if (entry != nullptr) {
+        crc_extra = entry->crc_extra;
+        msglen = entry->min_msg_len;
+    }
+    if (msgid == MavLinkTelemetry::kMessageId) {
+        msglen = MavLinkTelemetry::MessageLength; // mavlink doesn't know about our custom telemetry message.
+    }
+
+    if (len != msglen) {
+        // mavlink2 supports trimming the payload of trailing zeros so the messages
+        // are variable length as a result.
+        if (mavlink1) {
+            throw std::runtime_error(Utils::stringf("Message length %d doesn't match expected length%d\n", len, msglen));
+        }
+    }
+    len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
+    this->len = len;
+
+    // form the header as a byte array for the crc
+    buf[0] = this->magic;
+    buf[1] = this->len;
+    if (mavlink1) {
+        buf[2] = this->seq;
+        buf[3] = this->sysid;
+        buf[4] = this->compid;
+        buf[5] = this->msgid & 0xFF;
+    }
+    else {
+        buf[2] = this->incompat_flags;
+        buf[3] = this->compat_flags;
+        buf[4] = this->seq;
+        buf[5] = this->sysid;
+        buf[6] = this->compid;
+        buf[7] = this->msgid & 0xFF;
+        buf[8] = (this->msgid >> 8) & 0xFF;
+        buf[9] = (this->msgid >> 16) & 0xFF;
+    }
+
+    this->checksum = crc_calculate(&buf[1], header_len - 1);
+    crc_accumulate_buffer(&this->checksum, payload, len);
+    crc_accumulate(crc_extra, &this->checksum);
+
+    return len + header_len + 2;
+}
 void MavLinkMessageBase::decode(const MavLinkMessage& msg)
 {
     // unpack the message...
@@ -208,8 +276,7 @@ void MavLinkMessageBase::unpack_int8_t_array(int len, const char* buffer, int8_t
 }
 void MavLinkMessageBase::unpack_uint16_t_array(int len, const char* buffer, uint16_t* field, int offset)
 {
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
         _mav_get_uint16_t(buffer, offset, field);
         offset += sizeof(uint16_t);
         field++;
@@ -217,8 +284,7 @@ void MavLinkMessageBase::unpack_uint16_t_array(int len, const char* buffer, uint
 }
 void MavLinkMessageBase::unpack_int16_t_array(int len, const char* buffer, int16_t* field, int offset)
 {
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
         _mav_get_int16_t(buffer, offset, field);
         offset += sizeof(int16_t);
         field++;
@@ -226,8 +292,7 @@ void MavLinkMessageBase::unpack_int16_t_array(int len, const char* buffer, int16
 }
 void MavLinkMessageBase::unpack_float_array(int len, const char* buffer, float* field, int offset)
 {
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
         _mav_get_float(buffer, offset, field);
         offset += sizeof(float);
         field++;
@@ -235,33 +300,41 @@ void MavLinkMessageBase::unpack_float_array(int len, const char* buffer, float* 
 }
 
 int MavLinkTelemetry::pack(char* buffer) const {
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messagesSent), 0);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messagesReceived), 4);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messagesHandled), 8);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->crcErrors), 12);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->handlerMicroseconds), 16);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->renderTime), 20);
-    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->wifiRssi), 24);    
-    return 28;
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messages_sent), 0);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messages_received), 4);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messages_handled), 8);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->crc_errors), 12);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->handler_microseconds), 16);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->render_time), 20);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->wifi_rssi), 24);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->update_rate), 28);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->actuation_delay), 32);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->sensor_rate), 36);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->lock_step_resets), 40);
+    pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->update_time), 44);
+    return MavLinkTelemetry::MessageLength;
 }
 
 int MavLinkTelemetry::unpack(const char* buffer) {
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messagesSent), 0);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messagesReceived), 4);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messagesHandled), 8);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->crcErrors), 12);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->handlerMicroseconds), 16);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->renderTime), 20);
-    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->wifiRssi), 24);
-    return 28;
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messages_sent), 0);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messages_received), 4);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messages_handled), 8);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->crc_errors), 12);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->handler_microseconds), 16);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->render_time), 20);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->wifi_rssi), 24);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->update_rate), 28);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->actuation_delay), 32);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->sensor_rate), 36);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->lock_step_resets), 40);
+    unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->update_time), 44);
+    return MavLinkTelemetry::MessageLength;
 }
-
 
 std::string MavLinkMessageBase::char_array_tostring(int len, const char* field)
 {
     int i = 0;
-    for (i= 0; i < len; i++)
-    {
+    for (i= 0; i < len; i++) {
         if (field[i] == '\0')
             break;
     }

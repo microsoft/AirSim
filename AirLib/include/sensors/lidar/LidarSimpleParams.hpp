@@ -9,7 +9,8 @@
 
 namespace msr { namespace airlib {
 
-struct LidarSimpleParams {
+struct LidarSimpleParams 
+{
 
     // Velodyne VLP-16 Puck config
     // https://velodynelidar.com/vlp-16.html
@@ -43,17 +44,19 @@ struct LidarSimpleParams {
     {
         std::string simmode_name = AirSimSettings::singleton().simmode_name;
 
-        number_of_channels = settings.number_of_channels;
-        range = settings.range;
-        points_per_second = settings.points_per_second;
-        horizontal_rotation_frequency = settings.horizontal_rotation_frequency;
+        const auto& settings_json = settings.settings;
+        number_of_channels = settings_json.getInt("NumberOfChannels", number_of_channels);
+        range = settings_json.getFloat("Range", range);
+        points_per_second = settings_json.getInt("PointsPerSecond", points_per_second);
+        horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", horizontal_rotation_frequency);
+        draw_debug_points = settings_json.getBool("DrawDebugPoints", draw_debug_points);
+        data_frame = settings_json.getString("DataFrame", data_frame);
+        external_controller = settings_json.getBool("ExternalController", external_controller);
 
-        horizontal_FOV_start = settings.horizontal_FOV_start;
-        horizontal_FOV_end = settings.horizontal_FOV_end;
+        vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", Utils::nan<float>());
 
         // By default, for multirotors the lidars FOV point downwards;
         // for cars, the lidars FOV is more forward facing.
-        vertical_FOV_upper = settings.vertical_FOV_upper;
         if (std::isnan(vertical_FOV_upper)) {
             if (simmode_name == AirSimSettings::kSimModeTypeMultirotor)
                 vertical_FOV_upper = -15;
@@ -61,7 +64,8 @@ struct LidarSimpleParams {
                 vertical_FOV_upper = +10;
         }
 
-        vertical_FOV_lower = settings.vertical_FOV_lower;
+
+        vertical_FOV_lower = settings_json.getFloat("VerticalFOVLower", Utils::nan<float>());
         if (std::isnan(vertical_FOV_lower)) {
             if (simmode_name == AirSimSettings::kSimModeTypeMultirotor)
                 vertical_FOV_lower = -45;
@@ -69,7 +73,13 @@ struct LidarSimpleParams {
                 vertical_FOV_lower = -10;
         }
 
-        relative_pose.position = settings.position;
+
+        horizontal_FOV_start = settings_json.getFloat("HorizontalFOVStart", horizontal_FOV_start);
+        horizontal_FOV_end = settings_json.getFloat("HorizontalFOVEnd", horizontal_FOV_end);
+
+        relative_pose.position = AirSimSettings::createVectorSetting(settings_json, VectorMath::nanVector());
+        auto rotation = AirSimSettings::createRotationSetting(settings_json, AirSimSettings::Rotation::nanRotation());
+
         if (std::isnan(relative_pose.position.x()))
             relative_pose.position.x() = 0;
         if (std::isnan(relative_pose.position.y()))
@@ -82,17 +92,13 @@ struct LidarSimpleParams {
         }
 
         float pitch, roll, yaw;
-        pitch = !std::isnan(settings.rotation.pitch) ? settings.rotation.pitch : 0;
-        roll = !std::isnan(settings.rotation.roll) ? settings.rotation.roll : 0;
-        yaw = !std::isnan(settings.rotation.yaw) ? settings.rotation.yaw : 0;
+        pitch = !std::isnan(rotation.pitch) ? rotation.pitch : 0;
+        roll = !std::isnan(rotation.roll) ? rotation.roll : 0;
+        yaw = !std::isnan(rotation.yaw) ? rotation.yaw : 0;
         relative_pose.orientation = VectorMath::toQuaternion(
-            Utils::degreesToRadians(pitch),   //pitch - rotation around Y axis
-            Utils::degreesToRadians(roll),    //roll  - rotation around X axis
-            Utils::degreesToRadians(yaw));    //yaw   - rotation around Z axis
-           
-        draw_debug_points = settings.draw_debug_points;
-        data_frame = settings.data_frame;
-        external_controller = settings.external_controller;
+            Utils::degreesToRadians(pitch),   // pitch - rotation around Y axis
+            Utils::degreesToRadians(roll),    // roll  - rotation around X axis
+            Utils::degreesToRadians(yaw));    // yaw   - rotation around Z axis           
     }
 };
 

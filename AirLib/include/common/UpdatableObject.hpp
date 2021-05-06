@@ -24,8 +24,8 @@ Do not call reset() from constructor or initialization because that will produce
 init->reset calls for base-derived class that would be incorrect.
 */
 
-
-class UpdatableObject {
+class UpdatableObject
+{
 public:
     void reset()
     { 
@@ -73,6 +73,26 @@ public:
         return ClockFactory::get();
     }
 
+    UpdatableObject* getParent()
+    {
+        return parent_;
+    }
+
+    void setParent(UpdatableObject* container)
+    {
+        parent_ = container;
+    }
+
+    std::string getName()
+    {
+        return name_;
+    }
+
+    void setName(const std::string& name)
+    {
+        this->name_ = name;
+    }
+
 protected:
     virtual void resetImplementation() = 0;
     virtual void failResetUpdateOrdering(std::string err)
@@ -84,6 +104,8 @@ private:
     bool reset_called = false;
     bool update_called = false;
     bool reset_in_progress = false;
+    UpdatableObject* parent_ = nullptr;
+    std::string name_;
 };
 
 }} //namespace

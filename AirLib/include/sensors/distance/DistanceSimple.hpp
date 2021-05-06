@@ -14,7 +14,8 @@
 
 namespace msr { namespace airlib {
 
-class DistanceSimple : public DistanceBase {
+class DistanceSimple : public DistanceBase
+{
 public:
     DistanceSimple(const AirSimSettings::DistanceSetting& setting = AirSimSettings::DistanceSetting())
         : DistanceBase(setting.sensor_name)
@@ -22,7 +23,7 @@ public:
         // initialize params
         params_.initializeFromSettings(setting);
 
-        uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.unnorrelated_noise_sigma);
+        uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.uncorrelated_noise_sigma);
         //correlated_noise_.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);
 
 
