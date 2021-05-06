@@ -153,6 +153,10 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl_wsl2/">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_lockstep/">PX4 Lockstep</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_multi_vehicle/">PX4 Multi-vehicle in SITL</a>
                 </li>
                 <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
@@ -178,6 +182,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debugging">Debugging</a>
     </li>
     </ul>
                 </li>
@@ -318,7 +324,7 @@ top toolbar.</p>
 <p>There is also a map option which will plot the GPS path the drone took.  You can also load multiple
 log files so you can compare the data from each.</p>
 <h3 id="realtime">Realtime<a class="headerlink" href="#realtime" title="Permanent link">#</a></h3>
-<p>You can also get a realtime view if you connect the LogViewer <code>before</code> you run the simulation.  </p>
+<p>You can also get a realtime view if you connect the LogViewer <code>before</code> you run the simulation.</p>
 <p><img alt="connect" src="../images/log_viewer_connect.png" /></p>
 <p>For this to work you need to configure the <code>settings.json</code> with the following settings:
 <pre class="highlight"><code>{
@@ -331,10 +337,12 @@ log files so you can compare the data from each.</p>
             "LogViewerPort": 14388,
         }
     }
-}</code></pre>
-Simply press the blue connector button on the top right corner of the window, select the Socket
-<code>tab</code>, enter the port number <code>14388</code>, and your <code>localhost</code> network.  If you are using WSL 2 on 
-Windows then select <code>vEthernet (WSL)</code>.  </p>
+}</code></pre></p>
+<p>Note: do not use the "Logs" setting when you want realtime LogViewer logging.  Logging to
+a file using "Logs" is mutually exclusive with LogViewer logging.</p>
+<p>Simply press the blue connector button on the top right corner of the window, select the Socket
+<code>tab</code>, enter the port number <code>14388</code>, and your <code>localhost</code> network.  If you are using WSL 2 on
+Windows then select <code>vEthernet (WSL)</code>.</p>
 <p>If you do choose <code>vEthernet (WSL)</code> then make sure you also set <code>LocalHostIp</code> and
 <code>LogViewerHostIp</code> to the matching WSL ethernet address, something like <code>172.31.64.1</code>.</p>
 <p>Then press the record button (triangle on the right hand side of the toolbar). Now start the
@@ -350,6 +358,8 @@ installer</a>.</p>
 <p>The magic port number 14388 can be configured in the simulator by editing the <a href="../settings/">settings.json
 file</a>.  If you change the port number in LogViewer connection dialog then be sure
 to make the matching changes in your <code>settings.json</code> file.</p>
+<h3 id="debugging">Debugging<a class="headerlink" href="#debugging" title="Permanent link">#</a></h3>
+<p>See <a href="../px4_logging/">PX4 Logging</a> for more information on how to use the LogViewer to debug situations you are setting.</p>
               
             </div>
           </div>

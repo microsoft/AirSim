@@ -159,6 +159,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#check-the-home-position">Check the Home Position</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#wsl-2">WSL 2</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#no-remote-control">No Remote Control</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#manually-set-parameters">Manually set parameters</a>
@@ -170,6 +172,10 @@
     <li class="toctree-l3"><a class="reference internal" href="#remote-controller">Remote Controller</a>
     </li>
     </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl_wsl2/">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_lockstep/">PX4 Lockstep</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_multi_vehicle/">PX4 Multi-vehicle in SITL</a>
                 </li>
@@ -316,7 +322,9 @@
 their stack that runs in Linux. If you are on Windows then you can use the <a href="https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html">Cygwin
 Toolchain</a> or you can use the
 <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows subsystem for Linux</a> and follow
-the PX4 Linux toolchain setup. </p>
+the PX4 Linux toolchain setup.</p>
+<p>If you are using WSL2 please read these <a href="../px4_sitl_wsl2/">additional
+instructions</a>.</p>
 <p><strong>Note</strong> that every time you stop the unreal app you have to restart the <code>px4</code> app.</p>
 <ol>
 <li>
@@ -331,7 +339,7 @@ the PX4 Linux toolchain setup. </p>
     <pre class="highlight"><code>mkdir -p PX4
 cd PX4
 git clone https://github.com/PX4/PX4-Autopilot.git --recursive
-bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools 
+bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
 cd PX4-Autopilot</code></pre>
     And find the latest stable release from <a href="https://github.com/PX4/PX4-Autopilot/releases">https://github.com/PX4/PX4-Autopilot/releases</a>
     and checkout the source code matching that release, for example:
@@ -359,13 +367,22 @@ commands, but some of them can be useful for debugging.</p>
     <pre class="highlight"><code class="language-json">{
     "SettingsVersion": 1.2,
     "SimMode": "Multirotor",
+    "ClockType": "SteppableClock",
     "Vehicles": {
         "PX4": {
             "VehicleType": "PX4Multirotor",
             "UseSerial": false,
+            "LockStep": true,
             "UseTcp": true,
             "TcpPort": 4560,
             "ControlPort": 14580,
+            "Sensors":{
+                "Barometer":{
+                    "SensorType": 1,
+                    "Enabled": true,
+                    "PressureFactorSigma": 0.0001825
+                }
+            },
             "Parameters": {
                 "NAV_RCL_ACT": 0,
                 "NAV_DLL_ACT": 0,
@@ -376,7 +393,10 @@ commands, but some of them can be useful for debugging.</p>
         }
     }
 }</code></pre>
-    Notice the PX4 <code>[simulator]</code> is using TCP, which is why we need to add: <code>"UseTcp": true,</code>.</p>
+    Notice the PX4 <code>[simulator]</code> is using TCP, which is why we need to add: <code>"UseTcp": true,</code>.
+    See <a href="../px4_lockstep/">PX4 LockStep</a> for more information.
+    The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
+    noise generation.  This setting clamps that down a bit.</p>
 </li>
 <li>
 <p>Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
@@ -428,6 +448,9 @@ If you attempt to takeoff without a home position you will see the message:</p>
 <pre class="highlight"><code>Local position: x=-0.0326988, y=0.00656854, z=5.48506</code></pre>
 <p>If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL
 and simulation should fix that problem.</p>
+<h2 id="wsl-2">WSL 2<a class="headerlink" href="#wsl-2" title="Permanent link">#</a></h2>
+<p>Windows Subsystem for Linux version 2 operates in a Virtual Machine.  This requires
+additional setup - see <a href="../px4_sitl_wsl2/">additional instructions</a>.</p>
 <h2 id="no-remote-control">No Remote Control<a class="headerlink" href="#no-remote-control" title="Permanent link">#</a></h2>
 <p>Notice the above setting is provided in the <code>params</code> section of the <code>settings.json</code> file:
 <pre class="highlight"><code>    "NAV_RCL_ACT": 0,
@@ -463,7 +486,7 @@ xbox gamepad. See <a href="../remote_control/#rc-setup-for-px4">remote controlle
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../px4_multi_vehicle/" class="btn btn-neutral float-right" title="PX4 Multi-vehicle in SITL">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../px4_sitl_wsl2/" class="btn btn-neutral float-right" title="PX4 SITL with WSL 2">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../px4_setup/" class="btn btn-neutral" title="PX4 Setup for AirSim"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -499,7 +522,7 @@ xbox gamepad. See <a href="../remote_control/#rc-setup-for-px4">remote controlle
         <span><a href="../px4_setup/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../px4_multi_vehicle/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../px4_sitl_wsl2/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>AirSim with Unity - AirSim</title>
+  <title>PX4 SITL with WSL 2 - AirSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "AirSim with Unity";
-    var mkdocs_page_input_path = "Unity.md";
+    var mkdocs_page_name = "PX4 SITL with WSL 2";
+    var mkdocs_page_input_path = "px4_sitl_wsl2.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -57,7 +57,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Get AirSim</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../use_precompiled/">Download Binaries</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../build_windows/">Build on Windows</a>
@@ -70,65 +70,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">AirSim with Unity</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#warning-experimental-release">Warning: Experimental Release</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#windows">Windows</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#building-from-source">Building from source</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#install-unity">Install Unity</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#build-airsim">Build Airsim</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#build-unity-project">Build Unity Project</a>
-    </li>
-        </ul>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#linux">Linux</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#download-and-install-unity-for-linux">Download and Install Unity for Linux</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#install-unity_1">Install Unity</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#build-airsim_1">Build Airsim</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#generate-airsimwrapper-shared-library">Generate AirsimWrapper Shared Library</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#building-custom-environments-for-airsim">Building Custom Environments For AirSim</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#cross-compiling-to-linux">Cross-Compiling to Linux</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#linux-pre-requisites">Linux Pre-Requisites</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#package-unitydemo-binary-on-windows">Package UnityDemo Binary On Windows</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#install-necessary-components">Install Necessary Components</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#build-the-project">Build the Project</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#copy-the-airsimwrapper-library-to-the-project-plugins-folder">Copy The AirsimWrapper Library to the Project Plugins folder</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#run-the-project-binary">Run the Project Binary</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#using-airsim-api">Using Airsim API</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Unity/">AirSim with Unity</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../custom_unity_environments/">Custom Unity Environment</a>
                     </li>
@@ -204,14 +146,16 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
-    <ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">MavLink and PX4</a>
+    <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl_wsl2/">PX4 SITL with WSL 2</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">PX4 SITL with WSL 2</a>
+    <ul class="current">
+    </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_lockstep/">PX4 Lockstep</a>
                 </li>
@@ -333,14 +277,18 @@
     
       
         
-          <li>Get AirSim &raquo;</li>
+          <li>MavLink and PX4 &raquo;</li>
+        
+      
+        
+          <li>External Flight Controllers &raquo;</li>
         
       
     
-    <li>AirSim with Unity</li>
+    <li>PX4 SITL with WSL 2</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/Unity.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/px4_sitl_wsl2.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -351,128 +299,86 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="airsim-on-unity">AirSim on Unity<a class="headerlink" href="#airsim-on-unity" title="Permanent link">#</a></h1>
-<ul>
-<li>AirSim on Unity allows you to run your simulators in the <a href="https://unity3d.com/">Unity Engine</a>. This project comes with some sample Unity projects and a wrapper around the AirLib library to run as a <a href="https://docs.unity3d.com/Manual/NativePlugins.html">native plugin</a> in Unity. </li>
-<li>Included are two basic Unity Projects, one for a Car simulator and another for a Drone simulator. They are meant to be lightweight, and can be used to verify your setup is correct. </li>
-<li>Check out the <a href="https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation/">Unity blogpost</a> for overview on the release.  </li>
-</ul>
-<h3 id="warning-experimental-release">Warning: Experimental Release<a class="headerlink" href="#warning-experimental-release" title="Permanent link">#</a></h3>
-<p>This project is still in early development, expect some rough edges. We are working to fully support the full AirLib API and feature set, but some things may be missing. <a href="../unity_api_support/">Click here</a> for the list of currently supported APIs.</p>
-<h2 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">#</a></h2>
-<h3 id="building-from-source">Building from source<a class="headerlink" href="#building-from-source" title="Permanent link">#</a></h3>
-<h4 id="install-unity">Install Unity<a class="headerlink" href="#install-unity" title="Permanent link">#</a></h4>
-<ul>
-<li>Download <strong>Unity Hub</strong> from <a href="https://unity3d.com/get-unity/download">this page</a>. </li>
-<li>Install <strong>Unity 2019.3.12</strong> using the Unity Hub from <a href="https://unity3d.com/get-unity/update?_ga=2.150316848.720992218.1588269226-65412882.1588269226">here</a>. <a href="https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html">Detailed instructions here</a>. </li>
-<li>Note: If you are using Unity for the first time, check out <a href="https://docs.unity3d.com/Manual/GettingStarted.html">the Getting started guide</a>. The <a href="https://docs.unity3d.com/Manual/UnityManual.html">Unity User Manual</a> has additional tips, resources, and FAQs.</li>
-</ul>
-<h4 id="build-airsim">Build Airsim<a class="headerlink" href="#build-airsim" title="Permanent link">#</a></h4>
-<ul>
-<li>
-<p>Install Visual Studio 2019. 
-<strong>Make sure</strong> to select <strong>Desktop Development with C++</strong> and <strong>Windows 10 SDK 10.0.18362</strong> (should be selected by default) while installing VS 2019. </p>
-</li>
-<li>
-<p>Start <code>x64 Native Tools Command Prompt for VS 2019</code>. </p>
-</li>
-<li>Clone the repo: <code>git clone https://github.com/Microsoft/AirSim.git</code>, and go the AirSim directory by <code>cd AirSim</code>. </li>
-<li>Run <code>build.cmd</code> from the command line. </li>
-</ul>
-<h4 id="build-unity-project">Build Unity Project<a class="headerlink" href="#build-unity-project" title="Permanent link">#</a></h4>
-<ul>
-<li>Go inside the AirSim\Unity directory: <code>cd Unity</code>. </li>
-<li>Build the unity project: <code>build.cmd</code>. </li>
-<li>Additionally, there is a free environment <code>Windridge City</code> which you can download from <a href="https://assetstore.unity.com/packages/3d/environments/roadways/windridge-city-132222">Unity Asset Store</a>. And, of course, you can always create your own environment.</li>
-</ul>
-<h2 id="linux">Linux<a class="headerlink" href="#linux" title="Permanent link">#</a></h2>
-<h4 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">#</a></h4>
-<pre class="highlight"><code>sudo apt-get install libboost-all-dev</code></pre>
-<h4 id="download-and-install-unity-for-linux">Download and Install Unity for Linux<a class="headerlink" href="#download-and-install-unity-for-linux" title="Permanent link">#</a></h4>
-<p><span style="color:red">Warning:</span> Unity Editor for Linux is still in Beta. Expect some rough edges.</p>
-<h4 id="install-unity_1">Install Unity<a class="headerlink" href="#install-unity_1" title="Permanent link">#</a></h4>
-<ul>
-<li>Download <strong>Unity Hub</strong> from <a href="https://unity3d.com/get-unity/download">this page</a>. </li>
-<li><a href="https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html">Install <strong>Unity 2019.3.12</strong> using the Unity Hub</a>. </li>
-<li>Note: If you are using Unity for the first time, check out <a href="https://docs.unity3d.com/Manual/GettingStarted.html">the Getting started guide</a>. The <a href="https://docs.unity3d.com/Manual/UnityManual.html">Unity User Manual</a> has additional tips, resources, and FAQs.</li>
-</ul>
-<h4 id="build-airsim_1">Build Airsim<a class="headerlink" href="#build-airsim_1" title="Permanent link">#</a></h4>
-<pre class="highlight"><code>git clone https://github.com/Microsoft/AirSim.git;
-cd AirSim;
-./setup.sh;
-./build.sh</code></pre>
-<h4 id="generate-airsimwrapper-shared-library">Generate AirsimWrapper Shared Library<a class="headerlink" href="#generate-airsimwrapper-shared-library" title="Permanent link">#</a></h4>
-<pre class="highlight"><code>cd AirSim/Unity
-./build.sh</code></pre>
-<p>This will generate the necessary shared library and copy it to the UnityDemo Plugins folder.</p>
-<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">#</a></h2>
-<ul>
-<li>Start Unity Hub, click on <code>Projects</code> on left pane, and then click on the <code>Add</code> button </li>
-<li>Select the folder <code>AirSim\Unity\UnityDemo</code>, and then hit the <code>OK</code> button. </li>
-<li>Click on the new project which showed up in the Unity Hub menu to open it in Unity. </li>
-<li>In the bottom pane, click on <code>Projects</code>-&gt;<code>Assets</code>-&gt;<code>Scenes</code>. Then, <strong>Double-click</strong> on <code>SimModeSelector</code>. This will load the SimModeSelector scene into the scene hierarchy pane. <em>DO NOT</em> add CarDemo or DroneDemo scene into the scene hierarchy pane.</li>
-<li>Hit the play button to start the simulation (and hit play again to stop the simulation. .  </li>
-<li>Alternatively, you can change the SimMode in your <code>Settings.json</code> file. (You can read more about <a href="../settings/"><code>Settings.json</code> here</a>)</li>
-<li>Controlling the car:  <br />
-Use <code>WASD</code> or the <code>Arrow keys</code> or the AirSim client.   </li>
-<li>Controlling the drone:  <br />
-Keyboard control is not currently available for drone flight.</li>
-<li>Changing camera views:  <br />
-Keys <code>0</code>, <code>1</code>, <code>2</code>, <code>3</code> are used to toggle windows of different camera views.</li>
-<li>Recording simulation data:  <br />
-Press <em>Record</em> button(Red button) located at the right bottom corner of the screen, to toggle recording of the simulation data. The recorded data can be found at <code>Documents\AirSim\(Date of recording)</code> on Windows and <code>~/Documents/AirSim/(Date of recording)</code> on Linux.</li>
-</ul>
-<h2 id="building-custom-environments-for-airsim">Building Custom Environments For AirSim<a class="headerlink" href="#building-custom-environments-for-airsim" title="Permanent link">#</a></h2>
-<p>To use environments other than <code>UnityDemo</code>, follow the instructions written <a href="../custom_unity_environments/">here</a></p>
-<h2 id="cross-compiling-to-linux">Cross-Compiling to Linux<a class="headerlink" href="#cross-compiling-to-linux" title="Permanent link">#</a></h2>
-<p>Unity Editor supports compiling projects to Linux systems.
-After following the steps to build AirSim and Unity on Windows, do the following:</p>
-<h4 id="linux-pre-requisites">Linux Pre-Requisites<a class="headerlink" href="#linux-pre-requisites" title="Permanent link">#</a></h4>
-<p>Before being able to run Unity Binaries with the Airsim plugin, be sure have airsim and airsim unity built on your linux machine by following the Linux build steps above.</p>
-<h3 id="package-unitydemo-binary-on-windows">Package UnityDemo Binary On Windows<a class="headerlink" href="#package-unitydemo-binary-on-windows" title="Permanent link">#</a></h3>
-<h4 id="install-necessary-components">Install Necessary Components<a class="headerlink" href="#install-necessary-components" title="Permanent link">#</a></h4>
-<p>In order to package your project for linux, the <strong>Linux Build Support</strong> Unity add-on must be installed.
-* Open <strong>Unity Hub</strong>, and click the <strong>Add component</strong> button in the dropdown window under <strong>more options</strong> to the right of your <strong>Unity 2018.2.15f1</strong> tab.
-<img alt="Adding components" src="../images/unity_linux_components_1.PNG" />
-* Make sure the <strong>Linux Build Support</strong> Platform is selected
-<img alt="Adding components" src="../images/unity_linux_components_2.PNG" />
-Once this component is successfully installed, you are ready to build Unity Projects for Linux!</p>
-<h4 id="build-the-project">Build the Project<a class="headerlink" href="#build-the-project" title="Permanent link">#</a></h4>
-<ul>
-<li>On your Windows machine, build the Unity Demo by navigating to the build settings option in the toolbar <code>File -&gt; Build Settings</code></li>
-<li>Make sure the following scenes are set to be built:<ol>
-<li>SimModeSelector</li>
-<li>CarDemo</li>
-<li>DroneDemo</li>
-</ol>
-</li>
-<li>Set the target operating system to linux, and choose the version appropriate for your system (x86 vs x86_64)</li>
-<li>Click <code>Build</code></li>
-<li>Transport the built project as well as the generated folder <code>"{project_name}_Data"</code> to your linux machine</li>
-</ul>
-<h4 id="copy-the-airsimwrapper-library-to-the-project-plugins-folder">Copy The AirsimWrapper Library to the Project Plugins folder<a class="headerlink" href="#copy-the-airsimwrapper-library-to-the-project-plugins-folder" title="Permanent link">#</a></h4>
-<ul>
-<li>On your linux machine, navigate to your AirSim repository, and run the following commands in a terminal window:
-    <pre class="highlight"><code>cp Unity/linux-build/libAirsimWrapper.so path/to/your/project/{project_name}_Data/Plugins/{os_version}</code></pre>
-This will generate the necessary shared library to allow Airsim to communicate with Unity and copy it to the plugins folder of your project binary.</li>
-</ul>
-<h4 id="run-the-project-binary">Run the Project Binary<a class="headerlink" href="#run-the-project-binary" title="Permanent link">#</a></h4>
-<ul>
-<li>Open a terminal and navigate to your project directory</li>
-<li>Set your project binary as an executable file:
-<pre class="highlight"><code>chmod +x "{project_name}.{configuration}"</code></pre></li>
-<li>Run the binary file
-<pre class="highlight"><code>./{project_name}.{configuration}</code></pre></li>
-</ul>
-<h3 id="using-airsim-api">Using Airsim API<a class="headerlink" href="#using-airsim-api" title="Permanent link">#</a></h3>
-<ul>
-<li>For quickstart with the Python APIs for the car or the drone, simply run the <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/hello_car.py"><code>hello_car.py</code></a> or the <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> script accordingly. </li>
-<li>Details of the AirSim C++ and Python APIs are <a href="../apis/">here</a>. </li>
-</ul>
-<h3 id="acknowledgements">Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permanent link">#</a></h3>
-<ul>
-<li>The drone object was provided by user 31415926 on <a href="https://sketchfab.com/models/055841df0fb24cd4abde06a91f7d360a">sketchfab</a>. It is licensed under the <a href="https://creativecommons.org/licenses/by/4.0/">CC License</a>.</li>
-</ul>
+                <h1 id="px4-software-in-loop-with-wsl-2">PX4 Software-in-Loop with WSL 2<a class="headerlink" href="#px4-software-in-loop-with-wsl-2" title="Permanent link">#</a></h1>
+<p>The <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Windows subsystem for Linux version
+2</a> uses a Virtual Machine which has a
+separate IP address from your Windows host machine. This means PX4 cannot find AirSim using
+"localhost" which is the default behavior for PX4.</p>
+<p>You will notice that on Windows <code>ipconfig</code> returns a new ethernet adapter for WSL like this (notice
+the vEthernet has <code>(WSL)</code> in the name:</p>
+<pre class="highlight"><code class="language-plain">Ethernet adapter vEthernet (WSL):
+
+   Connection-specific DNS Suffix  . :
+   Link-local IPv6 Address . . . . . : fe80::1192:f9a5:df88:53ba%44
+   IPv4 Address. . . . . . . . . . . : 172.31.64.1
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+   Default Gateway . . . . . . . . . :</code></pre>
+<p>This address <code>172.31.64.1</code> is the address that WSL 2 can use to reach your Windows host machine.</p>
+<p>Starting with this <a href="https://github.com/PX4/PX4-Autopilot/commit/1719ff9892f3c3d034f2b44e94d15527ab09cec6">PX4 Change
+Request</a> PX4
+in SITL mode can now connect to AirSim on a different (remote) IP address.  To enable this make sure
+you have a version of PX4 containing this fix and set the following environment variable in linux:</p>
+<pre class="highlight"><code class="language-shell">export PX4_SIM_HOST_ADDR=172.31.64.1</code></pre>
+<p><strong>Note:</strong> Be sure to update the above address <code>172.31.64.1</code> to match what you see from your
+<code>ipconfig</code> command.</p>
+<p>Open incoming port 4560 using your Windows Firewall settings.</p>
+<p>Now on the linux side run <code>ip address show</code> and copy the <code>eth0 inet</code> address, it should be something
+like <code>172.31.66.156</code>.  This is the address Windows needs to know in order to find PX4.</p>
+<p>Edit your <a href="../settings/">AirSim settings</a> file and add <code>LocalHostIp</code> to tell AirSim to use the WSL
+ethernet adapter address instead of the default <code>localhost</code>.  This will cause AirSim to open the TCP
+port on that adapter which is the address that the PX4 app will be looking for.  Also tell AirSim
+to connect the <code>ControlIp</code> UDP channel by setting <code>ControlIp</code> to the magic string <code>remote</code>.
+This resolves to the WSL 2 remote ip address found in the TCP socket.</p>
+<p><pre class="highlight"><code class="language-json">{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+    "ClockType": "SteppableClock",
+    "Vehicles": {
+        "PX4": {
+            "VehicleType": "PX4Multirotor",
+            "UseSerial": false,
+            "LockStep": true,
+            "UseTcp": true,
+            "TcpPort": 4560,
+            "ControlIp": "remote",
+            "ControlPort": 14580,
+            "LocalHostIp": "172.31.64.1",
+            "Sensors":{
+                "Barometer":{
+                    "SensorType": 1,
+                    "Enabled": true,
+                    "PressureFactorSigma": 0.0001825
+                }
+            },
+            "Parameters": {
+                "NAV_RCL_ACT": 0,
+                "NAV_DLL_ACT": 0,
+                "COM_OBL_ACT": 1,
+                "LPE_LAT": 47.641468,
+                "LPE_LON": -122.140165
+            }
+        }
+    }
+}</code></pre>
+See <a href="../px4_lockstep/">PX4 LockStep</a> for more information.
+The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
+noise generation.  This setting clamps that down a bit.</p>
+<p>Lastly, please edit the Linux file in <code>ROMFS/px4fmu_common/init.d-posix/rcS</code> and make sure
+it is looking for the <code>PX4_SIM_HOST_ADDR</code> environment variable and is passing that through to the
+PX4 simulator like this:</p>
+<pre class="highlight"><code class="language-shell"># If PX4_SIM_HOST_ADDR environment variable is empty use localhost.
+if [ -z "${PX4_SIM_HOST_ADDR}" ]; then
+    echo "PX4 SIM HOST: localhost"
+    simulator start -c $simulator_tcp_port
+else
+    echo "PX4 SIM HOST: $PX4_SIM_HOST_ADDR"
+    simulator start -t $PX4_SIM_HOST_ADDR $simulator_tcp_port
+fi</code></pre>
+<p><strong>Note:</strong> this code might already be there depending on the version of PX4 you are using.</p>
+<p><strong>Note:</strong> please be patient when waiting for the message:</p>
+<pre class="highlight"><code>INFO  [simulator] Simulator connected on TCP port 4560.</code></pre>
+<p>It can take a little longer to establish the remote connection than it does with <code>localhost</code>.</p>
+<p>Now you can proceed with the steps shown in <a href="../px4_sitl/">Setting up PX4 Software-in-Loop</a>.</p>
               
             </div>
           </div>
@@ -480,10 +386,10 @@ This will generate the necessary shared library to allow Airsim to communicate w
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../custom_unity_environments/" class="btn btn-neutral float-right" title="Custom Unity Environment">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../px4_lockstep/" class="btn btn-neutral float-right" title="PX4 Lockstep">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../unreal_custenv/" class="btn btn-neutral" title="Custom Unreal Environment"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../px4_sitl/" class="btn btn-neutral" title="PX4 in SITL"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -513,10 +419,10 @@ This will generate the necessary shared library to allow Airsim to communicate w
           <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../unreal_custenv/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../px4_sitl/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../custom_unity_environments/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../px4_lockstep/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

@@ -189,6 +189,10 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl_wsl2/">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_lockstep/">PX4 Lockstep</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_multi_vehicle/">PX4 Multi-vehicle in SITL</a>
                 </li>
                 <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
@@ -364,36 +368,81 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 <p>The default sensor list can be configured in settings json:</p>
 <pre class="highlight"><code class="language-json">"DefaultSensors": {
     "Barometer": {
-         "SensorType": 1,
-         "Enabled" : true
+        "SensorType": 1,
+        "Enabled" : true,
+        "PressureFactorSigma": 0.001825,
+        "PressureFactorTau": 3600,
+        "UncorrelatedNoiseSigma": 2.7,
+        "UpdateLatency": 0,
+        "UpdateFrequency": 50,
+        "StartupDelay": 0
+
     },
     "Imu": {
-         "SensorType": 2,
-         "Enabled" : true
+        "SensorType": 2,
+        "Enabled" : true,
+        "AngularRandomWalk": 0.3,
+        "GyroBiasStabilityTau": 500,
+        "GyroBiasStability": 4.6,
+        "VelocityRandomWalk": 0.24,
+        "AccelBiasStabilityTau": 800,
+        "AccelBiasStability": 36
     },
     "Gps": {
-         "SensorType": 3,
-         "Enabled" : true
+        "SensorType": 3,
+        "Enabled" : true,
+        "EphTimeConstant": 0.9,
+        "EpvTimeConstant": 0.9,
+        "EphInitial": 25,
+        "EpvInitial": 25,
+        "EphFinal": 0.1,
+        "EpvFinal": 0.1,
+        "EphMin3d": 3,
+        "EphMin2d": 4,
+        "UpdateLatency": 0.2,
+        "UpdateFrequency": 50,
+        "StartupDelay": 1
     },
     "Magnetometer": {
-         "SensorType": 4,
-         "Enabled" : true
+        "SensorType": 4,
+        "Enabled" : true,
+        "NoiseSigma": 0.005,
+        "ScaleFactor": 1,
+        "NoiseBias": 0,
+        "UpdateLatency": 0,
+        "UpdateFrequency": 50,
+        "StartupDelay": 0
     },
     "Distance": {
-         "SensorType": 5,
-         "Enabled" : true
+        "SensorType": 5,
+        "Enabled" : true,
+        "MinDistance": 0.2,
+        "MaxDistance": 40,
+        "X": 0, "Y": 0, "Z": -1,
+        "Yaw": 0, "Pitch": 0, "Roll": 0,
+        "DrawDebugPoints": false
     },
     "Lidar2": {
-         "SensorType": 6,
-         "Enabled" : true,
-         "NumberOfChannels": 4,
-         "PointsPerSecond": 10000
+        "SensorType": 6,
+        "Enabled" : true,
+        "NumberOfChannels": 16,
+        "RotationsPerSecond": 10,
+        "PointsPerSecond": 100000,
+        "X": 0, "Y": 0, "Z": -1,
+        "Roll": 0, "Pitch": 0, "Yaw" : 0,
+        "VerticalFOVUpper": -15,
+        "VerticalFOVLower": -25,
+        "HorizontalFOVStart": -20,
+        "HorizontalFOVEnd": 20,
+        "DrawDebugPoints": true,
+        "DataFrame": "SensorLocalFrame"
     }
 },</code></pre>
 <h2 id="configuring-vehicle-specific-sensor-list">Configuring vehicle-specific sensor list<a class="headerlink" href="#configuring-vehicle-specific-sensor-list" title="Permanent link">#</a></h2>
-<p>If a vehicle provides its sensor list, it <strong>must</strong> provide the whole list. Selective add/remove/update of the default sensor list is <strong>NOT</strong> supported.
-A vehicle specific sensor list can be specified in the vehicle settings part of the json.
-e.g.,</p>
+<p>A vehicle can override a subset of the default sensors listed above. A Lidar and Distance sensor are
+not added to a vehicle by default, so those you need to add this way. Each sensor must have a valid
+"SensorType" and a subset of the properties can be defined that override the default values shown
+above and you can set Enabled to false to disable a specific type of sensor.</p>
 <pre class="highlight"><code class="language-json">"Vehicles": {
 
     "Drone1": {
@@ -401,6 +450,11 @@ e.g.,</p>
         "AutoCreate": true,
         ...
         "Sensors": {
+            "Barometer":{
+                "SensorType": 1,
+                "Enabled": true,
+                "PressureFactorSigma": 0.0001825
+            },
             "MyLidar1": {
                 "SensorType": 6,
                 "Enabled" : true,
@@ -437,22 +491,22 @@ see the following pages:</p>
 }</code></pre>
 <h2 id="sensor-apis">Sensor APIs<a class="headerlink" href="#sensor-apis" title="Permanent link">#</a></h2>
 <p>Jump straight to <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> or <a href="https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp"><code>hello_drone.cpp</code></a> for example usage, or see follow below for the full API.</p>
-<h5 id="barometer">Barometer<a class="headerlink" href="#barometer" title="Permanent link">#</a></h5>
+<h3 id="barometer">Barometer<a class="headerlink" href="#barometer" title="Permanent link">#</a></h3>
 <pre class="highlight"><code class="language-cpp">msr::airlib::BarometerBase::Output getBarometerData(const std::string&amp; barometer_name, const std::string&amp; vehicle_name);</code></pre>
 <pre class="highlight"><code class="language-python">barometer_data = client.getBarometerData(barometer_name = "", vehicle_name = "")</code></pre>
-<h5 id="imu">IMU<a class="headerlink" href="#imu" title="Permanent link">#</a></h5>
+<h3 id="imu">IMU<a class="headerlink" href="#imu" title="Permanent link">#</a></h3>
 <pre class="highlight"><code class="language-cpp">msr::airlib::ImuBase::Output getImuData(const std::string&amp; imu_name = "", const std::string&amp; vehicle_name = "");</code></pre>
 <pre class="highlight"><code class="language-python">imu_data = client.getImuData(imu_name = "", vehicle_name = "")</code></pre>
-<h5 id="gps">GPS<a class="headerlink" href="#gps" title="Permanent link">#</a></h5>
+<h3 id="gps">GPS<a class="headerlink" href="#gps" title="Permanent link">#</a></h3>
 <p><pre class="highlight"><code class="language-cpp">msr::airlib::GpsBase::Output getGpsData(const std::string&amp; gps_name = "", const std::string&amp; vehicle_name = "");</code></pre>
 <pre class="highlight"><code class="language-python">gps_data = client.getGpsData(gps_name = "", vehicle_name = "")</code></pre></p>
-<h5 id="magnetometer">Magnetometer<a class="headerlink" href="#magnetometer" title="Permanent link">#</a></h5>
+<h3 id="magnetometer">Magnetometer<a class="headerlink" href="#magnetometer" title="Permanent link">#</a></h3>
 <p><pre class="highlight"><code class="language-cpp">msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string&amp; magnetometer_name = "", const std::string&amp; vehicle_name = "");</code></pre>
 <pre class="highlight"><code class="language-python">magnetometer_data = client.getMagnetometerData(magnetometer_name = "", vehicle_name = "")</code></pre></p>
-<h5 id="distance-sensor">Distance sensor<a class="headerlink" href="#distance-sensor" title="Permanent link">#</a></h5>
+<h3 id="distance-sensor">Distance sensor<a class="headerlink" href="#distance-sensor" title="Permanent link">#</a></h3>
 <p><pre class="highlight"><code class="language-cpp">msr::airlib::DistanceSensorData getDistanceSensorData(const std::string&amp; distance_sensor_name = "", const std::string&amp; vehicle_name = "");</code></pre>
 <pre class="highlight"><code class="language-python">distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")</code></pre></p>
-<h5 id="lidar">Lidar<a class="headerlink" href="#lidar" title="Permanent link">#</a></h5>
+<h3 id="lidar">Lidar<a class="headerlink" href="#lidar" title="Permanent link">#</a></h3>
 <p>See the <a href="../lidar/">lidar page</a> for Lidar API.</p>
               
             </div>
