@@ -34,9 +34,6 @@ export PX4_SIM_HOST_ADDR=172.31.64.1
 
 Open incoming port 4560 using your Windows Firewall settings.
 
-Now on the linux side run `ip address show` and copy the `eth0 inet` address, it should be something
-like `172.31.66.156`.  This is the address Windows needs to know in order to find PX4.
-
 Edit your [AirSim settings](settings.md) file and add `LocalHostIp` to tell AirSim to use the WSL
 ethernet adapter address instead of the default `localhost`.  This will cause AirSim to open the TCP
 port on that adapter which is the address that the PX4 app will be looking for.  Also tell AirSim
@@ -56,7 +53,8 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
             "UseTcp": true,
             "TcpPort": 4560,
             "ControlIp": "remote",
-            "ControlPort": 14580,
+            "ControlPortLocal": 14540,
+            "ControlPortRemote": 14580,
             "LocalHostIp": "172.31.64.1",
             "Sensors":{
                 "Barometer":{
@@ -76,9 +74,10 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
     }
 }
 ```
-See [PX4 LockStep](px4_lockstep.md) for more information.
-The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
-noise generation.  This setting clamps that down a bit.
+Notice we are also enabling `LockStep`, see [PX4 LockStep](px4_lockstep.md) for more information.
+The `Barometer` setting keeps PX4 happy because the default AirSim barometer has a bit too much
+noise generation.  This setting clamps that down a bit which allows PX4 to achieve GPS lock more
+quickly.
 
 Lastly, please edit the Linux file in `ROMFS/px4fmu_common/init.d-posix/rcS` and make sure
 it is looking for the `PX4_SIM_HOST_ADDR` environment variable and is passing that through to the
