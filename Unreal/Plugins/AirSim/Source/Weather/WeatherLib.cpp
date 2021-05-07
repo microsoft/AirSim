@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
+AExponentialHeightFog* UWeatherLib::weather_fog_ = nullptr;
 
 UMaterialParameterCollectionInstance* UWeatherLib::getWeatherMaterialCollectionInstance(UWorld* World)
 {
@@ -106,6 +107,10 @@ void UWeatherLib::setWeatherParamScalar(UWorld* World, EWeatherParamScalar Param
 			WeatherMaterialCollectionInstance->SetScalarParameterValue(ParamName, 0.0f);
 		}
 
+		if (weather_fog_)
+		{
+			weather_fog_->GetRootComponent()->SetVisibility(true);
+		}
 	}
 	else
 	{
@@ -304,4 +309,8 @@ UWorld* UWeatherLib::actorGetWorld(AActor* Actor)
 		return Actor->GetWorld();
 	}
 	return NULL;
+}
+void UWeatherLib::setWeatherFog(AExponentialHeightFog* fog)
+{
+	weather_fog_ = fog;
 }
