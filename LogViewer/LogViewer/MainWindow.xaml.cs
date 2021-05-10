@@ -962,9 +962,11 @@ namespace LogViewer
         IEnumerable<DataValue> GetSelectedDataValues(LogItemSchema schema)
         {
             List<Flight> selected = GetSelectedFlights();
+            bool everything = false;
             if (selected.Count == 0)
             {
                 // show everything.
+                everything = true;
                 selected.Add(new Flight() { StartTime = DateTime.MinValue, Duration = TimeSpan.MaxValue });
             }
 
@@ -981,6 +983,11 @@ namespace LogViewer
                                 yield return dv;
                             }
                         }
+                    }
+                    if (everything)
+                    {
+                        // the first Log contains everything, subsequent logs are the separate flights found.
+                        break;
                     }
                 }
             }            
@@ -1094,7 +1101,7 @@ namespace LogViewer
                 else
                 {
                     var data = GetSelectedDataValues(schema);
-                    if (data.Count() > 0)
+                    if (data.Any())
                     {
                         chart = AddChart(schema, data);
                     }                                      

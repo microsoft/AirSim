@@ -904,6 +904,13 @@ namespace LogViewer.Controls
             {
                 tipPositionY = 0;
             }
+
+            Size closeBoxSize = CloseBox.DesiredSize;
+            if (tipPositionX == this.ActualWidth - PointerBorder.ActualWidth && tipPositionY < closeBoxSize.Height)
+            {
+                tipPositionX -= closeBoxSize.Width;
+            }
+
             PointerBorder.Margin = new Thickness(tipPositionX, tipPositionY, 0, 0);
             PointerBorder.Visibility = System.Windows.Visibility.Visible;
             PointerBorder.Data = data;
