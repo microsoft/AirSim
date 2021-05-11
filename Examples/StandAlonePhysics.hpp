@@ -8,7 +8,7 @@
 
 class StandAlonePhysics {
 public:
-    static void testCollison()
+    static void testCollision()
     {
         using namespace msr::airlib;
 

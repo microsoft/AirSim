@@ -1,7 +1,7 @@
 #include "StandAloneSensors.hpp"
 #include "StandAlonePhysics.hpp"
 #include "DataCollection/StereoImageGenerator.hpp"
-#include "DataCollection/DataCollectorSGM.h"                          
+#include "DataCollection/DataCollectorSGM.h"
 #include "GaussianMarkovTest.hpp"
 #include "DepthNav/DepthNavCost.hpp"
 #include "DepthNav/DepthNavThreshold.hpp"
@@ -12,7 +12,7 @@
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>                                             
+#include <math.h>
 
 int runStandAloneSensors(int argc, const char *argv[])
 {
@@ -36,7 +36,7 @@ int runStandAloneSensors(int argc, const char *argv[])
     using namespace msr::airlib;
 
     //60 acres park:
-    //GeoPoint testLocation(47.7037051477, -122.1415384809, 9.93f); 
+    //GeoPoint testLocation(47.7037051477, -122.1415384809, 9.93f);
 
     //marymoore park
     //GeoPoint testLocation(47.662804385, -122.1167039875, 9.93f);
@@ -58,7 +58,7 @@ int runStandAlonePhysics(int argc, const char *argv[])
 {
     using namespace msr::airlib;
 
-    StandAlonePhysics::testCollison();
+    StandAlonePhysics::testCollision();
 
     return 0;
 }
@@ -71,11 +71,11 @@ void runDataCollectorSGM(int num_samples, std::string storage_path)
 
 void runDataCollectorSGM(int argc, const char *argv[])
 {
-    runDataCollectorSGM(argc < 2 ? 5000 : std::stoi(argv[1]), argc < 3 ? 
+    runDataCollectorSGM(argc < 2 ? 5000 : std::stoi(argv[1]), argc < 3 ?
         common_utils::FileSystem::combine(
             common_utils::FileSystem::getAppDataFolder(), "data_sgm")
         : std::string(argv[2]));
-}                                                                  
+}
 void runSteroImageGenerator(int num_samples, std::string storage_path)
 {
     StereoImageGenerator gen(storage_path);
@@ -84,7 +84,7 @@ void runSteroImageGenerator(int num_samples, std::string storage_path)
 
 void runSteroImageGenerator(int argc, const char *argv[])
 {
-    runSteroImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]), argc < 3 ? 
+    runSteroImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]), argc < 3 ?
         common_utils::FileSystem::combine(
             common_utils::FileSystem::getAppDataFolder(), "stereo_gen")
         : std::string(argv[2]));
@@ -102,7 +102,7 @@ void runDepthNavGT()
 {
     typedef ImageCaptureBase::ImageRequest ImageRequest;
     typedef ImageCaptureBase::ImageType ImageType;
-                                                    
+
     std::vector<ImageRequest> request = {
         ImageRequest("front_left", ImageType::DepthPlanar, true) /*,
         ImageRequest("front_left", ImageType::Scene),
@@ -133,9 +133,9 @@ void runDepthNavSGM()
     typedef ImageCaptureBase::ImageType ImageType;
 
     std::vector<ImageRequest> request = {
-        ImageRequest("front_left", ImageType::Scene, false, false), 
+        ImageRequest("front_left", ImageType::Scene, false, false),
         ImageRequest("front_right", ImageType::Scene, false, false), /*
-        ImageRequest("front_left", ImageType::DepthPlanar, true), 
+        ImageRequest("front_left", ImageType::DepthPlanar, true),
         ImageRequest("front_left", ImageType::DisparityNormalized, true) */
     };
 
@@ -153,7 +153,7 @@ void runDepthNavSGM()
     DepthNavCost depthNav;
     //DepthNavOptAStar depthNav;
     depthNav.initialize(client, request);
-    
+
     SGMOptions params;
     CStateStereo * p_state;
 
