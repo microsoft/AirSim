@@ -21,9 +21,10 @@ Ethernet adapter vEthernet (WSL):
 This address `172.31.64.1` is the address that WSL 2 can use to reach your Windows host machine.
 
 Starting with this [PX4 Change
-Request](https://github.com/PX4/PX4-Autopilot/commit/1719ff9892f3c3d034f2b44e94d15527ab09cec6) PX4
-in SITL mode can now connect to AirSim on a different (remote) IP address.  To enable this make sure
-you have a version of PX4 containing this fix and set the following environment variable in linux:
+Request](https://github.com/PX4/PX4-Autopilot/commit/1719ff9892f3c3d034f2b44e94d15527ab09cec6)
+(which correlates to version v1.12.0-beta1 or newer) PX4 in SITL mode can now connect to AirSim on a
+different (remote) IP address.  To enable this make sure you have a version of PX4 containing this
+fix and set the following environment variable in linux:
 
 ```shell
 export PX4_SIM_HOST_ADDR=172.31.64.1
@@ -33,6 +34,9 @@ export PX4_SIM_HOST_ADDR=172.31.64.1
 `ipconfig` command.
 
 Open incoming port 4560 using your Windows Firewall settings.
+
+Now on the linux side run `ip address show` and copy the `eth0 inet` address, it should be something
+like `172.31.66.156`.  This is the address Windows needs to know in order to find PX4.
 
 Edit your [AirSim settings](settings.md) file and add `LocalHostIp` to tell AirSim to use the WSL
 ethernet adapter address instead of the default `localhost`.  This will cause AirSim to open the TCP
@@ -53,8 +57,7 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
             "UseTcp": true,
             "TcpPort": 4560,
             "ControlIp": "remote",
-            "ControlPortLocal": 14540,
-            "ControlPortRemote": 14580,
+            "ControlPort": 14580,
             "LocalHostIp": "172.31.64.1",
             "Sensors":{
                 "Barometer":{
@@ -74,10 +77,9 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
     }
 }
 ```
-Notice we are also enabling `LockStep`, see [PX4 LockStep](px4_lockstep.md) for more information.
-The `Barometer` setting keeps PX4 happy because the default AirSim barometer has a bit too much
-noise generation.  This setting clamps that down a bit which allows PX4 to achieve GPS lock more
-quickly.
+See [PX4 LockStep](px4_lockstep.md) for more information.
+The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
+noise generation.  This setting clamps that down a bit.
 
 Lastly, please edit the Linux file in `ROMFS/px4fmu_common/init.d-posix/rcS` and make sure
 it is looking for the `PX4_SIM_HOST_ADDR` environment variable and is passing that through to the
