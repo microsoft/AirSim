@@ -17,17 +17,18 @@ Cars in AirSim
 
 ## How to Get It
 
-[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
-
 ### Windows
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml)
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
 
 ### Linux
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml)
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 ### macOS
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 
