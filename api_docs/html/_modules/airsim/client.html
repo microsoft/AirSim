@@ -454,7 +454,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">CollisionInfo</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetCollisionInfo&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simSetVehiclePose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetVehiclePose">[docs]</a>    <span class="k">def</span> <span class="nf">simSetVehiclePose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">ignore_collison</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simSetVehiclePose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetVehiclePose">[docs]</a>    <span class="k">def</span> <span class="nf">simSetVehiclePose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">ignore_collision</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the pose of the vehicle</span>
 
@@ -465,7 +465,7 @@
 <span class="sd">            ignore_collision (bool): Whether to ignore any collision or not</span>
 <span class="sd">            vehicle_name (str, optional): Name of the vehicle to move</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetVehiclePose&#39;</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">ignore_collison</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetVehiclePose&#39;</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">ignore_collision</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="VehicleClient.simGetVehiclePose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetVehiclePose">[docs]</a>    <span class="k">def</span> <span class="nf">simGetVehiclePose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
