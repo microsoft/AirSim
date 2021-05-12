@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Engine/Classes/Engine/ExponentialHeightFog.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
@@ -184,4 +185,10 @@ public:
 	// since GetWorld() isn't exposed to bp
 	UFUNCTION(BlueprintCallable, Category = World)
 	static UWorld* actorGetWorld(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable, Category = Weather)
+	static void setWeatherFog(AExponentialHeightFog* fog);
+
+private:
+	static AExponentialHeightFog* weather_fog_;
 };
