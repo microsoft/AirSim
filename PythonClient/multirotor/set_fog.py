@@ -10,8 +10,8 @@ client.armDisarm(True)
 
 client.simEnableWeather(True)
 
-print("Setting fog to 25%") # NED
-client.simSetWeatherParameter(7, 0.25)
+print("Setting fog to 25%")
+client.simSetWeatherParameter(airsim.WeatherParameter.Fog, 0.25)
 
 # Takeoff or hover
 landed = client.getMultirotorState().landed_state
@@ -24,11 +24,10 @@ else:
 
 time.sleep(5)
 
-print("Setting fog to 50%") # NED
-client.simSetWeatherParameter(7, 0.5)
+print("Setting fog to 50%")
+client.simSetWeatherParameter(airsim.WeatherParameter.Fog, 0.5)
 
 time.sleep(5)
 
-# Set wind to 0
 print("Resetting fog to 0%")
-client.simSetWeatherParameter(7, 0)
+client.simSetWeatherParameter(airsim.WeatherParameter.Fog, 0)
