@@ -375,7 +375,8 @@ commands, but some of them can be useful for debugging.</p>
             "LockStep": true,
             "UseTcp": true,
             "TcpPort": 4560,
-            "ControlPort": 14580,
+            "ControlPortLocal": 14540,
+            "ControlPortRemote": 14580,
             "Sensors":{
                 "Barometer":{
                     "SensorType": 1,
@@ -394,9 +395,10 @@ commands, but some of them can be useful for debugging.</p>
     }
 }</code></pre>
     Notice the PX4 <code>[simulator]</code> is using TCP, which is why we need to add: <code>"UseTcp": true,</code>.
-    See <a href="../px4_lockstep/">PX4 LockStep</a> for more information.
-    The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
-    noise generation.  This setting clamps that down a bit.</p>
+    Notice we are also enabling <code>LockStep</code>, see <a href="../px4_lockstep/">PX4 LockStep</a> for more
+    information. The <code>Barometer</code> setting keeps PX4 happy because the default AirSim barometer has a
+    bit too much noise generation.  This setting clamps that down a bit which allows PX4 to achieve
+    GPS lock more quickly.</p>
 </li>
 <li>
 <p>Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see

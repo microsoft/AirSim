@@ -691,9 +691,10 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
 <pre class="highlight"><code>"Vehicles": {
     "PX4": {
       "VehicleType": "PX4Multirotor",
-
+      "Lockstep": true,
       "ControlIp": "127.0.0.1",
-      "ControlPort": 14580,
+      "ControlPortLocal": 14540,
+      "ControlPortRemote": 14580,
       "LogViewerHostIp": "127.0.0.1",
       "LogViewerPort": 14388,
       "OffboardCompID": 1,
@@ -712,20 +713,43 @@ In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
       "VehicleCompID": 1,
       "VehicleSysID": 135,
       "Model": "Generic",
-      "LocalHostIp": "127.0.0.1"
+      "LocalHostIp": "127.0.0.1",
+      "Logs": "d:\\temp\\mavlink",
+      "Sensors": {
+        ...
+      }
+      "Parameters": {
+        ...
+      }
     }
 }</code></pre>
-<p>These settings define the MavLink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for the vehicle (VehicleSysID, VehicleCompID)
-and the node that allows remote control of the drone from another app this is called the offboard node (OffboardSysID, OffboardCompID).</p>
-<p>If you want the simulator to also talk to your ground control app (like QGroundControl) you can also set the UDP address for that in case you want to run
-that on a different machine (QgcHostIp, QgcPort).  The default is local host so QGroundControl should "just work" if it is running on the same machine.</p>
-<p>You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP address for that (LogViewerHostIp, LogViewerPort).</p>
-<p>And for each flying drone added to the simulator there is a named block of additional settings.  In the above you see the default name "PX4".   You can change this name from the Unreal Editor when you add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink". The MavLink node for this pawn can be remote over UDP or it can be connected to a local serial port.  If serial then set UseSerial to true, otherwise set UseSerial to false.  For serial connections you also need to set the appropriate SerialBaudRate.  The default of 115200 works with Pixhawk version 2 over USB.</p>
-<p>When communicating with the PX4 drone over serial port both the HIL_* messages and vehicle control messages share the same serial port.
-When communicating over UDP or TCP PX4 requires two separate channels.  If UseTcp is false, then UdpIp, UdpPort are used to send HIL_* messages,
-otherwise the TcpPort is used.  TCP support in PX4 was added in 1.9.2 with the <code>lockstep</code> feature because the guarantee of message delivery that
-TCP provides is required for the proper functioning of lockstep.  AirSim becomes a TCP server in that case, and waits for a connection
-from the PX4 app.  The second channel for controlling the vehicle is defined by (ControlIp, ControlPort) and is always a UDP channel.</p>
+<p>These settings define the MavLink SystemId and ComponentId for the Simulator (SimSysID, SimCompID),
+and for the vehicle (VehicleSysID, VehicleCompID) and the node that allows remote control of the
+drone from another app this is called the offboard node (OffboardSysID, OffboardCompID).</p>
+<p>If you want the simulator to also forward mavlink messages to your ground control app (like
+QGroundControl) you can also set the UDP address for that in case you want to run that on a
+different machine (QgcHostIp, QgcPort).  The default is local host so QGroundControl should "just
+work" if it is running on the same machine.</p>
+<p>You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP
+address for that (LogViewerHostIp, LogViewerPort).</p>
+<p>And for each flying drone added to the simulator there is a named block of additional settings.  In
+the above you see the default name "PX4".   You can change this name from the Unreal Editor when you
+add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink".
+The MavLink node for this pawn can be remote over UDP or it can be connected to a local serial port.
+If serial then set UseSerial to true, otherwise set UseSerial to false.  For serial connections you
+also need to set the appropriate SerialBaudRate.  The default of 115200 works with Pixhawk version 2
+over USB.</p>
+<p>When communicating with the PX4 drone over serial port both the HIL_* messages and vehicle control
+messages share the same serial port. When communicating over UDP or TCP PX4 requires two separate
+channels.  If UseTcp is false, then UdpIp, UdpPort are used to send HIL_* messages, otherwise the
+TcpPort is used.  TCP support in PX4 was added in 1.9.2 with the <code>lockstep</code> feature because the
+guarantee of message delivery that TCP provides is required for the proper functioning of lockstep.
+AirSim becomes a TCP server in that case, and waits for a connection from the PX4 app.  The second
+channel for controlling the vehicle is defined by (ControlIp, ControlPort) and is always a UDP
+channel.</p>
+<p>The <code>Sensors</code> section can provide customized settings for simulated sensors, see
+<a href="../sensors/">Sensors</a>. The <code>Parameters</code> section can set PX4 parameters during initialization of the
+PX4 connection. See <a href="../px4_sitl/">Setting up PX4 Software-in-Loop</a> for an example.</p>
 <h3 id="using-ardupilot">Using ArduPilot<a class="headerlink" href="#using-ardupilot" title="Permanent link">#</a></h3>
 <p><a href="https://ardupilot.org/">ArduPilot</a> Copter &amp; Rover vehicles are supported in latest AirSim master &amp; releases <code>v1.3.0</code> and later. For settings and how to use, please see <a href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">ArduPilot SITL with AirSim</a></p>
 <h2 id="other-settings">Other Settings<a class="headerlink" href="#other-settings" title="Permanent link">#</a></h2>

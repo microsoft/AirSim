@@ -315,9 +315,10 @@ the vEthernet has <code>(WSL)</code> in the name:</p>
    Default Gateway . . . . . . . . . :</code></pre>
 <p>This address <code>172.31.64.1</code> is the address that WSL 2 can use to reach your Windows host machine.</p>
 <p>Starting with this <a href="https://github.com/PX4/PX4-Autopilot/commit/1719ff9892f3c3d034f2b44e94d15527ab09cec6">PX4 Change
-Request</a> PX4
-in SITL mode can now connect to AirSim on a different (remote) IP address.  To enable this make sure
-you have a version of PX4 containing this fix and set the following environment variable in linux:</p>
+Request</a>
+(which correlates to version v1.12.0-beta1 or newer) PX4 in SITL mode can now connect to AirSim on a
+different (remote) IP address.  To enable this make sure you have a version of PX4 containing this
+fix and set the following environment variable in linux:</p>
 <pre class="highlight"><code class="language-shell">export PX4_SIM_HOST_ADDR=172.31.64.1</code></pre>
 <p><strong>Note:</strong> Be sure to update the above address <code>172.31.64.1</code> to match what you see from your
 <code>ipconfig</code> command.</p>
