@@ -64,7 +64,8 @@ The default ports have changed recently, so check them closely to make sure AirS
                 "LockStep": true,
                 "UseTcp": true,
                 "TcpPort": 4560,
-                "ControlPort": 14580,
+                "ControlPortLocal": 14540,
+                "ControlPortRemote": 14580,
                 "Sensors":{
                     "Barometer":{
                         "SensorType": 1,
@@ -84,9 +85,10 @@ The default ports have changed recently, so check them closely to make sure AirS
     }
     ```
     Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
-    See [PX4 LockStep](px4_lockstep.md) for more information.
-    The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
-    noise generation.  This setting clamps that down a bit.
+    Notice we are also enabling `LockStep`, see [PX4 LockStep](px4_lockstep.md) for more
+    information. The `Barometer` setting keeps PX4 happy because the default AirSim barometer has a
+    bit too much noise generation.  This setting clamps that down a bit which allows PX4 to achieve
+    GPS lock more quickly.
 
 6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
    a bunch of messages from the SITL PX4 window. Specifically, the following messages tell you that

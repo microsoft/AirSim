@@ -59,12 +59,12 @@ See also [initial firmware setup video](https://docs.px4.io/master/en/config/).
     }
 ```
 
-See [PX4 LockStep](px4_lockstep.md) for more information.
+Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`. Notice we
+are also enabling `LockStep`, see [PX4 LockStep](px4_lockstep.md) for more information. The
+`Barometer` setting keeps PX4 happy because the default AirSim barometer has a bit too much noise
+generation.  This setting clamps that down a bit which allows PX4 to achieve GPS lock more quickly.
 
-The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
-noise generation.  This setting clamps that down a bit.
-
-After above setup you should be able to use RC to fly with AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.  See [PX4 Basic Flying Guide](https://docs.px4.io/master/en/flying/basic_flying.html).
+After above setup you should be able to use a remote control (RC) to fly with AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together down and in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.  See [PX4 Basic Flying Guide](https://docs.px4.io/master/en/flying/basic_flying.html).
 
 You can also control the drone from [Python APIs](apis.md).
 

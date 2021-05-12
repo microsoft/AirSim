@@ -21,9 +21,10 @@ Ethernet adapter vEthernet (WSL):
 This address `172.31.64.1` is the address that WSL 2 can use to reach your Windows host machine.
 
 Starting with this [PX4 Change
-Request](https://github.com/PX4/PX4-Autopilot/commit/1719ff9892f3c3d034f2b44e94d15527ab09cec6) PX4
-in SITL mode can now connect to AirSim on a different (remote) IP address.  To enable this make sure
-you have a version of PX4 containing this fix and set the following environment variable in linux:
+Request](https://github.com/PX4/PX4-Autopilot/commit/1719ff9892f3c3d034f2b44e94d15527ab09cec6)
+(which correlates to version v1.12.0-beta1 or newer) PX4 in SITL mode can now connect to AirSim on a
+different (remote) IP address.  To enable this make sure you have a version of PX4 containing this
+fix and set the following environment variable in linux:
 
 ```shell
 export PX4_SIM_HOST_ADDR=172.31.64.1
