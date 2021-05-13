@@ -261,6 +261,11 @@ namespace LogViewer.Model.ULog
 
         public override ulong GetTimestamp()
         {
+            if (values == null)
+            {
+                ParseValues();
+            }
+
             object ts = null;
             if (values.TryGetValue("timestamp", out ts))
             {
@@ -747,31 +752,34 @@ namespace LogViewer.Model.ULog
                 if (m is MessageData)
                 {
                     MessageData data = (MessageData)m;
-                    if (data.subscription.id == root.Id)
+                    //if (data.subscription.id == root.Id)
                     {
                         MessageFormat f = data.format;
                         // matching root schema, so drill down if necessary.
                         for (int i = 1, n = path.Count; i < n; i++)
                         {
                             bool found = false;
-                            LogItemSchema child = path[i];
-                            foreach (var field in f.fields)
+                            if (path[i].Name == f.name && i + 1 < n)
                             {
-                                if (field.name == child.Name)
+                                LogItemSchema child = path[i + 1];
+                                foreach (var field in f.fields)
                                 {
-                                    found = true;
-                                    if (i + 1 < n && child.HasChildren)
+                                    if (field.name == child.Name)
                                     {
-                                        // still need to drill down, so we need a MessageData and MessageFormat for the child item.
-                                        data = data.GetNestedData(field.name);
-                                        f = data.format;
+                                        found = true;
+                                        if (i + 1 < n && child.HasChildren)
+                                        {
+                                            // still need to drill down, so we need a MessageData and MessageFormat for the child item.
+                                            data = data.GetNestedData(field.name);
+                                            f = data.format;
+                                        }
+                                        else
+                                        {
+                                            yield return data.GetValue(field);
+                                            found = false; // done drilling down
+                                        }
+                                        break;
                                     }
-                                    else
-                                    {
-                                        yield return data.GetValue(field);
-                                        found = false; // done drilling down
-                                    }
-                                    break;
                                 }
                             }
                             if (!found)
