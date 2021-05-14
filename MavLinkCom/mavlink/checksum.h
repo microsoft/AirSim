@@ -1,8 +1,7 @@
 #pragma once
-
+// clang-format off
 #if defined(MAVLINK_USE_CXX_NAMESPACE)
-namespace mavlink
-{
+namespace mavlink {
 #elif defined(__cplusplus)
 extern "C" {
 #endif
@@ -33,16 +32,17 @@ extern "C" {
  * @param data new char to hash
  * @param crcAccum the already accumulated checksum
  **/
-static inline void crc_accumulate(uint8_t data, uint16_t* crcAccum)
+static inline void crc_accumulate(uint8_t data, uint16_t *crcAccum)
 {
-    /*Accumulate one byte of data into the CRC*/
-    uint8_t tmp;
+        /*Accumulate one byte of data into the CRC*/
+        uint8_t tmp;
 
-    tmp = data ^ (uint8_t)(*crcAccum & 0xff);
-    tmp ^= (tmp << 4);
-    *crcAccum = (*crcAccum >> 8) ^ (tmp << 8) ^ (tmp << 3) ^ (tmp >> 4);
+        tmp = data ^ (uint8_t)(*crcAccum &0xff);
+        tmp ^= (tmp<<4);
+        *crcAccum = (*crcAccum>>8) ^ (tmp<<8) ^ (tmp <<3) ^ (tmp>>4);
 }
 #endif
+
 
 /**
  * @brief Initiliaze the buffer for the X.25 CRC
@@ -51,8 +51,9 @@ static inline void crc_accumulate(uint8_t data, uint16_t* crcAccum)
  */
 static inline void crc_init(uint16_t* crcAccum)
 {
-    *crcAccum = X25_INIT_CRC;
+        *crcAccum = X25_INIT_CRC;
 }
+
 
 /**
  * @brief Calculates the X.25 checksum on a byte buffer
@@ -63,13 +64,14 @@ static inline void crc_init(uint16_t* crcAccum)
  **/
 static inline uint16_t crc_calculate(const uint8_t* pBuffer, uint16_t length)
 {
-    uint16_t crcTmp;
-    crc_init(&crcTmp);
-    while (length--) {
-        crc_accumulate(*pBuffer++, &crcTmp);
-    }
-    return crcTmp;
+        uint16_t crcTmp;
+        crc_init(&crcTmp);
+	while (length--) {
+                crc_accumulate(*pBuffer++, &crcTmp);
+        }
+        return crcTmp;
 }
+
 
 /**
  * @brief Accumulate the X.25 CRC by adding an array of bytes
@@ -80,12 +82,12 @@ static inline uint16_t crc_calculate(const uint8_t* pBuffer, uint16_t length)
  * @param data new bytes to hash
  * @param crcAccum the already accumulated checksum
  **/
-static inline void crc_accumulate_buffer(uint16_t* crcAccum, const char* pBuffer, uint16_t length)
+static inline void crc_accumulate_buffer(uint16_t *crcAccum, const char *pBuffer, uint16_t length)
 {
-    const uint8_t* p = (const uint8_t*)pBuffer;
-    while (length--) {
-        crc_accumulate(*p++, crcAccum);
-    }
+	const uint8_t *p = (const uint8_t *)pBuffer;
+	while (length--) {
+                crc_accumulate(*p++, crcAccum);
+        }
 }
 
 #if defined(MAVLINK_USE_CXX_NAMESPACE) || defined(__cplusplus)
