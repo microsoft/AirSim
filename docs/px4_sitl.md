@@ -90,7 +90,9 @@ The default ports have changed recently, so check them closely to make sure AirS
     bit too much noise generation.  This setting clamps that down a bit which allows PX4 to achieve
     GPS lock more quickly.
 
-6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
+6. Open incoming TCP port 4560 and incoming UDP port 14540 using your firewall configuration.
+
+7. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
    a bunch of messages from the SITL PX4 window. Specifically, the following messages tell you that
    AirSim is connected properly and GPS fusion is stable:
     ```
@@ -102,7 +104,7 @@ The default ports have changed recently, so check them closely to make sure AirS
 
     If you do not see these messages then check your port settings.
 
-7. You should also be able to use QGroundControl with SITL mode.  Make sure there is no Pixhawk
+8. You should also be able to use QGroundControl with SITL mode.  Make sure there is no Pixhawk
    hardware plugged in, otherwise QGroundControl will choose to use that instead.  Note that as we
    don't have a physical board, an RC cannot be connected directly to it. So the alternatives are
    either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky
