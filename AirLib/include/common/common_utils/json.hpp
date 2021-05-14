@@ -26,10 +26,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// clang-format off
 #ifndef NLOHMANN_JSON_HPP
 #define NLOHMANN_JSON_HPP
-
+// clang-format off
 #include <algorithm> // all_of, copy, fill, find, for_each, none_of, remove, reverse, transform
 #include <array> // array
 #include <cassert> // assert
@@ -13000,5 +12999,5 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_DEPRECATED
 #undef JSON_THROW
 #undef JSON_TRY
-
+// clang-format on
 #endif

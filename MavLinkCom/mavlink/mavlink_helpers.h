@@ -1131,3 +1131,5 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
 #ifdef MAVLINK_USE_CXX_NAMESPACE
 } // namespace mavlink
 #endif
+
+// clang-format on

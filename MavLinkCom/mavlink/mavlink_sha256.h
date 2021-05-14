@@ -250,3 +250,5 @@ MAVLINK_HELPER void mavlink_sha256_final_48(mavlink_sha256_ctx *m, uint8_t resul
 #endif
 
 #endif // HAVE_MAVLINK_SHA256
+
+// clang-format on

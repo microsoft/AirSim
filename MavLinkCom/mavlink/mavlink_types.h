@@ -297,3 +297,5 @@ typedef struct __mavlink_msg_entry {
 #ifdef MAVLINK_USE_CXX_NAMESPACE
 } // namespace mavlink
 #endif
+
+// clang-format on
