@@ -41,7 +41,8 @@ extern "C" {
 /** @brief Micro air vehicle / autopilot classes. This identifies the individual model. */
 #ifndef HAVE_ENUM_MAV_AUTOPILOT
 #define HAVE_ENUM_MAV_AUTOPILOT
-typedef enum MAV_AUTOPILOT {
+typedef enum MAV_AUTOPILOT
+{
     MAV_AUTOPILOT_GENERIC = 0, /* Generic autopilot, full support for everything | */
     MAV_AUTOPILOT_RESERVED = 1, /* Reserved for future use. | */
     MAV_AUTOPILOT_SLUGS = 2, /* SLUGS autopilot, http://slugsuav.soe.ucsc.edu | */
@@ -69,7 +70,8 @@ typedef enum MAV_AUTOPILOT {
 /** @brief MAVLINK component type reported in HEARTBEAT message. Flight controllers must report the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All other components must report a value appropriate for their type (e.g. a camera must use MAV_TYPE_CAMERA). */
 #ifndef HAVE_ENUM_MAV_TYPE
 #define HAVE_ENUM_MAV_TYPE
-typedef enum MAV_TYPE {
+typedef enum MAV_TYPE
+{
     MAV_TYPE_GENERIC = 0, /* Generic micro air vehicle | */
     MAV_TYPE_FIXED_WING = 1, /* Fixed wing aircraft. | */
     MAV_TYPE_QUADROTOR = 2, /* Quadrotor | */
@@ -112,7 +114,8 @@ typedef enum MAV_TYPE {
 /** @brief These values define the type of firmware release.  These values indicate the first version or release of this type.  For example the first alpha release would be 64, the second would be 65. */
 #ifndef HAVE_ENUM_FIRMWARE_VERSION_TYPE
 #define HAVE_ENUM_FIRMWARE_VERSION_TYPE
-typedef enum FIRMWARE_VERSION_TYPE {
+typedef enum FIRMWARE_VERSION_TYPE
+{
     FIRMWARE_VERSION_TYPE_DEV = 0, /* development release | */
     FIRMWARE_VERSION_TYPE_ALPHA = 64, /* alpha release | */
     FIRMWARE_VERSION_TYPE_BETA = 128, /* beta release | */
@@ -125,7 +128,8 @@ typedef enum FIRMWARE_VERSION_TYPE {
 /** @brief Flags to report failure cases over the high latency telemtry. */
 #ifndef HAVE_ENUM_HL_FAILURE_FLAG
 #define HAVE_ENUM_HL_FAILURE_FLAG
-typedef enum HL_FAILURE_FLAG {
+typedef enum HL_FAILURE_FLAG
+{
     HL_FAILURE_FLAG_GPS = 1, /* GPS failure. | */
     HL_FAILURE_FLAG_DIFFERENTIAL_PRESSURE = 2, /* Differential pressure sensor failure. | */
     HL_FAILURE_FLAG_ABSOLUTE_PRESSURE = 4, /* Absolute pressure sensor failure. | */
@@ -147,7 +151,8 @@ typedef enum HL_FAILURE_FLAG {
 /** @brief These flags encode the MAV mode. */
 #ifndef HAVE_ENUM_MAV_MODE_FLAG
 #define HAVE_ENUM_MAV_MODE_FLAG
-typedef enum MAV_MODE_FLAG {
+typedef enum MAV_MODE_FLAG
+{
     MAV_MODE_FLAG_CUSTOM_MODE_ENABLED = 1, /* 0b00000001 Reserved for future use. | */
     MAV_MODE_FLAG_TEST_ENABLED = 2, /* 0b00000010 system has a test mode enabled. This flag is intended for temporary system tests and should not be used for stable implementations. | */
     MAV_MODE_FLAG_AUTO_ENABLED = 4, /* 0b00000100 autonomous mode enabled, system finds its own goal positions. Guided flag can be set or not, depends on the actual implementation. | */
@@ -163,7 +168,8 @@ typedef enum MAV_MODE_FLAG {
 /** @brief These values encode the bit positions of the decode position. These values can be used to read the value of a flag bit by combining the base_mode variable with AND with the flag position value. The result will be either 0 or 1, depending on if the flag is set or not. */
 #ifndef HAVE_ENUM_MAV_MODE_FLAG_DECODE_POSITION
 #define HAVE_ENUM_MAV_MODE_FLAG_DECODE_POSITION
-typedef enum MAV_MODE_FLAG_DECODE_POSITION {
+typedef enum MAV_MODE_FLAG_DECODE_POSITION
+{
     MAV_MODE_FLAG_DECODE_POSITION_CUSTOM_MODE = 1, /* Eighth bit: 00000001 | */
     MAV_MODE_FLAG_DECODE_POSITION_TEST = 2, /* Seventh bit: 00000010 | */
     MAV_MODE_FLAG_DECODE_POSITION_AUTO = 4, /* Sixth bit:   00000100 | */
@@ -179,7 +185,8 @@ typedef enum MAV_MODE_FLAG_DECODE_POSITION {
 /** @brief Actions that may be specified in MAV_CMD_OVERRIDE_GOTO to override mission execution. */
 #ifndef HAVE_ENUM_MAV_GOTO
 #define HAVE_ENUM_MAV_GOTO
-typedef enum MAV_GOTO {
+typedef enum MAV_GOTO
+{
     MAV_GOTO_DO_HOLD = 0, /* Hold at the current position. | */
     MAV_GOTO_DO_CONTINUE = 1, /* Continue with the next item in mission execution. | */
     MAV_GOTO_HOLD_AT_CURRENT_POSITION = 2, /* Hold at the current position of the system | */
@@ -192,7 +199,8 @@ typedef enum MAV_GOTO {
                simplifies the use of the mode flags. Note that manual input is enabled in all modes as a safety override. */
 #ifndef HAVE_ENUM_MAV_MODE
 #define HAVE_ENUM_MAV_MODE
-typedef enum MAV_MODE {
+typedef enum MAV_MODE
+{
     MAV_MODE_PREFLIGHT = 0, /* System is not ready to fly, booting, calibrating, etc. No flag is set. | */
     MAV_MODE_MANUAL_DISARMED = 64, /* System is allowed to be active, under manual (RC) control, no stabilization | */
     MAV_MODE_TEST_DISARMED = 66, /* UNDEFINED mode. This solely depends on the autopilot - use with caution, intended for developers only. | */
@@ -211,7 +219,8 @@ typedef enum MAV_MODE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_STATE
 #define HAVE_ENUM_MAV_STATE
-typedef enum MAV_STATE {
+typedef enum MAV_STATE
+{
     MAV_STATE_UNINIT = 0, /* Uninitialized system, state is unknown. | */
     MAV_STATE_BOOT = 1, /* System is booting up. | */
     MAV_STATE_CALIBRATING = 2, /* System is calibrating and not flight-ready. | */
@@ -230,7 +239,8 @@ typedef enum MAV_STATE {
       When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded. */
 #ifndef HAVE_ENUM_MAV_COMPONENT
 #define HAVE_ENUM_MAV_COMPONENT
-typedef enum MAV_COMPONENT {
+typedef enum MAV_COMPONENT
+{
     MAV_COMP_ID_ALL = 0, /* Target id (target_component) used to broadcast messages to all components of the receiving system. Components should attempt to process messages with this component ID and forward to components on any other interfaces. Note: This is not a valid *source* component id for a message. | */
     MAV_COMP_ID_AUTOPILOT1 = 1, /* System flight controller component ("autopilot"). Only one autopilot is expected in a particular system. | */
     MAV_COMP_ID_USER1 = 25, /* Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network. | */
@@ -365,7 +375,8 @@ typedef enum MAV_COMPONENT {
 /** @brief These encode the sensors whose status is sent as part of the SYS_STATUS message. */
 #ifndef HAVE_ENUM_MAV_SYS_STATUS_SENSOR
 #define HAVE_ENUM_MAV_SYS_STATUS_SENSOR
-typedef enum MAV_SYS_STATUS_SENSOR {
+typedef enum MAV_SYS_STATUS_SENSOR
+{
     MAV_SYS_STATUS_SENSOR_3D_GYRO = 1, /* 0x01 3D gyro | */
     MAV_SYS_STATUS_SENSOR_3D_ACCEL = 2, /* 0x02 3D accelerometer | */
     MAV_SYS_STATUS_SENSOR_3D_MAG = 4, /* 0x04 3D magnetometer | */
@@ -403,7 +414,8 @@ typedef enum MAV_SYS_STATUS_SENSOR {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_FRAME
 #define HAVE_ENUM_MAV_FRAME
-typedef enum MAV_FRAME {
+typedef enum MAV_FRAME
+{
     MAV_FRAME_GLOBAL = 0, /* Global (WGS84) coordinate frame + MSL altitude. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL). | */
     MAV_FRAME_LOCAL_NED = 1, /* Local coordinate frame, Z-down (x: North, y: East, z: Down). | */
     MAV_FRAME_MISSION = 2, /* NOT a coordinate frame, indicates a mission command. | */
@@ -433,7 +445,8 @@ typedef enum MAV_FRAME {
 /** @brief  */
 #ifndef HAVE_ENUM_MAVLINK_DATA_STREAM_TYPE
 #define HAVE_ENUM_MAVLINK_DATA_STREAM_TYPE
-typedef enum MAVLINK_DATA_STREAM_TYPE {
+typedef enum MAVLINK_DATA_STREAM_TYPE
+{
     MAVLINK_DATA_STREAM_IMG_JPEG = 1, /*  | */
     MAVLINK_DATA_STREAM_IMG_BMP = 2, /*  | */
     MAVLINK_DATA_STREAM_IMG_RAW8U = 3, /*  | */
@@ -447,7 +460,8 @@ typedef enum MAVLINK_DATA_STREAM_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_FENCE_ACTION
 #define HAVE_ENUM_FENCE_ACTION
-typedef enum FENCE_ACTION {
+typedef enum FENCE_ACTION
+{
     FENCE_ACTION_NONE = 0, /* Disable fenced mode | */
     FENCE_ACTION_GUIDED = 1, /* Switched to guided mode to return point (fence point 0) | */
     FENCE_ACTION_REPORT = 2, /* Report fence breach, but don't take action | */
@@ -460,7 +474,8 @@ typedef enum FENCE_ACTION {
 /** @brief  */
 #ifndef HAVE_ENUM_FENCE_BREACH
 #define HAVE_ENUM_FENCE_BREACH
-typedef enum FENCE_BREACH {
+typedef enum FENCE_BREACH
+{
     FENCE_BREACH_NONE = 0, /* No last fence breach | */
     FENCE_BREACH_MINALT = 1, /* Breached minimum altitude | */
     FENCE_BREACH_MAXALT = 2, /* Breached maximum altitude | */
@@ -472,7 +487,8 @@ typedef enum FENCE_BREACH {
 /** @brief Actions being taken to mitigate/prevent fence breach */
 #ifndef HAVE_ENUM_FENCE_MITIGATE
 #define HAVE_ENUM_FENCE_MITIGATE
-typedef enum FENCE_MITIGATE {
+typedef enum FENCE_MITIGATE
+{
     FENCE_MITIGATE_UNKNOWN = 0, /* Unknown | */
     FENCE_MITIGATE_NONE = 1, /* No actions being taken | */
     FENCE_MITIGATE_VEL_LIMIT = 2, /* Velocity limiting active to prevent breach | */
@@ -483,7 +499,8 @@ typedef enum FENCE_MITIGATE {
 /** @brief Enumeration of possible mount operation modes. This message is used by obsolete/deprecated gimbal messages. */
 #ifndef HAVE_ENUM_MAV_MOUNT_MODE
 #define HAVE_ENUM_MAV_MOUNT_MODE
-typedef enum MAV_MOUNT_MODE {
+typedef enum MAV_MOUNT_MODE
+{
     MAV_MOUNT_MODE_RETRACT = 0, /* Load and keep safe position (Roll,Pitch,Yaw) from permant memory and stop stabilization | */
     MAV_MOUNT_MODE_NEUTRAL = 1, /* Load and keep neutral position (Roll,Pitch,Yaw) from permanent memory. | */
     MAV_MOUNT_MODE_MAVLINK_TARGETING = 2, /* Load neutral position and start MAVLink Roll,Pitch,Yaw control with stabilization | */
@@ -497,7 +514,8 @@ typedef enum MAV_MOUNT_MODE {
 /** @brief Gimbal device (low level) capability flags (bitmap) */
 #ifndef HAVE_ENUM_GIMBAL_DEVICE_CAP_FLAGS
 #define HAVE_ENUM_GIMBAL_DEVICE_CAP_FLAGS
-typedef enum GIMBAL_DEVICE_CAP_FLAGS {
+typedef enum GIMBAL_DEVICE_CAP_FLAGS
+{
     GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT = 1, /* Gimbal device supports a retracted position | */
     GIMBAL_DEVICE_CAP_FLAGS_HAS_NEUTRAL = 2, /* Gimbal device supports a horizontal, forward looking position, stabilized | */
     GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_AXIS = 4, /* Gimbal device supports rotating around roll axis. | */
@@ -517,7 +535,8 @@ typedef enum GIMBAL_DEVICE_CAP_FLAGS {
 /** @brief Gimbal manager high level capability flags (bitmap). The first 16 bits are identical to the GIMBAL_DEVICE_CAP_FLAGS which are identical with GIMBAL_DEVICE_FLAGS. However, the gimbal manager does not need to copy the flags from the gimbal but can also enhance the capabilities and thus add flags. */
 #ifndef HAVE_ENUM_GIMBAL_MANAGER_CAP_FLAGS
 #define HAVE_ENUM_GIMBAL_MANAGER_CAP_FLAGS
-typedef enum GIMBAL_MANAGER_CAP_FLAGS {
+typedef enum GIMBAL_MANAGER_CAP_FLAGS
+{
     GIMBAL_MANAGER_CAP_FLAGS_HAS_RETRACT = 1, /* Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT. | */
     GIMBAL_MANAGER_CAP_FLAGS_HAS_NEUTRAL = 2, /* Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_NEUTRAL. | */
     GIMBAL_MANAGER_CAP_FLAGS_HAS_ROLL_AXIS = 4, /* Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_AXIS. | */
@@ -542,7 +561,8 @@ typedef enum GIMBAL_MANAGER_CAP_FLAGS {
 /** @brief Flags for gimbal device (lower level) operation. */
 #ifndef HAVE_ENUM_GIMBAL_DEVICE_FLAGS
 #define HAVE_ENUM_GIMBAL_DEVICE_FLAGS
-typedef enum GIMBAL_DEVICE_FLAGS {
+typedef enum GIMBAL_DEVICE_FLAGS
+{
     GIMBAL_DEVICE_FLAGS_RETRACT = 1, /* Set to retracted safe position (no stabilization), takes presedence over all other flags. | */
     GIMBAL_DEVICE_FLAGS_NEUTRAL = 2, /* Set to neutral position (horizontal, forward looking, with stabiliziation), takes presedence over all other flags except RETRACT. | */
     GIMBAL_DEVICE_FLAGS_ROLL_LOCK = 4, /* Lock roll angle to absolute angle relative to horizon (not relative to drone). This is generally the default with a stabilizing gimbal. | */
@@ -555,7 +575,8 @@ typedef enum GIMBAL_DEVICE_FLAGS {
 /** @brief Flags for high level gimbal manager operation The first 16 bytes are identical to the GIMBAL_DEVICE_FLAGS. */
 #ifndef HAVE_ENUM_GIMBAL_MANAGER_FLAGS
 #define HAVE_ENUM_GIMBAL_MANAGER_FLAGS
-typedef enum GIMBAL_MANAGER_FLAGS {
+typedef enum GIMBAL_MANAGER_FLAGS
+{
     GIMBAL_MANAGER_FLAGS_RETRACT = 1, /* Based on GIMBAL_DEVICE_FLAGS_RETRACT | */
     GIMBAL_MANAGER_FLAGS_NEUTRAL = 2, /* Based on GIMBAL_DEVICE_FLAGS_NEUTRAL | */
     GIMBAL_MANAGER_FLAGS_ROLL_LOCK = 4, /* Based on GIMBAL_DEVICE_FLAGS_ROLL_LOCK | */
@@ -572,7 +593,8 @@ typedef enum GIMBAL_MANAGER_FLAGS {
 /** @brief Gimbal device (low level) error flags (bitmap, 0 means no error) */
 #ifndef HAVE_ENUM_GIMBAL_DEVICE_ERROR_FLAGS
 #define HAVE_ENUM_GIMBAL_DEVICE_ERROR_FLAGS
-typedef enum GIMBAL_DEVICE_ERROR_FLAGS {
+typedef enum GIMBAL_DEVICE_ERROR_FLAGS
+{
     GIMBAL_DEVICE_ERROR_FLAGS_AT_ROLL_LIMIT = 1, /* Gimbal device is limited by hardware roll limit. | */
     GIMBAL_DEVICE_ERROR_FLAGS_AT_PITCH_LIMIT = 2, /* Gimbal device is limited by hardware pitch limit. | */
     GIMBAL_DEVICE_ERROR_FLAGS_AT_YAW_LIMIT = 4, /* Gimbal device is limited by hardware yaw limit. | */
@@ -589,7 +611,8 @@ typedef enum GIMBAL_DEVICE_ERROR_FLAGS {
 /** @brief Generalized UAVCAN node health */
 #ifndef HAVE_ENUM_UAVCAN_NODE_HEALTH
 #define HAVE_ENUM_UAVCAN_NODE_HEALTH
-typedef enum UAVCAN_NODE_HEALTH {
+typedef enum UAVCAN_NODE_HEALTH
+{
     UAVCAN_NODE_HEALTH_OK = 0, /* The node is functioning properly. | */
     UAVCAN_NODE_HEALTH_WARNING = 1, /* A critical parameter went out of range or the node has encountered a minor failure. | */
     UAVCAN_NODE_HEALTH_ERROR = 2, /* The node has encountered a major failure. | */
@@ -601,7 +624,8 @@ typedef enum UAVCAN_NODE_HEALTH {
 /** @brief Generalized UAVCAN node mode */
 #ifndef HAVE_ENUM_UAVCAN_NODE_MODE
 #define HAVE_ENUM_UAVCAN_NODE_MODE
-typedef enum UAVCAN_NODE_MODE {
+typedef enum UAVCAN_NODE_MODE
+{
     UAVCAN_NODE_MODE_OPERATIONAL = 0, /* The node is performing its primary functions. | */
     UAVCAN_NODE_MODE_INITIALIZATION = 1, /* The node is initializing; this mode is entered immediately after startup. | */
     UAVCAN_NODE_MODE_MAINTENANCE = 2, /* The node is under maintenance. | */
@@ -614,7 +638,8 @@ typedef enum UAVCAN_NODE_MODE {
 /** @brief Indicates the ESC connection type. */
 #ifndef HAVE_ENUM_ESC_CONNECTION_TYPE
 #define HAVE_ENUM_ESC_CONNECTION_TYPE
-typedef enum ESC_CONNECTION_TYPE {
+typedef enum ESC_CONNECTION_TYPE
+{
     ESC_CONNECTION_TYPE_PPM = 0, /* Traditional PPM ESC. | */
     ESC_CONNECTION_TYPE_SERIAL = 1, /* Serial Bus connected ESC. | */
     ESC_CONNECTION_TYPE_ONESHOT = 2, /* One Shot PPM ESC. | */
@@ -628,7 +653,8 @@ typedef enum ESC_CONNECTION_TYPE {
 /** @brief Flags to report ESC failures. */
 #ifndef HAVE_ENUM_ESC_FAILURE_FLAGS
 #define HAVE_ENUM_ESC_FAILURE_FLAGS
-typedef enum ESC_FAILURE_FLAGS {
+typedef enum ESC_FAILURE_FLAGS
+{
     ESC_FAILURE_NONE = 0, /* No ESC failure. | */
     ESC_FAILURE_OVER_CURRENT = 1, /* Over current failure. | */
     ESC_FAILURE_OVER_VOLTAGE = 2, /* Over voltage failure. | */
@@ -644,7 +670,8 @@ typedef enum ESC_FAILURE_FLAGS {
 /** @brief Flags to indicate the status of camera storage. */
 #ifndef HAVE_ENUM_STORAGE_STATUS
 #define HAVE_ENUM_STORAGE_STATUS
-typedef enum STORAGE_STATUS {
+typedef enum STORAGE_STATUS
+{
     STORAGE_STATUS_EMPTY = 0, /* Storage is missing (no microSD card loaded for example.) | */
     STORAGE_STATUS_UNFORMATTED = 1, /* Storage present but unformatted. | */
     STORAGE_STATUS_READY = 2, /* Storage present and ready. | */
@@ -656,7 +683,8 @@ typedef enum STORAGE_STATUS {
 /** @brief Yaw behaviour during orbit flight. */
 #ifndef HAVE_ENUM_ORBIT_YAW_BEHAVIOUR
 #define HAVE_ENUM_ORBIT_YAW_BEHAVIOUR
-typedef enum ORBIT_YAW_BEHAVIOUR {
+typedef enum ORBIT_YAW_BEHAVIOUR
+{
     ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TO_CIRCLE_CENTER = 0, /* Vehicle front points to the center (default). | */
     ORBIT_YAW_BEHAVIOUR_HOLD_INITIAL_HEADING = 1, /* Vehicle front holds heading when message received. | */
     ORBIT_YAW_BEHAVIOUR_UNCONTROLLED = 2, /* Yaw uncontrolled. | */
@@ -669,7 +697,8 @@ typedef enum ORBIT_YAW_BEHAVIOUR {
 /** @brief Possible responses from a WIFI_CONFIG_AP message. */
 #ifndef HAVE_ENUM_WIFI_CONFIG_AP_RESPONSE
 #define HAVE_ENUM_WIFI_CONFIG_AP_RESPONSE
-typedef enum WIFI_CONFIG_AP_RESPONSE {
+typedef enum WIFI_CONFIG_AP_RESPONSE
+{
     WIFI_CONFIG_AP_RESPONSE_UNDEFINED = 0, /* Undefined response. Likely an indicative of a system that doesn't support this request. | */
     WIFI_CONFIG_AP_RESPONSE_ACCEPTED = 1, /* Changes accepted. | */
     WIFI_CONFIG_AP_RESPONSE_REJECTED = 2, /* Changes rejected. | */
@@ -683,7 +712,8 @@ typedef enum WIFI_CONFIG_AP_RESPONSE {
 /** @brief Possible responses from a CELLULAR_CONFIG message. */
 #ifndef HAVE_ENUM_CELLULAR_CONFIG_RESPONSE
 #define HAVE_ENUM_CELLULAR_CONFIG_RESPONSE
-typedef enum CELLULAR_CONFIG_RESPONSE {
+typedef enum CELLULAR_CONFIG_RESPONSE
+{
     CELLULAR_CONFIG_RESPONSE_ACCEPTED = 0, /* Changes accepted. | */
     CELLULAR_CONFIG_RESPONSE_APN_ERROR = 1, /* Invalid APN. | */
     CELLULAR_CONFIG_RESPONSE_PIN_ERROR = 2, /* Invalid PIN. | */
@@ -696,7 +726,8 @@ typedef enum CELLULAR_CONFIG_RESPONSE {
 /** @brief WiFi Mode. */
 #ifndef HAVE_ENUM_WIFI_CONFIG_AP_MODE
 #define HAVE_ENUM_WIFI_CONFIG_AP_MODE
-typedef enum WIFI_CONFIG_AP_MODE {
+typedef enum WIFI_CONFIG_AP_MODE
+{
     WIFI_CONFIG_AP_MODE_UNDEFINED = 0, /* WiFi mode is undefined. | */
     WIFI_CONFIG_AP_MODE_AP = 1, /* WiFi configured as an access point. | */
     WIFI_CONFIG_AP_MODE_STATION = 2, /* WiFi configured as a station connected to an existing local WiFi network. | */
@@ -708,7 +739,8 @@ typedef enum WIFI_CONFIG_AP_MODE {
 /** @brief Possible values for COMPONENT_INFORMATION.comp_metadata_type. */
 #ifndef HAVE_ENUM_COMP_METADATA_TYPE
 #define HAVE_ENUM_COMP_METADATA_TYPE
-typedef enum COMP_METADATA_TYPE {
+typedef enum COMP_METADATA_TYPE
+{
     COMP_METADATA_TYPE_VERSION = 0, /* Version information which also includes information on other optional supported COMP_METADATA_TYPE's. Must be supported. Only downloadable from vehicle. | */
     COMP_METADATA_TYPE_PARAMETER = 1, /* Parameter meta data. | */
     COMP_METADATA_TYPE_ENUM_END = 2, /*  | */
@@ -718,7 +750,8 @@ typedef enum COMP_METADATA_TYPE {
 /** @brief Possible responses from a PARAM_START_TRANSACTION and PARAM_COMMIT_TRANSACTION messages. */
 #ifndef HAVE_ENUM_PARAM_TRANSACTION_RESPONSE
 #define HAVE_ENUM_PARAM_TRANSACTION_RESPONSE
-typedef enum PARAM_TRANSACTION_RESPONSE {
+typedef enum PARAM_TRANSACTION_RESPONSE
+{
     PARAM_TRANSACTION_RESPONSE_ACCEPTED = 0, /* Transaction accepted. | */
     PARAM_TRANSACTION_RESPONSE_FAILED = 1, /* Transaction failed. | */
     PARAM_TRANSACTION_RESPONSE_UNSUPPORTED = 2, /* Transaction unsupported. | */
@@ -730,7 +763,8 @@ typedef enum PARAM_TRANSACTION_RESPONSE {
 /** @brief Possible transport layers to set and get parameters via mavlink during a parameter transaction. */
 #ifndef HAVE_ENUM_PARAM_TRANSACTION_TRANSPORT
 #define HAVE_ENUM_PARAM_TRANSACTION_TRANSPORT
-typedef enum PARAM_TRANSACTION_TRANSPORT {
+typedef enum PARAM_TRANSACTION_TRANSPORT
+{
     PARAM_TRANSACTION_TRANSPORT_PARAM = 0, /* Transaction over param transport. | */
     PARAM_TRANSACTION_TRANSPORT_PARAM_EXT = 1, /* Transaction over param_ext transport. | */
     PARAM_TRANSACTION_TRANSPORT_ENUM_END = 2, /*  | */
@@ -740,7 +774,8 @@ typedef enum PARAM_TRANSACTION_TRANSPORT {
 /** @brief Possible parameter transaction action during a commit. */
 #ifndef HAVE_ENUM_PARAM_TRANSACTION_ACTION
 #define HAVE_ENUM_PARAM_TRANSACTION_ACTION
-typedef enum PARAM_TRANSACTION_ACTION {
+typedef enum PARAM_TRANSACTION_ACTION
+{
     PARAM_TRANSACTION_ACTION_COMMIT = 0, /* Commit the current parameter transaction. | */
     PARAM_TRANSACTION_ACTION_CANCEL = 1, /* Cancel the current parameter transaction. | */
     PARAM_TRANSACTION_ACTION_ENUM_END = 2, /*  | */
@@ -750,7 +785,8 @@ typedef enum PARAM_TRANSACTION_ACTION {
 /** @brief Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries */
 #ifndef HAVE_ENUM_MAV_CMD
 #define HAVE_ENUM_MAV_CMD
-typedef enum MAV_CMD {
+typedef enum MAV_CMD
+{
     MAV_CMD_NAV_WAYPOINT = 16, /* Navigate to waypoint. |Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)| Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)| 0 to pass through the WP, if > 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.| Desired yaw angle at waypoint (rotary wing). NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).| Latitude| Longitude| Altitude|  */
     MAV_CMD_NAV_LOITER_UNLIM = 17, /* Loiter around this waypoint an unlimited amount of time |Empty| Empty| Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise| Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).| Latitude| Longitude| Altitude|  */
     MAV_CMD_NAV_LOITER_TURNS = 18, /* Loiter around this waypoint for X turns |Number of turns.| Leave loiter circle only once heading towards the next waypoint (0 = False)| Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise| Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. Otherwise the angle (in degrees) between the tangent of the loiter circle and the center xtrack at which the vehicle must leave the loiter (and converge to the center xtrack). NaN to use the current system default xtrack behaviour.| Latitude| Longitude| Altitude|  */
@@ -917,7 +953,8 @@ typedef enum MAV_CMD {
      the recommended messages. */
 #ifndef HAVE_ENUM_MAV_DATA_STREAM
 #define HAVE_ENUM_MAV_DATA_STREAM
-typedef enum MAV_DATA_STREAM {
+typedef enum MAV_DATA_STREAM
+{
     MAV_DATA_STREAM_ALL = 0, /* Enable all data streams | */
     MAV_DATA_STREAM_RAW_SENSORS = 1, /* Enable IMU_RAW, GPS_RAW, GPS_STATUS packets. | */
     MAV_DATA_STREAM_EXTENDED_STATUS = 2, /* Enable GPS_STATUS, CONTROL_STATUS, AUX_STATUS | */
@@ -936,7 +973,8 @@ typedef enum MAV_DATA_STREAM {
                 MAV_CMD_NAV_ROI). */
 #ifndef HAVE_ENUM_MAV_ROI
 #define HAVE_ENUM_MAV_ROI
-typedef enum MAV_ROI {
+typedef enum MAV_ROI
+{
     MAV_ROI_NONE = 0, /* No region of interest. | */
     MAV_ROI_WPNEXT = 1, /* Point toward next waypoint, with optional pitch/roll/yaw offset. | */
     MAV_ROI_WPINDEX = 2, /* Point toward given waypoint. | */
@@ -949,7 +987,8 @@ typedef enum MAV_ROI {
 /** @brief ACK / NACK / ERROR values as a result of MAV_CMDs and for mission item transmission. */
 #ifndef HAVE_ENUM_MAV_CMD_ACK
 #define HAVE_ENUM_MAV_CMD_ACK
-typedef enum MAV_CMD_ACK {
+typedef enum MAV_CMD_ACK
+{
     MAV_CMD_ACK_OK = 1, /* Command / mission item is ok. |Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)|  */
     MAV_CMD_ACK_ERR_FAIL = 2, /* Generic error message if none of the other reasons fails or if no detailed error reporting is implemented. |Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)|  */
     MAV_CMD_ACK_ERR_ACCESS_DENIED = 3, /* The system is refusing to accept this command from this source / communication partner. |Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)| Reserved (default:0)|  */
@@ -966,7 +1005,8 @@ typedef enum MAV_CMD_ACK {
 /** @brief Specifies the datatype of a MAVLink parameter. */
 #ifndef HAVE_ENUM_MAV_PARAM_TYPE
 #define HAVE_ENUM_MAV_PARAM_TYPE
-typedef enum MAV_PARAM_TYPE {
+typedef enum MAV_PARAM_TYPE
+{
     MAV_PARAM_TYPE_UINT8 = 1, /* 8-bit unsigned integer | */
     MAV_PARAM_TYPE_INT8 = 2, /* 8-bit signed integer | */
     MAV_PARAM_TYPE_UINT16 = 3, /* 16-bit unsigned integer | */
@@ -984,7 +1024,8 @@ typedef enum MAV_PARAM_TYPE {
 /** @brief Specifies the datatype of a MAVLink extended parameter. */
 #ifndef HAVE_ENUM_MAV_PARAM_EXT_TYPE
 #define HAVE_ENUM_MAV_PARAM_EXT_TYPE
-typedef enum MAV_PARAM_EXT_TYPE {
+typedef enum MAV_PARAM_EXT_TYPE
+{
     MAV_PARAM_EXT_TYPE_UINT8 = 1, /* 8-bit unsigned integer | */
     MAV_PARAM_EXT_TYPE_INT8 = 2, /* 8-bit signed integer | */
     MAV_PARAM_EXT_TYPE_UINT16 = 3, /* 16-bit unsigned integer | */
@@ -1003,7 +1044,8 @@ typedef enum MAV_PARAM_EXT_TYPE {
 /** @brief Result from a MAVLink command (MAV_CMD) */
 #ifndef HAVE_ENUM_MAV_RESULT
 #define HAVE_ENUM_MAV_RESULT
-typedef enum MAV_RESULT {
+typedef enum MAV_RESULT
+{
     MAV_RESULT_ACCEPTED = 0, /* Command is valid (is supported and has valid parameters), and was executed. | */
     MAV_RESULT_TEMPORARILY_REJECTED = 1, /* Command is valid, but cannot be executed at this time. This is used to indicate a problem that should be fixed just by waiting (e.g. a state machine is busy, can't arm because have not got GPS lock, etc.). Retrying later should work. | */
     MAV_RESULT_DENIED = 2, /* Command is invalid (is supported but has invalid parameters). Retrying same command and parameters will not work. | */
@@ -1018,7 +1060,8 @@ typedef enum MAV_RESULT {
 /** @brief Result of mission operation (in a MISSION_ACK message). */
 #ifndef HAVE_ENUM_MAV_MISSION_RESULT
 #define HAVE_ENUM_MAV_MISSION_RESULT
-typedef enum MAV_MISSION_RESULT {
+typedef enum MAV_MISSION_RESULT
+{
     MAV_MISSION_ACCEPTED = 0, /* mission accepted OK | */
     MAV_MISSION_ERROR = 1, /* Generic error / not accepting mission commands at all right now. | */
     MAV_MISSION_UNSUPPORTED_FRAME = 2, /* Coordinate frame is not supported. | */
@@ -1042,7 +1085,8 @@ typedef enum MAV_MISSION_RESULT {
 /** @brief Indicates the severity level, generally used for status messages to indicate their relative urgency. Based on RFC-5424 using expanded definitions at: http://www.kiwisyslog.com/kb/info:-syslog-message-levels/. */
 #ifndef HAVE_ENUM_MAV_SEVERITY
 #define HAVE_ENUM_MAV_SEVERITY
-typedef enum MAV_SEVERITY {
+typedef enum MAV_SEVERITY
+{
     MAV_SEVERITY_EMERGENCY = 0, /* System is unusable. This is a "panic" condition. | */
     MAV_SEVERITY_ALERT = 1, /* Action should be taken immediately. Indicates error in non-critical systems. | */
     MAV_SEVERITY_CRITICAL = 2, /* Action must be taken immediately. Indicates failure in a primary system. | */
@@ -1058,7 +1102,8 @@ typedef enum MAV_SEVERITY {
 /** @brief Power supply status flags (bitmask) */
 #ifndef HAVE_ENUM_MAV_POWER_STATUS
 #define HAVE_ENUM_MAV_POWER_STATUS
-typedef enum MAV_POWER_STATUS {
+typedef enum MAV_POWER_STATUS
+{
     MAV_POWER_STATUS_BRICK_VALID = 1, /* main brick power supply valid | */
     MAV_POWER_STATUS_SERVO_VALID = 2, /* main servo power supply valid for FMU | */
     MAV_POWER_STATUS_USB_CONNECTED = 4, /* USB power is connected | */
@@ -1072,7 +1117,8 @@ typedef enum MAV_POWER_STATUS {
 /** @brief SERIAL_CONTROL device types */
 #ifndef HAVE_ENUM_SERIAL_CONTROL_DEV
 #define HAVE_ENUM_SERIAL_CONTROL_DEV
-typedef enum SERIAL_CONTROL_DEV {
+typedef enum SERIAL_CONTROL_DEV
+{
     SERIAL_CONTROL_DEV_TELEM1 = 0, /* First telemetry port | */
     SERIAL_CONTROL_DEV_TELEM2 = 1, /* Second telemetry port | */
     SERIAL_CONTROL_DEV_GPS1 = 2, /* First GPS port | */
@@ -1095,7 +1141,8 @@ typedef enum SERIAL_CONTROL_DEV {
 /** @brief SERIAL_CONTROL flags (bitmask) */
 #ifndef HAVE_ENUM_SERIAL_CONTROL_FLAG
 #define HAVE_ENUM_SERIAL_CONTROL_FLAG
-typedef enum SERIAL_CONTROL_FLAG {
+typedef enum SERIAL_CONTROL_FLAG
+{
     SERIAL_CONTROL_FLAG_REPLY = 1, /* Set if this is a reply | */
     SERIAL_CONTROL_FLAG_RESPOND = 2, /* Set if the sender wants the receiver to send a response as another SERIAL_CONTROL message | */
     SERIAL_CONTROL_FLAG_EXCLUSIVE = 4, /* Set if access to the serial port should be removed from whatever driver is currently using it, giving exclusive access to the SERIAL_CONTROL protocol. The port can be handed back by sending a request without this flag set | */
@@ -1108,7 +1155,8 @@ typedef enum SERIAL_CONTROL_FLAG {
 /** @brief Enumeration of distance sensor types */
 #ifndef HAVE_ENUM_MAV_DISTANCE_SENSOR
 #define HAVE_ENUM_MAV_DISTANCE_SENSOR
-typedef enum MAV_DISTANCE_SENSOR {
+typedef enum MAV_DISTANCE_SENSOR
+{
     MAV_DISTANCE_SENSOR_LASER = 0, /* Laser rangefinder, e.g. LightWare SF02/F or PulsedLight units | */
     MAV_DISTANCE_SENSOR_ULTRASOUND = 1, /* Ultrasound rangefinder, e.g. MaxBotix units | */
     MAV_DISTANCE_SENSOR_INFRARED = 2, /* Infrared rangefinder, e.g. Sharp units | */
@@ -1121,7 +1169,8 @@ typedef enum MAV_DISTANCE_SENSOR {
 /** @brief Enumeration of sensor orientation, according to its rotations */
 #ifndef HAVE_ENUM_MAV_SENSOR_ORIENTATION
 #define HAVE_ENUM_MAV_SENSOR_ORIENTATION
-typedef enum MAV_SENSOR_ORIENTATION {
+typedef enum MAV_SENSOR_ORIENTATION
+{
     MAV_SENSOR_ROTATION_NONE = 0, /* Roll: 0, Pitch: 0, Yaw: 0 | */
     MAV_SENSOR_ROTATION_YAW_45 = 1, /* Roll: 0, Pitch: 0, Yaw: 45 | */
     MAV_SENSOR_ROTATION_YAW_90 = 2, /* Roll: 0, Pitch: 0, Yaw: 90 | */
@@ -1172,7 +1221,8 @@ typedef enum MAV_SENSOR_ORIENTATION {
 /** @brief Bitmask of (optional) autopilot capabilities (64 bit). If a bit is set, the autopilot supports this capability. */
 #ifndef HAVE_ENUM_MAV_PROTOCOL_CAPABILITY
 #define HAVE_ENUM_MAV_PROTOCOL_CAPABILITY
-typedef enum MAV_PROTOCOL_CAPABILITY {
+typedef enum MAV_PROTOCOL_CAPABILITY
+{
     MAV_PROTOCOL_CAPABILITY_MISSION_FLOAT = 1, /* Autopilot supports MISSION float message type. | */
     MAV_PROTOCOL_CAPABILITY_PARAM_FLOAT = 2, /* Autopilot supports the new param float message type. | */
     MAV_PROTOCOL_CAPABILITY_MISSION_INT = 4, /* Autopilot supports MISSION_ITEM_INT scaled integer message type. | */
@@ -1197,7 +1247,8 @@ typedef enum MAV_PROTOCOL_CAPABILITY {
 /** @brief Type of mission items being requested/sent in mission protocol. */
 #ifndef HAVE_ENUM_MAV_MISSION_TYPE
 #define HAVE_ENUM_MAV_MISSION_TYPE
-typedef enum MAV_MISSION_TYPE {
+typedef enum MAV_MISSION_TYPE
+{
     MAV_MISSION_TYPE_MISSION = 0, /* Items are mission commands for main mission. | */
     MAV_MISSION_TYPE_FENCE = 1, /* Specifies GeoFence area(s). Items are MAV_CMD_NAV_FENCE_ GeoFence items. | */
     MAV_MISSION_TYPE_RALLY = 2, /* Specifies the rally points for the vehicle. Rally points are alternative RTL points. Items are MAV_CMD_NAV_RALLY_POINT rally point items. | */
@@ -1209,7 +1260,8 @@ typedef enum MAV_MISSION_TYPE {
 /** @brief Enumeration of estimator types */
 #ifndef HAVE_ENUM_MAV_ESTIMATOR_TYPE
 #define HAVE_ENUM_MAV_ESTIMATOR_TYPE
-typedef enum MAV_ESTIMATOR_TYPE {
+typedef enum MAV_ESTIMATOR_TYPE
+{
     MAV_ESTIMATOR_TYPE_UNKNOWN = 0, /* Unknown type of the estimator. | */
     MAV_ESTIMATOR_TYPE_NAIVE = 1, /* This is a naive estimator without any real covariance feedback. | */
     MAV_ESTIMATOR_TYPE_VISION = 2, /* Computer vision based estimate. Might be up to scale. | */
@@ -1226,7 +1278,8 @@ typedef enum MAV_ESTIMATOR_TYPE {
 /** @brief Enumeration of battery types */
 #ifndef HAVE_ENUM_MAV_BATTERY_TYPE
 #define HAVE_ENUM_MAV_BATTERY_TYPE
-typedef enum MAV_BATTERY_TYPE {
+typedef enum MAV_BATTERY_TYPE
+{
     MAV_BATTERY_TYPE_UNKNOWN = 0, /* Not specified. | */
     MAV_BATTERY_TYPE_LIPO = 1, /* Lithium polymer battery | */
     MAV_BATTERY_TYPE_LIFE = 2, /* Lithium-iron-phosphate battery | */
@@ -1239,7 +1292,8 @@ typedef enum MAV_BATTERY_TYPE {
 /** @brief Enumeration of battery functions */
 #ifndef HAVE_ENUM_MAV_BATTERY_FUNCTION
 #define HAVE_ENUM_MAV_BATTERY_FUNCTION
-typedef enum MAV_BATTERY_FUNCTION {
+typedef enum MAV_BATTERY_FUNCTION
+{
     MAV_BATTERY_FUNCTION_UNKNOWN = 0, /* Battery function is unknown | */
     MAV_BATTERY_FUNCTION_ALL = 1, /* Battery supports all flight systems | */
     MAV_BATTERY_FUNCTION_PROPULSION = 2, /* Battery for the propulsion system | */
@@ -1252,7 +1306,8 @@ typedef enum MAV_BATTERY_FUNCTION {
 /** @brief Enumeration for battery charge states. */
 #ifndef HAVE_ENUM_MAV_BATTERY_CHARGE_STATE
 #define HAVE_ENUM_MAV_BATTERY_CHARGE_STATE
-typedef enum MAV_BATTERY_CHARGE_STATE {
+typedef enum MAV_BATTERY_CHARGE_STATE
+{
     MAV_BATTERY_CHARGE_STATE_UNDEFINED = 0, /* Low battery state is not provided | */
     MAV_BATTERY_CHARGE_STATE_OK = 1, /* Battery is not in low state. Normal operation. | */
     MAV_BATTERY_CHARGE_STATE_LOW = 2, /* Battery state is low, warn and monitor close. | */
@@ -1268,7 +1323,8 @@ typedef enum MAV_BATTERY_CHARGE_STATE {
 /** @brief Smart battery supply status/fault flags (bitmask) for health indication. */
 #ifndef HAVE_ENUM_MAV_SMART_BATTERY_FAULT
 #define HAVE_ENUM_MAV_SMART_BATTERY_FAULT
-typedef enum MAV_SMART_BATTERY_FAULT {
+typedef enum MAV_SMART_BATTERY_FAULT
+{
     MAV_SMART_BATTERY_FAULT_DEEP_DISCHARGE = 1, /* Battery has deep discharged. | */
     MAV_SMART_BATTERY_FAULT_SPIKES = 2, /* Voltage spikes. | */
     MAV_SMART_BATTERY_FAULT_SINGLE_CELL_FAIL = 4, /* Single cell has failed. | */
@@ -1282,7 +1338,8 @@ typedef enum MAV_SMART_BATTERY_FAULT {
 /** @brief Flags to report status/failure cases for a power generator (used in GENERATOR_STATUS). Note that FAULTS are conditions that cause the generator to fail. Warnings are conditions that require attention before the next use (they indicate the system is not operating properly). */
 #ifndef HAVE_ENUM_MAV_GENERATOR_STATUS_FLAG
 #define HAVE_ENUM_MAV_GENERATOR_STATUS_FLAG
-typedef enum MAV_GENERATOR_STATUS_FLAG {
+typedef enum MAV_GENERATOR_STATUS_FLAG
+{
     MAV_GENERATOR_STATUS_FLAG_OFF = 1, /* Generator is off. | */
     MAV_GENERATOR_STATUS_FLAG_READY = 2, /* Generator is ready to start generating power. | */
     MAV_GENERATOR_STATUS_FLAG_GENERATING = 4, /* Generator is generating power. | */
@@ -1313,7 +1370,8 @@ typedef enum MAV_GENERATOR_STATUS_FLAG {
 /** @brief Enumeration of VTOL states */
 #ifndef HAVE_ENUM_MAV_VTOL_STATE
 #define HAVE_ENUM_MAV_VTOL_STATE
-typedef enum MAV_VTOL_STATE {
+typedef enum MAV_VTOL_STATE
+{
     MAV_VTOL_STATE_UNDEFINED = 0, /* MAV is not configured as VTOL | */
     MAV_VTOL_STATE_TRANSITION_TO_FW = 1, /* VTOL is in transition from multicopter to fixed-wing | */
     MAV_VTOL_STATE_TRANSITION_TO_MC = 2, /* VTOL is in transition from fixed-wing to multicopter | */
@@ -1326,7 +1384,8 @@ typedef enum MAV_VTOL_STATE {
 /** @brief Enumeration of landed detector states */
 #ifndef HAVE_ENUM_MAV_LANDED_STATE
 #define HAVE_ENUM_MAV_LANDED_STATE
-typedef enum MAV_LANDED_STATE {
+typedef enum MAV_LANDED_STATE
+{
     MAV_LANDED_STATE_UNDEFINED = 0, /* MAV landed state is unknown | */
     MAV_LANDED_STATE_ON_GROUND = 1, /* MAV is landed (on ground) | */
     MAV_LANDED_STATE_IN_AIR = 2, /* MAV is in air | */
@@ -1339,7 +1398,8 @@ typedef enum MAV_LANDED_STATE {
 /** @brief Enumeration of the ADSB altimeter types */
 #ifndef HAVE_ENUM_ADSB_ALTITUDE_TYPE
 #define HAVE_ENUM_ADSB_ALTITUDE_TYPE
-typedef enum ADSB_ALTITUDE_TYPE {
+typedef enum ADSB_ALTITUDE_TYPE
+{
     ADSB_ALTITUDE_TYPE_PRESSURE_QNH = 0, /* Altitude reported from a Baro source using QNH reference | */
     ADSB_ALTITUDE_TYPE_GEOMETRIC = 1, /* Altitude reported from a GNSS source | */
     ADSB_ALTITUDE_TYPE_ENUM_END = 2, /*  | */
@@ -1349,7 +1409,8 @@ typedef enum ADSB_ALTITUDE_TYPE {
 /** @brief ADSB classification for the type of vehicle emitting the transponder signal */
 #ifndef HAVE_ENUM_ADSB_EMITTER_TYPE
 #define HAVE_ENUM_ADSB_EMITTER_TYPE
-typedef enum ADSB_EMITTER_TYPE {
+typedef enum ADSB_EMITTER_TYPE
+{
     ADSB_EMITTER_TYPE_NO_INFO = 0, /*  | */
     ADSB_EMITTER_TYPE_LIGHT = 1, /*  | */
     ADSB_EMITTER_TYPE_SMALL = 2, /*  | */
@@ -1377,7 +1438,8 @@ typedef enum ADSB_EMITTER_TYPE {
 /** @brief These flags indicate status such as data validity of each data source. Set = data valid */
 #ifndef HAVE_ENUM_ADSB_FLAGS
 #define HAVE_ENUM_ADSB_FLAGS
-typedef enum ADSB_FLAGS {
+typedef enum ADSB_FLAGS
+{
     ADSB_FLAGS_VALID_COORDS = 1, /*  | */
     ADSB_FLAGS_VALID_ALTITUDE = 2, /*  | */
     ADSB_FLAGS_VALID_HEADING = 4, /*  | */
@@ -1395,7 +1457,8 @@ typedef enum ADSB_FLAGS {
 /** @brief Bitmap of options for the MAV_CMD_DO_REPOSITION */
 #ifndef HAVE_ENUM_MAV_DO_REPOSITION_FLAGS
 #define HAVE_ENUM_MAV_DO_REPOSITION_FLAGS
-typedef enum MAV_DO_REPOSITION_FLAGS {
+typedef enum MAV_DO_REPOSITION_FLAGS
+{
     MAV_DO_REPOSITION_FLAGS_CHANGE_MODE = 1, /* The aircraft should immediately transition into guided. This should not be set for follow me applications | */
     MAV_DO_REPOSITION_FLAGS_ENUM_END = 2, /*  | */
 } MAV_DO_REPOSITION_FLAGS;
@@ -1404,7 +1467,8 @@ typedef enum MAV_DO_REPOSITION_FLAGS {
 /** @brief Flags in ESTIMATOR_STATUS message */
 #ifndef HAVE_ENUM_ESTIMATOR_STATUS_FLAGS
 #define HAVE_ENUM_ESTIMATOR_STATUS_FLAGS
-typedef enum ESTIMATOR_STATUS_FLAGS {
+typedef enum ESTIMATOR_STATUS_FLAGS
+{
     ESTIMATOR_ATTITUDE = 1, /* True if the attitude estimate is good | */
     ESTIMATOR_VELOCITY_HORIZ = 2, /* True if the horizontal velocity estimate is good | */
     ESTIMATOR_VELOCITY_VERT = 4, /* True if the  vertical velocity estimate is good | */
@@ -1424,7 +1488,8 @@ typedef enum ESTIMATOR_STATUS_FLAGS {
 /** @brief  */
 #ifndef HAVE_ENUM_MOTOR_TEST_ORDER
 #define HAVE_ENUM_MOTOR_TEST_ORDER
-typedef enum MOTOR_TEST_ORDER {
+typedef enum MOTOR_TEST_ORDER
+{
     MOTOR_TEST_ORDER_DEFAULT = 0, /* default autopilot motor test method | */
     MOTOR_TEST_ORDER_SEQUENCE = 1, /* motor numbers are specified as their index in a predefined vehicle-specific sequence | */
     MOTOR_TEST_ORDER_BOARD = 2, /* motor numbers are specified as the output as labeled on the board | */
@@ -1435,7 +1500,8 @@ typedef enum MOTOR_TEST_ORDER {
 /** @brief  */
 #ifndef HAVE_ENUM_MOTOR_TEST_THROTTLE_TYPE
 #define HAVE_ENUM_MOTOR_TEST_THROTTLE_TYPE
-typedef enum MOTOR_TEST_THROTTLE_TYPE {
+typedef enum MOTOR_TEST_THROTTLE_TYPE
+{
     MOTOR_TEST_THROTTLE_PERCENT = 0, /* throttle as a percentage from 0 ~ 100 | */
     MOTOR_TEST_THROTTLE_PWM = 1, /* throttle as an absolute PWM value (normally in range of 1000~2000) | */
     MOTOR_TEST_THROTTLE_PILOT = 2, /* throttle pass-through from pilot's transmitter | */
@@ -1447,7 +1513,8 @@ typedef enum MOTOR_TEST_THROTTLE_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_GPS_INPUT_IGNORE_FLAGS
 #define HAVE_ENUM_GPS_INPUT_IGNORE_FLAGS
-typedef enum GPS_INPUT_IGNORE_FLAGS {
+typedef enum GPS_INPUT_IGNORE_FLAGS
+{
     GPS_INPUT_IGNORE_FLAG_ALT = 1, /* ignore altitude field | */
     GPS_INPUT_IGNORE_FLAG_HDOP = 2, /* ignore hdop field | */
     GPS_INPUT_IGNORE_FLAG_VDOP = 4, /* ignore vdop field | */
@@ -1463,7 +1530,8 @@ typedef enum GPS_INPUT_IGNORE_FLAGS {
 /** @brief Possible actions an aircraft can take to avoid a collision. */
 #ifndef HAVE_ENUM_MAV_COLLISION_ACTION
 #define HAVE_ENUM_MAV_COLLISION_ACTION
-typedef enum MAV_COLLISION_ACTION {
+typedef enum MAV_COLLISION_ACTION
+{
     MAV_COLLISION_ACTION_NONE = 0, /* Ignore any potential collisions | */
     MAV_COLLISION_ACTION_REPORT = 1, /* Report potential collision | */
     MAV_COLLISION_ACTION_ASCEND_OR_DESCEND = 2, /* Ascend or Descend to avoid threat | */
@@ -1478,7 +1546,8 @@ typedef enum MAV_COLLISION_ACTION {
 /** @brief Aircraft-rated danger from this threat. */
 #ifndef HAVE_ENUM_MAV_COLLISION_THREAT_LEVEL
 #define HAVE_ENUM_MAV_COLLISION_THREAT_LEVEL
-typedef enum MAV_COLLISION_THREAT_LEVEL {
+typedef enum MAV_COLLISION_THREAT_LEVEL
+{
     MAV_COLLISION_THREAT_LEVEL_NONE = 0, /* Not a threat | */
     MAV_COLLISION_THREAT_LEVEL_LOW = 1, /* Craft is mildly concerned about this threat | */
     MAV_COLLISION_THREAT_LEVEL_HIGH = 2, /* Craft is panicking, and may take actions to avoid threat | */
@@ -1489,7 +1558,8 @@ typedef enum MAV_COLLISION_THREAT_LEVEL {
 /** @brief Source of information about this collision. */
 #ifndef HAVE_ENUM_MAV_COLLISION_SRC
 #define HAVE_ENUM_MAV_COLLISION_SRC
-typedef enum MAV_COLLISION_SRC {
+typedef enum MAV_COLLISION_SRC
+{
     MAV_COLLISION_SRC_ADSB = 0, /* ID field references ADSB_VEHICLE packets | */
     MAV_COLLISION_SRC_MAVLINK_GPS_GLOBAL_INT = 1, /* ID field references MAVLink SRC ID | */
     MAV_COLLISION_SRC_ENUM_END = 2, /*  | */
@@ -1499,7 +1569,8 @@ typedef enum MAV_COLLISION_SRC {
 /** @brief Type of GPS fix */
 #ifndef HAVE_ENUM_GPS_FIX_TYPE
 #define HAVE_ENUM_GPS_FIX_TYPE
-typedef enum GPS_FIX_TYPE {
+typedef enum GPS_FIX_TYPE
+{
     GPS_FIX_TYPE_NO_GPS = 0, /* No GPS connected | */
     GPS_FIX_TYPE_NO_FIX = 1, /* No position information, GPS is connected | */
     GPS_FIX_TYPE_2D_FIX = 2, /* 2D position | */
@@ -1516,7 +1587,8 @@ typedef enum GPS_FIX_TYPE {
 /** @brief RTK GPS baseline coordinate system, used for RTK corrections */
 #ifndef HAVE_ENUM_RTK_BASELINE_COORDINATE_SYSTEM
 #define HAVE_ENUM_RTK_BASELINE_COORDINATE_SYSTEM
-typedef enum RTK_BASELINE_COORDINATE_SYSTEM {
+typedef enum RTK_BASELINE_COORDINATE_SYSTEM
+{
     RTK_BASELINE_COORDINATE_SYSTEM_ECEF = 0, /* Earth-centered, Earth-fixed | */
     RTK_BASELINE_COORDINATE_SYSTEM_NED = 1, /* RTK basestation centered, north, east, down | */
     RTK_BASELINE_COORDINATE_SYSTEM_ENUM_END = 2, /*  | */
@@ -1526,7 +1598,8 @@ typedef enum RTK_BASELINE_COORDINATE_SYSTEM {
 /** @brief Type of landing target */
 #ifndef HAVE_ENUM_LANDING_TARGET_TYPE
 #define HAVE_ENUM_LANDING_TARGET_TYPE
-typedef enum LANDING_TARGET_TYPE {
+typedef enum LANDING_TARGET_TYPE
+{
     LANDING_TARGET_TYPE_LIGHT_BEACON = 0, /* Landing target signaled by light beacon (ex: IR-LOCK) | */
     LANDING_TARGET_TYPE_RADIO_BEACON = 1, /* Landing target signaled by radio beacon (ex: ILS, NDB) | */
     LANDING_TARGET_TYPE_VISION_FIDUCIAL = 2, /* Landing target represented by a fiducial marker (ex: ARTag) | */
@@ -1538,7 +1611,8 @@ typedef enum LANDING_TARGET_TYPE {
 /** @brief Direction of VTOL transition */
 #ifndef HAVE_ENUM_VTOL_TRANSITION_HEADING
 #define HAVE_ENUM_VTOL_TRANSITION_HEADING
-typedef enum VTOL_TRANSITION_HEADING {
+typedef enum VTOL_TRANSITION_HEADING
+{
     VTOL_TRANSITION_HEADING_VEHICLE_DEFAULT = 0, /* Respect the heading configuration of the vehicle. | */
     VTOL_TRANSITION_HEADING_NEXT_WAYPOINT = 1, /* Use the heading pointing towards the next waypoint. | */
     VTOL_TRANSITION_HEADING_TAKEOFF = 2, /* Use the heading on takeoff (while sitting on the ground). | */
@@ -1551,7 +1625,8 @@ typedef enum VTOL_TRANSITION_HEADING {
 /** @brief Camera capability flags (Bitmap) */
 #ifndef HAVE_ENUM_CAMERA_CAP_FLAGS
 #define HAVE_ENUM_CAMERA_CAP_FLAGS
-typedef enum CAMERA_CAP_FLAGS {
+typedef enum CAMERA_CAP_FLAGS
+{
     CAMERA_CAP_FLAGS_CAPTURE_VIDEO = 1, /* Camera is able to record video | */
     CAMERA_CAP_FLAGS_CAPTURE_IMAGE = 2, /* Camera is able to capture images | */
     CAMERA_CAP_FLAGS_HAS_MODES = 4, /* Camera has separate Video and Image/Photo modes (MAV_CMD_SET_CAMERA_MODE) | */
@@ -1571,7 +1646,8 @@ typedef enum CAMERA_CAP_FLAGS {
 /** @brief Stream status flags (Bitmap) */
 #ifndef HAVE_ENUM_VIDEO_STREAM_STATUS_FLAGS
 #define HAVE_ENUM_VIDEO_STREAM_STATUS_FLAGS
-typedef enum VIDEO_STREAM_STATUS_FLAGS {
+typedef enum VIDEO_STREAM_STATUS_FLAGS
+{
     VIDEO_STREAM_STATUS_FLAGS_RUNNING = 1, /* Stream is active (running) | */
     VIDEO_STREAM_STATUS_FLAGS_THERMAL = 2, /* Stream is thermal imaging | */
     VIDEO_STREAM_STATUS_FLAGS_ENUM_END = 3, /*  | */
@@ -1581,7 +1657,8 @@ typedef enum VIDEO_STREAM_STATUS_FLAGS {
 /** @brief Video stream types */
 #ifndef HAVE_ENUM_VIDEO_STREAM_TYPE
 #define HAVE_ENUM_VIDEO_STREAM_TYPE
-typedef enum VIDEO_STREAM_TYPE {
+typedef enum VIDEO_STREAM_TYPE
+{
     VIDEO_STREAM_TYPE_RTSP = 0, /* Stream is RTSP | */
     VIDEO_STREAM_TYPE_RTPUDP = 1, /* Stream is RTP UDP (URI gives the port number) | */
     VIDEO_STREAM_TYPE_TCP_MPEG = 2, /* Stream is MPEG on TCP | */
@@ -1593,7 +1670,8 @@ typedef enum VIDEO_STREAM_TYPE {
 /** @brief Camera tracking status flags */
 #ifndef HAVE_ENUM_CAMERA_TRACKING_STATUS_FLAGS
 #define HAVE_ENUM_CAMERA_TRACKING_STATUS_FLAGS
-typedef enum CAMERA_TRACKING_STATUS_FLAGS {
+typedef enum CAMERA_TRACKING_STATUS_FLAGS
+{
     CAMERA_TRACKING_STATUS_FLAGS_IDLE = 0, /* Camera is not tracking | */
     CAMERA_TRACKING_STATUS_FLAGS_ACTIVE = 1, /* Camera is tracking | */
     CAMERA_TRACKING_STATUS_FLAGS_ERROR = 2, /* Camera tracking in error state | */
@@ -1604,7 +1682,8 @@ typedef enum CAMERA_TRACKING_STATUS_FLAGS {
 /** @brief Camera tracking modes */
 #ifndef HAVE_ENUM_CAMERA_TRACKING_MODE
 #define HAVE_ENUM_CAMERA_TRACKING_MODE
-typedef enum CAMERA_TRACKING_MODE {
+typedef enum CAMERA_TRACKING_MODE
+{
     CAMERA_TRACKING_NONE = 0, /* Not tracking | */
     CAMERA_TRACKING_POINT = 1, /* Target is a point | */
     CAMERA_TRACKING_RECTANGLE = 2, /* Target is a rectangle | */
@@ -1615,7 +1694,8 @@ typedef enum CAMERA_TRACKING_MODE {
 /** @brief Camera tracking target data (shows where tracked target is within image) */
 #ifndef HAVE_ENUM_CAMERA_TRACKING_TARGET_DATA
 #define HAVE_ENUM_CAMERA_TRACKING_TARGET_DATA
-typedef enum CAMERA_TRACKING_TARGET_DATA {
+typedef enum CAMERA_TRACKING_TARGET_DATA
+{
     CAMERA_TRACKING_TARGET_NONE = 0, /* No target data | */
     CAMERA_TRACKING_TARGET_EMBEDDED = 1, /* Target data embedded in image data (proprietary) | */
     CAMERA_TRACKING_TARGET_RENDERED = 2, /* Target data rendered in image | */
@@ -1627,7 +1707,8 @@ typedef enum CAMERA_TRACKING_TARGET_DATA {
 /** @brief Zoom types for MAV_CMD_SET_CAMERA_ZOOM */
 #ifndef HAVE_ENUM_CAMERA_ZOOM_TYPE
 #define HAVE_ENUM_CAMERA_ZOOM_TYPE
-typedef enum CAMERA_ZOOM_TYPE {
+typedef enum CAMERA_ZOOM_TYPE
+{
     ZOOM_TYPE_STEP = 0, /* Zoom one step increment (-1 for wide, 1 for tele) | */
     ZOOM_TYPE_CONTINUOUS = 1, /* Continuous zoom up/down until stopped (-1 for wide, 1 for tele, 0 to stop zooming) | */
     ZOOM_TYPE_RANGE = 2, /* Zoom value as proportion of full camera range (a value between 0.0 and 100.0) | */
@@ -1639,7 +1720,8 @@ typedef enum CAMERA_ZOOM_TYPE {
 /** @brief Focus types for MAV_CMD_SET_CAMERA_FOCUS */
 #ifndef HAVE_ENUM_SET_FOCUS_TYPE
 #define HAVE_ENUM_SET_FOCUS_TYPE
-typedef enum SET_FOCUS_TYPE {
+typedef enum SET_FOCUS_TYPE
+{
     FOCUS_TYPE_STEP = 0, /* Focus one step increment (-1 for focusing in, 1 for focusing out towards infinity). | */
     FOCUS_TYPE_CONTINUOUS = 1, /* Continuous focus up/down until stopped (-1 for focusing in, 1 for focusing out towards infinity, 0 to stop focusing) | */
     FOCUS_TYPE_RANGE = 2, /* Focus value as proportion of full camera focus range (a value between 0.0 and 100.0) | */
@@ -1651,7 +1733,8 @@ typedef enum SET_FOCUS_TYPE {
 /** @brief Result from PARAM_EXT_SET message (or a PARAM_SET within a transaction). */
 #ifndef HAVE_ENUM_PARAM_ACK
 #define HAVE_ENUM_PARAM_ACK
-typedef enum PARAM_ACK {
+typedef enum PARAM_ACK
+{
     PARAM_ACK_ACCEPTED = 0, /* Parameter value ACCEPTED and SET | */
     PARAM_ACK_VALUE_UNSUPPORTED = 1, /* Parameter value UNKNOWN/UNSUPPORTED | */
     PARAM_ACK_FAILED = 2, /* Parameter failed to set | */
@@ -1663,7 +1746,8 @@ typedef enum PARAM_ACK {
 /** @brief Camera Modes. */
 #ifndef HAVE_ENUM_CAMERA_MODE
 #define HAVE_ENUM_CAMERA_MODE
-typedef enum CAMERA_MODE {
+typedef enum CAMERA_MODE
+{
     CAMERA_MODE_IMAGE = 0, /* Camera is in image/photo capture mode. | */
     CAMERA_MODE_VIDEO = 1, /* Camera is in video capture mode. | */
     CAMERA_MODE_IMAGE_SURVEY = 2, /* Camera is in image survey capture mode. It allows for camera controller to do specific settings for surveys. | */
@@ -1674,7 +1758,8 @@ typedef enum CAMERA_MODE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ARM_AUTH_DENIED_REASON
 #define HAVE_ENUM_MAV_ARM_AUTH_DENIED_REASON
-typedef enum MAV_ARM_AUTH_DENIED_REASON {
+typedef enum MAV_ARM_AUTH_DENIED_REASON
+{
     MAV_ARM_AUTH_DENIED_REASON_GENERIC = 0, /* Not a specific reason | */
     MAV_ARM_AUTH_DENIED_REASON_NONE = 1, /* Authorizer will send the error as string to GCS | */
     MAV_ARM_AUTH_DENIED_REASON_INVALID_WAYPOINT = 2, /* At least one waypoint have a invalid value | */
@@ -1688,7 +1773,8 @@ typedef enum MAV_ARM_AUTH_DENIED_REASON {
 /** @brief RC type */
 #ifndef HAVE_ENUM_RC_TYPE
 #define HAVE_ENUM_RC_TYPE
-typedef enum RC_TYPE {
+typedef enum RC_TYPE
+{
     RC_TYPE_SPEKTRUM_DSM2 = 0, /* Spektrum DSM2 | */
     RC_TYPE_SPEKTRUM_DSMX = 1, /* Spektrum DSMX | */
     RC_TYPE_ENUM_END = 2, /*  | */
@@ -1698,7 +1784,8 @@ typedef enum RC_TYPE {
 /** @brief Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 9 is set the floats afx afy afz should be interpreted as force instead of acceleration. */
 #ifndef HAVE_ENUM_POSITION_TARGET_TYPEMASK
 #define HAVE_ENUM_POSITION_TARGET_TYPEMASK
-typedef enum POSITION_TARGET_TYPEMASK {
+typedef enum POSITION_TARGET_TYPEMASK
+{
     POSITION_TARGET_TYPEMASK_X_IGNORE = 1, /* Ignore position x | */
     POSITION_TARGET_TYPEMASK_Y_IGNORE = 2, /* Ignore position y | */
     POSITION_TARGET_TYPEMASK_Z_IGNORE = 4, /* Ignore position z | */
@@ -1718,7 +1805,8 @@ typedef enum POSITION_TARGET_TYPEMASK {
 /** @brief Airborne status of UAS. */
 #ifndef HAVE_ENUM_UTM_FLIGHT_STATE
 #define HAVE_ENUM_UTM_FLIGHT_STATE
-typedef enum UTM_FLIGHT_STATE {
+typedef enum UTM_FLIGHT_STATE
+{
     UTM_FLIGHT_STATE_UNKNOWN = 1, /* The flight state can't be determined. | */
     UTM_FLIGHT_STATE_GROUND = 2, /* UAS on ground. | */
     UTM_FLIGHT_STATE_AIRBORNE = 3, /* UAS airborne. | */
@@ -1731,7 +1819,8 @@ typedef enum UTM_FLIGHT_STATE {
 /** @brief Flags for the global position report. */
 #ifndef HAVE_ENUM_UTM_DATA_AVAIL_FLAGS
 #define HAVE_ENUM_UTM_DATA_AVAIL_FLAGS
-typedef enum UTM_DATA_AVAIL_FLAGS {
+typedef enum UTM_DATA_AVAIL_FLAGS
+{
     UTM_DATA_AVAIL_FLAGS_TIME_VALID = 1, /* The field time contains valid data. | */
     UTM_DATA_AVAIL_FLAGS_UAS_ID_AVAILABLE = 2, /* The field uas_id contains valid data. | */
     UTM_DATA_AVAIL_FLAGS_POSITION_AVAILABLE = 4, /* The fields lat, lon and h_acc contain valid data. | */
@@ -1747,7 +1836,8 @@ typedef enum UTM_DATA_AVAIL_FLAGS {
 /** @brief Cellular network radio type */
 #ifndef HAVE_ENUM_CELLULAR_NETWORK_RADIO_TYPE
 #define HAVE_ENUM_CELLULAR_NETWORK_RADIO_TYPE
-typedef enum CELLULAR_NETWORK_RADIO_TYPE {
+typedef enum CELLULAR_NETWORK_RADIO_TYPE
+{
     CELLULAR_NETWORK_RADIO_TYPE_NONE = 0, /*  | */
     CELLULAR_NETWORK_RADIO_TYPE_GSM = 1, /*  | */
     CELLULAR_NETWORK_RADIO_TYPE_CDMA = 2, /*  | */
@@ -1760,7 +1850,8 @@ typedef enum CELLULAR_NETWORK_RADIO_TYPE {
 /** @brief These flags encode the cellular network status */
 #ifndef HAVE_ENUM_CELLULAR_STATUS_FLAG
 #define HAVE_ENUM_CELLULAR_STATUS_FLAG
-typedef enum CELLULAR_STATUS_FLAG {
+typedef enum CELLULAR_STATUS_FLAG
+{
     CELLULAR_STATUS_FLAG_UNKNOWN = 0, /* State unknown or not reportable. | */
     CELLULAR_STATUS_FLAG_FAILED = 1, /* Modem is unusable | */
     CELLULAR_STATUS_FLAG_INITIALIZING = 2, /* Modem is being initialized | */
@@ -1781,7 +1872,8 @@ typedef enum CELLULAR_STATUS_FLAG {
 /** @brief These flags are used to diagnose the failure state of CELLULAR_STATUS */
 #ifndef HAVE_ENUM_CELLULAR_NETWORK_FAILED_REASON
 #define HAVE_ENUM_CELLULAR_NETWORK_FAILED_REASON
-typedef enum CELLULAR_NETWORK_FAILED_REASON {
+typedef enum CELLULAR_NETWORK_FAILED_REASON
+{
     CELLULAR_NETWORK_FAILED_REASON_NONE = 0, /* No error | */
     CELLULAR_NETWORK_FAILED_REASON_UNKNOWN = 1, /* Error state is unknown | */
     CELLULAR_NETWORK_FAILED_REASON_SIM_MISSING = 2, /* SIM is required for the modem but missing | */
@@ -1793,7 +1885,8 @@ typedef enum CELLULAR_NETWORK_FAILED_REASON {
 /** @brief Precision land modes (used in MAV_CMD_NAV_LAND). */
 #ifndef HAVE_ENUM_PRECISION_LAND_MODE
 #define HAVE_ENUM_PRECISION_LAND_MODE
-typedef enum PRECISION_LAND_MODE {
+typedef enum PRECISION_LAND_MODE
+{
     PRECISION_LAND_MODE_DISABLED = 0, /* Normal (non-precision) landing. | */
     PRECISION_LAND_MODE_OPPORTUNISTIC = 1, /* Use precision landing if beacon detected when land command accepted, otherwise land normally. | */
     PRECISION_LAND_MODE_REQUIRED = 2, /* Use precision landing, searching for beacon if not found when land command accepted (land normally if beacon cannot be found). | */
@@ -1804,7 +1897,8 @@ typedef enum PRECISION_LAND_MODE {
 /** @brief Parachute actions. Trigger release and enable/disable auto-release. */
 #ifndef HAVE_ENUM_PARACHUTE_ACTION
 #define HAVE_ENUM_PARACHUTE_ACTION
-typedef enum PARACHUTE_ACTION {
+typedef enum PARACHUTE_ACTION
+{
     PARACHUTE_DISABLE = 0, /* Disable auto-release of parachute (i.e. release triggered by crash detectors). | */
     PARACHUTE_ENABLE = 1, /* Enable auto-release of parachute. | */
     PARACHUTE_RELEASE = 2, /* Release parachute and kill motors. | */
@@ -1815,7 +1909,8 @@ typedef enum PARACHUTE_ACTION {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_TUNNEL_PAYLOAD_TYPE
 #define HAVE_ENUM_MAV_TUNNEL_PAYLOAD_TYPE
-typedef enum MAV_TUNNEL_PAYLOAD_TYPE {
+typedef enum MAV_TUNNEL_PAYLOAD_TYPE
+{
     MAV_TUNNEL_PAYLOAD_TYPE_UNKNOWN = 0, /* Encoding of payload unknown. | */
     MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED0 = 200, /* Registered for STorM32 gimbal controller. | */
     MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED1 = 201, /* Registered for STorM32 gimbal controller. | */
@@ -1834,7 +1929,8 @@ typedef enum MAV_TUNNEL_PAYLOAD_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_ID_TYPE
 #define HAVE_ENUM_MAV_ODID_ID_TYPE
-typedef enum MAV_ODID_ID_TYPE {
+typedef enum MAV_ODID_ID_TYPE
+{
     MAV_ODID_ID_TYPE_NONE = 0, /* No type defined. | */
     MAV_ODID_ID_TYPE_SERIAL_NUMBER = 1, /* Manufacturer Serial Number (ANSI/CTA-2063 format). | */
     MAV_ODID_ID_TYPE_CAA_REGISTRATION_ID = 2, /* CAA (Civil Aviation Authority) registered ID. Format: [ICAO Country Code].[CAA Assigned ID]. | */
@@ -1846,7 +1942,8 @@ typedef enum MAV_ODID_ID_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_UA_TYPE
 #define HAVE_ENUM_MAV_ODID_UA_TYPE
-typedef enum MAV_ODID_UA_TYPE {
+typedef enum MAV_ODID_UA_TYPE
+{
     MAV_ODID_UA_TYPE_NONE = 0, /* No UA (Unmanned Aircraft) type defined. | */
     MAV_ODID_UA_TYPE_AEROPLANE = 1, /* Aeroplane/Airplane. Fixed wing. | */
     MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR = 2, /* Helicopter or multirotor. | */
@@ -1870,7 +1967,8 @@ typedef enum MAV_ODID_UA_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_STATUS
 #define HAVE_ENUM_MAV_ODID_STATUS
-typedef enum MAV_ODID_STATUS {
+typedef enum MAV_ODID_STATUS
+{
     MAV_ODID_STATUS_UNDECLARED = 0, /* The status of the (UA) Unmanned Aircraft is undefined. | */
     MAV_ODID_STATUS_GROUND = 1, /* The UA is on the ground. | */
     MAV_ODID_STATUS_AIRBORNE = 2, /* The UA is in the air. | */
@@ -1882,7 +1980,8 @@ typedef enum MAV_ODID_STATUS {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_HEIGHT_REF
 #define HAVE_ENUM_MAV_ODID_HEIGHT_REF
-typedef enum MAV_ODID_HEIGHT_REF {
+typedef enum MAV_ODID_HEIGHT_REF
+{
     MAV_ODID_HEIGHT_REF_OVER_TAKEOFF = 0, /* The height field is relative to the take-off location. | */
     MAV_ODID_HEIGHT_REF_OVER_GROUND = 1, /* The height field is relative to ground. | */
     MAV_ODID_HEIGHT_REF_ENUM_END = 2, /*  | */
@@ -1892,7 +1991,8 @@ typedef enum MAV_ODID_HEIGHT_REF {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_HOR_ACC
 #define HAVE_ENUM_MAV_ODID_HOR_ACC
-typedef enum MAV_ODID_HOR_ACC {
+typedef enum MAV_ODID_HOR_ACC
+{
     MAV_ODID_HOR_ACC_UNKNOWN = 0, /* The horizontal accuracy is unknown. | */
     MAV_ODID_HOR_ACC_10NM = 1, /* The horizontal accuracy is smaller than 10 Nautical Miles. 18.52 km. | */
     MAV_ODID_HOR_ACC_4NM = 2, /* The horizontal accuracy is smaller than 4 Nautical Miles. 7.408 km. | */
@@ -1913,7 +2013,8 @@ typedef enum MAV_ODID_HOR_ACC {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_VER_ACC
 #define HAVE_ENUM_MAV_ODID_VER_ACC
-typedef enum MAV_ODID_VER_ACC {
+typedef enum MAV_ODID_VER_ACC
+{
     MAV_ODID_VER_ACC_UNKNOWN = 0, /* The vertical accuracy is unknown. | */
     MAV_ODID_VER_ACC_150_METER = 1, /* The vertical accuracy is smaller than 150 meter. | */
     MAV_ODID_VER_ACC_45_METER = 2, /* The vertical accuracy is smaller than 45 meter. | */
@@ -1928,7 +2029,8 @@ typedef enum MAV_ODID_VER_ACC {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_SPEED_ACC
 #define HAVE_ENUM_MAV_ODID_SPEED_ACC
-typedef enum MAV_ODID_SPEED_ACC {
+typedef enum MAV_ODID_SPEED_ACC
+{
     MAV_ODID_SPEED_ACC_UNKNOWN = 0, /* The speed accuracy is unknown. | */
     MAV_ODID_SPEED_ACC_10_METERS_PER_SECOND = 1, /* The speed accuracy is smaller than 10 meters per second. | */
     MAV_ODID_SPEED_ACC_3_METERS_PER_SECOND = 2, /* The speed accuracy is smaller than 3 meters per second. | */
@@ -1941,7 +2043,8 @@ typedef enum MAV_ODID_SPEED_ACC {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_TIME_ACC
 #define HAVE_ENUM_MAV_ODID_TIME_ACC
-typedef enum MAV_ODID_TIME_ACC {
+typedef enum MAV_ODID_TIME_ACC
+{
     MAV_ODID_TIME_ACC_UNKNOWN = 0, /* The timestamp accuracy is unknown. | */
     MAV_ODID_TIME_ACC_0_1_SECOND = 1, /* The timestamp accuracy is smaller than or equal to 0.1 second. | */
     MAV_ODID_TIME_ACC_0_2_SECOND = 2, /* The timestamp accuracy is smaller than or equal to 0.2 second. | */
@@ -1965,7 +2068,8 @@ typedef enum MAV_ODID_TIME_ACC {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_AUTH_TYPE
 #define HAVE_ENUM_MAV_ODID_AUTH_TYPE
-typedef enum MAV_ODID_AUTH_TYPE {
+typedef enum MAV_ODID_AUTH_TYPE
+{
     MAV_ODID_AUTH_TYPE_NONE = 0, /* No authentication type is specified. | */
     MAV_ODID_AUTH_TYPE_UAS_ID_SIGNATURE = 1, /* Signature for the UAS (Unmanned Aircraft System) ID. | */
     MAV_ODID_AUTH_TYPE_OPERATOR_ID_SIGNATURE = 2, /* Signature for the Operator ID. | */
@@ -1978,7 +2082,8 @@ typedef enum MAV_ODID_AUTH_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_DESC_TYPE
 #define HAVE_ENUM_MAV_ODID_DESC_TYPE
-typedef enum MAV_ODID_DESC_TYPE {
+typedef enum MAV_ODID_DESC_TYPE
+{
     MAV_ODID_DESC_TYPE_TEXT = 0, /* Free-form text description of the purpose of the flight. | */
     MAV_ODID_DESC_TYPE_ENUM_END = 1, /*  | */
 } MAV_ODID_DESC_TYPE;
@@ -1987,7 +2092,8 @@ typedef enum MAV_ODID_DESC_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_OPERATOR_LOCATION_TYPE
 #define HAVE_ENUM_MAV_ODID_OPERATOR_LOCATION_TYPE
-typedef enum MAV_ODID_OPERATOR_LOCATION_TYPE {
+typedef enum MAV_ODID_OPERATOR_LOCATION_TYPE
+{
     MAV_ODID_OPERATOR_LOCATION_TYPE_TAKEOFF = 0, /* The location of the operator is the same as the take-off location. | */
     MAV_ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS = 1, /* The location of the operator is based on live GNSS data. | */
     MAV_ODID_OPERATOR_LOCATION_TYPE_FIXED = 2, /* The location of the operator is a fixed location. | */
@@ -1998,7 +2104,8 @@ typedef enum MAV_ODID_OPERATOR_LOCATION_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_CLASSIFICATION_TYPE
 #define HAVE_ENUM_MAV_ODID_CLASSIFICATION_TYPE
-typedef enum MAV_ODID_CLASSIFICATION_TYPE {
+typedef enum MAV_ODID_CLASSIFICATION_TYPE
+{
     MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED = 0, /* The classification type for the UA is undeclared. | */
     MAV_ODID_CLASSIFICATION_TYPE_EU = 1, /* The classification type for the UA follows EU (European Union) specifications. | */
     MAV_ODID_CLASSIFICATION_TYPE_ENUM_END = 2, /*  | */
@@ -2008,7 +2115,8 @@ typedef enum MAV_ODID_CLASSIFICATION_TYPE {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_CATEGORY_EU
 #define HAVE_ENUM_MAV_ODID_CATEGORY_EU
-typedef enum MAV_ODID_CATEGORY_EU {
+typedef enum MAV_ODID_CATEGORY_EU
+{
     MAV_ODID_CATEGORY_EU_UNDECLARED = 0, /* The category for the UA, according to the EU specification, is undeclared. | */
     MAV_ODID_CATEGORY_EU_OPEN = 1, /* The category for the UA, according to the EU specification, is the Open category. | */
     MAV_ODID_CATEGORY_EU_SPECIFIC = 2, /* The category for the UA, according to the EU specification, is the Specific category. | */
@@ -2020,7 +2128,8 @@ typedef enum MAV_ODID_CATEGORY_EU {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_CLASS_EU
 #define HAVE_ENUM_MAV_ODID_CLASS_EU
-typedef enum MAV_ODID_CLASS_EU {
+typedef enum MAV_ODID_CLASS_EU
+{
     MAV_ODID_CLASS_EU_UNDECLARED = 0, /* The class for the UA, according to the EU specification, is undeclared. | */
     MAV_ODID_CLASS_EU_CLASS_0 = 1, /* The class for the UA, according to the EU specification, is Class 0. | */
     MAV_ODID_CLASS_EU_CLASS_1 = 2, /* The class for the UA, according to the EU specification, is Class 1. | */
@@ -2036,7 +2145,8 @@ typedef enum MAV_ODID_CLASS_EU {
 /** @brief  */
 #ifndef HAVE_ENUM_MAV_ODID_OPERATOR_ID_TYPE
 #define HAVE_ENUM_MAV_ODID_OPERATOR_ID_TYPE
-typedef enum MAV_ODID_OPERATOR_ID_TYPE {
+typedef enum MAV_ODID_OPERATOR_ID_TYPE
+{
     MAV_ODID_OPERATOR_ID_TYPE_CAA = 0, /* CAA (Civil Aviation Authority) registered operator ID. | */
     MAV_ODID_OPERATOR_ID_TYPE_ENUM_END = 1, /*  | */
 } MAV_ODID_OPERATOR_ID_TYPE;
@@ -2045,7 +2155,8 @@ typedef enum MAV_ODID_OPERATOR_ID_TYPE {
 /** @brief Tune formats (used for vehicle buzzer/tone generation). */
 #ifndef HAVE_ENUM_TUNE_FORMAT
 #define HAVE_ENUM_TUNE_FORMAT
-typedef enum TUNE_FORMAT {
+typedef enum TUNE_FORMAT
+{
     TUNE_FORMAT_QBASIC1_1 = 1, /* Format is QBasic 1.1 Play: https://www.qbasic.net/en/reference/qb11/Statement/PLAY-006.htm. | */
     TUNE_FORMAT_MML_MODERN = 2, /* Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML. | */
     TUNE_FORMAT_ENUM_END = 3, /*  | */
@@ -2055,7 +2166,8 @@ typedef enum TUNE_FORMAT {
 /** @brief Component capability flags (Bitmap) */
 #ifndef HAVE_ENUM_COMPONENT_CAP_FLAGS
 #define HAVE_ENUM_COMPONENT_CAP_FLAGS
-typedef enum COMPONENT_CAP_FLAGS {
+typedef enum COMPONENT_CAP_FLAGS
+{
     COMPONENT_CAP_FLAGS_PARAM = 1, /* Component has parameters, and supports the parameter protocol (PARAM messages). | */
     COMPONENT_CAP_FLAGS_PARAM_EXT = 2, /* Component has parameters, and supports the extended parameter protocol (PARAM_EXT messages). | */
     COMPONENT_CAP_FLAGS_ENUM_END = 3, /*  | */
@@ -2065,7 +2177,8 @@ typedef enum COMPONENT_CAP_FLAGS {
 /** @brief Type of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html */
 #ifndef HAVE_ENUM_AIS_TYPE
 #define HAVE_ENUM_AIS_TYPE
-typedef enum AIS_TYPE {
+typedef enum AIS_TYPE
+{
     AIS_TYPE_UNKNOWN = 0, /* Not available (default). | */
     AIS_TYPE_RESERVED_1 = 1, /*  | */
     AIS_TYPE_RESERVED_2 = 2, /*  | */
@@ -2173,7 +2286,8 @@ typedef enum AIS_TYPE {
 /** @brief Navigational status of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html */
 #ifndef HAVE_ENUM_AIS_NAV_STATUS
 #define HAVE_ENUM_AIS_NAV_STATUS
-typedef enum AIS_NAV_STATUS {
+typedef enum AIS_NAV_STATUS
+{
     UNDER_WAY = 0, /* Under way using engine. | */
     AIS_NAV_ANCHORED = 1, /*  | */
     AIS_NAV_UN_COMMANDED = 2, /*  | */
@@ -2197,7 +2311,8 @@ typedef enum AIS_NAV_STATUS {
 /** @brief These flags are used in the AIS_VESSEL.fields bitmask to indicate validity of data in the other message fields. When set, the data is valid. */
 #ifndef HAVE_ENUM_AIS_FLAGS
 #define HAVE_ENUM_AIS_FLAGS
-typedef enum AIS_FLAGS {
+typedef enum AIS_FLAGS
+{
     AIS_FLAGS_POSITION_ACCURACY = 1, /* 1 = Position accuracy less than 10m, 0 = position accuracy greater than 10m. | */
     AIS_FLAGS_VALID_COG = 2, /*  | */
     AIS_FLAGS_VALID_VELOCITY = 4, /*  | */
@@ -2218,7 +2333,8 @@ typedef enum AIS_FLAGS {
 /** @brief List of possible units where failures can be injected. */
 #ifndef HAVE_ENUM_FAILURE_UNIT
 #define HAVE_ENUM_FAILURE_UNIT
-typedef enum FAILURE_UNIT {
+typedef enum FAILURE_UNIT
+{
     FAILURE_UNIT_SENSOR_GYRO = 0, /*  | */
     FAILURE_UNIT_SENSOR_ACCEL = 1, /*  | */
     FAILURE_UNIT_SENSOR_MAG = 2, /*  | */
@@ -2241,7 +2357,8 @@ typedef enum FAILURE_UNIT {
 /** @brief List of possible failure type to inject. */
 #ifndef HAVE_ENUM_FAILURE_TYPE
 #define HAVE_ENUM_FAILURE_TYPE
-typedef enum FAILURE_TYPE {
+typedef enum FAILURE_TYPE
+{
     FAILURE_TYPE_OK = 0, /* No failure injected, used to reset a previous failure. | */
     FAILURE_TYPE_OFF = 1, /* Sets unit off, so completely non-responsive. | */
     FAILURE_TYPE_STUCK = 2, /* Unit is stuck e.g. keeps reporting the same value. | */
@@ -2257,7 +2374,8 @@ typedef enum FAILURE_TYPE {
 /** @brief Winch status flags used in WINCH_STATUS */
 #ifndef HAVE_ENUM_MAV_WINCH_STATUS_FLAG
 #define HAVE_ENUM_MAV_WINCH_STATUS_FLAG
-typedef enum MAV_WINCH_STATUS_FLAG {
+typedef enum MAV_WINCH_STATUS_FLAG
+{
     MAV_WINCH_STATUS_HEALTHY = 1, /* Winch is healthy | */
     MAV_WINCH_STATUS_FULLY_RETRACTED = 2, /* Winch thread is fully retracted | */
     MAV_WINCH_STATUS_MOVING = 4, /* Winch motor is moving | */

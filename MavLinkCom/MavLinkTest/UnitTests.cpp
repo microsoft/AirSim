@@ -159,7 +159,6 @@ public:
         stream = std::make_shared<MavLinkVideoServer>(1, 1);
         stream->connect(con);
         con->subscribe([&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
-
             MavLinkVideoServer::MavLinkVideoRequest req;
             if (stream->hasVideoRequest(req)) {
                 printf("    server received request for video at %f frames every second\n", req.every_n_sec);
@@ -187,7 +186,6 @@ void UnitTests::SendImageTest()
     std::shared_ptr<MavLinkTcpServer> server = std::make_shared<MavLinkTcpServer>(testAddr, testPort);
 
     std::future<int> future = std::async(std::launch::async, [=] {
-
         // this is the server code, it will accept 1 connection from a client on port 14588
         // for this unit test we are expecting a request to send an image.
         auto con = server->acceptTcp("test");

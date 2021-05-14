@@ -1314,7 +1314,6 @@ int console(std::stringstream& script)
     cmdTable.push_back(new WaitForAltitudeCommand());
 
     droneConnection->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
-
         MavLinkStatustext statustext;
         if (inLogFile != nullptr && inLogFile->isOpen()) {
             std::lock_guard<std::mutex> lock(logLock);

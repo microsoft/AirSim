@@ -205,46 +205,45 @@ namespace ansi
     // http://vt100.net/docs/vt220-rm/table2-4.html
     // Some of these may not look right, depending on the font and code page (in
     // particular, the Control Pictures probably won't work at all).
-    const WCHAR G1[] =
-        {
-            ' ', // _ - blank
-            L'\x2666', // ` - Black Diamond Suit
-            L'\x2592', // a - Medium Shade
-            L'\x2409', // b - HT
-            L'\x240c', // c - FF
-            L'\x240d', // d - CR
-            L'\x240a', // e - LF
-            L'\x00b0', // f - Degree Sign
-            L'\x00b1', // g - Plus-Minus Sign
-            L'\x2424', // h - NL
-            L'\x240b', // i - VT
-            L'\x2518', // j - Box Drawings Light Up And Left
-            L'\x2510', // k - Box Drawings Light Down And Left
-            L'\x250c', // l - Box Drawings Light Down And Right
-            L'\x2514', // m - Box Drawings Light Up And Right
-            L'\x253c', // n - Box Drawings Light Vertical And Horizontal
-            L'\x00af', // o - SCAN 1 - Macron
-            L'\x25ac', // p - SCAN 3 - Black Rectangle
-            L'\x2500', // q - SCAN 5 - Box Drawings Light Horizontal
-            L'_', // r - SCAN 7 - Low Line
-            L'_', // s - SCAN 9 - Low Line
-            L'\x251c', // t - Box Drawings Light Vertical And Right
-            L'\x2524', // u - Box Drawings Light Vertical And Left
-            L'\x2534', // v - Box Drawings Light Up And Horizontal
-            L'\x252c', // w - Box Drawings Light Down And Horizontal
-            L'\x2502', // x - Box Drawings Light Vertical
-            L'\x2264', // y - Less-Than Or Equal To
-            L'\x2265', // z - Greater-Than Or Equal To
-            L'\x03c0', // { - Greek Small Letter Pi
-            L'\x2260', // | - Not Equal To
-            L'\x00a3', // } - Pound Sign
-            L'\x00b7', // ~ - Middle Dot
-        };
+    const WCHAR G1[] = {
+        ' ', // _ - blank
+        L'\x2666', // ` - Black Diamond Suit
+        L'\x2592', // a - Medium Shade
+        L'\x2409', // b - HT
+        L'\x240c', // c - FF
+        L'\x240d', // d - CR
+        L'\x240a', // e - LF
+        L'\x00b0', // f - Degree Sign
+        L'\x00b1', // g - Plus-Minus Sign
+        L'\x2424', // h - NL
+        L'\x240b', // i - VT
+        L'\x2518', // j - Box Drawings Light Up And Left
+        L'\x2510', // k - Box Drawings Light Down And Left
+        L'\x250c', // l - Box Drawings Light Down And Right
+        L'\x2514', // m - Box Drawings Light Up And Right
+        L'\x253c', // n - Box Drawings Light Vertical And Horizontal
+        L'\x00af', // o - SCAN 1 - Macron
+        L'\x25ac', // p - SCAN 3 - Black Rectangle
+        L'\x2500', // q - SCAN 5 - Box Drawings Light Horizontal
+        L'_', // r - SCAN 7 - Low Line
+        L'_', // s - SCAN 9 - Low Line
+        L'\x251c', // t - Box Drawings Light Vertical And Right
+        L'\x2524', // u - Box Drawings Light Vertical And Left
+        L'\x2534', // v - Box Drawings Light Up And Horizontal
+        L'\x252c', // w - Box Drawings Light Down And Horizontal
+        L'\x2502', // x - Box Drawings Light Vertical
+        L'\x2264', // y - Less-Than Or Equal To
+        L'\x2265', // z - Greater-Than Or Equal To
+        L'\x03c0', // { - Greek Small Letter Pi
+        L'\x2260', // | - Not Equal To
+        L'\x00a3', // } - Pound Sign
+        L'\x00b7', // ~ - Middle Dot
+    };
 
 #define FIRST_G1 '_'
 #define LAST_G1 '~'
 
-// color constants
+    // color constants
 
 #define FOREGROUND_BLACK 0
 #define FOREGROUND_WHITE FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
@@ -252,29 +251,27 @@ namespace ansi
 #define BACKGROUND_BLACK 0
 #define BACKGROUND_WHITE BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
 
-    const BYTE foregroundcolor[8] =
-        {
-            FOREGROUND_BLACK, // black foreground
-            FOREGROUND_RED, // red foreground
-            FOREGROUND_GREEN, // green foreground
-            FOREGROUND_RED | FOREGROUND_GREEN, // yellow foreground
-            FOREGROUND_BLUE, // blue foreground
-            FOREGROUND_BLUE | FOREGROUND_RED, // magenta foreground
-            FOREGROUND_BLUE | FOREGROUND_GREEN, // cyan foreground
-            FOREGROUND_WHITE // white foreground
-        };
+    const BYTE foregroundcolor[8] = {
+        FOREGROUND_BLACK, // black foreground
+        FOREGROUND_RED, // red foreground
+        FOREGROUND_GREEN, // green foreground
+        FOREGROUND_RED | FOREGROUND_GREEN, // yellow foreground
+        FOREGROUND_BLUE, // blue foreground
+        FOREGROUND_BLUE | FOREGROUND_RED, // magenta foreground
+        FOREGROUND_BLUE | FOREGROUND_GREEN, // cyan foreground
+        FOREGROUND_WHITE // white foreground
+    };
 
-    const BYTE backgroundcolor[8] =
-        {
-            BACKGROUND_BLACK, // black background
-            BACKGROUND_RED, // red background
-            BACKGROUND_GREEN, // green background
-            BACKGROUND_RED | BACKGROUND_GREEN, // yellow background
-            BACKGROUND_BLUE, // blue background
-            BACKGROUND_BLUE | BACKGROUND_RED, // magenta background
-            BACKGROUND_BLUE | BACKGROUND_GREEN, // cyan background
-            BACKGROUND_WHITE, // white background
-        };
+    const BYTE backgroundcolor[8] = {
+        BACKGROUND_BLACK, // black background
+        BACKGROUND_RED, // red background
+        BACKGROUND_GREEN, // green background
+        BACKGROUND_RED | BACKGROUND_GREEN, // yellow background
+        BACKGROUND_BLUE, // blue background
+        BACKGROUND_BLUE | BACKGROUND_RED, // magenta background
+        BACKGROUND_BLUE | BACKGROUND_GREEN, // cyan background
+        BACKGROUND_WHITE, // white background
+    };
 
     const BYTE attr2ansi[8] = // map console attribute to ANSI number
         {
@@ -293,7 +290,7 @@ namespace ansi
     // saved cursor position
     COORD SavePos;
 
-// ========== Print Buffer functions
+    // ========== Print Buffer functions
 
 #define BUFFER_SIZE 2048
 

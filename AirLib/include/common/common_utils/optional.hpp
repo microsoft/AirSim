@@ -115,7 +115,7 @@ namespace experimental
     template <typename T>
     using is_trivially_destructible = std::has_trivial_destructor<T>;
 #endif
-// END workaround for missing is_trivially_destructible
+    // END workaround for missing is_trivially_destructible
 
 #if (defined TR2_OPTIONAL_GCC_4_7_AND_HIGHER___)
 // leave it; our metafunctions are already defined.
@@ -170,7 +170,7 @@ namespace experimental
 
         constexpr static bool value = has_nothrow_move_assign<T, is_assignable<T&, T&&>::value>::value;
     };
-// end workaround
+    // end workaround
 
 #endif
 
@@ -396,7 +396,7 @@ namespace experimental
         constexpr const T* dataptr() const { return detail_::static_addressof(OptionalBase<T>::storage_.value_); }
 
 #if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
-        constexpr const T& contained_val() const &
+        constexpr const T& contained_val() const&
         {
             return OptionalBase<T>::storage_.value_;
         }
@@ -583,7 +583,7 @@ namespace experimental
             return dataptr();
         }
 
-        constexpr T const& operator*() const &
+        constexpr T const& operator*() const&
         {
             return TR2_OPTIONAL_ASSERTED_EXPRESSION(initialized(), contained_val());
         }
@@ -600,7 +600,7 @@ namespace experimental
             return constexpr_move(contained_val());
         }
 
-        constexpr T const& value() const &
+        constexpr T const& value() const&
         {
             return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
         }
@@ -650,7 +650,7 @@ namespace experimental
 #if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
 
         template <class V>
-        constexpr T value_or(V&& v) const &
+        constexpr T value_or(V&& v) const&
         {
             return *this ? **this : detail_::convert<T>(constexpr_forward<V>(v));
         }
@@ -797,7 +797,8 @@ namespace experimental
     template <class T>
     constexpr bool operator==(const optional<T>& x, const optional<T>& y)
     {
-        return bool(x) != bool(y) ? false : bool(x) == false ? true : *x == *y;
+        return bool(x) != bool(y) ? false : bool(x) == false ? true
+                                                             : *x == *y;
     }
 
     template <class T>
@@ -809,7 +810,8 @@ namespace experimental
     template <class T>
     constexpr bool operator<(const optional<T>& x, const optional<T>& y)
     {
-        return (!y) ? false : (!x) ? true : *x < *y;
+        return (!y) ? false : (!x) ? true
+                                   : *x < *y;
     }
 
     template <class T>

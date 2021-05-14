@@ -128,7 +128,8 @@ MAVPACKED(
     })
 mavlink_message_t;
 
-typedef enum {
+typedef enum
+{
     MAVLINK_TYPE_CHAR = 0,
     MAVLINK_TYPE_UINT8_T = 1,
     MAVLINK_TYPE_INT8_T = 2,
@@ -171,7 +172,8 @@ typedef struct __mavlink_message_info
 #define mavlink_ck_a(msg) *((msg)->len + (uint8_t*)_MAV_PAYLOAD_NON_CONST(msg))
 #define mavlink_ck_b(msg) *(((msg)->len + (uint16_t)1) + (uint8_t*)_MAV_PAYLOAD_NON_CONST(msg))
 
-typedef enum {
+typedef enum
+{
     MAVLINK_COMM_0,
     MAVLINK_COMM_1,
     MAVLINK_COMM_2,
@@ -191,7 +193,8 @@ typedef enum {
 #endif
 #endif
 
-typedef enum {
+typedef enum
+{
     MAVLINK_PARSE_STATE_UNINIT = 0,
     MAVLINK_PARSE_STATE_IDLE,
     MAVLINK_PARSE_STATE_GOT_STX,
@@ -210,7 +213,8 @@ typedef enum {
     MAVLINK_PARSE_STATE_SIGNATURE_WAIT
 } mavlink_parse_state_t; ///< The state machine for the comm parser
 
-typedef enum {
+typedef enum
+{
     MAVLINK_FRAMING_INCOMPLETE = 0,
     MAVLINK_FRAMING_OK = 1,
     MAVLINK_FRAMING_BAD_CRC = 2,

@@ -21,7 +21,6 @@ bool WorldSimApi::loadLevel(const std::string& level_name)
     simmode_->toggleLoadingScreen(true);
     std::this_thread::sleep_for(0.1s);
     UAirBlueprintLib::RunCommandOnGameThread([this, level_name]() {
-
         this->current_level_ = UAirBlueprintLib::loadLevel(this->simmode_->GetWorld(), FString(level_name.c_str()));
     },
                                              true);

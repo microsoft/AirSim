@@ -523,7 +523,7 @@ namespace bmp
 
         inline void invert_color_planes()
         {
-            for (unsigned char *itr = data(); itr < end(); *itr = ~(*itr), ++itr)
+            for (unsigned char* itr = data(); itr < end(); *itr = ~(*itr), ++itr)
                 ;
         }
 
@@ -634,7 +634,7 @@ namespace bmp
 
         inline void export_color_plane(const color_plane color, unsigned char* image)
         {
-            for (unsigned char *itr = (data() + offset(color)); itr < end(); ++image, itr += bytes_per_pixel_) {
+            for (unsigned char* itr = (data() + offset(color)); itr < end(); ++image, itr += bytes_per_pixel_) {
                 (*image) = (*itr);
             }
         }
@@ -665,7 +665,7 @@ namespace bmp
         {
             double* resp_itr = response_image;
 
-            for (unsigned char *itr = (data() + offset(color)); itr < end(); ++response_image, itr += bytes_per_pixel_) {
+            for (unsigned char* itr = (data() + offset(color)); itr < end(); ++response_image, itr += bytes_per_pixel_) {
                 *(resp_itr++) = (1.0 * (*itr)) / 256.0;
             }
         }
@@ -689,7 +689,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (const unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (const unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 (*blue) = (1.0 * (*(itr++))) / 256.0;
                 (*green) = (1.0 * (*(itr++))) / 256.0;
                 (*red) = (1.0 * (*(itr++))) / 256.0;
@@ -701,7 +701,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (const unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (const unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 (*blue) = (1.0f * (*(itr++))) / 256.0f;
                 (*green) = (1.0f * (*(itr++))) / 256.0f;
                 (*red) = (1.0f * (*(itr++))) / 256.0f;
@@ -713,7 +713,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (const unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (const unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 (*blue) = *(itr++);
                 (*green) = *(itr++);
                 (*red) = *(itr++);
@@ -725,7 +725,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (const unsigned char *itr = data(); itr < end(); ++y, ++cb, ++cr) {
+            for (const unsigned char* itr = data(); itr < end(); ++y, ++cb, ++cr) {
                 const double blue = (1.0 * (*(itr++)));
                 const double green = (1.0 * (*(itr++)));
                 const double red = (1.0 * (*(itr++)));
@@ -741,7 +741,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (const unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (const unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 (*blue) = (1.0 * (*(itr++)));
                 (*green) = (1.0 * (*(itr++)));
                 (*red) = (1.0 * (*(itr++)));
@@ -753,7 +753,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (const unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (const unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 (*blue) = (1.0f * (*(itr++)));
                 (*green) = (1.0f * (*(itr++)));
                 (*red) = (1.0f * (*(itr++)));
@@ -765,7 +765,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 *(itr++) = static_cast<unsigned char>(256.0 * (*blue));
                 *(itr++) = static_cast<unsigned char>(256.0 * (*green));
                 *(itr++) = static_cast<unsigned char>(256.0 * (*red));
@@ -777,7 +777,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 *(itr++) = static_cast<unsigned char>(256.0f * (*blue));
                 *(itr++) = static_cast<unsigned char>(256.0f * (*green));
                 *(itr++) = static_cast<unsigned char>(256.0f * (*red));
@@ -789,7 +789,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 *(itr++) = (*blue);
                 *(itr++) = (*green);
                 *(itr++) = (*red);
@@ -801,7 +801,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (unsigned char *itr = data(); itr < end(); ++y, ++cb, ++cr) {
+            for (unsigned char* itr = data(); itr < end(); ++y, ++cb, ++cr) {
                 double y_ = (*y);
                 double cb_ = (*cb);
                 double cr_ = (*cr);
@@ -833,7 +833,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 *(itr++) = static_cast<unsigned char>(clamp<double>(256.0 * (*blue), 0.0, 255.0));
                 *(itr++) = static_cast<unsigned char>(clamp<double>(256.0 * (*green), 0.0, 255.0));
                 *(itr++) = static_cast<unsigned char>(clamp<double>(256.0 * (*red), 0.0, 255.0));
@@ -845,7 +845,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 *(itr++) = static_cast<unsigned char>(clamp<double>(256.0f * (*blue), 0.0, 255.0));
                 *(itr++) = static_cast<unsigned char>(clamp<double>(256.0f * (*green), 0.0, 255.0));
                 *(itr++) = static_cast<unsigned char>(clamp<double>(256.0f * (*red), 0.0, 255.0));
@@ -857,7 +857,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 *(itr++) = static_cast<unsigned char>(*blue);
                 *(itr++) = static_cast<unsigned char>(*green);
                 *(itr++) = static_cast<unsigned char>(*red);
@@ -869,7 +869,7 @@ namespace bmp
             if (bgr_mode != channel_mode_)
                 return;
 
-            for (unsigned char *itr = data(); itr < end(); ++red, ++green, ++blue) {
+            for (unsigned char* itr = data(); itr < end(); ++red, ++green, ++blue) {
                 *(itr++) = static_cast<unsigned char>(*blue);
                 *(itr++) = static_cast<unsigned char>(*green);
                 *(itr++) = static_cast<unsigned char>(*red);
@@ -1598,7 +1598,8 @@ namespace bmp
             for (std::size_t x = 0; x < resp_image.width(); ++x) {
                 const double v = resp_image(x, y);
 
-                unsigned int index = static_cast<unsigned int>((v < 0) ? 0 : v > (palette.size()) ? (palette.size() - 1) : v);
+                unsigned int index = static_cast<unsigned int>((v < 0) ? 0 : v > (palette.size()) ? (palette.size() - 1)
+                                                                                                  : v);
 
                 image.set_pixel(x, y, palette[index]);
             }
