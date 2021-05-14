@@ -57,7 +57,8 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
             "UseTcp": true,
             "TcpPort": 4560,
             "ControlIp": "remote",
-            "ControlPort": 14580,
+            "ControlPortLocal": 14540,
+            "ControlPortRemote": 14580,
             "LocalHostIp": "172.31.64.1",
             "Sensors":{
                 "Barometer":{
