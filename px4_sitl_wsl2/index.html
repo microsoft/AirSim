@@ -322,7 +322,7 @@ fix and set the following environment variable in linux:</p>
 <pre class="highlight"><code class="language-shell">export PX4_SIM_HOST_ADDR=172.31.64.1</code></pre>
 <p><strong>Note:</strong> Be sure to update the above address <code>172.31.64.1</code> to match what you see from your
 <code>ipconfig</code> command.</p>
-<p>Open incoming port 4560 using your Windows Firewall settings.</p>
+<p>Open incoming TCP port 4560 and incoming UDP port 14540 using your firewall configuration.</p>
 <p>Now on the linux side run <code>ip address show</code> and copy the <code>eth0 inet</code> address, it should be something
 like <code>172.31.66.156</code>.  This is the address Windows needs to know in order to find PX4.</p>
 <p>Edit your <a href="../settings/">AirSim settings</a> file and add <code>LocalHostIp</code> to tell AirSim to use the WSL
@@ -342,7 +342,8 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.</p>
             "UseTcp": true,
             "TcpPort": 4560,
             "ControlIp": "remote",
-            "ControlPort": 14580,
+            "ControlPortLocal": 14540,
+            "ControlPortRemote": 14580,
             "LocalHostIp": "172.31.64.1",
             "Sensors":{
                 "Barometer":{
