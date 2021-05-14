@@ -441,4 +441,4 @@ namespace std
 }
 
 // clang-format on
-#endif  // H_PRETTY_PRINT
+#endif // H_PRETTY_PRINT
