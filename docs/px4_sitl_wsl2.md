@@ -33,7 +33,7 @@ export PX4_SIM_HOST_ADDR=172.31.64.1
 **Note:** Be sure to update the above address `172.31.64.1` to match what you see from your
 `ipconfig` command.
 
-Open incoming port 4560 using your Windows Firewall settings.
+Open incoming TCP port 4560 and incoming UDP port 14540 using your firewall configuration.
 
 Now on the linux side run `ip address show` and copy the `eth0 inet` address, it should be something
 like `172.31.66.156`.  This is the address Windows needs to know in order to find PX4.
@@ -57,7 +57,8 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.
             "UseTcp": true,
             "TcpPort": 4560,
             "ControlIp": "remote",
-            "ControlPort": 14580,
+            "ControlPortLocal": 14540,
+            "ControlPortRemote": 14580,
             "LocalHostIp": "172.31.64.1",
             "Sensors":{
                 "Barometer":{
