@@ -16,7 +16,6 @@
 *
 *********************************************************/
 
-
 #ifndef __ctpl_stl_thread_pool_H__
 #define __ctpl_stl_thread_pool_H__
 // clang-format off
