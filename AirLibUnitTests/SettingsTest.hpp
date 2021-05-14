@@ -4,17 +4,20 @@
 #include "TestBase.hpp"
 #include "common/Settings.hpp"
 
-namespace msr { namespace airlib {
+namespace msr
+{
+namespace airlib
+{
 
-class SettingsTest : public TestBase {
-public:
-    virtual void run() override
+    class SettingsTest : public TestBase
     {
-        Settings& settings = Settings::loadJSonFile("settings.json");
-        unused(settings);
-    }
-};
-
-
-}}
+    public:
+        virtual void run() override
+        {
+            Settings& settings = Settings::loadJSonFile("settings.json");
+            unused(settings);
+        }
+    };
+}
+}
 #endif

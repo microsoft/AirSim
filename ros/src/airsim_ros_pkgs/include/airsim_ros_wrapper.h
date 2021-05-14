@@ -4,7 +4,7 @@ STRICT_MODE_OFF //todo what does this do?
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
 #include "rpc/rpc_error.h"
-STRICT_MODE_ON
+    STRICT_MODE_ON
 
 #include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
@@ -63,10 +63,10 @@ STRICT_MODE_ON
 #include <tf2/convert.h>
 #include <unordered_map>
 #include <memory>
-// #include "nodelet/nodelet.h"
+    // #include "nodelet/nodelet.h"
 
-// todo move airlib typedefs to separate header file?
-typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
+    // todo move airlib typedefs to separate header file?
+    typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
 typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
 typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
@@ -82,7 +82,8 @@ struct SimpleMatrix
 
     SimpleMatrix(int rows, int cols, double* data)
         : rows(rows), cols(cols), data(data)
-    {}
+    {
+    }
 };
 
 struct VelCmd
@@ -132,8 +133,8 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string & host_ip);
-    ~AirsimROSWrapper() {};
+    AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string& host_ip);
+    ~AirsimROSWrapper(){};
 
     void initialize_airsim();
     void initialize_ros();
@@ -174,7 +175,6 @@ private:
         std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec;
 
         ros::Time stamp;
-
 
         std::string odom_frame_id;
         /// Status
@@ -317,11 +317,11 @@ private:
 
     ros::ServiceServer reset_srvr_;
     ros::Publisher origin_geo_point_pub_; // home geo coord of drones
-    msr::airlib::GeoPoint origin_geo_point_;// gps coord of unreal origin
+    msr::airlib::GeoPoint origin_geo_point_; // gps coord of unreal origin
     airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
 
     AirSimSettingsParser airsim_settings_parser_;
-    std::unordered_map< std::string, std::unique_ptr< VehicleROS > > vehicle_name_ptr_map_;
+    std::unordered_map<std::string, std::unique_ptr<VehicleROS>> vehicle_name_ptr_map_;
     static const std::unordered_map<int, std::string> image_type_int_to_string_map_;
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
@@ -382,13 +382,12 @@ private:
     ros::Subscriber gimbal_angle_quat_cmd_sub_;
     ros::Subscriber gimbal_angle_euler_cmd_sub_;
 
-    static constexpr char CAM_YML_NAME[]    = "camera_name";
-    static constexpr char WIDTH_YML_NAME[]  = "image_width";
+    static constexpr char CAM_YML_NAME[] = "camera_name";
+    static constexpr char WIDTH_YML_NAME[] = "image_width";
     static constexpr char HEIGHT_YML_NAME[] = "image_height";
-    static constexpr char K_YML_NAME[]      = "camera_matrix";
-    static constexpr char D_YML_NAME[]      = "distortion_coefficients";
-    static constexpr char R_YML_NAME[]      = "rectification_matrix";
-    static constexpr char P_YML_NAME[]      = "projection_matrix";
+    static constexpr char K_YML_NAME[] = "camera_matrix";
+    static constexpr char D_YML_NAME[] = "distortion_coefficients";
+    static constexpr char R_YML_NAME[] = "rectification_matrix";
+    static constexpr char P_YML_NAME[] = "projection_matrix";
     static constexpr char DMODEL_YML_NAME[] = "distortion_model";
-
 };

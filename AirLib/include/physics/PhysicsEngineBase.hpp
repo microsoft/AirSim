@@ -8,25 +8,27 @@
 #include "common/Common.hpp"
 #include "PhysicsBody.hpp"
 
-namespace msr { namespace airlib {
-
-class PhysicsEngineBase : public UpdatableContainer<PhysicsBody*>
+namespace msr
 {
-public:
-    virtual void update() override
+namespace airlib
+{
+
+    class PhysicsEngineBase : public UpdatableContainer<PhysicsBody*>
     {
-        UpdatableObject::update();
-    }
+    public:
+        virtual void update() override
+        {
+            UpdatableObject::update();
+        }
 
-    virtual void reportState(StateReporter& reporter) override
-    {
-        unused(reporter);
-        //default nothing to report for physics engine
-    }
+        virtual void reportState(StateReporter& reporter) override
+        {
+            unused(reporter);
+            //default nothing to report for physics engine
+        }
 
-    virtual void setWind(const Vector3r& wind) { unused(wind); };
-};
-
-
-}} //namespace
+        virtual void setWind(const Vector3r& wind) { unused(wind); };
+    };
+}
+} //namespace
 #endif

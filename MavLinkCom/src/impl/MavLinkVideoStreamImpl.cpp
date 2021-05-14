@@ -6,7 +6,7 @@
 #include "Utils.hpp"
 #include "MavLinkMessages.hpp"
 
-#define PACKET_PAYLOAD 253	//hard coded in MavLink code - do not change
+#define PACKET_PAYLOAD 253 //hard coded in MavLink code - do not change
 
 using namespace mavlink_utils;
 
@@ -26,13 +26,12 @@ MavLinkVideoClientImpl::~MavLinkVideoClientImpl()
 void MavLinkVideoClientImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message)
 {
     unused(connection);
-    switch (message.msgid)
-    {
+    switch (message.msgid) {
     case MavLinkDataTransmissionHandshake::kMessageId: //MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE:
     {
         MavLinkDataTransmissionHandshake p;
         p.decode(message);
-        
+
         std::lock_guard<std::mutex> guard(state_mutex);
         incoming_image.size = p.size;
         incoming_image.packets = p.packets;
@@ -58,15 +57,13 @@ void MavLinkVideoClientImpl::handleMessage(std::shared_ptr<MavLinkConnection> co
         int pos = seq * incoming_image.payload;
 
         // Check if we have a valid transaction
-        if (incoming_image.packets == 0)
-        {
+        if (incoming_image.packets == 0) {
             incoming_image.packetsArrived = 0;
             Utils::log("Aborting image reception because of zero packets", Utils::kLogLevelWarn);
             break;
         }
 
-        for (int i = 0; i < incoming_image.payload; ++i)
-        {
+        for (int i = 0; i < incoming_image.payload; ++i) {
             if (pos < incoming_image.size) {
                 incoming_image.data[pos] = img.data[i];
             }
@@ -76,8 +73,7 @@ void MavLinkVideoClientImpl::handleMessage(std::shared_ptr<MavLinkConnection> co
         ++incoming_image.packetsArrived;
 
         // emit signal if all packets arrived
-        if (incoming_image.packetsArrived >= incoming_image.packets)
-        {
+        if (incoming_image.packetsArrived >= incoming_image.packets) {
             Utils::log(Utils::stringf("Image is available: %d packets arrived", incoming_image.packetsArrived));
 
             // Restart statemachine
@@ -96,7 +92,6 @@ bool MavLinkVideoClientImpl::readNextFrame(MavLinkVideoClient::MavLinkVideoFrame
 {
     return incoming_image.read(image);
 }
-
 
 //image APIs
 void MavLinkVideoClientImpl::requestVideo(int camera_id, float every_n_sec, bool save_locally)
@@ -123,17 +118,13 @@ MavLinkVideoServerImpl::~MavLinkVideoServerImpl()
 void MavLinkVideoServerImpl::handleMessage(std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message)
 {
     unused(connection);
-    switch (message.msgid)
-    {
-    case MavLinkCommandLong::kMessageId:
-    {
+    switch (message.msgid) {
+    case MavLinkCommandLong::kMessageId: {
         MavLinkCommandLong cmd;
         cmd.decode(message);
 
-        switch (static_cast<MAV_CMD>(cmd.command))
-        {
-        case MAV_CMD::MAV_CMD_DO_CONTROL_VIDEO:
-        {
+        switch (static_cast<MAV_CMD>(cmd.command)) {
+        case MAV_CMD::MAV_CMD_DO_CONTROL_VIDEO: {
             std::lock_guard<std::mutex> guard(state_mutex);
             image_request_.camera_id = static_cast<int>(cmd.param1);
             image_request_.every_n_sec = cmd.param2;
@@ -158,7 +149,8 @@ bool MavLinkVideoServerImpl::hasVideoRequest(MavLinkVideoServer::MavLinkVideoReq
         image_request_.valid = false;
         return true;
     }
-    else return false;
+    else
+        return false;
 }
 
 void MavLinkVideoServerImpl::sendFrame(uint8_t data[], uint32_t data_size, uint16_t width, uint16_t height, uint8_t image_type, uint8_t image_quality)
@@ -194,5 +186,4 @@ void MavLinkVideoServerImpl::sendFrame(uint8_t data[], uint32_t data_size, uint1
         packet.seqnr = i;
         sendMessage(packet);
     }
-
 }

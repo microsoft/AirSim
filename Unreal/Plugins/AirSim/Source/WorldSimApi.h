@@ -6,10 +6,11 @@
 #include "SimMode/SimModeBase.h"
 #include "Components/StaticMeshComponent.h"
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
-#include "Engine/LevelStreamingDynamic.h" 
+#include "Engine/LevelStreamingDynamic.h"
 #include <string>
 
-class WorldSimApi : public msr::airlib::WorldSimApiBase {
+class WorldSimApi : public msr::airlib::WorldSimApiBase
+{
 public:
     typedef msr::airlib::Pose Pose;
     typedef msr::airlib::Vector3r Vector3r;
@@ -19,7 +20,7 @@ public:
     virtual ~WorldSimApi() = default;
 
     virtual bool loadLevel(const std::string& level_name) override;
-    
+
     virtual std::string spawnObject(std::string& object_name, const std::string& load_name, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled) override;
     virtual bool destroyObject(const std::string& object_name) override;
 
@@ -30,7 +31,7 @@ public:
     virtual void continueForFrames(uint32_t frames) override;
 
     virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
-        float celestial_clock_speed, float update_interval_secs, bool move_sun);
+                              float celestial_clock_speed, float update_interval_secs, bool move_sun);
 
     virtual void enableWeather(bool enable);
     virtual void setWeatherParameter(WeatherParameter param, float val);
@@ -41,7 +42,7 @@ public:
     virtual bool addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "") override;
 
     virtual void printLogMessage(const std::string& message,
-        const std::string& message_param = "", unsigned char severity = 0) override;
+                                 const std::string& message_param = "", unsigned char severity = 0) override;
 
     virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) override;
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;

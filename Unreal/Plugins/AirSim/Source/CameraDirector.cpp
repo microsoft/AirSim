@@ -48,7 +48,7 @@ ECameraDirectorMode ACameraDirector::getMode()
 }
 
 void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode,
-    AActor* follow_actor, APIPCamera* fpv_camera, APIPCamera* front_camera, APIPCamera* back_camera)
+                                             AActor* follow_actor, APIPCamera* fpv_camera, APIPCamera* front_camera, APIPCamera* back_camera)
 {
     manual_pose_controller_ = NewObject<UManualPoseController>(this, "CameraDirector_ManualPoseController");
     manual_pose_controller_->initializeForPlay();
@@ -63,19 +63,35 @@ void ACameraDirector::initializeForBeginPlay(ECameraDirectorMode view_mode,
     backup_camera_ = back_camera;
     camera_start_location_ = ExternalCamera->GetActorLocation();
     camera_start_rotation_ = ExternalCamera->GetActorRotation();
-    initial_ground_obs_offset_ = camera_start_location_ - 
-        (follow_actor_ ? follow_actor_->GetActorLocation() : FVector::ZeroVector);
+    initial_ground_obs_offset_ = camera_start_location_ -
+                                 (follow_actor_ ? follow_actor_->GetActorLocation() : FVector::ZeroVector);
 
     //set initial view mode
     switch (mode_) {
-    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME: inputEventFlyWithView(); break;
-    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV: inputEventFpvView(); break;
-    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER: inputEventGroundView(); break;
-    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL: inputEventManualView(); break;
-    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE: inputEventSpringArmChaseView(); break;
-    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_BACKUP: inputEventBackupView(); break;
-    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY: inputEventNoDisplayView(); break;
-    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FRONT: inputEventFrontView(); break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME:
+        inputEventFlyWithView();
+        break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FPV:
+        inputEventFpvView();
+        break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_GROUND_OBSERVER:
+        inputEventGroundView();
+        break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL:
+        inputEventManualView();
+        break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE:
+        inputEventSpringArmChaseView();
+        break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_BACKUP:
+        inputEventBackupView();
+        break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY:
+        inputEventNoDisplayView();
+        break;
+    case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FRONT:
+        inputEventFrontView();
+        break;
     default:
         throw std::out_of_range("Unsupported view mode specified in CameraDirector::initializeForBeginPlay");
     }
@@ -103,7 +119,7 @@ void ACameraDirector::attachSpringArm(bool attach)
             ExternalCamera->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
         }
 
-        //For car, we need to move the camera back a little more than for a drone. 
+        //For car, we need to move the camera back a little more than for a drone.
         //Otherwise, the camera will be stuck inside the car
         ExternalCamera->SetActorRelativeLocation(FVector(follow_distance_ * 100.0f, 0.0f, 0.0f));
         ExternalCamera->SetActorRelativeRotation(FRotator(10.0f, 0.0f, 0.0f));
@@ -119,49 +135,48 @@ void ACameraDirector::attachSpringArm(bool attach)
 
 void ACameraDirector::setMode(ECameraDirectorMode mode)
 {
-    {   //first remove any settings done by previous mode
+    { //first remove any settings done by previous mode
 
         //detach spring arm
         if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE &&
-            mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE) 
-        {
+            mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE) {
             attachSpringArm(false);
         }
 
         // Re-enable rendering
         if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY &&
-            mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY)
-        {
+            mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY) {
             UAirBlueprintLib::enableViewportRendering(this, true);
         }
 
         //Remove any existing key bindings for manual mode
         if (mode != ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL) {
-            if (ExternalCamera != nullptr
-                && manual_pose_controller_->getActor() == ExternalCamera) {
+            if (ExternalCamera != nullptr && manual_pose_controller_->getActor() == ExternalCamera) {
 
                 manual_pose_controller_->setActor(nullptr);
             }
             //else someone else is bound to manual pose controller, leave it alone
         }
     }
-    
-    {   //perform any settings to enter in to this mode
+
+    { //perform any settings to enter in to this mode
 
         switch (mode) {
         case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_MANUAL:
             //if new mode is manual mode then add key bindings
-            manual_pose_controller_->setActor(ExternalCamera); break;
+            manual_pose_controller_->setActor(ExternalCamera);
+            break;
         case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_SPRINGARM_CHASE:
             //if we switched to spring arm mode then attach to spring arm (detachment was done earlier in method)
-            attachSpringArm(true); break;
+            attachSpringArm(true);
+            break;
         case ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY:
-            UAirBlueprintLib::enableViewportRendering(this, false); break;
+            UAirBlueprintLib::enableViewportRendering(this, false);
+            break;
         default:
             //other modes don't need special setup
             break;
         }
-
     }
 
     //make switch official
@@ -338,11 +353,12 @@ void ACameraDirector::notifyViewModeChanged()
     if (front_camera_)
         front_camera_->onViewModeChanged(nodisplay);
 
-    UWorld * world = GetWorld();
-    UGameViewportClient * gameViewport = world->GetGameViewport();
+    UWorld* world = GetWorld();
+    UGameViewportClient* gameViewport = world->GetGameViewport();
     if (mode_ == ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY) {
         gameViewport->bDisableWorldRendering = 1;
-    } else {
+    }
+    else {
         gameViewport->bDisableWorldRendering = 0;
     }
 }

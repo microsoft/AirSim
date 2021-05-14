@@ -9,11 +9,8 @@
 UCLASS()
 class UCarWheelFront : public UVehicleWheel
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UCarWheelFront();
+    UCarWheelFront();
 };
-
-
-

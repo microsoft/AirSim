@@ -5,29 +5,34 @@
 #include <memory>
 #include <string>
 
-class DirectInputJoyStick {
+class DirectInputJoyStick
+{
 public:
-    struct DIGUID {
-        unsigned long  Data1;
+    struct DIGUID
+    {
+        unsigned long Data1;
         unsigned short Data2;
         unsigned short Data3;
-        unsigned char  Data4[8];
+        unsigned char Data4[8];
     };
 
-    struct Capabilities {
+    struct Capabilities
+    {
         bool x_axis = false, y_axis = false, z_axis = false;
         bool rx_axis = false, ry_axis = false, rz_axis = false;
         bool slider0 = false, slider1 = false;
         bool pov0 = false, pov1 = false, pov2 = false, pov3 = false;
     };
 
-    struct JoystickInfo {
+    struct JoystickInfo
+    {
         DIGUID instance_guide;
         std::string pid_vid;
         bool is_valid = false;
     };
 
-    struct JoystickState {
+    struct JoystickState
+    {
         long x = 0, y = 0, z = 0;
         long rx = 0, ry = 0, rz = 0;
         long slider0 = 0, slider1 = 0;

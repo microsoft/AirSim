@@ -8,14 +8,13 @@
 using namespace mavlinkcom;
 using namespace mavlink_utils;
 
-#define MAVLINK_STX_MAVLINK1 0xFE          // marker for old protocol
-#define MAVLINK_STX 253					// marker for mavlink 2
+#define MAVLINK_STX_MAVLINK1 0xFE // marker for old protocol
+#define MAVLINK_STX 253 // marker for mavlink 2
 
 uint64_t MavLinkFileLog::getTimeStamp()
 {
     return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 }
-
 
 MavLinkFileLog::MavLinkFileLog()
 {
@@ -77,7 +76,6 @@ void MavLinkFileLog::close()
     reading_ = false;
     writing_ = false;
 }
-
 
 uint64_t FlipEndianness(uint64_t v)
 {
@@ -162,7 +160,7 @@ bool MavLinkFileLog::read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp)
 
         size_t s = fread(&time, 1, sizeof(uint64_t), ptr_);
         if (s < sizeof(uint64_t)) {
-            int hr = errno;            
+            int hr = errno;
             return false;
         }
 

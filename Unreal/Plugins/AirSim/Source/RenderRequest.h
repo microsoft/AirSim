@@ -8,22 +8,23 @@
 #include <memory>
 #include "common/Common.hpp"
 
-
 class RenderRequest : public FRenderCommand
 {
 public:
-    struct RenderParams {
-        USceneCaptureComponent2D * const render_component;
+    struct RenderParams
+    {
+        USceneCaptureComponent2D* const render_component;
         UTextureRenderTarget2D* render_target;
         bool pixels_as_float;
         bool compress;
 
-        RenderParams(USceneCaptureComponent2D * render_component_val, UTextureRenderTarget2D* render_target_val, bool pixels_as_float_val, bool compress_val)
+        RenderParams(USceneCaptureComponent2D* render_component_val, UTextureRenderTarget2D* render_target_val, bool pixels_as_float_val, bool compress_val)
             : render_component(render_component_val), render_target(render_target_val), pixels_as_float(pixels_as_float_val), compress(compress_val)
         {
         }
     };
-    struct RenderResult {
+    struct RenderResult
+    {
         TArray<uint8> image_data_uint8;
         TArray<float> image_data_float;
 
@@ -46,18 +47,18 @@ private:
     std::shared_ptr<msr::airlib::WorkerThreadSignal> wait_signal_;
 
     bool saved_DisableWorldRendering_ = false;
-    UGameViewportClient * const game_viewport_;
+    UGameViewportClient* const game_viewport_;
     FDelegateHandle end_draw_handle_;
     std::function<void()> query_camera_pose_cb_;
 
 public:
-    RenderRequest(UGameViewportClient * game_viewport, std::function<void()>&& query_camera_pose_cb);
+    RenderRequest(UGameViewportClient* game_viewport, std::function<void()>&& query_camera_pose_cb);
     ~RenderRequest();
 
     void DoTask(ENamedThreads::Type CurrentThread, const FGraphEventRef& MyCompletionGraphEvent)
     {
         ExecuteTask();
-    } 
+    }
 
     FORCEINLINE TStatId GetStatId() const
     {

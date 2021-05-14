@@ -11,9 +11,10 @@
 #include <string>
 #include <future>
 
-namespace mavlinkcom {
+namespace mavlinkcom
+{
 
-template<class T>
+template <class T>
 class AsyncResultState
 {
 public:
@@ -32,8 +33,8 @@ public:
     ~AsyncResultState()
     {
         complete();
-    }        
-        
+    }
+
     int getState()
     {
         return state_;
@@ -76,8 +77,8 @@ public:
     bool isCompleted() { return completed_; }
 };
 
-template<class T>
-class AsyncResult 
+template <class T>
+class AsyncResult
 {
 public:
     typedef std::function<void(T result)> ResultHandler;
@@ -87,7 +88,7 @@ public:
     {
         state_ = std::make_shared<AsyncResultState<T>>(owner);
     }
-    ~AsyncResult() 
+    ~AsyncResult()
     {
         state_ = nullptr;
     }
@@ -168,8 +169,6 @@ private:
     {
         return state->getResult();
     }
-
-
 
     std::shared_ptr<AsyncResultState<T>> state_;
 };

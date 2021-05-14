@@ -31,6 +31,3 @@ void UnrealSensorFactory::setActor(AActor* actor, const NedTransform* ned_transf
     actor_ = actor;
     ned_transform_ = ned_transform;
 }
-
-
-

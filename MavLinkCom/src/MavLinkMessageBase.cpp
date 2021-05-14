@@ -10,7 +10,6 @@ STRICT_MODE_OFF
 #include "../mavlink/mavlink_helpers.h"
 STRICT_MODE_ON
 
-
 #include "MavLinkConnection.hpp"
 #include "MavLinkMessageBase.hpp"
 #include "Utils.hpp"
@@ -22,7 +21,7 @@ using namespace mavlinkcom;
 
 int MavLinkMessage::update_checksum()
 {
-    bool mavlink1 = protocol_version != 2;    
+    bool mavlink1 = protocol_version != 2;
     uint8_t header_len = MAVLINK_CORE_HEADER_LEN + 1;
     uint8_t buf[MAVLINK_CORE_HEADER_LEN + 1];
     if (mavlink1) {
@@ -96,7 +95,8 @@ void MavLinkMessageBase::decode(const MavLinkMessage& msg)
     unpack(reinterpret_cast<const char*>(msg.payload64));
 }
 
-void MavLinkMessageBase::encode(MavLinkMessage& msg) const {
+void MavLinkMessageBase::encode(MavLinkMessage& msg) const
+{
 
     msg.msgid = this->msgid;
     msg.sysid = this->sysid;
@@ -106,7 +106,6 @@ void MavLinkMessageBase::encode(MavLinkMessage& msg) const {
     int len = this->pack(reinterpret_cast<char*>(msg.payload64));
     msg.len = len;
 }
-
 
 void MavLinkMessageBase::pack_uint8_t(char* buffer, const uint8_t* field, int offset) const
 {
@@ -195,36 +194,34 @@ void MavLinkMessageBase::pack_float_array(int len, char* buffer, const float* fi
     STRICT_MODE_ON
 }
 
-
 #if MAVLINK_NEED_BYTE_SWAP
-#define _mav_get_uint16_t(buf, wire_offset, b) byte_swap_2(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_int16_t(buf, wire_offset, b)  byte_swap_2(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_uint32_t(buf, wire_offset, b) byte_swap_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_int32_t(buf, wire_offset, b)  byte_swap_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_uint64_t(buf, wire_offset, b) byte_swap_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_int64_t(buf, wire_offset, b)  byte_swap_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_float(buf, wire_offset, b)    byte_swap_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_double(buf, wire_offset, b)   byte_swap_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#elif !MAVLINK_ALIGNED_FIELDS											  
-#define _mav_get_uint16_t(buf, wire_offset, b) byte_copy_2(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_int16_t(buf, wire_offset, b)  byte_copy_2(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_uint32_t(buf, wire_offset, b) byte_copy_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_int32_t(buf, wire_offset, b)  byte_copy_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_uint64_t(buf, wire_offset, b) byte_copy_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_int64_t(buf, wire_offset, b)  byte_copy_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_float(buf, wire_offset, b)    byte_copy_4(reinterpret_cast<char *>(b),&buf[wire_offset], )
-#define _mav_get_double(buf, wire_offset, b)   byte_copy_8(reinterpret_cast<char *>(b),&buf[wire_offset], )
+#define _mav_get_uint16_t(buf, wire_offset, b) byte_swap_2(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_int16_t(buf, wire_offset, b) byte_swap_2(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_uint32_t(buf, wire_offset, b) byte_swap_4(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_int32_t(buf, wire_offset, b) byte_swap_4(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_uint64_t(buf, wire_offset, b) byte_swap_8(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_int64_t(buf, wire_offset, b) byte_swap_8(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_float(buf, wire_offset, b) byte_swap_4(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_double(buf, wire_offset, b) byte_swap_8(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#elif !MAVLINK_ALIGNED_FIELDS
+#define _mav_get_uint16_t(buf, wire_offset, b) byte_copy_2(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_int16_t(buf, wire_offset, b) byte_copy_2(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_uint32_t(buf, wire_offset, b) byte_copy_4(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_int32_t(buf, wire_offset, b) byte_copy_4(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_uint64_t(buf, wire_offset, b) byte_copy_8(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_int64_t(buf, wire_offset, b) byte_copy_8(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_float(buf, wire_offset, b) byte_copy_4(reinterpret_cast<char*>(b), &buf[wire_offset], )
+#define _mav_get_double(buf, wire_offset, b) byte_copy_8(reinterpret_cast<char*>(b), &buf[wire_offset], )
 #else
-#define _mav_get_uint16_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint16_t *>(&buf[wire_offset])
-#define _mav_get_int16_t(buf, wire_offset, b)  *b = *reinterpret_cast<const int16_t * >(&buf[wire_offset])
-#define _mav_get_uint32_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint32_t *>(&buf[wire_offset])
-#define _mav_get_int32_t(buf, wire_offset, b)  *b = *reinterpret_cast<const int32_t * >(&buf[wire_offset])
-#define _mav_get_uint64_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint64_t *>(&buf[wire_offset])
-#define _mav_get_int64_t(buf, wire_offset, b)  *b = *reinterpret_cast<const int64_t * >(&buf[wire_offset])
-#define _mav_get_float(buf, wire_offset, b)    *b = *reinterpret_cast<const float *   >(&buf[wire_offset])
-#define _mav_get_double(buf, wire_offset, b)   *b = *reinterpret_cast<const double *  >(&buf[wire_offset])
+#define _mav_get_uint16_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint16_t*>(&buf[wire_offset])
+#define _mav_get_int16_t(buf, wire_offset, b) *b = *reinterpret_cast<const int16_t*>(&buf[wire_offset])
+#define _mav_get_uint32_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint32_t*>(&buf[wire_offset])
+#define _mav_get_int32_t(buf, wire_offset, b) *b = *reinterpret_cast<const int32_t*>(&buf[wire_offset])
+#define _mav_get_uint64_t(buf, wire_offset, b) *b = *reinterpret_cast<const uint64_t*>(&buf[wire_offset])
+#define _mav_get_int64_t(buf, wire_offset, b) *b = *reinterpret_cast<const int64_t*>(&buf[wire_offset])
+#define _mav_get_float(buf, wire_offset, b) *b = *reinterpret_cast<const float*>(&buf[wire_offset])
+#define _mav_get_double(buf, wire_offset, b) *b = *reinterpret_cast<const double*>(&buf[wire_offset])
 #endif
-
 
 void MavLinkMessageBase::unpack_uint8_t(const char* buffer, uint8_t* field, int offset)
 {
@@ -299,7 +296,8 @@ void MavLinkMessageBase::unpack_float_array(int len, const char* buffer, float* 
     }
 }
 
-int MavLinkTelemetry::pack(char* buffer) const {
+int MavLinkTelemetry::pack(char* buffer) const
+{
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messages_sent), 0);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messages_received), 4);
     pack_int32_t(buffer, reinterpret_cast<const int32_t*>(&this->messages_handled), 8);
@@ -315,7 +313,8 @@ int MavLinkTelemetry::pack(char* buffer) const {
     return MavLinkTelemetry::MessageLength;
 }
 
-int MavLinkTelemetry::unpack(const char* buffer) {
+int MavLinkTelemetry::unpack(const char* buffer)
+{
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messages_sent), 0);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messages_received), 4);
     unpack_int32_t(buffer, reinterpret_cast<int32_t*>(&this->messages_handled), 8);
@@ -334,14 +333,14 @@ int MavLinkTelemetry::unpack(const char* buffer) {
 std::string MavLinkMessageBase::char_array_tostring(int len, const char* field)
 {
     int i = 0;
-    for (i= 0; i < len; i++) {
+    for (i = 0; i < len; i++) {
         if (field[i] == '\0')
             break;
     }
     return std::string(field, i);
 }
 
-std::string MavLinkMessageBase::float_tostring(float value) 
+std::string MavLinkMessageBase::float_tostring(float value)
 {
     // json can't handle "nan", so we convert it to null.
     if (std::isnan(value) || std::isinf(value)) {
@@ -352,12 +351,12 @@ std::string MavLinkMessageBase::float_tostring(float value)
     return s.str();
 }
 
-
-template<class T>
+template <class T>
 class BinaryArray
 {
 public:
-    static std::string toString(int len, const T* field) {
+    static std::string toString(int len, const T* field)
+    {
         std::ostringstream line;
         for (int i = 0; i < len; i++) {
             line << field[i];

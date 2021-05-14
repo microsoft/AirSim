@@ -9,65 +9,67 @@
 #include "sensors/SensorFactory.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 
-namespace msr { namespace airlib {
+namespace msr
+{
+namespace airlib
+{
 
-class Px4MultiRotorParams : public MultiRotorParams {
-public:
-    Px4MultiRotorParams(const AirSimSettings::MavLinkVehicleSetting& vehicle_setting, std::shared_ptr<const SensorFactory> sensor_factory)
-        : sensor_factory_(sensor_factory)
+    class Px4MultiRotorParams : public MultiRotorParams
     {
-        connection_info_ = getConnectionInfo(vehicle_setting);
-    }
-
-    virtual ~Px4MultiRotorParams() = default;
-
-    virtual std::unique_ptr<MultirotorApiBase> createMultirotorApi() override
-    {
-        unique_ptr<MultirotorApiBase> api(new MavLinkMultirotorApi());
-        auto api_ptr = static_cast<MavLinkMultirotorApi*>(api.get());
-        api_ptr->initialize(connection_info_, &getSensors(), true);
-
-        return api;
-    }
-
-    virtual void setupParams() override
-    {
-        auto& params = getParams();
-
-        if (connection_info_.model == "Blacksheep") {
-            setupFrameBlacksheep(params);
+    public:
+        Px4MultiRotorParams(const AirSimSettings::MavLinkVehicleSetting& vehicle_setting, std::shared_ptr<const SensorFactory> sensor_factory)
+            : sensor_factory_(sensor_factory)
+        {
+            connection_info_ = getConnectionInfo(vehicle_setting);
         }
-        else if (connection_info_.model == "Flamewheel") {
-            setupFrameFlamewheel(params);
+
+        virtual ~Px4MultiRotorParams() = default;
+
+        virtual std::unique_ptr<MultirotorApiBase> createMultirotorApi() override
+        {
+            unique_ptr<MultirotorApiBase> api(new MavLinkMultirotorApi());
+            auto api_ptr = static_cast<MavLinkMultirotorApi*>(api.get());
+            api_ptr->initialize(connection_info_, &getSensors(), true);
+
+            return api;
         }
-        else if (connection_info_.model == "FlamewheelFLA") {
-            setupFrameFlamewheelFLA(params);
+
+        virtual void setupParams() override
+        {
+            auto& params = getParams();
+
+            if (connection_info_.model == "Blacksheep") {
+                setupFrameBlacksheep(params);
+            }
+            else if (connection_info_.model == "Flamewheel") {
+                setupFrameFlamewheel(params);
+            }
+            else if (connection_info_.model == "FlamewheelFLA") {
+                setupFrameFlamewheelFLA(params);
+            }
+            else if (connection_info_.model == "Hexacopter") {
+                setupFrameGenericHex(params);
+            }
+            else //Generic
+                setupFrameGenericQuad(params);
         }
-        else if (connection_info_.model == "Hexacopter") {
-            setupFrameGenericHex(params);
+
+    protected:
+        virtual const SensorFactory* getSensorFactory() const override
+        {
+            return sensor_factory_.get();
         }
-        else //Generic
-            setupFrameGenericQuad(params);
-    }
 
-protected:
-    virtual const SensorFactory* getSensorFactory() const override
-    {
-        return sensor_factory_.get();
-    }
+    private:
+        static const AirSimSettings::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::MavLinkVehicleSetting& vehicle_setting)
+        {
+            return vehicle_setting.connection_info;
+        }
 
-private:
-    static const AirSimSettings::MavLinkConnectionInfo& getConnectionInfo(const AirSimSettings::MavLinkVehicleSetting& vehicle_setting)
-    {
-        return vehicle_setting.connection_info;
-    }
-
-
-private:
-    AirSimSettings::MavLinkConnectionInfo connection_info_;
-    std::shared_ptr<const SensorFactory> sensor_factory_;
-
-};
-
-}} //namespace
+    private:
+        AirSimSettings::MavLinkConnectionInfo connection_info_;
+        std::shared_ptr<const SensorFactory> sensor_factory_;
+    };
+}
+} //namespace
 #endif

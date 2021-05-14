@@ -10,7 +10,7 @@ public:
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
 public:
-    CarPawnApi(CarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, 
+    CarPawnApi(CarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics,
                const std::string car_name, msr::airlib::CarApiBase* vehicle_api);
 
     void updateMovement(const msr::airlib::CarApiBase::CarControls& controls);

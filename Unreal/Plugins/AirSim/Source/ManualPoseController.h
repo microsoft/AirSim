@@ -7,7 +7,8 @@
 #include "ManualPoseController.generated.h"
 
 UCLASS()
-class AIRSIM_API UManualPoseController : public UObject {
+class AIRSIM_API UManualPoseController : public UObject
+{
     GENERATED_BODY()
 
 public:
@@ -33,24 +34,23 @@ private:
     void inputManualUpPitch(float val);
     void inputManualDownPitch(float val);
 
-    void setupInputBindings();	
+    void setupInputBindings();
     void removeInputBindings();
     void clearBindings();
 
 private:
     FInputAxisBinding *left_binding_, *right_binding_, *up_binding_, *down_binding_;
     FInputAxisBinding *forward_binding_, *backward_binding_, *left_yaw_binding_, *right_yaw_binding_;
-    FInputAxisBinding *up_pitch_binding_, *down_pitch_binding_,  *left_roll_binding_, *right_roll_binding_;
+    FInputAxisBinding *up_pitch_binding_, *down_pitch_binding_, *left_roll_binding_, *right_roll_binding_;
 
     FInputAxisKeyMapping left_mapping_, right_mapping_, up_mapping_, down_mapping_;
     FInputAxisKeyMapping forward_mapping_, backward_mapping_, left_yaw_mapping_, right_yaw_mapping_;
     FInputAxisKeyMapping up_pitch_mapping_, down_pitch_mapping_, left_roll_mapping_, right_roll_mapping_;
 
-
     FVector delta_position_;
     FRotator delta_rotation_;
 
-    AActor *actor_;
+    AActor* actor_;
 
     float acceleration_ = 0;
     FVector input_positive_, inpute_negative_;

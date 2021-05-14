@@ -8,7 +8,6 @@
 #include "api/VehicleSimApiBase.hpp"
 #include "SimModeCar.generated.h"
 
-
 UCLASS()
 class AIRSIM_API ASimModeCar : public ASimModeBase
 {
@@ -48,12 +47,13 @@ protected:
     virtual std::unique_ptr<PawnSimApi> createVehicleSimApi(
         const PawnSimApi::Params& pawn_sim_api_params) const override;
     virtual msr::airlib::VehicleApiBase* getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
-        const PawnSimApi* sim_api) const override;
+                                                       const PawnSimApi* sim_api) const override;
 
 private:
     std::atomic<float> current_clockspeed_;
     std::atomic<TTimeDelta> pause_period_;
     std::atomic<TTimePoint> pause_period_start_;
     uint32_t targetFrameNumber_;
-    std::atomic_bool frame_countdown_enabled_;;
+    std::atomic_bool frame_countdown_enabled_;
+    ;
 };
