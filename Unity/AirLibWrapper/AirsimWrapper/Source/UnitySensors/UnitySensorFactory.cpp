@@ -12,9 +12,9 @@ void UnitySensorFactory::setActor(std::string vehicle_name, const NedTransform* 
     ned_transform_ = ned_transform;
 }
 
-std::shared_ptr<msr::airlib::SensorBase> UnitySensorFactory::createSensorFromSettings(const AirSimSettings::SensorSetting * sensor_setting) const
+std::shared_ptr<msr::airlib::SensorBase> UnitySensorFactory::createSensorFromSettings(const AirSimSettings::SensorSetting* sensor_setting) const
 {
-    
+
     using SensorBase = msr::airlib::SensorBase;
 
     switch (sensor_setting->sensor_type) {

@@ -10,7 +10,7 @@
 #include <mutex>
 #include "MavLinkMessageBase.hpp"
 
-#define MAVLINK_STX_MAVLINK1 0xFE          // marker for old protocol
+#define MAVLINK_STX_MAVLINK1 0xFE // marker for old protocol
 
 namespace mavlinkcom
 {
@@ -31,6 +31,7 @@ class MavLinkFileLog : public MavLinkLog
     bool writing_;
     bool json_;
     std::mutex log_lock_;
+
 public:
     MavLinkFileLog();
     virtual ~MavLinkFileLog();
@@ -42,9 +43,6 @@ public:
     bool read(mavlinkcom::MavLinkMessage& msg, uint64_t& timestamp);
     static uint64_t getTimeStamp();
 };
-
-
 }
-
 
 #endif

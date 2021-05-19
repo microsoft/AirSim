@@ -25,7 +25,7 @@ public:
 
     static void init();
     static void startRecording(const RecordingSetting& settings,
-        const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis);
+                               const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis);
     static void stopRecording();
     static void killRecording();
     static bool isRecording();
@@ -43,7 +43,7 @@ private:
     static std::unique_ptr<FRecordingThread> finishing_instance_;
     static msr::airlib::WorkerThreadSignal finishing_signal_;
     static bool first_;
-    
+
     static std::unique_ptr<FRecordingThread> instance_;
 
     std::unique_ptr<FRunnableThread> thread_;

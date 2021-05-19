@@ -1310,7 +1310,6 @@ namespace airlib
                 createDefaultSensorSettings(simmode_name, sensors);
         }
     };
-
 }
 } //namespace
 #endif

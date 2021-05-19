@@ -16,8 +16,7 @@ using namespace mavlinkcom;
 
 void CheckResult(NPRESULT result)
 {
-    if (result != NPRESULT_SUCCESS)
-    {
+    if (result != NPRESULT_SUCCESS) {
         // Treat all errors as failure conditions.
         printf("Error: %s\n", TT_GetResultString(result));
         exit(1);
@@ -33,13 +32,13 @@ void mavlink_euler_to_quaternion(float roll, float pitch, float yaw, float quate
     float cosPsi_2 = cosf(yaw / 2);
     float sinPsi_2 = sinf(yaw / 2);
     quaternion[0] = (cosPhi_2 * cosTheta_2 * cosPsi_2 +
-        sinPhi_2 * sinTheta_2 * sinPsi_2);
+                     sinPhi_2 * sinTheta_2 * sinPsi_2);
     quaternion[1] = (sinPhi_2 * cosTheta_2 * cosPsi_2 -
-        cosPhi_2 * sinTheta_2 * sinPsi_2);
+                     cosPhi_2 * sinTheta_2 * sinPsi_2);
     quaternion[2] = (cosPhi_2 * sinTheta_2 * cosPsi_2 +
-        sinPhi_2 * cosTheta_2 * sinPsi_2);
+                     sinPhi_2 * cosTheta_2 * sinPsi_2);
     quaternion[3] = (cosPhi_2 * cosTheta_2 * sinPsi_2 -
-        sinPhi_2 * sinTheta_2 * cosPsi_2);
+                     sinPhi_2 * sinTheta_2 * cosPsi_2);
 }
 
 class PortAddress
@@ -53,52 +52,41 @@ PortAddress endPoint = { "127.0.0.1", 14590 };
 std::string bodyName = "Quadrocopter"; // expected name.
 std::string project;
 
-bool ParseCommandLine(int argc, char* argv[]) {
+bool ParseCommandLine(int argc, char* argv[])
+{
 
     // parse command line
-    for (int i = 1; i < argc; i++)
-    {
+    for (int i = 1; i < argc; i++) {
         const char* arg = argv[i];
-        if (arg[0] == '-' || arg[0] == '/')
-        {
+        if (arg[0] == '-' || arg[0] == '/') {
             std::string option(arg + 1);
             std::vector<std::string> parts = Utils::split(parts, ":,", 2);
-            if (lower == "server")
-            {
-                if (parts.size() > 1)
-                {
+            if (lower == "server") {
+                if (parts.size() > 1) {
                     endPoint.addr = parts[1];
-                    if (parts.size() > 2)
-                    {
+                    if (parts.size() > 2) {
                         endPoint.port = atoi(parts[2].c_str());
                     }
                 }
             }
-            else if (lower == "body")
-            {
-                if (parts.size() > 1)
-                {
+            else if (lower == "body") {
+                if (parts.size() > 1) {
                     bodyName = parts[1];
                 }
             }
-            else if (lower == "project")
-            {
-                if (parts.size() > 1)
-                {
+            else if (lower == "project") {
+                if (parts.size() > 1) {
                     project = parts[1];
-                    if (parts.size() > 2)
-                    {
+                    if (parts.size() > 2) {
                         project += ":";
                         project += parts[2];
                     }
                 }
             }
-            else if (lower == "?" || lower == "h" || lower == "help")
-            {
+            else if (lower == "?" || lower == "h" || lower == "help") {
                 return false;
             }
-            else
-            {
+            else {
                 printf("### Error: unexpected argument: %s\n", arg);
                 return false;
             }
@@ -107,7 +95,8 @@ bool ParseCommandLine(int argc, char* argv[]) {
     return true;
 }
 
-void PrintUsage() {
+void PrintUsage()
+{
     printf("Usage: MavLinkMoCap options\n");
     printf("Connects PX4 to ATT_POS_MOCAP messages from OptiTrack system.\n");
     printf("Using a project you created already using OptiTrack Motive\n");
@@ -152,16 +141,14 @@ int main(int argc, char* argv[])
 
     // List all detected cameras.
     printf("Cameras:\n");
-    for (int i = 0; i < TT_CameraCount(); i++)
-    {
+    for (int i = 0; i < TT_CameraCount(); i++) {
         printf("\t%s\n", TT_CameraName(i));
     }
     printf("\n");
 
     // List all defined rigid bodies.
     printf("Rigid Bodies:\n");
-    for (int i = 0; i < TT_RigidBodyCount(); i++)
-    {
+    for (int i = 0; i < TT_RigidBodyCount(); i++) {
         printf("\t%s\n", TT_RigidBodyName(i));
     }
     printf("\n");
@@ -169,7 +156,7 @@ int main(int argc, char* argv[])
     printf("Starting MOCAP server at %s:%d\n", endPoint.addr.c_str(), endPoint.port);
 
     std::shared_ptr<MavLinkConnection> proxyConnection = MavLinkConnection::connectLocalUdp("optitrack", endPoint.addr, endPoint.port);
-    
+
     auto start = std::chrono::system_clock::now();
 
     int body = -1;
@@ -177,16 +164,13 @@ int main(int argc, char* argv[])
 
     while (true) {
 
-        if (TT_Update() == NPRESULT_SUCCESS)
-        {
-            float   yaw, pitch, roll;
-            float   x, y, z;
-            float   qx, qy, qz, qw;
+        if (TT_Update() == NPRESULT_SUCCESS) {
+            float yaw, pitch, roll;
+            float x, y, z;
+            float qx, qy, qz, qw;
 
-            if (body == -1)
-            {
-                for (int i = 0; i < TT_RigidBodyCount(); i++)
-                {
+            if (body == -1) {
+                for (int i = 0; i < TT_RigidBodyCount(); i++) {
                     const char* found = TT_RigidBodyName(i);
                     if (strcmp(found, bodyName.c_str()) == 0) {
                         printf("Found '%s'\n", bodyName.c_str());
@@ -196,32 +180,31 @@ int main(int argc, char* argv[])
                     }
                 }
             }
-            if (body >= 0)
-            {
+            if (body >= 0) {
                 TT_RigidBodyLocation(body, &x, &y, &z, &qx, &qy, &qz, &qw, &yaw, &pitch, &roll);
 
-                if (TT_IsRigidBodyTracked(body))
-                {
+                if (TT_IsRigidBodyTracked(body)) {
                     auto now = std::chrono::system_clock::now();
                     auto duration = now - start;
                     // throttle to 50 messages per second.
-                    if (std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() > 20)
-                    {
+                    if (std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() > 20) {
                         if (x < -10 || x > 10) {
                             printf("X out of range: %f\n", x);
                         }
-                        else if (y < -10 || y > 10)
-                        {
+                        else if (y < -10 || y > 10) {
                             printf("Y out of range: %f\n", y);
                         }
-                        else if (z < -10 || z > 10)
-                        {
+                        else if (z < -10 || z > 10) {
                             printf("Z out of range: %f\n", z);
                         }
-                        else 
-                        {
+                        else {
                             printf("Pos (%.3f, %.3f, %.3f) Orient (%.1f, %.1f, %.1f)\n",
-                                x, y, z, yaw, pitch, roll);
+                                   x,
+                                   y,
+                                   z,
+                                   yaw,
+                                   pitch,
+                                   roll);
 
                             MavLinkAttPosMocap pos;
                             // OptiTrack uses 'y' axis for vertical.
@@ -239,9 +222,7 @@ int main(int argc, char* argv[])
                 }
             }
         }
-
     }
 
     return 0;
 }
-

@@ -80,18 +80,15 @@ int main(int argc, const char* argv[])
         connection_info.baud_rate = child.getInt("SerialBaudRate", connection_info.baud_rate);
         connection_info.model = child.getString("Model", connection_info.model);
         connection_info.logs = child.getString("Logs", connection_info.logs);
-
     }
     else {
         std::cout << "Could not load settings from " << Settings::singleton().getFullFilePath() << std::endl;
         return 3;
-
     }
 
     MavLinkMultirotorApi api;
     api.initialize(connection_info, nullptr, is_simulation);
     api.reset();
-
 
     ApiProvider api_provider(nullptr);
     api_provider.insert_or_assign("", &api, nullptr);

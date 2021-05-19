@@ -7,12 +7,10 @@
 #include "RenderRequest.h"
 #include "PIPCamera.h"
 
-
 std::unique_ptr<FRecordingThread> FRecordingThread::running_instance_;
 std::unique_ptr<FRecordingThread> FRecordingThread::finishing_instance_;
 msr::airlib::WorkerThreadSignal FRecordingThread::finishing_signal_;
 bool FRecordingThread::first_ = true;
-
 
 FRecordingThread::FRecordingThread()
     : stop_task_counter_(0), recording_file_(nullptr), is_ready_(false)
@@ -20,9 +18,8 @@ FRecordingThread::FRecordingThread()
     thread_.reset(FRunnableThread::Create(this, TEXT("FRecordingThread"), 0, TPri_BelowNormal)); // Windows default, possible to specify more priority
 }
 
-
 void FRecordingThread::startRecording(const RecordingSetting& settings,
-    const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis)
+                                      const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis)
 {
     stopRecording();
 
@@ -67,8 +64,7 @@ bool FRecordingThread::isRecording()
 
 void FRecordingThread::stopRecording()
 {
-    if (running_instance_)
-    {
+    if (running_instance_) {
         assert(finishing_instance_ == nullptr);
         finishing_instance_ = std::move(running_instance_);
         assert(!isRecording());
@@ -98,8 +94,7 @@ bool FRecordingThread::Init()
     else {
         finishing_signal_.wait();
     }
-    if (recording_file_)
-    {
+    if (recording_file_) {
         UAirBlueprintLib::LogMessage(TEXT("Initiated recording thread"), TEXT(""), LogDebugLevel::Success);
     }
     return true;
@@ -107,8 +102,7 @@ bool FRecordingThread::Init()
 
 uint32 FRecordingThread::Run()
 {
-    while (stop_task_counter_.GetValue() == 0)
-    {
+    while (stop_task_counter_.GetValue() == 0) {
         //make sure all vars are set up
         if (is_ready_) {
             bool interval_elapsed = msr::airlib::ClockFactory::get()->elapsedSince(last_screenshot_on_) > settings_.record_interval;
@@ -133,7 +127,6 @@ uint32 FRecordingThread::Run()
                 }
             }
         }
-
     }
 
     recording_file_.reset();
@@ -141,12 +134,10 @@ uint32 FRecordingThread::Run()
     return 0;
 }
 
-
 void FRecordingThread::Stop()
 {
     stop_task_counter_.Increment();
 }
-
 
 void FRecordingThread::Exit()
 {

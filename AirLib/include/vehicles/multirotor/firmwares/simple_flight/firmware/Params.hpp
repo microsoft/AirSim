@@ -2,9 +2,11 @@
 
 #include "interfaces/CommonStructs.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-struct Params {
+struct Params
+{
 public:
     static float min_armed_throttle()
     {
@@ -14,7 +16,8 @@ public:
 
     //this should match up with target board
     //simulation board should respect possible values
-    struct Motor {
+    struct Motor
+    {
         uint16_t motor_count = 4;
         float min_motor_output = 0;
         float max_motor_output = 1;
@@ -22,7 +25,8 @@ public:
         float min_angling_throttle = Params::min_armed_throttle() / 2;
     } motor;
 
-    struct Rc {
+    struct Rc
+    {
         uint16_t channel_count = 12;
         uint16_t read_interval_ms = 10;
         int16_t rate_level_mode_channel = 4; //corresponds to switch 0 in rc_data
@@ -32,10 +36,10 @@ public:
         float action_request_tolerance = 0.1f;
 
         //milliseconds while sticks should stay in position
-        uint64_t arm_duration = 100; 
-        uint64_t disarm_duration = 100; 
+        uint64_t arm_duration = 100;
+        uint64_t disarm_duration = 100;
         uint64_t neutral_duration = 100;
-        
+
         Axis4<int16_t> channels = Axis4<int16_t>(0, 3, 1, 2);
 
         TReal max_angle_level_switch = 0.3f;
@@ -48,7 +52,8 @@ public:
 
     } rc;
 
-    struct AngleRatePid {
+    struct AngleRatePid
+    {
         //max_xxx_rate > 5 would introduce wobble/oscillations
         const float kMaxLimit = 2.5f;
         const float kP = 0.25f;
@@ -57,19 +62,20 @@ public:
 
         Axis3r max_limit = Axis3r(kMaxLimit, kMaxLimit, kMaxLimit); //roll, pitch, yaw - in radians/sec
 
-        //p_xxx_rate params are sensitive to gyro noise. Values higher than 0.5 would require 
+        //p_xxx_rate params are sensitive to gyro noise. Values higher than 0.5 would require
         //noise filtration
         Axis4r p = Axis4r(kP, kP, kP, 1.0f);
         Axis4r i = Axis4r(kI, kI, kI, 0.0f);
         Axis4r d = Axis4r(kD, kD, kD, 0.0f);
     } angle_rate_pid;
 
-    struct AngleLevelPid {
+    struct AngleLevelPid
+    {
         const float pi = 3.14159265359f; //180-degrees
         const float kP = 2.5f;
         const float kI = 0.0f;
         const float kD = 0.0f;
-        
+
         //max_pitch/roll_angle > 5.5 would produce verticle thrust that is not enough to keep vehicle in air at extremities of controls
         Axis4r max_limit = Axis4r(pi / 5.5f, pi / 5.5f, pi, 1.0f); //roll, pitch, yaw - in radians/sec
 
@@ -78,7 +84,8 @@ public:
         Axis4r d = Axis4r(kD, kD, kD, 0.0f);
     } angle_level_pid;
 
-    struct PositionPid {
+    struct PositionPid
+    {
         const float kMaxLimit = 8.8E26f; //some big number like size of known universe
         const float kP = 0.25f;
         const float kI = 0.0f;
@@ -91,7 +98,8 @@ public:
         Axis4r d = Axis4r(kD, kD, kD, kD);
     } position_pid;
 
-    struct VelocityPid {
+    struct VelocityPid
+    {
         const float kMinThrottle = std::min(1.0f, Params::min_armed_throttle() * 3.0f);
         const float kMaxLimit = 6.0f; // m/s
         const float kP = 0.2f;
@@ -106,17 +114,19 @@ public:
 
         Axis4r iterm_discount = Axis4r(1, 1, 1, 0.9999f);
         Axis4r output_bias = Axis4r(0, 0, 0, 0);
-                
+
         //we keep min throttle higher so that if we are angling a lot, its still supported
-        float min_throttle = kMinThrottle ;
+        float min_throttle = kMinThrottle;
     } velocity_pid;
 
-    struct Takeoff {
+    struct Takeoff
+    {
         float takeoff_z = -2.0f;
         //float velocity = -1.0f;
     } takeoff;
 
-    enum class ControllerType {
+    enum class ControllerType
+    {
         Cascade,
         Adaptive
     };
@@ -127,6 +137,5 @@ public:
     ControllerType controller_type = ControllerType::Cascade;
     bool gains_changed;
 };
-
 
 } //namespace

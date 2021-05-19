@@ -9,19 +9,19 @@
 #include <string>
 #include "Utils.hpp"
 
-// This defines a default folder name for all the files created by AirLib so they 
+// This defines a default folder name for all the files created by AirLib so they
 // are all gathered nicely in one place in the user's documents folder.
 #ifndef ProductFolderName
-#define ProductFolderName "AirSim" 
+#define ProductFolderName "AirSim"
 #endif
-    
-namespace mavlink_utils {
+
+namespace mavlink_utils
+{
 class FileSystem
 {
     typedef unsigned int uint;
 
 public:
-
     // please use the combine() method instead.
     static const char kPathSeparator =
 #ifdef _WIN32
@@ -34,23 +34,25 @@ public:
 
     static std::string getUserHomeFolder()
     {
-        //Windows uses USERPROFILE, Linux uses HOME
-    #ifdef _WIN32
+//Windows uses USERPROFILE, Linux uses HOME
+#ifdef _WIN32
         std::wstring userProfile = _wgetenv(L"USERPROFILE");
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
         return converter.to_bytes(userProfile);
-    #else
+#else
         return std::getenv("HOME");
-    #endif
+#endif
     }
 
     static std::string getUserDocumentsFolder();
 
-    static std::string getAppDataFolder() {
+    static std::string getAppDataFolder()
+    {
         return ensureFolder(combine(getUserDocumentsFolder(), ProductFolderName));
     }
 
-    static std::string ensureFolder(std::string fullpath) {
+    static std::string ensureFolder(std::string fullpath)
+    {
         // make sure this directory exists.
         return createDirectory(fullpath);
     }
@@ -58,8 +60,7 @@ public:
     // resolves the absolute path given a base path and a relative name, handles "..".
     static std::string resolve(std::string path, std::string rel)
     {
-        if (rel.size() > 0 && rel[0] == kPathSeparator)
-        {
+        if (rel.size() > 0 && rel[0] == kPathSeparator) {
             // absolute path overrides cwd.
             return rel;
         }
@@ -69,8 +70,7 @@ public:
         std::string sep;
         sep.push_back(kPathSeparator);
         auto vector = Utils::split(srcPath, sep.c_str(), 1);
-        for (auto iter = vector.begin(); iter != vector.end(); iter++)
-        {
+        for (auto iter = vector.begin(); iter != vector.end(); iter++) {
             if (*iter == "..") {
                 FileSystem::removeLeaf(currentPath);
             }
@@ -98,7 +98,8 @@ public:
 
     static bool exists(const std::string path);
 
-    static std::string getTempFolder() {
+    static std::string getTempFolder()
+    {
 #ifdef _WIN32
         std::wstring userProfile = _wgetenv(L"TEMP");
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -108,12 +109,13 @@ public:
 #endif
     }
 
-    static std::string combine(const std::string parentFolder, const std::string child) {
+    static std::string combine(const std::string parentFolder, const std::string child)
+    {
         size_t len = parentFolder.size();
         if (len > 0 && parentFolder[len - 1] == kPathSeparator) {
             // parent already ends with '/'
             return parentFolder + child;
-        } 
+        }
         len = child.size();
         if (len > 0 && child[0] == kPathSeparator) {
             // child already starts with '/'
@@ -122,7 +124,8 @@ public:
         return parentFolder + kPathSeparator + child;
     }
 
-    static void removeLeaf(std::string& path) {
+    static void removeLeaf(std::string& path)
+    {
         size_t size = path.size();
         size_t pos = path.find_last_of(kPathSeparator);
         if (pos != std::string::npos) {
@@ -130,7 +133,8 @@ public:
         }
     }
 
-    static std::string getFileName(std::string fullPath) {
+    static std::string getFileName(std::string fullPath)
+    {
         size_t size = fullPath.size();
         size_t pos = fullPath.find_last_of(kPathSeparator);
         if (pos != std::string::npos) {
@@ -140,15 +144,13 @@ public:
         return fullPath;
     }
 
-
     static std::string getFileExtension(const std::string str)
     {
         // bugbug: this is not unicode safe.
         int len = static_cast<int>(str.size());
         const char* ptr = str.c_str();
         int i = 0;
-        for (i = len - 1; i >= 0; i--)
-        {
+        for (i = len - 1; i >= 0; i--) {
             if (ptr[i] == '.')
                 break;
         }
@@ -167,8 +169,9 @@ public:
         return filename_ss.str();
     }
 
-    static void openTextFile(std::string filepath, std::ifstream& file){
-        
+    static void openTextFile(std::string filepath, std::ifstream& file)
+    {
+
 #ifdef _WIN32
         // WIN32 will create the wrong file names if we don't first convert them to UTF-16.
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -178,9 +181,10 @@ public:
         file.open(filepath, std::ios::in);
 #endif
     }
-    
-    static void createBinaryFile(std::string filepath, std::ofstream& file){
-        
+
+    static void createBinaryFile(std::string filepath, std::ofstream& file)
+    {
+
 #ifdef _WIN32
         // WIN32 will create the wrong file names if we don't first convert them to UTF-16.
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -190,9 +194,10 @@ public:
         file.open(filepath, std::ios::binary | std::ios::trunc);
 #endif
     }
-    
-    static void createTextFile(std::string filepath, std::ofstream& file){
-        
+
+    static void createTextFile(std::string filepath, std::ofstream& file)
+    {
+
 #ifdef _WIN32
         // WIN32 will create the wrong file names if we don't first convert them to UTF-16.
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -205,7 +210,7 @@ public:
         if (file.fail())
             throw std::ios_base::failure(std::strerror(errno));
     }
-    
+
     static std::string createLogFile(std::string suffix, std::ofstream& flog)
     {
         std::string filepath = getLogFileNamePath("log_", suffix, ".tsv", true);
@@ -224,12 +229,12 @@ public:
         try {
             std::getline(file, line);
         }
-        catch(...) {
+        catch (...) {
             if (!file.eof())
                 throw;
         }
         return line;
-    }    
+    }
 
     static void appendLineToFile(std::string filepath, std::string line)
     {
@@ -247,8 +252,6 @@ public:
         file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
         file << line << std::endl;
     }
-
 };
-
-} 
+}
 #endif

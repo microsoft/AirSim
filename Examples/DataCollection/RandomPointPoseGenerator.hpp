@@ -1,9 +1,9 @@
 #pragma once
 
-
 #include "common/Common.hpp"
 
-class RandomPointPoseGenerator {
+class RandomPointPoseGenerator
+{
 public:
 private:
     typedef common_utils::RandomGeneratorGaussianF RandomGeneratorGaussianF;
@@ -18,12 +18,13 @@ public:
 
 public:
     RandomPointPoseGenerator(int random_seed)
-        :
-        //settings are for neighbourhood environement
+        : //settings are for neighbourhood environement
         //sigma = desired_max / 2 so 95% of the times we in desired
-        rand_xy_(0.0f, 75.0f), rand_z_(2.0f, 1.0f), 
-        rand_pitch_(0.0f, M_PIf / 8), rand_roll_(0.0f, M_PIf / 16),
-        rand_yaw_(0.0f, M_PIf / 2)
+        rand_xy_(0.0f, 75.0f)
+        , rand_z_(2.0f, 1.0f)
+        , rand_pitch_(0.0f, M_PIf / 8)
+        , rand_roll_(0.0f, M_PIf / 16)
+        , rand_yaw_(0.0f, M_PIf / 2)
     {
         rand_xy_.seed(random_seed);
         rand_z_.seed(random_seed);
@@ -43,6 +44,7 @@ public:
 
         orientation = VectorMath::toQuaternion(pitch, roll, yaw);
     }
+
 private:
     RandomGeneratorGaussianF rand_xy_, rand_z_, rand_pitch_, rand_yaw_, rand_roll_;
 };

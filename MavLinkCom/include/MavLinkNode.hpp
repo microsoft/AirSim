@@ -10,10 +10,12 @@
 #include "MavLinkConnection.hpp"
 #include "MavLinkMessages.hpp"
 
-namespace mavlinkcom_impl {
-    class MavLinkNodeImpl;
+namespace mavlinkcom_impl
+{
+class MavLinkNodeImpl;
 }
-namespace mavlinkcom {
+namespace mavlinkcom
+{
 
 struct MavLinkParameter
 {
@@ -50,19 +52,19 @@ public:
 
     // get the list of configurable parameters supported by this node.
     std::vector<MavLinkParameter> getParamList();
-        
+
     // get the parameter from last getParamList download.
     MavLinkParameter getCachedParameter(const std::string& name);
 
     // get a single parameter by name.
     AsyncResult<MavLinkParameter> getParameter(const std::string& name);
 
-    // set a new value on a given parameter.  
+    // set a new value on a given parameter.
     // it is best if you use getParameter to get the current value, see if it
     // needs changing, change the value, then call setParameter with the same parameter object.
     AsyncResult<bool> setParameter(MavLinkParameter p);
 
-    // get the connection 
+    // get the connection
     std::shared_ptr<MavLinkConnection> getConnection();
 
     // get the capabilities of the drone
@@ -93,11 +95,12 @@ public:
     // passing a message along).
     void sendMessage(MavLinkMessage& msg);
 
-    // send a command to the remote node        
+    // send a command to the remote node
     void sendCommand(MavLinkCommand& cmd);
 
     // send a command to the remote node and get async result that tells you whether it succeeded or not.
     AsyncResult<bool> sendCommandAndWaitForAck(MavLinkCommand& cmd);
+
 public:
     MavLinkNode();
     //MavLinkNode(MavLinkNode&&);

@@ -10,7 +10,7 @@
 #include "EngineUtils.h"
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
 #include "Runtime/Engine/Classes/Engine/LevelStreamingDynamic.h"
-#include "UObject/UObjectIterator.h" 
+#include "UObject/UObjectIterator.h"
 #include "Camera/CameraComponent.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerStart.h"
 #include "Misc/MessageDialog.h"
@@ -34,13 +34,13 @@ Methods -> CamelCase
 parameters -> camel_case
 */
 
-ULevelStreamingDynamic *UAirBlueprintLib::CURRENT_LEVEL = nullptr;
+ULevelStreamingDynamic* UAirBlueprintLib::CURRENT_LEVEL = nullptr;
 bool UAirBlueprintLib::log_messages_hidden_ = false;
 msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method_ =
     msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName;
 IImageWrapperModule* UAirBlueprintLib::image_wrapper_module_ = nullptr;
 
-void UAirBlueprintLib::LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec)
+void UAirBlueprintLib::LogMessageString(const std::string& prefix, const std::string& suffix, LogDebugLevel level, float persist_sec)
 {
     LogMessage(FString(prefix.c_str()), FString(suffix.c_str()), level, persist_sec);
 }
@@ -50,18 +50,16 @@ EAppReturnType::Type UAirBlueprintLib::ShowMessage(EAppMsgType::Type message_typ
     FText title_text = FText::FromString(title.c_str());
 
     return FMessageDialog::Open(message_type,
-        FText::FromString(message.c_str()),
-        &title_text);
+                                FText::FromString(message.c_str()),
+                                &title_text);
 }
 
 void UAirBlueprintLib::enableWorldRendering(AActor* context, bool enable)
 {
     ULocalPlayer* player = context->GetWorld()->GetFirstLocalPlayerFromController();
-    if (player)
-    {
+    if (player) {
         UGameViewportClient* viewport_client = player->ViewportClient;
-        if (viewport_client)
-        {
+        if (viewport_client) {
             viewport_client->bDisableWorldRendering = enable;
         }
     }
@@ -72,8 +70,7 @@ void UAirBlueprintLib::setSimulatePhysics(AActor* actor, bool simulate_physics)
     TInlineComponentArray<UPrimitiveComponent*> components;
     actor->GetComponents(components);
 
-    for (UPrimitiveComponent* component : components)
-    {
+    for (UPrimitiveComponent* component : components) {
         component->SetSimulatePhysics(simulate_physics);
     }
 }
@@ -81,30 +78,26 @@ void UAirBlueprintLib::setSimulatePhysics(AActor* actor, bool simulate_physics)
 ULevelStreamingDynamic* UAirBlueprintLib::loadLevel(UObject* context, const FString& level_name)
 {
     bool success{ false };
-    context->GetWorld()->SetNewWorldOrigin(FIntVector(0,0,0));
+    context->GetWorld()->SetNewWorldOrigin(FIntVector(0, 0, 0));
     ULevelStreamingDynamic* new_level = UAirsimLevelStreaming::LoadAirsimLevelInstance(
-            context->GetWorld(), level_name, FVector(0, 0, 0), FRotator(0, 0, 0), success);
-    if (success)
-    {
-        if(CURRENT_LEVEL != nullptr && CURRENT_LEVEL->IsValidLowLevel())
+        context->GetWorld(), level_name, FVector(0, 0, 0), FRotator(0, 0, 0), success);
+    if (success) {
+        if (CURRENT_LEVEL != nullptr && CURRENT_LEVEL->IsValidLowLevel())
             CURRENT_LEVEL->SetShouldBeLoaded(false);
-        CURRENT_LEVEL = new_level;	
+        CURRENT_LEVEL = new_level;
     }
     return CURRENT_LEVEL;
 }
 
 bool UAirBlueprintLib::spawnPlayer(UWorld* context)
 {
-    
+
     bool success{ false };
     TArray<AActor*> player_start_actors;
     FindAllActor<APlayerStart>(context, player_start_actors);
-    if (player_start_actors.Num() > 1)
-    {
-        for (auto player_start : player_start_actors)
-        {
-            if (player_start->GetName() != FString("SuperStart"))
-            {
+    if (player_start_actors.Num() > 1) {
+        for (auto player_start : player_start_actors) {
+            if (player_start->GetName() != FString("SuperStart")) {
                 //context->GetWorld()->SetNewWorldOrigin(FIntVector(0, 0, 0));
                 auto location = player_start->GetActorLocation();
                 context->RequestNewWorldOrigin(FIntVector(location.X, location.Y, location.Z));
@@ -116,15 +109,13 @@ bool UAirBlueprintLib::spawnPlayer(UWorld* context)
     return success;
 }
 
-
 std::vector<UPrimitiveComponent*> UAirBlueprintLib::getPhysicsComponents(AActor* actor)
 {
     std::vector<UPrimitiveComponent*> phys_comps;
     TInlineComponentArray<UPrimitiveComponent*> components;
     actor->GetComponents(components);
 
-    for (UPrimitiveComponent* component : components)
-    {
+    for (UPrimitiveComponent* component : components) {
         if (component->IsSimulatingPhysics())
             phys_comps.push_back(component);
     }
@@ -137,8 +128,7 @@ void UAirBlueprintLib::resetSimulatePhysics(AActor* actor)
     TInlineComponentArray<UPrimitiveComponent*> components;
     actor->GetComponents(components);
 
-    for (UPrimitiveComponent* component : components)
-    {
+    for (UPrimitiveComponent* component : components) {
         if (component->IsSimulatingPhysics()) {
             component->SetSimulatePhysics(false);
             component->SetSimulatePhysics(true);
@@ -171,7 +161,6 @@ void UAirBlueprintLib::enableViewportRendering(AActor* context, bool enable)
     }
     else {
         viewport->EngineShowFlags.SetRendering(true);
-
     }
 }
 
@@ -200,11 +189,10 @@ void UAirBlueprintLib::setLogMessagesVisibility(bool is_visible)
         GEngine->ClearOnScreenDebugMessages();
 }
 
-void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec)
+void UAirBlueprintLib::LogMessage(const FString& prefix, const FString& suffix, LogDebugLevel level, float persist_sec)
 {
     if (log_messages_hidden_)
         return;
-
 
     static TMap<FString, int> loggingKeys;
     static int counter = 1;
@@ -233,7 +221,9 @@ void UAirBlueprintLib::LogMessage(const FString &prefix, const FString &suffix, 
         color = FColor(237, 228, 147);
         //UE_LOG(LogTemp, Verbose, TEXT("%s%s"), *prefix, *suffix);
         break;
-    default: color = FColor::Black; break;
+    default:
+        color = FColor::Black;
+        break;
     }
     if (GEngine) {
         GEngine->AddOnScreenDebugMessage(key, persist_sec, color, prefix + suffix);
@@ -252,32 +242,30 @@ void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FSt
         TArray<FAssetData> AssetData;
 
         // Find mesh in /Game and /AirSim asset registry. When more plugins are added this function will have to change
-        FAssetRegistryModule &AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+        FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
         AssetRegistryModule.Get().GetAssets(Filter, AssetData);
 
-        UObject *LoadObject = NULL;
-        for (auto asset : AssetData)
-        {
+        UObject* LoadObject = NULL;
+        for (auto asset : AssetData) {
             FString asset_name = asset.AssetName.ToString();
             asset_map.Add(asset_name, asset);
         }
 
-        LogMessageString("Asset database ready", "!", LogDebugLevel::Informational); 
-    }, true);
+        LogMessageString("Asset database ready", "!", LogDebugLevel::Informational);
+    },
+                                             true);
 }
 
-
-void UAirBlueprintLib::GenerateActorMap(const UObject* context, TMap<FString, AActor*>& scene_object_map) {
+void UAirBlueprintLib::GenerateActorMap(const UObject* context, TMap<FString, AActor*>& scene_object_map)
+{
     auto world = context->GetWorld();
-    for (TActorIterator<AActor> actorIterator(world); actorIterator; ++actorIterator) 
-    {
+    for (TActorIterator<AActor> actorIterator(world); actorIterator; ++actorIterator) {
         AActor* actor = *actorIterator;
         FString name = *actor->GetName();
 
         scene_object_map.Add(name, actor);
     }
 }
-
 
 void UAirBlueprintLib::setUnrealClockSpeed(const AActor* context, float clock_speed)
 {
@@ -287,32 +275,30 @@ void UAirBlueprintLib::setUnrealClockSpeed(const AActor* context, float clock_sp
             world_settings->SetTimeDilation(clock_speed);
         else
             LogMessageString("Failed:", "WorldSettings was nullptr", LogDebugLevel::Failure);
-    }, true);
+    },
+                                             true);
 }
 
 float UAirBlueprintLib::GetWorldToMetersScale(const AActor* context)
 {
     float w2m = 100.f;
     UWorld* w = context->GetWorld();
-    if (w != nullptr)
-    {
+    if (w != nullptr) {
         AWorldSettings* ws = w->GetWorldSettings();
-        if (ws != nullptr)
-        {
+        if (ws != nullptr) {
             w2m = ws->WorldToMeters;
         }
     }
     return w2m;
 }
 
-template<typename T>
+template <typename T>
 T* UAirBlueprintLib::GetActorComponent(AActor* actor, FString name)
 {
     TArray<T*> components;
     actor->GetComponents(components);
     T* found = nullptr;
-    for (T* component : components)
-    {
+    for (T* component : components) {
         if (component->GetName().Compare(name) == 0) {
             found = component;
             break;
@@ -342,11 +328,10 @@ void UAirBlueprintLib::RunCommandOnGameThread(TFunction<void()> InFunction, bool
     }
 }
 
-template<>
+template <>
 std::string UAirBlueprintLib::GetMeshName<USkinnedMeshComponent>(USkinnedMeshComponent* mesh)
 {
-    switch (mesh_naming_method_)
-    {
+    switch (mesh_naming_method_) {
     case msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName:
         if (mesh->GetOwner())
             return std::string(TCHAR_TO_UTF8(*(mesh->GetOwner()->GetName())));
@@ -362,7 +347,6 @@ std::string UAirBlueprintLib::GetMeshName<USkinnedMeshComponent>(USkinnedMeshCom
     }
 }
 
-
 std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
 {
     return std::string(TCHAR_TO_UTF8(*(mesh->GetName())));
@@ -370,26 +354,23 @@ std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
 
 void UAirBlueprintLib::InitializeMeshStencilIDs(bool ignore_existing)
 {
-    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
-    {
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp) {
         InitializeObjectStencilID(*comp, ignore_existing);
     }
-    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp)
-    {
+    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp) {
         InitializeObjectStencilID(*comp, ignore_existing);
     }
     //for (TObjectIterator<UFoliageType> comp; comp; ++comp)
     //{
     //    InitializeObjectStencilID(*comp);
     //}
-    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
-    {
+    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp) {
         InitializeObjectStencilID(*comp, ignore_existing);
     }
 }
 
 bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object_id,
-    bool is_name_regex)
+                                        bool is_name_regex)
 {
     std::regex name_regex;
 
@@ -397,16 +378,13 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
         name_regex.assign(mesh_name, std::regex_constants::icase);
 
     int changes = 0;
-    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
-    {
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp) {
         SetObjectStencilIDIfMatch(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
     }
-    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp)
-    {
+    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp) {
         SetObjectStencilIDIfMatch(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
     }
-    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
-    {
+    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp) {
         SetObjectStencilIDIfMatch(*comp, object_id, mesh_name, is_name_regex, name_regex, changes);
     }
 
@@ -415,7 +393,7 @@ bool UAirBlueprintLib::SetMeshStencilID(const std::string& mesh_name, int object
 
 int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)
 {
-    // Takes a UStaticMeshComponent, USkinnedMeshComponent or ALandscapeProxy and returns their custom stencil ID if 
+    // Takes a UStaticMeshComponent, USkinnedMeshComponent or ALandscapeProxy and returns their custom stencil ID if
     // their meshes's name or their owner's name (depending on the naming method in mesh_naming_method_) equals mesh_name
     auto getCustomStencilForMesh = [&mesh_name](auto mesh) -> int {
         const std::string component_mesh_name = common_utils::Utils::toLower(GetMeshName(mesh));
@@ -425,20 +403,17 @@ int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)
         return -1;
     };
 
-    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
-    {
-        int id = getCustomStencilForMesh(*comp);
-        if(id != -1)
-            return id;
-    }
-    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp)
-    {
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp) {
         int id = getCustomStencilForMesh(*comp);
         if (id != -1)
             return id;
     }
-    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp)
-    {
+    for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp) {
+        int id = getCustomStencilForMesh(*comp);
+        if (id != -1)
+            return id;
+    }
+    for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp) {
         int id = getCustomStencilForMesh(*comp);
         if (id != -1)
             return id;
@@ -447,14 +422,13 @@ int UAirBlueprintLib::GetMeshStencilID(const std::string& mesh_name)
     return -1;
 }
 
-std::vector<std::string> UAirBlueprintLib::ListMatchingActors(const UObject *context, const std::string& name_regex)
+std::vector<std::string> UAirBlueprintLib::ListMatchingActors(const UObject* context, const std::string& name_regex)
 {
     std::vector<std::string> results;
     auto world = context->GetWorld();
     std::regex compiledRegex(name_regex, std::regex::optimize);
-    for (TActorIterator<AActor> actorIterator(world); actorIterator; ++actorIterator)
-    {
-        AActor *actor = *actorIterator;
+    for (TActorIterator<AActor> actorIterator(world); actorIterator; ++actorIterator) {
+        AActor* actor = *actorIterator;
         auto name = std::string(TCHAR_TO_UTF8(*actor->GetName()));
         bool match = std::regex_match(name, compiledRegex);
         if (match)
@@ -467,16 +441,12 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
 {
     std::vector<msr::airlib::MeshPositionVertexBuffersResponse> meshes;
     int num_meshes = 0;
-    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp)
-    {
+    for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp) {
         *comp;
 
         std::string name = common_utils::Utils::toLower(GetMeshName(*comp));
         //The skybox is ignored here as it is huge, and really is of no use to the end user typically. Also the associated meshes with the cameras
-        if (name == "" || common_utils::Utils::startsWith(name, "default_")
-            || common_utils::Utils::startsWith(name, "sky")
-            || common_utils::Utils::startsWith(name, "camera"))
-        {
+        if (name == "" || common_utils::Utils::startsWith(name, "default_") || common_utils::Utils::startsWith(name, "sky") || common_utils::Utils::startsWith(name, "camera")) {
             continue;
         }
 
@@ -499,16 +469,15 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
         mesh.orientation.z() = att.Z;
 
         FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->RenderData->LODResources[0].VertexBuffers.PositionVertexBuffer;
-        if (vertex_buffer)
-        {
+        if (vertex_buffer) {
             const int32 vertex_count = vertex_buffer->VertexBufferRHI->GetSize();
             TArray<FVector> vertices;
             vertices.SetNum(vertex_count);
             FVector* data = vertices.GetData();
 
-            ENQUEUE_RENDER_COMMAND(GetVertexBuffer)(
-                [vertex_buffer, data](FRHICommandListImmediate& RHICmdList)
-                {
+            ENQUEUE_RENDER_COMMAND(GetVertexBuffer)
+            (
+                [vertex_buffer, data](FRHICommandListImmediate& RHICmdList) {
                     FVector* indices = (FVector*)RHILockVertexBuffer(vertex_buffer->VertexBufferRHI, 0, vertex_buffer->VertexBufferRHI->GetSize(), RLM_ReadOnly);
                     memcpy(data, indices, vertex_buffer->VertexBufferRHI->GetSize());
                     RHIUnlockVertexBuffer(vertex_buffer->VertexBufferRHI);
@@ -524,9 +493,9 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
 
                 uint16_t* data_ptr = indices_vec.GetData();
 
-                ENQUEUE_RENDER_COMMAND(GetIndexBuffer)(
-                    [IndexBuffer, data_ptr](FRHICommandListImmediate& RHICmdList)
-                    {
+                ENQUEUE_RENDER_COMMAND(GetIndexBuffer)
+                (
+                    [IndexBuffer, data_ptr](FRHICommandListImmediate& RHICmdList) {
                         uint16_t* indices = (uint16_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
                         memcpy(data_ptr, indices, IndexBuffer->IndexBufferRHI->GetSize());
                         RHIUnlockIndexBuffer(IndexBuffer->IndexBufferRHI);
@@ -547,9 +516,9 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
 
                 uint32_t* data_ptr = indices_vec.GetData();
 
-                ENQUEUE_RENDER_COMMAND(GetIndexBuffer)(
-                    [IndexBuffer, data_ptr](FRHICommandListImmediate& RHICmdList)
-                    {
+                ENQUEUE_RENDER_COMMAND(GetIndexBuffer)
+                (
+                    [IndexBuffer, data_ptr](FRHICommandListImmediate& RHICmdList) {
                         uint32_t* indices = (uint32_t*)RHILockIndexBuffer(IndexBuffer->IndexBufferRHI, 0, IndexBuffer->IndexBufferRHI->GetSize(), RLM_ReadOnly);
                         memcpy(data_ptr, indices, IndexBuffer->IndexBufferRHI->GetSize());
                         RHIUnlockIndexBuffer(IndexBuffer->IndexBufferRHI);
@@ -570,7 +539,7 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
             mesh.vertices.resize(max_triangle_index * 3);
             int aligned_index = 0;
             FTransform transform = comp->GetComponentTransform();
-            for(int vertex_idx=0;vertex_idx<max_triangle_index;++vertex_idx){
+            for (int vertex_idx = 0; vertex_idx < max_triangle_index; ++vertex_idx) {
                 FVector transformed_vec = pos + transform.TransformVector(vertices[vertex_idx]);
                 mesh.vertices[aligned_index++] = transformed_vec.X;
                 mesh.vertices[aligned_index++] = transformed_vec.Y;
@@ -584,17 +553,16 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
     return meshes;
 }
 
-
 TArray<FName> UAirBlueprintLib::ListWorldsInRegistry()
 {
     FARFilter Filter;
     Filter.ClassNames.Add(UWorld::StaticClass()->GetFName());
     Filter.bRecursivePaths = true;
-    
+
     TArray<FAssetData> AssetData;
     FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
     AssetRegistryModule.Get().GetAssets(Filter, AssetData);
-    
+
     TArray<FName> WorldNames;
     for (auto asset : AssetData)
         WorldNames.Add(asset.AssetName);
@@ -612,11 +580,9 @@ UObject* UAirBlueprintLib::GetMeshFromRegistry(const std::string& load_object)
     AssetRegistryModule.Get().GetAssets(Filter, AssetData);
 
     UObject* LoadObject = NULL;
-    for (auto asset : AssetData)
-    {
+    for (auto asset : AssetData) {
         UE_LOG(LogTemp, Log, TEXT("Asset path: %s"), *asset.PackagePath.ToString());
-        if (asset.AssetName == FName(load_object.c_str()))
-        {
+        if (asset.AssetName == FName(load_object.c_str())) {
             LoadObject = asset.GetAsset();
             break;
         }
@@ -626,7 +592,8 @@ UObject* UAirBlueprintLib::GetMeshFromRegistry(const std::string& load_object)
 
 bool UAirBlueprintLib::RunConsoleCommand(const AActor* context, const FString& command)
 {
-    auto* playerController = UGameplayStatics::GetPlayerController(context->GetWorld(), 0);;
+    auto* playerController = UGameplayStatics::GetPlayerController(context->GetWorld(), 0);
+    ;
     if (playerController != nullptr)
         playerController->ConsoleCommand(command, true);
     return playerController != nullptr;
@@ -643,7 +610,7 @@ bool UAirBlueprintLib::HasObstacle(const AActor* actor, const FVector& start, co
 }
 
 bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, const FVector& end,
-    FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collision_channel)
+                                   FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collision_channel)
 {
     hit = FHitResult(ForceInit);
 
@@ -656,7 +623,7 @@ bool UAirBlueprintLib::GetObstacle(const AActor* actor, const FVector& start, co
 }
 
 bool UAirBlueprintLib::GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end,
-    FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collision_channel)
+                                               FHitResult& hit, const AActor* ignore_actor, ECollisionChannel collision_channel)
 {
     TArray<FHitResult> hits;
 
@@ -698,7 +665,7 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
     float dist = (follower->GetActorLocation() - next_location).Size();
     float offset_dist = offset.Size();
     float dist_offset = (dist - offset_dist) / offset_dist;
-    float lerp_alpha = common_utils::Utils::clip((dist_offset*dist_offset) * 0.01f + 0.01f, 0.0f, 1.0f);
+    float lerp_alpha = common_utils::Utils::clip((dist_offset * dist_offset) * 0.01f + 0.01f, 0.0f, 1.0f);
     next_location = FMath::Lerp(follower->GetActorLocation(), next_location, lerp_alpha);
     follower->SetActorLocation(next_location);
 
@@ -706,7 +673,6 @@ void UAirBlueprintLib::FollowActor(AActor* follower, const AActor* followee, con
     next_rot = FMath::Lerp(follower->GetActorRotation(), next_rot, 0.5f);
     follower->SetActorRotation(next_rot);
 }
-
 
 int UAirBlueprintLib::RemoveAxisBinding(const FInputAxisKeyMapping& axis, FInputAxisBinding* axis_binding, AActor* actor)
 {
@@ -739,7 +705,8 @@ int UAirBlueprintLib::RemoveAxisBinding(const FInputAxisKeyMapping& axis, FInput
 
         return found_binding_index;
     }
-    else return -1;
+    else
+        return -1;
 }
 
 float UAirBlueprintLib::GetDisplayGamma()
@@ -755,7 +722,7 @@ void UAirBlueprintLib::EnableInput(AActor* actor)
 UObject* UAirBlueprintLib::LoadObject(const std::string& name)
 {
     FString str(name.c_str());
-    UObject *obj = StaticLoadObject(UObject::StaticClass(), nullptr, *str);
+    UObject* obj = StaticLoadObject(UObject::StaticClass(), nullptr, *str);
     if (obj == nullptr) {
         std::string msg = "Failed to load asset object - " + name;
         FString fmsg(msg.c_str());
@@ -768,7 +735,7 @@ UObject* UAirBlueprintLib::LoadObject(const std::string& name)
 UClass* UAirBlueprintLib::LoadClass(const std::string& name)
 {
     FString str(name.c_str());
-    UClass *cls = StaticLoadClass(UObject::StaticClass(), nullptr, *str);
+    UClass* cls = StaticLoadClass(UObject::StaticClass(), nullptr, *str);
     if (cls == nullptr) {
         std::string msg = "Failed to load asset class - " + name;
         FString fmsg(msg.c_str());
@@ -778,14 +745,13 @@ UClass* UAirBlueprintLib::LoadClass(const std::string& name)
     return cls;
 }
 
-void UAirBlueprintLib::CompressImageArray(int32 width, int32 height, const TArray<FColor> &src, TArray<uint8> &dest)
+void UAirBlueprintLib::CompressImageArray(int32 width, int32 height, const TArray<FColor>& src, TArray<uint8>& dest)
 {
     TArray<FColor> MutableSrcData = src;
 
     // PNGs are saved as RGBA but FColors are stored as BGRA. An option to swap the order upon compression may be added at
     // some point. At the moment, manually swapping Red and Blue
-    for (int32 Index = 0; Index < width*height; Index++)
-    {
+    for (int32 Index = 0; Index < width * height; Index++) {
         uint8 TempRed = MutableSrcData[Index].R;
         MutableSrcData[Index].R = MutableSrcData[Index].B;
         MutableSrcData[Index].B = TempRed;
@@ -796,24 +762,23 @@ void UAirBlueprintLib::CompressImageArray(int32 width, int32 height, const TArra
     TArray<uint8>& ThumbnailByteArray = TempThumbnail.AccessImageData();
 
     // Copy scaled image into destination thumb
-    int32 MemorySize = width*height * sizeof(FColor);
+    int32 MemorySize = width * height * sizeof(FColor);
     ThumbnailByteArray.AddUninitialized(MemorySize);
     FMemory::Memcpy(ThumbnailByteArray.GetData(), MutableSrcData.GetData(), MemorySize);
 
     // Compress data - convert into a .png
-    CompressUsingImageWrapper(ThumbnailByteArray, width, height, dest);;
+    CompressUsingImageWrapper(ThumbnailByteArray, width, height, dest);
+    ;
 }
 
 bool UAirBlueprintLib::CompressUsingImageWrapper(const TArray<uint8>& uncompressed, const int32 width, const int32 height, TArray<uint8>& compressed)
 {
     bool bSucceeded = false;
     compressed.Reset();
-    if (uncompressed.Num() > 0)
-    {
+    if (uncompressed.Num() > 0) {
         IImageWrapperModule* ImageWrapperModule = UAirBlueprintLib::getImageWrapperModule();
         TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule->CreateImageWrapper(EImageFormat::PNG);
-        if (ImageWrapper.IsValid() && ImageWrapper->SetRaw(&uncompressed[0], uncompressed.Num(), width, height, ERGBFormat::RGBA, 8))
-        {
+        if (ImageWrapper.IsValid() && ImageWrapper->SetRaw(&uncompressed[0], uncompressed.Num(), width, height, ERGBFormat::RGBA, 8)) {
             compressed = ImageWrapper->GetCompressed();
             bSucceeded = true;
         }

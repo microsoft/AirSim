@@ -20,7 +20,7 @@ public:
 
 public:
     AirSimSettingsParser(const std::string& host_ip);
-    ~AirSimSettingsParser() {};
+    ~AirSimSettingsParser(){};
 
     bool success();
 

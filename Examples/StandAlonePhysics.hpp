@@ -5,8 +5,8 @@
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/DebugPhysicsBody.hpp"
 
-
-class StandAlonePhysics {
+class StandAlonePhysics
+{
 public:
     static void testCollision()
     {

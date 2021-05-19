@@ -11,11 +11,13 @@
 #include <string>
 #include <vector>
 
-namespace mavlinkcom_impl {
-    class MavLinkVehicleImpl;
+namespace mavlinkcom_impl
+{
+class MavLinkVehicleImpl;
 }
 
-namespace mavlinkcom {
+namespace mavlinkcom
+{
 
 // This class represents a MavLinkNode that can be controlled, hence a "vehicle" of some sort.
 // It also keeps certain state about the vehicle position so you can query it any time.
@@ -29,7 +31,7 @@ public:
     // It returns false if the command is rejected.
     AsyncResult<bool> armDisarm(bool arm);
     AsyncResult<bool> takeoff(float z = -2.5, float pitch = 0, float yaw = 0);
-    AsyncResult<bool> land(float yaw, float  lat = 0, float lon = 0, float altitude = 0);
+    AsyncResult<bool> land(float yaw, float lat = 0, float lon = 0, float altitude = 0);
     AsyncResult<bool> returnToHome();
     AsyncResult<bool> loiter();
     AsyncResult<bool> setPositionHoldMode();
@@ -44,7 +46,7 @@ public:
     // wait for it to settle down with dz delta, and dvz delta velocity.
     AsyncResult<bool> waitForAltitude(float z, float dz, float dvz);
 
-    // request OFFBOARD control.  
+    // request OFFBOARD control.
     void requestControl();
     // release OFFBOARD control
     void releaseControl();
@@ -65,7 +67,7 @@ public:
     // Move drone by directly controlling the attitude of the drone (units are degrees).
     // If the rollRate, pitchRate and yawRate are all zero then you will get the default rates provided by the drone.
     void moveByAttitude(float roll, float pitch, float yaw, float rollRate, float pitchRate, float yawRate, float thrust);
-         
+
     uint32_t getTimeStamp();
     int getVehicleStateVersion();
     const VehicleState& getVehicleState();

@@ -66,8 +66,7 @@ using std::experimental::optional;
 */
 
 #ifndef _MSC_VER
-__attribute__((__format__ (__printf__, 1, 0)))
-static int _vscprintf(const char * format, va_list pargs)
+__attribute__((__format__(__printf__, 1, 0))) static int _vscprintf(const char* format, va_list pargs)
 {
     int retval;
     va_list argcopy;
@@ -81,10 +80,14 @@ static int _vscprintf(const char * format, va_list pargs)
 #endif
 
 // Call this on a function parameter to suppress the unused paramter warning
-template <class T> inline 
-void unused(T const & result) { static_cast<void>(result); }
+template <class T>
+inline void unused(T const& result)
+{
+    static_cast<void>(result);
+}
 
-namespace mavlink_utils {
+namespace mavlink_utils
+{
 
 class Utils
 {
@@ -96,8 +99,7 @@ private:
     //this is not required for most compilers
     typedef unsigned int uint;
     template <typename T>
-    using time_point = std::chrono::time_point<T>;    
-
+    using time_point = std::chrono::time_point<T>;
 
 public:
     static void enableImmediateConsoleFlush()
@@ -106,7 +108,7 @@ public:
         setbuf(stdout, NULL);
     }
 
-    template<typename T>
+    template <typename T>
     static T getRandomFromGaussian(T stddev = 1, T mean = 0)
     {
         static std::default_random_engine random_gen;
@@ -114,20 +116,20 @@ public:
 
         return gaussian_dist(random_gen) * stddev + mean;
     }
-    
-    static constexpr double degreesToRadians(double degrees) 
+
+    static constexpr double degreesToRadians(double degrees)
     {
         return static_cast<double>(M_PIl * degrees / 180.0);
     }
-    static constexpr float degreesToRadians(float degrees) 
+    static constexpr float degreesToRadians(float degrees)
     {
         return static_cast<float>(M_PIf * degrees / 180.0f);
     }
-    static constexpr double radiansToDegrees(double radians) 
+    static constexpr double radiansToDegrees(double radians)
     {
         return static_cast<double>(radians * 180.0 / M_PIl);
     }
-    static constexpr float radiansToDegrees(float radians) 
+    static constexpr float radiansToDegrees(float radians)
     {
         return static_cast<float>(radians * 180.0f / M_PIf);
     }
@@ -144,10 +146,10 @@ public:
     static int sign(T val)
     {
         return T(0) < val ? 1 : (T(0) > val ? -1 : 0);
-    }   
+    }
 
     /// Limits absolute value whole preserving sign
-    template <typename T> 
+    template <typename T>
     static T limitAbsValue(T val, T min_value, T max_value)
     {
         T val_abs = std::abs(val);
@@ -155,23 +157,23 @@ public:
         val_limited = std::min(val_limited, max_value);
         return sign(val) * val_limited;
     }
-    
+
     /// Limits absolute value whole preserving sign
-    template <typename T> 
+    template <typename T>
     static T clip(T val, T min_value, T max_value)
     {
         return std::max(min_value, std::min(val, max_value));
     }
 
-    template<typename Range>
+    template <typename Range>
     static const string printRange(Range&& range, const string& delim = ", ",
-        const string& prefix="(", const string& suffix=")")
+                                   const string& prefix = "(", const string& suffix = ")")
     {
         return printRange(std::begin(range), std::end(range), delim, prefix, suffix);
     }
-    template<typename Iterator>
+    template <typename Iterator>
     static const string printRange(Iterator start, Iterator last, const string& delim = ", ",
-        const string& prefix="(", const string& suffix=")")
+                                   const string& prefix = "(", const string& suffix = ")")
     {
         stringstream ss;
         ss << prefix;
@@ -183,7 +185,7 @@ public:
         }
 
         ss << suffix;
-        return ss.str();         
+        return ss.str();
     }
 
     static std::string getFileExtension(const string& str)
@@ -199,10 +201,11 @@ public:
         return str.substr(i, len - i);
     }
 
-    #ifndef _MSC_VER
-    __attribute__((__format__ (__printf__, 1, 0)))
-    #endif
-    static string stringf(const char* format, ...)
+#ifndef _MSC_VER
+    __attribute__((__format__(__printf__, 1, 0)))
+#endif
+    static string
+    stringf(const char* format, ...)
     {
         va_list args;
         va_start(args, format);
@@ -210,17 +213,17 @@ public:
         IGNORE_FORMAT_STRING_ON
         auto size = _vscprintf(format, args) + 1U;
         IGNORE_FORMAT_STRING_OFF
-        std::unique_ptr<char[]> buf(new char[size] ); 
+        std::unique_ptr<char[]> buf(new char[size]);
 
-        #ifndef _MSC_VER
-            IGNORE_FORMAT_STRING_ON
-            vsnprintf(buf.get(), size, format, args);
-            IGNORE_FORMAT_STRING_OFF
-        #else
-            vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
-        #endif
+#ifndef _MSC_VER
+        IGNORE_FORMAT_STRING_ON
+        vsnprintf(buf.get(), size, format, args);
+        IGNORE_FORMAT_STRING_OFF
+#else
+        vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
+#endif
 
-        va_end(args);            
+        va_end(args);
 
         return string(buf.get());
     }
@@ -277,7 +280,7 @@ public:
         auto start = line.begin();
         std::vector<std::string> result;
         auto end = line.end();
-        for (auto it = line.begin(); it != end; ) {
+        for (auto it = line.begin(); it != end;) {
             bool split = false;
             char ch = *it;
             if (ch == '\'' || ch == '"') {
@@ -287,13 +290,14 @@ public:
                 }
                 it++;
                 start = it;
-                for (; it != end; it++) {					
+                for (; it != end; it++) {
                     if (*it == ch) {
                         break;
-                    } 
+                    }
                 }
                 split = true;
-            } else {
+            }
+            else {
                 for (int i = 0; i < numSeparators; i++) {
                     if (ch == separators[i]) {
                         split = true;
@@ -344,8 +348,7 @@ public:
         //  return (onecount != 0)
         //      ? (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount))
         //      : 0;
-        return static_cast<R>(-(onecount != 0))
-            & (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount));
+        return static_cast<R>(-(onecount != 0)) & (static_cast<R>(-1) >> ((sizeof(R) * CHAR_BIT) - onecount));
     }
 
     static void cleanupThread(std::thread& th)
@@ -358,39 +361,39 @@ public:
 
     static inline int floorToInt(float x)
     {
-        return static_cast<int> (std::floor(x));
+        return static_cast<int>(std::floor(x));
     }
 
-    template<typename T>
+    template <typename T>
     static constexpr T nan()
     {
         return std::numeric_limits<T>::quiet_NaN();
     }
-    template<typename T>
+    template <typename T>
     static constexpr T max()
     {
         return std::numeric_limits<T>::max();
     }
-    template<typename T>
+    template <typename T>
     static constexpr T min()
     {
         return std::numeric_limits<T>::min();
     }
 
-    template<typename T>
+    template <typename T>
     static void setValue(T arr[], size_t length, const T& val)
     {
         std::fill(arr, arr + length, val);
     }
 
-    template<typename T, size_t N>
+    template <typename T, size_t N>
     static void setValue(T (&arr)[N], const T& val)
     {
-        std::fill(arr, arr+N, val);
+        std::fill(arr, arr + N, val);
     }
 
-    template< class T, size_t N>
-    static std::size_t length(const T(&)[N])
+    template <class T, size_t N>
+    static std::size_t length(const T (&)[N])
     {
         return N;
     };
@@ -400,7 +403,7 @@ public:
         std::ofstream file(file_name, std::ios::binary);
         file.write(data, size);
     }
-    template<typename Container>
+    template <typename Container>
     static typename std::enable_if<type_utils::is_container<Container>::value, void>::type
     append(Container& to, const Container& from)
     {
@@ -408,15 +411,15 @@ public:
         using std::end;
         to.insert(end(to), begin(from), end(from));
     }
-    template<typename Container>
+    template <typename Container>
     static typename std::enable_if<type_utils::is_container<Container>::value, void>::type
-        copy(const Container& from, Container& to)
+    copy(const Container& from, Container& to)
     {
         using std::begin;
         using std::end;
         std::copy(begin(from), end(from), begin(to));
     }
-    template<typename T>
+    template <typename T>
     static void copy(const T* from, T* to, uint count)
     {
         std::copy(from, from + count, to);
@@ -450,7 +453,8 @@ public:
         char str[1024];
         if (std::strftime(str, sizeof(str), format, std::localtime(&tt)))
             return string(str);
-        else return string();
+        else
+            return string();
     }
     static string getLogFileTimeStamp()
     {
@@ -476,30 +480,29 @@ public:
     static double getTimeSinceEpochSecs(std::chrono::high_resolution_clock::time_point* t = nullptr)
     {
         using Clock = std::chrono::high_resolution_clock;
-        return std::chrono::duration<double>((t != nullptr ? *t : Clock::now() ).time_since_epoch()).count();
+        return std::chrono::duration<double>((t != nullptr ? *t : Clock::now()).time_since_epoch()).count();
     }
     static uint64_t getTimeSinceEpochNanos(std::chrono::high_resolution_clock::time_point* t = nullptr)
     {
         using Clock = std::chrono::high_resolution_clock;
-        return static_cast<uint64_t>((t != nullptr ? *t : Clock::now() ).time_since_epoch().count());
+        return static_cast<uint64_t>((t != nullptr ? *t : Clock::now()).time_since_epoch().count());
     }
 
-    template<typename T>
-    static void clear(std::queue<T> &q, size_t max_elements = SIZE_MAX)
+    template <typename T>
+    static void clear(std::queue<T>& q, size_t max_elements = SIZE_MAX)
     {
-        while(!q.empty() && max_elements > 0) {
+        while (!q.empty() && max_elements > 0) {
             q.pop();
             --max_elements;
         }
     }
 
-    template<typename T>
+    template <typename T>
     static const std::vector<T>& emptyVector()
     {
         static const std::vector<T> empty_vector;
         return empty_vector;
     }
-
 
     static constexpr float kelvinToCelcius(float kelvin)
     {
@@ -510,10 +513,9 @@ public:
         return celcius + 273.15f;
     }
 
-
     //implements relative method - do not use for comparing with zero
     //use this most of the time, tolerance needs to be meaningful in your context
-    template<typename TReal>
+    template <typename TReal>
     static bool isApproximatelyEqual(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
     {
         TReal diff = std::fabs(a - b);
@@ -528,7 +530,7 @@ public:
 
     //supply tolerance that is meaningful in your context
     //for example, default tolerance may not work if you are comparing double with float
-    template<typename TReal>
+    template <typename TReal>
     static bool isApproximatelyZero(TReal a, TReal tolerance = std::numeric_limits<TReal>::epsilon())
     {
         if (std::fabs(a) <= tolerance)
@@ -536,10 +538,9 @@ public:
         return false;
     }
 
-
     //use this when you want to be on safe side
     //for example, don't start rover unless signal is above 1
-    template<typename TReal>
+    template <typename TReal>
     static bool isDefinitelyLessThan(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
     {
         TReal diff = a - b;
@@ -551,7 +552,7 @@ public:
 
         return false;
     }
-    template<typename TReal>
+    template <typename TReal>
     static bool isDefinitelyGreaterThan(TReal a, TReal b, TReal tolerance = std::numeric_limits<TReal>::epsilon())
     {
         TReal diff = a - b;
@@ -568,7 +569,7 @@ public:
     //use this when you are only concerned about floating point precision issue
     //for example, if you want to see if a is 1.0 by checking if its within
     //10 closest representable floating point numbers around 1.0.
-    template<typename TReal>
+    template <typename TReal>
     static bool isWithinPrecisionInterval(TReal a, TReal b, unsigned int interval_size = 1)
     {
         TReal min_a = a - (a - std::nextafter(a, std::numeric_limits<TReal>::lowest())) * interval_size;
@@ -582,10 +583,9 @@ public:
 #ifdef _MSC_VER
         __debugbreak();
 #else
-        //TODO: Use GCC and Clang version from https://github.com/scottt/debugbreak
+//TODO: Use GCC and Clang version from https://github.com/scottt/debugbreak
 #endif
     }
-
 };
 
 } //namespace

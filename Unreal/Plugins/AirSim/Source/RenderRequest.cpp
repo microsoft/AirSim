@@ -7,10 +7,8 @@
 #include "AirBlueprintLib.h"
 #include "Async/Async.h"
 
-RenderRequest::RenderRequest(UGameViewportClient * game_viewport, std::function<void()>&& query_camera_pose_cb)
-    : params_(nullptr), results_(nullptr), req_size_(0),
-    wait_signal_(new msr::airlib::WorkerThreadSignal),
-    game_viewport_(game_viewport), query_camera_pose_cb_(std::move(query_camera_pose_cb))
+RenderRequest::RenderRequest(UGameViewportClient* game_viewport, std::function<void()>&& query_camera_pose_cb)
+    : params_(nullptr), results_(nullptr), req_size_(0), wait_signal_(new msr::airlib::WorkerThreadSignal), game_viewport_(game_viewport), query_camera_pose_cb_(std::move(query_camera_pose_cb))
 {
 }
 
@@ -75,11 +73,11 @@ void RenderRequest::getScreenshot(std::shared_ptr<RenderParams> params[], std::v
                 // rendering commands to RenderThread. Hence, our ExecuteTask will
                 // execute *immediately* after RenderThread renders the scene!
                 RenderRequest* This = this;
-                ENQUEUE_RENDER_COMMAND(SceneDrawCompletion)(
-                [This](FRHICommandListImmediate& RHICmdList)
-                {
-                    This->ExecuteTask();
-                });
+                ENQUEUE_RENDER_COMMAND(SceneDrawCompletion)
+                (
+                    [This](FRHICommandListImmediate& RHICmdList) {
+                        This->ExecuteTask();
+                    });
 
                 game_viewport_->bDisableWorldRendering = saved_DisableWorldRendering_;
 
@@ -141,8 +139,7 @@ FReadSurfaceDataFlags RenderRequest::setupRenderResource(const FTextureRenderTar
 
 void RenderRequest::ExecuteTask()
 {
-    if (params_ != nullptr && req_size_ > 0)
-    {
+    if (params_ != nullptr && req_size_ > 0) {
         for (unsigned int i = 0; i < req_size_; ++i) {
             FRHICommandListImmediate& RHICmdList = GetImmediateCommandList_ForRenderCommand();
             auto rt_resource = params_[i]->render_target->GetRenderTargetResource();
@@ -166,8 +163,9 @@ void RenderRequest::ExecuteTask()
                         rhi_texture,
                         FIntRect(0, 0, size.X, size.Y),
                         results_[i]->bmp_float,
-                        CubeFace_PosX, 0, 0
-                    );
+                        CubeFace_PosX,
+                        0,
+                        0);
                 }
             }
 

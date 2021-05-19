@@ -12,13 +12,15 @@
 #include <mutex>
 #include <cstdint>
 
-namespace common_utils {
+namespace common_utils
+{
 
-class ScheduledExecutor 
+class ScheduledExecutor
 {
 public:
     ScheduledExecutor()
-    {}
+    {
+    }
 
     ScheduledExecutor(const std::function<bool(uint64_t)>& callback, uint64_t period_nanos)
     {
@@ -44,7 +46,7 @@ public:
         is_first_period_ = true;
 
         initializePauseState();
-        
+
         sleep_time_avg_ = 0;
         Utils::cleanupThread(th_);
         th_ = std::thread(&ScheduledExecutor::executorLoop, this);
@@ -85,7 +87,7 @@ public:
 
     void setFrameNumber(uint32_t frameNumber)
     {
-        currentFrameNumber_ = frameNumber;    
+        currentFrameNumber_ = frameNumber;
     }
 
     void stop()
@@ -99,7 +101,7 @@ public:
                     th_.join();
                 }
             }
-            catch(const std::system_error& /* e */) {
+            catch (const std::system_error& /* e */) {
             }
         }
     }
@@ -177,14 +179,14 @@ private:
             TTimeDelta since_last_call = period_start - call_end;
 
             if (frame_countdown_enabled_) {
-                if (targetFrameNumber_ <= currentFrameNumber_){
-                    if (! isPaused())
+                if (targetFrameNumber_ <= currentFrameNumber_) {
+                    if (!isPaused())
                         pause(true);
 
                     frame_countdown_enabled_ = false;
                 }
             }
-            
+
             if (pause_period_start_ > 0) {
                 if (nanos() - pause_period_start_ >= pause_period_) {
                     pause(!isPaused());
@@ -203,10 +205,10 @@ private:
                         started_ = result;
                     }
                 }
-            } 
+            }
             else
                 is_first_period_ = false;
-            
+
             call_end = nanos();
 
             TTimeDelta elapsed_period = nanos() - period_start;
@@ -231,11 +233,10 @@ private:
     uint32_t currentFrameNumber_;
     uint32_t targetFrameNumber_;
     std::atomic_bool frame_countdown_enabled_;
-    
+
     double sleep_time_avg_;
 
     std::mutex mutex_;
 };
-
 }
 #endif
