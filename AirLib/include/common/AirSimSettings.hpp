@@ -1153,8 +1153,8 @@ namespace airlib
 
             Settings child_json;
             if (settings_json.getChild("CameraDirector", child_json)) {
-                camera_director.position = createVectorSetting(settings_json, camera_director.position);
-                camera_director.rotation = createRotationSetting(settings_json, camera_director.rotation);
+                camera_director.position = createVectorSetting(child_json, camera_director.position);
+                camera_director.rotation = createRotationSetting(child_json, camera_director.rotation);
                 camera_director.follow_distance = child_json.getFloat("FollowDistance", camera_director.follow_distance);
             }
 
