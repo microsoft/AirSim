@@ -140,6 +140,8 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#quick-note">Quick Note</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#clang-format">clang-format</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#naming-conventions">Naming Conventions</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#header-files">Header Files</a>
@@ -318,6 +320,19 @@
 <h2 id="quick-note">Quick Note<a class="headerlink" href="#quick-note" title="Permanent link">#</a></h2>
 <p>The great thing about "standards" is that there are many to chose from: <a href="https://isocpp.org/wiki/faq/coding-standards">ISO</a>, <a href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md">Sutter &amp; Stroustrup</a>, <a href="http://wiki.ros.org/CppStyleGuide">ROS</a>, <a href="https://www.kernel.org/doc/Documentation/CodingStyle">LINUX</a>, <a href="https://google.github.io/styleguide/cppguide.html">Google's</a>, <a href="https://msdn.microsoft.com/en-us/library/888a6zcz.aspx">Microsoft's</a>, <a href="http://atlas-computing.web.cern.ch/atlas-computing/projects/qa/draft_guidelines.html">CERN's</a>, <a href="https://gcc.gnu.org/wiki/CppConventions">GCC's</a>, <a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0475c/CJAJAJCJ.html">ARM's</a>, <a href="http://llvm.org/docs/CodingStandards.html">LLVM's</a> and probably 
 thousands of others. Unfortunately most of these can't even agree on something as basic as how to name a class or a constant. This is probably due to the fact that these standards often carry lots of  legacy issues due to supporting existing code bases. The intention behind this document is to create guidance that remains as close to ISO, Sutter &amp; Stroustrup and ROS while resolving as many conflicts, disadvantages and inconsistencies as possible among them.</p>
+<h2 id="clang-format">clang-format<a class="headerlink" href="#clang-format" title="Permanent link">#</a></h2>
+<p>Formatting the syntax of C++ is normalized by the clang-format tool which has settings checked into
+this project in the file <code>.clang-format</code>. These settings are set to match the formatting guidelines
+listed below.  You can "format" a file using clang-format command line or by enabling Visual Studio
+automatic-clang formatting either during every edit or when you save the file.  All files have been
+formatted this way and the github workflow called <code>clang-format</code> will also ensure all pull requests
+are correctly formatted so it should stay clean.  Obviously this does not include external code like
+<code>Eigen</code> or <code>rpclib</code>.  </p>
+<p>If you find a bug in clang-format you can disable clang formatting of a specific block of code by
+using the following comments pair:</p>
+<pre class="highlight"><code class="language-c++">// clang-format off
+...
+// clang-format on</code></pre>
 <h2 id="naming-conventions">Naming Conventions<a class="headerlink" href="#naming-conventions" title="Permanent link">#</a></h2>
 <p>Avoid using any sort of Hungarian notation on names and "_ptr" on pointers.</p>
 <table>
