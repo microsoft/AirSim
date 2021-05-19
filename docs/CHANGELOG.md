@@ -4,6 +4,7 @@ Below is summarized list of important changes. This does not include minor/less 
 
 ### May 2021
 
+* Latest release `v1.5.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.5.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.5.0-linux)
 * [fix px4 connection for wsl 2.](https://github.com/microsoft/AirSim/pull/3603)
 
 ### Apr 2021
