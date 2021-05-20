@@ -365,9 +365,11 @@ This resolves to the WSL 2 remote ip address found in the TCP socket.</p>
 See <a href="../px4_lockstep/">PX4 LockStep</a> for more information.
 The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
 noise generation.  This setting clamps that down a bit.</p>
-<p>Lastly, please edit the Linux file in <code>ROMFS/px4fmu_common/init.d-posix/rcS</code> and make sure
-it is looking for the <code>PX4_SIM_HOST_ADDR</code> environment variable and is passing that through to the
-PX4 simulator like this:</p>
+<p>If your local repo does not include <a href="https://github.com/PX4/PX4-Autopilot/commit/292a66ce417c9769e1a7845fbc9b8d5e68e1cf0b">this PX4 
+commit</a>, 
+please edit the Linux file in <code>ROMFS/px4fmu_common/init.d-posix/rcS</code> and make sure it is looking
+for the <code>PX4_SIM_HOST_ADDR</code> environment variable and is passing that through to the PX4 
+simulator like this:</p>
 <pre class="highlight"><code class="language-shell"># If PX4_SIM_HOST_ADDR environment variable is empty use localhost.
 if [ -z "${PX4_SIM_HOST_ADDR}" ]; then
     echo "PX4 SIM HOST: localhost"
