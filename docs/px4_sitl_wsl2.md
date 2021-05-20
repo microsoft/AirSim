@@ -82,9 +82,11 @@ See [PX4 LockStep](px4_lockstep.md) for more information.
 The "Barometer" setting keeps PX4 happy because the default AirSim barometer has a bit too much
 noise generation.  This setting clamps that down a bit.
 
-Lastly, please edit the Linux file in `ROMFS/px4fmu_common/init.d-posix/rcS` and make sure
-it is looking for the `PX4_SIM_HOST_ADDR` environment variable and is passing that through to the
-PX4 simulator like this:
+If your local repo does not include [this PX4 
+commit](https://github.com/PX4/PX4-Autopilot/commit/292a66ce417c9769e1a7845fbc9b8d5e68e1cf0b), 
+please edit the Linux file in `ROMFS/px4fmu_common/init.d-posix/rcS` and make sure it is looking
+for the `PX4_SIM_HOST_ADDR` environment variable and is passing that through to the PX4 
+simulator like this:
 
 ```shell
 # If PX4_SIM_HOST_ADDR environment variable is empty use localhost.
