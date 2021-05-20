@@ -19,8 +19,8 @@ STRICT_MODE_OFF
 #include "rpc/rpc_error.h"
 STRICT_MODE_ON
 
-
-class StereoImageGenerator {
+class StereoImageGenerator
+{
 public:
     StereoImageGenerator(std::string storage_dir)
         : storage_dir_(storage_dir)
@@ -35,16 +35,16 @@ public:
 
         msr::airlib::ClockBase* clock = msr::airlib::ClockFactory::get();
         RandomPointPoseGenerator pose_generator(static_cast<int>(clock->nowNanos()));
-        std::fstream file_list(FileSystem::combine(storage_dir_, "files_list.txt"), 
-            std::ios::out | std::ios::in | std::ios_base::app);
+        std::fstream file_list(FileSystem::combine(storage_dir_, "files_list.txt"),
+                               std::ios::out | std::ios::in | std::ios_base::app);
 
         int sample = getImageCount(file_list);
 
         common_utils::ProsumerQueue<ImagesResult> results;
-        std::thread result_process_thread(processImages, & results);
+        std::thread result_process_thread(processImages, &results);
 
         try {
-            while(sample < num_samples) {
+            while (sample < num_samples) {
                 //const auto& collision_info = client.getCollisionInfo();
                 //if (collision_info.has_collided) {
                 //    pose_generator.next();
@@ -60,8 +60,8 @@ public:
 
                 auto start_nanos = clock->nowNanos();
 
-                std::vector<ImageRequest> request = { 
-                    ImageRequest("0", ImageType::Scene), 
+                std::vector<ImageRequest> request = {
+                    ImageRequest("0", ImageType::Scene),
                     ImageRequest("1", ImageType::Scene),
                     ImageRequest("1", ImageType::DisparityNormalized, true)
                 };
@@ -76,18 +76,19 @@ public:
                 result.file_list = &file_list;
                 result.response = response;
                 result.sample = sample;
-                result.render_time = clock->elapsedSince(start_nanos);;
+                result.render_time = clock->elapsedSince(start_nanos);
+                ;
                 result.storage_dir_ = storage_dir_;
                 result.position = pose_generator.position;
                 result.orientation = pose_generator.orientation;
-
 
                 results.push(result);
 
                 pose_generator.next();
                 client.simSetVehiclePose(Pose(pose_generator.position, pose_generator.orientation), true);
             }
-        } catch (rpc::timeout &t) {
+        }
+        catch (rpc::timeout& t) {
             // will display a message like
             // rpc::timeout: Timeout of 50ms while calling RPC function 'sleep'
 
@@ -98,7 +99,6 @@ public:
         result_process_thread.join();
         return 0;
     }
-
 
 private:
     typedef common_utils::FileSystem FileSystem;
@@ -114,8 +114,10 @@ private:
 
     std::string storage_dir_;
     bool spawn_ue4 = false;
+
 private:
-    struct ImagesResult {
+    struct ImagesResult
+    {
         std::vector<ImageResponse> response;
         msr::airlib::TTimeDelta render_time;
         std::string storage_dir_;
@@ -125,7 +127,6 @@ private:
         Quaternionr orientation;
     };
 
-
     static int getImageCount(std::fstream& file_list)
     {
         int sample = 0;
@@ -133,9 +134,9 @@ private:
         while (std::getline(file_list, line))
             ++sample;
         if (file_list.eof())
-            file_list.clear();  //otherwise we can't do any further I/O
+            file_list.clear(); //otherwise we can't do any further I/O
         else if (file_list.bad()) {
-            throw  std::runtime_error("Error occurred while reading files_list.txt");
+            throw std::runtime_error("Error occurred while reading files_list.txt");
         }
 
         return sample;
@@ -156,17 +157,17 @@ private:
 
             std::string left_file_name = Utils::stringf("left_%06d.png", result.sample);
             std::string right_file_name = Utils::stringf("right_%06d.png", result.sample);
-            std::string disparity_file_name  = Utils::stringf("disparity_%06d.pfm", result.sample);
-            saveImageToFile(result.response.at(0).image_data_uint8, 
-                FileSystem::combine(result.storage_dir_, right_file_name));
-            saveImageToFile(result.response.at(1).image_data_uint8, 
-                FileSystem::combine(result.storage_dir_, left_file_name));
+            std::string disparity_file_name = Utils::stringf("disparity_%06d.pfm", result.sample);
+            saveImageToFile(result.response.at(0).image_data_uint8,
+                            FileSystem::combine(result.storage_dir_, right_file_name));
+            saveImageToFile(result.response.at(1).image_data_uint8,
+                            FileSystem::combine(result.storage_dir_, left_file_name));
 
             std::vector<float> disparity_data = result.response.at(2).image_data_float;
 
             //writeFilePFM(depth_data, response.at(2).width, response.at(2).height,
             //    FileSystem::combine(storage_dir_, Utils::stringf("depth_%06d.pfm", i)));
-            
+
             //below is not needed because we get disparity directly
             //convertToPlanDepth(depth_data, result.response.at(2).width, result.response.at(2).height);
             //float f = result.response.at(2).width / 2.0f - 1;
@@ -174,25 +175,23 @@ private:
 
             denormalizeDisparity(disparity_data, result.response.at(2).width);
 
-            Utils::writePFMfile(disparity_data.data(), result.response.at(2).width, result.response.at(2).height,
-                FileSystem::combine(result.storage_dir_, disparity_file_name));
+            Utils::writePFMfile(disparity_data.data(), result.response.at(2).width, result.response.at(2).height, FileSystem::combine(result.storage_dir_, disparity_file_name));
 
-            (* result.file_list) << left_file_name << "," << right_file_name << "," << disparity_file_name << std::endl;
+            (*result.file_list) << left_file_name << "," << right_file_name << "," << disparity_file_name << std::endl;
 
-            std::cout << "Image #" << result.sample 
-                << " pos:" << VectorMath::toString(result.position)
-                << " ori:" << VectorMath::toString(result.orientation)
-                << " render time " << result.render_time * 1E3f << "ms" 
-                << " process time " << clock->elapsedSince(process_time) * 1E3f << " ms"
-                << std::endl;
-
+            std::cout << "Image #" << result.sample
+                      << " pos:" << VectorMath::toString(result.position)
+                      << " ori:" << VectorMath::toString(result.orientation)
+                      << " render time " << result.render_time * 1E3f << "ms"
+                      << " process time " << clock->elapsedSince(process_time) * 1E3f << " ms"
+                      << std::endl;
         }
     }
 
     static void saveImageToFile(const std::vector<uint8_t>& image_data, const std::string& file_name)
     {
-        std::ofstream file(file_name , std::ios::binary);
-        file.write((char*) image_data.data(), image_data.size());
+        std::ofstream file(file_name, std::ios::binary);
+        file.write((char*)image_data.data(), image_data.size());
         file.close();
     }
 
@@ -203,7 +202,7 @@ private:
 
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
-                float dist = std::sqrt((i - center_i)*(i - center_i) + (j - center_j)*(j - center_j));
+                float dist = std::sqrt((i - center_i) * (i - center_i) + (j - center_j) * (j - center_j));
                 float denom = (dist / f);
                 denom *= denom;
                 denom = std::sqrt(1 + denom);
@@ -225,6 +224,4 @@ private:
             image_data[i] = image_data[i] * width;
         }
     }
-
 };
-

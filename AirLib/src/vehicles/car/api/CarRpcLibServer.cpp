@@ -9,7 +9,6 @@
 
 #include "vehicles/car/api/CarRpcLibServer.hpp"
 
-
 #include "common/Common.hpp"
 STRICT_MODE_OFF
 
@@ -31,40 +30,36 @@ STRICT_MODE_OFF
 
 #include "vehicles/car/api/CarRpcLibAdaptors.hpp"
 
-
 STRICT_MODE_ON
 
-
-namespace msr { namespace airlib {
-
-typedef msr::airlib_rpclib::CarRpcLibAdaptors CarRpcLibAdaptors;
-
-CarRpcLibServer::CarRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port)
-    : RpcLibServerBase(api_provider, server_address, port)
+namespace msr
 {
-    (static_cast<rpc::server*>(getServer()))->
-        bind("getCarState", [&](const std::string& vehicle_name) -> CarRpcLibAdaptors::CarState {
-        return CarRpcLibAdaptors::CarState(getVehicleApi(vehicle_name)->getCarState());
-    });
-
-    (static_cast<rpc::server*>(getServer()))->
-        bind("setCarControls", [&](const CarRpcLibAdaptors::CarControls& controls, const std::string& vehicle_name) -> void {
-        getVehicleApi(vehicle_name)->setCarControls(controls.to());
-    });
-	(static_cast<rpc::server*>(getServer()))->
-		bind("getCarControls", [&](const std::string& vehicle_name) -> CarRpcLibAdaptors::CarControls {
-		return CarRpcLibAdaptors::CarControls(getVehicleApi(vehicle_name)->getCarControls());
-	});
-
-}
-
-//required for pimpl
-CarRpcLibServer::~CarRpcLibServer()
+namespace airlib
 {
+
+    typedef msr::airlib_rpclib::CarRpcLibAdaptors CarRpcLibAdaptors;
+
+    CarRpcLibServer::CarRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port)
+        : RpcLibServerBase(api_provider, server_address, port)
+    {
+        (static_cast<rpc::server*>(getServer()))->bind("getCarState", [&](const std::string& vehicle_name) -> CarRpcLibAdaptors::CarState {
+            return CarRpcLibAdaptors::CarState(getVehicleApi(vehicle_name)->getCarState());
+        });
+
+        (static_cast<rpc::server*>(getServer()))->bind("setCarControls", [&](const CarRpcLibAdaptors::CarControls& controls, const std::string& vehicle_name) -> void {
+            getVehicleApi(vehicle_name)->setCarControls(controls.to());
+        });
+        (static_cast<rpc::server*>(getServer()))->bind("getCarControls", [&](const std::string& vehicle_name) -> CarRpcLibAdaptors::CarControls {
+            return CarRpcLibAdaptors::CarControls(getVehicleApi(vehicle_name)->getCarControls());
+        });
+    }
+
+    //required for pimpl
+    CarRpcLibServer::~CarRpcLibServer()
+    {
+    }
 }
-
-}} //namespace
-
+} //namespace
 
 #endif
 #endif

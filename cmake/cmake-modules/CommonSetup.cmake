@@ -24,12 +24,8 @@ macro(SetupConsoleBuild)
 endmacro(SetupConsoleBuild)
 
 macro(CommonSetup)
-    message(STATUS "Running CommonSetup...")
-
     find_package(Threads REQUIRED)
-
-    find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
-    message(STATUS "found AIRSIM_ROOT=${AIRSIM_ROOT}")
+    find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../.." REQUIRED)    
 
     #setup output paths
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)

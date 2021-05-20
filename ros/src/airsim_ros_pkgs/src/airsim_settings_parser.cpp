@@ -30,8 +30,7 @@ std::string AirSimSettingsParser::getSimMode()
 // mimics void ASimHUD::initializeSettings()
 bool AirSimSettingsParser::initializeSettings()
 {
-    if (getSettingsText(settings_text_))
-    {
+    if (getSettingsText(settings_text_)) {
         AirSimSettings::initializeSettings(settings_text_);
 
         AirSimSettings::singleton().load(std::bind(&AirSimSettingsParser::getSimMode, this));
@@ -39,6 +38,6 @@ bool AirSimSettingsParser::initializeSettings()
 
         return true;
     }
-    
+
     return false;
 }

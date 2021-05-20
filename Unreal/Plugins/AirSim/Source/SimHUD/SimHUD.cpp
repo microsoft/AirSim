@@ -10,7 +10,6 @@
 #include "common/AirSimSettings.hpp"
 #include <stdexcept>
 
-
 ASimHUD::ASimHUD()
 {
     static ConstructorHelpers::FClassFinder<UUserWidget> hud_widget_class(TEXT("WidgetBlueprint'/AirSim/Blueprints/BP_SimHUDWidget'"));
@@ -138,9 +137,8 @@ void ASimHUD::updateWidgetSubwindowVisibility()
             camera->setCameraTypeEnabled(camera_type, is_visible);
 
         widget_->setSubwindowVisibility(window_index,
-            is_visible,
-            is_visible ? camera->getRenderTarget(camera_type, false) : nullptr
-        );
+                                        is_visible,
+                                        is_visible ? camera->getRenderTarget(camera_type, false) : nullptr);
     }
 }
 
@@ -189,7 +187,6 @@ void ASimHUD::createMainWidget()
             UAirBlueprintLib::LogMessage(TEXT("There were no compatible vehicles created for current SimMode! Check your settings.json."), TEXT(""), LogDebugLevel::Failure);
         }
 
-
         widget_ = CreateWidget<USimHUDWidget>(player_controller, widget_class_);
     }
     else {
@@ -209,7 +206,6 @@ void ASimHUD::createMainWidget()
     widget_->setRecordButtonVisibility(AirSimSettings::singleton().is_record_ui_visible);
     updateWidgetSubwindowVisibility();
 }
-
 
 void ASimHUD::setUnrealEngineSettings()
 {
@@ -275,9 +271,8 @@ std::vector<ASimHUD::AirSimSettings::SubwindowSetting>& ASimHUD::getSubWindowSet
 std::string ASimHUD::getSimModeFromUser()
 {
     if (EAppReturnType::No == UAirBlueprintLib::ShowMessage(EAppMsgType::YesNo,
-        "Would you like to use car simulation? Choose no to use quadrotor simulation.",
-        "Choose Vehicle"))
-    {
+                                                            "Would you like to use car simulation? Choose no to use quadrotor simulation.",
+                                                            "Choose Vehicle")) {
         return AirSimSettings::kSimModeTypeMultirotor;
     }
     else
@@ -287,9 +282,9 @@ std::string ASimHUD::getSimModeFromUser()
 void ASimHUD::loadLevel()
 {
     if (AirSimSettings::singleton().level_name != "")
-        UAirBlueprintLib::RunCommandOnGameThread([&]() {UAirBlueprintLib::loadLevel(this->GetWorld(), FString(AirSimSettings::singleton().level_name.c_str()));}, true);
+        UAirBlueprintLib::RunCommandOnGameThread([&]() { UAirBlueprintLib::loadLevel(this->GetWorld(), FString(AirSimSettings::singleton().level_name.c_str())); }, true);
     else
-        UAirBlueprintLib::RunCommandOnGameThread([&]() {UAirBlueprintLib::loadLevel(this->GetWorld(), FString("Blocks"));}, true);
+        UAirBlueprintLib::RunCommandOnGameThread([&]() { UAirBlueprintLib::loadLevel(this->GetWorld(), FString("Blocks")); }, true);
 }
 void ASimHUD::createSimMode()
 {
@@ -300,14 +295,17 @@ void ASimHUD::createSimMode()
 
     //spawn at origin. We will use this to do global NED transforms, for ex, non-vehicle objects in environment
     if (simmode_name == AirSimSettings::kSimModeTypeMultirotor)
-        simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, 
-            FRotator::ZeroRotator, simmode_spawn_params);
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector,
+                                                                         FRotator::ZeroRotator,
+                                                                         simmode_spawn_params);
     else if (simmode_name == AirSimSettings::kSimModeTypeCar)
         simmode_ = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector,
-            FRotator::ZeroRotator, simmode_spawn_params);
+                                                             FRotator::ZeroRotator,
+                                                             simmode_spawn_params);
     else if (simmode_name == AirSimSettings::kSimModeTypeComputerVision)
         simmode_ = this->GetWorld()->SpawnActor<ASimModeComputerVision>(FVector::ZeroVector,
-            FRotator::ZeroRotator, simmode_spawn_params);
+                                                                        FRotator::ZeroRotator,
+                                                                        simmode_spawn_params);
     else {
         UAirBlueprintLib::ShowMessage(EAppMsgType::Ok, std::string("SimMode is not valid: ") + simmode_name, "Error");
         UAirBlueprintLib::LogMessageString("SimMode is not valid: ", simmode_name, LogDebugLevel::Failure);
@@ -344,31 +342,27 @@ void ASimHUD::initializeSubWindows()
                 subwindow_cameras_[subwindow_setting.window_index] = vehicle_sim_api->getCamera(subwindow_setting.camera_name);
             else
                 UAirBlueprintLib::LogMessageString("CameraID in <SubWindows> element in settings.json is invalid",
-                    std::to_string(window_index), LogDebugLevel::Failure);
+                                                   std::to_string(window_index),
+                                                   LogDebugLevel::Failure);
         }
         else
             UAirBlueprintLib::LogMessageString("Vehicle in <SubWindows> element in settings.json is invalid",
-                std::to_string(window_index), LogDebugLevel::Failure);
-
+                                               std::to_string(window_index),
+                                               LogDebugLevel::Failure);
     }
-
 }
-
-
 
 // Attempts to parse the settings text from one of multiple locations.
 // First, check the command line for settings provided via "-s" or "--settings" arguments
 // Next, check the executable's working directory for the settings file.
-// Finally, check the user's documents folder. 
+// Finally, check the user's documents folder.
 // If the settings file cannot be read, throw an exception
 
-bool ASimHUD::getSettingsText(std::string& settingsText) 
+bool ASimHUD::getSettingsText(std::string& settingsText)
 {
-    return (getSettingsTextFromCommandLine(settingsText)
-        ||
-        readSettingsTextFromFile(FString(msr::airlib::Settings::getExecutableFullPath("settings.json").c_str()), settingsText)
-        ||
-        readSettingsTextFromFile(FString(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json").c_str()), settingsText));
+    return (getSettingsTextFromCommandLine(settingsText) ||
+            readSettingsTextFromFile(FString(msr::airlib::Settings::getExecutableFullPath("settings.json").c_str()), settingsText) ||
+            readSettingsTextFromFile(FString(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json").c_str()), settingsText));
 }
 
 // Attempts to parse the settings file path or the settings text from the command line
@@ -376,7 +370,7 @@ bool ASimHUD::getSettingsText(std::string& settingsText)
 // Example (Path): AirSim.exe --settings "C:\path\to\settings.json"
 // Example (Text): AirSim.exe -s '{"foo" : "bar"}' -> settingsText will be set to {"foo": "bar"}
 // Returns true if the argument is present, false otherwise.
-bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText) 
+bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText)
 {
 
     bool found = false;
@@ -401,7 +395,7 @@ bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText)
     return found;
 }
 
-bool ASimHUD::readSettingsTextFromFile(FString settingsFilepath, std::string& settingsText) 
+bool ASimHUD::readSettingsTextFromFile(FString settingsFilepath, std::string& settingsText)
 {
 
     bool found = FPaths::FileExists(settingsFilepath);

@@ -4,7 +4,10 @@ The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (
 their stack that runs in Linux. If you are on Windows then you can use the [Cygwin
 Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) or you can use the
 [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) and follow
-the PX4 Linux toolchain setup. 
+the PX4 Linux toolchain setup.
+
+If you are using WSL2 please read these [additional
+instructions](px4_sitl_wsl2.md).
 
 **Note** that every time you stop the unreal app you have to restart the `px4` app.
 
@@ -19,7 +22,7 @@ the PX4 Linux toolchain setup.
     mkdir -p PX4
     cd PX4
     git clone https://github.com/PX4/PX4-Autopilot.git --recursive
-    bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools 
+    bash ./PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
     cd PX4-Autopilot
     ```
     And find the latest stable release from [https://github.com/PX4/PX4-Autopilot/releases](https://github.com/PX4/PX4-Autopilot/releases)
@@ -53,13 +56,23 @@ The default ports have changed recently, so check them closely to make sure AirS
     {
         "SettingsVersion": 1.2,
         "SimMode": "Multirotor",
+        "ClockType": "SteppableClock",
         "Vehicles": {
             "PX4": {
                 "VehicleType": "PX4Multirotor",
                 "UseSerial": false,
+                "LockStep": true,
                 "UseTcp": true,
                 "TcpPort": 4560,
-                "ControlPort": 14580,
+                "ControlPortLocal": 14540,
+                "ControlPortRemote": 14580,
+                "Sensors":{
+                    "Barometer":{
+                        "SensorType": 1,
+                        "Enabled": true,
+                        "PressureFactorSigma": 0.0001825
+                    }
+                },
                 "Parameters": {
                     "NAV_RCL_ACT": 0,
                     "NAV_DLL_ACT": 0,
@@ -72,8 +85,14 @@ The default ports have changed recently, so check them closely to make sure AirS
     }
     ```
     Notice the PX4 `[simulator]` is using TCP, which is why we need to add: `"UseTcp": true,`.
+    Notice we are also enabling `LockStep`, see [PX4 LockStep](px4_lockstep.md) for more
+    information. The `Barometer` setting keeps PX4 happy because the default AirSim barometer has a
+    bit too much noise generation.  This setting clamps that down a bit which allows PX4 to achieve
+    GPS lock more quickly.
 
-6. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
+6. Open incoming TCP port 4560 and incoming UDP port 14540 using your firewall configuration.
+
+7. Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP. You should see
    a bunch of messages from the SITL PX4 window. Specifically, the following messages tell you that
    AirSim is connected properly and GPS fusion is stable:
     ```
@@ -85,7 +104,7 @@ The default ports have changed recently, so check them closely to make sure AirS
 
     If you do not see these messages then check your port settings.
 
-7. You should also be able to use QGroundControl with SITL mode.  Make sure there is no Pixhawk
+8. You should also be able to use QGroundControl with SITL mode.  Make sure there is no Pixhawk
    hardware plugged in, otherwise QGroundControl will choose to use that instead.  Note that as we
    don't have a physical board, an RC cannot be connected directly to it. So the alternatives are
    either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky
@@ -153,6 +172,11 @@ Local position: x=-0.0326988, y=0.00656854, z=5.48506
 
 If the z coordinate is large like this then takeoff might not work as expected.  Resetting the SITL
 and simulation should fix that problem.
+
+## WSL 2
+
+Windows Subsystem for Linux version 2 operates in a Virtual Machine.  This requires
+additional setup - see [additional instructions](px4_sitl_wsl2.md).
 
 ## No Remote Control
 

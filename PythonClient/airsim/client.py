@@ -301,7 +301,7 @@ class VehicleClient:
         """
         return CollisionInfo.from_msgpack(self.client.call('simGetCollisionInfo', vehicle_name))
 
-    def simSetVehiclePose(self, pose, ignore_collison, vehicle_name = ''):
+    def simSetVehiclePose(self, pose, ignore_collision, vehicle_name = ''):
         """
         Set the pose of the vehicle
 
@@ -312,7 +312,7 @@ class VehicleClient:
             ignore_collision (bool): Whether to ignore any collision or not
             vehicle_name (str, optional): Name of the vehicle to move
         """
-        self.client.call('simSetVehiclePose', pose, ignore_collison, vehicle_name)
+        self.client.call('simSetVehiclePose', pose, ignore_collision, vehicle_name)
 
     def simGetVehiclePose(self, vehicle_name = ''):
         """

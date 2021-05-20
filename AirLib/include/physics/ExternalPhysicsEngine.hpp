@@ -14,45 +14,43 @@
 #include "common/SteppableClock.hpp"
 #include <cinttypes>
 
-namespace msr 
-{ 
-namespace airlib 
+namespace msr
+{
+namespace airlib
 {
 
-class ExternalPhysicsEngine : public PhysicsEngineBase {
-public:
-    ExternalPhysicsEngine()
-    { 
-    }
-
-    //*** Start: UpdatableState implementation ***//
-    virtual void resetImplementation() override
+    class ExternalPhysicsEngine : public PhysicsEngineBase
     {
-
-    }
-
-    virtual void update() override
-    {
-        PhysicsEngineBase::update();
-
-        for (PhysicsBody* body_ptr : *this) {
-            body_ptr->updateKinematics();
-            body_ptr->update();
+    public:
+        ExternalPhysicsEngine()
+        {
         }
 
-    }
-    virtual void reportState(StateReporter& reporter) override
-    {
-        for (PhysicsBody* body_ptr : *this) {
-            reporter.writeValue("ExternalPhysicsEngine",true);
-            reporter.writeValue("Is Grounded", body_ptr->isGrounded());
+        //*** Start: UpdatableState implementation ***//
+        virtual void resetImplementation() override
+        {
         }
-        //call base
-        UpdatableObject::reportState(reporter);
-    }
-    //*** End: UpdatableState implementation ***//
 
-};
+        virtual void update() override
+        {
+            PhysicsEngineBase::update();
+
+            for (PhysicsBody* body_ptr : *this) {
+                body_ptr->updateKinematics();
+                body_ptr->update();
+            }
+        }
+        virtual void reportState(StateReporter& reporter) override
+        {
+            for (PhysicsBody* body_ptr : *this) {
+                reporter.writeValue("ExternalPhysicsEngine", true);
+                reporter.writeValue("Is Grounded", body_ptr->isGrounded());
+            }
+            //call base
+            UpdatableObject::reportState(reporter);
+        }
+        //*** End: UpdatableState implementation ***//
+    };
 
 } //namespace
 } //namespace

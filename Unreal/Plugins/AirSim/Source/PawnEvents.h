@@ -5,11 +5,12 @@
 
 #include "common/common_utils/Signal.hpp"
 
-
-class PawnEvents {
+class PawnEvents
+{
 public: //types
     typedef common_utils::Signal<UPrimitiveComponent*, AActor*, UPrimitiveComponent*, bool, FVector,
-        FVector, FVector, const FHitResult&> CollisionSignal;
+                                 FVector, FVector, const FHitResult&>
+        CollisionSignal;
     typedef common_utils::Signal<float> PawnTickSignal;
 
 public:

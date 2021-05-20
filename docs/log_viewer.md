@@ -20,7 +20,7 @@ log files so you can compare the data from each.
 
 ### Realtime
 
-You can also get a realtime view if you connect the LogViewer `before` you run the simulation.  
+You can also get a realtime view if you connect the LogViewer `before` you run the simulation.
 
 ![connect](images/log_viewer_connect.png)
 
@@ -38,9 +38,13 @@ For this to work you need to configure the `settings.json` with the following se
     }
 }
 ```
+
+Note: do not use the "Logs" setting when you want realtime LogViewer logging.  Logging to
+a file using "Logs" is mutually exclusive with LogViewer logging.
+
 Simply press the blue connector button on the top right corner of the window, select the Socket
-`tab`, enter the port number `14388`, and your `localhost` network.  If you are using WSL 2 on 
-Windows then select `vEthernet (WSL)`.  
+`tab`, enter the port number `14388`, and your `localhost` network.  If you are using WSL 2 on
+Windows then select `vEthernet (WSL)`.
 
 If you do choose `vEthernet (WSL)` then make sure you also set `LocalHostIp` and
 `LogViewerHostIp` to the matching WSL ethernet address, something like `172.31.64.1`.
@@ -65,3 +69,6 @@ The magic port number 14388 can be configured in the simulator by editing the [s
 file](settings.md).  If you change the port number in LogViewer connection dialog then be sure
 to make the matching changes in your `settings.json` file.
 
+### Debugging
+
+See [PX4 Logging](px4_logging.md) for more information on how to use the LogViewer to debug situations you are setting.

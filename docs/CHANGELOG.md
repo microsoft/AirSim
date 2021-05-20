@@ -2,8 +2,36 @@
 
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
+### May 2021
+
+* Latest release `v1.5.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.5.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.5.0-linux)
+* [fix px4 connection for wsl 2.](https://github.com/microsoft/AirSim/pull/3603)
+
+### Apr 2021
+
+* [External physics engine](https://github.com/microsoft/AirSim/pull/3626)
+* [ArduPilot Sensor Updates](https://github.com/microsoft/AirSim/pull/3364)
+* [Add new build configuration "--RelWithDebInfo" which makes it easier to debug](https://github.com/microsoft/AirSim/pull/3596)
+* [Add ApiServerPort to available AirSim settings](https://github.com/microsoft/AirSim/pull/3196)
+* [ROS: Use the same settings as AirSim](https://github.com/microsoft/AirSim/pull/3536)
+
+### Mar 2021
+
+* [Add moveByVelocityZBodyFrame](https://github.com/microsoft/AirSim/pull/3475)
+* [Spawn vehicles via RPC](https://github.com/microsoft/AirSim/pull/2390)
+* [Unity weather parameters, weather HUD, and a visual effect for snow](https://github.com/microsoft/AirSim/pull/2909)
+* [Rotor output API](https://github.com/microsoft/AirSim/pull/3242)
+* [Extend Recording to multiple vehicles](https://github.com/microsoft/AirSim/pull/2861)
+* [Combine Lidar Segmentation API into getLidarData](https://github.com/microsoft/AirSim/pull/2810)
+
+### Feb 2021
+
+* [Add Ubuntu 20.04 to Actions CI](https://github.com/microsoft/AirSim/pull/3383)
+* [add tcp server support to MavLinkTest](https://github.com/microsoft/AirSim/pull/3386)
+
 ### Jan 2021
 
+* [Added continueForFrames](https://github.com/microsoft/AirSim/pull/3102)
 * Latest release `v1.4.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.4.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.4.0-linux)
 
 ### Dec 2020

@@ -13,12 +13,12 @@
 #include <string>
 #include <exception>
 
+namespace simple_flight
+{
 
-namespace simple_flight {
-
-class AngleLevelController : 
-    public IAxisController,
-    public IGoal  //for internal rate controller
+class AngleLevelController : public IAxisController
+    ,
+                             public IGoal //for internal rate controller
 {
 public:
     AngleLevelController(Params* params, const IBoardClock* clock = nullptr)
@@ -37,14 +37,14 @@ public:
 
         //initialize level PID
         pid_.reset(new PidController<float>(clock_,
-            PidConfig<float>(params_->angle_level_pid.p[axis], params_->angle_level_pid.i[axis], params_->angle_level_pid.d[axis])));
+                                            PidConfig<float>(params_->angle_level_pid.p[axis], params_->angle_level_pid.i[axis], params_->angle_level_pid.d[axis])));
 
         //initialize rate controller
         rate_controller_.reset(new AngleRateController(params_, clock_));
         rate_controller_->initialize(axis, this, state_estimator_);
 
         //we will be setting goal for rate controller so we need these two things
-        rate_mode_  = GoalMode::getUnknown();
+        rate_mode_ = GoalMode::getUnknown();
         rate_mode_[axis] = GoalModeType::AngleRate;
     }
 
@@ -69,7 +69,7 @@ public:
         TReal measured_angle = state_estimator_->getAngles()[axis_];
 
         adjustToMinDistanceAngles(measured_angle, goal_angle);
-            
+
         pid_->setGoal(goal_angle);
         pid_->setMeasured(measured_angle);
         pid_->update();
@@ -82,7 +82,6 @@ public:
         output_ = rate_controller_->getOutput();
     }
 
-    
     virtual TReal getOutput() override
     {
         return output_;
@@ -94,7 +93,7 @@ public:
         return rate_goal_;
     }
 
-    virtual const GoalMode& getGoalMode() const  override
+    virtual const GoalMode& getGoalMode() const override
     {
         return rate_mode_;
     }
@@ -139,8 +138,6 @@ private:
     const IBoardClock* clock_;
     std::unique_ptr<PidController<float>> pid_;
     std::unique_ptr<AngleRateController> rate_controller_;
-
 };
-
 
 } //namespace

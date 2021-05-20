@@ -15,12 +15,12 @@
 
 #include "common/common_utils/MinWinDefines.hpp"
 
-#undef NOWINMESSAGES			// WM_*, EM_*, LB_*, CB_*
-#undef NOCTLMGR				    // Control and Dialog routines
-#undef NOGDI					// All GDI #undefs and routines
-#undef NOKERNEL				    // All KERNEL #undefs and routines
-#undef NOUSER				    // All USER #undefs and routines
-#undef NOMSG					// typedef MSG and associated routines
+#undef NOWINMESSAGES // WM_*, EM_*, LB_*, CB_*
+#undef NOCTLMGR // Control and Dialog routines
+#undef NOGDI // All GDI #undefs and routines
+#undef NOKERNEL // All KERNEL #undefs and routines
+#undef NOUSER // All USER #undefs and routines
+#undef NOMSG // typedef MSG and associated routines
 
 //#include <fileapi.h>
 #include <Shlobj.h>
@@ -29,7 +29,6 @@
 #include <direct.h>
 
 #include "common/common_utils/WindowsApisCommonPost.hpp"
-
 
 #else
 #include <unistd.h>
@@ -43,11 +42,13 @@
 #include <mach-o/dyld.h>
 #endif
 
-namespace common_utils {
+namespace common_utils
+{
 
 // File names are unicode (std::wstring), because users can create folders containing unicode characters on both
 // Windows, OSX and Linux.
-std::string FileSystem::createDirectory(const std::string& fullPath) {
+std::string FileSystem::createDirectory(const std::string& fullPath)
+{
 
 #ifdef _WIN32
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -67,8 +68,8 @@ std::string FileSystem::createDirectory(const std::string& fullPath) {
     return fullPath;
 }
 
-
-std::string FileSystem::getUserDocumentsFolder() {
+std::string FileSystem::getUserDocumentsFolder()
+{
     std::string path;
 #ifdef _WIN32
     // Windows users can move the Documents folder to any location they want
@@ -76,16 +77,15 @@ std::string FileSystem::getUserDocumentsFolder() {
     wchar_t szPath[MAX_PATH];
 
     if (0 == SHGetFolderPath(NULL,
-        CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE,
-        NULL,
-        0,
-        szPath))
-    {
+                             CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE,
+                             NULL,
+                             0,
+                             szPath)) {
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
         path = converter.to_bytes(szPath);
     }
 
-    // fall back in case SHGetFolderPath failed for some reason.
+// fall back in case SHGetFolderPath failed for some reason.
 #endif
     if (path == "") {
         path = combine(getUserHomeFolder(), "Documents");
@@ -93,7 +93,8 @@ std::string FileSystem::getUserDocumentsFolder() {
     return ensureFolder(path);
 }
 
-std::string FileSystem::getExecutableFolder() {
+std::string FileSystem::getExecutableFolder()
+{
     std::string path;
 #ifdef _WIN32
     wchar_t szPath[MAX_PATH];

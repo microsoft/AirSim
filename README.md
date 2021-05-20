@@ -1,3 +1,9 @@
+## Last announcement
+
+The AirSim team is trying to get a better understanding of how AirSim and other simulation engines are being used across the community. If you have a couple of minutes, please take a look and respond to the AirSim survey as it does have an impact on the features and direction of the platform:
+
+[Survey link](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR4J_69QtqUREtdPd5aLYTsFURDJPQUFSNDI3T0VENzJHUjVQVkpVWlRFNC4u)
+
 # Welcome to AirSim
 
 AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
@@ -17,17 +23,18 @@ Cars in AirSim
 
 ## How to Get It
 
-[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
-
 ### Windows
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml)
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
 
 ### Linux
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml)
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 ### macOS
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 

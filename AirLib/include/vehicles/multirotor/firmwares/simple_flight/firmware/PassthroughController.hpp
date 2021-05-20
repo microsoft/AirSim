@@ -8,9 +8,11 @@
 #include "Params.hpp"
 #include <memory>
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class PassthroughController : public IAxisController {
+class PassthroughController : public IAxisController
+{
 public:
     virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) override
     {
@@ -41,6 +43,5 @@ private:
     const IGoal* goal_;
     TReal output_;
 };
-
 
 } //namespace
