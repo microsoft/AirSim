@@ -7,9 +7,12 @@ namespace msr
 {
 namespace airlib
 {
-
     class GaussianMarkovTest
     {
+    private:
+        GaussianMarkov pressure_factor_;
+        std::shared_ptr<SteppableClock> clock_;
+
     public:
         GaussianMarkovTest()
             : pressure_factor_(0.1f, 5.0f)
@@ -27,10 +30,6 @@ namespace airlib
                 std::cout << pressure_factor_.getOutput() << std::endl;
             }
         }
-
-    private:
-        GaussianMarkov pressure_factor_;
-        std::shared_ptr<SteppableClock> clock_;
     };
 }
 }
