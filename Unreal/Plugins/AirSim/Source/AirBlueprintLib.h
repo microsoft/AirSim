@@ -101,7 +101,7 @@ public:
     static bool SetMeshStencilID(const std::string& mesh_name, int object_id,
                                  bool is_name_regex = false);
     static int GetMeshStencilID(const std::string& mesh_name);
-    static void InitializeMeshStencilIDs(bool ignore_existing);
+    static void InitializeMeshStencilIDs(bool override_existing);
 
     static bool IsInGameThread();
 
@@ -199,7 +199,7 @@ public:
 
 private:
     template <typename T>
-    static void InitializeObjectStencilID(T* mesh, bool ignore_existing = true)
+    static void InitializeObjectStencilID(T* mesh, bool override_existing = true)
     {
         std::string mesh_name = common_utils::Utils::toLower(GetMeshName(mesh));
         if (mesh_name == "" || common_utils::Utils::startsWith(mesh_name, "default_")) {
@@ -214,7 +214,7 @@ private:
                 continue; //numerics and other punctuations
             hash += char_num;
         }
-        if (ignore_existing || mesh->CustomDepthStencilValue == 0) { //if value is already set then don't bother
+        if (override_existing || mesh->CustomDepthStencilValue == 0) { //if value is already set then don't bother
             SetObjectStencilID(mesh, hash % 256);
         }
     }
