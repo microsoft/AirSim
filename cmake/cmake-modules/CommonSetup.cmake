@@ -33,7 +33,7 @@ macro(CommonSetup)
     SET(LIBRARY_OUTPUT_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
     #setup include and lib for rpclib which will be referenced by other projects
-    set(RPCLIB_VERSION_FOLDER rpclib-2.2.1)
+    set(RPCLIB_VERSION_FOLDER rpclib-2.3.0)
     set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/${RPCLIB_VERSION_FOLDER}/include")
     #name of .a file with lib prefix
     set(RPC_LIB rpc)

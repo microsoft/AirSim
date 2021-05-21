@@ -4,11 +4,12 @@ set -x
 set -e
 
 # check for rpclib
-if [ ! -f ../external/rpclib/rpclib-2.2.1/rpclib.pc.in ]; then
+RPC_VERSION_FOLDER="rpclib-2.3.0"
+if [ ! -f ../external/rpclib/$RPC_VERSION_FOLDER/rpclib.pc.in ]; then
     >&2 echo "error, rpc.pc.in not found, please run setup.sh first and then run build.sh again"
 fi
 
-cp ../external/rpclib/rpclib-2.2.1/rpclib.pc.in AirLibWrapper/AirsimWrapper/rpclib.pc.in
+cp ../external/rpclib/$RPC_VERSION_FOLDER/rpclib.pc.in AirLibWrapper/AirsimWrapper/rpclib.pc.in
 
 if [ ! -d "linux-build" ]; then
     mkdir linux-build

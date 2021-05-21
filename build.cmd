@@ -64,7 +64,9 @@ if ERRORLEVEL 1 (
 
 REM //---------- get rpclib ----------
 IF NOT EXIST external\rpclib mkdir external\rpclib
-IF NOT EXIST external\rpclib\rpclib-2.2.1 (
+
+set RPC_VERSION_FOLDER=rpclib-2.3.0
+IF NOT EXIST external\rpclib\%RPC_VERSION_FOLDER% (
     REM //leave some blank lines because %powershell% shows download banner at top of console
     ECHO(
     ECHO(   
@@ -74,9 +76,9 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1 (
     ECHO *****************************************************************************************
     @echo on
     if "%PWSHV7%" == "" (
-        %powershell% -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/madratman/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip }"
+        %powershell% -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://github.com/rpclib/rpclib/archive/v2.3.0.zip -OutFile external\rpclib.zip }"
     ) else (
-        %powershell% -command "iwr https://github.com/madratman/rpclib/archive/v2.2.1.zip -OutFile external\rpclib.zip"
+        %powershell% -command "iwr https://github.com/rpclib/rpclib/archive/v2.3.0.zip -OutFile external\rpclib.zip"
     )
     @echo off
     
@@ -86,18 +88,17 @@ IF NOT EXIST external\rpclib\rpclib-2.2.1 (
     %powershell% -command "Expand-Archive -Path external\rpclib.zip -DestinationPath external\rpclib"
     del external\rpclib.zip /q
     
-    REM //Don't fail the build if the high-poly car is unable to be downloaded
-    REM //Instead, just notify users that the gokart will be used.
-    IF NOT EXIST external\rpclib\rpclib-2.2.1 (
-        ECHO Unable to download high-polycount SUV. Your AirSim build will use the default vehicle.
+    REM //Fail the build if unable to download rpclib
+    IF NOT EXIST external\rpclib\%RPC_VERSION_FOLDER% (
+        ECHO Unable to download rpclib, stopping build
         goto :buildfailed
     )
 )
 
 REM //---------- Build rpclib ------------
 ECHO Starting cmake to build rpclib...
-IF NOT EXIST external\rpclib\rpclib-2.2.1\build mkdir external\rpclib\rpclib-2.2.1\build
-cd external\rpclib\rpclib-2.2.1\build
+IF NOT EXIST external\rpclib\%RPC_VERSION_FOLDER%\build mkdir external\rpclib\%RPC_VERSION_FOLDER%\build
+cd external\rpclib\%RPC_VERSION_FOLDER%\build
 cmake -G"Visual Studio 16 2019" ..
 
 if "%buildMode%" == "" (
@@ -115,13 +116,13 @@ set RPCLIB_TARGET_LIB=AirLib\deps\rpclib\lib\x64
 if NOT exist %RPCLIB_TARGET_LIB% mkdir %RPCLIB_TARGET_LIB%
 set RPCLIB_TARGET_INCLUDE=AirLib\deps\rpclib\include
 if NOT exist %RPCLIB_TARGET_INCLUDE% mkdir %RPCLIB_TARGET_INCLUDE%
-robocopy /MIR external\rpclib\rpclib-2.2.1\include %RPCLIB_TARGET_INCLUDE%
+robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\include %RPCLIB_TARGET_INCLUDE%
 
 if "%buildMode%" == "" (
-robocopy /MIR external\rpclib\rpclib-2.2.1\build\Debug %RPCLIB_TARGET_LIB%\Debug
-robocopy /MIR external\rpclib\rpclib-2.2.1\build\Release %RPCLIB_TARGET_LIB%\Release
+robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\Debug %RPCLIB_TARGET_LIB%\Debug
+robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\Release %RPCLIB_TARGET_LIB%\Release
 ) else (
-robocopy /MIR external\rpclib\rpclib-2.2.1\build\%buildMode% %RPCLIB_TARGET_LIB%\%buildMode%
+robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\%buildMode% %RPCLIB_TARGET_LIB%\%buildMode%
 )
 
 REM //---------- get High PolyCount SUV Car Model ------------
