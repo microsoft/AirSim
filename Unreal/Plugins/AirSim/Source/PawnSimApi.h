@@ -19,10 +19,10 @@
 #include "api/VehicleSimApiBase.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
 
-
 #include "PawnEvents.h"
 
-class PawnSimApi : public msr::airlib::VehicleSimApiBase {
+class PawnSimApi : public msr::airlib::VehicleSimApiBase
+{
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
     typedef msr::airlib::Vector2r Vector2r;
@@ -37,8 +37,9 @@ public: //types
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
     typedef msr::airlib::DetectionInfo DetectionInfo;
 
-    struct Params {
-        APawn* pawn; 
+    struct Params
+    {
+        APawn* pawn;
         const NedTransform* global_transform;
         PawnEvents* pawn_events;
         common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
@@ -52,11 +53,11 @@ public: //types
         }
 
         Params(APawn* pawn_val, const NedTransform* global_transform_val, PawnEvents* pawn_events_val,
-            const common_utils::UniqueValueMap<std::string, APIPCamera*> cameras_val, UClass* pip_camera_class_val,
-            UParticleSystem* collision_display_template_val, const msr::airlib::GeoPoint home_geopoint_val,
-            std::string vehicle_name_val)
+               const common_utils::UniqueValueMap<std::string, APIPCamera*> cameras_val, UClass* pip_camera_class_val,
+               UParticleSystem* collision_display_template_val, const msr::airlib::GeoPoint home_geopoint_val,
+               std::string vehicle_name_val)
         {
-            pawn = pawn_val; 
+            pawn = pawn_val;
             global_transform = global_transform_val;
             pawn_events = pawn_events_val;
             cameras = cameras_val;
@@ -140,14 +141,14 @@ public: //Unreal specific methods
     void setRCForceFeedback(float rumble_strength, float auto_center);
 
 private: //methods
-    bool canTeleportWhileMove()  const;
+    bool canTeleportWhileMove() const;
     void allowPassthroughToggleInput();
     void detectUsbRc();
     void setupCamerasFromSettings(const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras);
     void createCamerasFromSettings();
     //on collision, pawns should update this
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp,
-        bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
+                     bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
@@ -176,14 +177,15 @@ private: //vars
     mutable SimJoyStick joystick_;
     mutable SimJoyStick::State joystick_state_;
 
-    struct State {
+    struct State
+    {
         FVector start_location;
         FRotator start_rotation;
         FVector last_position;
         FVector last_debug_position;
         FVector current_position;
         FVector current_debug_position;
-        FVector debug_position_offset;        
+        FVector debug_position_offset;
         bool tracing_enabled;
         bool collisions_enabled;
         bool passthrough_enabled;
@@ -195,7 +197,7 @@ private: //vars
         FVector ground_offset;
         FVector transformation_offset;
     };
-    
+
     State state_, initial_state_;
 
     std::unique_ptr<msr::airlib::Kinematics> kinematics_;

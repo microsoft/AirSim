@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include "api/VehicleSimApiBase.hpp"
-#include "physics/FastPhysicsEngine.hpp"
+#include "physics/PhysicsEngineBase.hpp"
 #include "physics/World.hpp"
 #include "physics/PhysicsWorld.hpp"
 #include "common/StateReporterWrapper.hpp"
@@ -18,11 +18,11 @@ UCLASS()
 class AIRSIM_API ASimModeWorldBase : public ASimModeBase
 {
     GENERATED_BODY()
-    
+
 public:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-    virtual void Tick( float DeltaSeconds ) override;
+    virtual void Tick(float DeltaSeconds) override;
 
     virtual void reset() override;
     virtual std::string getDebugReport() override;
@@ -43,10 +43,11 @@ protected:
     void initializeForPlay();
 
     //used for adding physics bodies on the fly
-    virtual void registerPhysicsBody(msr::airlib::VehicleSimApiBase *physicsBody) override;
+    virtual void registerPhysicsBody(msr::airlib::VehicleSimApiBase* physicsBody) override;
 
     long long getPhysicsLoopPeriod() const;
-    void setPhysicsLoopPeriod(long long  period);
+    void setPhysicsLoopPeriod(long long period);
+
 private:
     typedef msr::airlib::UpdatableObject UpdatableObject;
     typedef msr::airlib::PhysicsEngineBase PhysicsEngineBase;
@@ -69,5 +70,4 @@ private:
     To increase freq with limited CPU power, switch Barometer to constant ref mode.
     */
     long long physics_loop_period_ = 3000000LL; //3ms
-
 };

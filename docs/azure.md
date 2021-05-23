@@ -55,7 +55,7 @@ Once both the AirSim environment and the Python application are ready, you can p
 
 This would be a perfect scenario when you want to run the simulation at scale. For instance, you could have several different configurations for the same simulation and execute them in a parallel, unattended way using a Docker image on Azure Container Services
 
-Since AirSim requires access to the host GPU, it is required to use a Docker runtime that supports it. For more information about running AirSim in Docker, click [here](https://github.com/microsoft/AirSim/blob/master/docs/docker_ubuntu.md).
+Since AirSim requires access to the host GPU, it is required to use a Docker runtime that supports it. For more information about running AirSim in Docker, click [here](docker_ubuntu.md).
 
 When using Azure Container Services to run this image, the only extra-requirement is to add GPU support to the Container Group where it will be deployed. 
 

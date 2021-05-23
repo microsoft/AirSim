@@ -24,7 +24,7 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
-        FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+                           FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
     //interface
     void initializeForBeginPlay();
@@ -37,16 +37,21 @@ public:
     void setRotorSpeed(const std::vector<MultirotorPawnEvents::RotorActuatorInfo>& rotor_infos);
     void initializeRotors(const std::vector<MultirotorPawnEvents::RotorActuatorInfo>& rotor_infos);
 
-
 private: //variables
     //Unreal components
-    UPROPERTY() APIPCamera* camera_front_left_;
-    UPROPERTY() APIPCamera* camera_front_right_;
-    UPROPERTY() APIPCamera* camera_front_center_;
-    UPROPERTY() APIPCamera* camera_back_center_;
-    UPROPERTY() APIPCamera* camera_bottom_center_;
+    UPROPERTY()
+    APIPCamera* camera_front_left_;
+    UPROPERTY()
+    APIPCamera* camera_front_right_;
+    UPROPERTY()
+    APIPCamera* camera_front_center_;
+    UPROPERTY()
+    APIPCamera* camera_back_center_;
+    UPROPERTY()
+    APIPCamera* camera_bottom_center_;
 
-    UPROPERTY() TArray<URotatingMovementComponent*> rotating_movements_;
+    UPROPERTY()
+    TArray<URotatingMovementComponent*> rotating_movements_;
 
     MultirotorPawnEvents pawn_events_;
     int init_id_;

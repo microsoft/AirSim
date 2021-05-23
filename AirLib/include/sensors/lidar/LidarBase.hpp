@@ -6,38 +6,43 @@
 
 #include "sensors/SensorBase.hpp"
 
-namespace msr { namespace airlib {
+namespace msr
+{
+namespace airlib
+{
 
-class LidarBase : public SensorBase {
-public:
-    LidarBase(const std::string& sensor_name = "")
-        : SensorBase(sensor_name)
-    {}
-
-public:
-    virtual void reportState(StateReporter& reporter) override
+    class LidarBase : public SensorBase
     {
-        //call base
-        UpdatableObject::reportState(reporter);
+    public:
+        LidarBase(const std::string& sensor_name = "")
+            : SensorBase(sensor_name)
+        {
+        }
 
-        reporter.writeValue("Lidar-Timestamp", output_.time_stamp);
-        reporter.writeValue("Lidar-NumPoints", static_cast<int>(output_.point_cloud.size() / 3));
-    }
+    public:
+        virtual void reportState(StateReporter& reporter) override
+        {
+            //call base
+            UpdatableObject::reportState(reporter);
 
-    const LidarData& getOutput() const
-    {
-        return output_;
-    }
+            reporter.writeValue("Lidar-Timestamp", output_.time_stamp);
+            reporter.writeValue("Lidar-NumPoints", static_cast<int>(output_.point_cloud.size() / 3));
+        }
 
-protected:
-    void setOutput(const LidarData& output)
-    {
-        output_ = output;
-    }
+        const LidarData& getOutput() const
+        {
+            return output_;
+        }
 
-private:
-    LidarData output_;
-};
+    protected:
+        void setOutput(const LidarData& output)
+        {
+            output_ = output;
+        }
 
-}} //namespace
+    private:
+        LidarData output_;
+    };
+}
+} //namespace
 #endif

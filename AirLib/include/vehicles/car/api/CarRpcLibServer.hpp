@@ -11,22 +11,25 @@
 #include "api/RpcLibServerBase.hpp"
 #include "vehicles/car/api/CarApiBase.hpp"
 
+namespace msr
+{
+namespace airlib
+{
 
-namespace msr { namespace airlib {
-
-class CarRpcLibServer : public RpcLibServerBase {
-public:
-    CarRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port = RpcLibPort);
-    virtual ~CarRpcLibServer();
-
-protected:
-    virtual CarApiBase* getVehicleApi(const std::string& vehicle_name) override
+    class CarRpcLibServer : public RpcLibServerBase
     {
-        return static_cast<CarApiBase*>(RpcLibServerBase::getVehicleApi(vehicle_name));
-    }
-};
+    public:
+        CarRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port = RpcLibPort);
+        virtual ~CarRpcLibServer();
+
+    protected:
+        virtual CarApiBase* getVehicleApi(const std::string& vehicle_name) override
+        {
+            return static_cast<CarApiBase*>(RpcLibServerBase::getVehicleApi(vehicle_name));
+        }
+    };
 
 #endif
-
-}} //namespace
+}
+} //namespace
 #endif

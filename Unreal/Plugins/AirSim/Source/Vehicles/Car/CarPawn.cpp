@@ -13,7 +13,6 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/ClockFactory.hpp"
 
-
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
 ACarPawn::ACarPawn()
@@ -37,8 +36,7 @@ ACarPawn::ACarPawn()
 
     setupVehicleMovementComponent();
 
-
-    // Create In-Car camera component 
+    // Create In-Car camera component
     camera_front_center_base_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
     camera_front_center_base_->SetRelativeLocation(FVector(200, 0, 100)); //center
     camera_front_center_base_->SetupAttachment(GetMesh());
@@ -114,7 +112,7 @@ void ACarPawn::setupVehicleMovementComponent()
     movement->MaxNormalizedTireLoad = 2.0f;
     movement->MaxNormalizedTireLoadFiltered = 2.0f;
 
-    // Engine 
+    // Engine
     // Torque setup
     movement->EngineSetup.MaxRPM = 5700.0f;
     movement->EngineSetup.TorqueCurve.GetRichCurve()->Reset();
@@ -122,13 +120,13 @@ void ACarPawn::setupVehicleMovementComponent()
     movement->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(1890.0f, 500.0f);
     movement->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(5730.0f, 400.0f);
 
-    // Adjust the steering 
+    // Adjust the steering
     movement->SteeringCurve.GetRichCurve()->Reset();
     movement->SteeringCurve.GetRichCurve()->AddKey(0.0f, 1.0f);
     movement->SteeringCurve.GetRichCurve()->AddKey(40.0f, 0.7f);
     movement->SteeringCurve.GetRichCurve()->AddKey(120.0f, 0.6f);
 
-    // Transmission	
+    // Transmission
     // We want 4wd
     movement->DifferentialSetup.DifferentialType = EVehicleDifferential4W::LimitedSlip_4W;
 
@@ -146,8 +144,7 @@ void ACarPawn::setupVehicleMovementComponent()
     // Physics settings
     // Adjust the center of mass - the buggy is quite low
     UPrimitiveComponent* primitive = Cast<UPrimitiveComponent>(movement->UpdatedComponent);
-    if (primitive)
-    {
+    if (primitive) {
         primitive->BodyInstance.COMNudge = FVector(8.0f, 0.0f, 0.0f);
     }
 
@@ -157,10 +154,9 @@ void ACarPawn::setupVehicleMovementComponent()
 }
 
 void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
-    FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+                         FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-    pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
-        HitNormal, NormalImpulse, Hit);
+    pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 }
 
 UWheeledVehicleMovementComponent* ACarPawn::getVehicleMovementComponent() const
@@ -175,13 +171,12 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
     else
         engine_sound_audio_->Deactivate();
 
-
     //put camera little bit above vehicle
     FTransform camera_transform(FVector::ZeroVector);
     FActorSpawnParameters camera_spawn_params;
     camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    camera_spawn_params.Name = FName(* (this->GetName() + "_camera_front_center"));
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_front_center"));
     camera_front_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
     camera_front_center_->AttachToComponent(camera_front_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
@@ -199,7 +194,8 @@ void ACarPawn::initializeForBeginPlay(bool engine_sound)
 
     camera_spawn_params.Name = FName(*(this->GetName() + "_camera_back_center"));
     camera_back_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_,
-        FTransform(FRotator(0, -180, 0), FVector::ZeroVector), camera_spawn_params);
+                                                                   FTransform(FRotator(0, -180, 0), FVector::ZeroVector),
+                                                                   camera_spawn_params);
     camera_back_center_->AttachToComponent(camera_back_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
     setupInputBindings();
@@ -255,7 +251,7 @@ void ACarPawn::Tick(float Delta)
 
     // Pass the engine RPM to the sound component
     float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
-    engine_sound_audio_->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
+    engine_sound_audio_->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed() * RPMToAudioScale);
 
     pawn_events_.getPawnTickSignal().emit(Delta);
 }
@@ -271,24 +267,21 @@ void ACarPawn::BeginPlay()
 void ACarPawn::updateHUDStrings()
 {
 
-	float speed_unit_factor = AirSimSettings::singleton().speed_unit_factor;
-	FText speed_unit_label = FText::FromString(FString(AirSimSettings::singleton().speed_unit_label.c_str()));
+    float speed_unit_factor = AirSimSettings::singleton().speed_unit_factor;
+    FText speed_unit_label = FText::FromString(FString(AirSimSettings::singleton().speed_unit_label.c_str()));
     float vel = FMath::Abs(GetVehicleMovement()->GetForwardSpeed() / 100); //cm/s -> m/s
     float vel_rounded = FMath::FloorToInt(vel * 10 * speed_unit_factor) / 10.0f;
     int32 Gear = GetVehicleMovement()->GetCurrentGear();
-	
+
     // Using FText because this is display text that should be localizable
     last_speed_ = FText::Format(LOCTEXT("SpeedFormat", "{0} {1}"), FText::AsNumber(vel_rounded), speed_unit_label);
 
-    if (GetVehicleMovement()->GetCurrentGear() < 0)
-    {
+    if (GetVehicleMovement()->GetCurrentGear() < 0) {
         last_gear_ = FText(LOCTEXT("ReverseGear", "R"));
     }
-    else
-    {
+    else {
         last_gear_ = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
     }
-
 
     UAirBlueprintLib::LogMessage(TEXT("Speed: "), last_speed_.ToString(), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessage(TEXT("Gear: "), last_gear_.ToString(), LogDebugLevel::Informational);
@@ -298,36 +291,28 @@ void ACarPawn::updateHUDStrings()
 void ACarPawn::updateInCarHUD()
 {
     APlayerController* PlayerController = Cast<APlayerController>(GetController());
-    if ((PlayerController != nullptr) && (speed_text_render_ != nullptr) && (gear_text_render_ != nullptr))
-    {
+    if ((PlayerController != nullptr) && (speed_text_render_ != nullptr) && (gear_text_render_ != nullptr)) {
         // Setup the text render component strings
         speed_text_render_->SetText(last_speed_);
         gear_text_render_->SetText(last_gear_);
 
-        if (GetVehicleMovement()->GetCurrentGear() >= 0)
-        {
+        if (GetVehicleMovement()->GetCurrentGear() >= 0) {
             gear_text_render_->SetTextRenderColor(last_gear_display_color_);
         }
-        else
-        {
+        else {
             gear_text_render_->SetTextRenderColor(last_gear_display_reverse_color_);
         }
     }
 }
 
-
-
 void ACarPawn::updatePhysicsMaterial()
 {
-    if (GetActorUpVector().Z < 0)
-    {
-        if (is_low_friction_ == true)
-        {
+    if (GetActorUpVector().Z < 0) {
+        if (is_low_friction_ == true) {
             GetMesh()->SetPhysMaterialOverride(non_slippery_mat_);
             is_low_friction_ = false;
         }
-        else
-        {
+        else {
             GetMesh()->SetPhysMaterialOverride(slippery_mat_);
             is_low_friction_ = true;
         }
@@ -340,32 +325,24 @@ void ACarPawn::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Up, 1), this,
-        this, &ACarPawn::onMoveForward);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Up, 1), this, this, &ACarPawn::onMoveForward);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this,
-        this, &ACarPawn::onMoveForward);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this, this, &ACarPawn::onMoveForward);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Right, 0.5), this,
-        this, &ACarPawn::onMoveRight);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Right, 0.5), this, this, &ACarPawn::onMoveRight);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Left, -0.5), this,
-        this, &ACarPawn::onMoveRight);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Left, -0.5), this, this, &ACarPawn::onMoveRight);
 
     UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::End, this, &ACarPawn::onHandbrakePressed, true);
     UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::End, this, &ACarPawn::onHandbrakeReleased, false);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::SpaceBar, 1), this,
-        this, &ACarPawn::onFootBrake);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::SpaceBar, 1), this, this, &ACarPawn::onFootBrake);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Gamepad_LeftX, 1), this,
-        this, &ACarPawn::onMoveRight);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Gamepad_LeftX, 1), this, this, &ACarPawn::onMoveRight);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightTriggerAxis, 1), this,
-        this, &ACarPawn::onMoveForward);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightTriggerAxis, 1), this, this, &ACarPawn::onMoveForward);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_LeftTriggerAxis, 1), this,
-        this, &ACarPawn::onFootBrake);
+    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_LeftTriggerAxis, 1), this, this, &ACarPawn::onFootBrake);
 
     //below is not needed
     //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::onReversePressed, true);

@@ -62,7 +62,7 @@ This will generate the necessary shared library and copy it to the UnityDemo Plu
 * Click on the new project which showed up in the Unity Hub menu to open it in Unity. 
 * In the bottom pane, click on `Projects`->`Assets`->`Scenes`. Then, **Double-click** on `SimModeSelector`. This will load the SimModeSelector scene into the scene hierarchy pane. *DO NOT* add CarDemo or DroneDemo scene into the scene hierarchy pane.
 * Hit the play button to start the simulation (and hit play again to stop the simulation. .  
-* Alternatively, you can change the SimMode in your `Settings.json` file. (You can read more about [`Settings.json` here](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md))
+* Alternatively, you can change the SimMode in your `Settings.json` file. (You can read more about [`Settings.json` here](settings.md))
 * Controlling the car:    
 Use `WASD` or the `Arrow keys` or the AirSim client.   
 * Controlling the drone:    
@@ -119,7 +119,7 @@ chmod +x "{project_name}.{configuration}"
 ```
 ### Using Airsim API
 * For quickstart with the Python APIs for the car or the drone, simply run the [`hello_car.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/hello_car.py) or the [`hello_drone.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py) script accordingly. 
-* Details of the AirSim C++ and Python APIs are [here](https://github.com/Microsoft/AirSim/blob/master/docs/apis.md). 
+* Details of the AirSim C++ and Python APIs are [here](apis.md). 
 
 ### Acknowledgements
 * The drone object was provided by user 31415926 on [sketchfab](https://sketchfab.com/models/055841df0fb24cd4abde06a91f7d360a). It is licensed under the [CC License](https://creativecommons.org/licenses/by/4.0/).

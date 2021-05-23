@@ -3,9 +3,11 @@
 #include "IUpdatable.hpp"
 #include <cstdint>
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class ICommLink : public IUpdatable {
+class ICommLink : public IUpdatable
+{
 public:
     static constexpr int kLogLevelInfo = 0;
     static constexpr int kLogLevelWarn = 1;

@@ -39,7 +39,7 @@
                 <TextBlock x:Name="PointerLabel" Foreground="{StaticResource TooltipForeground}"/>
             </local:PointerBorder>
             <Canvas x:Name="AdornerCanvas">
-                
+
             </Canvas>
         </Canvas>
 
@@ -53,6 +53,7 @@
             <TextBlock x:Name="MinLabel" Grid.Row="2" Margin="4"/>
         </Grid>
 
-        <local:CloseBox HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Click="CloseBoxClick"/>
+        <local:CloseBox x:Name="CloseBox" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Click="CloseBoxClick"/>
+        
     </Grid>
 </UserControl>

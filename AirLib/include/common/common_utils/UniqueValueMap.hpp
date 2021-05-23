@@ -7,12 +7,14 @@
 #include <set>
 #include "Utils.hpp"
 
-namespace common_utils {
+namespace common_utils
+{
 
-//This class allows to maintain unique set of values while 
+//This class allows to maintain unique set of values while
 //still allowing key to value maps
 template <class TKey, class TVal>
-class UniqueValueMap {
+class UniqueValueMap
+{
 public:
     void insert(const TKey& key, const TVal& val)
     {
@@ -77,7 +79,5 @@ private:
     std::map<TKey, TVal> map_;
     std::set<TVal> vals_;
 };
-
-
 }
 #endif

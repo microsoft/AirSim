@@ -11,7 +11,7 @@
 #include "Windows/AllowWindowsPlatformAtomics.h"
 //remove warnings for VC++
 #pragma warning(push)
-#pragma warning(disable:4191 6000 28251)
-#pragma warning(disable:4996) //warning C4996: This function or variable may be unsafe. Consider using xxx instead.
-#pragma warning(disable:4005) //warning C4005: 'TEXT': macro redefinition
+#pragma warning(disable : 4191 6000 28251)
+#pragma warning(disable : 4996) //warning C4996: This function or variable may be unsafe. Consider using xxx instead.
+#pragma warning(disable : 4005) //warning C4005: 'TEXT': macro redefinition
 #endif

@@ -19,10 +19,33 @@ class MsgpackMixin:
         #return cls(**msgpack.unpack(encoded))
         return obj
 
+class _ImageType(type):
+    @property
+    def Scene(cls):
+        return 0
+    def DepthPlanar(cls):
+        return 1
+    def DepthPerspective(cls):
+        return 2
+    def DepthVis(cls):
+        return 3
+    def DisparityNormalized(cls):
+        return 4
+    def Segmentation(cls):
+        return 5
+    def SurfaceNormals(cls):
+        return 6
+    def Infrared(cls):
+        return 7
 
-class ImageType:
+    def __getattr__(self, key):
+        if key == 'DepthPlanner':
+            print('\033[31m'+"DepthPlanner has been (correctly) renamed to DepthPlanar. Please use ImageType.DepthPlanar instead."+'\033[0m')
+            raise AttributeError
+
+class ImageType(metaclass=_ImageType):
     Scene = 0
-    DepthPlanner = 1
+    DepthPlanar = 1
     DepthPerspective = 2
     DepthVis = 3
     DisparityNormalized = 4

@@ -18,15 +18,15 @@ Vehicles are spawned at position specified in settings in global NED
 class NedTransform
 {
 public:
-	typedef msr::airlib::Vector3r Vector3r;
-	typedef msr::airlib::Quaternionr Quaternionr;
-	typedef msr::airlib::Pose Pose;
+    typedef msr::airlib::Vector3r Vector3r;
+    typedef msr::airlib::Quaternionr Quaternionr;
+    typedef msr::airlib::Pose Pose;
 
 public:
-	NedTransform(const AirSimUnity::UnityTransform& global_transform);
-	NedTransform(const NedTransform& global_transform);
+    NedTransform(const AirSimUnity::UnityTransform& global_transform);
+    NedTransform(const NedTransform& global_transform);
 
 private:
-	AirSimUnity::UnityTransform global_transform_;
-	AirSimUnity::AirSimVector local_ned_offset_;
+    AirSimUnity::UnityTransform global_transform_;
+    AirSimUnity::AirSimVector local_ned_offset_;
 };

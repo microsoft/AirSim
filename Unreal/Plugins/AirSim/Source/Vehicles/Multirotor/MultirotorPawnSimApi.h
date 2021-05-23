@@ -8,10 +8,9 @@
 #include "physics//Kinematics.hpp"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"
-#include "common/common_utils/UniqueValueMap.hpp" 
+#include "common/common_utils/UniqueValueMap.hpp"
 #include "MultirotorPawnEvents.h"
 #include <future>
-
 
 class MultirotorPawnSimApi : public PawnSimApi
 {
@@ -71,8 +70,10 @@ private:
 
     //when pose needs to set from non-physics thread, we set it as pending
     bool pending_pose_collisions_;
-    enum class PendingPoseStatus {
-        NonePending, RenderPending
+    enum class PendingPoseStatus
+    {
+        NonePending,
+        RenderPending
     } pending_pose_status_;
     Pose pending_phys_pose_; //force new pose through API
 
