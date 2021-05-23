@@ -36,43 +36,40 @@ STRICT_MODE_OFF
 
 STRICT_MODE_ON
 #ifdef _MSC_VER
-__pragma(warning( disable : 4239))
-#endif	
+__pragma(warning(disable : 4239))
+#endif
 
-
-
-namespace msr { namespace airlib {
-
-
-typedef msr::airlib_rpclib::CarRpcLibAdaptors CarRpcLibAdaptors;
-
-CarRpcLibClient::CarRpcLibClient(const string&  ip_address, uint16_t port, float timeout_sec)
-    : RpcLibClientBase(ip_address, port, timeout_sec)
+    namespace msr
 {
-}
+    namespace airlib
+    {
 
-CarRpcLibClient::~CarRpcLibClient()
-{}
+        typedef msr::airlib_rpclib::CarRpcLibAdaptors CarRpcLibAdaptors;
 
-void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls, const std::string& vehicle_name)
-{
-    static_cast<rpc::client*>(getClient())->
-        call("setCarControls", CarRpcLibAdaptors::CarControls(controls), vehicle_name);
-}
+        CarRpcLibClient::CarRpcLibClient(const string& ip_address, uint16_t port, float timeout_sec)
+            : RpcLibClientBase(ip_address, port, timeout_sec)
+        {
+        }
 
-CarApiBase::CarState CarRpcLibClient::getCarState(const std::string& vehicle_name)
-{
-    return static_cast<rpc::client*>(getClient())->
-        call("getCarState", vehicle_name).as<CarRpcLibAdaptors::CarState>().to();
-}
-CarApiBase::CarControls CarRpcLibClient::getCarControls(const std::string& vehicle_name)
-{
-	return static_cast<rpc::client*>(getClient())->
-		call("getCarControls", vehicle_name).as<CarRpcLibAdaptors::CarControls>().to();
-}
+        CarRpcLibClient::~CarRpcLibClient()
+        {
+        }
 
+        void CarRpcLibClient::setCarControls(const CarApiBase::CarControls& controls, const std::string& vehicle_name)
+        {
+            static_cast<rpc::client*>(getClient())->call("setCarControls", CarRpcLibAdaptors::CarControls(controls), vehicle_name);
+        }
 
-}} //namespace
+        CarApiBase::CarState CarRpcLibClient::getCarState(const std::string& vehicle_name)
+        {
+            return static_cast<rpc::client*>(getClient())->call("getCarState", vehicle_name).as<CarRpcLibAdaptors::CarState>().to();
+        }
+        CarApiBase::CarControls CarRpcLibClient::getCarControls(const std::string& vehicle_name)
+        {
+            return static_cast<rpc::client*>(getClient())->call("getCarControls", vehicle_name).as<CarRpcLibAdaptors::CarControls>().to();
+        }
+    }
+} //namespace
 
 #endif
 #endif
