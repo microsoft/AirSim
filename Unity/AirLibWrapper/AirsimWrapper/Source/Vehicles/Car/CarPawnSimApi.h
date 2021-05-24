@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CarPawn.h"
 #include "CarPawnApi.h"
 #include "../../PawnSimApi.h"
 #include "vehicles/car/api/CarApiBase.hpp"
@@ -15,12 +14,12 @@ public:
     typedef msr::airlib::Pose Pose;
 
 private:
-    void createVehicleApi(CarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint);
+    void createVehicleApi(const msr::airlib::GeoPoint& home_geopoint);
     void updateCarControls();
 
 public:
     virtual void initialize() override;
-    CarPawnSimApi(const Params& params, const msr::airlib::CarApiBase::CarControls& keyboard_controls, std::string car_name);
+    CarPawnSimApi(const Params& params, std::string car_name);
     virtual ~CarPawnSimApi() = default;
 
     virtual void update() override;
@@ -46,7 +45,4 @@ private:
     msr::airlib::CarApiBase::CarControls joystick_controls_;
     msr::airlib::CarApiBase::CarControls current_controls_;
     std::string car_name_;
-
-    //storing reference from pawn
-    const msr::airlib::CarApiBase::CarControls& keyboard_controls_;
 };

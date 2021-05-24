@@ -15,9 +15,9 @@ public:
     virtual ~WorldSimApi();
 
     // ------ Level setting apis ----- //
-    virtual bool loadLevel(const std::string& level_name) { return false; };
-    virtual std::string spawnObject(std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled) { return ""; };
-    virtual bool destroyObject(const std::string& object_name) { return false; };
+    virtual bool loadLevel(const std::string& level_name) override { return false; };
+    virtual std::string spawnObject(std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled) override { return ""; };
+    virtual bool destroyObject(const std::string& object_name) override { return false; };
 
     virtual bool isPaused() const override;
     virtual void reset() override;
