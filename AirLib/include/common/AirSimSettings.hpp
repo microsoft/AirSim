@@ -1264,11 +1264,8 @@ namespace airlib
                                        std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
 
         {
-            // start with defaults.
-            for (auto ptr = sensor_defaults.begin(); ptr != sensor_defaults.end(); ptr++) {
-                auto key = ptr->first;
-                sensors[key] = sensor_defaults[key];
-            }
+            // NOTE: Increase type if number of sensors goes above 8
+            uint8_t present_sensors_bitmask = 0;
 
             msr::airlib::Settings sensors_child;
             if (settings_json.getChild(collectionName, sensors_child)) {
@@ -1284,7 +1281,18 @@ namespace airlib
 
                     sensors[key] = createSensorSetting(sensor_type, key, enabled);
                     initializeSensorSetting(sensors[key].get(), child);
+
+                    // Mark sensor types already added
+                    present_sensors_bitmask |= 1U << Utils::toNumeric(sensor_type);
                 }
+            }
+
+            // Only add default sensors which are not present
+            for (const auto& p : sensor_defaults) {
+                auto type = Utils::toNumeric(p.second->sensor_type);
+
+                if ((present_sensors_bitmask & (1U << type)) == 0)
+                    sensors[p.first] = p.second;
             }
         }
 
