@@ -16,16 +16,14 @@ FObjectFilter::FObjectFilter()
     , ComponentTag()
     , ActorInstance(nullptr)
 {
-
 }
 
-bool FObjectFilter::MatchesActor(AActor* Actor) const 
+bool FObjectFilter::MatchesActor(AActor* Actor) const
 {
-    if (ActorInstance) 
-    {
+    if (ActorInstance) {
         return Actor == ActorInstance;
     }
-    
+
     bool bMatchesActorName = false;
     bool bMatchesStaticMesh = false;
     bool bMatchesSkeletalMesh = false;
@@ -34,98 +32,81 @@ bool FObjectFilter::MatchesActor(AActor* Actor) const
     bool bMatchesActorTag = false;
     bool bMatchesComponentClass = false;
     bool bMatchesComponentTag = false;
-    
-    if (WildcardMeshNames.Num() != 0 && IsMatchAnyWildcard(Actor->GetName()))
-    {
+
+    if (WildcardMeshNames.Num() != 0 && IsMatchAnyWildcard(Actor->GetName())) {
         //bMatchesActorName = true;
         return true;
     }
 
     TInlineComponentArray<UActorComponent*> ActorComponents;
     Actor->GetComponents(ActorComponents);
-    for (UActorComponent* ActorComponent : ActorComponents) 
-    {
-        if (StaticMesh || WildcardMeshNames.Num() != 0) 
-        {
+    for (UActorComponent* ActorComponent : ActorComponents) {
+        if (StaticMesh || WildcardMeshNames.Num() != 0) {
             UStaticMeshComponent* StaticMeshComponent =
                 Cast<UStaticMeshComponent>(ActorComponent);
             if (StaticMeshComponent) {
-                if (StaticMesh && StaticMeshComponent->GetStaticMesh() == StaticMesh) 
-                {
+                if (StaticMesh && StaticMeshComponent->GetStaticMesh() == StaticMesh) {
                     //bMatchesStaticMesh = true;
                     return true;
                 }
                 if (WildcardMeshNames.Num() != 0 &&
                     StaticMeshComponent->GetStaticMesh() != nullptr &&
-                    IsMatchAnyWildcard(StaticMeshComponent->GetStaticMesh()->GetName()))
-                {
+                    IsMatchAnyWildcard(StaticMeshComponent->GetStaticMesh()->GetName())) {
                     //bMatchesWildcardMeshName = true;
                     return true;
                 }
             }
         }
-        if (SkeletalMesh || WildcardMeshNames.Num() != 0) 
-        {
+        if (SkeletalMesh || WildcardMeshNames.Num() != 0) {
             USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(ActorComponent);
-            if (SkeletalMeshComponent) 
-            {
+            if (SkeletalMeshComponent) {
                 if (SkeletalMesh &&
-                    SkeletalMeshComponent->SkeletalMesh == SkeletalMesh) 
-                {
+                    SkeletalMeshComponent->SkeletalMesh == SkeletalMesh) {
                     //bMatchesSkeletalMesh = true;
                     return true;
                 }
                 if (WildcardMeshNames.Num() != 0 &&
-                    IsMatchAnyWildcard(SkeletalMeshComponent->SkeletalMesh->GetName()))
-                {
+                    IsMatchAnyWildcard(SkeletalMeshComponent->SkeletalMesh->GetName())) {
                     //bMatchesWildcardMeshName = true;
                     return true;
                 }
             }
         }
-        if (ComponentClass) 
-        {
-            if (ActorComponent->GetClass()->IsChildOf(ComponentClass)) 
-            {
-            // bMatchesComponentClass = true;
+        if (ComponentClass) {
+            if (ActorComponent->GetClass()->IsChildOf(ComponentClass)) {
+                // bMatchesComponentClass = true;
                 return true;
             }
         }
-        if (!ComponentTag.IsNone()) 
-        {
-            if (ActorComponent->ComponentHasTag(ComponentTag)) 
-            {
+        if (!ComponentTag.IsNone()) {
+            if (ActorComponent->ComponentHasTag(ComponentTag)) {
                 //bMatchesComponentTag = true;
                 return true;
             }
         }
     }
 
-    if (ActorClass) 
-    {
-        if (Actor->GetClass()->IsChildOf(ActorClass)) 
-        {
+    if (ActorClass) {
+        if (Actor->GetClass()->IsChildOf(ActorClass)) {
             //bMatchesActorClass = true;
             return true;
         }
     }
 
-    if (!ActorTag.IsNone()) 
-    {
-        if (Actor->ActorHasTag(ActorTag)) 
-        {
-        // bMatchesActorTag = true;
+    if (!ActorTag.IsNone()) {
+        if (Actor->ActorHasTag(ActorTag)) {
+            // bMatchesActorTag = true;
             return true;
         }
     }
 
     return bMatchesActorName || bMatchesStaticMesh || bMatchesSkeletalMesh ||
-        bMatchesWildcardMeshName || bMatchesActorClass || bMatchesActorTag ||
-        bMatchesComponentClass || bMatchesComponentClass ||
-        bMatchesComponentTag;
+           bMatchesWildcardMeshName || bMatchesActorClass || bMatchesActorTag ||
+           bMatchesComponentClass || bMatchesComponentClass ||
+           bMatchesComponentTag;
 }
 
-bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const 
+bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const
 {
     bool bMatchesStaticMesh = !StaticMesh;
     bool bMatchesSkeletalMesh = !SkeletalMesh;
@@ -135,84 +116,66 @@ bool FObjectFilter::MatchesComponent(UActorComponent* ActorComponent) const
     bool bMatchesComponentClass = !ComponentClass;
     bool bMatchesComponentTag = ComponentTag.IsNone();
 
-    if (StaticMesh || WildcardMeshNames.Num() != 0)
-    {
+    if (StaticMesh || WildcardMeshNames.Num() != 0) {
         UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(ActorComponent);
-        if (StaticMeshComponent) 
-        {
-            if (StaticMesh && StaticMeshComponent->GetStaticMesh() == StaticMesh)
-            {
+        if (StaticMeshComponent) {
+            if (StaticMesh && StaticMeshComponent->GetStaticMesh() == StaticMesh) {
                 bMatchesStaticMesh = true;
             }
             if (WildcardMeshNames.Num() != 0 &&
                 StaticMeshComponent->GetStaticMesh()->IsValidLowLevel() &&
-                IsMatchAnyWildcard(StaticMeshComponent->GetStaticMesh()->GetName()))
-            {
+                IsMatchAnyWildcard(StaticMeshComponent->GetStaticMesh()->GetName())) {
                 bMatchesWildcardMeshName = true;
             }
         }
     }
-    if (SkeletalMesh || WildcardMeshNames.Num() != 0) 
-    {
+    if (SkeletalMesh || WildcardMeshNames.Num() != 0) {
         USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(ActorComponent);
-        if (SkeletalMeshComponent)
-        {
-            if (SkeletalMesh && SkeletalMeshComponent->SkeletalMesh == SkeletalMesh)
-            {
+        if (SkeletalMeshComponent) {
+            if (SkeletalMesh && SkeletalMeshComponent->SkeletalMesh == SkeletalMesh) {
                 bMatchesSkeletalMesh = true;
             }
             if (WildcardMeshNames.Num() != 0 &&
-                IsMatchAnyWildcard(SkeletalMeshComponent->SkeletalMesh->GetName()))
-            {
+                IsMatchAnyWildcard(SkeletalMeshComponent->SkeletalMesh->GetName())) {
                 bMatchesWildcardMeshName = true;
             }
         }
     }
-    if (ComponentClass)
-    {
-        if (ActorComponent->GetClass()->IsChildOf(ComponentClass))
-        {
+    if (ComponentClass) {
+        if (ActorComponent->GetClass()->IsChildOf(ComponentClass)) {
             bMatchesComponentClass = true;
         }
     }
-    if (!ComponentTag.IsNone())
-    {
-        if (ActorComponent->ComponentHasTag(ComponentTag))
-        {
+    if (!ComponentTag.IsNone()) {
+        if (ActorComponent->ComponentHasTag(ComponentTag)) {
             bMatchesComponentTag = true;
         }
     }
 
-    if (ActorClass)
-    {
+    if (ActorClass) {
         if (ActorComponent->GetOwner() &&
-            ActorComponent->GetOwner()->GetClass()->IsChildOf(ActorClass))
-        {
+            ActorComponent->GetOwner()->GetClass()->IsChildOf(ActorClass)) {
             bMatchesActorClass = true;
         }
     }
 
-    if (!ActorTag.IsNone())
-    {
+    if (!ActorTag.IsNone()) {
         if (ActorComponent->GetOwner() &&
-            ActorComponent->GetOwner()->ActorHasTag(ActorTag))
-        {
+            ActorComponent->GetOwner()->ActorHasTag(ActorTag)) {
             bMatchesActorTag = true;
         }
     }
 
     return bMatchesStaticMesh && bMatchesSkeletalMesh &&
-        bMatchesWildcardMeshName && bMatchesActorClass && bMatchesActorTag &&
-        bMatchesComponentClass && bMatchesComponentClass &&
-        bMatchesComponentTag;
+           bMatchesWildcardMeshName && bMatchesActorClass && bMatchesActorTag &&
+           bMatchesComponentClass && bMatchesComponentClass &&
+           bMatchesComponentTag;
 }
 
 bool FObjectFilter::IsMatchAnyWildcard(FString ComponentName) const
 {
-    for (FString WildcardMeshName : WildcardMeshNames)
-    {
-        if (ComponentName.MatchesWildcard(WildcardMeshName))
-        {
+    for (FString WildcardMeshName : WildcardMeshNames) {
+        if (ComponentName.MatchesWildcard(WildcardMeshName)) {
             return true;
         }
     }
@@ -220,17 +183,17 @@ bool FObjectFilter::IsMatchAnyWildcard(FString ComponentName) const
     return false;
 }
 
-bool operator==(const FObjectFilter& X, const FObjectFilter& Y) 
+bool operator==(const FObjectFilter& X, const FObjectFilter& Y)
 {
     // Check pointer eqaulity first for performance
     return X.ActorClass == Y.ActorClass && X.ActorInstance == Y.ActorInstance &&
-        X.ComponentClass == Y.ComponentClass && X.StaticMesh == Y.StaticMesh &&
-        X.SkeletalMesh == Y.SkeletalMesh && X.ActorTag == Y.ActorTag &&
-        X.ActorTag == Y.ActorTag && X.ComponentTag == Y.ComponentTag &&
-        X.WildcardMeshNames == Y.WildcardMeshNames;
+           X.ComponentClass == Y.ComponentClass && X.StaticMesh == Y.StaticMesh &&
+           X.SkeletalMesh == Y.SkeletalMesh && X.ActorTag == Y.ActorTag &&
+           X.ActorTag == Y.ActorTag && X.ComponentTag == Y.ComponentTag &&
+           X.WildcardMeshNames == Y.WildcardMeshNames;
 }
 
-uint32 GetTypeHash(const FObjectFilter& Key) 
+uint32 GetTypeHash(const FObjectFilter& Key)
 {
     uint32 KeyHash = 0;
     KeyHash = HashCombine(KeyHash, GetTypeHash(Key.ActorClass));
@@ -240,7 +203,7 @@ uint32 GetTypeHash(const FObjectFilter& Key)
     KeyHash = HashCombine(KeyHash, GetTypeHash(Key.ComponentTag));
     KeyHash = HashCombine(KeyHash, GetTypeHash(Key.SkeletalMesh));
     KeyHash = HashCombine(KeyHash, GetTypeHash(Key.StaticMesh));
-// KeyHash = HashCombine(KeyHash, GetTypeHash(Key.WildcardMeshNames));
+    // KeyHash = HashCombine(KeyHash, GetTypeHash(Key.WildcardMeshNames));
 
     return KeyHash;
 }

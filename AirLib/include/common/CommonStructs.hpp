@@ -270,56 +270,60 @@ namespace airlib
         }
     };
 
-struct Box2D
-{
-    Vector2r min;
-    Vector2r max;
-
-    Box2D()
-    {}
-
-    Box2D(Vector2r min_val, Vector2r max_val)
-        : min(min_val), max(max_val)
+    struct Box2D
     {
-    }
-};
+        Vector2r min;
+        Vector2r max;
 
-struct Box3D
-{
-    Vector3r min;
-    Vector3r max;
+        Box2D()
+        {
+        }
 
-    Box3D()
-    {}
+        Box2D(Vector2r min_val, Vector2r max_val)
+            : min(min_val), max(max_val)
+        {
+        }
+    };
 
-    Box3D(Vector3r min_val, Vector3r max_val)
-        : min(min_val), max(max_val)
+    struct Box3D
     {
-    }
-};
+        Vector3r min;
+        Vector3r max;
 
-struct DetectionInfo
-{
-    std::string name = "";
-    GeoPoint geo_point = GeoPoint();
-    Box2D box2D = Box2D();
-    Box3D box3D = Box3D();
-    Pose relative_pose = Pose();
+        Box3D()
+        {
+        }
 
-    DetectionInfo()
-    {}
+        Box3D(Vector3r min_val, Vector3r max_val)
+            : min(min_val), max(max_val)
+        {
+        }
+    };
 
-    DetectionInfo(const std::string& name_val, const GeoPoint& geo_point_val, const Box2D& box2D_val, const Box3D& box3D_val, const Pose& relative_pose_val)
-        : name(name_val), geo_point(geo_point_val), box2D(box2D_val), box3D(box3D_val), relative_pose(relative_pose_val)
+    struct DetectionInfo
     {
-    }
-};
+        std::string name = "";
+        GeoPoint geo_point = GeoPoint();
+        Box2D box2D = Box2D();
+        Box3D box3D = Box3D();
+        Pose relative_pose = Pose();
 
-struct CollisionResponse {
-    unsigned int collision_count_raw = 0;
-    unsigned int collision_count_non_resting = 0;
-    TTimePoint collision_time_stamp = 0;
-};
+        DetectionInfo()
+        {
+        }
+
+        DetectionInfo(const std::string& name_val, const GeoPoint& geo_point_val, const Box2D& box2D_val, const Box3D& box3D_val, const Pose& relative_pose_val)
+            : name(name_val), geo_point(geo_point_val), box2D(box2D_val), box3D(box3D_val), relative_pose(relative_pose_val)
+        {
+        }
+    };
+
+    struct CollisionResponse
+    {
+        unsigned int collision_count_raw = 0;
+        unsigned int collision_count_non_resting = 0;
+        TTimePoint collision_time_stamp = 0;
+    };
 
     struct GeoPose
     {

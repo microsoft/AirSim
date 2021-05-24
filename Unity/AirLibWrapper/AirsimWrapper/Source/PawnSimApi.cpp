@@ -61,31 +61,35 @@ void PawnSimApi::pawnTick(float dt)
 
 void PawnSimApi::addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name)
 {
-	throw std::invalid_argument(common_utils::Utils::stringf(
-		"addDetectionFilterMeshName is not supported on unity").c_str());
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "addDetectionFilterMeshName is not supported on unity")
+                                    .c_str());
 }
 
 void PawnSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm)
 {
-	throw std::invalid_argument(common_utils::Utils::stringf(
-		"setDetectionFilterRadius is not supported on unity").c_str());
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "setDetectionFilterRadius is not supported on unity")
+                                    .c_str());
 }
 
 void PawnSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type)
 {
-	throw std::invalid_argument(common_utils::Utils::stringf(
-		"clearDetectionMeshNames is not supported on unity").c_str());
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "clearDetectionMeshNames is not supported on unity")
+                                    .c_str());
 }
 
 std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
 {
-	unused(camera_name);
-	unused(camera_name);
+    unused(camera_name);
+    unused(camera_name);
 
-	throw std::invalid_argument(common_utils::Utils::stringf(
-		"getDetections is not supported on unity").c_str());
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "getDetections is not supported on unity")
+                                    .c_str());
 
-	return std::vector<DetectionInfo>();
+    return std::vector<DetectionInfo>();
 }
 
 void PawnSimApi::OnCollision(msr::airlib::CollisionInfo collisionInfo)

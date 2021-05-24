@@ -19,17 +19,17 @@ private:
     typedef msr::airlib::Environment Environment;
 
 public:
-	typedef msr::airlib::GeoPoint GeoPoint;
-	typedef msr::airlib::Vector3r Vector3r;
-	typedef msr::airlib::Pose Pose;
-	typedef msr::airlib::Quaternionr Quaternionr;
-	typedef msr::airlib::CollisionInfo CollisionInfo;
-	typedef msr::airlib::VectorMath VectorMath;
-	typedef msr::airlib::real_T real_T;
-	typedef msr::airlib::Utils Utils;
-	typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
-	typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
-	typedef msr::airlib::DetectionInfo DetectionInfo;
+    typedef msr::airlib::GeoPoint GeoPoint;
+    typedef msr::airlib::Vector3r Vector3r;
+    typedef msr::airlib::Pose Pose;
+    typedef msr::airlib::Quaternionr Quaternionr;
+    typedef msr::airlib::CollisionInfo CollisionInfo;
+    typedef msr::airlib::VectorMath VectorMath;
+    typedef msr::airlib::real_T real_T;
+    typedef msr::airlib::Utils Utils;
+    typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
+    typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
+    typedef msr::airlib::DetectionInfo DetectionInfo;
 
 public:
     struct Params
@@ -98,10 +98,10 @@ public:
     const NedTransform& getNedTransform() const;
     virtual void pawnTick(float dt);
 
-	virtual void addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name) override;
-	virtual void setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm) override;
-	virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type) override;
-	virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
+    virtual void addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name) override;
+    virtual void setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm) override;
+    virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type) override;
+    virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
 
 private:
     Params params_;
