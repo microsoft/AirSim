@@ -13,24 +13,24 @@ struct FDetectionInfo
     GENERATED_BODY()
 
     UPROPERTY()
-        AActor* Actor;
+    AActor* Actor;
 
     UPROPERTY()
-        FBox2D Box2D;
+    FBox2D Box2D;
 
     UPROPERTY()
-        FBox Box3D;
+    FBox Box3D;
 
     UPROPERTY()
-        FTransform RelativeTransform;
+    FTransform RelativeTransform;
 };
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class AIRSIM_API UDetectionComponent : public USceneComponent
 {
     GENERATED_BODY()
 
-public:	
+public:
     // Sets default values for this component's properties
     UDetectionComponent();
 
@@ -38,31 +38,33 @@ protected:
     // Called when the game starts
     virtual void BeginPlay() override;
 
-public:	
+public:
     // Called every frame
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
     TArray<FDetectionInfo> GetDetections() const;
+
 private:
     bool CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut);
-    
+
     FVector GetRelativeLocation(FVector InLocation);
 
     FRotator GetRelativeRotation(FVector InLocation, FRotator InRotation);
+
 public:
     UPROPERTY()
-        FObjectFilter ObjectFilter;
+    FObjectFilter ObjectFilter;
 
     UPROPERTY(EditAnywhere, Category = "Tracked Actors")
-        float MaxDistanceToCamera;
+    float MaxDistanceToCamera;
 
     UPROPERTY()
-        UTextureRenderTarget2D* TextureTarget;
+    UTextureRenderTarget2D* TextureTarget;
+
 private:
+    UPROPERTY()
+    USceneCaptureComponent2D* SceneCaptureComponent2D;
 
     UPROPERTY()
-        USceneCaptureComponent2D* SceneCaptureComponent2D;
-
-    UPROPERTY()
-        TArray<FDetectionInfo> CachedDetections;
+    TArray<FDetectionInfo> CachedDetections;
 };

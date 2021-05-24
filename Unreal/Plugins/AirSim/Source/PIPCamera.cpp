@@ -71,13 +71,12 @@ void APIPCamera::PostInitializeComponents()
     captures_[Utils::toNumeric(ImageType::SurfaceNormals)] =
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
 
-    detections_[Utils::toNumeric(ImageType::Scene)] = 
+    detections_[Utils::toNumeric(ImageType::Scene)] =
         UAirBlueprintLib::GetActorComponent<UDetectionComponent>(this, TEXT("DetectionComponent"));
-    if (detections_[Utils::toNumeric(ImageType::Scene)])
-    {
+    if (detections_[Utils::toNumeric(ImageType::Scene)]) {
         detections_[Utils::toNumeric(ImageType::Scene)]->Deactivate();
     }
-  //  detections_[Utils::toNumeric(ImageType::Scene)]->ObjectFilter = UAirBlueprintLib::GetObjectFilter();// &object_filter;
+    //  detections_[Utils::toNumeric(ImageType::Scene)]->ObjectFilter = UAirBlueprintLib::GetObjectFilter();// &object_filter;
 }
 
 void APIPCamera::BeginPlay()
@@ -471,8 +470,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
             if (!capture->IsActive() || capture->TextureTarget == nullptr) {
                 capture->TextureTarget = getRenderTarget(type, false);
                 capture->Activate();
-                if (detection != nullptr)
-                {
+                if (detection != nullptr) {
                     detection->TextureTarget = capture->TextureTarget;
                     detection->Activate();
                 }
@@ -482,8 +480,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
             if (capture->IsActive() || capture->TextureTarget != nullptr) {
                 capture->Deactivate();
                 capture->TextureTarget = nullptr;
-                if (detection != nullptr)
-                {
+                if (detection != nullptr) {
                     detection->Deactivate();
                     detection->TextureTarget = nullptr;
                 }

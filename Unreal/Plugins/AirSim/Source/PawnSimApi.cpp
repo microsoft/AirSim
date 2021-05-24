@@ -324,12 +324,11 @@ void PawnSimApi::addDetectionFilterMeshName(const std::string& camera_name, Imag
 
         FString name = FString(mesh_name.c_str());
 
-        if (!detection_comp->ObjectFilter.WildcardMeshNames.Contains(name))
-        {
+        if (!detection_comp->ObjectFilter.WildcardMeshNames.Contains(name)) {
             detection_comp->ObjectFilter.WildcardMeshNames.Add(name);
         }
-        
-        }, true);
+    },
+                                             true);
 }
 
 void PawnSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type)
@@ -337,7 +336,8 @@ void PawnSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCa
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type]() {
         const APIPCamera* camera = getCamera(camera_name);
         camera->getDetectionComponent(image_type, false)->ObjectFilter.WildcardMeshNames.Empty();
-        }, true);
+    },
+                                             true);
 }
 
 void PawnSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm)
@@ -345,7 +345,8 @@ void PawnSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageC
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, radius_cm]() {
         const APIPCamera* camera = getCamera(camera_name);
         camera->getDetectionComponent(image_type, false)->MaxDistanceToCamera = radius_cm;
-        }, true);
+    },
+                                             true);
 }
 
 std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
@@ -357,13 +358,12 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
         const TArray<FDetectionInfo> detections = camera->getDetectionComponent(image_type, false)->GetDetections();
         result.resize(detections.Num());
 
-        for (int i = 0; i < detections.Num(); i++)
-        {
+        for (int i = 0; i < detections.Num(); i++) {
             result[i].name = std::string(TCHAR_TO_UTF8(*(detections[i].Actor->GetFName().ToString())));
 
             Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(detections[i].Actor->GetActorLocation());
             result[i].geo_point = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
-                AirSimSettings::singleton().origin_geopoint);
+                                                                         AirSimSettings::singleton().origin_geopoint);
 
             result[i].box2D.min = Vector2r(detections[i].Box2D.Min.X, detections[i].Box2D.Min.Y);
             result[i].box2D.max = Vector2r(detections[i].Box2D.Max.X, detections[i].Box2D.Max.Y);
@@ -373,8 +373,8 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
 
             result[i].relative_pose = toPose(detections[i].RelativeTransform.GetTranslation(), detections[i].RelativeTransform.GetRotation());
         }
-
-        }, true);
+    },
+                                             true);
 
     return result;
 }

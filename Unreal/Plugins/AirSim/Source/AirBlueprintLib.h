@@ -193,9 +193,10 @@ public:
     static void CompressImageArray(int32 width, int32 height, const TArray<FColor>& src, TArray<uint8>& dest);
     static std::vector<msr::airlib::MeshPositionVertexBuffersResponse> GetStaticMeshComponents();
 
-    static void addDetectionFilterMeshName(const  std::string& name);
+    static void addDetectionFilterMeshName(const std::string& name);
     static void setDetectionFilterRadius(const float radius_cm);
     static void clearDetectionMeshNames();
+
 private:
     template <typename T>
     static void InitializeObjectStencilID(T* mesh, bool ignore_existing = true)
