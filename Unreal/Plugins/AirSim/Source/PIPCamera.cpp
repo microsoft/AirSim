@@ -76,7 +76,6 @@ void APIPCamera::PostInitializeComponents()
     if (detections_[Utils::toNumeric(ImageType::Scene)]) {
         detections_[Utils::toNumeric(ImageType::Scene)]->Deactivate();
     }
-    //  detections_[Utils::toNumeric(ImageType::Scene)]->ObjectFilter = UAirBlueprintLib::GetObjectFilter();// &object_filter;
 }
 
 void APIPCamera::BeginPlay()
