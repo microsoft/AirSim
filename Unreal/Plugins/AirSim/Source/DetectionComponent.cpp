@@ -58,7 +58,7 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
     }
 }
 
-TArray<FDetectionInfo> UDetectionComponent::GetDetections() const
+const TArray<FDetectionInfo>& UDetectionComponent::GetDetections() const
 {
     return CachedDetections;
 }

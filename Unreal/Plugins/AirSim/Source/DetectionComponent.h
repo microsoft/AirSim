@@ -42,7 +42,7 @@ public:
     // Called every frame
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-    TArray<FDetectionInfo> GetDetections() const;
+    const TArray<FDetectionInfo>& GetDetections() const;
 
 private:
     bool CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut);

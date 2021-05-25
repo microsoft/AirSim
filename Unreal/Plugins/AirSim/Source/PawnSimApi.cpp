@@ -355,7 +355,7 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
 
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, &result]() {
         const APIPCamera* camera = getCamera(camera_name);
-        const TArray<FDetectionInfo> detections = camera->getDetectionComponent(image_type, false)->GetDetections();
+        const TArray<FDetectionInfo>& detections = camera->getDetectionComponent(image_type, false)->GetDetections();
         result.resize(detections.Num());
 
         for (int i = 0; i < detections.Num(); i++) {
