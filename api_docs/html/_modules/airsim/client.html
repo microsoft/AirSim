@@ -947,20 +947,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;cancelLastTask&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.waitOnLastTask"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.waitOnLastTask">[docs]</a>    <span class="k">def</span> <span class="nf">waitOnLastTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout_sec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Wait for the last Async task to complete</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            timeout_sec (float, optional): Time for the task to complete</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            bool: Result of the last task</span>
-
-<span class="sd">                  True if the task completed without cancellation or timeout</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;waitOnLastTask&#39;</span><span class="p">,</span> <span class="n">timeout_sec</span><span class="p">)</span></div>
-
     <span class="c1"># Recording APIs</span>
 <div class="viewcode-block" id="VehicleClient.startRecording"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.startRecording">[docs]</a>    <span class="k">def</span> <span class="nf">startRecording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
