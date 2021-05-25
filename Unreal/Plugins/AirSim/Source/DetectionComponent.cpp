@@ -118,7 +118,6 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
     }
     else {
         ProjectionData.ProjectionMatrix = Info.CalculateProjectionMatrix();
-        ;
     }
     ProjectionData.SetConstrainedViewRectangle(ScreenRect);
 
