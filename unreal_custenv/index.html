@@ -375,6 +375,11 @@
 }</code></pre>
 </li>
 <li>
+<p>Edit the <code>Config\DefaultGame.ini</code> to add the following line at the end:</p>
+<pre class="highlight"><code>+MapsToCook=(FilePath="/AirSim/AirSimAssets")</code></pre>
+<p>Doing this forces Unreal to include all necessary AirSim content in packaged builds of your project.</p>
+</li>
+<li>
 <p>Close Visual Studio and the  <code>Unreal Editor</code> and right click the LandscapeMountains.uproject in Windows Explorer and select <code>Generate Visual Studio Project Files</code>.  This step detects all plugins and source files in your Unreal project and generates <code>.sln</code> file for Visual Studio.</p>
 <p><img alt="regen" src="../images/regen_sln.png" /></p>
 <div class="admonition tip">
