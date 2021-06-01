@@ -73,6 +73,15 @@ public:
         return vals_.size();
     }
 
+    std::vector<TKey> keys() const
+    {
+        std::vector<TKey> ret;
+        for (const auto& element : map_) {
+            ret.push_back(element.first);
+        }
+        return ret;
+    }
+
     //TODO: add erase methods
 
 private:
