@@ -78,7 +78,8 @@ void ASimModeBase::toggleLoadingScreen(bool is_visible)
                 loading_screen_widget_->SetVisibility(ESlateVisibility::Visible);
             else
                 loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);
-        }, true);
+        },
+                                                 true);
     }
 }
 
