@@ -439,7 +439,7 @@ namespace airlib
             setCommandHistorySize(50);
             setPrompt(prompt);
 
-            //Setup the command completition
+            //Setup the command completion
             linenoise::SetCompletionCallback(std::bind(&SimpleShell::commandCompletitionCallBack, this, std::placeholders::_1, std::placeholders::_2));
         }
 

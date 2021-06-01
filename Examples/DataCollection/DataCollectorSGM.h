@@ -178,7 +178,7 @@ private:
 
         auto process_time = clock->nowNanos();
 
-        //Initialze file names
+        //Initialize file names
         std::string left_file_name = Utils::stringf("left/%06d.png", result->sample);
         std::string right_file_name = Utils::stringf("right/%06d.png", result->sample);
         std::string depth_gt_file_name = Utils::stringf("depth_gt/%06d.pfm", result->sample);
@@ -243,7 +243,7 @@ private:
         svpng(sgm_c, w, h, reinterpret_cast<const unsigned char*>(sgm_confidence_data.data()), 0, 1);
         fclose(sgm_c);
 
-        //GT and SGM disparity for visulatization
+        //GT and SGM disparity for visualization
         std::vector<uint8_t> sgm_disparity_viz(h * w * 3);
         getColorVisualization(sgm_disparity_data, sgm_disparity_viz, h, w, 0.05f * w);
         FILE* disparity_sgm = fopen(FileSystem::combine(result->storage_dir_, disparity_sgm_viz_file_name).c_str(), "wb");
