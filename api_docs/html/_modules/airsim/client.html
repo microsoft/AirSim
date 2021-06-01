@@ -1004,12 +1004,21 @@
 <span class="sd">            vehicle_name (str): Name of the vehicle being created</span>
 <span class="sd">            vehicle_type (str): Type of vehicle, e.g. &quot;simpleflight&quot;</span>
 <span class="sd">            pose (Pose): Initial pose of the vehicle</span>
-<span class="sd">            pawn_path (str): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type</span>
+<span class="sd">            pawn_path (str, optional): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: Whether vehicle was created</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simAddVehicle&#39;</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">vehicle_type</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">pawn_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VehicleClient.listVehicles"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.listVehicles">[docs]</a>    <span class="k">def</span> <span class="nf">listVehicles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lists the names of current vehicles</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: List containing names of all vehicles</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;listVehicles&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="VehicleClient.getSettingsString"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.getSettingsString">[docs]</a>    <span class="k">def</span> <span class="nf">getSettingsString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

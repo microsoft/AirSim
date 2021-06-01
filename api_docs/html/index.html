@@ -418,6 +418,20 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="airsim.client.VehicleClient.listVehicles">
+<span class="sig-name descname"><span class="pre">listVehicles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.listVehicles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.listVehicles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lists the names of current vehicles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List containing names of all vehicles</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.ping">
 <span class="sig-name descname"><span class="pre">ping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.ping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.ping" title="Permalink to this definition">¶</a></dt>
 <dd><p>If connection is established then this call will return true otherwise it will be blocked until timeout</p>
@@ -448,7 +462,7 @@
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the vehicle being created</p></li>
 <li><p><strong>vehicle_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Type of vehicle, e.g. “simpleflight”</p></li>
 <li><p><strong>pose</strong> (<a class="reference internal" href="#airsim.types.Pose" title="airsim.types.Pose"><em>Pose</em></a>) – Initial pose of the vehicle</p></li>
-<li><p><strong>pawn_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type</p></li>
+<li><p><strong>pawn_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
