@@ -405,6 +405,18 @@ class VehicleClient:
             list[str]: List containing all the names
         """
         return self.client.call('simListSceneObjects', name_regex)
+        
+    def simLoadLevel(self, level_name):
+        """
+        Loads a level specified by its name
+
+        Args:
+            level_name (str): Name of the level to load
+
+        Returns:
+            bool: True if the level was successfully loaded
+        """
+        return self.client.call('simLoadLevel', level_name)
 
     def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
         """Spawned selected object in the world
