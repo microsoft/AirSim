@@ -19,7 +19,7 @@ then run ./setup.sh and ./build.sh
 
 # AirSim plugin
 
-The AirSim UE plugin needs to be built with clang. You can clone AirSim again in another folder without the above change, and from that one, run the Blocks environment.
+The AirSim UE plugin needs to be built with clang, so you can't use the one compiled in the previous step. You can use [our binaries](https://github.com/microsoft/AirSim/releases) or you can clone AirSim again in another folder without the above change, and with that one, [run Blocks](https://microsoft.github.io/AirSim/build_linux/#how-to-use-airsim) or your environment.
 
 
 # AirSim settings
