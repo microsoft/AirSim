@@ -24,10 +24,6 @@
 #include "UdpSocket.hpp"
 
 #include <sstream>
-#include <iostream>
-
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
 
 namespace msr
 {
@@ -39,9 +35,8 @@ namespace airlib
 
     public:
         ArduCopterApi(const MultiRotorParams* vehicle_params, const AirSimSettings::MavLinkConnectionInfo& connection_info)
-            : ip_(connection_info.udp_address), vehicle_params_(vehicle_params)
+            : connection_info_(connection_info), vehicle_params_(vehicle_params)
         {
-            connection_info_ = connection_info;
             sensors_ = &getSensors();
 
             connect(); // Should we try catching exceptions here?
@@ -310,6 +305,7 @@ namespace airlib
         void connect()
         {
             port_ = static_cast<uint16_t>(connection_info_.udp_port);
+            ip_ = connection_info_.udp_address;
 
             closeConnections();
 
@@ -339,16 +335,46 @@ namespace airlib
 
         void sendSensors()
         {
-            if (sensors_ == nullptr)
+            if (sensors_ == nullptr || udp_socket_ == nullptr)
                 return;
 
-            std::ostringstream oss;
+            std::ostringstream buf;
+
+            // Start of JSON element
+            buf << "{";
+
+            buf << "\"timestamp\": " << ClockFactory::get()->nowNanos() / 1000 << ",";
+
+            const auto& imu_output = getImuData("");
+
+            buf << "\"imu\": {"
+                << std::fixed << std::setprecision(7)
+                << "\"angular_velocity\": ["
+                << imu_output.angular_velocity[0] << ","
+                << imu_output.angular_velocity[1] << ","
+                << imu_output.angular_velocity[2] << "]"
+                << ","
+                << "\"linear_acceleration\": ["
+                << imu_output.linear_acceleration[0] << ","
+                << imu_output.linear_acceleration[1] << ","
+                << imu_output.linear_acceleration[2] << "]"
+                << "}";
+
+            float pitch, roll, yaw;
+            VectorMath::toEulerianAngle(imu_output.orientation, pitch, roll, yaw);
+
+            buf << ","
+                << "\"pose\": {"
+                << "\"pitch\": " << pitch << ","
+                << "\"roll\": " << roll << ","
+                << "\"yaw\": " << yaw
+                << "}";
 
             const uint count_gps_sensors = sensors_->size(SensorBase::SensorType::Gps);
             if (count_gps_sensors != 0) {
                 const auto& gps_output = getGpsData("");
 
-                oss << ","
+                buf << ","
                        "\"gps\": {"
                     << std::fixed << std::setprecision(7)
                     << "\"lat\": " << gps_output.gnss.geo_point.latitude << ","
@@ -357,7 +383,6 @@ namespace airlib
                     << "},"
 
                     << "\"velocity\": {"
-                    << std::setprecision(12)
                     << "\"world_linear_velocity\": ["
                     << gps_output.gnss.velocity[0] << ","
                     << gps_output.gnss.velocity[1] << ","
@@ -367,7 +392,7 @@ namespace airlib
 
             // Send RC channels to Ardupilot if present
             if (is_rc_connected_ && last_rcData_.is_valid) {
-                oss << ","
+                buf << ","
                        "\"rc\": {"
                        "\"channels\": ["
                     << (last_rcData_.roll + 1) * 0.5f << ","
@@ -377,20 +402,23 @@ namespace airlib
 
                 // Add switches to RC channels array, 8 switches
                 for (uint8_t i = 0; i < 8; ++i) {
-                    oss << "," << static_cast<float>(last_rcData_.getSwitch(i));
+                    buf << "," << static_cast<float>(last_rcData_.getSwitch(i));
                 }
 
                 // Close JSON array & element
-                oss << "]}";
+                buf << "]}";
             }
 
             // Send Distance Sensors data if present
             const uint count_distance_sensors = sensors_->size(SensorBase::SensorType::Distance);
             if (count_distance_sensors != 0) {
                 // Start JSON element
-                oss << ","
+                buf << ","
                        "\"rng\": {"
                        "\"distances\": [";
+
+                // More than mm level accuracy isn't needed or expected
+                buf << std::fixed << std::setprecision(3);
 
                 // Used to avoid trailing comma
                 std::string sep = "";
@@ -403,20 +431,23 @@ namespace airlib
                     if (distance_sensor && distance_sensor->getParams().external_controller) {
                         const auto& distance_output = distance_sensor->getOutput();
                         // AP uses meters so no need to convert here
-                        oss << sep << distance_output.distance;
+                        buf << sep << distance_output.distance;
                         sep = ",";
                     }
                 }
 
                 // Close JSON array & element
-                oss << "]}";
+                buf << "]}";
             }
 
             const uint count_lidars = sensors_->size(SensorBase::SensorType::Lidar);
             if (count_lidars != 0) {
-                oss << ","
+                buf << ","
                        "\"lidar\": {"
                        "\"point_cloud\": [";
+
+                // More than mm level accuracy isn't needed or expected
+                buf << std::fixed << std::setprecision(3);
 
                 // Add sensor outputs in the array
                 for (uint i = 0; i < count_lidars; ++i) {
@@ -424,63 +455,25 @@ namespace airlib
 
                     if (lidar && lidar->getParams().external_controller) {
                         const auto& lidar_output = lidar->getOutput();
-                        std::copy(lidar_output.point_cloud.begin(), lidar_output.point_cloud.end(), std::ostream_iterator<real_T>(oss, ","));
+                        std::copy(lidar_output.point_cloud.begin(), lidar_output.point_cloud.end(), std::ostream_iterator<real_T>(buf, ","));
                         // AP backend only takes in a single Lidar sensor data currently
                         break;
                     }
                 }
 
                 // Close JSON array & element
-                oss << "]}";
+                buf << "]}";
             }
 
-            const auto& imu_output = getImuData("");
+            // End of JSON data, AP Parser needs newline
+            buf << "}\n";
 
-            float yaw;
-            float pitch;
-            float roll;
-            VectorMath::toEulerianAngle(imu_output.orientation, pitch, roll, yaw);
-
-            // UDP packets have a maximum size limit of 65kB
-            char buf[65000];
-
-            int ret = snprintf(buf, sizeof(buf), "{"
-                                                 "\"timestamp\": %" PRIu64 ","
-                                                 "\"imu\": {"
-                                                 "\"angular_velocity\": [%.12f, %.12f, %.12f],"
-                                                 "\"linear_acceleration\": [%.12f, %.12f, %.12f]"
-                                                 "},"
-                                                 "\"pose\": {"
-                                                 "\"roll\": %.12f,"
-                                                 "\"pitch\": %.12f,"
-                                                 "\"yaw\": %.12f"
-                                                 "}"
-                                                 "%s"
-                                                 "}\n",
-                               static_cast<uint64_t>(ClockFactory::get()->nowNanos() / 1.0E3),
-                               imu_output.angular_velocity[0],
-                               imu_output.angular_velocity[1],
-                               imu_output.angular_velocity[2],
-                               imu_output.linear_acceleration[0],
-                               imu_output.linear_acceleration[1],
-                               imu_output.linear_acceleration[2],
-                               roll,
-                               pitch,
-                               yaw,
-                               oss.str().c_str());
-
-            if (ret < 0) {
-                Utils::log("Encoding error while forming sensor message", Utils::kLogLevelError);
-                return;
-            }
-            else if (static_cast<uint>(ret) >= sizeof(buf)) {
-                Utils::log(Utils::stringf("Sensor message truncated, lost %d bytes", ret - sizeof(buf)), Utils::kLogLevelWarn);
-            }
-
-            // Send data
-            if (udp_socket_ != nullptr) {
-                udp_socket_->sendto(buf, strlen(buf), ip_, port_);
-            }
+            // str copy is made since if later on something like -
+            //  const char* ptr = buf.str().c_str()
+            // is written, ptr is invalid since buf.str() is a temporary copy
+            // Currently there's no way to get pointer to underlying buffer
+            const std::string sensor_data = buf.str();
+            udp_socket_->sendto(sensor_data.c_str(), sensor_data.length(), ip_, port_);
         }
 
         void recvRotorControl()
@@ -518,7 +511,7 @@ namespace airlib
 
         AirSimSettings::MavLinkConnectionInfo connection_info_;
         uint16_t port_;
-        const std::string& ip_;
+        std::string ip_;
         const SensorCollection* sensors_;
         const MultiRotorParams* vehicle_params_;
 

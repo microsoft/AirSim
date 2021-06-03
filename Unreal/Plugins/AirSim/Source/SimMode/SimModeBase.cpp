@@ -71,11 +71,13 @@ void ASimModeBase::toggleLoadingScreen(bool is_visible)
     if (loading_screen_widget_ == nullptr)
         return;
     else {
-
-        if (is_visible)
-            loading_screen_widget_->SetVisibility(ESlateVisibility::Visible);
-        else
-            loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);
+        UAirBlueprintLib::RunCommandOnGameThread([this, is_visible]() {
+            if (is_visible)
+                loading_screen_widget_->SetVisibility(ESlateVisibility::Visible);
+            else
+                loading_screen_widget_->SetVisibility(ESlateVisibility::Hidden);
+        },
+                                                 true);
     }
 }
 

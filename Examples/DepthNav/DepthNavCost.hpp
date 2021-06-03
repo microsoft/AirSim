@@ -86,7 +86,7 @@ namespace airlib
                     return goal_pose;
                 }
             }
-            //Not in frustrum
+            //Not in frustum
             else {
                 return Pose::nanPose();
             }

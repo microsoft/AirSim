@@ -383,6 +383,10 @@ namespace airlib
             getWorldSimApi()->setWind(wind.to());
         });
 
+        pimpl_->server.bind("listVehicles", [&]() -> vector<string> {
+            return getWorldSimApi()->listVehicles();
+        });
+
         pimpl_->server.bind("getSettingsString", [&]() -> std::string {
             return getWorldSimApi()->getSettingsString();
         });

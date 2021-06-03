@@ -1,7 +1,7 @@
 macro(BuildRpc)
 
 
-set(RPC_SOURCE_DIR ${AIRSIM_ROOT}/external/rpclib/rpclib-2.2.1)
+set(RPC_SOURCE_DIR ${AIRSIM_ROOT}/external/rpclib/rpclib-2.3.0)
 include(${RPC_SOURCE_DIR}/cmake/policies.cmake)
 include(${RPC_SOURCE_DIR}/cmake/msvc_support.cmake)
 include(${RPC_SOURCE_DIR}/cmake/coverage.cmake)

@@ -607,6 +607,22 @@ void WorldSimApi::setWind(const Vector3r& wind) const
     simmode_->setWind(wind);
 }
 
+std::vector<std::string> WorldSimApi::listVehicles() const
+{
+    std::vector<std::string> vehicle_names;
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, &vehicle_names]() {
+        vehicle_names = (simmode_->getApiProvider()->getVehicleSimApis()).keys();
+    },
+                                             true);
+
+    // Remove '' from the list, representing default vehicle
+    auto position = std::find(vehicle_names.begin(), vehicle_names.end(), "");
+    if (position != vehicle_names.end())
+        vehicle_names.erase(position);
+    return vehicle_names;
+}
+
 std::string WorldSimApi::getSettingsString() const
 {
     return msr::airlib::AirSimSettings::singleton().settings_text_;

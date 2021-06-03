@@ -405,6 +405,18 @@ class VehicleClient:
             list[str]: List containing all the names
         """
         return self.client.call('simListSceneObjects', name_regex)
+        
+    def simLoadLevel(self, level_name):
+        """
+        Loads a level specified by its name
+
+        Args:
+            level_name (str): Name of the level to load
+
+        Returns:
+            bool: True if the level was successfully loaded
+        """
+        return self.client.call('simLoadLevel', level_name)
 
     def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
         """Spawned selected object in the world
@@ -794,20 +806,6 @@ class VehicleClient:
         """
         self.client.call('cancelLastTask', vehicle_name)
 
-    def waitOnLastTask(self, timeout_sec = float('nan')):
-        """
-        Wait for the last Async task to complete
-
-        Args:
-            timeout_sec (float, optional): Time for the task to complete
-
-        Returns:
-            bool: Result of the last task
-
-                  True if the task completed without cancellation or timeout
-        """
-        return self.client.call('waitOnLastTask', timeout_sec)
-
     # Recording APIs
     def startRecording(self):
         """
@@ -865,12 +863,21 @@ class VehicleClient:
             vehicle_name (str): Name of the vehicle being created
             vehicle_type (str): Type of vehicle, e.g. "simpleflight"
             pose (Pose): Initial pose of the vehicle
-            pawn_path (str): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type
+            pawn_path (str, optional): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type
 
         Returns:
             bool: Whether vehicle was created
         """
         return self.client.call('simAddVehicle', vehicle_name, vehicle_type, pose, pawn_path)
+
+    def listVehicles(self):
+        """
+        Lists the names of current vehicles
+
+        Returns:
+            list[str]: List containing names of all vehicles
+        """
+        return self.client.call('listVehicles')
 
     def getSettingsString(self):
         """
