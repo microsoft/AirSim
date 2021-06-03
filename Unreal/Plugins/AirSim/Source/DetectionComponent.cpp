@@ -33,7 +33,10 @@ void UDetectionComponent::BeginPlay()
 void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
 
+const TArray<FDetectionInfo>& UDetectionComponent::GetDetections()
+{
     CachedDetections.Empty();
 
     for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
@@ -56,10 +59,7 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
             }
         }
     }
-}
 
-const TArray<FDetectionInfo>& UDetectionComponent::GetDetections() const
-{
     return CachedDetections;
 }
 
