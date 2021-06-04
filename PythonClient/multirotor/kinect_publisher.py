@@ -194,7 +194,7 @@ if __name__ == "__main__":
     pub = KinectPublisher()
 
     while not rospy.is_shutdown():
-        responses = client.simGetImages([airsim.ImageRequest(0, airsim.ImageType.DepthPlanner, True, False),
+        responses = client.simGetImages([airsim.ImageRequest(0, airsim.ImageType.DepthPlanar, True, False),
                                          airsim.ImageRequest(0, airsim.ImageType.Scene, False, False)])
         img_depth = pub.getDepthImage(responses[0])
         img_rgb = pub.getRGBImage(responses[1])

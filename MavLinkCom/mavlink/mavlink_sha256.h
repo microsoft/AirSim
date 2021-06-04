@@ -1,11 +1,11 @@
 #pragma once
-
+// clang-format off
 /*
   sha-256 implementation for MAVLink based on Heimdal sources, with
   modifications to suit mavlink headers
  */
 /*
- * Copyright (c) 1995 - 2001 Kungliga Tekniska Högskolan
+ * Copyright (c) 1995 - 2001 Kungliga Tekniska Hï¿½gskolan
  * (Royal Institute of Technology, Stockholm, Sweden).
  * All rights reserved.
  * 
@@ -250,3 +250,5 @@ MAVLINK_HELPER void mavlink_sha256_final_48(mavlink_sha256_ctx *m, uint8_t resul
 #endif
 
 #endif // HAVE_MAVLINK_SHA256
+
+// clang-format on

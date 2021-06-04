@@ -48,6 +48,7 @@ Below are complete list of settings available along with their default values. I
   "ClockType": "",
   "ClockSpeed": 1,
   "LocalHostIp": "127.0.0.1",
+  "ApiServerPort": 41451,
   "RecordUIVisible": true,
   "LogMessagesVisible": true,
   "ViewMode": "",
@@ -57,6 +58,11 @@ Below are complete list of settings available along with their default values. I
   "SpeedUnitFactor": 1.0,
   "SpeedUnitLabel": "m/s",
   "Wind": { "X": 0, "Y": 0, "Z": 0 },
+  "CameraDirector": {
+    "FollowDistance": -3,
+    "X": NaN, "Y": NaN, "Z": NaN,
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+  },
   "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,
@@ -109,7 +115,7 @@ Below are complete list of settings available along with their default values. I
     "Gimbal": {
       "Stabilization": 0,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN
-    }
+    },
     "X": NaN, "Y": NaN, "Z": NaN,
     "Pitch": NaN, "Roll": NaN, "Yaw": NaN
   },
@@ -150,6 +156,7 @@ Below are complete list of settings available along with their default values. I
       "EnableCollisionPassthrogh": false,
       "EnableCollisions": true,
       "AllowAPIAlways": true,
+      "EnableTrace": false,
       "RC": {
         "RemoteControlID": 0,
         "AllowAPIWhenDisconnected": false
@@ -268,6 +275,13 @@ The `InitMethod` determines how object IDs are initialized at startup to generat
 
 This setting specifies the wind speed in World frame, in NED direction. Values are in m/s. By default, speed is 0, i.e. no wind.
 
+## Camera Director Settings
+
+This element specifies the settings used for the camera following the vehicle in the ViewPort.
+
+* `FollowDistance`: Distance at which camera follows the vehicle, default is -8 (8 meters) for Car, -3 for others.
+* `X, Y, Z, Yaw, Roll, Pitch`: These elements allows you to specify the position and orientation of the camera relative to the vehicle. Position is in NED coordinates in SI units with origin set to Player Start location in Unreal environment. The orientation is specified in degrees.
+
 ## Camera Settings
 The `CameraDefaults` element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in `Cameras` element inside `Vehicles` as described later.
 
@@ -367,9 +381,10 @@ The defaults for PX4 is to enable hardware-in-loop setup. There are various othe
 "Vehicles": {
     "PX4": {
       "VehicleType": "PX4Multirotor",
-
+      "Lockstep": true,
       "ControlIp": "127.0.0.1",
-      "ControlPort": 14580,
+      "ControlPortLocal": 14540,
+      "ControlPortRemote": 14580,
       "LogViewerHostIp": "127.0.0.1",
       "LogViewerPort": 14388,
       "OffboardCompID": 1,
@@ -388,26 +403,50 @@ The defaults for PX4 is to enable hardware-in-loop setup. There are various othe
       "VehicleCompID": 1,
       "VehicleSysID": 135,
       "Model": "Generic",
-      "LocalHostIp": "127.0.0.1"
+      "LocalHostIp": "127.0.0.1",
+      "Logs": "d:\\temp\\mavlink",
+      "Sensors": {
+        ...
+      }
+      "Parameters": {
+        ...
+      }
     }
 }
 ```
 
-These settings define the MavLink SystemId and ComponentId for the Simulator (SimSysID, SimCompID), and for the vehicle (VehicleSysID, VehicleCompID)
-and the node that allows remote control of the drone from another app this is called the offboard node (OffboardSysID, OffboardCompID).
+These settings define the MavLink SystemId and ComponentId for the Simulator (SimSysID, SimCompID),
+and for the vehicle (VehicleSysID, VehicleCompID) and the node that allows remote control of the
+drone from another app this is called the offboard node (OffboardSysID, OffboardCompID).
 
-If you want the simulator to also talk to your ground control app (like QGroundControl) you can also set the UDP address for that in case you want to run
-that on a different machine (QgcHostIp, QgcPort).  The default is local host so QGroundControl should "just work" if it is running on the same machine.
+If you want the simulator to also forward mavlink messages to your ground control app (like
+QGroundControl) you can also set the UDP address for that in case you want to run that on a
+different machine (QgcHostIp, QgcPort).  The default is local host so QGroundControl should "just
+work" if it is running on the same machine.
 
-You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP address for that (LogViewerHostIp, LogViewerPort).
+You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP
+address for that (LogViewerHostIp, LogViewerPort).
 
-And for each flying drone added to the simulator there is a named block of additional settings.  In the above you see the default name "PX4".   You can change this name from the Unreal Editor when you add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink". The MavLink node for this pawn can be remote over UDP or it can be connected to a local serial port.  If serial then set UseSerial to true, otherwise set UseSerial to false.  For serial connections you also need to set the appropriate SerialBaudRate.  The default of 115200 works with Pixhawk version 2 over USB.
+And for each flying drone added to the simulator there is a named block of additional settings.  In
+the above you see the default name "PX4".   You can change this name from the Unreal Editor when you
+add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink".
+The MavLink node for this pawn can be remote over UDP or it can be connected to a local serial port.
+If serial then set UseSerial to true, otherwise set UseSerial to false.  For serial connections you
+also need to set the appropriate SerialBaudRate.  The default of 115200 works with Pixhawk version 2
+over USB.
 
-When communicating with the PX4 drone over serial port both the HIL_* messages and vehicle control messages share the same serial port.
-When communicating over UDP or TCP PX4 requires two separate channels.  If UseTcp is false, then UdpIp, UdpPort are used to send HIL_* messages,
-otherwise the TcpPort is used.  TCP support in PX4 was added in 1.9.2 with the `lockstep` feature because the guarantee of message delivery that
-TCP provides is required for the proper functioning of lockstep.  AirSim becomes a TCP server in that case, and waits for a connection
-from the PX4 app.  The second channel for controlling the vehicle is defined by (ControlIp, ControlPort) and is always a UDP channel.
+When communicating with the PX4 drone over serial port both the HIL_* messages and vehicle control
+messages share the same serial port. When communicating over UDP or TCP PX4 requires two separate
+channels.  If UseTcp is false, then UdpIp, UdpPort are used to send HIL_* messages, otherwise the
+TcpPort is used.  TCP support in PX4 was added in 1.9.2 with the `lockstep` feature because the
+guarantee of message delivery that TCP provides is required for the proper functioning of lockstep.
+AirSim becomes a TCP server in that case, and waits for a connection from the PX4 app.  The second
+channel for controlling the vehicle is defined by (ControlIp, ControlPort) and is always a UDP
+channel.
+
+The `Sensors` section can provide customized settings for simulated sensors, see
+[Sensors](sensors.md). The `Parameters` section can set PX4 parameters during initialization of the
+PX4 connection. See [Setting up PX4 Software-in-Loop](px4_sitl.md) for an example.
 
 ### Using ArduPilot
 
@@ -422,7 +461,7 @@ To turn off the engine sound use [setting](settings.md) `"EngineSound": false`. 
 This allows you to specify your own vehicle pawn blueprints, for example, you can replace the default car in AirSim with your own car. Your vehicle BP can reside in Content folder of your own Unreal project (i.e. outside of AirSim plugin folder). For example, if you have a car BP located in file `Content\MyCar\MySedanBP.uasset` in your project then you can set `"DefaultCar": {"PawnBP":"Class'/Game/MyCar/MySedanBP.MySedanBP_C'"}`. The `XYZ.XYZ_C` is a special notation required to specify class for BP `XYZ`. Please note that your BP must be derived from CarPawn class. By default this is not the case but you can re-parent the BP using the "Class Settings" button in toolbar in UE editor after you open the BP and then choosing "Car Pawn" for Parent Class settings in Class Options. It is also a good idea to disable "Auto Possess Player" and "Auto Possess AI" as well as set AI Controller Class to None in BP details. Please make sure your asset is included for cooking in packaging options if you are creating binary.
 
 ### PhysicsEngineName
-For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` only.
+For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support `"FastPhysicsEngine"` and `"ExternalPhysicsEngine"`. `"ExternalPhysicsEngine"` allows the drone to be controlled via setVehiclePose (), keeping the drone in place until the next call. It is especially useful for moving the AirSim drone using an external simulator or on a saved path.
 
 ### LocalHostIp Setting
 Now when connecting to remote machines you may need to pick a specific Ethernet adapter to reach those machines, for example, it might be
@@ -431,6 +470,10 @@ be allowed to talk to each other, in which case the UDP messages from one networ
 
 So the LocalHostIp allows you to configure how you are reaching those machines.  The default of 127.0.0.1 is not able to reach external machines,
 this default is only used when everything you are talking to is contained on a single PC.
+
+### ApiServerPort
+This setting determines the server port that used by airsim clients, default port is 41451.
+By specifying different ports, the user can run multiple environments in parallel to accelerate data collection process.
 
 ### SpeedUnitFactor
 Unit conversion factor for speed related to `m/s`, default is 1. Used in conjunction with SpeedUnitLabel. This may be only used for display purposes for example on-display speed when car is being driven. For example, to get speed in `miles/hr` use factor 2.23694.

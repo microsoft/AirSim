@@ -1,5 +1,5 @@
 #pragma once
-
+// clang-format off
 #ifndef MAVLINK_NO_CONVERSION_HELPERS
 
 /* enable math defines on Windows */
@@ -210,3 +210,5 @@ MAVLINK_HELPER void mavlink_euler_to_dcm(float roll, float pitch, float yaw, flo
 }
 
 #endif // MAVLINK_NO_CONVERSION_HELPERS
+
+// clang-format on

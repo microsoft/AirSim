@@ -1,0 +1,4 @@
+msgpack-rpc-python
+numpy
+pyaudio
+opencv-contrib-python

@@ -232,7 +232,7 @@ namespace Microsoft.Networking.Mavlink
             typeof(mavlink_gimbal_control_t),                                    // 201
             null,                                                                // 202
             null,                                                                // 203
-            null,                                                                // 204
+            typeof(mavlink_telemetry),                                           // 204
             null,                                                                // 205
             null,                                                                // 206
             null,                                                                // 207
@@ -2350,7 +2350,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 42)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_sensor_offsets_t
         {
             /// <summary> magnetic declination (radians) </summary>
@@ -2381,7 +2381,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_set_mag_offsets_t
         {
             /// <summary> magnetometer X offset </summary>
@@ -2398,7 +2398,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_meminfo_t
         {
             /// <summary> heap top </summary>
@@ -2409,7 +2409,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_ap_adc_t
         {
             /// <summary> ADC output 1 </summary>
@@ -2428,7 +2428,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 15)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_digicam_configure_t
         {
             /// <summary> Correspondent value to given extra_param </summary>
@@ -2457,7 +2457,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 13)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_digicam_control_t
         {
             /// <summary> Correspondent value to given extra_param </summary>
@@ -2484,7 +2484,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mount_configure_t
         {
             /// <summary> System ID </summary>
@@ -2503,7 +2503,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 15)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mount_control_t
         {
             /// <summary> pitch(deg*100) or lat, depending on mount mode </summary>
@@ -2522,7 +2522,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 14)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mount_status_t
         {
             /// <summary> pitch(deg*100) </summary>
@@ -2539,7 +2539,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_fence_point_t
         {
             /// <summary> Latitude of point </summary>
@@ -2558,7 +2558,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_fence_fetch_point_t
         {
             /// <summary> System ID </summary>
@@ -2571,7 +2571,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_fence_status_t
         {
             /// <summary> time of last breach in milliseconds since boot </summary>
@@ -2586,7 +2586,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 28)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_ahrs_t
         {
             /// <summary> X gyro drift estimate rad/s </summary>
@@ -2607,7 +2607,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 44)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_simstate_t
         {
             /// <summary> Roll angle (rad) </summary>
@@ -2636,7 +2636,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hwstatus_t
         {
             /// <summary> board voltage (mV) </summary>
@@ -2647,7 +2647,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 9)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_radio_t
         {
             /// <summary> receive errors </summary>
@@ -2668,7 +2668,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_limits_status_t
         {
             /// <summary> time of last breach in milliseconds since boot </summary>
@@ -2693,7 +2693,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_wind_t
         {
             /// <summary> wind direction that wind is coming from (degrees) </summary>
@@ -2706,7 +2706,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 18)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_data16_t
         {
             /// <summary> data type </summary>
@@ -2720,7 +2720,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 34)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_data32_t
         {
             /// <summary> data type </summary>
@@ -2734,7 +2734,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 66)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_data64_t
         {
             /// <summary> data type </summary>
@@ -2748,7 +2748,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 98)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_data96_t
         {
             /// <summary> data type </summary>
@@ -2762,7 +2762,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_rangefinder_t
         {
             /// <summary> distance in meters </summary>
@@ -2773,7 +2773,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 48)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_airspeed_autocal_t
         {
             /// <summary> GPS velocity north m/s </summary>
@@ -2804,7 +2804,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 19)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_rally_point_t
         {
             /// <summary> Latitude of point in degrees * 1E7 </summary>
@@ -2831,7 +2831,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_rally_fetch_point_t
         {
             /// <summary> System ID </summary>
@@ -2844,7 +2844,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 20)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_compassmot_status_t
         {
             /// <summary> current (amps) </summary>
@@ -2863,7 +2863,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 24)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_ahrs2_t
         {
             /// <summary> Roll angle (rad) </summary>
@@ -2882,7 +2882,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 29)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_camera_status_t
         {
             /// <summary> Image timestamp (microseconds since UNIX epoch, according to camera clock) </summary>
@@ -2907,7 +2907,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 45)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_camera_feedback_t
         {
             /// <summary> Image timestamp (microseconds since UNIX epoch), as passed in by CAMERA_STATUS message (or autopilot if no CCB) </summary>
@@ -2940,7 +2940,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_battery2_t
         {
             /// <summary> voltage in millivolts </summary>
@@ -2951,7 +2951,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 40)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_ahrs3_t
         {
             /// <summary> Roll angle (rad) </summary>
@@ -2978,7 +2978,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_autopilot_version_request_t
         {
             /// <summary> System ID </summary>
@@ -2989,7 +2989,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 206)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_remote_log_data_block_t
         {
             /// <summary> log data block sequence number </summary>
@@ -3005,7 +3005,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 7)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_remote_log_block_status_t
         {
             /// <summary> log data block sequence number </summary>
@@ -3020,7 +3020,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 29)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_led_control_t
         {
             /// <summary> System ID </summary>
@@ -3040,7 +3040,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 27)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mag_cal_progress_t
         {
             /// <summary> Body frame direction vector for display </summary>
@@ -3066,7 +3066,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 44)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mag_cal_report_t
         {
             /// <summary> RMS milligauss residuals </summary>
@@ -3101,7 +3101,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_ekf_status_report_t
         {
             /// <summary> Velocity variance </summary>
@@ -3120,7 +3120,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 25)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_pid_tuning_t
         {
             /// <summary> desired rate (degrees/s) </summary>
@@ -3141,7 +3141,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 42)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gimbal_report_t
         {
             /// <summary> Time since last update (seconds) </summary>
@@ -3172,7 +3172,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 14)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gimbal_control_t
         {
             /// <summary> Demanded angular rate X (rad/s) </summary>
@@ -3189,7 +3189,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gimbal_torque_cmd_report_t
         {
             /// <summary> Roll Torque Command </summary>
@@ -3206,7 +3206,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gopro_heartbeat_t
         {
             /// <summary> Status </summary>
@@ -3219,7 +3219,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gopro_get_request_t
         {
             /// <summary> System ID </summary>
@@ -3232,7 +3232,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gopro_get_response_t
         {
             /// <summary> Command ID </summary>
@@ -3246,7 +3246,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 7)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gopro_set_request_t
         {
             /// <summary> System ID </summary>
@@ -3262,7 +3262,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gopro_set_response_t
         {
             /// <summary> Command ID </summary>
@@ -3273,7 +3273,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_rpm_t
         {
             /// <summary> RPM Sensor1 </summary>
@@ -3284,7 +3284,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 9)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_heartbeat_t
         {
             /// <summary> A bitfield for use for autopilot-specific flags. </summary>
@@ -3303,7 +3303,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 31)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_sys_status_t
         {
             /// <summary> Bitmask showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present. Indices defined by ENUM MAV_SYS_STATUS_SENSOR </summary>
@@ -3336,7 +3336,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_system_time_t
         {
             /// <summary> Timestamp of the master clock in microseconds since UNIX epoch. </summary>
@@ -3347,7 +3347,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 14)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_ping_t
         {
             /// <summary> Unix timestamp in microseconds or since system boot if smaller than MAVLink epoch (1.1.2009) </summary>
@@ -3362,7 +3362,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 28)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_change_operator_control_t
         {
             /// <summary> System the GCS requests control for </summary>
@@ -3378,7 +3378,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_change_operator_control_ack_t
         {
             /// <summary> ID of the GCS this message  </summary>
@@ -3391,7 +3391,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 32)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_auth_key_t
         {
             /// <summary> key </summary>
@@ -3401,7 +3401,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_set_mode_t
         {
             /// <summary> The new autopilot-specific mode. This field can be ignored by an autopilot. </summary>
@@ -3414,7 +3414,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 20)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_param_request_read_t
         {
             /// <summary> Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored) </summary>
@@ -3430,7 +3430,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_param_request_list_t
         {
             /// <summary> System ID </summary>
@@ -3441,7 +3441,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 25)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_param_value_t
         {
             /// <summary> Onboard parameter value </summary>
@@ -3459,7 +3459,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 23)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_param_set_t
         {
             /// <summary> Onboard parameter value </summary>
@@ -3477,7 +3477,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 30)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gps_raw_int_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -3504,7 +3504,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 101)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gps_status_t
         {
             /// <summary> Number of satellites visible </summary>
@@ -3528,7 +3528,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_scaled_imu_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -3555,7 +3555,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 26)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_raw_imu_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -3582,7 +3582,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_raw_pressure_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -3599,7 +3599,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 14)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_scaled_pressure_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -3614,7 +3614,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 28)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_attitude_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -3635,7 +3635,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 32)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_attitude_quaternion_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -3658,7 +3658,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 28)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_local_position_ned_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -3679,7 +3679,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 28)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_global_position_int_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -3704,7 +3704,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_rc_channels_scaled_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -3733,7 +3733,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_rc_channels_raw_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -3762,7 +3762,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 21)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_servo_output_raw_t
         {
             /// <summary> Timestamp (microseconds since system boot) </summary>
@@ -3789,7 +3789,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_request_partial_list_t
         {
             /// <summary> Start index, 0 by default </summary>
@@ -3804,7 +3804,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_write_partial_list_t
         {
             /// <summary> Start index, 0 by default and smaller / equal to the largest index of the current onboard list. </summary>
@@ -3819,7 +3819,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 37)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_item_t
         {
             /// <summary> PARAM1, see MAV_CMD enum </summary>
@@ -3854,7 +3854,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_request_t
         {
             /// <summary> Sequence </summary>
@@ -3867,7 +3867,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_set_current_t
         {
             /// <summary> Sequence </summary>
@@ -3880,7 +3880,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_current_t
         {
             /// <summary> Sequence </summary>
@@ -3889,7 +3889,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_request_list_t
         {
             /// <summary> System ID </summary>
@@ -3900,7 +3900,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_count_t
         {
             /// <summary> Number of mission items in the sequence </summary>
@@ -3913,7 +3913,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_clear_all_t
         {
             /// <summary> System ID </summary>
@@ -3924,7 +3924,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_item_reached_t
         {
             /// <summary> Sequence </summary>
@@ -3933,7 +3933,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_ack_t
         {
             /// <summary> System ID </summary>
@@ -3946,7 +3946,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 13)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_set_gps_global_origin_t
         {
             /// <summary> Latitude (WGS84), in degrees * 1E7 </summary>
@@ -3961,7 +3961,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gps_global_origin_t
         {
             /// <summary> Latitude (WGS84), in degrees * 1E7 </summary>
@@ -3974,7 +3974,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 37)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_param_map_rc_t
         {
             /// <summary> Initial parameter value </summary>
@@ -4000,7 +4000,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_request_int_t
         {
             /// <summary> Sequence </summary>
@@ -4013,7 +4013,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 27)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_safety_set_allowed_area_t
         {
             /// <summary> x position 1 / Latitude 1 </summary>
@@ -4038,7 +4038,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 25)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_safety_allowed_area_t
         {
             /// <summary> x position 1 / Latitude 1 </summary>
@@ -4059,7 +4059,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 68)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_attitude_quaternion_cov_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -4080,7 +4080,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 26)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_nav_controller_output_t
         {
             /// <summary> Current desired roll in degrees </summary>
@@ -4103,7 +4103,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 185)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_global_position_int_cov_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch) in UTC. 0 for unknown. Commonly filled by the precision time source of a GPS receiver. </summary>
@@ -4133,7 +4133,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 229)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_local_position_ned_cov_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch) in UTC. 0 for unknown. Commonly filled by the precision time source of a GPS receiver. </summary>
@@ -4167,7 +4167,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 42)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_rc_channels_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -4216,7 +4216,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_request_data_stream_t
         {
             /// <summary> The requested message rate </summary>
@@ -4233,7 +4233,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_data_stream_t
         {
             /// <summary> The message rate </summary>
@@ -4246,7 +4246,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 11)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_manual_control_t
         {
             /// <summary> X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle. </summary>
@@ -4265,7 +4265,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 18)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_rc_channels_override_t
         {
             /// <summary> RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field. </summary>
@@ -4292,7 +4292,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 37)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_mission_item_int_t
         {
             /// <summary> PARAM1, see MAV_CMD enum </summary>
@@ -4327,7 +4327,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 20)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_vfr_hud_t
         {
             /// <summary> Current airspeed in m/s </summary>
@@ -4346,7 +4346,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 35)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_command_int_t
         {
             /// <summary> PARAM1, see MAV_CMD enum </summary>
@@ -4379,7 +4379,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 33)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_command_long_t
         {
             /// <summary> Parameter 1, as defined by MAV_CMD enum. </summary>
@@ -4408,7 +4408,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 3)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_command_ack_t
         {
             /// <summary> Command ID, as defined by MAV_CMD enum. </summary>
@@ -4419,7 +4419,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_manual_setpoint_t
         {
             /// <summary> Timestamp in milliseconds since system boot </summary>
@@ -4440,7 +4440,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 39)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_set_attitude_target_t
         {
             /// <summary> Timestamp in milliseconds since system boot </summary>
@@ -4466,7 +4466,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 37)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_attitude_target_t
         {
             /// <summary> Timestamp in milliseconds since system boot </summary>
@@ -4489,7 +4489,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 53)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_set_position_target_local_ned_t
         {
             /// <summary> Timestamp in milliseconds since system boot </summary>
@@ -4528,7 +4528,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 51)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_position_target_local_ned_t
         {
             /// <summary> Timestamp in milliseconds since system boot </summary>
@@ -4563,7 +4563,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 53)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_set_position_target_global_int_t
         {
             /// <summary> Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency. </summary>
@@ -4602,7 +4602,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 51)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_position_target_global_int_t
         {
             /// <summary> Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency. </summary>
@@ -4637,7 +4637,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 28)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_local_position_ned_system_global_offset_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -4658,7 +4658,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 56)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hil_state_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -4697,7 +4697,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 42)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hil_controls_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -4727,7 +4727,7 @@ namespace Microsoft.Networking.Mavlink
 
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 81)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hil_actuator_controls_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -4742,7 +4742,7 @@ namespace Microsoft.Networking.Mavlink
 
         };
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 33)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hil_rc_inputs_raw_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -4777,7 +4777,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 26)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_optical_flow_t
         {
             /// <summary> Timestamp (UNIX) </summary>
@@ -4800,7 +4800,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 32)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_global_vision_position_estimate_t
         {
             /// <summary> Timestamp (microseconds, synced to UNIX time or since system boot) </summary>
@@ -4821,7 +4821,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 32)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_vision_position_estimate_t
         {
             /// <summary> Timestamp (microseconds, synced to UNIX time or since system boot) </summary>
@@ -4842,7 +4842,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 20)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_vision_speed_estimate_t
         {
             /// <summary> Timestamp (microseconds, synced to UNIX time or since system boot) </summary>
@@ -4857,7 +4857,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 32)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_vicon_position_estimate_t
         {
             /// <summary> Timestamp (microseconds, synced to UNIX time or since system boot) </summary>
@@ -4878,7 +4878,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 62)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_highres_imu_t
         {
             /// <summary> Timestamp (microseconds, synced to UNIX time or since system boot) </summary>
@@ -4915,7 +4915,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 44)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_optical_flow_rad_t
         {
             /// <summary> Timestamp (microseconds, synced to UNIX time or since system boot) </summary>
@@ -4946,7 +4946,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 64)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hil_sensor_t
         {
             /// <summary> Timestamp (microseconds, synced to UNIX time or since system boot) </summary>
@@ -4983,7 +4983,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 84)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_sim_state_t
         {
             /// <summary> True attitude quaternion component 1, w (1 in null-rotation) </summary>
@@ -5032,7 +5032,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 9)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_radio_status_t
         {
             /// <summary> Receive errors </summary>
@@ -5053,7 +5053,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 254)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_file_transfer_protocol_t
         {
             /// <summary> Network ID (0 for broadcast) </summary>
@@ -5069,7 +5069,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_timesync_t
         {
             /// <summary> Time sync timestamp 1 </summary>
@@ -5080,7 +5080,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_camera_trigger_t
         {
             /// <summary> Timestamp for the image frame in microseconds </summary>
@@ -5091,7 +5091,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 36)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hil_gps_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -5124,7 +5124,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 44)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hil_optical_flow_t
         {
             /// <summary> Timestamp (microseconds, synced to UNIX time or since system boot) </summary>
@@ -5155,7 +5155,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 64)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_hil_state_quaternion_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -5195,7 +5195,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_scaled_imu2_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -5222,7 +5222,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_log_request_list_t
         {
             /// <summary> First log id (0 for first available) </summary>
@@ -5237,7 +5237,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 14)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_log_entry_t
         {
             /// <summary> UTC timestamp of log in seconds since 1970, or 0 if not available </summary>
@@ -5254,7 +5254,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 12)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_log_request_data_t
         {
             /// <summary> Offset into the log </summary>
@@ -5271,7 +5271,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 97)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_log_data_t
         {
             /// <summary> Offset into the log </summary>
@@ -5287,7 +5287,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_log_erase_t
         {
             /// <summary> System ID </summary>
@@ -5298,7 +5298,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_log_request_end_t
         {
             /// <summary> System ID </summary>
@@ -5309,7 +5309,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 113)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gps_inject_data_t
         {
             /// <summary> System ID </summary>
@@ -5325,7 +5325,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 35)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gps2_raw_t
         {
             /// <summary> Timestamp (microseconds since UNIX epoch or microseconds since system boot) </summary>
@@ -5356,7 +5356,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_power_status_t
         {
             /// <summary> 5V rail voltage in millivolts </summary>
@@ -5369,7 +5369,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 79)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_serial_control_t
         {
             /// <summary> Baudrate of transfer. Zero means no change. </summary>
@@ -5389,7 +5389,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 35)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gps_rtk_t
         {
             /// <summary> Time since boot of last baseline message received in ms. </summary>
@@ -5422,7 +5422,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 35)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_gps2_rtk_t
         {
             /// <summary> Time since boot of last baseline message received in ms. </summary>
@@ -5455,7 +5455,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_scaled_imu3_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -5482,7 +5482,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 13)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_data_transmission_handshake_t
         {
             /// <summary> total data size in bytes (set on ACK only) </summary>
@@ -5503,7 +5503,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 255)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_encapsulated_data_t
         {
             /// <summary> sequence number (starting with 0 on every transmission) </summary>
@@ -5515,7 +5515,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 14)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_distance_sensor_t
         {
             /// <summary> Time since system boot </summary>
@@ -5538,7 +5538,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 18)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_terrain_request_t
         {
             /// <summary> Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits) </summary>
@@ -5553,7 +5553,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 43)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_terrain_data_t
         {
             /// <summary> Latitude of SW corner of first grid (degrees *10^7) </summary>
@@ -5571,7 +5571,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_terrain_check_t
         {
             /// <summary> Latitude (degrees *10^7) </summary>
@@ -5582,7 +5582,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 22)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_terrain_report_t
         {
             /// <summary> Latitude (degrees *10^7) </summary>
@@ -5603,7 +5603,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 14)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_scaled_pressure2_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -5618,7 +5618,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 36)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_att_pos_mocap_t
         {
             /// <summary> Timestamp (micros since boot or Unix epoch) </summary>
@@ -5636,7 +5636,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 43)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_set_actuator_control_target_t
         {
             /// <summary> Timestamp (micros since boot or Unix epoch) </summary>
@@ -5654,7 +5654,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 41)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_actuator_control_target_t
         {
             /// <summary> Timestamp (micros since boot or Unix epoch) </summary>
@@ -5668,7 +5668,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 32)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_altitude_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -5689,7 +5689,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 243)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_resource_request_t
         {
             /// <summary> Request ID. This ID should be re-used when sending back URI contents </summary>
@@ -5708,7 +5708,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 14)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_scaled_pressure3_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -5723,7 +5723,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 100)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_control_system_state_t
         {
             /// <summary> Timestamp (micros since boot or Unix epoch) </summary>
@@ -5767,7 +5767,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 36)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_battery_status_t
         {
             /// <summary> Consumed charge, in milliampere hours (1 = 1 mAh), -1: autopilot does not provide mAh consumption estimate </summary>
@@ -5793,7 +5793,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 60)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_autopilot_version_t
         {
             /// <summary> bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum) </summary>
@@ -5825,7 +5825,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 30)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_landing_target_t
         {
             /// <summary> Timestamp (micros since boot or Unix epoch) </summary>
@@ -5848,7 +5848,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 32)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_vibration_t
         {
             /// <summary> Timestamp (micros since boot or Unix epoch) </summary>
@@ -5869,7 +5869,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 52)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_home_position_t
         {
             /// <summary> Latitude (WGS84), in degrees * 1E7 </summary>
@@ -5898,7 +5898,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 53)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_set_home_position_t
         {
             /// <summary> Latitude (WGS84), in degrees * 1E7 </summary>
@@ -5929,7 +5929,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 6)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_message_interval_t
         {
             /// <summary> The interval between two messages, in microseconds. A value of -1 indicates this stream is disabled, 0 indicates it is not available, > 0 indicates the interval at which it is sent. </summary>
@@ -5940,7 +5940,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 2)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_extended_sys_state_t
         {
             /// <summary> The VTOL state if applicable. Is set to MAV_VTOL_STATE_UNDEFINED if UAV is not in VTOL configuration. </summary>
@@ -5951,7 +5951,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 38)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_adsb_vehicle_t
         {
             /// <summary> ICAO address </summary>
@@ -6006,7 +6006,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 254)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_v2_extension_t
         {
             /// <summary> A code that identifies the software component that understands this message (analogous to usb device classes or mime type strings).  If this code is less than 32768, it is considered a 'registered' protocol extension and the corresponding entry should be added to https://github.com/mavlink/mavlink/extension-message-ids.xml.  Software creators can register blocks of message IDs as needed (useful for GCS specific metadata, etc...). Message_types greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase. </summary>
@@ -6024,7 +6024,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 36)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_memory_vect_t
         {
             /// <summary> Starting address of the debug variables </summary>
@@ -6040,7 +6040,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 30)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_debug_vect_t
         {
             /// <summary> Timestamp </summary>
@@ -6058,7 +6058,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 18)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_named_value_float_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -6072,7 +6072,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 18)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_named_value_int_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -6086,7 +6086,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 51)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_statustext_t
         {
             /// <summary> Severity of status. Relies on the definitions within RFC-5424. See enum MAV_SEVERITY. </summary>
@@ -6098,7 +6098,7 @@ namespace Microsoft.Networking.Mavlink
         };
 
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 9)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_debug_t
         {
             /// <summary> Timestamp (milliseconds since system boot) </summary>
@@ -6110,22 +6110,23 @@ namespace Microsoft.Networking.Mavlink
 
         };
 
-
-
         // custom message from the simulator 
-        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 24)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct mavlink_telemetry
         {
             public const int MessageId = 204;
-            public int messagesSent;       // number of messages sent since the last telemetry message
-            public int messagesReceived;   // number of messages received since the last telemetry message
-            public int messagesHandled;    // number of messages handled since the last telemetry message
-            public int crcErrors;          // # crc errors detected in mavlink stream since the last telemetry message
-            public int handlerMicroseconds; // total time spent in the handlers in microseconds since the last telemetry message
-            public int renderTime;          // total time spent rendering frames since the last message
-            public int wifiRssi;            // if this device is communicating over wifi this is the signal strength.
+            public int messages_sent;        // number of messages sent since the last telemetry message
+            public int messages_received;    // number of messages received since the last telemetry message
+            public int messages_handled;     // number of messages handled since the last telemetry message
+            public int crc_errors;           // # crc errors detected in mavlink stream since the last telemetry message
+            public int handler_microseconds; // total time spent in the handlers in microseconds since the last telemetry message
+            public int render_time;          // total time spent rendering frames since the last telemetry message
+            public int wifi_rssi;            // if this device is communicating over wifi this is the signal strength.
+            public int udpate_rate;          // rate at which update() is being called on MavLinkMultiRotorApi
+            public int actuation_delay;      // delay from HIL_SENSOR to HIL_ACTUATORCONTROLS response
+            public int sensor_rate;          // rate we are sending HIL_SENSOR messages
+            public int lock_step_resets;     // total number of lock_step resets
+            public int update_time;          // avg time spent inside MavLinkMultiRotorApi::update method.
         };
-
-
     }
 }

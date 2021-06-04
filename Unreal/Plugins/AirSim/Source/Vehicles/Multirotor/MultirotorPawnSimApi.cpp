@@ -7,8 +7,7 @@
 using namespace msr::airlib;
 
 MultirotorPawnSimApi::MultirotorPawnSimApi(const Params& params)
-    : PawnSimApi(params),
-      pawn_events_(static_cast<MultirotorPawnEvents*>(params.pawn_events))
+    : PawnSimApi(params), pawn_events_(static_cast<MultirotorPawnEvents*>(params.pawn_events))
 {
 }
 
@@ -21,8 +20,7 @@ void MultirotorPawnSimApi::initialize()
     vehicle_params_ = MultiRotorParamsFactory::createConfig(getVehicleSetting(), sensor_factory);
     vehicle_api_ = vehicle_params_->createMultirotorApi();
     //setup physics vehicle
-    multirotor_physics_body_ = std::unique_ptr<MultiRotor>(new MultiRotorPhysicsBody(vehicle_params_.get(), vehicle_api_.get(),
-        getKinematics(), getEnvironment()));
+    multirotor_physics_body_ = std::unique_ptr<MultiRotor>(new MultiRotorPhysicsBody(vehicle_params_.get(), vehicle_api_.get(), getKinematics(), getEnvironment()));
     rotor_count_ = multirotor_physics_body_->wrenchVertexCount();
     rotor_actuator_info_.assign(rotor_count_, RotorActuatorInfo());
 
@@ -33,8 +31,9 @@ void MultirotorPawnSimApi::initialize()
     pending_pose_status_ = PendingPoseStatus::NonePending;
     reset_pending_ = false;
     did_reset_ = false;
+    rotor_states_.rotors.assign(rotor_count_, RotorParameters());
 
-	//reset roll & pitch of vehicle as multirotors required to be on plain surface at start
+    //reset roll & pitch of vehicle as multirotors required to be on plain surface at start
     Pose pose = getPose();
     float pitch, roll, yaw;
     VectorMath::toEulerianAngle(pose.orientation, pitch, roll, yaw);
@@ -62,14 +61,16 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
     //move collision info from rendering engine to vehicle
     const CollisionInfo& collision_info = getCollisionInfo();
     multirotor_physics_body_->setCollisionInfo(collision_info);
-        
+
     last_phys_pose_ = multirotor_physics_body_->getPose();
-    
+
     collision_response = multirotor_physics_body_->getCollisionResponseInfo();
 
     //update rotor poses
     for (unsigned int i = 0; i < rotor_count_; ++i) {
         const auto& rotor_output = multirotor_physics_body_->getRotorOutput(i);
+        // update private rotor variable
+        rotor_states_.rotors[i].update(rotor_output.thrust, rotor_output.torque_scaler, rotor_output.speed);
         RotorActuatorInfo* info = &rotor_actuator_info_[i];
         info->rotor_speed = rotor_output.speed;
         info->rotor_direction = static_cast<int>(rotor_output.turning_direction);
@@ -81,6 +82,8 @@ void MultirotorPawnSimApi::updateRenderedState(float dt)
 
     if (getRemoteControlID() >= 0)
         vehicle_api_->setRCData(getRCData());
+    rotor_states_.timestamp = clock()->nowNanos();
+    vehicle_api_->setRotorStates(rotor_states_);
 }
 
 void MultirotorPawnSimApi::updateRendering(float dt)
@@ -99,7 +102,7 @@ void MultirotorPawnSimApi::updateRendering(float dt)
     }
 
     if (!VectorMath::hasNan(last_phys_pose_)) {
-        if (pending_pose_status_ ==  PendingPoseStatus::RenderPending) {
+        if (pending_pose_status_ == PendingPoseStatus::RenderPending) {
             PawnSimApi::setPose(last_phys_pose_, pending_pose_collisions_);
             pending_pose_status_ = PendingPoseStatus::NonePending;
         }
@@ -108,8 +111,9 @@ void MultirotorPawnSimApi::updateRendering(float dt)
     }
 
     //UAirBlueprintLib::LogMessage(TEXT("Collision (raw) Count:"), FString::FromInt(collision_response.collision_count_raw), LogDebugLevel::Unimportant);
-    UAirBlueprintLib::LogMessage(TEXT("Collision Count:"), 
-        FString::FromInt(collision_response.collision_count_non_resting), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage(TEXT("Collision Count:"),
+                                 FString::FromInt(collision_response.collision_count_non_resting),
+                                 LogDebugLevel::Informational);
 
     for (auto i = 0; i < vehicle_api_messages_.size(); ++i) {
         UAirBlueprintLib::LogMessage(FString(vehicle_api_messages_[i].c_str()), TEXT(""), LogDebugLevel::Success, 30);
@@ -118,7 +122,7 @@ void MultirotorPawnSimApi::updateRendering(float dt)
     try {
         vehicle_api_->sendTelemetry(dt);
     }
-    catch (std::exception &e) {
+    catch (std::exception& e) {
         UAirBlueprintLib::LogMessage(FString(e.what()), TEXT(""), LogDebugLevel::Failure, 30);
     }
 
@@ -169,4 +173,3 @@ MultirotorPawnSimApi::UpdatableObject* MultirotorPawnSimApi::getPhysicsBody()
     return multirotor_physics_body_->getPhysicsBody();
 }
 //*** End: UpdatableState implementation ***//
-

@@ -14,7 +14,7 @@
 #include "common/ClockFactory.hpp"
 #include <memory>
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
-
+#include "common/SteppableClock.hpp"
 
 void ASimModeWorldMultiRotor::BeginPlay()
 {
@@ -127,13 +127,13 @@ std::unique_ptr<PawnSimApi> ASimModeWorldMultiRotor::createVehicleSimApi(
     const PawnSimApi::Params& pawn_sim_api_params) const
 {
     auto vehicle_sim_api = std::unique_ptr<PawnSimApi>(new MultirotorPawnSimApi(pawn_sim_api_params));
-    vehicle_sim_api->initialize(); 
+    vehicle_sim_api->initialize();
     //For multirotors the vehicle_sim_api are in PhysicsWOrld container and then get reseted when world gets reseted
     //vehicle_sim_api->reset();
     return vehicle_sim_api;
 }
 msr::airlib::VehicleApiBase* ASimModeWorldMultiRotor::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
-    const PawnSimApi* sim_api) const
+                                                                    const PawnSimApi* sim_api) const
 {
     const auto multirotor_sim_api = static_cast<const MultirotorPawnSimApi*>(sim_api);
     return multirotor_sim_api->getVehicleApi();

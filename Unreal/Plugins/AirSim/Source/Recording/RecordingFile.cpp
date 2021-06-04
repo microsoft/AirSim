@@ -6,9 +6,8 @@
 #include "common/ClockFactory.hpp"
 #include "common/common_utils/FileSystem.hpp"
 
-
 void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses,
-    msr::airlib::VehicleSimApiBase* vehicle_sim_api) const
+                                 msr::airlib::VehicleSimApiBase* vehicle_sim_api) const
 {
     bool save_success = false;
     std::ostringstream image_file_names;
@@ -19,10 +18,8 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
         //build image file name
         std::ostringstream image_file_name;
         image_file_name << "img_"
-            << vehicle_sim_api->getVehicleName() << "_" 
-            << response.camera_name << "_" <<
-            common_utils::Utils::toNumeric(response.image_type) << "_" <<
-            common_utils::Utils::getTimeSinceEpochNanos();
+                        << vehicle_sim_api->getVehicleName() << "_"
+                        << response.camera_name << "_" << common_utils::Utils::toNumeric(response.image_type) << "_" << common_utils::Utils::getTimeSinceEpochNanos();
 
         std::string extension;
         if (response.pixels_as_float)
@@ -42,12 +39,10 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
         //write image file
         try {
             if (extension == ".pfm") {
-                common_utils::Utils::writePFMfile(response.image_data_float.data(), response.width, response.height,
-                    image_full_file_path);
+                common_utils::Utils::writePFMfile(response.image_data_float.data(), response.width, response.height, image_full_file_path);
             }
             else if (extension == ".ppm") {
-                common_utils::Utils::writePPMfile(response.image_data_uint8.data(), response.width, response.height,
-                    image_full_file_path);
+                common_utils::Utils::writePPMfile(response.image_data_uint8.data(), response.width, response.height, image_full_file_path);
             }
             else {
                 // Write PNG image, already compressed in binary
@@ -58,15 +53,15 @@ void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase
 
             save_success = true;
         }
-        catch(std::exception& ex) {
+        catch (std::exception& ex) {
             save_success = false;
-            UAirBlueprintLib::LogMessage(TEXT("Image file save failed"), FString(ex.what()), LogDebugLevel::Failure);        
+            UAirBlueprintLib::LogMessage(TEXT("Image file save failed"), FString(ex.what()), LogDebugLevel::Failure);
         }
     }
 
     //write to CSV file
     if (save_success || (responses.size() == 0)) {
-        // Either images were saved successfully, or there were no images 
+        // Either images were saved successfully, or there were no images
         writeString(vehicle_sim_api->getRecordFileLine(false).append(image_file_names.str()).append("\n"));
 
         //UAirBlueprintLib::LogMessage(TEXT("Screenshot saved to:"), filePath, LogDebugLevel::Success);
@@ -87,8 +82,8 @@ void RecordingFile::createFile(const std::string& file_path, const std::string& 
         log_file_handle_ = platform_file.OpenWrite(*FString(file_path.c_str()));
         appendColumnHeader(header_columns);
     }
-    catch(std::exception& ex) {
-        UAirBlueprintLib::LogMessageString(std::string("createFile Failed for ") + file_path, ex.what(), LogDebugLevel::Failure);        
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessageString(std::string("createFile Failed for ") + file_path, ex.what(), LogDebugLevel::Failure);
     }
 }
 
@@ -107,7 +102,7 @@ void RecordingFile::closeFile()
 
 void RecordingFile::writeString(const std::string& str) const
 {
-    try {    
+    try {
         if (log_file_handle_) {
             FString line_f(str.c_str());
             log_file_handle_->Write((const uint8*)TCHAR_TO_ANSI(*line_f), line_f.Len());
@@ -115,8 +110,8 @@ void RecordingFile::writeString(const std::string& str) const
         else
             UAirBlueprintLib::LogMessageString("Attempt to write to recording log file when file was not opened", "", LogDebugLevel::Failure);
     }
-    catch(std::exception& ex) {
-        UAirBlueprintLib::LogMessageString(std::string("file write to recording file failed "), ex.what(), LogDebugLevel::Failure);        
+    catch (std::exception& ex) {
+        UAirBlueprintLib::LogMessageString(std::string("file write to recording file failed "), ex.what(), LogDebugLevel::Failure);
     }
 }
 
@@ -146,7 +141,7 @@ void RecordingFile::startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_a
         else
             UAirBlueprintLib::LogMessageString("Error creating log file", log_filepath.c_str(), LogDebugLevel::Failure);
     }
-    catch(...) {
+    catch (...) {
         UAirBlueprintLib::LogMessageString("Error in startRecording", "", LogDebugLevel::Failure);
     }
 }
@@ -154,7 +149,7 @@ void RecordingFile::startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_a
 void RecordingFile::stopRecording(bool ignore_if_stopped)
 {
     is_recording_ = false;
-    if (! isFileOpen()) {
+    if (!isFileOpen()) {
         if (ignore_if_stopped)
             return;
 

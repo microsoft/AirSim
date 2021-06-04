@@ -9,12 +9,12 @@ AdHocConnection::AdHocConnection()
     pImpl.reset(new AdHocConnectionImpl());
 }
 
-std::shared_ptr<AdHocConnection>  AdHocConnection::connectLocalUdp(const std::string& nodeName, std::string localAddr, int localPort)
+std::shared_ptr<AdHocConnection> AdHocConnection::connectLocalUdp(const std::string& nodeName, std::string localAddr, int localPort)
 {
     return AdHocConnectionImpl::connectLocalUdp(nodeName, localAddr, localPort);
 }
 
-std::shared_ptr<AdHocConnection>  AdHocConnection::connectRemoteUdp(const std::string& nodeName, std::string localAddr, std::string remoteAddr, int remotePort)
+std::shared_ptr<AdHocConnection> AdHocConnection::connectRemoteUdp(const std::string& nodeName, std::string localAddr, std::string remoteAddr, int remotePort)
 {
     return AdHocConnectionImpl::connectRemoteUdp(nodeName, localAddr, remoteAddr, remotePort);
 }
@@ -34,7 +34,7 @@ bool AdHocConnection::isOpen()
     return pImpl->isOpen();
 }
 
-void AdHocConnection::sendMessage(const std::vector<uint8_t> &msg)
+void AdHocConnection::sendMessage(const std::vector<uint8_t>& msg)
 {
     pImpl->sendMessage(msg);
 }
@@ -49,7 +49,8 @@ void AdHocConnection::unsubscribe(int id)
     pImpl->unsubscribe(id);
 }
 
-AdHocConnection::~AdHocConnection() {
+AdHocConnection::~AdHocConnection()
+{
     pImpl->close();
     pImpl = nullptr;
 }

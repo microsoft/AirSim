@@ -48,7 +48,7 @@ textSize, baseline = cv2.getTextSize("FPS", fontFace, fontScale, thickness)
 print (textSize)
 textOrg = (10, 10 + textSize[1])
 frameCount = 0
-startTime=time.clock()
+startTime=time.time()
 fps = 0
 
 while True:
@@ -63,7 +63,7 @@ while True:
         cv2.imshow("Depth", png)
 
     frameCount  = frameCount  + 1
-    endTime=time.clock()
+    endTime=time.time()
     diff = endTime - startTime
     if (diff > 1):
         fps = frameCount

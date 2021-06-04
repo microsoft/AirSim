@@ -301,7 +301,7 @@ class VehicleClient:
         """
         return CollisionInfo.from_msgpack(self.client.call('simGetCollisionInfo', vehicle_name))
 
-    def simSetVehiclePose(self, pose, ignore_collison, vehicle_name = ''):
+    def simSetVehiclePose(self, pose, ignore_collision, vehicle_name = ''):
         """
         Set the pose of the vehicle
 
@@ -312,7 +312,7 @@ class VehicleClient:
             ignore_collision (bool): Whether to ignore any collision or not
             vehicle_name (str, optional): Name of the vehicle to move
         """
-        self.client.call('simSetVehiclePose', pose, ignore_collison, vehicle_name)
+        self.client.call('simSetVehiclePose', pose, ignore_collision, vehicle_name)
 
     def simGetVehiclePose(self, vehicle_name = ''):
         """
@@ -405,6 +405,18 @@ class VehicleClient:
             list[str]: List containing all the names
         """
         return self.client.call('simListSceneObjects', name_regex)
+        
+    def simLoadLevel(self, level_name):
+        """
+        Loads a level specified by its name
+
+        Args:
+            level_name (str): Name of the level to load
+
+        Returns:
+            bool: True if the level was successfully loaded
+        """
+        return self.client.call('simLoadLevel', level_name)
 
     def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
         """Spawned selected object in the world
@@ -794,20 +806,6 @@ class VehicleClient:
         """
         self.client.call('cancelLastTask', vehicle_name)
 
-    def waitOnLastTask(self, timeout_sec = float('nan')):
-        """
-        Wait for the last Async task to complete
-
-        Args:
-            timeout_sec (float, optional): Time for the task to complete
-
-        Returns:
-            bool: Result of the last task
-
-                  True if the task completed without cancellation or timeout
-        """
-        return self.client.call('waitOnLastTask', timeout_sec)
-
     # Recording APIs
     def startRecording(self):
         """
@@ -855,6 +853,40 @@ class VehicleClient:
             bool: True if output written to file successfully, else False
         """
         return self.client.call('simCreateVoxelGrid', position, x, y, z, res, of)
+
+    # Add new vehicle via RPC
+    def simAddVehicle(self, vehicle_name, vehicle_type, pose, pawn_path = ""):
+        """
+        Create vehicle at runtime
+
+        Args:
+            vehicle_name (str): Name of the vehicle being created
+            vehicle_type (str): Type of vehicle, e.g. "simpleflight"
+            pose (Pose): Initial pose of the vehicle
+            pawn_path (str, optional): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type
+
+        Returns:
+            bool: Whether vehicle was created
+        """
+        return self.client.call('simAddVehicle', vehicle_name, vehicle_type, pose, pawn_path)
+
+    def listVehicles(self):
+        """
+        Lists the names of current vehicles
+
+        Returns:
+            list[str]: List containing names of all vehicles
+        """
+        return self.client.call('listVehicles')
+
+    def getSettingsString(self):
+        """
+        Fetch the settings text being used by AirSim
+
+        Returns:
+            str: Settings text in JSON format
+        """
+        return self.client.call('getSettingsString')
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
@@ -916,7 +948,24 @@ class MultirotorClient(VehicleClient, object):
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
         return self.client.call_async('moveByVelocityBodyFrame', vx, vy, vz, duration, drivetrain, yaw_mode, vehicle_name)
-        
+
+    def moveByVelocityZBodyFrameAsync(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
+        """
+        Args:
+            vx (float): desired velocity in the X axis of the vehicle's local NED frame
+            vy (float): desired velocity in the Y axis of the vehicle's local NED frame
+            z (float): desired Z value (in local NED frame of the vehicle)
+            duration (float): Desired amount of time (seconds), to send this command for
+            drivetrain (DrivetrainType, optional):
+            yaw_mode (YawMode, optional):
+            vehicle_name (str, optional): Name of the multirotor to send this command to
+
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+
+        return self.client.call_async('moveByVelocityZBodyFrame', vx, vy, z, duration, drivetrain, yaw_mode, vehicle_name)
+
     def moveByAngleZAsync(self, pitch, roll, z, yaw, duration, vehicle_name = ''):
         return self.client.call_async('moveByAngleZ', pitch, roll, z, yaw, duration, vehicle_name)
 
@@ -1284,7 +1333,20 @@ class MultirotorClient(VehicleClient, object):
         """
         return MultirotorState.from_msgpack(self.client.call('getMultirotorState', vehicle_name))
     getMultirotorState.__annotations__ = {'return': MultirotorState}
+    # query rotor states
+    def getRotorStates(self, vehicle_name = ''):
+        """
+        Used to obtain the current state of all a multirotor's rotors. The state includes the speeds,
+        thrusts and torques for all rotors.
 
+        Args:
+            vehicle_name (str, optional): Vehicle to get the rotor state of
+
+        Returns:
+            RotorStates: Containing a timestamp and the speed, thrust and torque of all rotors.
+        """
+        return RotorStates.from_msgpack(self.client.call('getRotorStates', vehicle_name))
+    getRotorStates.__annotations__ = {'return': RotorStates}
 
 # -----------------------------------  Car APIs ---------------------------------------------
 class CarClient(VehicleClient, object):

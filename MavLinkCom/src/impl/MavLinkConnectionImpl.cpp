@@ -16,12 +16,11 @@ using namespace mavlinkcom_impl;
 MavLinkConnectionImpl::MavLinkConnectionImpl()
 {
     // add our custom telemetry message length.
-    telemetry_.crcErrors = 0;
-    telemetry_.handlerMicroseconds = 0;
-    telemetry_.messagesHandled = 0;
-    telemetry_.messagesReceived = 0;
-    telemetry_.messagesSent = 0;
-    telemetry_.renderTime = 0;
+    telemetry_.crc_errors = 0;
+    telemetry_.handler_microseconds = 0;
+    telemetry_.messages_handled = 0;
+    telemetry_.messages_received = 0;
+    telemetry_.messages_sent = 0;
     closed = true;
     ::memset(&mavlink_intermediate_status_, 0, sizeof(mavlink_status_t));
     ::memset(&mavlink_status_, 0, sizeof(mavlink_status_t));
@@ -29,7 +28,8 @@ MavLinkConnectionImpl::MavLinkConnectionImpl()
     // mavlink_intermediate_status_.signing callbacks
 }
 
-std::string MavLinkConnectionImpl::getName() {
+std::string MavLinkConnectionImpl::getName()
+{
     return name;
 }
 
@@ -39,7 +39,7 @@ MavLinkConnectionImpl::~MavLinkConnectionImpl()
     close();
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::createConnection(const std::string& nodeName, std::shared_ptr<Port> port)
+std::shared_ptr<MavLinkConnection> MavLinkConnectionImpl::createConnection(const std::string& nodeName, std::shared_ptr<Port> port)
 {
     // std::shared_ptr<MavLinkCom> owner, const std::string& nodeName
     std::shared_ptr<MavLinkConnection> con = std::make_shared<MavLinkConnection>();
@@ -47,7 +47,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::createConnection(cons
     return con;
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectLocalUdp(const std::string& nodeName, const std::string& localAddr, int localPort)
+std::shared_ptr<MavLinkConnection> MavLinkConnectionImpl::connectLocalUdp(const std::string& nodeName, const std::string& localAddr, int localPort)
 {
     std::shared_ptr<UdpClientPort> socket = std::make_shared<UdpClientPort>();
 
@@ -56,10 +56,10 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectLocalUdp(const
     return createConnection(nodeName, socket);
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectRemoteUdp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteAddr, int remotePort)
+std::shared_ptr<MavLinkConnection> MavLinkConnectionImpl::connectRemoteUdp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteAddr, int remotePort)
 {
     std::string local = localAddr;
-    // just a little sanity check on the local address, if remoteAddr is localhost then localAddr must be also. 
+    // just a little sanity check on the local address, if remoteAddr is localhost then localAddr must be also.
     if (remoteAddr == "127.0.0.1") {
         local = "127.0.0.1";
     }
@@ -71,10 +71,10 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectRemoteUdp(cons
     return createConnection(nodeName, socket);
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort)
+std::shared_ptr<MavLinkConnection> MavLinkConnectionImpl::connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort)
 {
     std::string local = localAddr;
-    // just a little sanity check on the local address, if remoteAddr is localhost then localAddr must be also. 
+    // just a little sanity check on the local address, if remoteAddr is localhost then localAddr must be also.
     if (remoteIpAddr == "127.0.0.1") {
         local = "127.0.0.1";
     }
@@ -86,7 +86,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectTcp(const std:
     return createConnection(nodeName, socket);
 }
 
-void MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort)
+std::string MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent, const std::string& nodeName, const std::string& localAddr, int listeningPort)
 {
     std::string local = localAddr;
     close();
@@ -95,13 +95,16 @@ void MavLinkConnectionImpl::acceptTcp(std::shared_ptr<MavLinkConnection> parent,
     port = socket; // this is so that a call to close() can cancel this blocking accept call.
     socket->accept(localAddr, listeningPort);
 
+    std::string remote = socket->remoteAddress();
+
     socket->setNonBlocking();
     socket->setNoDelay();
 
     parent->startListening(nodeName, socket);
+    return remote;
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const std::string& nodeName, const std::string& portName, int baudRate, const std::string& initString)
+std::shared_ptr<MavLinkConnection> MavLinkConnectionImpl::connectSerial(const std::string& nodeName, const std::string& portName, int baudRate, const std::string& initString)
 {
     std::shared_ptr<SerialPort> serial = std::make_shared<SerialPort>();
 
@@ -109,7 +112,7 @@ std::shared_ptr<MavLinkConnection>  MavLinkConnectionImpl::connectSerial(const s
     if (hr != 0)
         throw std::runtime_error(Utils::stringf("Could not open the serial port %s, error=%d", portName.c_str(), hr));
 
-    // send this right away just in case serial link is not already configured 
+    // send this right away just in case serial link is not already configured
     if (initString.size() > 0) {
         serial->write(reinterpret_cast<const uint8_t*>(initString.c_str()), static_cast<int>(initString.size()));
     }
@@ -144,6 +147,17 @@ void MavLinkConnectionImpl::stopLoggingSendMessage()
     sendLog_ = nullptr;
 }
 
+// log every message that is "sent" using sendMessage.
+void MavLinkConnectionImpl::startLoggingReceiveMessage(std::shared_ptr<MavLinkLog> log)
+{
+    receiveLog_ = log;
+}
+
+void MavLinkConnectionImpl::stopLoggingReceiveMessage()
+{
+    receiveLog_ = nullptr;
+}
+
 void MavLinkConnectionImpl::close()
 {
     closed = true;
@@ -160,6 +174,7 @@ void MavLinkConnectionImpl::close()
         publish_thread_.join();
     }
     sendLog_ = nullptr;
+    receiveLog_ = nullptr;
 }
 
 bool MavLinkConnectionImpl::isOpen()
@@ -201,8 +216,7 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& m)
         ::memcpy(&msg, &m, sizeof(MavLinkMessage));
         prepareForSending(msg);
 
-        if (sendLog_ != nullptr)
-        {
+        if (sendLog_ != nullptr) {
             sendLog_->write(msg);
         }
 
@@ -218,7 +232,7 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& m)
         message.msgid = msg.msgid;
         ::memcpy(message.signature, msg.signature, 13);
         ::memcpy(message.payload64, msg.payload64, PayloadSize * sizeof(uint64_t));
-        
+
         std::lock_guard<std::mutex> guard(buffer_mutex);
         unsigned len = mavlink_msg_to_send_buffer(message_buf, &message);
 
@@ -231,9 +245,8 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessage& m)
     }
     {
         std::lock_guard<std::mutex> guard(telemetry_mutex_);
-        telemetry_.messagesSent++;
+        telemetry_.messages_sent++;
     }
-
 }
 
 int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
@@ -257,7 +270,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
 
     msg.seq = seqno;
     msg.incompat_flags = 0;
-    if (signing_) {
+    if (signing) {
         msg.incompat_flags |= MAVLINK_IFLAG_SIGNED;
     }
     msg.compat_flags = 0;
@@ -275,7 +288,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
         msglen = entry->min_msg_len;
     }
     if (msg.msgid == MavLinkTelemetry::kMessageId) {
-        msglen = 28; // mavlink doesn't know about our custom telemetry message.
+        msglen = MavLinkTelemetry::MessageLength; // mavlink doesn't know about our custom telemetry message.
     }
 
     if (len != msglen) {
@@ -286,7 +299,7 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
             // mavlink2 supports trimming the payload of trailing zeros so the messages
             // are variable length as a result.
         }
-    }    
+    }
     len = mavlink1 ? msglen : _mav_trim_payload(payload, msglen);
     msg.len = len;
 
@@ -320,12 +333,14 @@ int MavLinkConnectionImpl::prepareForSending(MavLinkMessage& msg)
     mavlink_ck_b(&msg) = (uint8_t)(msg.checksum >> 8);
     STRICT_MODE_ON
 
-    if (signing_) {
+    if (signing) {
         mavlink_sign_packet(mavlink_status_.signing,
-            reinterpret_cast<uint8_t *>(msg.signature),
-            reinterpret_cast<const uint8_t *>(message_buf), header_len,
-            reinterpret_cast<const uint8_t *>(payload), msg.len,
-            reinterpret_cast<const uint8_t *>(payload) + msg.len);
+                            reinterpret_cast<uint8_t*>(msg.signature),
+                            reinterpret_cast<const uint8_t*>(message_buf),
+                            header_len,
+                            reinterpret_cast<const uint8_t*>(payload),
+                            msg.len,
+                            reinterpret_cast<const uint8_t*>(payload) + msg.len);
     }
 
     return msg.len + header_len + 2 + signature_len;
@@ -350,10 +365,8 @@ int MavLinkConnectionImpl::subscribe(MessageHandler handler)
 void MavLinkConnectionImpl::unsubscribe(int id)
 {
     std::lock_guard<std::mutex> guard(listener_mutex);
-    for (auto ptr = listeners.begin(), end = listeners.end(); ptr != end; ptr++)
-    {
-        if ((*ptr).id == id)
-        {
+    for (auto ptr = listeners.begin(), end = listeners.end(); ptr != end; ptr++) {
+        if ((*ptr).id == id) {
             listeners.erase(ptr);
             snapshot_stale = true;
             break;
@@ -365,8 +378,7 @@ void MavLinkConnectionImpl::joinLeftSubscriber(std::shared_ptr<MavLinkConnection
 {
     unused(connection);
     // forward messages from our connected node to the remote proxy.
-    if (supports_mavlink2_)
-    {
+    if (supports_mavlink2_) {
         // tell the remote connection to expect mavlink2 messages.
         remote->pImpl->supports_mavlink2_ = true;
     }
@@ -401,11 +413,9 @@ void MavLinkConnectionImpl::readPackets()
     mavlink_intermediate_status_.parse_state = MAVLINK_PARSE_STATE_IDLE;
     int channel = 0;
     int hr = 0;
-    while (hr == 0 && con_ != nullptr && !closed)
-    {
+    while (hr == 0 && con_ != nullptr && !closed) {
         int read = 0;
-        if (safePort->isClosed())
-        {
+        if (safePort->isClosed()) {
             // hmmm, wait till it is opened?
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
@@ -417,8 +427,7 @@ void MavLinkConnectionImpl::readPackets()
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             continue;
         }
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             uint8_t frame_state = mavlink_frame_char_buffer(&msgBuffer, &mavlink_intermediate_status_, buffer[i], &msg, &mavlink_status_);
 
             if (frame_state == MAVLINK_FRAMING_INCOMPLETE) {
@@ -426,29 +435,27 @@ void MavLinkConnectionImpl::readPackets()
             }
             else if (frame_state == MAVLINK_FRAMING_BAD_CRC) {
                 std::lock_guard<std::mutex> guard(telemetry_mutex_);
-                telemetry_.crcErrors++;
+                telemetry_.crc_errors++;
             }
-            else if (frame_state == MAVLINK_FRAMING_OK)
-            {
+            else if (frame_state == MAVLINK_FRAMING_OK) {
                 // pick up the sysid/compid of the remote node we are connected to.
                 if (other_system_id == -1) {
                     other_system_id = msg.sysid;
                     other_component_id = msg.compid;
                 }
 
-                if (mavlink_intermediate_status_.flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
-                {
+                if (mavlink_intermediate_status_.flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) {
                     // then this is a mavlink 1 message
-                } else if (!supports_mavlink2_) {
+                }
+                else if (!supports_mavlink2_) {
                     // then this mavlink sender supports mavlink 2
                     supports_mavlink2_ = true;
                 }
 
-                if (con_ != nullptr && !closed)
-                {
+                if (con_ != nullptr && !closed) {
                     {
                         std::lock_guard<std::mutex> guard(telemetry_mutex_);
-                        telemetry_.messagesReceived++;
+                        telemetry_.messages_received++;
                     }
                     // queue event for publishing.
                     {
@@ -475,13 +482,13 @@ void MavLinkConnectionImpl::readPackets()
             }
             else {
                 std::lock_guard<std::mutex> guard(telemetry_mutex_);
-                telemetry_.crcErrors++;
+                telemetry_.crc_errors++;
             }
-        }	
+        }
 
     } //while
 
-    delete[]  buffer;
+    delete[] buffer;
 
 } //readPackets
 
@@ -499,10 +506,14 @@ void MavLinkConnectionImpl::drainQueue()
                 hasMsg = true;
             }
         }
-        if (!hasMsg)
-        {
+        if (!hasMsg) {
             return;
         }
+
+        if (receiveLog_ != nullptr) {
+            receiveLog_->write(message);
+        }
+
         // publish the message from this thread, this is safer than publishing from the readPackets thread
         // as it ensures we don't lose messages if the listener is slow.
         if (snapshot_stale) {
@@ -517,26 +528,26 @@ void MavLinkConnectionImpl::drainQueue()
         }
         auto end = snapshot.end();
 
-        if (message.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION))
-        {
+        if (message.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_AUTOPILOT_VERSION)) {
             MavLinkAutopilotVersion cap;
             cap.decode(message);
-            if ((cap.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2) != 0)
-            {
+            if ((cap.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2) != 0) {
                 this->supports_mavlink2_ = true;
             }
         }
 
         auto startTime = std::chrono::system_clock::now();
         std::shared_ptr<MavLinkConnection> sharedPtr = std::shared_ptr<MavLinkConnection>(this->con_);
-        for (auto ptr = snapshot.begin(); ptr != end; ptr++)
-        {
+        for (auto ptr = snapshot.begin(); ptr != end; ptr++) {
             try {
                 (*ptr).handler(sharedPtr, message);
             }
             catch (std::exception& e) {
                 Utils::log(Utils::stringf("MavLinkConnectionImpl: Error handling message %d on connection '%s', details: %s",
-                    message.msgid, name.c_str(), e.what()), Utils::kLogLevelError);
+                                          message.msgid,
+                                          name.c_str(),
+                                          e.what()),
+                           Utils::kLogLevelError);
             }
         }
 
@@ -545,8 +556,8 @@ void MavLinkConnectionImpl::drainQueue()
             auto diff = endTime - startTime;
             long microseconds = static_cast<long>(std::chrono::duration_cast<std::chrono::microseconds>(diff).count());
             std::lock_guard<std::mutex> guard(telemetry_mutex_);
-            telemetry_.messagesHandled++;
-            telemetry_.handlerMicroseconds += microseconds;
+            telemetry_.messages_handled++;
+            telemetry_.handler_microseconds += microseconds;
         }
     }
 }
@@ -559,7 +570,7 @@ void MavLinkConnectionImpl::publishPackets()
     while (!closed) {
 
         drainQueue();
-        
+
         waiting_for_msg_ = true;
         msg_available_.wait();
         waiting_for_msg_ = false;
@@ -575,14 +586,13 @@ void MavLinkConnectionImpl::getTelemetry(MavLinkTelemetry& result)
 {
     std::lock_guard<std::mutex> guard(telemetry_mutex_);
     result = telemetry_;
-    // reset counters 
-    telemetry_.crcErrors = 0;
-    telemetry_.handlerMicroseconds = 0;
-    telemetry_.messagesHandled = 0;
-    telemetry_.messagesReceived = 0;
-    telemetry_.messagesSent = 0;
-    telemetry_.renderTime = 0;
+    // reset counters
+    telemetry_.crc_errors = 0;
+    telemetry_.handler_microseconds = 0;
+    telemetry_.messages_handled = 0;
+    telemetry_.messages_received = 0;
+    telemetry_.messages_sent = 0;
     if (telemetry_.wifiInterfaceName != nullptr) {
-        telemetry_.wifiRssi = port->getRssi(telemetry_.wifiInterfaceName);
+        telemetry_.wifi_rssi = port->getRssi(telemetry_.wifiInterfaceName);
     }
 }

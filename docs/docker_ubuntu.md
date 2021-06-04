@@ -52,12 +52,12 @@ You can download it by running
 $ ./run_airsim_image_binary.sh Blocks/Blocks.sh -- headless
 ```
 
-- [Specifying a `settings.json`](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md#airsim_binary-docker-image)
+- [Specifying a `settings.json`](docker_ubuntu.md#airsim_binary-docker-image)
 
 ## Source
 #### Requirements:
 - Install [nvidia-docker2](https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-2.0))
-- Install [ue4-docker](https://adamrehn.com/docs/ue4-docker/configuration/configuring-linux)
+- Install [ue4-docker](https://docs.adamrehn.com/ue4-docker/configuration/configuring-linux)
 
 #### Build Unreal Engine inside docker:
  * To get access to Unreal Engine's source code, register on Epic Games' website and link it to your github account, as explained in the `Required Steps` section [here](https://docs.unrealengine.com/en-us/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow).    
@@ -65,14 +65,14 @@ $ ./run_airsim_image_binary.sh Blocks/Blocks.sh -- headless
 
  * Build unreal engine 4.19.2 docker image. We're going to use CUDA 10.0 in our example.    
     `$ ue4-docker build 4.19.2 --cuda=10.0 --no-full`   
-    [optional] `$ ue4-docker clean` to free up some space. [Details here](https://adamrehn.com/docs/ue4-docker/commands/clean) 
+    [optional] `$ ue4-docker clean` to free up some space. [Details here](https://docs.adamrehn.com/ue4-docker/commands/clean) 
    - `ue4-docker` supports all CUDA version listed on NVIDIA's cudagl dockerhub [here](https://hub.docker.com/r/nvidia/cudagl/).    
-   - Please see [this page](https://adamrehn.com/docs/ue4-docker/building-images/advanced-build-options) for advanced configurations using `ue4-docker`   
+   - Please see [this page](https://docs.adamrehn.com/ue4-docker/building-images/advanced-build-options) for advanced configurations using `ue4-docker`   
 
  * Disk space:
    - The unreal images and containers can take up a lot of space, especially if you try more than one version.    
    - Here's a list of useful links to monitor space used by docker and clean up intermediate builds:
-     * [Large container images primer](https://adamrehn.com/docs/ue4-docker/read-these-first/large-container-images-primer)  
+     * [Large container images primer](https://docs.adamrehn.com/ue4-docker/read-these-first/large-container-images-primer)  
      * [$ `docker system df`](https://docs.docker.com/engine/reference/commandline/system_df/)   
        [$ `docker container prune`](https://docs.docker.com/engine/reference/commandline/container_prune/)   
        [$ `docker image prune`](https://docs.docker.com/engine/reference/commandline/image_prune/)   
@@ -81,7 +81,7 @@ $ ./run_airsim_image_binary.sh Blocks/Blocks.sh -- headless
 #### Building AirSim inside UE4 docker container:
 * Build AirSim docker image (which lays over the unreal image we just built)   
   Below are the default arguments.   
-  `--base_image`: This is image over which we'll install airsim. We've tested on `adamrehn/ue4-engine:4.19.2-cudagl10.0`. See [ue4-docker](https://adamrehn.com/docs/ue4-docker/building-images/available-container-images) for other versions.     
+  `--base_image`: This is image over which we'll install airsim. We've tested on `adamrehn/ue4-engine:4.19.2-cudagl10.0`. See [ue4-docker](https://docs.adamrehn.com/ue4-docker/building-images/available-container-images) for other versions.     
    `--target_image` is the desired name of your docker image.    
    Defaults to `airsim_source` with same tag as the base image
 
@@ -106,8 +106,8 @@ $ python build_airsim_image.py \
 * Inside the container, you can see `UnrealEngine` and `AirSim` under `/home/ue4`. 
 * Start unreal engine inside the container:   
    `ue4@HOSTMACHINE:~$ /home/ue4/UnrealEngine/Engine/Binaries/Linux/UE4Editor`
-* [Specifying an airsim settings.json](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md#airsim_source-docker-image)
-* Continue with [AirSim's Linux docs](https://microsoft.github.io/AirSim/docs/build_linux/#build-unreal-environment). 
+* See [Specifying an airsim settings.json](docker_ubuntu.md#airsim_source-docker-image) below.
+* Continue with [AirSim's Linux docs](build_linux.md#build-unreal-environment). 
 
 #### [Misc] Packaging Unreal Environments in `airsim_source` containers
 * Let's take the Blocks environment as an example.    

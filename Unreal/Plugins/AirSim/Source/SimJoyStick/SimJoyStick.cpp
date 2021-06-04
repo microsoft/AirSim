@@ -4,7 +4,8 @@
 
 #include "DirectInputJoystick.h"
 
-struct SimJoyStick::impl {
+struct SimJoyStick::impl
+{
 public:
     void getJoyStickState(int index, SimJoyStick::State& state, const AxisMaps& maps)
     {
@@ -27,7 +28,7 @@ public:
         const DirectInputJoyStick::JoystickInfo& joystick_info = controllers_[index]->getJoystickInfo();
 
         state.is_valid = di_state.is_valid;
-        
+
         state.left_x = getAxisValue(AxisMap::AxisType::LeftX, maps.left_x, di_state, joystick_info.pid_vid);
         state.left_y = getAxisValue(AxisMap::AxisType::LeftY, maps.left_y, di_state, joystick_info.pid_vid);
         state.right_x = getAxisValue(AxisMap::AxisType::RightX, maps.right_x, di_state, joystick_info.pid_vid);
@@ -46,21 +47,22 @@ public:
         state.pid_vid = joystick_info.pid_vid;
 
         state.buttons = 0;
-        for (int i = 0; i < sizeof(int)*8; ++i) {
+        for (int i = 0; i < sizeof(int) * 8; ++i) {
             state.buttons |= ((di_state.buttons[i] & 0x80) == 0 ? 0 : 1) << i;
         }
     }
 
-	void setAutoCenter(int index, double strength) {
+    void setAutoCenter(int index, double strength)
+    {
         if (index >= 0)
-		    controllers_[index]->setAutoCenter(strength);
-	}
+            controllers_[index]->setAutoCenter(strength);
+    }
 
-	void setWheelRumble(int index, double strength) {
+    void setWheelRumble(int index, double strength)
+    {
         if (index >= 0)
-    		controllers_[index]->setWheelRumble(strength);
-	}
-
+            controllers_[index]->setWheelRumble(strength);
+    }
 
 private:
     float getMappedValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
@@ -69,44 +71,79 @@ private:
         if (map.rc_axis == AxisMap::AxisType::Auto) {
             if (device_pid_vid == "" || device_pid_vid == "VID_0483&PID_5710") { //RCs like FrSky Taranis
                 switch (axis_type) {
-                case AxisMap::AxisType::LeftX: rc_axis = AxisMap::AxisType::RightX; break;
-                case AxisMap::AxisType::LeftY: rc_axis = AxisMap::AxisType::LeftX; break;
-                case AxisMap::AxisType::LeftZ: rc_axis = AxisMap::AxisType::RightY; break;
-                case AxisMap::AxisType::RightX: rc_axis = AxisMap::AxisType::LeftY; break;
-                case AxisMap::AxisType::RightY: rc_axis = AxisMap::AxisType::LeftZ; break;
-                case AxisMap::AxisType::RightZ: rc_axis = AxisMap::AxisType::RightZ; break;
+                case AxisMap::AxisType::LeftX:
+                    rc_axis = AxisMap::AxisType::RightX;
+                    break;
+                case AxisMap::AxisType::LeftY:
+                    rc_axis = AxisMap::AxisType::LeftX;
+                    break;
+                case AxisMap::AxisType::LeftZ:
+                    rc_axis = AxisMap::AxisType::RightY;
+                    break;
+                case AxisMap::AxisType::RightX:
+                    rc_axis = AxisMap::AxisType::LeftY;
+                    break;
+                case AxisMap::AxisType::RightY:
+                    rc_axis = AxisMap::AxisType::LeftZ;
+                    break;
+                case AxisMap::AxisType::RightZ:
+                    rc_axis = AxisMap::AxisType::RightZ;
+                    break;
                 default:
                     throw std::invalid_argument("Unsupported axis_type in getMappedValue");
                 }
             }
-			else if (device_pid_vid == "VID_0401&PID_0401") { //Flysky FS-SM100 RC USB adapter
-				switch (axis_type) {
-				case AxisMap::AxisType::LeftX: rc_axis = AxisMap::AxisType::RightY; break;
-				case AxisMap::AxisType::LeftY: rc_axis = AxisMap::AxisType::LeftX; break;
-				case AxisMap::AxisType::LeftZ: rc_axis = AxisMap::AxisType::RightX; break;
-				case AxisMap::AxisType::RightX: rc_axis = AxisMap::AxisType::LeftY; break;
-				case AxisMap::AxisType::RightY: rc_axis = AxisMap::AxisType::LeftZ; break;
-				case AxisMap::AxisType::RightZ: rc_axis = AxisMap::AxisType::RightZ; break;
-				default:
-					throw std::invalid_argument("Unsupported axis_type in getMappedValue");
-				}
-			}
+            else if (device_pid_vid == "VID_0401&PID_0401") { //Flysky FS-SM100 RC USB adapter
+                switch (axis_type) {
+                case AxisMap::AxisType::LeftX:
+                    rc_axis = AxisMap::AxisType::RightY;
+                    break;
+                case AxisMap::AxisType::LeftY:
+                    rc_axis = AxisMap::AxisType::LeftX;
+                    break;
+                case AxisMap::AxisType::LeftZ:
+                    rc_axis = AxisMap::AxisType::RightX;
+                    break;
+                case AxisMap::AxisType::RightX:
+                    rc_axis = AxisMap::AxisType::LeftY;
+                    break;
+                case AxisMap::AxisType::RightY:
+                    rc_axis = AxisMap::AxisType::LeftZ;
+                    break;
+                case AxisMap::AxisType::RightZ:
+                    rc_axis = AxisMap::AxisType::RightZ;
+                    break;
+                default:
+                    throw std::invalid_argument("Unsupported axis_type in getMappedValue");
+                }
+            }
             else { //Xbox controllers
                 rc_axis = axis_type;
             }
-        } 
+        }
         else
             rc_axis = map.rc_axis;
 
         long result;
-        switch (rc_axis)
-        {
-        case AxisMap::AxisType::LeftX: result = di_state.x; break;
-        case AxisMap::AxisType::LeftY: result = di_state.y; break;
-        case AxisMap::AxisType::LeftZ: result = di_state.z; break;
-        case AxisMap::AxisType::RightX: result = di_state.rx; break;
-        case AxisMap::AxisType::RightY: result = di_state.ry; break;
-        case AxisMap::AxisType::RightZ: result = di_state.rz; break;
+        switch (rc_axis) {
+        case AxisMap::AxisType::LeftX:
+            result = di_state.x;
+            break;
+        case AxisMap::AxisType::LeftY:
+            result = di_state.y;
+            break;
+        case AxisMap::AxisType::LeftZ:
+            result = di_state.z;
+            break;
+        case AxisMap::AxisType::RightX:
+            result = di_state.rx;
+            break;
+        case AxisMap::AxisType::RightY:
+            result = di_state.ry;
+            break;
+        case AxisMap::AxisType::RightZ:
+            result = di_state.rz;
+            break;
         default:
             throw std::invalid_argument("Unsupported rc_axis in getMappedValue");
         }
@@ -117,29 +154,30 @@ private:
     float getAxisValue(AxisMap::AxisType axis_type, const AxisMap& map, const DirectInputJoyStick::JoystickState& di_state, const std::string& device_pid_vid)
     {
         float val = getMappedValue(axis_type, map, di_state, device_pid_vid);
-        
+
         //normalize min to max --> 0 to 1
         val = (val - map.min_val) / (map.max_val - map.min_val);
 
-        switch (map.direction)
-        {
+        switch (map.direction) {
         case AxisMap::AxisDirection::Auto:
             if (
                 ((device_pid_vid == "" || device_pid_vid == "VID_0483&PID_5710") &&
-                    (axis_type == AxisMap::AxisType::LeftZ || axis_type == AxisMap::AxisType::RightY)) ||
+                 (axis_type == AxisMap::AxisType::LeftZ || axis_type == AxisMap::AxisType::RightY)) ||
                 ((device_pid_vid != "" && device_pid_vid != "VID_0483&PID_5710" && device_pid_vid != "VID_0401&PID_0401") &&
-                    (axis_type == AxisMap::AxisType::LeftY))
-               )
+                 (axis_type == AxisMap::AxisType::LeftY)))
                 val = 1 - val;
             break;
-        case AxisMap::AxisDirection::Normal: break;
-        case AxisMap::AxisDirection::Reverse: val = 1 - val; break;
+        case AxisMap::AxisDirection::Normal:
+            break;
+        case AxisMap::AxisDirection::Reverse:
+            val = 1 - val;
+            break;
         default:
             throw std::invalid_argument("Unsupported map.direction in getAxisValue");
         }
 
         //normalize 0 to 1 --> -1 to 1
-        val = 2*val - 1;
+        val = 2 * val - 1;
 
         return val;
     }
@@ -161,77 +199,74 @@ private:
 #include "unistd.h"
 
 //implementation for unsupported OS
-struct SimJoyStick::impl {
+struct SimJoyStick::impl
+{
 private:
-    
-    
-
     class JoystickEvent
     {
     public:
-      /** Minimum value of axes range */
-      static const short MIN_AXES_VALUE = -32768;
+        /** Minimum value of axes range */
+        static const short MIN_AXES_VALUE = -32768;
 
-      /** Maximum value of axes range */
-      static const short MAX_AXES_VALUE = 32767;
-      
-      /**
+        /** Maximum value of axes range */
+        static const short MAX_AXES_VALUE = 32767;
+
+        /**
        * The timestamp of the event, in milliseconds.
        */
-      unsigned int time;
-      
-      /**
+        unsigned int time;
+
+        /**
        * The value associated with this joystick event.
        * For buttons this will be either 1 (down) or 0 (up).
        * For axes, this will range between MIN_AXES_VALUE and MAX_AXES_VALUE.
        */
-      short value;
-      
-      /**
+        short value;
+
+        /**
        * The event type.
        */
-      unsigned char type;
-      
-      /**
+        unsigned char type;
+
+        /**
        * The axis/button number.
        */
-      unsigned char number;
+        unsigned char number;
 
-      /**
+        /**
        * Returns true if this event is the result of a button press.
        */
-      bool isButton()
-      {
-        static constexpr unsigned char JS_EVENT_BUTTON = 0x01; // button pressed/released
-        return (type & JS_EVENT_BUTTON) != 0;
-      }
+        bool isButton()
+        {
+            static constexpr unsigned char JS_EVENT_BUTTON = 0x01; // button pressed/released
+            return (type & JS_EVENT_BUTTON) != 0;
+        }
 
-      /**
+        /**
        * Returns true if this event is the result of an axis movement.
        */
-      bool isAxis()
-      {
-        static constexpr unsigned char JS_EVENT_AXIS = 0x02; // joystick moved
-        return (type & JS_EVENT_AXIS) != 0;
-      }
+        bool isAxis()
+        {
+            static constexpr unsigned char JS_EVENT_AXIS = 0x02; // joystick moved
+            return (type & JS_EVENT_AXIS) != 0;
+        }
 
-      /**
+        /**
        * Returns true if this event is part of the initial state obtained when
        * the joystick is first connected to.
        */
-      bool isInitialState()
-      {
-        static constexpr unsigned char JS_EVENT_INIT = 0x80; // initial state of device
-        return (type & JS_EVENT_INIT) != 0;
-      }
+        bool isInitialState()
+        {
+            static constexpr unsigned char JS_EVENT_INIT = 0x80; // initial state of device
+            return (type & JS_EVENT_INIT) != 0;
+        }
 
-      /**
+        /**
        * The ostream inserter needs to be a friend so it can access the
        * internal data structures.
        */
-      friend std::ostream& operator<<(std::ostream& os, const JoystickEvent& e);
+        friend std::ostream& operator<<(std::ostream& os, const JoystickEvent& e);
     };
-
 
 public:
     ~impl()
@@ -251,7 +286,7 @@ public:
                 val = 1 - val;
         }
         else {
-            val = 2*val - 1;
+            val = 2 * val - 1;
             if (reversed)
                 val *= -1;
         }
@@ -267,7 +302,7 @@ public:
 
         //if this is new index
         if (index != last_index_) {
-             //getJoystickInfo(1, manufacturerID, productID, state.message);
+            //getJoystickInfo(1, manufacturerID, productID, state.message);
 
             //close previous one
             if (fd_ >= 0)
@@ -285,7 +320,7 @@ public:
         //if open was successful
         if (fd_ >= 0) {
             //read the device
-            int bytes = read(fd_, &event_, sizeof(event_)); 
+            int bytes = read(fd_, &event_, sizeof(event_));
 
             //if we didn't had valid read
             if (bytes == -1 || bytes != sizeof(event_)) {
@@ -305,24 +340,46 @@ public:
                 }
                 else if (event_.isAxis()) {
                     if (device_type > 0) { //RCs like FrSky Taranis
-                        switch(event_.number) {
-                        case 0: state.left_y = event_.value; break;
-                        case 1: state.right_x = event_.value; break;
-                        case 2: state.right_y = event_.value; break;
-                        case 3: state.left_x = event_.value; break;
-                        default: break;
+                        switch (event_.number) {
+                        case 0:
+                            state.left_y = event_.value;
+                            break;
+                        case 1:
+                            state.right_x = event_.value;
+                            break;
+                        case 2:
+                            state.right_y = event_.value;
+                            break;
+                        case 3:
+                            state.left_x = event_.value;
+                            break;
+                        default:
+                            break;
                         }
                     }
                     else { //XBox
-                        switch(event_.number) {
-                        case 0: state.left_x = normalizeAxisVal(event_.value, true, false, false); break;
-                        case 1: state.left_y = normalizeAxisVal(event_.value, true, false, true); break;
-                        case 2: state.left_z = normalizeAxisVal(event_.value, true, false, false); break;
-                        case 3: state.right_x = normalizeAxisVal(event_.value, true, false, false); break;
-                        case 4: state.right_y = normalizeAxisVal(event_.value, true, false, false); break;
-                        case 5: state.right_z = normalizeAxisVal(event_.value, true, false, false); break;
+                        switch (event_.number) {
+                        case 0:
+                            state.left_x = normalizeAxisVal(event_.value, true, false, false);
+                            break;
+                        case 1:
+                            state.left_y = normalizeAxisVal(event_.value, true, false, true);
+                            break;
+                        case 2:
+                            state.left_z = normalizeAxisVal(event_.value, true, false, false);
+                            break;
+                        case 3:
+                            state.right_x = normalizeAxisVal(event_.value, true, false, false);
+                            break;
+                        case 4:
+                            state.right_y = normalizeAxisVal(event_.value, true, false, false);
+                            break;
+                        case 5:
+                            state.right_z = normalizeAxisVal(event_.value, true, false, false);
+                            break;
 
-                        default: break;
+                        default:
+                            break;
                         }
                     }
                 }
@@ -333,18 +390,19 @@ public:
             state.is_valid = false;
     }
 
-    
-	void setAutoCenter(unsigned int index, double strength) {
+    void setAutoCenter(unsigned int index, double strength)
+    {
         unused(index);
         unused(strength);
-		//TODO: implement this for linux
-	}
+        //TODO: implement this for linux
+    }
 
-	void setWheelRumble(unsigned int index, double strength) {
+    void setWheelRumble(unsigned int index, double strength)
+    {
         unused(index);
         unused(strength);
-		//TODO: implement this for linux
-	}
+        //TODO: implement this for linux
+    }
 
     // bool getJoystickInfo(int index, std::string& manufacturerID, std::string& productID, std::string& message)
     // {
