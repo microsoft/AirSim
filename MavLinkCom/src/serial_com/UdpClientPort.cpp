@@ -126,6 +126,11 @@ public:
             remoteaddr.sin_port = 0;
         }
 
+        struct timeval tv;
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
+        setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&tv), sizeof(tv));
+
         // bind socket to local address.
         socklen_t addrlen = sizeof(sockaddr_in);
         int rc = bind(sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
@@ -242,6 +247,9 @@ public:
                 else if (hr == WSAEINTR) {
                     // skip this, it is was interrupted, and if user is closing the port closed_ will be true.
                     continue;
+                }
+                else if (hr == WSAETIMEDOUT) {
+                    // skip this, the receive just timed out, no problem, we'll try again later.
                 }
 #else
                 if (hr == EINTR) {
