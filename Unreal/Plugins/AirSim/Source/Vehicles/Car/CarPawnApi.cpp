@@ -35,8 +35,7 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
         movement_->GetEngineMaxRotationSpeed(),
         last_controls_.handbrake,
         *pawn_kinematics_,
-        msr::airlib::ClockFactory::get()->nowNanos()
-    );
+        msr::airlib::ClockFactory::get()->nowNanos());
     return state;
 }
 
@@ -66,12 +65,14 @@ void CarPawnApi::reset()
         if (pvd) {
             pvd->mDriveDynData.setToRestState();
         }
-    }, true);
+    },
+                                             true);
 
     UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
         for (auto* phys_comp : phys_comps)
             phys_comp->SetSimulatePhysics(true);
-    }, true);
+    },
+                                             true);
 }
 
 void CarPawnApi::update()

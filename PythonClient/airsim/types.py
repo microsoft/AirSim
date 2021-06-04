@@ -1,6 +1,7 @@
 from __future__ import print_function
 import msgpackrpc #install as admin: pip install msgpack-rpc-python
 import numpy as np #pip install numpy
+import math
 
 class MsgpackMixin:
     def __repr__(self):
@@ -18,10 +19,33 @@ class MsgpackMixin:
         #return cls(**msgpack.unpack(encoded))
         return obj
 
+class _ImageType(type):
+    @property
+    def Scene(cls):
+        return 0
+    def DepthPlanar(cls):
+        return 1
+    def DepthPerspective(cls):
+        return 2
+    def DepthVis(cls):
+        return 3
+    def DisparityNormalized(cls):
+        return 4
+    def Segmentation(cls):
+        return 5
+    def SurfaceNormals(cls):
+        return 6
+    def Infrared(cls):
+        return 7
 
-class ImageType:
+    def __getattr__(self, key):
+        if key == 'DepthPlanner':
+            print('\033[31m'+"DepthPlanner has been (correctly) renamed to DepthPlanar. Please use ImageType.DepthPlanar instead."+'\033[0m')
+            raise AttributeError
+
+class ImageType(metaclass=_ImageType):
     Scene = 0
-    DepthPlanner = 1
+    DepthPlanar = 1
     DepthPerspective = 2
     DepthVis = 3
     DisparityNormalized = 4
@@ -61,6 +85,9 @@ class Vector3r(MsgpackMixin):
     @staticmethod
     def nanVector3r():
         return Vector3r(np.nan, np.nan, np.nan)
+
+    def containsNan(self):
+        return (math.isnan(self.x_val) or math.isnan(self.y_val) or math.isnan(self.z_val))
 
     def __add__(self, other):
         return Vector3r(self.x_val + other.x_val, self.y_val + other.y_val, self.z_val + other.z_val)
@@ -121,6 +148,9 @@ class Quaternionr(MsgpackMixin):
     @staticmethod
     def nanQuaternionr():
         return Quaternionr(np.nan, np.nan, np.nan, np.nan)
+
+    def containsNan(self):
+        return (math.isnan(self.w_val) or math.isnan(self.x_val) or math.isnan(self.y_val) or math.isnan(self.z_val))
 
     def __add__(self, other):
         if type(self) == type(other):
@@ -206,6 +236,9 @@ class Pose(MsgpackMixin):
     @staticmethod
     def nanPose():
         return Pose(Vector3r.nanVector3r(), Quaternionr.nanQuaternionr())
+
+    def containsNan(self):
+        return (self.position.containsNan() or self.orientation.containsNan())
 
 
 class CollisionInfo(MsgpackMixin):
@@ -304,13 +337,13 @@ class CarControls(MsgpackMixin):
 
     def set_throttle(self, throttle_val, forward):
         if (forward):
-            is_manual_gear = False
-            manual_gear = 0
-            throttle = abs(throttle_val)
+            self.is_manual_gear = False
+            self.manual_gear = 0
+            self.throttle = abs(throttle_val)
         else:
-            is_manual_gear = False
-            manual_gear = -1
-            throttle = - abs(throttle_val)
+            self.is_manual_gear = False
+            self.manual_gear = -1
+            self.throttle = - abs(throttle_val)
 
 class KinematicsState(MsgpackMixin):
     position = Vector3r()
@@ -349,6 +382,10 @@ class MultirotorState(MsgpackMixin):
     ready_message = ""
     can_arm = False
 
+class RotorStates(MsgpackMixin):
+    timestamp = np.uint64(0)
+    rotors = []
+
 class ProjectionMatrix(MsgpackMixin):
     matrix = []
 
@@ -361,6 +398,7 @@ class LidarData(MsgpackMixin):
     point_cloud = 0.0
     time_stamp = np.uint64(0)
     pose = Pose()
+    segmentation = 0
 
 class ImuData(MsgpackMixin):
     time_stamp = np.uint64(0)
@@ -400,9 +438,9 @@ class GpsData(MsgpackMixin):
 
 class DistanceSensorData(MsgpackMixin):
     time_stamp = np.uint64(0)
-    distance = Quaternionr()
-    min_distance = Quaternionr()
-    max_distance = Quaternionr()
+    distance = 0.0
+    min_distance = 0.0
+    max_distance = 0.0
     relative_pose = Pose()
 
 class PIDGains():

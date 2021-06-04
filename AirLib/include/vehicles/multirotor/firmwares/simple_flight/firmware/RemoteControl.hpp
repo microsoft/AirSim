@@ -7,16 +7,16 @@
 #include "interfaces/IGoal.hpp"
 #include "interfaces/CommonStructs.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class RemoteControl : 
-    public IGoal,
-    public IUpdatable {
+class RemoteControl : public IGoal
+    , public IUpdatable
+{
 public:
     RemoteControl(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs,
-        VehicleState* vehicle_state, IStateEstimator* state_estimator, ICommLink* comm_link)
-        : params_(params), clock_(clock), board_inputs_(board_inputs), 
-        vehicle_state_(vehicle_state), state_estimator_(state_estimator), comm_link_(comm_link)
+                  VehicleState* vehicle_state, IStateEstimator* state_estimator, ICommLink* comm_link)
+        : params_(params), clock_(clock), board_inputs_(board_inputs), vehicle_state_(vehicle_state), state_estimator_(state_estimator), comm_link_(comm_link)
     {
     }
 
@@ -31,11 +31,11 @@ public:
         last_angle_mode_ = std::numeric_limits<TReal>::min();
         request_duration_ = 0;
     }
-    
+
     virtual void update() override
     {
         IUpdatable::update();
-        
+
         uint64_t time = clock_->millis();
 
         //don't keep reading if not updated
@@ -47,9 +47,8 @@ public:
         //read channel values
         Axis4r channels;
         for (unsigned int axis = 0; axis < Axis4r::AxisCount(); ++axis) {
-            channels[axis] = board_inputs_->isRcConnected() ?
-                board_inputs_->readChannel(params_->rc.channels[axis])
-                : 0;
+            channels[axis] = board_inputs_->isRcConnected() ? board_inputs_->readChannel(params_->rc.channels[axis])
+                                                            : 0;
         }
 
         //set goal mode as per the switch position on RC
@@ -150,12 +149,16 @@ public:
 
     float getMotorOutput()
     {
-	return board_inputs_->getAvgMotorOutput();
+        return board_inputs_->getAvgMotorOutput();
     }
 
 private:
-    enum class RcRequestType {
-        None, ArmRequest, DisarmRequest, NeutralRequest
+    enum class RcRequestType
+    {
+        None,
+        ArmRequest,
+        DisarmRequest,
+        NeutralRequest
     };
 
     void updateGoalMode()
@@ -187,9 +190,8 @@ private:
     void updateAllowApiControl()
     {
         bool allow = params_->rc.allow_api_always;
-        allow |= board_inputs_->isRcConnected() ?
-            board_inputs_->readChannel(params_->rc.allow_api_control_channel) > 0.1f
-            : params_->rc.allow_api_when_disconnected;
+        allow |= board_inputs_->isRcConnected() ? board_inputs_->readChannel(params_->rc.allow_api_control_channel) > 0.1f
+                                                : params_->rc.allow_api_when_disconnected;
 
         if (allow_api_control_ != allow)
             comm_link_->log(std::string("API control enabled:\t").append(std::to_string(allow_api_control_)));
@@ -200,9 +202,9 @@ private:
     void updateGoal(const Axis4r& channels)
     {
         //for 3 way switch, 1/3 value for each position
-        if (angle_mode_ < params_->rc.max_angle_level_switch) { 
+        if (angle_mode_ < params_->rc.max_angle_level_switch) {
             //we are in control-by-level mode
-            goal_ = channels.colWiseMultiply4(params_->angle_level_pid.max_limit); 
+            goal_ = channels.colWiseMultiply4(params_->angle_level_pid.max_limit);
         }
         else { //we are in control-by-rate mode
             goal_ = channels.colWiseMultiply4(params_->angle_level_pid.max_limit);
@@ -217,7 +219,7 @@ private:
 
     static bool isInTolerance(TReal val, TReal tolerance, TReal center = TReal())
     {
-        return val <= center + tolerance && val >= center  - tolerance;
+        return val <= center + tolerance && val >= center - tolerance;
     }
 
     RcRequestType getActionRequest(const Axis4r& channels)
@@ -238,9 +240,7 @@ private:
             return RcRequestType::ArmRequest;
         else if (yaw_action_negative && throttle_action && roll_action_positive && pitch_action)
             return RcRequestType::DisarmRequest;
-        else if (isInTolerance(channels.roll(), tolerance)
-            && isInTolerance(channels.pitch(), tolerance)
-            && isInTolerance(channels.yaw(), tolerance))
+        else if (isInTolerance(channels.roll(), tolerance) && isInTolerance(channels.pitch(), tolerance) && isInTolerance(channels.yaw(), tolerance))
             return RcRequestType::NeutralRequest;
         else
             return RcRequestType::None;
@@ -262,8 +262,6 @@ private:
     bool allow_api_control_;
 
     uint64_t request_duration_;
-
 };
-
 
 } //namespace

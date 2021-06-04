@@ -1,5 +1,5 @@
 #pragma once
-
+// clang-format off
 #include "string.h"
 #include "mavlink_types.h"
 
@@ -234,9 +234,9 @@ _MAV_PUT_ARRAY(int64_t,  i64)
 _MAV_PUT_ARRAY(float,    f)
 _MAV_PUT_ARRAY(double,   d)
 
-#define _MAV_RETURN_char(msg, wire_offset)             (const char)_MAV_PAYLOAD(msg)[wire_offset]
-#define _MAV_RETURN_int8_t(msg, wire_offset)   (const int8_t)_MAV_PAYLOAD(msg)[wire_offset]
-#define _MAV_RETURN_uint8_t(msg, wire_offset) (const uint8_t)_MAV_PAYLOAD(msg)[wire_offset]
+#define _MAV_RETURN_char(msg, wire_offset)             (char)_MAV_PAYLOAD(msg)[wire_offset]
+#define _MAV_RETURN_int8_t(msg, wire_offset)   (int8_t)_MAV_PAYLOAD(msg)[wire_offset]
+#define _MAV_RETURN_uint8_t(msg, wire_offset) (uint8_t)_MAV_PAYLOAD(msg)[wire_offset]
 
 #if MAVLINK_NEED_BYTE_SWAP
 #define _MAV_MSG_RETURN_TYPE(TYPE, SIZE) \
@@ -331,4 +331,4 @@ _MAV_RETURN_ARRAY(int64_t,  i64)
 _MAV_RETURN_ARRAY(float,    f)
 _MAV_RETURN_ARRAY(double,   d)
 
-
+// clang-format on

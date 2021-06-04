@@ -1,6 +1,12 @@
+## Last announcement
+
+The AirSim team is trying to get a better understanding of how AirSim and other simulation engines are being used across the community. If you have a couple of minutes, please take a look and respond to the AirSim survey as it does have an impact on the features and direction of the platform:
+
+[Survey link](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR4J_69QtqUREtdPd5aLYTsFURDJPQUFSNDI3T0VENzJHUjVQVkpVWlRFNC4u)
+
 # Welcome to AirSim
 
-AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports hardware-in-loop with popular flight controllers such as PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
+AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
 
 Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
 
@@ -14,36 +20,24 @@ Cars in AirSim
 
 [![AirSim Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
 
-## What's New
-* A ROS wrapper for multirotors is available. See [airsim_ros_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs) for the ROS API, and [airsim_tutorial_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs) for tutorials.
-* [Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor](https://microsoft.github.io/AirSim/sensors)
-* Added support for [docker in ubuntu](https://github.com/microsoft/AirSim/blob/master/docs/docker_ubuntu.md)
-* Added Weather Effects and [APIs](https://microsoft.github.io/AirSim/apis#weather-apis)
-* Added [Time of Day API](https://microsoft.github.io/AirSim/apis#time-of-day-api)
-* An experimental integration of [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity) is now available. Learn more in [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation).
-* [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
-* Highly efficient [NoDisplay view mode](https://microsoft.github.io/AirSim/settings#viewmode) to turn off main screen rendering so you can capture images at high rate
-* [Lidar Sensor](https://microsoft.github.io/AirSim/lidar)
-* Case Study: [Formula Student Technion Driverless](https://github.com/Microsoft/AirSim/wiki/technion)
-* [Multi-Vehicle Capability](https://microsoft.github.io/AirSim/multi_vehicle)
-* [ROS publisher](https://github.com/Microsoft/AirSim/pull/1135)
-
-For complete list of changes, view our [Changelog](CHANGELOG.md)
 
 ## How to Get It
 
 ### Windows
-* [Download binaries](https://microsoft.github.io/AirSim/use_precompiled)
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml)
+* [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
 
 ### Linux
-* [Download binaries](https://microsoft.github.io/AirSim/use_precompiled)
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml)
+* [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 ### macOS
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
-[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
+For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 
 
 ## How to Use It
 
@@ -97,7 +91,7 @@ Press F10 to see various options available for weather effects. You can also con
 - [Video - Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) by Chris Lovett
 - [Video - Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0) by Chris Lovett
 - [Video - Using off-the-self environments with AirSim](https://www.youtube.com/watch?v=y09VbdQWvQY) by Jim Piavis
-- [Reinforcement Learning with AirSim](https://microsoft.github.io/AirSim/docs/reinforcement_learning) by Ashish Kapoor
+- [Reinforcement Learning with AirSim](https://microsoft.github.io/AirSim/reinforcement_learning) by Ashish Kapoor
 - [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
 - [Using TensorFlow for simple collision avoidance](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
 
@@ -124,7 +118,6 @@ Please take a look at [open issues](https://github.com/microsoft/airsim/issues) 
 * [More on AirSim design](https://microsoft.github.io/AirSim/design)
 * [More on code structure](https://microsoft.github.io/AirSim/code_structure)
 * [Contribution Guidelines](CONTRIBUTING.md)
-* [Trello Board](https://trello.com/b/1t2qCeaA/wishlist-by-community-for-community)
 
 ### Who is Using AirSim?
 
@@ -132,12 +125,34 @@ We are maintaining a [list](https://microsoft.github.io/AirSim/who_is_using) of 
 
 ## Contact
 
-Join the AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
+Join our [GitHub Discussions group](https://github.com/microsoft/AirSim/discussions) to stay up to date or ask any questions.
+
+We also have an AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/). 
+
+
+## What's New
+
+- [Python wrapper for Open AI gym interfaces.](https://github.com/microsoft/AirSim/pull/3215)
+- [Python wrapper for Event camera simulation](https://github.com/microsoft/AirSim/pull/3202)
+- [Voxel grid construction](https://github.com/microsoft/AirSim/pull/3209)
+- [Programmable camera distortion](https://github.com/microsoft/AirSim/pull/3039)
+- [Wind simulation](https://github.com/microsoft/AirSim/pull/2867)
+- [Azure development environment with documentation](https://github.com/microsoft/AirSim/pull/2816)
+- ROS wrapper for [multirotor](https://github.com/microsoft/AirSim/blob/master/docs/airsim_ros_pkgs.md) and [car](https://github.com/microsoft/AirSim/pull/2743).
+
+For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
 ## FAQ
 
 If you run into problems, check the [FAQ](https://microsoft.github.io/AirSim/faq) and feel free to post issues in the  [AirSim](https://github.com/Microsoft/AirSim/issues) repository.
 
+## Code of Conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+
 ## License
 
 This project is released under the MIT License. Please review the [License file](LICENSE) for more details.
+
+

@@ -1,0 +1,128 @@
+variables:
+  container_linux: airsimci.azurecr.io/ue4p25p1/ubuntu18:debugeditor_fulldebugoff
+  ue4_root_linux: /home/ue4/ue-4.25.1-linux-debugeditor
+  container_win: airsimci.azurecr.io/ue4p25p1/win1809:pipe
+  ue4_root_win: C:\ue-4.25.1-win
+
+stages:
+  - stage: AirSimCI
+    jobs:
+      - job: Ubuntu_1804
+        pool:
+          name: 'AirSim'
+          demands:
+            - Spec -equals Ubuntu_18.04
+        container:
+          image: $(container_linux)
+          endpoint: airsimci_acr_connection
+        variables:
+          ue4_root: $(ue4_root_linux)
+        workspace:
+          clean: all
+        steps:
+          # Setup / Prereq
+          - checkout: self
+          - script: |
+              ./setup.sh
+            displayName: Install system dependencies
+
+          # Build AirLib
+          - script: |
+              ./build.sh
+            displayName: Build AirLib
+
+          # Build UE Blocks project
+          - script: |
+              ./update_from_git.sh
+            workingDirectory: Unreal/Environments/Blocks
+            displayName: Copy AirLib to Blocks (update_from_git.sh)
+            
+          # Build Blocks
+          - script: |
+              $(UE4_ROOT)/Engine/Build/BatchFiles/Linux/Build.sh Blocks Linux Development \
+                -project=$(pwd)/Unreal/Environments/Blocks/Blocks.uproject
+              $(UE4_ROOT)/Engine/Build/BatchFiles/Linux/Build.sh BlocksEditor Linux Development \
+                -project=$(pwd)/Unreal/Environments/Blocks/Blocks.uproject
+            displayName: Build Blocks - Development
+     
+          # Package Blocks
+          - script: |
+              $(UE4_ROOT)/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun \
+                -project="$(pwd)/Unreal/Environments/Blocks/Blocks.uproject" \
+                -nop4 -nocompile -build -cook -compressed -pak -allmaps -stage \
+                -archive -archivedirectory="$(pwd)/Unreal/Environments/Blocks/Packaged/Development" \
+                -clientconfig=Development -clean -utf8output
+            displayName: Package Blocks - Development
+            
+          # Publish Artifact for Blocks Linux
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: 'Unreal/Environments/Blocks/Packaged'
+              artifactName: 'Blocks_Linux'
+            displayName: Artifact for Blocks Linux
+            condition: succeededOrFailed()
+
+          - task: ArchiveFiles@2
+            displayName: Blocks Linux Zip
+            inputs:
+              rootFolderOrFile: 'Unreal/Environments/Blocks/Packaged'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: 'Unreal/Environments/Blocks/Packaged/Blocks_Linux.zip'
+              replaceExistingArchive: true
+
+      - job: Windows_VS2019
+        pool:
+          name: 'AirSim'
+          demands:
+            - Spec -equals WinServer2019_VS2019_Datacenter
+        container:
+          image: $(container_win)
+          endpoint: airsimci_acr_connection
+        variables:
+          ue4_root: $(ue4_root_win)
+        workspace:
+          clean: all
+
+        steps:
+          - checkout: self
+
+          # Build AirLib
+          - script: |
+              call "C:\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+              call .\build.cmd
+            displayName: Build AirLib
+
+          - script: |
+              call "C:\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+              call .\update_from_git_ci.bat
+            workingDirectory: Unreal/Environments/Blocks
+            displayName: Copy AirLib to Blocks (update_from_git_ci.bat)
+
+          # Build Blocks
+          - script: |
+              call "%UE4_ROOT%\Engine\Build\BatchFiles\Build.bat" Blocks Win64 Development -project="%CD%\Unreal\Environments\Blocks\Blocks.uproject"
+              call "%UE4_ROOT%\Engine\Build\BatchFiles\Build.bat" BlocksEditor Win64 Development -project="%CD%\Unreal\Environments\Blocks\Blocks.uproject"
+            displayName: Build Blocks - Development
+
+          # Package Blocks
+          - script: |
+              call "%UE4_ROOT%\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun -project="%CD%\Unreal\Environments\Blocks\Blocks.uproject" -nop4 -nocompile -build -cook -compressed -pak -allmaps -stage -archive -archivedirectory="%CD%\Unreal\Environments\Blocks\Packaged\Development" -clientconfig=Development -clean -utf8output
+            displayName: Package Blocks - Development
+
+          # Publish Artifact for Blocks Windows
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: 'Unreal/Environments/Blocks/Packaged'
+              artifactName: 'Blocks_Windows'
+            displayName: Artifact for Blocks Windows
+            condition: succeededOrFailed()
+
+          - task: ArchiveFiles@2
+            displayName: Blocks Windows Zip
+            inputs:
+              rootFolderOrFile: 'Unreal/Environments/Blocks/Packaged'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: 'Unreal/Environments/Blocks/Packaged/Blocks_Windows.zip'
+              replaceExistingArchive: true

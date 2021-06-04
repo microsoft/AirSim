@@ -6,20 +6,21 @@
 class MultirotorPawnEvents
 {
 public:
-	typedef msr::airlib::real_T real_T;
+    typedef msr::airlib::real_T real_T;
 
-	struct RotorActuatorInfo {
-		real_T rotor_speed = 0;
-		int rotor_direction = 0;
-		real_T rotor_thrust = 0;
-		real_T rotor_control_filtered = 0;
-	};
+    struct RotorActuatorInfo
+    {
+        real_T rotor_speed = 0;
+        int rotor_direction = 0;
+        real_T rotor_thrust = 0;
+        real_T rotor_control_filtered = 0;
+    };
 
-	typedef common_utils::Signal<const std::vector<RotorActuatorInfo>&> ActuatorsSignal;
+    typedef common_utils::Signal<const std::vector<RotorActuatorInfo>&> ActuatorsSignal;
 
 public:
-	ActuatorsSignal & getActuatorSignal();
+    ActuatorsSignal& getActuatorSignal();
 
 private:
-	ActuatorsSignal actuator_signal_;
+    ActuatorsSignal actuator_signal_;
 };

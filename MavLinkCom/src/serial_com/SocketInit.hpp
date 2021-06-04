@@ -6,9 +6,10 @@
 
 class SocketInit
 {
-	static bool socket_initialized_;
+    static bool socket_initialized_;
+
 public:
-	SocketInit();
+    SocketInit();
 };
 
 #endif

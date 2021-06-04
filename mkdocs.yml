@@ -6,30 +6,38 @@ site_description: 'Open source simulator based on Unreal Engine for autonomous v
 markdown_extensions:
     - toc:
         permalink: "#"
+    - pymdownx.arithmatex:
+        generic: true
+    - pymdownx.extra:
+    - admonition
 
 remote_branch: gh-pages
 
-theme: 
+theme:
   name: 'readthedocs'
   logo:
     icon: ' '
 
 extra:
   highlightjs: true
-  version: 1.2.1
+  version: 1.3.1
   feature:
       tabs: true
   palette:
   social:
       - type: facebook
-        link: https://www.facebook.com/groups/1225832467530667/ 
+        link: https://www.facebook.com/groups/1225832467530667/
       - type: github-alt
         link: https://github.com/Microsoft/AirSim
 
-copyright: Copyright &copy; 2018 Microsoft Research
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+copyright: Copyright &copy; 2021 Microsoft Research
 
 nav:
-  - "Home": 
+  - "Home":
     - "Home": 'README.md'
   - "Changelog": 'CHANGELOG.md'
   - "Get AirSim":
@@ -37,6 +45,7 @@ nav:
     - "Build on Windows": 'build_windows.md'
     - "Build on Linux": 'build_linux.md'
     - "Docker on Linux": 'docker_ubuntu.md'
+    - "AirSim on Azure": 'azure.md'
     - "Custom Unreal Environment": 'unreal_custenv.md'
     - "AirSim with Unity": "Unity.md"
     - "Custom Unity Environment": "custom_unity_environments.md"
@@ -45,22 +54,27 @@ nav:
     - "Core APIs": 'apis.md'
     - "Image APIs": 'image_apis.md'
     - "C++ APIs": 'apis_cpp.md'
+    - "API Reference Docs": 'api_docs/html/index.html'
     - "Development Workflow": 'dev_workflow.md'
     - "Settings": 'settings.md'
-    - "Camera Views": 'camera_views.md'      
+    - "Camera Views": 'camera_views.md'
     - "Car Mode": 'using_car.md'
     - "Remote Control": 'remote_control.md'
     - "XBox Controller": 'xbox_controller.md'
     - "Steering Wheel": 'steering_wheel_installation.md'
     - "Multiple Vehicles": 'multi_vehicle.md'
-    - "Sensors": 'sensors.md'
-    - "LIDAR": 'lidar.md'
-    - "Infrared Camera": "InfraredCamera.md"
-    - "ROS: AirSim ROS Wrapper": "airsim_ros_pkgs.md"     
-    - "ROS: AirSim Tutorial Packages": "airsim_tutorial_pkgs.md"     
+    - "Sensors":
+      - "Sensors": 'sensors.md'
+      - "LIDAR": 'lidar.md'
+      - "Distance Sensor": 'distance_sensor.md'
+      - "Infrared Camera": "InfraredCamera.md"
+    - "ROS: AirSim ROS Wrapper": "airsim_ros_pkgs.md"
+    - "ROS: AirSim Tutorial Packages": "airsim_tutorial_pkgs.md"
     - "Domain Randomization": "retexturing.md"
     - "Mesh Vertex Buffers": "meshes.md"
     - "Playing Logs": 'playback.md'
+    - "Voxel Grid Generator": "voxel_grid.md"
+    - "Event camera" : "event_sim.md"
   - "Design":
     - "Architecture": 'design.md'
     - "Code Structure": 'code_structure.md'
@@ -68,19 +82,26 @@ nav:
     - "Flight Controller": 'flight_controller.md'
     - "Simple Flight": 'simple_flight.md'
     - "Hello Drone": 'hello_drone.md'
-  - "MavLink and PX4":
-    - "PX4 Setup for AirSim": 'px4_setup.md'
-    - "PX4 in SITL": 'px4_sitl.md'
-    - "AirSim with Pixhawk": 'https://youtu.be/1oY8Qu5maQQ'
-    - "PX4 Setup with AirSim": 'https://youtu.be/HNWdYrtw3f0'
-    - "Debugging Attitude Estimation": 'https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be'
-    - "Intercepting MavLink Messages": 'https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages'
-    - "Rapid Descent on PX4 Drones": 'https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones'
-    - "Building PX4": "px4_build.md"
-    - "PX4/MavLink Logging": 'px4_logging.md'
-    - "MavLink LogViewer": "log_viewer.md"
-    - "MavLinkCom": 'mavlinkcom.md'
-    - "MavLink MoCap": 'mavlinkcom_mocap.md'
+  - "External Flight Controllers":
+    - "MavLink and PX4":
+      - "PX4 Setup for AirSim": 'px4_setup.md'
+      - "PX4 in SITL": 'px4_sitl.md'
+      - "PX4 SITL with WSL 2": 'px4_sitl_wsl2.md'
+      - "PX4 Lockstep": 'px4_lockstep.md'
+      - "PX4 Multi-vehicle in SITL": 'px4_multi_vehicle.md'
+      - "AirSim with Pixhawk": 'https://youtu.be/1oY8Qu5maQQ'
+      - "PX4 Setup with AirSim": 'https://youtu.be/HNWdYrtw3f0'
+      - "Debugging Attitude Estimation": 'https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be'
+      - "Intercepting MavLink Messages": 'https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages'
+      - "Rapid Descent on PX4 Drones": 'https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones'
+      - "Building PX4": "px4_build.md"
+      - "PX4/MavLink Logging": 'px4_logging.md'
+      - "MavLink LogViewer": "log_viewer.md"
+      - "MavLinkCom": 'mavlinkcom.md'
+      - "MavLink MoCap": 'mavlinkcom_mocap.md'
+    - "ArduPilot":
+      - "ArduPilot SITL Setup": "https://ardupilot.org/dev/docs/building-the-code.html"
+      - "AirSim & ArduPilot": "https://ardupilot.org/dev/docs/sitl-with-airsim.html"
   - "Upgrading":
     - "Upgrading Unreal": 'unreal_upgrade.md'
     - "Upgrading APIs": 'upgrade_apis.md'
@@ -92,8 +113,10 @@ nav:
     - "Autonomous Driving on Azure": 'https://aka.ms/AutonomousDrivingCookbook'
     - "Building Hexacopter": 'https://github.com/Microsoft/AirSim/wiki/hexacopter'
     - "Moving on Path Demo": 'https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo'
-    - "Building Point Clouds": 'https://github.com/Microsoft/AirSim/wiki/Point-Clouds'
-    - "Surveying Using Drone": 'https://github.com/Microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script'      
+    - "Building Point Clouds": 'point_clouds.md'
+    - "Surveying Using Drone": 'drone_survey.md'
+    - "Orbit Trajectory": "orbit.md"
+    - "Importing a custom multirotor mesh": 'https://youtu.be/Bp86WiLUC80'
   - "Misc":
     - "AirSim on Real Drones": 'custom_drone.md'
     - "Installing cmake on Linux": 'cmake_linux.md'
@@ -104,7 +127,7 @@ nav:
     - "Who is Using AirSim": 'who_is_using.md'
     - "Working with UE Plugin Contents": 'working_with_plugin_contents.md'
     - "Formula Student Technion Self-drive": 'https://github.com/Microsoft/AirSim/wiki/technion'
-  - "Support": 
+  - "Support":
     - "FAQ": 'faq.md'
     - "Support": 'SUPPORT.md'
     - "Create Issue": 'create_issue.md'

@@ -9,6 +9,7 @@
 #include "common/EarthUtils.hpp"
 #include "vehicles/car/api/CarRpcLibServer.hpp"
 
+extern CORE_API uint32 GFrameNumber;
 
 void ASimModeCar::BeginPlay()
 {
@@ -46,6 +47,13 @@ void ASimModeCar::continueForTime(double seconds)
     pause(false);
 }
 
+void ASimModeCar::continueForFrames(uint32_t frames)
+{
+    targetFrameNumber_ = GFrameNumber + frames;
+    frame_countdown_enabled_ = true;
+    pause(false);
+}
+
 void ASimModeCar::setupClockSpeed()
 {
     current_clockspeed_ = getSettings().clock_speed;
@@ -58,13 +66,22 @@ void ASimModeCar::setupClockSpeed()
 void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    
+
     if (pause_period_start_ > 0) {
         if (ClockFactory::get()->elapsedSince(pause_period_start_) >= pause_period_) {
             if (!isPaused())
                 pause(true);
 
             pause_period_start_ = 0;
+        }
+    }
+
+    if (frame_countdown_enabled_) {
+        if (targetFrameNumber_ <= GFrameNumber) {
+            if (!isPaused())
+                pause(true);
+
+            frame_countdown_enabled_ = false;
         }
     }
 }
@@ -120,14 +137,15 @@ std::unique_ptr<PawnSimApi> ASimModeCar::createVehicleSimApi(
     const PawnSimApi::Params& pawn_sim_api_params) const
 {
     auto vehicle_pawn = static_cast<TVehiclePawn*>(pawn_sim_api_params.pawn);
-    auto vehicle_sim_api = std::unique_ptr<PawnSimApi>(new CarPawnSimApi(pawn_sim_api_params, 
-        vehicle_pawn->getKeyBoardControls(), vehicle_pawn->getVehicleMovementComponent()));
+    auto vehicle_sim_api = std::unique_ptr<PawnSimApi>(new CarPawnSimApi(pawn_sim_api_params,
+                                                                         vehicle_pawn->getKeyBoardControls(),
+                                                                         vehicle_pawn->getVehicleMovementComponent()));
     vehicle_sim_api->initialize();
     vehicle_sim_api->reset();
     return vehicle_sim_api;
 }
 msr::airlib::VehicleApiBase* ASimModeCar::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
-    const PawnSimApi* sim_api) const
+                                                        const PawnSimApi* sim_api) const
 {
     const auto car_sim_api = static_cast<const CarPawnSimApi*>(sim_api);
     return car_sim_api->getVehicleApi();

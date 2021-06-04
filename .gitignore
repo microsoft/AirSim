@@ -286,12 +286,14 @@ ModelManifest.xml
 /cmake/MavLinkCom/Makefile
 /cmake/Makefile
 /cmake/HelloDrone/Makefile
+/cmake/HelloSpawnedDrones/Makefile
 /cmake/DroneShell/Makefile
 /cmake/DroneServer/Makefile
 /cmake/AirLib/Makefile
 /cmake/AirLibUnity/Makefile
 /cmake/AirLibUnity/AirLibUnity
 /cmake/HelloDrone/HelloDrone
+/cmake/HelloSpawnedDrones/HelloSpawnedDrones
 /cmake/DroneShell/DroneShell
 /cmake/DroneServer/DroneServer
 cmake/AirLibUnitTests/Makefile
@@ -307,7 +309,7 @@ cmake_build/
 /boost
 /[Ee]igen
 /build_debug
-/build_gcc_debug
+/build_release
 /cmake/CPackSourceConfig.cmake
 /cmake/CPackConfig.cmake
 /cmake/arch.c
@@ -359,13 +361,17 @@ xcuserdata/
 /*.gcno
 
 # Unity
-/Unity/UnityDemo/Library
 /Unity/UnityDemo/Assembly-CSharp.csproj
 /Unity/UnityDemo/UnityDemo.sln
-/Unity/UnityDemo/Logs/
-/Unity/UnityDemo/Assets/Plugins/AirsimWrapper.dll
-/Unity/UnityDemo/Assets/Plugins/libAirsimWrapper.so
-/Unity/linux-build/
+/Unity/linux-build
+/Unity/UnityDemo/Assets/Plugins/
+/Unity/UnityDemo/[Ll]ibrary/
+/Unity/UnityDemo/[Tt]emp/
+/Unity/UnityDemo/[Oo]bj/
+/Unity/UnityDemo/[Bb]uild/
+/Unity/UnityDemo/[Bb]uilds/
+/Unity/UnityDemo/[Ll]ogs/
+/Unity/UnityDemo/[Uu]ser[Ss]ettings/
 
 # ROS
 ros/.catkin_tools/
@@ -377,3 +383,6 @@ ros/src/CMakeLists.txt
 # docs
 docs/README.md
 build_docs/
+
+# api docs
+PythonClient/docs/_build

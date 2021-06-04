@@ -9,11 +9,10 @@
 #include <memory>
 #include "SimHUD.generated.h"
 
-
 UENUM(BlueprintType)
 enum class ESimulatorMode : uint8
 {
-    SIM_MODE_HIL 	UMETA(DisplayName = "Hardware-in-loop")
+    SIM_MODE_HIL UMETA(DisplayName = "Hardware-in-loop")
 };
 
 UCLASS()
@@ -35,14 +34,13 @@ public:
     void inputEventToggleSubwindow2();
     void inputEventToggleAll();
 
-
     ImageType getSubwindowCameraType(int window_index);
     void setSubwindowCameraType(int window_index, ImageType type);
     APIPCamera* getSubwindowCamera(int window_index);
     void setSubwindowCamera(int window_index, APIPCamera* camera);
     bool getSubwindowVisible(int window_index);
     void setSubwindowVisible(int window_index, bool is_visible);
-    
+
     ASimHUD();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -59,22 +57,26 @@ private:
     void createSimMode();
     void initializeSettings();
     void setUnrealEngineSettings();
+    void loadLevel();
     void createMainWidget();
     const std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings() const;
     std::vector<AirSimSettings::SubwindowSetting>& getSubWindowSettings();
-    
 
     bool getSettingsText(std::string& settingsText);
     bool getSettingsTextFromCommandLine(std::string& settingsText);
-    bool readSettingsTextFromFile(FString fileName, std::string& settingsText);
+    bool readSettingsTextFromFile(const FString& fileName, std::string& settingsText);
     std::string getSimModeFromUser();
+
+    static FString getLaunchPath(const std::string& filename);
 
 private:
     typedef common_utils::Utils Utils;
     UClass* widget_class_;
 
-    UPROPERTY() USimHUDWidget* widget_;
-    UPROPERTY() ASimModeBase* simmode_;
+    UPROPERTY()
+    USimHUDWidget* widget_;
+    UPROPERTY()
+    ASimModeBase* simmode_;
 
     APIPCamera* subwindow_cameras_[AirSimSettings::kSubwindowCount];
 };

@@ -18,7 +18,7 @@ You can either get AirSim binaries from [releases](https://github.com/Microsoft/
 python hello_car.py
 ```
 
-If you are using Visual Studio 2017 then just open AirSim.sln, set PythonClient as startup project and choose `car\hello_car.py` as your startup script.
+If you are using Visual Studio 2019 then just open AirSim.sln, set PythonClient as startup project and choose `car\hello_car.py` as your startup script.
 
 ### Installing AirSim Package
 You can also install `airsim` package simply by,
@@ -66,7 +66,7 @@ while True:
     # get camera images from the car
     responses = client.simGetImages([
         airsim.ImageRequest(0, airsim.ImageType.DepthVis),
-        airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
+        airsim.ImageRequest(1, airsim.ImageType.DepthPlanar, True)])
     print('Retrieved images: %d', len(responses))
 
     # do something with images
@@ -86,6 +86,7 @@ Here's how to use AirSim APIs using Python to control simulated quadrotor (see a
 ```python
 # ready to run example: PythonClient/multirotor/hello_drone.py
 import airsim
+import os
 
 # connect to the AirSim simulator
 client = airsim.MultirotorClient()
@@ -100,7 +101,7 @@ client.moveToPositionAsync(-10, 10, -10, 5).join()
 # take images
 responses = client.simGetImages([
     airsim.ImageRequest("0", airsim.ImageType.DepthVis),
-    airsim.ImageRequest("1", airsim.ImageType.DepthPlanner, True)])
+    airsim.ImageRequest("1", airsim.ImageType.DepthPlanar, True)])
 print('Retrieved images: %d', len(responses))
 
 # do something with the images
@@ -124,7 +125,7 @@ for response in responses:
 * `simGetObjectPose`, `simSetObjectPose`: Gets and sets the pose of specified object in Unreal environment. Here the object means "actor" in Unreal terminology. They are searched by tag as well as name. Please note that the names shown in UE Editor are *auto-generated* in each run and are not permanent. So if you want to refer to actor by name, you must change its auto-generated name in UE Editor. Alternatively you can add a tag to actor which can be done by clicking on that actor in Unreal Editor and then going to [Tags property](https://answers.unrealengine.com/questions/543807/whats-the-difference-between-tag-and-tag.html), click "+" sign and add some string value. If multiple actors have same tag then the first match is returned. If no matches are found then NaN pose is returned. The returned pose is in NED coordinates in SI units with its origin at Player Start. For `simSetObjectPose`, the specified actor must have [Mobility](https://docs.unrealengine.com/en-us/Engine/Actors/Mobility) set to Movable or otherwise you will get undefined behavior. The `simSetObjectPose` has parameter `teleport` which means object is [moved through other objects](https://www.unrealengine.com/en-US/blog/moving-physical-objects) in its way and it returns true if move was successful
 
 ### Image / Computer Vision APIs
-AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
+AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plane, computation of disparity image and saving it to [pfm format](pfm.md).
 
 More on [image APIs and Computer Vision mode](image_apis.md).
 For vision problems that can benefit from domain randomization, there is also an [object retexturing API](retexturing.md), which can be used in supported scenes.
@@ -137,7 +138,7 @@ AirSim allows to pause and continue the simulation through `pause(is_paused)` AP
 The collision information can be obtained using `simGetCollisionInfo` API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.
 
 ### Time of Day API
-AirSim assumes there exist sky sphere of class `EngineSky/BP_Sky_Sphere` in your environment with [ADirectionalLight actor](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L156). By default, the position of the sun in the scene doesn't move with time. You can use [settings](settings.md#timeofday) to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene.
+AirSim assumes there exist sky sphere of class `EngineSky/BP_Sky_Sphere` in your environment with [ADirectionalLight actor](https://github.com/microsoft/AirSim/blob/v1.4.0-linux/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L224). By default, the position of the sun in the scene doesn't move with time. You can use [settings](settings.md#timeofday) to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene.
 
 You can also use following API call to set the sun position according to given date time:
 
@@ -177,7 +178,35 @@ class WeatherParameter:
 
 Please note that `Roadwetness`, `RoadSnow` and `RoadLeaf` effects requires adding [materials](https://github.com/Microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Content/Weather/WeatherFX) to your scene.
 
-Please see [example code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/weather.py) for more details.
+Please see [example code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/environment/weather.py) for more details.
+
+### Recording APIs
+
+Recording APIs can be used to start recording data through APIs. Data to be recorded can be specified using [settings](settings.md#recording). To start recording, use -
+
+```
+client.startRecording()
+```
+
+Similarly, to stop recording, use `client.stopRecording()`. To check whether Recording is running, call `client.isRecording()`, returns a `bool`.
+
+This API works alongwith toggling Recording using R button, therefore if it's enabled using R key, `isRecording()` will return `True`, and recording can be stopped via API using `stopRecording()`. Similarly, recording started using API will be stopped if R key is pressed in Viewport. LogMessage will also appear in the top-left of the viewport if recording is started or stopped using API.
+
+Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired.
+
+### Wind API
+
+Wind can be changed during simulation using `simSetWind()`. Wind is specified in World frame, NED direction and m/s values
+
+E.g. To set 20m/s wind in North (forward) direction -
+
+```python
+# Set wind to (20,0,0) in NED (forward direction)
+wind = airsim.Vector3r(20, 0, 0)
+client.simSetWind(wind)
+```
+
+Also see example script in [set_wind.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/set_wind.py)
 
 ### Lidar APIs
 AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in [settings.json](settings.md).
@@ -264,7 +293,7 @@ The APIs use [msgpack-rpc protocol](https://github.com/msgpack-rpc/msgpack-rpc) 
 If you see Unreal getting slowed down dramatically when Unreal Engine window loses focus then go to 'Edit->Editor Preferences' in Unreal Editor, in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.
 
 #### Do I need anything else on Windows?
-You should install VS2017 with VC++, Windows SDK 8.1 and Python. To use Python APIs you will need Python 3.5 or later (install it using Anaconda).
+You should install VS2019 with VC++, Windows SDK 10.0 and Python. To use Python APIs you will need Python 3.5 or later (install it using Anaconda).
 
 #### Which version of Python should I use?
 We recommend [Anaconda](https://www.anaconda.com/download/) to get Python tools and libraries. Our code is tested with Python 3.5.3 :: Anaconda 4.4.0. This is important because older version have been known to have [problems](https://stackoverflow.com/a/45934992/207661).

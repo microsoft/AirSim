@@ -11,7 +11,7 @@
 using namespace mavlink_utils;
 
 using namespace mavlinkcom_impl;
-#define PACKET_PAYLOAD 253	//hard coded in MavLink code - do not change
+#define PACKET_PAYLOAD 253 //hard coded in MavLink code - do not change
 
 void mavlink_euler_to_quaternion(float roll, float pitch, float yaw, float quaternion[4])
 {
@@ -22,16 +22,17 @@ void mavlink_euler_to_quaternion(float roll, float pitch, float yaw, float quate
     float cosPsi_2 = cosf(yaw / 2);
     float sinPsi_2 = sinf(yaw / 2);
     quaternion[0] = (cosPhi_2 * cosTheta_2 * cosPsi_2 +
-        sinPhi_2 * sinTheta_2 * sinPsi_2);
+                     sinPhi_2 * sinTheta_2 * sinPsi_2);
     quaternion[1] = (sinPhi_2 * cosTheta_2 * cosPsi_2 -
-        cosPhi_2 * sinTheta_2 * sinPsi_2);
+                     cosPhi_2 * sinTheta_2 * sinPsi_2);
     quaternion[2] = (cosPhi_2 * sinTheta_2 * cosPsi_2 +
-        sinPhi_2 * cosTheta_2 * sinPsi_2);
+                     sinPhi_2 * cosTheta_2 * sinPsi_2);
     quaternion[3] = (cosPhi_2 * cosTheta_2 * sinPsi_2 -
-        sinPhi_2 * sinTheta_2 * cosPsi_2);
+                     sinPhi_2 * sinTheta_2 * cosPsi_2);
 }
 
-enum PX4_CUSTOM_MAIN_MODE {
+enum PX4_CUSTOM_MAIN_MODE
+{
     PX4_CUSTOM_MAIN_MODE_NONE = 0,
     PX4_CUSTOM_MAIN_MODE_MANUAL = 1,
     PX4_CUSTOM_MAIN_MODE_ALTCTL = 2,
@@ -43,7 +44,8 @@ enum PX4_CUSTOM_MAIN_MODE {
     PX4_CUSTOM_MAIN_MODE_RATTITUDE = 8
 };
 
-enum PX4_CUSTOM_SUB_MODE_AUTO {
+enum PX4_CUSTOM_SUB_MODE_AUTO
+{
     PX4_CUSTOM_SUB_MODE_AUTO_NONE = 0,
     PX4_CUSTOM_SUB_MODE_AUTO_READY = 1,
     PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF = 2,
@@ -94,17 +96,17 @@ enum PX4_CUSTOM_SUB_MODE_AUTO {
 */
 
 // bit number  876543210987654321
-#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_POSITION     0x7			// if 0x7 bits are on the PX4 ignores position.
-#define MAVLINK_MSG_SET_POSITION_TARGET_ALT_HOLD			0x3			// if 0x4 bit can be used to do z altitude hold.
-#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY     0x38		// if 0x38 bits are on on the PX4 ignores velocity.
-#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION 0x1C0		// if 0x1C0 bits are on the PX4 ignores acceleration.
-#define MAVLINK_MSG_SET_POSITION_TARGET_FORCE		        0x200		// if 0x200 is on the PX4 interprets acceleration as a force.
-#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE    0x400		// if 0x400 is on the PX4 ignores the yaw 
-#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE     0x800		// if 0x800 is on the PX4 ignores the yaw rate.
-#define MAVLINK_MSG_SET_POSITION_TARGET_TAKEOFF			    0x1000
-#define MAVLINK_MSG_SET_POSITION_TARGET_LAND			    0x2000
-#define MAVLINK_MSG_SET_POSITION_TARGET_LOITER			    0x3000
-#define MAVLINK_MSG_SET_POSITION_TARGET_IDLE			    0x4000
+#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_POSITION 0x7 // if 0x7 bits are on the PX4 ignores position.
+#define MAVLINK_MSG_SET_POSITION_TARGET_ALT_HOLD 0x3 // if 0x4 bit can be used to do z altitude hold.
+#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY 0x38 // if 0x38 bits are on on the PX4 ignores velocity.
+#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION 0x1C0 // if 0x1C0 bits are on the PX4 ignores acceleration.
+#define MAVLINK_MSG_SET_POSITION_TARGET_FORCE 0x200 // if 0x200 is on the PX4 interprets acceleration as a force.
+#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE 0x400 // if 0x400 is on the PX4 ignores the yaw
+#define MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE 0x800 // if 0x800 is on the PX4 ignores the yaw rate.
+#define MAVLINK_MSG_SET_POSITION_TARGET_TAKEOFF 0x1000
+#define MAVLINK_MSG_SET_POSITION_TARGET_LAND 0x2000
+#define MAVLINK_MSG_SET_POSITION_TARGET_LOITER 0x3000
+#define MAVLINK_MSG_SET_POSITION_TARGET_IDLE 0x4000
 
 MavLinkVehicleImpl::MavLinkVehicleImpl(int localSystemId, int localComponentId)
     : MavLinkNodeImpl(localSystemId, localComponentId)
@@ -140,7 +142,7 @@ AsyncResult<MavLinkHomePosition> MavLinkVehicleImpl::waitForHomePosition()
 
 AsyncResult<bool> MavLinkVehicleImpl::allowFlightControlOverUsb()
 {
-    MavLinkParameter  p;
+    MavLinkParameter p;
     p.name = "CBRK_USB_CHK";
     p.value = 197848;
     return setParameter(p);
@@ -154,7 +156,7 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
     //in future it would be good to have ability to add system IDs we are interested in
     //if (msg.sysid != getTargetSystemId())
     //{
-    //	// we only care about messages from our intended remote node. 
+    //	// we only care about messages from our intended remote node.
     //	return;
     //}
 
@@ -196,7 +198,8 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
                     control_request_sent_ = false;
 
                     Utils::log(Utils::stringf("MavLinkVehicle: detected mode change (mode=%d, submode=%d), will stop trying to do offboard control\n",
-                        mode, submode));
+                                              mode,
+                                              submode));
                 }
             }
             previous_mode_ = custom;
@@ -304,8 +307,14 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         std::lock_guard<std::mutex> guard(state_mutex_);
         state_version_++;
         updateReadStats(msg);
-        vehicle_state_.servo.servo_raw[0] = servo.servo1_raw; vehicle_state_.servo.servo_raw[1] = servo.servo2_raw; vehicle_state_.servo.servo_raw[2] = servo.servo3_raw; vehicle_state_.servo.servo_raw[3] = servo.servo4_raw;
-        vehicle_state_.servo.servo_raw[4] = servo.servo5_raw; vehicle_state_.servo.servo_raw[5] = servo.servo6_raw; vehicle_state_.servo.servo_raw[6] = servo.servo7_raw; vehicle_state_.servo.servo_raw[7] = servo.servo8_raw;
+        vehicle_state_.servo.servo_raw[0] = servo.servo1_raw;
+        vehicle_state_.servo.servo_raw[1] = servo.servo2_raw;
+        vehicle_state_.servo.servo_raw[2] = servo.servo3_raw;
+        vehicle_state_.servo.servo_raw[3] = servo.servo4_raw;
+        vehicle_state_.servo.servo_raw[4] = servo.servo5_raw;
+        vehicle_state_.servo.servo_raw[5] = servo.servo6_raw;
+        vehicle_state_.servo.servo_raw[6] = servo.servo7_raw;
+        vehicle_state_.servo.servo_raw[7] = servo.servo8_raw;
         vehicle_state_.servo.servo_port = servo.port;
         vehicle_state_.servo.updated_on = servo.time_usec;
 
@@ -404,7 +413,8 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         MavLinkMessageInterval msgInt;
         msgInt.decode(msg);
         Utils::log(Utils::stringf("Received message interval for msg=%d, interval = %d",
-            static_cast<int>(msgInt.message_id), msgInt.interval_us));
+                                  static_cast<int>(msgInt.message_id),
+                                  msgInt.interval_us));
         break;
     }
     case MavLinkNamedValueInt::kMessageId: { // MAVLINK_MSG_ID_NAMED_VALUE_INT
@@ -429,14 +439,12 @@ void MavLinkVehicleImpl::handleMessage(std::shared_ptr<MavLinkConnection> connec
         vehicle_state_.controls.updated_on = value.time_usec;
         break;
     }
-    case MavLinkCommandAck::kMessageId:
-    {
+    case MavLinkCommandAck::kMessageId: {
         // This one is tricky, we can't do sendCommandAndWaitForAck in this case because it takes too long
         // but we do want to know when we get the ack.  So this is async ACK processing!
         MavLinkCommandAck ack;
         ack.decode(msg);
-        if (ack.command == MavCmdNavGuidedEnable::kCommandId)
-        {
+        if (ack.command == MavCmdNavGuidedEnable::kCommandId) {
             MAV_RESULT ackResult = static_cast<MAV_RESULT>(ack.result);
             if (ackResult == MAV_RESULT::MAV_RESULT_TEMPORARILY_REJECTED) {
                 Utils::log("### command MavCmdNavGuidedEnable result: MAV_RESULT_TEMPORARILY_REJECTED");
@@ -530,11 +538,11 @@ AsyncResult<bool> MavLinkVehicleImpl::waitForAltitude(float z, float dz, float d
 AsyncResult<bool> MavLinkVehicleImpl::land(float yaw, float lat, float lon, float altitude)
 {
     MavCmdNavLand cmd{};
-    cmd.AbortAlt = 1;
+    cmd.AbortAlt = 0; // use system default.
     cmd.YawAngle = yaw;
     cmd.Latitude = lat;
     cmd.Longitude = lon;
-    cmd.LandingAltitude = altitude;
+    cmd.Altitude = altitude;
     return sendCommandAndWaitForAck(cmd);
 }
 
@@ -556,7 +564,7 @@ bool MavLinkVehicleImpl::getRcSwitch(int channel, float threshold)
         int16_t position = vehicle_state_.rc.rc_channels_scaled[channel - 1];
         // RC channel 1 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
         // Convert it to a floating point number between -1 and 1.
-        float value = static_cast<float>(position) / 10000.0f; 
+        float value = static_cast<float>(position) / 10000.0f;
         if (threshold < 0) {
             return value < threshold;
         }
@@ -585,23 +593,22 @@ void MavLinkVehicleImpl::releaseControl()
     control_requested_ = false;
     control_request_sent_ = false;
     vehicle_state_.controls.offboard = false;
-    MavCmdNavGuidedEnable cmd{};
-    cmd.Enable = 0;
-    sendCommand(cmd);
+    setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
+            static_cast<int>(PX4_CUSTOM_MAIN_MODE_POSCTL),
+            0,
+            false);
 }
 
 void MavLinkVehicleImpl::checkOffboard()
 {
-    if (!control_requested_)
-    {
+    if (!control_requested_) {
         throw std::runtime_error("You must call requestControl first.");
     }
 
-    if (control_requested_ && !vehicle_state_.controls.offboard)
-    {
+    if (control_requested_ && !vehicle_state_.controls.offboard) {
         // Ok, now's the time to actually request it since the caller is about to send MavLinkSetPositionTargetGlobalInt, but
         // PX4 will reject this thinking 'offboard_control_loss_timeout' because we haven't actually sent any offboard messages
-        // yet.  I know the PX4 protocol is kind of weird.  So we prime the pump here with some dummy messages that tell the 
+        // yet.  I know the PX4 protocol is kind of weird.  So we prime the pump here with some dummy messages that tell the
         // drone to stay where it is, this will reset the 'offboard_control_loss_timeout', then we should be able to get control.
 
         // send a few to make sure it gets through...
@@ -609,15 +616,16 @@ void MavLinkVehicleImpl::checkOffboard()
             offboardIdle();
         }
 
-        Utils::log("MavLinkVehicleImpl::checkOffboard: sending MavCmdNavGuidedEnable \n");		
-        // now the command should succeed.
-        bool r = false;
-        MavCmdNavGuidedEnable cmd{};
-        cmd.Enable = 1;
+        Utils::log("MavLinkVehicleImpl::checkOffboard: sending MavCmdNavGuidedEnable \n");
         // Note: we can't wait for ACK here, I've tried it.  The ACK takes too long to get back to
         // us by which time the PX4 times out offboard mode!!
-        sendCommand(cmd);
+        setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
+                static_cast<int>(PX4_CUSTOM_MAIN_MODE_OFFBOARD),
+                0,
+                false);
         control_request_sent_ = true;
+        // assume this was successful, we'll find out if so in the next heartbeat.
+        vehicle_state_.controls.offboard = true;
     }
 }
 
@@ -626,7 +634,8 @@ uint32_t MavLinkVehicleImpl::getTimeStamp()
     return static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 }
 
-void MavLinkVehicleImpl::offboardIdle() {
+void MavLinkVehicleImpl::offboardIdle()
+{
     MavLinkSetPositionTargetLocalNed msg;
     msg.time_boot_ms = getTimeStamp();
     msg.target_system = getTargetSystemId();
@@ -634,11 +643,11 @@ void MavLinkVehicleImpl::offboardIdle() {
     msg.coordinate_frame = static_cast<uint8_t>(MAV_FRAME::MAV_FRAME_LOCAL_NED);
 
     msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_POSITION |
-        MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION |
-        MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_POSITION |
-        MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE |
-        MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE |
-        MAVLINK_MSG_SET_POSITION_TARGET_IDLE;
+                    MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION |
+                    MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_POSITION |
+                    MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE |
+                    MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE |
+                    MAVLINK_MSG_SET_POSITION_TARGET_IDLE;
 
     writeMessage(msg);
 }
@@ -648,7 +657,7 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
     checkOffboard();
 
     MavLinkSetPositionTargetGlobalInt msg;
-    msg.target_component = getTimeStamp();	
+    msg.target_component = getTimeStamp();
     msg.target_system = getTargetSystemId();
     msg.target_component = getTargetComponentId();
     msg.afx = msg.afy = msg.afz = 0;
@@ -656,21 +665,18 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
     msg.coordinate_frame = static_cast<uint8_t>(MAV_FRAME::MAV_FRAME_GLOBAL_INT);
 
     msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY |
-        MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
+                    MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
 
-    if (isYaw)
-    {
+    if (isYaw) {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;
     }
-
 
     msg.lat_int = static_cast<int>(lat * 1E7);
     msg.lon_int = static_cast<int>(lon * 1E7);
@@ -679,11 +685,13 @@ void MavLinkVehicleImpl::moveToGlobalPosition(float lat, float lon, float alt, b
     writeMessage(msg);
 }
 
-AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int customSubMode)
+AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int customSubMode, bool waitForAck)
 {
     // this mode change take precedence over offboard mode.
-    control_requested_ = false;
-    control_request_sent_ = false;
+    if (customMode != static_cast<int>(PX4_CUSTOM_MAIN_MODE_OFFBOARD)) {
+        control_requested_ = false;
+        control_request_sent_ = false;
+    }
 
     if ((vehicle_state_.mode & static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED)) != 0) {
         mode |= static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED); // must preserve this flag.
@@ -696,13 +704,19 @@ AsyncResult<bool> MavLinkVehicleImpl::setMode(int mode, int customMode, int cust
     cmd.Mode = static_cast<float>(mode);
     cmd.CustomMode = static_cast<float>(customMode);
     cmd.CustomSubmode = static_cast<float>(customSubMode);
-    return sendCommandAndWaitForAck(cmd);
+    if (waitForAck) {
+        return sendCommandAndWaitForAck(cmd);
+    }
+    else {
+        sendCommand(cmd);
+        return AsyncResult<bool>::Completed(true);
+    }
 }
 
-AsyncResult<bool>  MavLinkVehicleImpl::setPositionHoldMode()
+AsyncResult<bool> MavLinkVehicleImpl::setPositionHoldMode()
 {
     return setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
-        static_cast<int>(PX4_CUSTOM_MAIN_MODE_POSCTL));
+                   static_cast<int>(PX4_CUSTOM_MAIN_MODE_POSCTL));
 }
 
 AsyncResult<bool> MavLinkVehicleImpl::setStabilizedFlightMode()
@@ -723,17 +737,16 @@ AsyncResult<bool> MavLinkVehicleImpl::setHomePosition(float lat, float lon, floa
 AsyncResult<bool> MavLinkVehicleImpl::setMissionMode()
 {
     return setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) |
-        static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_AUTO_ENABLED),
-        static_cast<int>(PX4_CUSTOM_MAIN_MODE_AUTO),
-        static_cast<int>(PX4_CUSTOM_SUB_MODE_AUTO_MISSION));
+                       static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_AUTO_ENABLED),
+                   static_cast<int>(PX4_CUSTOM_MAIN_MODE_AUTO),
+                   static_cast<int>(PX4_CUSTOM_SUB_MODE_AUTO_MISSION));
 }
-
 
 AsyncResult<bool> MavLinkVehicleImpl::loiter()
 {
     return setMode(static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_CUSTOM_MODE_ENABLED),
-        static_cast<int>(PX4_CUSTOM_MAIN_MODE_AUTO),
-        static_cast<int>(PX4_CUSTOM_SUB_MODE_AUTO_LOITER));
+                   static_cast<int>(PX4_CUSTOM_MAIN_MODE_AUTO),
+                   static_cast<int>(PX4_CUSTOM_SUB_MODE_AUTO_LOITER));
 }
 
 bool MavLinkVehicleImpl::isLocalControlSupported()
@@ -756,24 +769,26 @@ void MavLinkVehicleImpl::moveByLocalVelocity(float vx, float vy, float vz, bool 
     msg.target_component = getTargetComponentId();
     msg.afx = msg.afy = msg.afz = 0;
     msg.x = msg.y = msg.z = 0;
-    msg.vx = vx; msg.vy = vy; msg.vz = vz;
+    msg.vx = vx;
+    msg.vy = vy;
+    msg.vz = vz;
     msg.coordinate_frame = static_cast<uint8_t>(MAV_FRAME::MAV_FRAME_LOCAL_NED);
 
     msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_POSITION |
-        MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
+                    MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
 
     if (isYaw) {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
-    } else {
+    }
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;
     }
 
     writeMessage(msg);
-
 }
 
 void MavLinkVehicleImpl::moveByLocalVelocityWithAltHold(float vx, float vy, float z, bool isYaw, float yawOrRate)
@@ -786,19 +801,20 @@ void MavLinkVehicleImpl::moveByLocalVelocityWithAltHold(float vx, float vy, floa
     msg.target_component = getTargetComponentId();
     msg.afx = msg.afy = msg.afz = 0;
     msg.x = msg.y = msg.z = z;
-    msg.vx = vx; msg.vy = vy; msg.vz = 0;
+    msg.vx = vx;
+    msg.vy = vy;
+    msg.vz = 0;
     msg.coordinate_frame = static_cast<uint8_t>(MAV_FRAME::MAV_FRAME_LOCAL_NED);
 
     msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_ALT_HOLD |
-        MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
+                    MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION;
 
     if (isYaw) {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;
@@ -817,18 +833,19 @@ void MavLinkVehicleImpl::moveToLocalPosition(float x, float y, float z, bool isY
     msg.target_component = getTargetComponentId();
     msg.afx = msg.afy = msg.afz = 0;
     msg.vx = msg.vy = msg.vz = 0;
-    msg.x = x; msg.y = y; msg.z = z;
+    msg.x = x;
+    msg.y = y;
+    msg.z = z;
     msg.coordinate_frame = static_cast<uint8_t>(MAV_FRAME::MAV_FRAME_LOCAL_NED);
 
-    msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION | 
-        MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY;
+    msg.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_ACCELERATION |
+                    MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_VELOCITY;
     if (isYaw) {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_RATE;
         msg.yaw = yawOrRate;
         msg.yaw_rate = 0;
     }
-    else
-    {
+    else {
         msg.type_mask |= MAVLINK_MSG_SET_POSITION_TARGET_IGNORE_YAW_ANGLE;
         msg.yaw = 0;
         msg.yaw_rate = yawOrRate;
@@ -855,7 +872,7 @@ void MavLinkVehicleImpl::moveByAttitude(float roll, float pitch, float yaw, floa
     msg.time_boot_ms = getTimeStamp();
     msg.target_system = getTargetSystemId();
     msg.target_component = getTargetComponentId();
-    
+
     float radRoll = roll * M_PIf / 180.0f;
     float radPitch = pitch * M_PIf / 180.0f;
     float radYaw = yaw * M_PIf / 180.0f;
@@ -863,18 +880,18 @@ void MavLinkVehicleImpl::moveByAttitude(float roll, float pitch, float yaw, floa
 
     // thrust must be between -1 and 1.
     thrust = static_cast<float>(fmax(-1.0f, fmin(1.0f, thrust)));
-    msg.thrust = thrust;	
+    msg.thrust = thrust;
     msg.body_roll_rate = rollRate * M_PIf / 180.0f;
     msg.body_pitch_rate = pitchRate * M_PIf / 180.0f;
     msg.body_yaw_rate = yawRate * M_PIf / 180.0f;
 
     const uint8_t kIgnoreBodyRollRateBit = 1; //  mask bit 1: body roll rate,
-    const uint8_t kIgnoreBodyPitchRateBit = 2; // bit 2: body pitch rate, 
-    const uint8_t kIgnoreBodyYawRateBit = 4; // bit 3: body yaw rate. 
+    const uint8_t kIgnoreBodyPitchRateBit = 2; // bit 2: body pitch rate,
+    const uint8_t kIgnoreBodyYawRateBit = 4; // bit 3: body yaw rate.
     const uint8_t kIgnoreBit4Reserved = 8; //  bit 4-bit 6: reserved
     const uint8_t kIgnoreBit5Reserved = 0x10;
     const uint8_t kIgnoreBit6Reserved = 0x20;
-    const uint8_t kIgnoreThrottleBit = 0x40; // bit 7: throttle, 
+    const uint8_t kIgnoreThrottleBit = 0x40; // bit 7: throttle,
     const uint8_t kIgnoreAttitudeBit = 0x80; // bit 8: attitude
 
     msg.type_mask = 0;
@@ -904,7 +921,7 @@ const VehicleState& MavLinkVehicleImpl::getVehicleState()
 int MavLinkVehicleImpl::getVehicleStateVersion()
 {
     std::lock_guard<std::mutex> guard(state_mutex_);
-    return state_version_; 
+    return state_version_;
 }
 
 void MavLinkVehicleImpl::updateReadStats(const MavLinkMessage& msg)

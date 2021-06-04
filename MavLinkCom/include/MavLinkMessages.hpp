@@ -10,7 +10,8 @@
 namespace mavlinkcom
 {
 
-enum class MavLinkMessageIds {
+enum class MavLinkMessageIds
+{
     MAVLINK_MSG_ID_HEARTBEAT = 0,
     MAVLINK_MSG_ID_SYS_STATUS = 1,
     MAVLINK_MSG_ID_SYSTEM_TIME = 2,
@@ -20,6 +21,7 @@ enum class MavLinkMessageIds {
     MAVLINK_MSG_ID_AUTH_KEY = 7,
     MAVLINK_MSG_ID_LINK_NODE_STATUS = 8,
     MAVLINK_MSG_ID_SET_MODE = 11,
+    MAVLINK_MSG_ID_PARAM_ACK_TRANSACTION = 19,
     MAVLINK_MSG_ID_PARAM_REQUEST_READ = 20,
     MAVLINK_MSG_ID_PARAM_REQUEST_LIST = 21,
     MAVLINK_MSG_ID_PARAM_VALUE = 22,
@@ -69,6 +71,7 @@ enum class MavLinkMessageIds {
     MAVLINK_MSG_ID_COMMAND_INT = 75,
     MAVLINK_MSG_ID_COMMAND_LONG = 76,
     MAVLINK_MSG_ID_COMMAND_ACK = 77,
+    MAVLINK_MSG_ID_COMMAND_CANCEL = 80,
     MAVLINK_MSG_ID_MANUAL_SETPOINT = 81,
     MAVLINK_MSG_ID_SET_ATTITUDE_TARGET = 82,
     MAVLINK_MSG_ID_ATTITUDE_TARGET = 83,
@@ -153,14 +156,15 @@ enum class MavLinkMessageIds {
     MAVLINK_MSG_ID_DEBUG = 254
 };
 // Micro air vehicle / autopilot classes. This identifies the individual model.
-enum class MAV_AUTOPILOT {
+enum class MAV_AUTOPILOT
+{
     // Generic autopilot, full support for everything
     MAV_AUTOPILOT_GENERIC = 0,
     // Reserved for future use.
     MAV_AUTOPILOT_RESERVED = 1,
     // SLUGS autopilot, http://slugsuav.soe.ucsc.edu
     MAV_AUTOPILOT_SLUGS = 2,
-    // ArduPilot - Plane/Copter/Rover/Sub/Tracker, http://ardupilot.org
+    // ArduPilot - Plane/Copter/Rover/Sub/Tracker, https://ardupilot.org
     MAV_AUTOPILOT_ARDUPILOTMEGA = 3,
     // OpenPilot, http://openpilot.org
     MAV_AUTOPILOT_OPENPILOT = 4,
@@ -200,7 +204,8 @@ enum class MAV_AUTOPILOT {
 // the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All
 // other components must report a value appropriate for their type (e.g. a camera
 // must use MAV_TYPE_CAMERA).
-enum class MAV_TYPE {
+enum class MAV_TYPE
+{
     // Generic micro air vehicle
     MAV_TYPE_GENERIC = 0,
     // Fixed wing aircraft.
@@ -268,13 +273,16 @@ enum class MAV_TYPE {
     // FLARM collision avoidance system
     MAV_TYPE_FLARM = 32,
     // Servo
-    MAV_TYPE_SERVO = 33
+    MAV_TYPE_SERVO = 33,
+    // Open Drone ID. See https://mavlink.io/en/services/opendroneid.html.
+    MAV_TYPE_ODID = 34
 };
 
 // These values define the type of firmware release. These values indicate the first
 // version or release of this type. For example the first alpha release would be 64,
 // the second would be 65.
-enum class FIRMWARE_VERSION_TYPE {
+enum class FIRMWARE_VERSION_TYPE
+{
     // development release
     FIRMWARE_VERSION_TYPE_DEV = 0,
     // alpha release
@@ -288,7 +296,8 @@ enum class FIRMWARE_VERSION_TYPE {
 };
 
 // Flags to report failure cases over the high latency telemtry.
-enum class HL_FAILURE_FLAG {
+enum class HL_FAILURE_FLAG
+{
     // GPS failure.
     HL_FAILURE_FLAG_GPS = 1,
     // Differential pressure sensor failure.
@@ -320,7 +329,8 @@ enum class HL_FAILURE_FLAG {
 };
 
 // These flags encode the MAV mode.
-enum class MAV_MODE_FLAG {
+enum class MAV_MODE_FLAG
+{
     // 0b10000000 MAV safety set to armed. Motors are enabled / running / can start.
     // Ready to fly. Additional note: this flag is to be ignore when sent in the command
     // MAV_CMD_DO_SET_MODE and MAV_CMD_COMPONENT_ARM_DISARM shall be used instead.
@@ -350,7 +360,8 @@ enum class MAV_MODE_FLAG {
 // be used to read the value of a flag bit by combining the base_mode variable with
 // AND with the flag position value. The result will be either 0 or 1, depending on
 // if the flag is set or not.
-enum class MAV_MODE_FLAG_DECODE_POSITION {
+enum class MAV_MODE_FLAG_DECODE_POSITION
+{
     // First bit: 10000000
     MAV_MODE_FLAG_DECODE_POSITION_SAFETY = 128,
     // Second bit: 01000000
@@ -370,7 +381,8 @@ enum class MAV_MODE_FLAG_DECODE_POSITION {
 };
 
 // Actions that may be specified in MAV_CMD_OVERRIDE_GOTO to override mission execution.
-enum class MAV_GOTO {
+enum class MAV_GOTO
+{
     // Hold at the current position.
     MAV_GOTO_DO_HOLD = 0,
     // Continue with the next item in mission execution.
@@ -384,7 +396,8 @@ enum class MAV_GOTO {
 // These defines are predefined OR-combined mode flags. There is no need to use values
 // from this enum, but it simplifies the use of the mode flags. Note that manual input
 // is enabled in all modes as a safety override.
-enum class MAV_MODE {
+enum class MAV_MODE
+{
     // System is not ready to fly, booting, calibrating, etc. No flag is set.
     MAV_MODE_PREFLIGHT = 0,
     // System is allowed to be active, under assisted RC control.
@@ -413,7 +426,8 @@ enum class MAV_MODE {
     MAV_MODE_TEST_ARMED = 194
 };
 
-enum class MAV_STATE {
+enum class MAV_STATE
+{
     // Uninitialized system, state is unknown.
     MAV_STATE_UNINIT = 0,
     // System is booting up.
@@ -444,7 +458,8 @@ enum class MAV_STATE {
 // that can have multiple instances (e.g. cameras, servos etc.) should be allocated
 // sequential values. An appropriate number of values should be left free after these
 // components to allow the number of instances to be expanded.
-enum class MAV_COMPONENT {
+enum class MAV_COMPONENT
+{
     // Target id (target_component) used to broadcast messages to all components of
     // the receiving system. Components should attempt to process messages with this
     // component ID and forward to components on any other interfaces. Note: This
@@ -500,7 +515,7 @@ enum class MAV_COMPONENT {
     MAV_COMP_ID_USER15 = 39,
     // Id for a component on privately managed MAVLink network. Can be used for any
     // purpose but may not be published by components outside of the private network.
-    MAV_COMP_ID_USE16 = 40,
+    MAV_COMP_ID_USER16 = 40,
     // Id for a component on privately managed MAVLink network. Can be used for any
     // purpose but may not be published by components outside of the private network.
     MAV_COMP_ID_USER17 = 41,
@@ -582,9 +597,9 @@ enum class MAV_COMPONENT {
     // Id for a component on privately managed MAVLink network. Can be used for any
     // purpose but may not be published by components outside of the private network.
     MAV_COMP_ID_USER43 = 67,
-    // Id for a component on privately managed MAVLink network. Can be used for any
-    // purpose but may not be published by components outside of the private network.
-    MAV_COMP_ID_USER44 = 68,
+    // Telemetry radio (e.g. SiK radio, or other component that emits RADIO_STATUS
+    // messages).
+    MAV_COMP_ID_TELEMETRY_RADIO = 68,
     // Id for a component on privately managed MAVLink network. Can be used for any
     // purpose but may not be published by components outside of the private network.
     MAV_COMP_ID_USER45 = 69,
@@ -746,6 +761,10 @@ enum class MAV_COMPONENT {
     // Component that can generate/supply a mission flight plan (e.g. GCS or developer
     // API).
     MAV_COMP_ID_MISSIONPLANNER = 190,
+    // Component that lives on the onboard computer (companion computer) and has some
+    // generic functionalities, such as settings system parameters and monitoring
+    // the status of some processes that don't directly speak mavlink and so on.
+    MAV_COMP_ID_ONBOARD_COMPUTER = 191,
     // Component that finds an optimal path between points based on a certain constraint
     // (e.g. minimum snap, shortest path, cost, etc.).
     MAV_COMP_ID_PATHPLANNER = 195,
@@ -753,6 +772,8 @@ enum class MAV_COMPONENT {
     MAV_COMP_ID_OBSTACLE_AVOIDANCE = 196,
     // Component that provides position estimates using VIO techniques.
     MAV_COMP_ID_VISUAL_INERTIAL_ODOMETRY = 197,
+    // Component that manages pairing of vehicle and GCS.
+    MAV_COMP_ID_PAIRING_MANAGER = 198,
     // Inertial Measurement Unit (IMU) #1.
     MAV_COMP_ID_IMU = 200,
     // Inertial Measurement Unit (IMU) #2.
@@ -763,6 +784,12 @@ enum class MAV_COMPONENT {
     MAV_COMP_ID_GPS = 220,
     // GPS #2.
     MAV_COMP_ID_GPS2 = 221,
+    // Open Drone ID transmitter/receiver (Bluetooth/WiFi/Internet).
+    MAV_COMP_ID_ODID_TXRX_1 = 236,
+    // Open Drone ID transmitter/receiver (Bluetooth/WiFi/Internet).
+    MAV_COMP_ID_ODID_TXRX_2 = 237,
+    // Open Drone ID transmitter/receiver (Bluetooth/WiFi/Internet).
+    MAV_COMP_ID_ODID_TXRX_3 = 238,
     // Component to bridge MAVLink to UDP (i.e. from a UART).
     MAV_COMP_ID_UDP_BRIDGE = 240,
     // Component to bridge to UART (i.e. from UDP).
@@ -774,7 +801,8 @@ enum class MAV_COMPONENT {
 };
 
 // These encode the sensors whose status is sent as part of the SYS_STATUS message.
-enum class MAV_SYS_STATUS_SENSOR {
+enum class MAV_SYS_STATUS_SENSOR
+{
     // 0x01 3D gyro
     MAV_SYS_STATUS_SENSOR_3D_GYRO = 1,
     // 0x02 3D accelerometer
@@ -830,15 +858,20 @@ enum class MAV_SYS_STATUS_SENSOR {
     // 0x4000000 Proximity
     MAV_SYS_STATUS_SENSOR_PROXIMITY = 67108864,
     // 0x8000000 Satellite Communication
-    MAV_SYS_STATUS_SENSOR_SATCOM = 134217728
+    MAV_SYS_STATUS_SENSOR_SATCOM = 134217728,
+    // 0x10000000 pre-arm check status. Always healthy when armed
+    MAV_SYS_STATUS_PREARM_CHECK = 268435456,
+    // 0x20000000 Avoidance/collision prevention
+    MAV_SYS_STATUS_OBSTACLE_AVOIDANCE = 536870912
 };
 
-enum class MAV_FRAME {
+enum class MAV_FRAME
+{
     // Global (WGS84) coordinate frame + MSL altitude. First value / x: latitude,
     // second value / y: longitude, third value / z: positive altitude over mean sea
     // level (MSL).
     MAV_FRAME_GLOBAL = 0,
-    // Local coordinate frame, Z-down (x: north, y: east, z: down).
+    // Local coordinate frame, Z-down (x: North, y: East, z: Down).
     MAV_FRAME_LOCAL_NED = 1,
     // NOT a coordinate frame, indicates a mission command.
     MAV_FRAME_MISSION = 2,
@@ -846,7 +879,7 @@ enum class MAV_FRAME {
     // value / x: latitude, second value / y: longitude, third value / z: positive
     // altitude with 0 being at the altitude of the home location.
     MAV_FRAME_GLOBAL_RELATIVE_ALT = 3,
-    // Local coordinate frame, Z-up (x: east, y: north, z: up).
+    // Local coordinate frame, Z-up (x: East, y: North, z: Up).
     MAV_FRAME_LOCAL_ENU = 4,
     // Global (WGS84) coordinate frame (scaled) + MSL altitude. First value / x: latitude
     // in degrees*1.0e-7, second value / y: longitude in degrees*1.0e-7, third value
@@ -877,28 +910,29 @@ enum class MAV_FRAME {
     // longitude in degrees*10e-7, third value / z: positive altitude in meters with
     // 0 being at ground level in terrain model.
     MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11,
-    // Body fixed frame of reference, Z-down (x: forward, y: right, z: down).
+    // Body fixed frame of reference, Z-down (x: Forward, y: Right, z: Down).
     MAV_FRAME_BODY_FRD = 12,
-    // Body fixed frame of reference, Z-up (x: forward, y: left, z: up).
-    MAV_FRAME_BODY_FLU = 13,
-    // Odometry local coordinate frame of data given by a motion capture system, Z-down
-    // (x: north, y: east, z: down).
-    MAV_FRAME_MOCAP_NED = 14,
-    // Odometry local coordinate frame of data given by a motion capture system, Z-up
-    // (x: east, y: north, z: up).
-    MAV_FRAME_MOCAP_ENU = 15,
-    // Odometry local coordinate frame of data given by a vision estimation system,
-    // Z-down (x: north, y: east, z: down).
-    MAV_FRAME_VISION_NED = 16,
-    // Odometry local coordinate frame of data given by a vision estimation system,
-    // Z-up (x: east, y: north, z: up).
-    MAV_FRAME_VISION_ENU = 17,
-    // Odometry local coordinate frame of data given by an estimator running onboard
-    // the vehicle, Z-down (x: north, y: east, z: down).
-    MAV_FRAME_ESTIM_NED = 18,
-    // Odometry local coordinate frame of data given by an estimator running onboard
-    // the vehicle, Z-up (x: east, y: noth, z: up).
-    MAV_FRAME_ESTIM_ENU = 19,
+    // MAV_FRAME_BODY_FLU - Body fixed frame of reference, Z-up (x: Forward, y: Left,
+    // z: Up).
+    MAV_FRAME_RESERVED_13 = 13,
+    // MAV_FRAME_MOCAP_NED - Odometry local coordinate frame of data given by a motion
+    // capture system, Z-down (x: North, y: East, z: Down).
+    MAV_FRAME_RESERVED_14 = 14,
+    // MAV_FRAME_MOCAP_ENU - Odometry local coordinate frame of data given by a motion
+    // capture system, Z-up (x: East, y: North, z: Up).
+    MAV_FRAME_RESERVED_15 = 15,
+    // MAV_FRAME_VISION_NED - Odometry local coordinate frame of data given by a vision
+    // estimation system, Z-down (x: North, y: East, z: Down).
+    MAV_FRAME_RESERVED_16 = 16,
+    // MAV_FRAME_VISION_ENU - Odometry local coordinate frame of data given by a vision
+    // estimation system, Z-up (x: East, y: North, z: Up).
+    MAV_FRAME_RESERVED_17 = 17,
+    // MAV_FRAME_ESTIM_NED - Odometry local coordinate frame of data given by an estimator
+    // running onboard the vehicle, Z-down (x: North, y: East, z: Down).
+    MAV_FRAME_RESERVED_18 = 18,
+    // MAV_FRAME_ESTIM_ENU - Odometry local coordinate frame of data given by an estimator
+    // running onboard the vehicle, Z-up (x: East, y: North, z: Up).
+    MAV_FRAME_RESERVED_19 = 19,
     // Forward, Right, Down coordinate frame. This is a local frame with Z-down and
     // arbitrary F/R alignment (i.e. not aligned with NED/earth frame).
     MAV_FRAME_LOCAL_FRD = 20,
@@ -907,7 +941,8 @@ enum class MAV_FRAME {
     MAV_FRAME_LOCAL_FLU = 21
 };
 
-enum class MAVLINK_DATA_STREAM_TYPE {
+enum class MAVLINK_DATA_STREAM_TYPE
+{
     MAVLINK_DATA_STREAM_IMG_JPEG = 0,
     MAVLINK_DATA_STREAM_IMG_BMP,
     MAVLINK_DATA_STREAM_IMG_RAW8U,
@@ -916,7 +951,8 @@ enum class MAVLINK_DATA_STREAM_TYPE {
     MAVLINK_DATA_STREAM_IMG_PNG
 };
 
-enum class FENCE_ACTION {
+enum class FENCE_ACTION
+{
     // Disable fenced mode
     FENCE_ACTION_NONE = 0,
     // Switched to guided mode to return point (fence point 0)
@@ -930,7 +966,8 @@ enum class FENCE_ACTION {
     FENCE_ACTION_RTL = 4
 };
 
-enum class FENCE_BREACH {
+enum class FENCE_BREACH
+{
     // No last fence breach
     FENCE_BREACH_NONE = 0,
     // Breached minimum altitude
@@ -942,15 +979,20 @@ enum class FENCE_BREACH {
 };
 
 // Actions being taken to mitigate/prevent fence breach
-enum class FENCE_MITIGATE {
+enum class FENCE_MITIGATE
+{
+    // Unknown
+    FENCE_MITIGATE_UNKNOWN = 0,
     // No actions being taken
-    FENCE_MITIGATE_NONE = 0,
+    FENCE_MITIGATE_NONE = 1,
     // Velocity limiting active to prevent breach
-    FENCE_MITIGATE_VEL_LIMIT = 1
+    FENCE_MITIGATE_VEL_LIMIT = 2
 };
 
-// Enumeration of possible mount operation modes
-enum class MAV_MOUNT_MODE {
+// Enumeration of possible mount operation modes. This message is used by obsolete/deprecated
+// gimbal messages.
+enum class MAV_MOUNT_MODE
+{
     // Load and keep safe position (Roll,Pitch,Yaw) from permant memory and stop stabilization
     MAV_MOUNT_MODE_RETRACT = 0,
     // Load and keep neutral position (Roll,Pitch,Yaw) from permanent memory.
@@ -960,11 +1002,165 @@ enum class MAV_MOUNT_MODE {
     // Load neutral position and start RC Roll,Pitch,Yaw control with stabilization
     MAV_MOUNT_MODE_RC_TARGETING = 3,
     // Load neutral position and start to point to Lat,Lon,Alt
-    MAV_MOUNT_MODE_GPS_POINT = 4
+    MAV_MOUNT_MODE_GPS_POINT = 4,
+    // Gimbal tracks system with specified system ID
+    MAV_MOUNT_MODE_SYSID_TARGET = 5
+};
+
+// Gimbal device (low level) capability flags (bitmap)
+enum class GIMBAL_DEVICE_CAP_FLAGS
+{
+    // Gimbal device supports a retracted position
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT = 1,
+    // Gimbal device supports a horizontal, forward looking position, stabilized
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_NEUTRAL = 2,
+    // Gimbal device supports rotating around roll axis.
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_AXIS = 4,
+    // Gimbal device supports to follow a roll angle relative to the vehicle
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_FOLLOW = 8,
+    // Gimbal device supports locking to an roll angle (generally that's the default
+    // with roll stabilized)
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_LOCK = 16,
+    // Gimbal device supports rotating around pitch axis.
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_AXIS = 32,
+    // Gimbal device supports to follow a pitch angle relative to the vehicle
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_FOLLOW = 64,
+    // Gimbal device supports locking to an pitch angle (generally that's the default
+    // with pitch stabilized)
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_LOCK = 128,
+    // Gimbal device supports rotating around yaw axis.
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_AXIS = 256,
+    // Gimbal device supports to follow a yaw angle relative to the vehicle (generally
+    // that's the default)
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_FOLLOW = 512,
+    // Gimbal device supports locking to an absolute heading (often this is an option
+    // available)
+    GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_LOCK = 1024,
+    // Gimbal device supports yawing/panning infinetely (e.g. using slip disk).
+    GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_INFINITE_YAW = 2048
+};
+
+// Gimbal manager high level capability flags (bitmap). The first 16 bits are identical
+// to the GIMBAL_DEVICE_CAP_FLAGS which are identical with GIMBAL_DEVICE_FLAGS. However,
+// the gimbal manager does not need to copy the flags from the gimbal but can also
+// enhance the capabilities and thus add flags.
+enum class GIMBAL_MANAGER_CAP_FLAGS
+{
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_RETRACT.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_RETRACT = 1,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_NEUTRAL.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_NEUTRAL = 2,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_AXIS.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_ROLL_AXIS = 4,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_FOLLOW.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_ROLL_FOLLOW = 8,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_ROLL_LOCK.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_ROLL_LOCK = 16,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_AXIS.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_PITCH_AXIS = 32,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_FOLLOW.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_PITCH_FOLLOW = 64,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_PITCH_LOCK.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_PITCH_LOCK = 128,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_AXIS.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_YAW_AXIS = 256,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_FOLLOW.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_YAW_FOLLOW = 512,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_HAS_YAW_LOCK.
+    GIMBAL_MANAGER_CAP_FLAGS_HAS_YAW_LOCK = 1024,
+    // Based on GIMBAL_DEVICE_CAP_FLAGS_SUPPORTS_INFINITE_YAW.
+    GIMBAL_MANAGER_CAP_FLAGS_SUPPORTS_INFINITE_YAW = 2048,
+    // Gimbal manager supports to point to a local position.
+    GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_LOCAL = 65536,
+    // Gimbal manager supports to point to a global latitude, longitude, altitude
+    // position.
+    GIMBAL_MANAGER_CAP_FLAGS_CAN_POINT_LOCATION_GLOBAL = 131072,
+    // Gimbal manager supports pitching and yawing at an angular velocity scaled by
+    // focal length (the more zoomed in, the slower the movement).
+    GIMBAL_MANAGER_CAP_FLAGS_SUPPORTS_FOCAL_LENGTH_SCALE = 1048576,
+    // Gimbal manager supports nudging when pointing to a location or tracking.
+    GIMBAL_MANAGER_CAP_FLAGS_SUPPORTS_NUDGING = 2097152,
+    // Gimbal manager supports overriding when pointing to a location or tracking.
+    GIMBAL_MANAGER_CAP_FLAGS_SUPPORTS_OVERRIDE = 4194304
+};
+
+// Flags for gimbal device (lower level) operation.
+enum class GIMBAL_DEVICE_FLAGS
+{
+    // Set to retracted safe position (no stabilization), takes presedence over all
+    // other flags.
+    GIMBAL_DEVICE_FLAGS_RETRACT = 1,
+    // Set to neutral position (horizontal, forward looking, with stabiliziation),
+    // takes presedence over all other flags except RETRACT.
+    GIMBAL_DEVICE_FLAGS_NEUTRAL = 2,
+    // Lock roll angle to absolute angle relative to horizon (not relative to drone).
+    // This is generally the default with a stabilizing gimbal.
+    GIMBAL_DEVICE_FLAGS_ROLL_LOCK = 4,
+    // Lock pitch angle to absolute angle relative to horizon (not relative to drone).
+    // This is generally the default.
+    GIMBAL_DEVICE_FLAGS_PITCH_LOCK = 8,
+    // Lock yaw angle to absolute angle relative to North (not relative to drone).
+    // If this flag is set, the quaternion is in the Earth frame with the x-axis pointing
+    // North (yaw absolute). If this flag is not set, the quaternion frame is in the
+    // Earth frame rotated so that the x-axis is pointing forward (yaw relative to
+    // vehicle).
+    GIMBAL_DEVICE_FLAGS_YAW_LOCK = 16
+};
+
+// Flags for high level gimbal manager operation The first 16 bytes are identical
+// to the GIMBAL_DEVICE_FLAGS.
+enum class GIMBAL_MANAGER_FLAGS
+{
+    // Based on GIMBAL_DEVICE_FLAGS_RETRACT
+    GIMBAL_MANAGER_FLAGS_RETRACT = 1,
+    // Based on GIMBAL_DEVICE_FLAGS_NEUTRAL
+    GIMBAL_MANAGER_FLAGS_NEUTRAL = 2,
+    // Based on GIMBAL_DEVICE_FLAGS_ROLL_LOCK
+    GIMBAL_MANAGER_FLAGS_ROLL_LOCK = 4,
+    // Based on GIMBAL_DEVICE_FLAGS_PITCH_LOCK
+    GIMBAL_MANAGER_FLAGS_PITCH_LOCK = 8,
+    // Based on GIMBAL_DEVICE_FLAGS_YAW_LOCK
+    GIMBAL_MANAGER_FLAGS_YAW_LOCK = 16,
+    // Scale angular velocity relative to focal length. This means the gimbal moves
+    // slower if it is zoomed in.
+    GIMBAL_MANAGER_FLAGS_ANGULAR_VELOCITY_RELATIVE_TO_FOCAL_LENGTH = 1048576,
+    // Interpret attitude control on top of pointing to a location or tracking. If
+    // this flag is set, the quaternion is relative to the existing tracking angle.
+    GIMBAL_MANAGER_FLAGS_NUDGE = 2097152,
+    // Completely override pointing to a location or tracking. If this flag is set,
+    // the quaternion is (as usual) according to GIMBAL_MANAGER_FLAGS_YAW_LOCK.
+    GIMBAL_MANAGER_FLAGS_OVERRIDE = 4194304,
+    // This flag can be set to give up control previously set using MAV_CMD_DO_GIMBAL_MANAGER_ATTITUDE.
+    // This flag must not be combined with other flags.
+    GIMBAL_MANAGER_FLAGS_NONE = 8388608
+};
+
+// Gimbal device (low level) error flags (bitmap, 0 means no error)
+enum class GIMBAL_DEVICE_ERROR_FLAGS
+{
+    // Gimbal device is limited by hardware roll limit.
+    GIMBAL_DEVICE_ERROR_FLAGS_AT_ROLL_LIMIT = 1,
+    // Gimbal device is limited by hardware pitch limit.
+    GIMBAL_DEVICE_ERROR_FLAGS_AT_PITCH_LIMIT = 2,
+    // Gimbal device is limited by hardware yaw limit.
+    GIMBAL_DEVICE_ERROR_FLAGS_AT_YAW_LIMIT = 4,
+    // There is an error with the gimbal encoders.
+    GIMBAL_DEVICE_ERROR_FLAGS_ENCODER_ERROR = 8,
+    // There is an error with the gimbal power source.
+    GIMBAL_DEVICE_ERROR_FLAGS_POWER_ERROR = 16,
+    // There is an error with the gimbal motor's.
+    GIMBAL_DEVICE_ERROR_FLAGS_MOTOR_ERROR = 32,
+    // There is an error with the gimbal's software.
+    GIMBAL_DEVICE_ERROR_FLAGS_SOFTWARE_ERROR = 64,
+    // There is an error with the gimbal's communication.
+    GIMBAL_DEVICE_ERROR_FLAGS_COMMS_ERROR = 128,
+    // Gimbal is currently calibrating.
+    GIMBAL_DEVICE_ERROR_FLAGS_CALIBRATION_RUNNING = 256
 };
 
 // Generalized UAVCAN node health
-enum class UAVCAN_NODE_HEALTH {
+enum class UAVCAN_NODE_HEALTH
+{
     // The node is functioning properly.
     UAVCAN_NODE_HEALTH_OK = 0,
     // A critical parameter went out of range or the node has encountered a minor
@@ -977,7 +1173,8 @@ enum class UAVCAN_NODE_HEALTH {
 };
 
 // Generalized UAVCAN node mode
-enum class UAVCAN_NODE_MODE {
+enum class UAVCAN_NODE_MODE
+{
     // The node is performing its primary functions.
     UAVCAN_NODE_MODE_OPERATIONAL = 0,
     // The node is initializing; this mode is entered immediately after startup.
@@ -990,8 +1187,47 @@ enum class UAVCAN_NODE_MODE {
     UAVCAN_NODE_MODE_OFFLINE = 7
 };
 
+// Indicates the ESC connection type.
+enum class ESC_CONNECTION_TYPE
+{
+    // Traditional PPM ESC.
+    ESC_CONNECTION_TYPE_PPM = 0,
+    // Serial Bus connected ESC.
+    ESC_CONNECTION_TYPE_SERIAL = 1,
+    // One Shot PPM ESC.
+    ESC_CONNECTION_TYPE_ONESHOT = 2,
+    // I2C ESC.
+    ESC_CONNECTION_TYPE_I2C = 3,
+    // CAN-Bus ESC.
+    ESC_CONNECTION_TYPE_CAN = 4,
+    // DShot ESC.
+    ESC_CONNECTION_TYPE_DSHOT = 5
+};
+
+// Flags to report ESC failures.
+enum class ESC_FAILURE_FLAGS
+{
+    // No ESC failure.
+    ESC_FAILURE_NONE = 0,
+    // Over current failure.
+    ESC_FAILURE_OVER_CURRENT = 1,
+    // Over voltage failure.
+    ESC_FAILURE_OVER_VOLTAGE = 2,
+    // Over temperature failure.
+    ESC_FAILURE_OVER_TEMPERATURE = 4,
+    // Over RPM failure.
+    ESC_FAILURE_OVER_RPM = 8,
+    // Inconsistent command failure i.e. out of bounds.
+    ESC_FAILURE_INCONSISTENT_CMD = 16,
+    // Motor stuck failure.
+    ESC_FAILURE_MOTOR_STUCK = 32,
+    // Generic ESC failure.
+    ESC_FAILURE_GENERIC = 64
+};
+
 // Flags to indicate the status of camera storage.
-enum class STORAGE_STATUS {
+enum class STORAGE_STATUS
+{
     // Storage is missing (no microSD card loaded for example.)
     STORAGE_STATUS_EMPTY = 0,
     // Storage present but unformatted.
@@ -1003,27 +1239,140 @@ enum class STORAGE_STATUS {
     STORAGE_STATUS_NOT_SUPPORTED = 3
 };
 
+// Yaw behaviour during orbit flight.
+enum class ORBIT_YAW_BEHAVIOUR
+{
+    // Vehicle front points to the center (default).
+    ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TO_CIRCLE_CENTER = 0,
+    // Vehicle front holds heading when message received.
+    ORBIT_YAW_BEHAVIOUR_HOLD_INITIAL_HEADING = 1,
+    // Yaw uncontrolled.
+    ORBIT_YAW_BEHAVIOUR_UNCONTROLLED = 2,
+    // Vehicle front follows flight path (tangential to circle).
+    ORBIT_YAW_BEHAVIOUR_HOLD_FRONT_TANGENT_TO_CIRCLE = 3,
+    // Yaw controlled by RC input.
+    ORBIT_YAW_BEHAVIOUR_RC_CONTROLLED = 4
+};
+
+// Possible responses from a WIFI_CONFIG_AP message.
+enum class WIFI_CONFIG_AP_RESPONSE
+{
+    // Undefined response. Likely an indicative of a system that doesn't support this
+    // request.
+    WIFI_CONFIG_AP_RESPONSE_UNDEFINED = 0,
+    // Changes accepted.
+    WIFI_CONFIG_AP_RESPONSE_ACCEPTED = 1,
+    // Changes rejected.
+    WIFI_CONFIG_AP_RESPONSE_REJECTED = 2,
+    // Invalid Mode.
+    WIFI_CONFIG_AP_RESPONSE_MODE_ERROR = 3,
+    // Invalid SSID.
+    WIFI_CONFIG_AP_RESPONSE_SSID_ERROR = 4,
+    // Invalid Password.
+    WIFI_CONFIG_AP_RESPONSE_PASSWORD_ERROR = 5
+};
+
+// Possible responses from a CELLULAR_CONFIG message.
+enum class CELLULAR_CONFIG_RESPONSE
+{
+    // Changes accepted.
+    CELLULAR_CONFIG_RESPONSE_ACCEPTED = 0,
+    // Invalid APN.
+    CELLULAR_CONFIG_RESPONSE_APN_ERROR = 1,
+    // Invalid PIN.
+    CELLULAR_CONFIG_RESPONSE_PIN_ERROR = 2,
+    // Changes rejected.
+    CELLULAR_CONFIG_RESPONSE_REJECTED = 3,
+    // PUK is required to unblock SIM card.
+    CELLULAR_CONFIG_BLOCKED_PUK_REQUIRED = 4
+};
+
+// WiFi Mode.
+enum class WIFI_CONFIG_AP_MODE
+{
+    // WiFi mode is undefined.
+    WIFI_CONFIG_AP_MODE_UNDEFINED = 0,
+    // WiFi configured as an access point.
+    WIFI_CONFIG_AP_MODE_AP = 1,
+    // WiFi configured as a station connected to an existing local WiFi network.
+    WIFI_CONFIG_AP_MODE_STATION = 2,
+    // WiFi disabled.
+    WIFI_CONFIG_AP_MODE_DISABLED = 3
+};
+
+// Possible values for COMPONENT_INFORMATION.comp_metadata_type.
+enum class COMP_METADATA_TYPE
+{
+    // Version information which also includes information on other optional supported
+    // COMP_METADATA_TYPE's. Must be supported. Only downloadable from vehicle.
+    COMP_METADATA_TYPE_VERSION = 0,
+    // Parameter meta data.
+    COMP_METADATA_TYPE_PARAMETER = 1
+};
+
+// Possible responses from a PARAM_START_TRANSACTION and PARAM_COMMIT_TRANSACTION
+// messages.
+enum class PARAM_TRANSACTION_RESPONSE
+{
+    // Transaction accepted.
+    PARAM_TRANSACTION_RESPONSE_ACCEPTED = 0,
+    // Transaction failed.
+    PARAM_TRANSACTION_RESPONSE_FAILED = 1,
+    // Transaction unsupported.
+    PARAM_TRANSACTION_RESPONSE_UNSUPPORTED = 2,
+    // Transaction in progress.
+    PARAM_TRANSACTION_RESPONSE_INPROGRESS = 3
+};
+
+// Possible transport layers to set and get parameters via mavlink during a parameter
+// transaction.
+enum class PARAM_TRANSACTION_TRANSPORT
+{
+    // Transaction over param transport.
+    PARAM_TRANSACTION_TRANSPORT_PARAM = 0,
+    // Transaction over param_ext transport.
+    PARAM_TRANSACTION_TRANSPORT_PARAM_EXT = 1
+};
+
+// Possible parameter transaction action during a commit.
+enum class PARAM_TRANSACTION_ACTION
+{
+    // Commit the current parameter transaction.
+    PARAM_TRANSACTION_ACTION_COMMIT = 0,
+    // Cancel the current parameter transaction.
+    PARAM_TRANSACTION_ACTION_CANCEL = 1
+};
+
 // Commands to be executed by the MAV. They can be executed on user request, or as
 // part of a mission script. If the action is used in a mission, the parameter mapping
 // to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param
 // 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424
 // is for commercial aircraft: A data format how to interpret waypoint/mission data.
-// See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the
-// structure of the MAV_CMD entries
-enum class MAV_CMD {
+// NaN and INT32_MAX may be used in float/integer params (respectively) to indicate
+// optional/default values (e.g. to use the component's current yaw or latitude rather
+// than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD
+// for information about the structure of the MAV_CMD entries
+enum class MAV_CMD
+{
     // Navigate to waypoint.
     MAV_CMD_NAV_WAYPOINT = 16,
     // Loiter around this waypoint an unlimited amount of time
     MAV_CMD_NAV_LOITER_UNLIM = 17,
     // Loiter around this waypoint for X turns
     MAV_CMD_NAV_LOITER_TURNS = 18,
-    // Loiter around this waypoint for X seconds
+    // Loiter at the specified latitude, longitude and altitude for a certain amount
+    // of time. Multicopter vehicles stop at the point (within a vehicle-specific
+    // acceptance radius). Forward-only moving vehicles (e.g. fixed-wing) circle the
+    // point with the specified radius/direction. If the Heading Required parameter
+    // (2) is non-zero forward moving aircraft will only leave the loiter circle once
+    // heading towards the next waypoint.
     MAV_CMD_NAV_LOITER_TIME = 19,
     // Return to launch location
     MAV_CMD_NAV_RETURN_TO_LAUNCH = 20,
     // Land at location.
     MAV_CMD_NAV_LAND = 21,
-    // Takeoff from ground / hand
+    // Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g.
+    // VTOL quadplane) should take off using the currently configured mode.
     MAV_CMD_NAV_TAKEOFF = 22,
     // Land at local position (local frame only)
     MAV_CMD_NAV_LAND_LOCAL = 23,
@@ -1049,7 +1398,7 @@ enum class MAV_CMD {
     // Setting any value NaN results in using defaults.
     MAV_CMD_DO_ORBIT = 34,
     // Sets the region of interest (ROI) for a sensor set or the vehicle itself. This
-    // can then be used by the vehicles control system to control the vehicle attitude
+    // can then be used by the vehicle's control system to control the vehicle attitude
     // and the attitude of various sensors such as cameras.
     MAV_CMD_NAV_ROI = 80,
     // Control autonomous path planning on the MAV.
@@ -1057,7 +1406,8 @@ enum class MAV_CMD {
     // Navigate to waypoint using a spline path.
     MAV_CMD_NAV_SPLINE_WAYPOINT = 82,
     // Takeoff from ground using VTOL mode, and transition to forward flight with
-    // specified heading.
+    // specified heading. The command should be ignored by vehicles that dont support
+    // both VTOL and fixed-wing flight (multicopters, boats,etc.).
     MAV_CMD_NAV_VTOL_TAKEOFF = 84,
     // Land using VTOL mode
     MAV_CMD_NAV_VTOL_LAND = 85,
@@ -1076,8 +1426,8 @@ enum class MAV_CMD {
     MAV_CMD_NAV_LAST = 95,
     // Delay mission state machine.
     MAV_CMD_CONDITION_DELAY = 112,
-    // Ascend/descend at rate. Delay mission state machine until desired altitude
-    // reached.
+    // Ascend/descend to target altitude at specified rate. Delay mission state machine
+    // until desired altitude reached.
     MAV_CMD_CONDITION_CHANGE_ALT = 113,
     // Delay mission state machine until within desired distance of next NAV point.
     MAV_CMD_CONDITION_DISTANCE = 114,
@@ -1111,6 +1461,10 @@ enum class MAV_CMD {
     MAV_CMD_DO_FLIGHTTERMINATION = 185,
     // Change altitude set point.
     MAV_CMD_DO_CHANGE_ALTITUDE = 186,
+    // Sets actuators (e.g. servos) to a desired value. The actuator numbers are mapped
+    // to specific outputs (e.g. on any MAIN or AUX PWM or UAVCAN) using a flight-stack
+    // specific mechanism (i.e. a parameter).
+    MAV_CMD_DO_SET_ACTUATOR = 187,
     // Mission command to perform a landing. This is used as a marker in a mission
     // to tell the autopilot where a sequence of mission items that represents a landing
     // starts. It may also be sent via a COMMAND_LONG to trigger a landing, in which
@@ -1129,22 +1483,33 @@ enum class MAV_CMD {
     // Set moving direction to forward or reverse.
     MAV_CMD_DO_SET_REVERSE = 194,
     // Sets the region of interest (ROI) to a location. This can then be used by the
-    // vehicles control system to control the vehicle attitude and the attitude of
-    // various sensors such as cameras.
+    // vehicle's control system to control the vehicle attitude and the attitude of
+    // various sensors such as cameras. This command can be sent to a gimbal manager
+    // but not to a gimbal device. A gimbal is not to react to this message.
     MAV_CMD_DO_SET_ROI_LOCATION = 195,
     // Sets the region of interest (ROI) to be toward next waypoint, with optional
-    // pitch/roll/yaw offset. This can then be used by the vehicles control system
+    // pitch/roll/yaw offset. This can then be used by the vehicle's control system
     // to control the vehicle attitude and the attitude of various sensors such as
-    // cameras.
+    // cameras. This command can be sent to a gimbal manager but not to a gimbal device.
+    // A gimbal device is not to react to this message.
     MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET = 196,
     // Cancels any previous ROI command returning the vehicle/sensors to default flight
-    // characteristics. This can then be used by the vehicles control system to control
-    // the vehicle attitude and the attitude of various sensors such as cameras.
+    // characteristics. This can then be used by the vehicle's control system to control
+    // the vehicle attitude and the attitude of various sensors such as cameras. This
+    // command can be sent to a gimbal manager but not to a gimbal device. A gimbal
+    // device is not to react to this message. After this command the gimbal manager
+    // should go back to manual input if available, and otherwise assume a neutral
+    // position.
     MAV_CMD_DO_SET_ROI_NONE = 197,
+    // Mount tracks system with specified system ID. Determination of target vehicle
+    // position may be done with GLOBAL_POSITION_INT or any other means. This command
+    // can be sent to a gimbal manager but not to a gimbal device. A gimbal device
+    // is not to react to this message.
+    MAV_CMD_DO_SET_ROI_SYSID = 198,
     // Control onboard camera system.
     MAV_CMD_DO_CONTROL_VIDEO = 200,
     // Sets the region of interest (ROI) for a sensor set or the vehicle itself. This
-    // can then be used by the vehicles control system to control the vehicle attitude
+    // can then be used by the vehicle's control system to control the vehicle attitude
     // and the attitude of various sensors such as cameras.
     MAV_CMD_DO_SET_ROI = 201,
     // Configure digital camera. This is a fallback message for systems that have
@@ -1165,7 +1530,7 @@ enum class MAV_CMD {
     MAV_CMD_DO_SET_CAM_TRIGG_DIST = 206,
     // Mission command to enable the geofence
     MAV_CMD_DO_FENCE_ENABLE = 207,
-    // Mission command to trigger a parachute
+    // Mission item/command to release a parachute or enable/disable auto release.
     MAV_CMD_DO_PARACHUTE = 208,
     // Mission command to perform motor test.
     MAV_CMD_DO_MOTOR_TEST = 209,
@@ -1209,6 +1574,12 @@ enum class MAV_CMD {
     MAV_CMD_PREFLIGHT_STORAGE = 245,
     // Request the reboot or shutdown of system components.
     MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN = 246,
+    // Request a target system to start an upgrade of one (or all) of its components.
+    // For example, the command might be sent to a companion computer to cause it
+    // to upgrade a connected flight controller. The system doing the upgrade will
+    // report progress using the normal command protocol sequence for a long running
+    // operation. Command protocol information: https://mavlink.io/en/services/command.html.
+    MAV_CMD_DO_UPGRADE = 247,
     // Override current mission with command to pause mission, pause mission and move
     // to position, continue/resume mission. When param 1 indicates that the mission
     // is paused (MAV_GOTO_DO_HOLD), param 2 defines whether it holds in place or
@@ -1218,8 +1589,17 @@ enum class MAV_CMD {
     MAV_CMD_MISSION_START = 300,
     // Arms / Disarms a component
     MAV_CMD_COMPONENT_ARM_DISARM = 400,
+    // Turns illuminators ON/OFF. An illuminator is a light source that is used for
+    // lighting up dark areas external to the sytstem: e.g. a torch or searchlight
+    // (as opposed to a light source for illuminating the system itself, e.g. an indicator
+    // light).
+    MAV_CMD_ILLUMINATOR_ON_OFF = 405,
     // Request the home position from the vehicle.
     MAV_CMD_GET_HOME_POSITION = 410,
+    // Inject artificial failure for testing purposes. Note that autopilots should
+    // implement an additional protection before accepting this command such as a
+    // specific param setting.
+    MAV_CMD_INJECT_FAILURE = 420,
     // Starts receiver pairing.
     MAV_CMD_START_RX_PAIR = 500,
     // Request the interval between messages for a particular MAVLink message ID.
@@ -1232,7 +1612,8 @@ enum class MAV_CMD {
     // Request the target system(s) emit a single instance of a specified message
     // (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).
     MAV_CMD_REQUEST_MESSAGE = 512,
-    // Request MAVLink protocol version compatibility
+    // Request MAVLink protocol version compatibility. All receivers should ACK the
+    // command and then emit their capabilities in an PROTOCOL_VERSION message
     MAV_CMD_REQUEST_PROTOCOL_VERSION = 519,
     // Request autopilot capabilities. The receiver should ACK the command and then
     // emit its capabilities in an AUTOPILOT_VERSION message
@@ -1258,10 +1639,8 @@ enum class MAV_CMD {
     // command after a mode change if the camera supports video streaming.
     MAV_CMD_SET_CAMERA_MODE = 530,
     // Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success).
-    // Use NaN for reserved values.
     MAV_CMD_SET_CAMERA_ZOOM = 531,
     // Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success).
-    // Use NaN for reserved values.
     MAV_CMD_SET_CAMERA_FOCUS = 532,
     // Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.
     MAV_CMD_JUMP_TAG = 600,
@@ -1271,18 +1650,33 @@ enum class MAV_CMD {
     // and a jump where there are multiple matching tags should always select the
     // one with the lowest mission sequence number.
     MAV_CMD_DO_JUMP_TAG = 601,
+    // High level setpoint to be sent to a gimbal manager to set a gimbal attitude.
+    // It is possible to set combinations of the values below. E.g. an angle as well
+    // as a desired angular rate can be used to get to this angle at a certain angular
+    // rate, or an angular rate only will result in continuous turning. NaN is to
+    // be used to signal unset. Note: a gimbal is never to react to this command but
+    // only the gimbal manager.
+    MAV_CMD_DO_GIMBAL_MANAGER_TILTPAN = 1000,
     // Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture.
     // Use NaN for reserved values.
     MAV_CMD_IMAGE_START_CAPTURE = 2000,
     // Stop image capture sequence Use NaN for reserved values.
     MAV_CMD_IMAGE_STOP_CAPTURE = 2001,
-    // Re-request a CAMERA_IMAGE_CAPTURE message. Use NaN for reserved values.
+    // Re-request a CAMERA_IMAGE_CAPTURED message.
     MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE = 2002,
     // Enable or disable on-board camera triggering system.
     MAV_CMD_DO_TRIGGER_CONTROL = 2003,
-    // Starts video capture (recording). Use NaN for reserved values.
+    // If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT
+    // is set), this command allows to initiate the tracking.
+    MAV_CMD_CAMERA_TRACK_POINT = 2004,
+    // If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE
+    // is set), this command allows to initiate the tracking.
+    MAV_CMD_CAMERA_TRACK_RECTANGLE = 2005,
+    // Stops ongoing tracking.
+    MAV_CMD_CAMERA_STOP_TRACKING = 2010,
+    // Starts video capture (recording).
     MAV_CMD_VIDEO_START_CAPTURE = 2500,
-    // Stop the current video capture (recording). Use NaN for reserved values.
+    // Stop the current video capture (recording).
     MAV_CMD_VIDEO_STOP_CAPTURE = 2501,
     // Start video streaming
     MAV_CMD_VIDEO_START_STREAMING = 2502,
@@ -1396,7 +1790,8 @@ enum class MAV_CMD {
 
 // A data stream is not a fixed set of messages, but rather a recommendation to the
 // autopilot software. Individual autopilots may or may not obey the recommended messages.
-enum class MAV_DATA_STREAM {
+enum class MAV_DATA_STREAM
+{
     // Enable all data streams
     MAV_DATA_STREAM_ALL = 0,
     // Enable IMU_RAW, GPS_RAW, GPS_STATUS packets.
@@ -1419,7 +1814,8 @@ enum class MAV_DATA_STREAM {
 
 // The ROI (region of interest) for the vehicle. This can be be used by the vehicle
 // for camera/vehicle attitude alignment (see MAV_CMD_NAV_ROI).
-enum class MAV_ROI {
+enum class MAV_ROI
+{
     // No region of interest.
     MAV_ROI_NONE = 0,
     // Point toward next waypoint, with optional pitch/roll/yaw offset.
@@ -1433,7 +1829,8 @@ enum class MAV_ROI {
 };
 
 // ACK / NACK / ERROR values as a result of MAV_CMDs and for mission item transmission.
-enum class MAV_CMD_ACK {
+enum class MAV_CMD_ACK
+{
     // Command / mission item is ok.
     MAV_CMD_ACK_OK = 0,
     // Generic error message if none of the other reasons fails or if no detailed
@@ -1459,7 +1856,8 @@ enum class MAV_CMD_ACK {
 };
 
 // Specifies the datatype of a MAVLink parameter.
-enum class MAV_PARAM_TYPE {
+enum class MAV_PARAM_TYPE
+{
     // 8-bit unsigned integer
     MAV_PARAM_TYPE_UINT8 = 1,
     // 8-bit signed integer
@@ -1483,7 +1881,8 @@ enum class MAV_PARAM_TYPE {
 };
 
 // Specifies the datatype of a MAVLink extended parameter.
-enum class MAV_PARAM_EXT_TYPE {
+enum class MAV_PARAM_EXT_TYPE
+{
     // 8-bit unsigned integer
     MAV_PARAM_EXT_TYPE_UINT8 = 1,
     // 8-bit signed integer
@@ -1509,7 +1908,8 @@ enum class MAV_PARAM_EXT_TYPE {
 };
 
 // Result from a MAVLink command (MAV_CMD)
-enum class MAV_RESULT {
+enum class MAV_RESULT
+{
     // Command is valid (is supported and has valid parameters), and was executed.
     MAV_RESULT_ACCEPTED = 0,
     // Command is valid, but cannot be executed at this time. This is used to indicate
@@ -1531,14 +1931,15 @@ enum class MAV_RESULT {
     // MAV_RESULT_IN_PROGRESS (at a rate decided by the implementation), and must
     // terminate by sending a COMMAND_ACK message with final result of the operation.
     // The COMMAND_ACK.progress field can be used to indicate the progress of the
-    // operation. There is no need for the sender to retry the command, but if done
-    // during execution, the component will return MAV_RESULT_IN_PROGRESS with an
-    // updated progress.
-    MAV_RESULT_IN_PROGRESS = 5
+    // operation.
+    MAV_RESULT_IN_PROGRESS = 5,
+    // Command has been cancelled (as a result of receiving a COMMAND_CANCEL message).
+    MAV_RESULT_CANCELLED = 6
 };
 
 // Result of mission operation (in a MISSION_ACK message).
-enum class MAV_MISSION_RESULT {
+enum class MAV_MISSION_RESULT
+{
     // mission accepted OK
     MAV_MISSION_ACCEPTED = 0,
     // Generic error / not accepting mission commands at all right now.
@@ -1547,7 +1948,7 @@ enum class MAV_MISSION_RESULT {
     MAV_MISSION_UNSUPPORTED_FRAME = 2,
     // Command is not supported.
     MAV_MISSION_UNSUPPORTED = 3,
-    // Mission item exceeds storage space.
+    // Mission items exceed storage space.
     MAV_MISSION_NO_SPACE = 4,
     // One of the parameters has an invalid value.
     MAV_MISSION_INVALID = 5,
@@ -1575,7 +1976,8 @@ enum class MAV_MISSION_RESULT {
 
 // Indicates the severity level, generally used for status messages to indicate their
 // relative urgency. Based on RFC-5424 using expanded definitions at: http://www.kiwisyslog.com/kb/info:-syslog-message-levels/.
-enum class MAV_SEVERITY {
+enum class MAV_SEVERITY
+{
     // System is unusable. This is a "panic" condition.
     MAV_SEVERITY_EMERGENCY = 0,
     // Action should be taken immediately. Indicates error in non-critical systems.
@@ -1599,7 +2001,8 @@ enum class MAV_SEVERITY {
 };
 
 // Power supply status flags (bitmask)
-enum class MAV_POWER_STATUS {
+enum class MAV_POWER_STATUS
+{
     // main brick power supply valid
     MAV_POWER_STATUS_BRICK_VALID = 1,
     // main servo power supply valid for FMU
@@ -1615,7 +2018,8 @@ enum class MAV_POWER_STATUS {
 };
 
 // SERIAL_CONTROL device types
-enum class SERIAL_CONTROL_DEV {
+enum class SERIAL_CONTROL_DEV
+{
     // First telemetry port
     SERIAL_CONTROL_DEV_TELEM1 = 0,
     // Second telemetry port
@@ -1625,11 +2029,32 @@ enum class SERIAL_CONTROL_DEV {
     // Second GPS port
     SERIAL_CONTROL_DEV_GPS2 = 3,
     // system shell
-    SERIAL_CONTROL_DEV_SHELL = 10
+    SERIAL_CONTROL_DEV_SHELL = 10,
+    // SERIAL0
+    SERIAL_CONTROL_SERIAL0 = 100,
+    // SERIAL1
+    SERIAL_CONTROL_SERIAL1 = 101,
+    // SERIAL2
+    SERIAL_CONTROL_SERIAL2 = 102,
+    // SERIAL3
+    SERIAL_CONTROL_SERIAL3 = 103,
+    // SERIAL4
+    SERIAL_CONTROL_SERIAL4 = 104,
+    // SERIAL5
+    SERIAL_CONTROL_SERIAL5 = 105,
+    // SERIAL6
+    SERIAL_CONTROL_SERIAL6 = 106,
+    // SERIAL7
+    SERIAL_CONTROL_SERIAL7 = 107,
+    // SERIAL8
+    SERIAL_CONTROL_SERIAL8 = 108,
+    // SERIAL9
+    SERIAL_CONTROL_SERIAL9 = 109
 };
 
 // SERIAL_CONTROL flags (bitmask)
-enum class SERIAL_CONTROL_FLAG {
+enum class SERIAL_CONTROL_FLAG
+{
     // Set if this is a reply
     SERIAL_CONTROL_FLAG_REPLY = 1,
     // Set if the sender wants the receiver to send a response as another SERIAL_CONTROL
@@ -1646,7 +2071,8 @@ enum class SERIAL_CONTROL_FLAG {
 };
 
 // Enumeration of distance sensor types
-enum class MAV_DISTANCE_SENSOR {
+enum class MAV_DISTANCE_SENSOR
+{
     // Laser rangefinder, e.g. LightWare SF02/F or PulsedLight units
     MAV_DISTANCE_SENSOR_LASER = 0,
     // Ultrasound rangefinder, e.g. MaxBotix units
@@ -1660,7 +2086,8 @@ enum class MAV_DISTANCE_SENSOR {
 };
 
 // Enumeration of sensor orientation, according to its rotations
-enum class MAV_SENSOR_ORIENTATION {
+enum class MAV_SENSOR_ORIENTATION
+{
     // Roll: 0, Pitch: 0, Yaw: 0
     MAV_SENSOR_ROTATION_NONE = 0,
     // Roll: 0, Pitch: 0, Yaw: 45
@@ -1743,18 +2170,21 @@ enum class MAV_SENSOR_ORIENTATION {
     MAV_SENSOR_ROTATION_PITCH_315 = 39,
     // Roll: 90, Pitch: 315
     MAV_SENSOR_ROTATION_ROLL_90_PITCH_315 = 40,
+    // Roll: 270, Yaw: 180
+    MAV_SENSOR_ROTATION_ROLL_270_YAW_180 = 41,
     // Custom orientation
     MAV_SENSOR_ROTATION_CUSTOM = 100
 };
 
 // Bitmask of (optional) autopilot capabilities (64 bit). If a bit is set, the autopilot
 // supports this capability.
-enum class MAV_PROTOCOL_CAPABILITY {
+enum class MAV_PROTOCOL_CAPABILITY
+{
     // Autopilot supports MISSION float message type.
     MAV_PROTOCOL_CAPABILITY_MISSION_FLOAT = 1,
     // Autopilot supports the new param float message type.
     MAV_PROTOCOL_CAPABILITY_PARAM_FLOAT = 2,
-    // Autopilot supports MISSION_INT scaled integer message type.
+    // Autopilot supports MISSION_ITEM_INT scaled integer message type.
     MAV_PROTOCOL_CAPABILITY_MISSION_INT = 4,
     // Autopilot supports COMMAND_INT scaled integer message type.
     MAV_PROTOCOL_CAPABILITY_COMMAND_INT = 8,
@@ -1788,7 +2218,8 @@ enum class MAV_PROTOCOL_CAPABILITY {
 };
 
 // Type of mission items being requested/sent in mission protocol.
-enum class MAV_MISSION_TYPE {
+enum class MAV_MISSION_TYPE
+{
     // Items are mission commands for main mission.
     MAV_MISSION_TYPE_MISSION = 0,
     // Specifies GeoFence area(s). Items are MAV_CMD_NAV_FENCE_ GeoFence items.
@@ -1801,7 +2232,8 @@ enum class MAV_MISSION_TYPE {
 };
 
 // Enumeration of estimator types
-enum class MAV_ESTIMATOR_TYPE {
+enum class MAV_ESTIMATOR_TYPE
+{
     // Unknown type of the estimator.
     MAV_ESTIMATOR_TYPE_UNKNOWN = 0,
     // This is a naive estimator without any real covariance feedback.
@@ -1823,7 +2255,8 @@ enum class MAV_ESTIMATOR_TYPE {
 };
 
 // Enumeration of battery types
-enum class MAV_BATTERY_TYPE {
+enum class MAV_BATTERY_TYPE
+{
     // Not specified.
     MAV_BATTERY_TYPE_UNKNOWN = 0,
     // Lithium polymer battery
@@ -1837,7 +2270,8 @@ enum class MAV_BATTERY_TYPE {
 };
 
 // Enumeration of battery functions
-enum class MAV_BATTERY_FUNCTION {
+enum class MAV_BATTERY_FUNCTION
+{
     // Battery function is unknown
     MAV_BATTERY_FUNCTION_UNKNOWN = 0,
     // Battery supports all flight systems
@@ -1851,7 +2285,8 @@ enum class MAV_BATTERY_FUNCTION {
 };
 
 // Enumeration for battery charge states.
-enum class MAV_BATTERY_CHARGE_STATE {
+enum class MAV_BATTERY_CHARGE_STATE
+{
     // Low battery state is not provided
     MAV_BATTERY_CHARGE_STATE_UNDEFINED = 0,
     // Battery is not in low state. Normal operation.
@@ -1873,7 +2308,8 @@ enum class MAV_BATTERY_CHARGE_STATE {
 };
 
 // Smart battery supply status/fault flags (bitmask) for health indication.
-enum class MAV_SMART_BATTERY_FAULT {
+enum class MAV_SMART_BATTERY_FAULT
+{
     // Battery has deep discharged.
     MAV_SMART_BATTERY_FAULT_DEEP_DISCHARGE = 1,
     // Voltage spikes.
@@ -1888,8 +2324,69 @@ enum class MAV_SMART_BATTERY_FAULT {
     MAV_SMART_BATTERY_FAULT_UNDER_TEMPERATURE = 32
 };
 
+// Flags to report status/failure cases for a power generator (used in GENERATOR_STATUS).
+// Note that FAULTS are conditions that cause the generator to fail. Warnings are
+// conditions that require attention before the next use (they indicate the system
+// is not operating properly).
+enum class MAV_GENERATOR_STATUS_FLAG
+{
+    // Generator is off.
+    MAV_GENERATOR_STATUS_FLAG_OFF = 1,
+    // Generator is ready to start generating power.
+    MAV_GENERATOR_STATUS_FLAG_READY = 2,
+    // Generator is generating power.
+    MAV_GENERATOR_STATUS_FLAG_GENERATING = 4,
+    // Generator is charging the batteries (generating enough power to charge and
+    // provide the load).
+    MAV_GENERATOR_STATUS_FLAG_CHARGING = 8,
+    // Generator is operating at a reduced maximum power.
+    MAV_GENERATOR_STATUS_FLAG_REDUCED_POWER = 16,
+    // Generator is providing the maximum output.
+    MAV_GENERATOR_STATUS_FLAG_MAXPOWER = 32,
+    // Generator is near the maximum operating temperature, cooling is insufficient.
+    MAV_GENERATOR_STATUS_FLAG_OVERTEMP_WARNING = 64,
+    // Generator hit the maximum operating temperature and shutdown.
+    MAV_GENERATOR_STATUS_FLAG_OVERTEMP_FAULT = 128,
+    // Power electronics are near the maximum operating temperature, cooling is insufficient.
+    MAV_GENERATOR_STATUS_FLAG_ELECTRONICS_OVERTEMP_WARNING = 256,
+    // Power electronics hit the maximum operating temperature and shutdown.
+    MAV_GENERATOR_STATUS_FLAG_ELECTRONICS_OVERTEMP_FAULT = 512,
+    // Power electronics experienced a fault and shutdown.
+    MAV_GENERATOR_STATUS_FLAG_ELECTRONICS_FAULT = 1024,
+    // The power source supplying the generator failed e.g. mechanical generator stopped,
+    // tether is no longer providing power, solar cell is in shade, hydrogen reaction
+    // no longer happening.
+    MAV_GENERATOR_STATUS_FLAG_POWERSOURCE_FAULT = 2048,
+    // Generator controller having communication problems.
+    MAV_GENERATOR_STATUS_FLAG_COMMUNICATION_WARNING = 4096,
+    // Power electronic or generator cooling system error.
+    MAV_GENERATOR_STATUS_FLAG_COOLING_WARNING = 8192,
+    // Generator controller power rail experienced a fault.
+    MAV_GENERATOR_STATUS_FLAG_POWER_RAIL_FAULT = 16384,
+    // Generator controller exceeded the overcurrent threshold and shutdown to prevent
+    // damage.
+    MAV_GENERATOR_STATUS_FLAG_OVERCURRENT_FAULT = 32768,
+    // Generator controller detected a high current going into the batteries and shutdown
+    // to prevent battery damage.
+    MAV_GENERATOR_STATUS_FLAG_BATTERY_OVERCHARGE_CURRENT_FAULT = 65536,
+    // Generator controller exceeded it's overvoltage threshold and shutdown to prevent
+    // it exceeding the voltage rating.
+    MAV_GENERATOR_STATUS_FLAG_OVERVOLTAGE_FAULT = 131072,
+    // Batteries are under voltage (generator will not start).
+    MAV_GENERATOR_STATUS_FLAG_BATTERY_UNDERVOLT_FAULT = 262144,
+    // Generator start is inhibited by e.g. a safety switch.
+    MAV_GENERATOR_STATUS_FLAG_START_INHIBITED = 524288,
+    // Generator requires maintenance.
+    MAV_GENERATOR_STATUS_FLAG_MAINTENANCE_REQUIRED = 1048576,
+    // Generator is not ready to generate yet.
+    MAV_GENERATOR_STATUS_FLAG_WARMING_UP = 2097152,
+    // Generator is idle.
+    MAV_GENERATOR_STATUS_FLAG_IDLE = 4194304
+};
+
 // Enumeration of VTOL states
-enum class MAV_VTOL_STATE {
+enum class MAV_VTOL_STATE
+{
     // MAV is not configured as VTOL
     MAV_VTOL_STATE_UNDEFINED = 0,
     // VTOL is in transition from multicopter to fixed-wing
@@ -1903,7 +2400,8 @@ enum class MAV_VTOL_STATE {
 };
 
 // Enumeration of landed detector states
-enum class MAV_LANDED_STATE {
+enum class MAV_LANDED_STATE
+{
     // MAV landed state is unknown
     MAV_LANDED_STATE_UNDEFINED = 0,
     // MAV is landed (on ground)
@@ -1917,7 +2415,8 @@ enum class MAV_LANDED_STATE {
 };
 
 // Enumeration of the ADSB altimeter types
-enum class ADSB_ALTITUDE_TYPE {
+enum class ADSB_ALTITUDE_TYPE
+{
     // Altitude reported from a Baro source using QNH reference
     ADSB_ALTITUDE_TYPE_PRESSURE_QNH = 0,
     // Altitude reported from a GNSS source
@@ -1925,7 +2424,8 @@ enum class ADSB_ALTITUDE_TYPE {
 };
 
 // ADSB classification for the type of vehicle emitting the transponder signal
-enum class ADSB_EMITTER_TYPE {
+enum class ADSB_EMITTER_TYPE
+{
     ADSB_EMITTER_TYPE_NO_INFO = 0,
     ADSB_EMITTER_TYPE_LIGHT = 1,
     ADSB_EMITTER_TYPE_SMALL = 2,
@@ -1950,25 +2450,31 @@ enum class ADSB_EMITTER_TYPE {
 
 // These flags indicate status such as data validity of each data source. Set = data
 // valid
-enum class ADSB_FLAGS {
+enum class ADSB_FLAGS
+{
     ADSB_FLAGS_VALID_COORDS = 1,
     ADSB_FLAGS_VALID_ALTITUDE = 2,
     ADSB_FLAGS_VALID_HEADING = 4,
     ADSB_FLAGS_VALID_VELOCITY = 8,
     ADSB_FLAGS_VALID_CALLSIGN = 16,
     ADSB_FLAGS_VALID_SQUAWK = 32,
-    ADSB_FLAGS_SIMULATED = 64
+    ADSB_FLAGS_SIMULATED = 64,
+    ADSB_FLAGS_VERTICAL_VELOCITY_VALID = 128,
+    ADSB_FLAGS_BARO_VALID = 256,
+    ADSB_FLAGS_SOURCE_UAT = 32768
 };
 
 // Bitmap of options for the MAV_CMD_DO_REPOSITION
-enum class MAV_DO_REPOSITION_FLAGS {
+enum class MAV_DO_REPOSITION_FLAGS
+{
     // The aircraft should immediately transition into guided. This should not be
     // set for follow me applications
     MAV_DO_REPOSITION_FLAGS_CHANGE_MODE = 1
 };
 
-// Flags in EKF_STATUS message
-enum class ESTIMATOR_STATUS_FLAGS {
+// Flags in ESTIMATOR_STATUS message
+enum class ESTIMATOR_STATUS_FLAGS
+{
     // True if the attitude estimate is good
     ESTIMATOR_ATTITUDE = 1,
     // True if the horizontal velocity estimate is good
@@ -1998,7 +2504,8 @@ enum class ESTIMATOR_STATUS_FLAGS {
     ESTIMATOR_ACCEL_ERROR = 2048
 };
 
-enum class MOTOR_TEST_ORDER {
+enum class MOTOR_TEST_ORDER
+{
     // default autopilot motor test method
     MOTOR_TEST_ORDER_DEFAULT = 0,
     // motor numbers are specified as their index in a predefined vehicle-specific
@@ -2008,7 +2515,8 @@ enum class MOTOR_TEST_ORDER {
     MOTOR_TEST_ORDER_BOARD = 2
 };
 
-enum class MOTOR_TEST_THROTTLE_TYPE {
+enum class MOTOR_TEST_THROTTLE_TYPE
+{
     // throttle as a percentage from 0 ~ 100
     MOTOR_TEST_THROTTLE_PERCENT = 0,
     // throttle as an absolute PWM value (normally in range of 1000~2000)
@@ -2019,7 +2527,8 @@ enum class MOTOR_TEST_THROTTLE_TYPE {
     MOTOR_TEST_COMPASS_CAL = 3
 };
 
-enum class GPS_INPUT_IGNORE_FLAGS {
+enum class GPS_INPUT_IGNORE_FLAGS
+{
     // ignore altitude field
     GPS_INPUT_IGNORE_FLAG_ALT = 1,
     // ignore hdop field
@@ -2039,7 +2548,8 @@ enum class GPS_INPUT_IGNORE_FLAGS {
 };
 
 // Possible actions an aircraft can take to avoid a collision.
-enum class MAV_COLLISION_ACTION {
+enum class MAV_COLLISION_ACTION
+{
     // Ignore any potential collisions
     MAV_COLLISION_ACTION_NONE = 0,
     // Report potential collision
@@ -2057,7 +2567,8 @@ enum class MAV_COLLISION_ACTION {
 };
 
 // Aircraft-rated danger from this threat.
-enum class MAV_COLLISION_THREAT_LEVEL {
+enum class MAV_COLLISION_THREAT_LEVEL
+{
     // Not a threat
     MAV_COLLISION_THREAT_LEVEL_NONE = 0,
     // Craft is mildly concerned about this threat
@@ -2067,7 +2578,8 @@ enum class MAV_COLLISION_THREAT_LEVEL {
 };
 
 // Source of information about this collision.
-enum class MAV_COLLISION_SRC {
+enum class MAV_COLLISION_SRC
+{
     // ID field references ADSB_VEHICLE packets
     MAV_COLLISION_SRC_ADSB = 0,
     // ID field references MAVLink SRC ID
@@ -2075,7 +2587,8 @@ enum class MAV_COLLISION_SRC {
 };
 
 // Type of GPS fix
-enum class GPS_FIX_TYPE {
+enum class GPS_FIX_TYPE
+{
     // No GPS connected
     GPS_FIX_TYPE_NO_GPS = 0,
     // No position information, GPS is connected
@@ -2097,15 +2610,17 @@ enum class GPS_FIX_TYPE {
 };
 
 // RTK GPS baseline coordinate system, used for RTK corrections
-enum class RTK_BASELINE_COORDINATE_SYSTEM {
+enum class RTK_BASELINE_COORDINATE_SYSTEM
+{
     // Earth-centered, Earth-fixed
     RTK_BASELINE_COORDINATE_SYSTEM_ECEF = 0,
-    // North, East, Down
+    // RTK basestation centered, north, east, down
     RTK_BASELINE_COORDINATE_SYSTEM_NED = 1
 };
 
 // Type of landing target
-enum class LANDING_TARGET_TYPE {
+enum class LANDING_TARGET_TYPE
+{
     // Landing target signaled by light beacon (ex: IR-LOCK)
     LANDING_TARGET_TYPE_LIGHT_BEACON = 0,
     // Landing target signaled by radio beacon (ex: ILS, NDB)
@@ -2118,7 +2633,8 @@ enum class LANDING_TARGET_TYPE {
 };
 
 // Direction of VTOL transition
-enum class VTOL_TRANSITION_HEADING {
+enum class VTOL_TRANSITION_HEADING
+{
     // Respect the heading configuration of the vehicle.
     VTOL_TRANSITION_HEADING_VEHICLE_DEFAULT = 0,
     // Use the heading pointing towards the next waypoint.
@@ -2133,7 +2649,8 @@ enum class VTOL_TRANSITION_HEADING {
 };
 
 // Camera capability flags (Bitmap)
-enum class CAMERA_CAP_FLAGS {
+enum class CAMERA_CAP_FLAGS
+{
     // Camera is able to record video
     CAMERA_CAP_FLAGS_CAPTURE_VIDEO = 1,
     // Camera is able to capture images
@@ -2150,13 +2667,20 @@ enum class CAMERA_CAP_FLAGS {
     CAMERA_CAP_FLAGS_HAS_BASIC_ZOOM = 64,
     // Camera has basic focus control (MAV_CMD_SET_CAMERA_FOCUS)
     CAMERA_CAP_FLAGS_HAS_BASIC_FOCUS = 128,
-    // Camera has video streaming capabilities (use MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION
-    // for video streaming info)
-    CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM = 256
+    // Camera has video streaming capabilities (request VIDEO_STREAM_INFORMATION with
+    // MAV_CMD_REQUEST_MESSAGE for video streaming info)
+    CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM = 256,
+    // Camera supports tracking of a point on the camera view.
+    CAMERA_CAP_FLAGS_HAS_TRACKING_POINT = 512,
+    // Camera supports tracking of a selection rectangle on the camera view.
+    CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE = 1024,
+    // Camera supports tracking geo status (CAMERA_TRACKING_GEO_STATUS).
+    CAMERA_CAP_FLAGS_HAS_TRACKING_GEO_STATUS = 2048
 };
 
 // Stream status flags (Bitmap)
-enum class VIDEO_STREAM_STATUS_FLAGS {
+enum class VIDEO_STREAM_STATUS_FLAGS
+{
     // Stream is active (running)
     VIDEO_STREAM_STATUS_FLAGS_RUNNING = 1,
     // Stream is thermal imaging
@@ -2164,7 +2688,8 @@ enum class VIDEO_STREAM_STATUS_FLAGS {
 };
 
 // Video stream types
-enum class VIDEO_STREAM_TYPE {
+enum class VIDEO_STREAM_TYPE
+{
     // Stream is RTSP
     VIDEO_STREAM_TYPE_RTSP = 0,
     // Stream is RTP UDP (URI gives the port number)
@@ -2175,8 +2700,44 @@ enum class VIDEO_STREAM_TYPE {
     VIDEO_STREAM_TYPE_MPEG_TS_H264 = 3
 };
 
+// Camera tracking status flags
+enum class CAMERA_TRACKING_STATUS_FLAGS
+{
+    // Camera is not tracking
+    CAMERA_TRACKING_STATUS_FLAGS_IDLE = 0,
+    // Camera is tracking
+    CAMERA_TRACKING_STATUS_FLAGS_ACTIVE = 1,
+    // Camera tracking in error state
+    CAMERA_TRACKING_STATUS_FLAGS_ERROR = 2
+};
+
+// Camera tracking modes
+enum class CAMERA_TRACKING_MODE
+{
+    // Not tracking
+    CAMERA_TRACKING_NONE = 0,
+    // Target is a point
+    CAMERA_TRACKING_POINT = 1,
+    // Target is a rectangle
+    CAMERA_TRACKING_RECTANGLE = 2
+};
+
+// Camera tracking target data (shows where tracked target is within image)
+enum class CAMERA_TRACKING_TARGET_DATA
+{
+    // No target data
+    CAMERA_TRACKING_TARGET_NONE = 0,
+    // Target data embedded in image data (proprietary)
+    CAMERA_TRACKING_TARGET_EMBEDDED = 1,
+    // Target data rendered in image
+    CAMERA_TRACKING_TARGET_RENDERED = 2,
+    // Target data within status message (Point or Rectangle)
+    CAMERA_TRACKING_TARGET_IN_STATUS = 4
+};
+
 // Zoom types for MAV_CMD_SET_CAMERA_ZOOM
-enum class CAMERA_ZOOM_TYPE {
+enum class CAMERA_ZOOM_TYPE
+{
     // Zoom one step increment (-1 for wide, 1 for tele)
     ZOOM_TYPE_STEP = 0,
     // Continuous zoom up/down until stopped (-1 for wide, 1 for tele, 0 to stop zooming)
@@ -2191,7 +2752,8 @@ enum class CAMERA_ZOOM_TYPE {
 };
 
 // Focus types for MAV_CMD_SET_CAMERA_FOCUS
-enum class SET_FOCUS_TYPE {
+enum class SET_FOCUS_TYPE
+{
     // Focus one step increment (-1 for focusing in, 1 for focusing out towards infinity).
     FOCUS_TYPE_STEP = 0,
     // Continuous focus up/down until stopped (-1 for focusing in, 1 for focusing
@@ -2207,24 +2769,25 @@ enum class SET_FOCUS_TYPE {
     FOCUS_TYPE_METERS = 3
 };
 
-// Result from a PARAM_EXT_SET message.
-enum class PARAM_ACK {
+// Result from PARAM_EXT_SET message (or a PARAM_SET within a transaction).
+enum class PARAM_ACK
+{
     // Parameter value ACCEPTED and SET
     PARAM_ACK_ACCEPTED = 0,
     // Parameter value UNKNOWN/UNSUPPORTED
     PARAM_ACK_VALUE_UNSUPPORTED = 1,
     // Parameter failed to set
     PARAM_ACK_FAILED = 2,
-    // Parameter value received but not yet validated or set. A subsequent PARAM_EXT_ACK
-    // will follow once operation is completed with the actual result. These are for
-    // parameters that may take longer to set. Instead of waiting for an ACK and potentially
-    // timing out, you will immediately receive this response to let you know it was
-    // received.
+    // Parameter value received but not yet set/accepted. A subsequent PARAM_ACK_TRANSACTION
+    // or PARAM_EXT_ACK with the final result will follow once operation is completed.
+    // This is returned immediately for parameters that take longer to set, indicating
+    // taht the the parameter was recieved and does not need to be resent.
     PARAM_ACK_IN_PROGRESS = 3
 };
 
 // Camera Modes.
-enum class CAMERA_MODE {
+enum class CAMERA_MODE
+{
     // Camera is in image/photo capture mode.
     CAMERA_MODE_IMAGE = 0,
     // Camera is in video capture mode.
@@ -2234,7 +2797,8 @@ enum class CAMERA_MODE {
     CAMERA_MODE_IMAGE_SURVEY = 2
 };
 
-enum class MAV_ARM_AUTH_DENIED_REASON {
+enum class MAV_ARM_AUTH_DENIED_REASON
+{
     // Not a specific reason
     MAV_ARM_AUTH_DENIED_REASON_GENERIC = 0,
     // Authorizer will send the error as string to GCS
@@ -2251,7 +2815,8 @@ enum class MAV_ARM_AUTH_DENIED_REASON {
 };
 
 // RC type
-enum class RC_TYPE {
+enum class RC_TYPE
+{
     // Spektrum DSM2
     RC_TYPE_SPEKTRUM_DSM2 = 0,
     // Spektrum DSMX
@@ -2262,7 +2827,8 @@ enum class RC_TYPE {
 // 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions
 // should be ignored. If bit 9 is set the floats afx afy afz should be interpreted
 // as force instead of acceleration.
-enum class POSITION_TARGET_TYPEMASK {
+enum class POSITION_TARGET_TYPEMASK
+{
     // Ignore position x
     POSITION_TARGET_TYPEMASK_X_IGNORE = 1,
     // Ignore position y
@@ -2290,7 +2856,8 @@ enum class POSITION_TARGET_TYPEMASK {
 };
 
 // Airborne status of UAS.
-enum class UTM_FLIGHT_STATE {
+enum class UTM_FLIGHT_STATE
+{
     // The flight state can't be determined.
     UTM_FLIGHT_STATE_UNKNOWN = 1,
     // UAS on ground.
@@ -2304,7 +2871,8 @@ enum class UTM_FLIGHT_STATE {
 };
 
 // Flags for the global position report.
-enum class UTM_DATA_AVAIL_FLAGS {
+enum class UTM_DATA_AVAIL_FLAGS
+{
     // The field time contains valid data.
     UTM_DATA_AVAIL_FLAGS_TIME_VALID = 1,
     // The field uas_id contains valid data.
@@ -2324,7 +2892,8 @@ enum class UTM_DATA_AVAIL_FLAGS {
 };
 
 // Cellular network radio type
-enum class CELLULAR_NETWORK_RADIO_TYPE {
+enum class CELLULAR_NETWORK_RADIO_TYPE
+{
     CELLULAR_NETWORK_RADIO_TYPE_NONE = 0,
     CELLULAR_NETWORK_RADIO_TYPE_GSM = 1,
     CELLULAR_NETWORK_RADIO_TYPE_CDMA = 2,
@@ -2333,13 +2902,58 @@ enum class CELLULAR_NETWORK_RADIO_TYPE {
 };
 
 // These flags encode the cellular network status
-enum class CELLULAR_NETWORK_STATUS_FLAG {
-    // Roaming is active
-    CELLULAR_NETWORK_STATUS_FLAG_ROAMING = 1
+enum class CELLULAR_STATUS_FLAG
+{
+    // State unknown or not reportable.
+    CELLULAR_STATUS_FLAG_UNKNOWN = 0,
+    // Modem is unusable
+    CELLULAR_STATUS_FLAG_FAILED = 1,
+    // Modem is being initialized
+    CELLULAR_STATUS_FLAG_INITIALIZING = 2,
+    // Modem is locked
+    CELLULAR_STATUS_FLAG_LOCKED = 3,
+    // Modem is not enabled and is powered down
+    CELLULAR_STATUS_FLAG_DISABLED = 4,
+    // Modem is currently transitioning to the CELLULAR_STATUS_FLAG_DISABLED state
+    CELLULAR_STATUS_FLAG_DISABLING = 5,
+    // Modem is currently transitioning to the CELLULAR_STATUS_FLAG_ENABLED state
+    CELLULAR_STATUS_FLAG_ENABLING = 6,
+    // Modem is enabled and powered on but not registered with a network provider
+    // and not available for data connections
+    CELLULAR_STATUS_FLAG_ENABLED = 7,
+    // Modem is searching for a network provider to register
+    CELLULAR_STATUS_FLAG_SEARCHING = 8,
+    // Modem is registered with a network provider, and data connections and messaging
+    // may be available for use
+    CELLULAR_STATUS_FLAG_REGISTERED = 9,
+    // Modem is disconnecting and deactivating the last active packet data bearer.
+    // This state will not be entered if more than one packet data bearer is active
+    // and one of the active bearers is deactivated
+    CELLULAR_STATUS_FLAG_DISCONNECTING = 10,
+    // Modem is activating and connecting the first packet data bearer. Subsequent
+    // bearer activations when another bearer is already active do not cause this
+    // state to be entered
+    CELLULAR_STATUS_FLAG_CONNECTING = 11,
+    // One or more packet data bearers is active and connected
+    CELLULAR_STATUS_FLAG_CONNECTED = 12
+};
+
+// These flags are used to diagnose the failure state of CELLULAR_STATUS
+enum class CELLULAR_NETWORK_FAILED_REASON
+{
+    // No error
+    CELLULAR_NETWORK_FAILED_REASON_NONE = 0,
+    // Error state is unknown
+    CELLULAR_NETWORK_FAILED_REASON_UNKNOWN = 1,
+    // SIM is required for the modem but missing
+    CELLULAR_NETWORK_FAILED_REASON_SIM_MISSING = 2,
+    // SIM is available, but not usuable for connection
+    CELLULAR_NETWORK_FAILED_REASON_SIM_ERROR = 3
 };
 
 // Precision land modes (used in MAV_CMD_NAV_LAND).
-enum class PRECISION_LAND_MODE {
+enum class PRECISION_LAND_MODE
+{
     // Normal (non-precision) landing.
     PRECISION_LAND_MODE_DISABLED = 0,
     // Use precision landing if beacon detected when land command accepted, otherwise
@@ -2350,16 +2964,19 @@ enum class PRECISION_LAND_MODE {
     PRECISION_LAND_MODE_REQUIRED = 2
 };
 
-enum class PARACHUTE_ACTION {
-    // Disable parachute release.
+// Parachute actions. Trigger release and enable/disable auto-release.
+enum class PARACHUTE_ACTION
+{
+    // Disable auto-release of parachute (i.e. release triggered by crash detectors).
     PARACHUTE_DISABLE = 0,
-    // Enable parachute release.
+    // Enable auto-release of parachute.
     PARACHUTE_ENABLE = 1,
-    // Release parachute.
+    // Release parachute and kill motors.
     PARACHUTE_RELEASE = 2
 };
 
-enum class MAV_TUNNEL_PAYLOAD_TYPE {
+enum class MAV_TUNNEL_PAYLOAD_TYPE
+{
     // Encoding of payload unknown.
     MAV_TUNNEL_PAYLOAD_TYPE_UNKNOWN = 0,
     // Registered for STorM32 gimbal controller.
@@ -2384,7 +3001,8 @@ enum class MAV_TUNNEL_PAYLOAD_TYPE {
     MAV_TUNNEL_PAYLOAD_TYPE_STORM32_RESERVED9 = 209
 };
 
-enum class MAV_ODID_ID_TYPE {
+enum class MAV_ODID_ID_TYPE
+{
     // No type defined.
     MAV_ODID_ID_TYPE_NONE = 0,
     // Manufacturer Serial Number (ANSI/CTA-2063 format).
@@ -2396,18 +3014,19 @@ enum class MAV_ODID_ID_TYPE {
     MAV_ODID_ID_TYPE_UTM_ASSIGNED_UUID = 3
 };
 
-enum class MAV_ODID_UA_TYPE {
+enum class MAV_ODID_UA_TYPE
+{
     // No UA (Unmanned Aircraft) type defined.
     MAV_ODID_UA_TYPE_NONE = 0,
     // Aeroplane/Airplane. Fixed wing.
     MAV_ODID_UA_TYPE_AEROPLANE = 1,
-    // Rotorcraft (including Multirotor).
-    MAV_ODID_UA_TYPE_ROTORCRAFT = 2,
+    // Helicopter or multirotor.
+    MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR = 2,
     // Gyroplane.
     MAV_ODID_UA_TYPE_GYROPLANE = 3,
     // VTOL (Vertical Take-Off and Landing). Fixed wing aircraft that can take off
     // vertically.
-    MAV_ODID_UA_TYPE_VTOL = 4,
+    MAV_ODID_UA_TYPE_HYBRID_LIFT = 4,
     // Ornithopter.
     MAV_ODID_UA_TYPE_ORNITHOPTER = 5,
     // Glider.
@@ -2420,7 +3039,7 @@ enum class MAV_ODID_UA_TYPE {
     MAV_ODID_UA_TYPE_CAPTIVE_BALLOON = 9,
     // Airship. E.g. a blimp.
     MAV_ODID_UA_TYPE_AIRSHIP = 10,
-    // Free Fall/Parachute.
+    // Free Fall/Parachute (unpowered).
     MAV_ODID_UA_TYPE_FREE_FALL_PARACHUTE = 11,
     // Rocket.
     MAV_ODID_UA_TYPE_ROCKET = 12,
@@ -2432,23 +3051,28 @@ enum class MAV_ODID_UA_TYPE {
     MAV_ODID_UA_TYPE_OTHER = 15
 };
 
-enum class MAV_ODID_STATUS {
+enum class MAV_ODID_STATUS
+{
     // The status of the (UA) Unmanned Aircraft is undefined.
     MAV_ODID_STATUS_UNDECLARED = 0,
     // The UA is on the ground.
     MAV_ODID_STATUS_GROUND = 1,
     // The UA is in the air.
-    MAV_ODID_STATUS_AIRBORNE = 2
+    MAV_ODID_STATUS_AIRBORNE = 2,
+    // The UA is having an emergency.
+    MAV_ODID_STATUS_EMERGENCY = 3
 };
 
-enum class MAV_ODID_HEIGHT_REF {
+enum class MAV_ODID_HEIGHT_REF
+{
     // The height field is relative to the take-off location.
     MAV_ODID_HEIGHT_REF_OVER_TAKEOFF = 0,
     // The height field is relative to ground.
     MAV_ODID_HEIGHT_REF_OVER_GROUND = 1
 };
 
-enum class MAV_ODID_HOR_ACC {
+enum class MAV_ODID_HOR_ACC
+{
     // The horizontal accuracy is unknown.
     MAV_ODID_HOR_ACC_UNKNOWN = 0,
     // The horizontal accuracy is smaller than 10 Nautical Miles. 18.52 km.
@@ -2477,7 +3101,8 @@ enum class MAV_ODID_HOR_ACC {
     MAV_ODID_HOR_ACC_1_METER = 12
 };
 
-enum class MAV_ODID_VER_ACC {
+enum class MAV_ODID_VER_ACC
+{
     // The vertical accuracy is unknown.
     MAV_ODID_VER_ACC_UNKNOWN = 0,
     // The vertical accuracy is smaller than 150 meter.
@@ -2494,7 +3119,8 @@ enum class MAV_ODID_VER_ACC {
     MAV_ODID_VER_ACC_1_METER = 6
 };
 
-enum class MAV_ODID_SPEED_ACC {
+enum class MAV_ODID_SPEED_ACC
+{
     // The speed accuracy is unknown.
     MAV_ODID_SPEED_ACC_UNKNOWN = 0,
     // The speed accuracy is smaller than 10 meters per second.
@@ -2507,42 +3133,44 @@ enum class MAV_ODID_SPEED_ACC {
     MAV_ODID_SPEED_ACC_0_3_METERS_PER_SECOND = 4
 };
 
-enum class MAV_ODID_TIME_ACC {
+enum class MAV_ODID_TIME_ACC
+{
     // The timestamp accuracy is unknown.
     MAV_ODID_TIME_ACC_UNKNOWN = 0,
-    // The timestamp accuracy is smaller than 0.1 second.
+    // The timestamp accuracy is smaller than or equal to 0.1 second.
     MAV_ODID_TIME_ACC_0_1_SECOND = 1,
-    // The timestamp accuracy is smaller than 0.2 second.
+    // The timestamp accuracy is smaller than or equal to 0.2 second.
     MAV_ODID_TIME_ACC_0_2_SECOND = 2,
-    // The timestamp accuracy is smaller than 0.3 second.
+    // The timestamp accuracy is smaller than or equal to 0.3 second.
     MAV_ODID_TIME_ACC_0_3_SECOND = 3,
-    // The timestamp accuracy is smaller than 0.4 second.
+    // The timestamp accuracy is smaller than or equal to 0.4 second.
     MAV_ODID_TIME_ACC_0_4_SECOND = 4,
-    // The timestamp accuracy is smaller than 0.5 second.
+    // The timestamp accuracy is smaller than or equal to 0.5 second.
     MAV_ODID_TIME_ACC_0_5_SECOND = 5,
-    // The timestamp accuracy is smaller than 0.6 second.
+    // The timestamp accuracy is smaller than or equal to 0.6 second.
     MAV_ODID_TIME_ACC_0_6_SECOND = 6,
-    // The timestamp accuracy is smaller than 0.7 second.
+    // The timestamp accuracy is smaller than or equal to 0.7 second.
     MAV_ODID_TIME_ACC_0_7_SECOND = 7,
-    // The timestamp accuracy is smaller than 0.8 second.
+    // The timestamp accuracy is smaller than or equal to 0.8 second.
     MAV_ODID_TIME_ACC_0_8_SECOND = 8,
-    // The timestamp accuracy is smaller than 0.9 second.
+    // The timestamp accuracy is smaller than or equal to 0.9 second.
     MAV_ODID_TIME_ACC_0_9_SECOND = 9,
-    // The timestamp accuracy is smaller than 1.0 second.
+    // The timestamp accuracy is smaller than or equal to 1.0 second.
     MAV_ODID_TIME_ACC_1_0_SECOND = 10,
-    // The timestamp accuracy is smaller than 1.1 second.
+    // The timestamp accuracy is smaller than or equal to 1.1 second.
     MAV_ODID_TIME_ACC_1_1_SECOND = 11,
-    // The timestamp accuracy is smaller than 1.2 second.
+    // The timestamp accuracy is smaller than or equal to 1.2 second.
     MAV_ODID_TIME_ACC_1_2_SECOND = 12,
-    // The timestamp accuracy is smaller than 1.3 second.
+    // The timestamp accuracy is smaller than or equal to 1.3 second.
     MAV_ODID_TIME_ACC_1_3_SECOND = 13,
-    // The timestamp accuracy is smaller than 1.4 second.
+    // The timestamp accuracy is smaller than or equal to 1.4 second.
     MAV_ODID_TIME_ACC_1_4_SECOND = 14,
-    // The timestamp accuracy is smaller than 1.5 second.
+    // The timestamp accuracy is smaller than or equal to 1.5 second.
     MAV_ODID_TIME_ACC_1_5_SECOND = 15
 };
 
-enum class MAV_ODID_AUTH_TYPE {
+enum class MAV_ODID_AUTH_TYPE
+{
     // No authentication type is specified.
     MAV_ODID_AUTH_TYPE_NONE = 0,
     // Signature for the UAS (Unmanned Aircraft System) ID.
@@ -2555,31 +3183,305 @@ enum class MAV_ODID_AUTH_TYPE {
     MAV_ODID_AUTH_TYPE_NETWORK_REMOTE_ID = 4
 };
 
-enum class MAV_ODID_DESC_TYPE {
+enum class MAV_ODID_DESC_TYPE
+{
     // Free-form text description of the purpose of the flight.
     MAV_ODID_DESC_TYPE_TEXT = 0
 };
 
-enum class MAV_ODID_LOCATION_SRC {
+enum class MAV_ODID_OPERATOR_LOCATION_TYPE
+{
     // The location of the operator is the same as the take-off location.
-    MAV_ODID_LOCATION_SRC_TAKEOFF = 0,
+    MAV_ODID_OPERATOR_LOCATION_TYPE_TAKEOFF = 0,
     // The location of the operator is based on live GNSS data.
-    MAV_ODID_LOCATION_SRC_LIVE_GNSS = 1,
+    MAV_ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS = 1,
     // The location of the operator is a fixed location.
-    MAV_ODID_LOCATION_SRC_FIXED = 2
+    MAV_ODID_OPERATOR_LOCATION_TYPE_FIXED = 2
 };
 
-enum class MAV_ODID_OPERATOR_ID_TYPE {
+enum class MAV_ODID_CLASSIFICATION_TYPE
+{
+    // The classification type for the UA is undeclared.
+    MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED = 0,
+    // The classification type for the UA follows EU (European Union) specifications.
+    MAV_ODID_CLASSIFICATION_TYPE_EU = 1
+};
+
+enum class MAV_ODID_CATEGORY_EU
+{
+    // The category for the UA, according to the EU specification, is undeclared.
+    MAV_ODID_CATEGORY_EU_UNDECLARED = 0,
+    // The category for the UA, according to the EU specification, is the Open category.
+    MAV_ODID_CATEGORY_EU_OPEN = 1,
+    // The category for the UA, according to the EU specification, is the Specific
+    // category.
+    MAV_ODID_CATEGORY_EU_SPECIFIC = 2,
+    // The category for the UA, according to the EU specification, is the Certified
+    // category.
+    MAV_ODID_CATEGORY_EU_CERTIFIED = 3
+};
+
+enum class MAV_ODID_CLASS_EU
+{
+    // The class for the UA, according to the EU specification, is undeclared.
+    MAV_ODID_CLASS_EU_UNDECLARED = 0,
+    // The class for the UA, according to the EU specification, is Class 0.
+    MAV_ODID_CLASS_EU_CLASS_0 = 1,
+    // The class for the UA, according to the EU specification, is Class 1.
+    MAV_ODID_CLASS_EU_CLASS_1 = 2,
+    // The class for the UA, according to the EU specification, is Class 2.
+    MAV_ODID_CLASS_EU_CLASS_2 = 3,
+    // The class for the UA, according to the EU specification, is Class 3.
+    MAV_ODID_CLASS_EU_CLASS_3 = 4,
+    // The class for the UA, according to the EU specification, is Class 4.
+    MAV_ODID_CLASS_EU_CLASS_4 = 5,
+    // The class for the UA, according to the EU specification, is Class 5.
+    MAV_ODID_CLASS_EU_CLASS_5 = 6,
+    // The class for the UA, according to the EU specification, is Class 6.
+    MAV_ODID_CLASS_EU_CLASS_6 = 7
+};
+
+enum class MAV_ODID_OPERATOR_ID_TYPE
+{
     // CAA (Civil Aviation Authority) registered operator ID.
     MAV_ODID_OPERATOR_ID_TYPE_CAA = 0
 };
 
 // Tune formats (used for vehicle buzzer/tone generation).
-enum class TUNE_FORMAT {
+enum class TUNE_FORMAT
+{
     // Format is QBasic 1.1 Play: https://www.qbasic.net/en/reference/qb11/Statement/PLAY-006.htm.
     TUNE_FORMAT_QBASIC1_1 = 1,
     // Format is Modern Music Markup Language (MML): https://en.wikipedia.org/wiki/Music_Macro_Language#Modern_MML.
     TUNE_FORMAT_MML_MODERN = 2
+};
+
+// Component capability flags (Bitmap)
+enum class COMPONENT_CAP_FLAGS
+{
+    // Component has parameters, and supports the parameter protocol (PARAM messages).
+    COMPONENT_CAP_FLAGS_PARAM = 1,
+    // Component has parameters, and supports the extended parameter protocol (PARAM_EXT
+    // messages).
+    COMPONENT_CAP_FLAGS_PARAM_EXT = 2
+};
+
+// Type of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html
+enum class AIS_TYPE
+{
+    // Not available (default).
+    AIS_TYPE_UNKNOWN = 0,
+    AIS_TYPE_RESERVED_1 = 1,
+    AIS_TYPE_RESERVED_2 = 2,
+    AIS_TYPE_RESERVED_3 = 3,
+    AIS_TYPE_RESERVED_4 = 4,
+    AIS_TYPE_RESERVED_5 = 5,
+    AIS_TYPE_RESERVED_6 = 6,
+    AIS_TYPE_RESERVED_7 = 7,
+    AIS_TYPE_RESERVED_8 = 8,
+    AIS_TYPE_RESERVED_9 = 9,
+    AIS_TYPE_RESERVED_10 = 10,
+    AIS_TYPE_RESERVED_11 = 11,
+    AIS_TYPE_RESERVED_12 = 12,
+    AIS_TYPE_RESERVED_13 = 13,
+    AIS_TYPE_RESERVED_14 = 14,
+    AIS_TYPE_RESERVED_15 = 15,
+    AIS_TYPE_RESERVED_16 = 16,
+    AIS_TYPE_RESERVED_17 = 17,
+    AIS_TYPE_RESERVED_18 = 18,
+    AIS_TYPE_RESERVED_19 = 19,
+    // Wing In Ground effect.
+    AIS_TYPE_WIG = 20,
+    AIS_TYPE_WIG_HAZARDOUS_A = 21,
+    AIS_TYPE_WIG_HAZARDOUS_B = 22,
+    AIS_TYPE_WIG_HAZARDOUS_C = 23,
+    AIS_TYPE_WIG_HAZARDOUS_D = 24,
+    AIS_TYPE_WIG_RESERVED_1 = 25,
+    AIS_TYPE_WIG_RESERVED_2 = 26,
+    AIS_TYPE_WIG_RESERVED_3 = 27,
+    AIS_TYPE_WIG_RESERVED_4 = 28,
+    AIS_TYPE_WIG_RESERVED_5 = 29,
+    AIS_TYPE_FISHING = 30,
+    AIS_TYPE_TOWING = 31,
+    // Towing: length exceeds 200m or breadth exceeds 25m.
+    AIS_TYPE_TOWING_LARGE = 32,
+    // Dredging or other underwater ops.
+    AIS_TYPE_DREDGING = 33,
+    AIS_TYPE_DIVING = 34,
+    AIS_TYPE_MILITARY = 35,
+    AIS_TYPE_SAILING = 36,
+    AIS_TYPE_PLEASURE = 37,
+    AIS_TYPE_RESERVED_20 = 38,
+    AIS_TYPE_RESERVED_21 = 39,
+    // High Speed Craft.
+    AIS_TYPE_HSC = 40,
+    AIS_TYPE_HSC_HAZARDOUS_A = 41,
+    AIS_TYPE_HSC_HAZARDOUS_B = 42,
+    AIS_TYPE_HSC_HAZARDOUS_C = 43,
+    AIS_TYPE_HSC_HAZARDOUS_D = 44,
+    AIS_TYPE_HSC_RESERVED_1 = 45,
+    AIS_TYPE_HSC_RESERVED_2 = 46,
+    AIS_TYPE_HSC_RESERVED_3 = 47,
+    AIS_TYPE_HSC_RESERVED_4 = 48,
+    AIS_TYPE_HSC_UNKNOWN = 49,
+    AIS_TYPE_PILOT = 50,
+    // Search And Rescue vessel.
+    AIS_TYPE_SAR = 51,
+    AIS_TYPE_TUG = 52,
+    AIS_TYPE_PORT_TENDER = 53,
+    // Anti-pollution equipment.
+    AIS_TYPE_ANTI_POLLUTION = 54,
+    AIS_TYPE_LAW_ENFORCEMENT = 55,
+    AIS_TYPE_SPARE_LOCAL_1 = 56,
+    AIS_TYPE_SPARE_LOCAL_2 = 57,
+    AIS_TYPE_MEDICAL_TRANSPORT = 58,
+    // Noncombatant ship according to RR Resolution No. 18.
+    AIS_TYPE_NONECOMBATANT = 59,
+    AIS_TYPE_PASSENGER = 60,
+    AIS_TYPE_PASSENGER_HAZARDOUS_A = 61,
+    AIS_TYPE_PASSENGER_HAZARDOUS_B = 62,
+    AIS_TYPE_AIS_TYPE_PASSENGER_HAZARDOUS_C = 63,
+    AIS_TYPE_PASSENGER_HAZARDOUS_D = 64,
+    AIS_TYPE_PASSENGER_RESERVED_1 = 65,
+    AIS_TYPE_PASSENGER_RESERVED_2 = 66,
+    AIS_TYPE_PASSENGER_RESERVED_3 = 67,
+    AIS_TYPE_AIS_TYPE_PASSENGER_RESERVED_4 = 68,
+    AIS_TYPE_PASSENGER_UNKNOWN = 69,
+    AIS_TYPE_CARGO = 70,
+    AIS_TYPE_CARGO_HAZARDOUS_A = 71,
+    AIS_TYPE_CARGO_HAZARDOUS_B = 72,
+    AIS_TYPE_CARGO_HAZARDOUS_C = 73,
+    AIS_TYPE_CARGO_HAZARDOUS_D = 74,
+    AIS_TYPE_CARGO_RESERVED_1 = 75,
+    AIS_TYPE_CARGO_RESERVED_2 = 76,
+    AIS_TYPE_CARGO_RESERVED_3 = 77,
+    AIS_TYPE_CARGO_RESERVED_4 = 78,
+    AIS_TYPE_CARGO_UNKNOWN = 79,
+    AIS_TYPE_TANKER = 80,
+    AIS_TYPE_TANKER_HAZARDOUS_A = 81,
+    AIS_TYPE_TANKER_HAZARDOUS_B = 82,
+    AIS_TYPE_TANKER_HAZARDOUS_C = 83,
+    AIS_TYPE_TANKER_HAZARDOUS_D = 84,
+    AIS_TYPE_TANKER_RESERVED_1 = 85,
+    AIS_TYPE_TANKER_RESERVED_2 = 86,
+    AIS_TYPE_TANKER_RESERVED_3 = 87,
+    AIS_TYPE_TANKER_RESERVED_4 = 88,
+    AIS_TYPE_TANKER_UNKNOWN = 89,
+    AIS_TYPE_OTHER = 90,
+    AIS_TYPE_OTHER_HAZARDOUS_A = 91,
+    AIS_TYPE_OTHER_HAZARDOUS_B = 92,
+    AIS_TYPE_OTHER_HAZARDOUS_C = 93,
+    AIS_TYPE_OTHER_HAZARDOUS_D = 94,
+    AIS_TYPE_OTHER_RESERVED_1 = 95,
+    AIS_TYPE_OTHER_RESERVED_2 = 96,
+    AIS_TYPE_OTHER_RESERVED_3 = 97,
+    AIS_TYPE_OTHER_RESERVED_4 = 98,
+    AIS_TYPE_OTHER_UNKNOWN = 99
+};
+
+// Navigational status of AIS vessel, enum duplicated from AIS standard, https://gpsd.gitlab.io/gpsd/AIVDM.html
+enum class AIS_NAV_STATUS
+{
+    // Under way using engine.
+    UNDER_WAY = 0,
+    AIS_NAV_ANCHORED = 1,
+    AIS_NAV_UN_COMMANDED = 2,
+    AIS_NAV_RESTRICTED_MANOEUVERABILITY = 3,
+    AIS_NAV_DRAUGHT_CONSTRAINED = 4,
+    AIS_NAV_MOORED = 5,
+    AIS_NAV_AGROUND = 6,
+    AIS_NAV_FISHING = 7,
+    AIS_NAV_SAILING = 8,
+    AIS_NAV_RESERVED_HSC = 9,
+    AIS_NAV_RESERVED_WIG = 10,
+    AIS_NAV_RESERVED_1 = 11,
+    AIS_NAV_RESERVED_2 = 12,
+    AIS_NAV_RESERVED_3 = 13,
+    // Search And Rescue Transponder.
+    AIS_NAV_AIS_SART = 14,
+    // Not available (default).
+    AIS_NAV_UNKNOWN = 15
+};
+
+// These flags are used in the AIS_VESSEL.fields bitmask to indicate validity of data
+// in the other message fields. When set, the data is valid.
+enum class AIS_FLAGS
+{
+    // 1 = Position accuracy less than 10m, 0 = position accuracy greater than 10m.
+    AIS_FLAGS_POSITION_ACCURACY = 1,
+    AIS_FLAGS_VALID_COG = 2,
+    AIS_FLAGS_VALID_VELOCITY = 4,
+    // 1 = Velocity over 52.5765m/s (102.2 knots)
+    AIS_FLAGS_HIGH_VELOCITY = 8,
+    AIS_FLAGS_VALID_TURN_RATE = 16,
+    // Only the sign of the returned turn rate value is valid, either greater than
+    // 5deg/30s or less than -5deg/30s
+    AIS_FLAGS_TURN_RATE_SIGN_ONLY = 32,
+    AIS_FLAGS_VALID_DIMENSIONS = 64,
+    // Distance to bow is larger than 511m
+    AIS_FLAGS_LARGE_BOW_DIMENSION = 128,
+    // Distance to stern is larger than 511m
+    AIS_FLAGS_LARGE_STERN_DIMENSION = 256,
+    // Distance to port side is larger than 63m
+    AIS_FLAGS_LARGE_PORT_DIMENSION = 512,
+    // Distance to starboard side is larger than 63m
+    AIS_FLAGS_LARGE_STARBOARD_DIMENSION = 1024,
+    AIS_FLAGS_VALID_CALLSIGN = 2048,
+    AIS_FLAGS_VALID_NAME = 4096
+};
+
+// List of possible units where failures can be injected.
+enum class FAILURE_UNIT
+{
+    FAILURE_UNIT_SENSOR_GYRO = 0,
+    FAILURE_UNIT_SENSOR_ACCEL = 1,
+    FAILURE_UNIT_SENSOR_MAG = 2,
+    FAILURE_UNIT_SENSOR_BARO = 3,
+    FAILURE_UNIT_SENSOR_GPS = 4,
+    FAILURE_UNIT_SENSOR_OPTICAL_FLOW = 5,
+    FAILURE_UNIT_SENSOR_VIO = 6,
+    FAILURE_UNIT_SENSOR_DISTANCE_SENSOR = 7,
+    FAILURE_UNIT_SENSOR_AIRSPEED = 8,
+    FAILURE_UNIT_SYSTEM_BATTERY = 100,
+    FAILURE_UNIT_SYSTEM_MOTOR = 101,
+    FAILURE_UNIT_SYSTEM_SERVO = 102,
+    FAILURE_UNIT_SYSTEM_AVOIDANCE = 103,
+    FAILURE_UNIT_SYSTEM_RC_SIGNAL = 104,
+    FAILURE_UNIT_SYSTEM_MAVLINK_SIGNAL = 105
+};
+
+// List of possible failure type to inject.
+enum class FAILURE_TYPE
+{
+    // No failure injected, used to reset a previous failure.
+    FAILURE_TYPE_OK = 0,
+    // Sets unit off, so completely non-responsive.
+    FAILURE_TYPE_OFF = 1,
+    // Unit is stuck e.g. keeps reporting the same value.
+    FAILURE_TYPE_STUCK = 2,
+    // Unit is reporting complete garbage.
+    FAILURE_TYPE_GARBAGE = 3,
+    // Unit is consistently wrong.
+    FAILURE_TYPE_WRONG = 4,
+    // Unit is slow, so e.g. reporting at slower than expected rate.
+    FAILURE_TYPE_SLOW = 5,
+    // Data of unit is delayed in time.
+    FAILURE_TYPE_DELAYED = 6,
+    // Unit is sometimes working, sometimes not.
+    FAILURE_TYPE_INTERMITTENT = 7
+};
+
+// Winch status flags used in WINCH_STATUS
+enum class MAV_WINCH_STATUS_FLAG
+{
+    // Winch is healthy
+    MAV_WINCH_STATUS_HEALTHY = 1,
+    // Winch thread is fully retracted
+    MAV_WINCH_STATUS_FULLY_RETRACTED = 2,
+    // Winch motor is moving
+    MAV_WINCH_STATUS_MOVING = 4,
+    // Winch clutch is engaged allowing motor to move freely
+    MAV_WINCH_STATUS_CLUTCH_ENGAGED = 8
 };
 
 // The heartbeat message shows that a system or component is present and responding.
@@ -2587,7 +3489,8 @@ enum class TUNE_FORMAT {
 // receiving system to treat further messages from this system appropriately (e.g.
 // by laying out the user interface based on the autopilot). This microservice is
 // documented at https://mavlink.io/en/services/heartbeat.html
-class MavLinkHeartbeat : public MavLinkMessageBase {
+class MavLinkHeartbeat : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 0;
     MavLinkHeartbeat() { msgid = kMessageId; }
@@ -2609,6 +3512,7 @@ public:
     // data type: uint8_t_mavlink_version
     uint8_t mavlink_version = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2626,7 +3530,8 @@ protected:
 // should start emergency procedures autonomously. After a failure occurred it should
 // first move from active to critical to allow manual intervention and then move to
 // emergency after a certain timeout.
-class MavLinkSysStatus : public MavLinkMessageBase {
+class MavLinkSysStatus : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 1;
     MavLinkSysStatus() { msgid = kMessageId; }
@@ -2663,6 +3568,7 @@ public:
     // Autopilot-specific errors
     uint16_t errors_count4 = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2670,7 +3576,8 @@ protected:
 
 // The system time is the time of the master clock, typically the computer clock of
 // the main onboard computer.
-class MavLinkSystemTime : public MavLinkMessageBase {
+class MavLinkSystemTime : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 2;
     MavLinkSystemTime() { msgid = kMessageId; }
@@ -2679,6 +3586,7 @@ public:
     // Timestamp (time since system boot).
     uint32_t time_boot_ms = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2687,13 +3595,14 @@ protected:
 // A ping message either requesting or responding to a ping. This allows to measure
 // the system latencies, including serial port, radio modem and UDP connections. The
 // ping microservice is documented at https://mavlink.io/en/services/ping.html
-class MavLinkPing : public MavLinkMessageBase {
+class MavLinkPing : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 4;
     MavLinkPing() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // PING sequence
     uint32_t seq = 0;
@@ -2704,13 +3613,15 @@ public:
     // a ping response and number is the component id of the requesting component.
     uint8_t target_component = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Request to control this MAV
-class MavLinkChangeOperatorControl : public MavLinkMessageBase {
+class MavLinkChangeOperatorControl : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 5;
     MavLinkChangeOperatorControl() { msgid = kMessageId; }
@@ -2727,13 +3638,15 @@ public:
     // NULL terminated. The characters may involve A-Z, a-z, 0-9, and "!?,.-"
     char passkey[25] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Accept / deny control of this MAV
-class MavLinkChangeOperatorControlAck : public MavLinkMessageBase {
+class MavLinkChangeOperatorControlAck : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 6;
     MavLinkChangeOperatorControlAck() { msgid = kMessageId; }
@@ -2745,6 +3658,7 @@ public:
     // 3: NACK: Already under control
     uint8_t ack = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2753,13 +3667,15 @@ protected:
 // Emit an encrypted signature / key identifying this system. PLEASE NOTE: This protocol
 // has been kept simple, so transmitting the key requires an encrypted channel for
 // true safety.
-class MavLinkAuthKey : public MavLinkMessageBase {
+class MavLinkAuthKey : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 7;
     MavLinkAuthKey() { msgid = kMessageId; }
     // key
     char key[32] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2767,7 +3683,8 @@ protected:
 
 // Status generated in each node in the communication chain and injected into MAVLink
 // stream.
-class MavLinkLinkNodeStatus : public MavLinkMessageBase {
+class MavLinkLinkNodeStatus : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 8;
     MavLinkLinkNodeStatus() { msgid = kMessageId; }
@@ -2794,6 +3711,7 @@ public:
     // Messages lost (estimated from counting seq)
     uint32_t messages_lost = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2801,7 +3719,8 @@ protected:
 
 // Set the system mode, as defined by enum MAV_MODE. There is no target component
 // id as the mode is by definition for the overall aircraft, not only for one component.
-class MavLinkSetMode : public MavLinkMessageBase {
+class MavLinkSetMode : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 11;
     MavLinkSetMode() { msgid = kMessageId; }
@@ -2812,6 +3731,35 @@ public:
     // The new autopilot-specific mode. This field can be ignored by an autopilot.
     uint32_t custom_mode = 0;
     virtual std::string toJSon();
+
+protected:
+    virtual int pack(char* buffer) const;
+    virtual int unpack(const char* buffer);
+};
+
+// Response from a PARAM_SET message when it is used in a transaction.
+class MavLinkParamAckTransaction : public MavLinkMessageBase
+{
+public:
+    const static uint8_t kMessageId = 19;
+    MavLinkParamAckTransaction() { msgid = kMessageId; }
+    // Id of system that sent PARAM_SET message.
+    uint8_t target_system = 0;
+    // Id of system that sent PARAM_SET message.
+    uint8_t target_component = 0;
+    // Parameter id, terminated by NULL if the length is less than 16 human-readable
+    // chars and WITHOUT null termination (NULL) byte if the length is exactly 16
+    // chars - applications have to provide 16+1 bytes storage if the ID is stored
+    // as string
+    char param_id[16] = { 0 };
+    // Parameter value (new value if PARAM_ACCEPTED, current value otherwise)
+    float param_value = 0;
+    // Parameter type.
+    uint8_t param_type = 0;
+    // Result code.
+    uint8_t param_result = 0;
+    virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2823,7 +3771,8 @@ protected:
 // of possible parameter names. Thus the same GCS can store different parameters for
 // different autopilots. See also https://mavlink.io/en/services/parameter.html for
 // a full documentation of QGroundControl and IMU code.
-class MavLinkParamRequestRead : public MavLinkMessageBase {
+class MavLinkParamRequestRead : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 20;
     MavLinkParamRequestRead() { msgid = kMessageId; }
@@ -2840,6 +3789,7 @@ public:
     // param id will be ignored)
     int16_t param_index = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2847,7 +3797,8 @@ protected:
 
 // Request all parameters of this component. After this request, all parameters are
 // emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html
-class MavLinkParamRequestList : public MavLinkMessageBase {
+class MavLinkParamRequestList : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 21;
     MavLinkParamRequestList() { msgid = kMessageId; }
@@ -2856,6 +3807,7 @@ public:
     // Component ID
     uint8_t target_component = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2865,7 +3817,8 @@ protected:
 // in the message allows the recipient to keep track of received parameters and allows
 // him to re-request missing parameters after a loss or timeout. The parameter microservice
 // is documented at https://mavlink.io/en/services/parameter.html
-class MavLinkParamValue : public MavLinkMessageBase {
+class MavLinkParamValue : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 22;
     MavLinkParamValue() { msgid = kMessageId; }
@@ -2883,18 +3836,22 @@ public:
     // Index of this onboard parameter
     uint16_t param_index = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
-// Set a parameter value (write new value to permanent storage). IMPORTANT: The receiving
-// component should acknowledge the new parameter value by sending a PARAM_VALUE message
-// to all communication partners. This will also ensure that multiple GCS all have
-// an up-to-date list of all parameters. If the sending GCS did not receive a PARAM_VALUE
+// Set a parameter value (write new value to permanent storage). Within a transaction
+// the recieving componenent should respond with PARAM_ACK_TRANSACTION to the setter
+// component. IMPORTANT: If sent outside a transaction the receiving component should
+// acknowledge the new parameter value by broadcasting a PARAM_VALUE message to all
+// communication partners (broadcasting ensures that multiple GCS all have an up-to-date
+// list of all parameters). If the sending GCS did not receive a PARAM_VALUE or PARAM_ACK_TRANSACTION
 // message within its timeout time, it should re-send the PARAM_SET message. The parameter
 // microservice is documented at https://mavlink.io/en/services/parameter.html
-class MavLinkParamSet : public MavLinkMessageBase {
+class MavLinkParamSet : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 23;
     MavLinkParamSet() { msgid = kMessageId; }
@@ -2912,6 +3869,7 @@ public:
     // Onboard parameter type.
     uint8_t param_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2920,13 +3878,14 @@ protected:
 // The global position, as returned by the Global Positioning System (GPS). This is
 // NOT the global position estimate of the system, but rather a RAW sensor value.
 // See message GLOBAL_POSITION for the global position estimate.
-class MavLinkGpsRawInt : public MavLinkMessageBase {
+class MavLinkGpsRawInt : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 24;
     MavLinkGpsRawInt() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // GPS fix type.
     uint8_t fix_type = 0;
@@ -2950,15 +3909,20 @@ public:
     uint8_t satellites_visible = 0;
     // Altitude (above WGS84, EGM96 ellipsoid). Positive for up.
     int32_t alt_ellipsoid = 0;
-    // Position uncertainty. Positive for up.
+    // Position uncertainty.
     uint32_t h_acc = 0;
-    // Altitude uncertainty. Positive for up.
+    // Altitude uncertainty.
     uint32_t v_acc = 0;
-    // Speed uncertainty. Positive for up.
+    // Speed uncertainty.
     uint32_t vel_acc = 0;
     // Heading / track uncertainty
     uint32_t hdg_acc = 0;
+    // Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use
+    // 65535 if this GPS is configured to provide yaw and is currently unable to provide
+    // it. Use 36000 for north.
+    uint16_t yaw = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2968,7 +3932,8 @@ protected:
 // status information about each satellite visible to the receiver. See message GLOBAL_POSITION
 // for the global position estimate. This message can contain information for up to
 // 20 satellites.
-class MavLinkGpsStatus : public MavLinkMessageBase {
+class MavLinkGpsStatus : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 25;
     MavLinkGpsStatus() { msgid = kMessageId; }
@@ -2985,6 +3950,7 @@ public:
     // Signal to noise ratio of satellite
     uint8_t satellite_snr[20] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -2992,7 +3958,8 @@ protected:
 
 // The RAW IMU readings for the usual 9DOF sensor setup. This message should contain
 // the scaled values to the described units
-class MavLinkScaledImu : public MavLinkMessageBase {
+class MavLinkScaledImu : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 26;
     MavLinkScaledImu() { msgid = kMessageId; }
@@ -3020,6 +3987,7 @@ public:
     // it must send 1 (0.01C).
     int16_t temperature = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3028,13 +3996,14 @@ protected:
 // The RAW IMU readings for a 9DOF sensor, which is identified by the id (default
 // IMU1). This message should always contain the true raw values without any scaling
 // to allow data capture and system debugging.
-class MavLinkRawImu : public MavLinkMessageBase {
+class MavLinkRawImu : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 27;
     MavLinkRawImu() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // X acceleration (raw)
     int16_t xacc = 0;
@@ -3061,6 +4030,7 @@ public:
     // it must send 1 (0.01C).
     int16_t temperature = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3069,13 +4039,14 @@ protected:
 // The RAW pressure readings for the typical setup of one absolute pressure and one
 // differential pressure sensor. The sensor values should be the raw, UNSCALED ADC
 // values.
-class MavLinkRawPressure : public MavLinkMessageBase {
+class MavLinkRawPressure : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 28;
     MavLinkRawPressure() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Absolute pressure (raw)
     int16_t press_abs = 0;
@@ -3086,6 +4057,7 @@ public:
     // Raw Temperature measurement (raw)
     int16_t temperature = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3093,7 +4065,8 @@ protected:
 
 // The pressure readings for the typical setup of one absolute and differential pressure
 // sensor. The units are as specified in each field.
-class MavLinkScaledPressure : public MavLinkMessageBase {
+class MavLinkScaledPressure : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 29;
     MavLinkScaledPressure() { msgid = kMessageId; }
@@ -3103,16 +4076,20 @@ public:
     float press_abs = 0;
     // Differential pressure 1
     float press_diff = 0;
-    // Temperature
+    // Absolute pressure temperature
     int16_t temperature = 0;
+    // Differential pressure temperature (UINT16_MAX, if not available)
+    int16_t temperature_press_diff = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right).
-class MavLinkAttitude : public MavLinkMessageBase {
+class MavLinkAttitude : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 30;
     MavLinkAttitude() { msgid = kMessageId; }
@@ -3131,6 +4108,7 @@ public:
     // Yaw angular speed
     float yawspeed = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3139,7 +4117,8 @@ protected:
 // The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right),
 // expressed as quaternion. Quaternion order is w, x, y, z and a zero rotation would
 // be expressed as (1 0 0 0).
-class MavLinkAttitudeQuaternion : public MavLinkMessageBase {
+class MavLinkAttitudeQuaternion : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 31;
     MavLinkAttitudeQuaternion() { msgid = kMessageId; }
@@ -3168,6 +4147,7 @@ public:
     // mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode.
     float repr_offset_q[4] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3175,7 +4155,8 @@ protected:
 
 // The filtered local position (e.g. fused computer vision and accelerometers). Coordinate
 // frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)
-class MavLinkLocalPositionNed : public MavLinkMessageBase {
+class MavLinkLocalPositionNed : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 32;
     MavLinkLocalPositionNed() { msgid = kMessageId; }
@@ -3194,6 +4175,7 @@ public:
     // Z Speed
     float vz = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3202,7 +4184,8 @@ protected:
 // The filtered global position (e.g. fused GPS and accelerometers). The position
 // is in GPS-frame (right-handed, Z-up). It is designed as scaled integer message
 // since the resolution of float is not sufficient.
-class MavLinkGlobalPositionInt : public MavLinkMessageBase {
+class MavLinkGlobalPositionInt : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 33;
     MavLinkGlobalPositionInt() { msgid = kMessageId; }
@@ -3226,6 +4209,7 @@ public:
     // Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
     uint16_t hdg = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3233,7 +4217,8 @@ protected:
 
 // The scaled values of the RC channels received: (-100%) -10000, (0%) 0, (100%) 10000.
 // Channels that are inactive should be set to UINT16_MAX.
-class MavLinkRcChannelsScaled : public MavLinkMessageBase {
+class MavLinkRcChannelsScaled : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 34;
     MavLinkRcChannelsScaled() { msgid = kMessageId; }
@@ -3262,6 +4247,7 @@ public:
     // [0-254], 255: invalid/unknown.
     uint8_t rssi = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3270,7 +4256,8 @@ protected:
 // The RAW values of the RC channels received. The standard PPM modulation is as follows:
 // 1000 microseconds: 0%, 2000 microseconds: 100%. A value of UINT16_MAX implies the
 // channel is unused. Individual receivers/transmitters might violate this specification.
-class MavLinkRcChannelsRaw : public MavLinkMessageBase {
+class MavLinkRcChannelsRaw : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 35;
     MavLinkRcChannelsRaw() { msgid = kMessageId; }
@@ -3299,6 +4286,7 @@ public:
     // [0-254], 255: invalid/unknown.
     uint8_t rssi = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3307,13 +4295,14 @@ protected:
 // Superseded by ACTUATOR_OUTPUT_STATUS. The RAW values of the servo outputs (for
 // RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation
 // is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.
-class MavLinkServoOutputRaw : public MavLinkMessageBase {
+class MavLinkServoOutputRaw : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 36;
     MavLinkServoOutputRaw() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint32_t time_usec = 0;
     // Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk
     // should use: 0 = MAIN, 1 = AUX.
@@ -3351,6 +4340,7 @@ public:
     // Servo output 16 value
     uint16_t servo16_raw = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3358,7 +4348,8 @@ protected:
 
 // Request a partial list of mission items from the system/component. https://mavlink.io/en/services/mission.html.
 // If start and end index are the same, just send one waypoint.
-class MavLinkMissionRequestPartialList : public MavLinkMessageBase {
+class MavLinkMissionRequestPartialList : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 37;
     MavLinkMissionRequestPartialList() { msgid = kMessageId; }
@@ -3374,6 +4365,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3382,7 +4374,8 @@ protected:
 // This message is sent to the MAV to write a partial list. If start index == end
 // index, only one item will be transmitted / updated. If the start index is NOT 0
 // and above the current list size, this request should be REJECTED!
-class MavLinkMissionWritePartialList : public MavLinkMessageBase {
+class MavLinkMissionWritePartialList : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 38;
     MavLinkMissionWritePartialList() { msgid = kMessageId; }
@@ -3398,6 +4391,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3406,9 +4400,11 @@ protected:
 // Message encoding a mission item. This message is emitted to announce the presence
 // of a mission item and to set a mission item on the system. The mission item can
 // be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame
-// is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). See also
-// https://mavlink.io/en/services/mission.html.
-class MavLinkMissionItem : public MavLinkMessageBase {
+// is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). NaN may
+// be used to indicate an optional/default value (e.g. to use the system's current
+// latitude or yaw rather than a specific value). See also https://mavlink.io/en/services/mission.html.
+class MavLinkMissionItem : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 39;
     MavLinkMissionItem() { msgid = kMessageId; }
@@ -3444,6 +4440,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3451,7 +4448,8 @@ protected:
 
 // Request the information of the mission item with the sequence number seq. The response
 // of the system to this message should be a MISSION_ITEM message. https://mavlink.io/en/services/mission.html
-class MavLinkMissionRequest : public MavLinkMessageBase {
+class MavLinkMissionRequest : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 40;
     MavLinkMissionRequest() { msgid = kMessageId; }
@@ -3464,6 +4462,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3472,7 +4471,8 @@ protected:
 // Set the mission item with sequence number seq as current item. This means that
 // the MAV will continue to this mission item on the shortest path (not following
 // the mission items in-between).
-class MavLinkMissionSetCurrent : public MavLinkMessageBase {
+class MavLinkMissionSetCurrent : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 41;
     MavLinkMissionSetCurrent() { msgid = kMessageId; }
@@ -3483,6 +4483,7 @@ public:
     // Sequence
     uint16_t seq = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3490,20 +4491,23 @@ protected:
 
 // Message that announces the sequence number of the current active mission item.
 // The MAV will fly towards this mission item.
-class MavLinkMissionCurrent : public MavLinkMessageBase {
+class MavLinkMissionCurrent : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 42;
     MavLinkMissionCurrent() { msgid = kMessageId; }
     // Sequence
     uint16_t seq = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Request the overall list of mission items from the system/component.
-class MavLinkMissionRequestList : public MavLinkMessageBase {
+class MavLinkMissionRequestList : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 43;
     MavLinkMissionRequestList() { msgid = kMessageId; }
@@ -3514,6 +4518,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3522,7 +4527,8 @@ protected:
 // This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate
 // a write transaction. The GCS can then request the individual mission item based
 // on the knowledge of the total number of waypoints.
-class MavLinkMissionCount : public MavLinkMessageBase {
+class MavLinkMissionCount : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 44;
     MavLinkMissionCount() { msgid = kMessageId; }
@@ -3535,13 +4541,15 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Delete all mission items at once.
-class MavLinkMissionClearAll : public MavLinkMessageBase {
+class MavLinkMissionClearAll : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 45;
     MavLinkMissionClearAll() { msgid = kMessageId; }
@@ -3552,6 +4560,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3560,13 +4569,15 @@ protected:
 // A certain mission item has been reached. The system will either hold this position
 // (or circle on the orbit) or (if the autocontinue on the WP was set) continue to
 // the next waypoint.
-class MavLinkMissionItemReached : public MavLinkMessageBase {
+class MavLinkMissionItemReached : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 46;
     MavLinkMissionItemReached() { msgid = kMessageId; }
     // Sequence
     uint16_t seq = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3574,7 +4585,8 @@ protected:
 
 // Acknowledgment message during waypoint handling. The type field states if this
 // message is a positive ack (type=0) or if an error happened (type=non-zero).
-class MavLinkMissionAck : public MavLinkMessageBase {
+class MavLinkMissionAck : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 47;
     MavLinkMissionAck() { msgid = kMessageId; }
@@ -3587,6 +4599,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3597,7 +4610,8 @@ protected:
 // enables transform between the local coordinate frame and the global (GPS) coordinate
 // frame, which may be necessary when (for example) indoor and outdoor settings are
 // connected and the MAV should move from in- to outdoor.
-class MavLinkSetGpsGlobalOrigin : public MavLinkMessageBase {
+class MavLinkSetGpsGlobalOrigin : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 48;
     MavLinkSetGpsGlobalOrigin() { msgid = kMessageId; }
@@ -3611,9 +4625,10 @@ public:
     int32_t altitude = 0;
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3622,7 +4637,8 @@ protected:
 // Publishes the GPS co-ordinates of the vehicle local origin (0,0,0) position. Emitted
 // whenever a new GPS-Local position mapping is requested or set - e.g. following
 // SET_GPS_GLOBAL_ORIGIN message.
-class MavLinkGpsGlobalOrigin : public MavLinkMessageBase {
+class MavLinkGpsGlobalOrigin : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 49;
     MavLinkGpsGlobalOrigin() { msgid = kMessageId; }
@@ -3634,9 +4650,10 @@ public:
     int32_t altitude = 0;
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3644,7 +4661,8 @@ protected:
 
 // Bind a RC channel to a parameter. The parameter should change according to the
 // RC channel value.
-class MavLinkParamMapRc : public MavLinkMessageBase {
+class MavLinkParamMapRc : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 50;
     MavLinkParamMapRc() { msgid = kMessageId; }
@@ -3674,6 +4692,7 @@ public:
     // maximum value. (Depends on implementation)
     float param_value_max = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3681,7 +4700,8 @@ protected:
 
 // Request the information of the mission item with the sequence number seq. The response
 // of the system to this message should be a MISSION_ITEM_INT message. https://mavlink.io/en/services/mission.html
-class MavLinkMissionRequestInt : public MavLinkMessageBase {
+class MavLinkMissionRequestInt : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 51;
     MavLinkMissionRequestInt() { msgid = kMessageId; }
@@ -3694,6 +4714,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3701,7 +4722,8 @@ protected:
 
 // A broadcast message to notify any ground station or SDK if a mission, geofence
 // or safe points have changed on the vehicle.
-class MavLinkMissionChanged : public MavLinkMessageBase {
+class MavLinkMissionChanged : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 52;
     MavLinkMissionChanged() { msgid = kMessageId; }
@@ -3717,6 +4739,7 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3725,7 +4748,8 @@ protected:
 // Set a safety zone (volume), which is defined by two corners of a cube. This message
 // can be used to tell the MAV which setpoints/waypoints to accept and which to reject.
 // Safety areas are often enforced by national or competition regulations.
-class MavLinkSafetySetAllowedArea : public MavLinkMessageBase {
+class MavLinkSafetySetAllowedArea : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 54;
     MavLinkSafetySetAllowedArea() { msgid = kMessageId; }
@@ -3749,13 +4773,15 @@ public:
     // z position 2 / Altitude 2
     float p2z = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Read out the safety zone the MAV currently assumes.
-class MavLinkSafetyAllowedArea : public MavLinkMessageBase {
+class MavLinkSafetyAllowedArea : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 55;
     MavLinkSafetyAllowedArea() { msgid = kMessageId; }
@@ -3775,6 +4801,7 @@ public:
     // z position 2 / Altitude 2
     float p2z = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3783,13 +4810,14 @@ protected:
 // The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right),
 // expressed as quaternion. Quaternion order is w, x, y, z and a zero rotation would
 // be expressed as (1 0 0 0).
-class MavLinkAttitudeQuaternionCov : public MavLinkMessageBase {
+class MavLinkAttitudeQuaternionCov : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 61;
     MavLinkAttitudeQuaternionCov() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation)
     float q[4] = { 0 };
@@ -3804,13 +4832,15 @@ public:
     // second row, etc.). If unknown, assign NaN value to first element in the array.
     float covariance[9] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The state of the fixed wing navigation and position controller.
-class MavLinkNavControllerOutput : public MavLinkMessageBase {
+class MavLinkNavControllerOutput : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 62;
     MavLinkNavControllerOutput() { msgid = kMessageId; }
@@ -3831,6 +4861,7 @@ public:
     // Current crosstrack error on x-y plane
     float xtrack_error = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3842,13 +4873,14 @@ protected:
 // for onboard networks / companion computers and higher-bandwidth links and optimized
 // for accuracy and completeness. Please use the GLOBAL_POSITION_INT message for a
 // minimal subset.
-class MavLinkGlobalPositionIntCov : public MavLinkMessageBase {
+class MavLinkGlobalPositionIntCov : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 63;
     MavLinkGlobalPositionIntCov() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Class id of the estimator this estimate originated from.
     uint8_t estimator_type = 0;
@@ -3872,6 +4904,7 @@ public:
     // to first element in the array.
     float covariance[36] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3879,13 +4912,14 @@ protected:
 
 // The filtered local position (e.g. fused computer vision and accelerometers). Coordinate
 // frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)
-class MavLinkLocalPositionNedCov : public MavLinkMessageBase {
+class MavLinkLocalPositionNedCov : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 64;
     MavLinkLocalPositionNedCov() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Class id of the estimator this estimate originated from.
     uint8_t estimator_type = 0;
@@ -3913,6 +4947,7 @@ public:
     // If unknown, assign NaN value to first element in the array.
     float covariance[45] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -3921,7 +4956,8 @@ protected:
 // The PPM values of the RC channels received. The standard PPM modulation is as follows:
 // 1000 microseconds: 0%, 2000 microseconds: 100%. A value of UINT16_MAX implies the
 // channel is unused. Individual receivers/transmitters might violate this specification.
-class MavLinkRcChannels : public MavLinkMessageBase {
+class MavLinkRcChannels : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 65;
     MavLinkRcChannels() { msgid = kMessageId; }
@@ -3971,13 +5007,15 @@ public:
     // [0-254], 255: invalid/unknown.
     uint8_t rssi = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Request a data stream.
-class MavLinkRequestDataStream : public MavLinkMessageBase {
+class MavLinkRequestDataStream : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 66;
     MavLinkRequestDataStream() { msgid = kMessageId; }
@@ -3992,13 +5030,15 @@ public:
     // 1 to start sending, 0 to stop sending.
     uint8_t start_stop = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Data stream status information.
-class MavLinkDataStream : public MavLinkMessageBase {
+class MavLinkDataStream : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 67;
     MavLinkDataStream() { msgid = kMessageId; }
@@ -4009,6 +5049,7 @@ public:
     // 1 stream is enabled, 0 stream is stopped.
     uint8_t on_off = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4017,7 +5058,8 @@ protected:
 // This message provides an API for manually controlling the vehicle using standard
 // joystick axes nomenclature, along with a joystick-like input device. Unused axes
 // can be disabled an buttons are also transmit as boolean values of their
-class MavLinkManualControl : public MavLinkMessageBase {
+class MavLinkManualControl : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 69;
     MavLinkManualControl() { msgid = kMessageId; }
@@ -4046,6 +5088,7 @@ public:
     // 0 for released. The lowest bit corresponds to Button 1.
     uint16_t buttons = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4056,7 +5099,8 @@ protected:
 // 0 means control of that channel should be released back to the RC radio. The standard
 // PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual
 // receivers/transmitters might violate this specification.
-class MavLinkRcChannelsOverride : public MavLinkMessageBase {
+class MavLinkRcChannelsOverride : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 70;
     MavLinkRcChannelsOverride() { msgid = kMessageId; }
@@ -4101,6 +5145,7 @@ public:
     // RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.
     uint16_t chan18_raw = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4109,9 +5154,12 @@ protected:
 // Message encoding a mission item. This message is emitted to announce the presence
 // of a mission item and to set a mission item on the system. The mission item can
 // be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame
-// is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). See also
-// https://mavlink.io/en/services/mission.html.
-class MavLinkMissionItemInt : public MavLinkMessageBase {
+// is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). NaN or
+// INT32_MAX may be used in float/integer params (respectively) to indicate optional/default
+// values (e.g. to use the component's current latitude, yaw rather than a specific
+// value). See also https://mavlink.io/en/services/mission.html.
+class MavLinkMissionItemInt : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 73;
     MavLinkMissionItemInt() { msgid = kMessageId; }
@@ -4149,17 +5197,21 @@ public:
     // Mission type.
     uint8_t mission_type = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Metrics typically displayed on a HUD for fixed wing aircraft.
-class MavLinkVfrHud : public MavLinkMessageBase {
+class MavLinkVfrHud : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 74;
     MavLinkVfrHud() { msgid = kMessageId; }
-    // Current indicated airspeed (IAS).
+    // Vehicle speed in form appropriate for vehicle type. For standard aircraft this
+    // is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either
+    // of which can be used by a pilot to estimate stall speed.
     float airspeed = 0;
     // Current ground speed.
     float groundspeed = 0;
@@ -4172,6 +5224,7 @@ public:
     // Current climb rate.
     float climb = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4179,7 +5232,8 @@ protected:
 
 // Message encoding a command with parameters as scaled integers. Scaling depends
 // on the actual command value. The command microservice is documented at https://mavlink.io/en/services/command.html
-class MavLinkCommandInt : public MavLinkMessageBase {
+class MavLinkCommandInt : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 75;
     MavLinkCommandInt() { msgid = kMessageId; }
@@ -4212,6 +5266,7 @@ public:
     // on frame).
     float z = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4219,7 +5274,8 @@ protected:
 
 // Send a command with up to seven parameters to the MAV. The command microservice
 // is documented at https://mavlink.io/en/services/command.html
-class MavLinkCommandLong : public MavLinkMessageBase {
+class MavLinkCommandLong : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 76;
     MavLinkCommandLong() { msgid = kMessageId; }
@@ -4247,6 +5303,7 @@ public:
     // Parameter 7 (for the specific command).
     float param7 = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4254,7 +5311,8 @@ protected:
 
 // Report status of a command. Includes feedback whether the command was executed.
 // The command microservice is documented at https://mavlink.io/en/services/command.html
-class MavLinkCommandAck : public MavLinkMessageBase {
+class MavLinkCommandAck : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 77;
     MavLinkCommandAck() { msgid = kMessageId; }
@@ -4274,13 +5332,38 @@ public:
     // WIP: Component which requested the command to be executed
     uint8_t target_component = 0;
     virtual std::string toJSon();
+
+protected:
+    virtual int pack(char* buffer) const;
+    virtual int unpack(const char* buffer);
+};
+
+// Cancel a long running command. The target system should respond with a COMMAND_ACK
+// to the original command with result=MAV_RESULT_CANCELLED if the long running process
+// was cancelled. If it has already completed, the cancel action can be ignored. The
+// cancel action can be retried until some sort of acknowledgement to the original
+// command has been received. The command microservice is documented at https://mavlink.io/en/services/command.html
+class MavLinkCommandCancel : public MavLinkMessageBase
+{
+public:
+    const static uint8_t kMessageId = 80;
+    MavLinkCommandCancel() { msgid = kMessageId; }
+    // System executing long running command. Should not be broadcast (0).
+    uint8_t target_system = 0;
+    // Component executing long running command.
+    uint8_t target_component = 0;
+    // Command ID (of command to cancel).
+    uint16_t command = 0;
+    virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Setpoint in roll, pitch, yaw and thrust from the operator
-class MavLinkManualSetpoint : public MavLinkMessageBase {
+class MavLinkManualSetpoint : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 81;
     MavLinkManualSetpoint() { msgid = kMessageId; }
@@ -4299,6 +5382,7 @@ public:
     // Override mode switch position, 0.. 255
     uint8_t manual_override_switch = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4306,7 +5390,8 @@ protected:
 
 // Sets a desired vehicle attitude. Used by an external controller to command the
 // vehicle (manual controller or other system).
-class MavLinkSetAttitudeTarget : public MavLinkMessageBase {
+class MavLinkSetAttitudeTarget : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 82;
     MavLinkSetAttitudeTarget() { msgid = kMessageId; }
@@ -4332,6 +5417,7 @@ public:
     // trust)
     float thrust = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4340,7 +5426,8 @@ protected:
 // Reports the current commanded attitude of the vehicle as specified by the autopilot.
 // This should match the commands sent in a SET_ATTITUDE_TARGET message if the vehicle
 // is being controlled this way.
-class MavLinkAttitudeTarget : public MavLinkMessageBase {
+class MavLinkAttitudeTarget : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 83;
     MavLinkAttitudeTarget() { msgid = kMessageId; }
@@ -4362,6 +5449,7 @@ public:
     // trust)
     float thrust = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4369,7 +5457,8 @@ protected:
 
 // Sets a desired vehicle position in a local north-east-down coordinate frame. Used
 // by an external controller to command the vehicle (manual controller or other system).
-class MavLinkSetPositionTargetLocalNed : public MavLinkMessageBase {
+class MavLinkSetPositionTargetLocalNed : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 84;
     MavLinkSetPositionTargetLocalNed() { msgid = kMessageId; }
@@ -4410,6 +5499,7 @@ public:
     // yaw rate setpoint
     float yaw_rate = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4418,7 +5508,8 @@ protected:
 // Reports the current commanded vehicle position, velocity, and acceleration as specified
 // by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED
 // if the vehicle is being controlled this way.
-class MavLinkPositionTargetLocalNed : public MavLinkMessageBase {
+class MavLinkPositionTargetLocalNed : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 85;
     MavLinkPositionTargetLocalNed() { msgid = kMessageId; }
@@ -4455,6 +5546,7 @@ public:
     // yaw rate setpoint
     float yaw_rate = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4463,7 +5555,8 @@ protected:
 // Sets a desired vehicle position, velocity, and/or acceleration in a global coordinate
 // system (WGS84). Used by an external controller to command the vehicle (manual controller
 // or other system).
-class MavLinkSetPositionTargetGlobalInt : public MavLinkMessageBase {
+class MavLinkSetPositionTargetGlobalInt : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 86;
     MavLinkSetPositionTargetGlobalInt() { msgid = kMessageId; }
@@ -4506,6 +5599,7 @@ public:
     // yaw rate setpoint
     float yaw_rate = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4514,7 +5608,8 @@ protected:
 // Reports the current commanded vehicle position, velocity, and acceleration as specified
 // by the autopilot. This should match the commands sent in SET_POSITION_TARGET_GLOBAL_INT
 // if the vehicle is being controlled this way.
-class MavLinkPositionTargetGlobalInt : public MavLinkMessageBase {
+class MavLinkPositionTargetGlobalInt : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 87;
     MavLinkPositionTargetGlobalInt() { msgid = kMessageId; }
@@ -4553,6 +5648,7 @@ public:
     // yaw rate setpoint
     float yaw_rate = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4561,7 +5657,8 @@ protected:
 // The offset in X, Y, Z and yaw between the LOCAL_POSITION_NED messages of MAV X
 // and the global coordinate frame in NED coordinates. Coordinate frame is right-handed,
 // Z-axis down (aeronautical frame, NED / north-east-down convention)
-class MavLinkLocalPositionNedSystemGlobalOffset : public MavLinkMessageBase {
+class MavLinkLocalPositionNedSystemGlobalOffset : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 89;
     MavLinkLocalPositionNedSystemGlobalOffset() { msgid = kMessageId; }
@@ -4580,6 +5677,7 @@ public:
     // Yaw
     float yaw = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4587,13 +5685,14 @@ protected:
 
 // Sent from simulation to autopilot. This packet is useful for high throughput applications
 // such as hardware in the loop simulations.
-class MavLinkHilState : public MavLinkMessageBase {
+class MavLinkHilState : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 90;
     MavLinkHilState() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Roll angle
     float roll = 0;
@@ -4626,19 +5725,21 @@ public:
     // Z acceleration
     int16_t zacc = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Sent from autopilot to simulation. Hardware in the loop control outputs
-class MavLinkHilControls : public MavLinkMessageBase {
+class MavLinkHilControls : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 91;
     MavLinkHilControls() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Control output -1 .. 1
     float roll_ailerons = 0;
@@ -4661,6 +5762,7 @@ public:
     // Navigation mode (MAV_NAV_MODE)
     uint8_t nav_mode = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4669,13 +5771,14 @@ protected:
 // Sent from simulation to autopilot. The RAW values of the RC channels received.
 // The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds:
 // 100%. Individual receivers/transmitters might violate this specification.
-class MavLinkHilRcInputsRaw : public MavLinkMessageBase {
+class MavLinkHilRcInputsRaw : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 92;
     MavLinkHilRcInputsRaw() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // RC channel 1 value
     uint16_t chan1_raw = 0;
@@ -4705,6 +5808,7 @@ public:
     // [0-254], 255: invalid/unknown.
     uint8_t rssi = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -4712,34 +5816,37 @@ protected:
 
 // Sent from autopilot to simulation. Hardware in the loop control outputs (replacement
 // for HIL_CONTROLS)
-class MavLinkHilActuatorControls : public MavLinkMessageBase {
+class MavLinkHilActuatorControls : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 93;
     MavLinkHilActuatorControls() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.
     float controls[16] = { 0 };
     // System mode. Includes arming state.
     uint8_t mode = 0;
-    // Flags as bitfield, reserved for future use.
+    // Flags as bitfield, 1: indicate simulation using lockstep.
     uint64_t flags = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Optical flow from a flow sensor (e.g. optical mouse sensor)
-class MavLinkOpticalFlow : public MavLinkMessageBase {
+class MavLinkOpticalFlow : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 100;
     MavLinkOpticalFlow() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Sensor ID
     uint8_t sensor_id = 0;
@@ -4760,13 +5867,15 @@ public:
     // Flow rate about Y axis
     float flow_rate_y = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Global position/attitude estimate from a vision source.
-class MavLinkGlobalVisionPositionEstimate : public MavLinkMessageBase {
+class MavLinkGlobalVisionPositionEstimate : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 101;
     MavLinkGlobalVisionPositionEstimate() { msgid = kMessageId; }
@@ -4795,13 +5904,15 @@ public:
     // and the estimate jumps.
     uint8_t reset_counter = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Local position/attitude estimate from a vision source.
-class MavLinkVisionPositionEstimate : public MavLinkMessageBase {
+class MavLinkVisionPositionEstimate : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 102;
     MavLinkVisionPositionEstimate() { msgid = kMessageId; }
@@ -4830,13 +5941,15 @@ public:
     // and the estimate jumps.
     uint8_t reset_counter = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Speed estimate from a vision source.
-class MavLinkVisionSpeedEstimate : public MavLinkMessageBase {
+class MavLinkVisionSpeedEstimate : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 103;
     MavLinkVisionSpeedEstimate() { msgid = kMessageId; }
@@ -4858,13 +5971,15 @@ public:
     // and the estimate jumps.
     uint8_t reset_counter = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Global position estimate from a Vicon motion system source.
-class MavLinkViconPositionEstimate : public MavLinkMessageBase {
+class MavLinkViconPositionEstimate : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 104;
     MavLinkViconPositionEstimate() { msgid = kMessageId; }
@@ -4888,19 +6003,21 @@ public:
     // element in the array.
     float covariance[21] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The IMU readings in SI units in NED body frame
-class MavLinkHighresImu : public MavLinkMessageBase {
+class MavLinkHighresImu : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 105;
     MavLinkHighresImu() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // X acceleration
     float xacc = 0;
@@ -4935,19 +6052,21 @@ public:
     // have a message with id=0)
     uint8_t id = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)
-class MavLinkOpticalFlowRad : public MavLinkMessageBase {
+class MavLinkOpticalFlowRad : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 106;
     MavLinkOpticalFlowRad() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Sensor ID
     uint8_t sensor_id = 0;
@@ -4976,19 +6095,21 @@ public:
     // distance known. Negative value: Unknown distance.
     float distance = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The IMU readings in SI units in NED body frame
-class MavLinkHilSensor : public MavLinkMessageBase {
+class MavLinkHilSensor : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 107;
     MavLinkHilSensor() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // X acceleration
     float xacc = 0;
@@ -5021,13 +6142,15 @@ public:
     // in sim.
     uint32_t fields_updated = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Status of simulation environment, if used
-class MavLinkSimState : public MavLinkMessageBase {
+class MavLinkSimState : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 108;
     MavLinkSimState() { msgid = kMessageId; }
@@ -5070,20 +6193,22 @@ public:
     float std_dev_horz = 0;
     // Vertical position standard deviation
     float std_dev_vert = 0;
-    // True velocity in NORTH direction in earth-fixed NED frame
+    // True velocity in north direction in earth-fixed NED frame
     float vn = 0;
-    // True velocity in EAST direction in earth-fixed NED frame
+    // True velocity in east direction in earth-fixed NED frame
     float ve = 0;
-    // True velocity in DOWN direction in earth-fixed NED frame
+    // True velocity in down direction in earth-fixed NED frame
     float vd = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Status generated by radio and injected into MAVLink stream.
-class MavLinkRadioStatus : public MavLinkMessageBase {
+class MavLinkRadioStatus : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 109;
     MavLinkRadioStatus() { msgid = kMessageId; }
@@ -5106,13 +6231,15 @@ public:
     // Count of error corrected radio packets (since boot).
     uint16_t fixed = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // File transfer message
-class MavLinkFileTransferProtocol : public MavLinkMessageBase {
+class MavLinkFileTransferProtocol : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 110;
     MavLinkFileTransferProtocol() { msgid = kMessageId; }
@@ -5129,13 +6256,15 @@ public:
     // as part of the mavlink specification.
     uint8_t payload[251] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Time synchronization message.
-class MavLinkTimesync : public MavLinkMessageBase {
+class MavLinkTimesync : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 111;
     MavLinkTimesync() { msgid = kMessageId; }
@@ -5144,23 +6273,26 @@ public:
     // Time sync timestamp 2
     int64_t ts1 = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Camera-IMU triggering and synchronisation message.
-class MavLinkCameraTrigger : public MavLinkMessageBase {
+class MavLinkCameraTrigger : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 112;
     MavLinkCameraTrigger() { msgid = kMessageId; }
     // Timestamp for image frame (UNIX Epoch time or time since system boot). The
     // receiving end can infer timestamp format (since 1.1.1970 or since system boot)
-    // by checking for the magnitude the number.
+    // by checking for the magnitude of the number.
     uint64_t time_usec = 0;
     // Image frame sequence
     uint32_t seq = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5169,13 +6301,14 @@ protected:
 // The global position, as returned by the Global Positioning System (GPS). This is
 // NOT the global position estimate of the sytem, but rather a RAW sensor value. See
 // message GLOBAL_POSITION for the global position estimate.
-class MavLinkHilGps : public MavLinkMessageBase {
+class MavLinkHilGps : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 113;
     MavLinkHilGps() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // 0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value
     // of this field unless it is at least two, so always correctly fill in the fix.
@@ -5192,31 +6325,35 @@ public:
     uint16_t epv = 0;
     // GPS ground speed. If unknown, set to: 65535
     uint16_t vel = 0;
-    // GPS velocity in NORTH direction in earth-fixed NED frame
+    // GPS velocity in north direction in earth-fixed NED frame
     int16_t vn = 0;
-    // GPS velocity in EAST direction in earth-fixed NED frame
+    // GPS velocity in east direction in earth-fixed NED frame
     int16_t ve = 0;
-    // GPS velocity in DOWN direction in earth-fixed NED frame
+    // GPS velocity in down direction in earth-fixed NED frame
     int16_t vd = 0;
     // Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees.
     // If unknown, set to: 65535
     uint16_t cog = 0;
     // Number of satellites visible. If unknown, set to 255
     uint8_t satellites_visible = 0;
+    // GPS ID (zero indexed). Used for multiple GPS inputs
+    uint8_t id = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Simulated optical flow from a flow sensor (e.g. PX4FLOW or optical mouse sensor)
-class MavLinkHilOpticalFlow : public MavLinkMessageBase {
+class MavLinkHilOpticalFlow : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 114;
     MavLinkHilOpticalFlow() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Sensor ID
     uint8_t sensor_id = 0;
@@ -5247,6 +6384,7 @@ public:
     // distance known. Negative value: Unknown distance.
     float distance = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5255,13 +6393,14 @@ protected:
 // Sent from simulation to autopilot, avoids in contrast to HIL_STATE singularities.
 // This packet is useful for high throughput applications such as hardware in the
 // loop simulations.
-class MavLinkHilStateQuaternion : public MavLinkMessageBase {
+class MavLinkHilStateQuaternion : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 115;
     MavLinkHilStateQuaternion() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Vehicle attitude expressed as normalized quaternion in w, x, y, z order (with
     // 1 0 0 0 being the null-rotation)
@@ -5295,6 +6434,7 @@ public:
     // Z acceleration
     int16_t zacc = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5302,7 +6442,8 @@ protected:
 
 // The RAW IMU readings for secondary 9DOF sensor setup. This message should contain
 // the scaled values to the described units
-class MavLinkScaledImu2 : public MavLinkMessageBase {
+class MavLinkScaledImu2 : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 116;
     MavLinkScaledImu2() { msgid = kMessageId; }
@@ -5330,14 +6471,18 @@ public:
     // it must send 1 (0.01C).
     int16_t temperature = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Request a list of available logs. On some systems calling this may stop on-board
-// logging until LOG_REQUEST_END is called.
-class MavLinkLogRequestList : public MavLinkMessageBase {
+// logging until LOG_REQUEST_END is called. If there are no log files available this
+// request shall be answered with one LOG_ENTRY message with id = 0 and num_logs =
+// 0.
+class MavLinkLogRequestList : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 117;
     MavLinkLogRequestList() { msgid = kMessageId; }
@@ -5350,13 +6495,15 @@ public:
     // Last log id (0xffff for last available)
     uint16_t end = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Reply to LOG_REQUEST_LIST
-class MavLinkLogEntry : public MavLinkMessageBase {
+class MavLinkLogEntry : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 118;
     MavLinkLogEntry() { msgid = kMessageId; }
@@ -5371,13 +6518,15 @@ public:
     // Size of the log (may be approximate)
     uint32_t size = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Request a chunk of a log
-class MavLinkLogRequestData : public MavLinkMessageBase {
+class MavLinkLogRequestData : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 119;
     MavLinkLogRequestData() { msgid = kMessageId; }
@@ -5392,13 +6541,15 @@ public:
     // Number of bytes
     uint32_t count = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Reply to LOG_REQUEST_DATA
-class MavLinkLogData : public MavLinkMessageBase {
+class MavLinkLogData : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 120;
     MavLinkLogData() { msgid = kMessageId; }
@@ -5411,13 +6562,15 @@ public:
     // log data
     uint8_t data[90] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Erase all logs
-class MavLinkLogErase : public MavLinkMessageBase {
+class MavLinkLogErase : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 121;
     MavLinkLogErase() { msgid = kMessageId; }
@@ -5426,13 +6579,15 @@ public:
     // Component ID
     uint8_t target_component = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Stop log transfer and resume normal logging
-class MavLinkLogRequestEnd : public MavLinkMessageBase {
+class MavLinkLogRequestEnd : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 122;
     MavLinkLogRequestEnd() { msgid = kMessageId; }
@@ -5441,13 +6596,15 @@ public:
     // Component ID
     uint8_t target_component = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Data for injecting into the onboard GPS (used for DGPS)
-class MavLinkGpsInjectData : public MavLinkMessageBase {
+class MavLinkGpsInjectData : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 123;
     MavLinkGpsInjectData() { msgid = kMessageId; }
@@ -5460,19 +6617,21 @@ public:
     // Raw data (110 is enough for 12 satellites of RTCMv2)
     uint8_t data[110] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Second GPS data.
-class MavLinkGps2Raw : public MavLinkMessageBase {
+class MavLinkGps2Raw : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 124;
     MavLinkGps2Raw() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // GPS fix type.
     uint8_t fix_type = 0;
@@ -5497,14 +6656,20 @@ public:
     uint8_t dgps_numch = 0;
     // Age of DGPS info
     uint32_t dgps_age = 0;
+    // Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use
+    // 65535 if this GPS is configured to provide yaw and is currently unable to provide
+    // it. Use 36000 for north.
+    uint16_t yaw = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Power supply status
-class MavLinkPowerStatus : public MavLinkMessageBase {
+class MavLinkPowerStatus : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 125;
     MavLinkPowerStatus() { msgid = kMessageId; }
@@ -5515,6 +6680,7 @@ public:
     // Bitmap of power supply status flags.
     uint16_t flags = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5524,7 +6690,8 @@ protected:
 // such as a GPS or telemetry radio. It is designed to make it possible to update
 // the devices firmware via MAVLink messages or change the devices settings. A message
 // with zero bytes can be used to change just the baudrate.
-class MavLinkSerialControl : public MavLinkMessageBase {
+class MavLinkSerialControl : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 126;
     MavLinkSerialControl() { msgid = kMessageId; }
@@ -5541,6 +6708,7 @@ public:
     // serial data
     uint8_t data[70] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5548,7 +6716,8 @@ protected:
 
 // RTK GPS data. Gives information on the relative baseline calculation the GPS is
 // reporting
-class MavLinkGpsRtk : public MavLinkMessageBase {
+class MavLinkGpsRtk : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 127;
     MavLinkGpsRtk() { msgid = kMessageId; }
@@ -5579,6 +6748,7 @@ public:
     // Current number of integer ambiguity hypotheses.
     int32_t iar_num_hypotheses = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5586,7 +6756,8 @@ protected:
 
 // RTK GPS data. Gives information on the relative baseline calculation the GPS is
 // reporting
-class MavLinkGps2Rtk : public MavLinkMessageBase {
+class MavLinkGps2Rtk : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 128;
     MavLinkGps2Rtk() { msgid = kMessageId; }
@@ -5617,6 +6788,7 @@ public:
     // Current number of integer ambiguity hypotheses.
     int32_t iar_num_hypotheses = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5624,7 +6796,8 @@ protected:
 
 // The RAW IMU readings for 3rd 9DOF sensor setup. This message should contain the
 // scaled values to the described units
-class MavLinkScaledImu3 : public MavLinkMessageBase {
+class MavLinkScaledImu3 : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 129;
     MavLinkScaledImu3() { msgid = kMessageId; }
@@ -5652,6 +6825,7 @@ public:
     // it must send 1 (0.01C).
     int16_t temperature = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5659,7 +6833,8 @@ protected:
 
 // Handshake message to initiate, control and stop image streaming when using the
 // Image Transmission Protocol: https://mavlink.io/en/services/image_transmission.html.
-class MavLinkDataTransmissionHandshake : public MavLinkMessageBase {
+class MavLinkDataTransmissionHandshake : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 130;
     MavLinkDataTransmissionHandshake() { msgid = kMessageId; }
@@ -5679,13 +6854,15 @@ public:
     // JPEG quality. Values: [1-100].
     uint8_t jpg_quality = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Data packet for images sent using the Image Transmission Protocol: https://mavlink.io/en/services/image_transmission.html.
-class MavLinkEncapsulatedData : public MavLinkMessageBase {
+class MavLinkEncapsulatedData : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 131;
     MavLinkEncapsulatedData() { msgid = kMessageId; }
@@ -5694,13 +6871,15 @@ public:
     // image data bytes
     uint8_t data[253] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Distance sensor information for an onboard rangefinder.
-class MavLinkDistanceSensor : public MavLinkMessageBase {
+class MavLinkDistanceSensor : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 132;
     MavLinkDistanceSensor() { msgid = kMessageId; }
@@ -5733,14 +6912,21 @@ public:
     // This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM.
     // Set it to 0 if invalid."
     float quaternion[4] = { 0 };
+    // Signal quality of the sensor. Specific to each sensor type, representing the
+    // relation of the signal strength with the target reflectivity, distance, size
+    // or aspect, but normalised as a percentage. 0 = unknown/unset signal quality,
+    // 1 = invalid signal, 100 = perfect signal.
+    uint8_t signal_quality = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
-// Request for terrain data and terrain status
-class MavLinkTerrainRequest : public MavLinkMessageBase {
+// Request for terrain data and terrain status. See terrain protocol docs: https://mavlink.io/en/services/terrain.html
+class MavLinkTerrainRequest : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 133;
     MavLinkTerrainRequest() { msgid = kMessageId; }
@@ -5753,14 +6939,16 @@ public:
     // Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits)
     uint64_t mask = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a
-// lat/lon from a TERRAIN_REQUEST
-class MavLinkTerrainData : public MavLinkMessageBase {
+// lat/lon from a TERRAIN_REQUEST. See terrain protocol docs: https://mavlink.io/en/services/terrain.html
+class MavLinkTerrainData : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 134;
     MavLinkTerrainData() { msgid = kMessageId; }
@@ -5775,6 +6963,7 @@ public:
     // Terrain data MSL
     int16_t data[16] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -5782,7 +6971,8 @@ protected:
 
 // Request that the vehicle report terrain height at the given location. Used by GCS
 // to check if vehicle has all terrain data needed for a mission.
-class MavLinkTerrainCheck : public MavLinkMessageBase {
+class MavLinkTerrainCheck : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 135;
     MavLinkTerrainCheck() { msgid = kMessageId; }
@@ -5791,13 +6981,16 @@ public:
     // Longitude
     int32_t lon = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
-// Response from a TERRAIN_CHECK request
-class MavLinkTerrainReport : public MavLinkMessageBase {
+// Streamed from drone to report progress of terrain map download (or response from
+// a TERRAIN_CHECK request - deprecated). See terrain protocol docs: https://mavlink.io/en/services/terrain.html
+class MavLinkTerrainReport : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 136;
     MavLinkTerrainReport() { msgid = kMessageId; }
@@ -5816,13 +7009,15 @@ public:
     // Number of 4x4 terrain blocks in memory
     uint16_t loaded = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Barometer readings for 2nd barometer
-class MavLinkScaledPressure2 : public MavLinkMessageBase {
+class MavLinkScaledPressure2 : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 137;
     MavLinkScaledPressure2() { msgid = kMessageId; }
@@ -5832,22 +7027,26 @@ public:
     float press_abs = 0;
     // Differential pressure
     float press_diff = 0;
-    // Temperature measurement
+    // Absolute pressure temperature
     int16_t temperature = 0;
+    // Differential pressure temperature (UINT16_MAX, if not available)
+    int16_t temperature_press_diff = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Motion capture attitude and position
-class MavLinkAttPosMocap : public MavLinkMessageBase {
+class MavLinkAttPosMocap : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 138;
     MavLinkAttPosMocap() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
     float q[4] = { 0 };
@@ -5863,19 +7062,21 @@ public:
     // to first element in the array.
     float covariance[21] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Set the vehicle attitude and body angular rates.
-class MavLinkSetActuatorControlTarget : public MavLinkMessageBase {
+class MavLinkSetActuatorControlTarget : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 139;
     MavLinkSetActuatorControlTarget() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Actuator group. The "_mlx" indicates this is a multi-instance message and a
     // MAVLink parser should use this field to difference between instances.
@@ -5891,19 +7092,21 @@ public:
     // mixer to repurpose them as generic outputs.
     float controls[8] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Set the vehicle attitude and body angular rates.
-class MavLinkActuatorControlTarget : public MavLinkMessageBase {
+class MavLinkActuatorControlTarget : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 140;
     MavLinkActuatorControlTarget() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Actuator group. The "_mlx" indicates this is a multi-instance message and a
     // MAVLink parser should use this field to difference between instances.
@@ -5915,19 +7118,21 @@ public:
     // mixer to repurpose them as generic outputs.
     float controls[8] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The current system altitude.
-class MavLinkAltitude : public MavLinkMessageBase {
+class MavLinkAltitude : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 141;
     MavLinkAltitude() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // This altitude measure is initialized on system boot and monotonic (it is never
     // reset, but represents the local altitude change). The only guarantee on this
@@ -5956,13 +7161,15 @@ public:
     // indicates no measurement available.
     float bottom_clearance = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The autopilot is requesting a resource (file, binary, other type of data)
-class MavLinkResourceRequest : public MavLinkMessageBase {
+class MavLinkResourceRequest : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 142;
     MavLinkResourceRequest() { msgid = kMessageId; }
@@ -5980,13 +7187,15 @@ public:
     // valid if the transfer_type has a storage associated (e.g. MAVLink FTP).
     uint8_t storage[120] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Barometer readings for 3rd barometer
-class MavLinkScaledPressure3 : public MavLinkMessageBase {
+class MavLinkScaledPressure3 : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 143;
     MavLinkScaledPressure3() { msgid = kMessageId; }
@@ -5996,16 +7205,20 @@ public:
     float press_abs = 0;
     // Differential pressure
     float press_diff = 0;
-    // Temperature measurement
+    // Absolute pressure temperature
     int16_t temperature = 0;
+    // Differential pressure temperature (UINT16_MAX, if not available)
+    int16_t temperature_press_diff = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Current motion information from a designated system
-class MavLinkFollowTarget : public MavLinkMessageBase {
+class MavLinkFollowTarget : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 144;
     MavLinkFollowTarget() { msgid = kMessageId; }
@@ -6033,19 +7246,21 @@ public:
     // button states or switches of a tracker device
     uint64_t custom_state = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The smoothed, monotonic system state used to feed the control loops of the system.
-class MavLinkControlSystemState : public MavLinkMessageBase {
+class MavLinkControlSystemState : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 146;
     MavLinkControlSystemState() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // X acceleration in body frame
     float x_acc = 0;
@@ -6080,6 +7295,7 @@ public:
     // Angular rate in yaw axis
     float yaw_rate = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6087,7 +7303,8 @@ protected:
 
 // Battery information. Updates GCS with flight controller battery status. Use SMART_BATTERY_*
 // messages instead for smart batteries.
-class MavLinkBatteryStatus : public MavLinkMessageBase {
+class MavLinkBatteryStatus : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 147;
     MavLinkBatteryStatus() { msgid = kMessageId; }
@@ -6099,8 +7316,14 @@ public:
     uint8_t type = 0;
     // Temperature of the battery. INT16_MAX for unknown temperature.
     int16_t temperature = 0;
-    // Battery voltage of cells. Cells above the valid cell count for this battery
-    // should have the UINT16_MAX value.
+    // Battery voltage of cells 1 to 10 (see voltages_ext for cells 11-14). Cells
+    // in this field above the valid cell count for this battery should have the UINT16_MAX
+    // value. If individual cell voltages are unknown or not measured for this battery,
+    // then the overall battery voltage should be filled in cell 0, with all others
+    // set to UINT16_MAX. If the voltage of the battery is greater than (UINT16_MAX
+    // - 1), then cell 0 should be set to (UINT16_MAX - 1), and cell 1 to the remaining
+    // voltage. This can be extended to multiple cells if the total voltage is greater
+    // than 2 * (UINT16_MAX - 1).
     uint16_t voltages[10] = { 0 };
     // Battery current, -1: autopilot does not measure the current
     int16_t current_battery = 0;
@@ -6117,15 +7340,22 @@ public:
     // State for extent of discharge, provided by autopilot for warning or external
     // reactions
     uint8_t charge_state = 0;
+    // Battery voltages for cells 11 to 14. Cells above the valid cell count for this
+    // battery should have a value of 0, where zero indicates not supported (note,
+    // this is different than for the voltages field and allows empty byte truncation).
+    // If the measured value is 0 then 1 should be sent instead.
+    uint16_t voltages_ext[4] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Version and capability of autopilot software. This should be emitted in response
-// to a MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES command.
-class MavLinkAutopilotVersion : public MavLinkMessageBase {
+// to a request with MAV_CMD_REQUEST_MESSAGE.
+class MavLinkAutopilotVersion : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 148;
     MavLinkAutopilotVersion() { msgid = kMessageId; }
@@ -6161,19 +7391,21 @@ public:
     // use this field, otherwise use uid)
     uint8_t uid2[18] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The location of a landing target. See: https://mavlink.io/en/services/landing_target.html
-class MavLinkLandingTarget : public MavLinkMessageBase {
+class MavLinkLandingTarget : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 149;
     MavLinkLandingTarget() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // The ID of the target if multiple targets are present
     uint8_t target_num = 0;
@@ -6204,13 +7436,15 @@ public:
     // target position information (valid: 1, invalid: 0). Default is 0 (invalid).
     uint8_t position_valid = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Status of geo-fencing. Sent in extended status stream when fencing enabled.
-class MavLinkFenceStatus : public MavLinkMessageBase {
+class MavLinkFenceStatus : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 162;
     MavLinkFenceStatus() { msgid = kMessageId; }
@@ -6225,6 +7459,7 @@ public:
     // Active action to prevent fence breach
     uint8_t breach_mitigation = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6240,13 +7475,14 @@ protected:
 // has been rejected by the filter. The user should be notified if an innovation test
 // ratio greater than 1.0 is recorded. Notifications for values in the range between
 // 0.5 and 1.0 should be optional and controllable by the user.
-class MavLinkEstimatorStatus : public MavLinkMessageBase {
+class MavLinkEstimatorStatus : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 230;
     MavLinkEstimatorStatus() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Bitmap indicating which EKF outputs are valid.
     uint16_t flags = 0;
@@ -6267,19 +7503,21 @@ public:
     // Vertical position 1-STD accuracy relative to the EKF local origin
     float pos_vert_accuracy = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Wind covariance estimate from vehicle.
-class MavLinkWindCov : public MavLinkMessageBase {
+class MavLinkWindCov : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 231;
     MavLinkWindCov() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Wind in X (NED) direction
     float wind_x = 0;
@@ -6298,6 +7536,7 @@ public:
     // Vertical speed 1-STD accuracy
     float vert_accuracy = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6305,13 +7544,14 @@ protected:
 
 // GPS sensor input message. This is a raw sensor value sent by the GPS. This is NOT
 // the global position estimate of the system.
-class MavLinkGpsInput : public MavLinkMessageBase {
+class MavLinkGpsInput : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 232;
     MavLinkGpsInput() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // ID of the GPS for multiple GPS inputs
     uint8_t gps_id = 0;
@@ -6334,11 +7574,11 @@ public:
     float hdop = 0;
     // GPS VDOP vertical dilution of position
     float vdop = 0;
-    // GPS velocity in NORTH direction in earth-fixed NED frame
+    // GPS velocity in north direction in earth-fixed NED frame
     float vn = 0;
-    // GPS velocity in EAST direction in earth-fixed NED frame
+    // GPS velocity in east direction in earth-fixed NED frame
     float ve = 0;
-    // GPS velocity in DOWN direction in earth-fixed NED frame
+    // GPS velocity in down direction in earth-fixed NED frame
     float vd = 0;
     // GPS speed accuracy
     float speed_accuracy = 0;
@@ -6348,14 +7588,19 @@ public:
     float vert_accuracy = 0;
     // Number of satellites visible.
     uint8_t satellites_visible = 0;
+    // Yaw of vehicle relative to Earth's North, zero means not available, use 36000
+    // for north
+    uint16_t yaw = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // RTCM message for injecting into the onboard GPS (used for DGPS)
-class MavLinkGpsRtcmData : public MavLinkMessageBase {
+class MavLinkGpsRtcmData : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 233;
     MavLinkGpsRtcmData() { msgid = kMessageId; }
@@ -6374,13 +7619,15 @@ public:
     // RTCM message (may be fragmented)
     uint8_t data[180] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Message appropriate for high latency connections like Iridium
-class MavLinkHighLatency : public MavLinkMessageBase {
+class MavLinkHighLatency : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 234;
     MavLinkHighLatency() { msgid = kMessageId; }
@@ -6434,13 +7681,15 @@ public:
     // distance to target
     uint16_t wp_distance = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Message appropriate for high latency connections like Iridium (version 2)
-class MavLinkHighLatency2 : public MavLinkMessageBase {
+class MavLinkHighLatency2 : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 235;
     MavLinkHighLatency2() { msgid = kMessageId; }
@@ -6500,19 +7749,21 @@ public:
     // Field for custom payload.
     int8_t custom2 = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Vibration levels and accelerometer clipping
-class MavLinkVibration : public MavLinkMessageBase {
+class MavLinkVibration : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 241;
     MavLinkVibration() { msgid = kMessageId; }
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // Vibration levels on X-axis
     float vibration_x = 0;
@@ -6527,6 +7778,7 @@ public:
     // third accelerometer clipping count
     uint32_t clipping_2 = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6535,14 +7787,14 @@ protected:
 // This message can be requested by sending the MAV_CMD_GET_HOME_POSITION command.
 // The position the system will return to and land on. The position is set automatically
 // by the system during the takeoff in case it was not explicitly set by the operator
-// before or after. The position the system will return to and land on. The global
-// and local positions encode the position in the respective coordinate frames, while
-// the q parameter encodes the orientation of the surface. Under normal conditions
-// it describes the heading and terrain slope, which can be used by the aircraft to
-// adjust the approach. The approach 3D vector describes the point to which the system
-// should fly in normal flight mode and then perform a landing sequence along the
-// vector.
-class MavLinkHomePosition : public MavLinkMessageBase {
+// before or after. The global and local positions encode the position in the respective
+// coordinate frames, while the q parameter encodes the orientation of the surface.
+// Under normal conditions it describes the heading and terrain slope, which can be
+// used by the aircraft to adjust the approach. The approach 3D vector describes the
+// point to which the system should fly in normal flight mode and then perform a landing
+// sequence along the vector.
+class MavLinkHomePosition : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 242;
     MavLinkHomePosition() { msgid = kMessageId; }
@@ -6581,9 +7833,10 @@ public:
     float approach_z = 0;
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6597,7 +7850,8 @@ protected:
 // used by the aircraft to adjust the approach. The approach 3D vector describes the
 // point to which the system should fly in normal flight mode and then perform a landing
 // sequence along the vector.
-class MavLinkSetHomePosition : public MavLinkMessageBase {
+class MavLinkSetHomePosition : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 243;
     MavLinkSetHomePosition() { msgid = kMessageId; }
@@ -6638,9 +7892,10 @@ public:
     float approach_z = 0;
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6649,7 +7904,8 @@ protected:
 // The interval between messages for a particular MAVLink message ID. This message
 // is the response to the MAV_CMD_GET_MESSAGE_INTERVAL command. This interface replaces
 // DATA_STREAM.
-class MavLinkMessageInterval : public MavLinkMessageBase {
+class MavLinkMessageInterval : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 244;
     MavLinkMessageInterval() { msgid = kMessageId; }
@@ -6660,13 +7916,15 @@ public:
     // sent.
     int32_t interval_us = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Provides state for additional features
-class MavLinkExtendedSysState : public MavLinkMessageBase {
+class MavLinkExtendedSysState : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 245;
     MavLinkExtendedSysState() { msgid = kMessageId; }
@@ -6676,13 +7934,15 @@ public:
     // The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.
     uint8_t landed_state = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // The location and information of an ADSB vehicle
-class MavLinkAdsbVehicle : public MavLinkMessageBase {
+class MavLinkAdsbVehicle : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 246;
     MavLinkAdsbVehicle() { msgid = kMessageId; }
@@ -6713,13 +7973,15 @@ public:
     // Squawk code
     uint16_t squawk = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Information about a potential collision
-class MavLinkCollision : public MavLinkMessageBase {
+class MavLinkCollision : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 247;
     MavLinkCollision() { msgid = kMessageId; }
@@ -6738,6 +8000,7 @@ public:
     // Closest horizontal distance between vehicle and object
     float horizontal_minimum_delta = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6745,7 +8008,8 @@ protected:
 
 // Message implementing parts of the V2 payload specs in V1 frames for transitional
 // support.
-class MavLinkV2Extension : public MavLinkMessageBase {
+class MavLinkV2Extension : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 248;
     MavLinkV2Extension() { msgid = kMessageId; }
@@ -6773,6 +8037,7 @@ public:
     // as part of the MAVLink specification.
     uint8_t payload[249] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6781,7 +8046,8 @@ protected:
 // Send raw controller memory. The use of this message is discouraged for normal packets,
 // but a quite efficient way for testing new messages and getting experimental debug
 // output.
-class MavLinkMemoryVect : public MavLinkMessageBase {
+class MavLinkMemoryVect : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 249;
     MavLinkMemoryVect() { msgid = kMessageId; }
@@ -6796,13 +8062,15 @@ public:
     // Memory contents at specified address
     int8_t value[32] = { 0 };
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // To debug something using a named 3D vector.
-class MavLinkDebugVect : public MavLinkMessageBase {
+class MavLinkDebugVect : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 250;
     MavLinkDebugVect() { msgid = kMessageId; }
@@ -6810,7 +8078,7 @@ public:
     char name[10] = { 0 };
     // Timestamp (UNIX Epoch time or time since system boot). The receiving end can
     // infer timestamp format (since 1.1.1970 or since system boot) by checking for
-    // the magnitude the number.
+    // the magnitude of the number.
     uint64_t time_usec = 0;
     // x
     float x = 0;
@@ -6819,6 +8087,7 @@ public:
     // z
     float z = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6827,7 +8096,8 @@ protected:
 // Send a key-value pair as float. The use of this message is discouraged for normal
 // packets, but a quite efficient way for testing new messages and getting experimental
 // debug output.
-class MavLinkNamedValueFloat : public MavLinkMessageBase {
+class MavLinkNamedValueFloat : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 251;
     MavLinkNamedValueFloat() { msgid = kMessageId; }
@@ -6838,6 +8108,7 @@ public:
     // Floating point value
     float value = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6846,7 +8117,8 @@ protected:
 // Send a key-value pair as integer. The use of this message is discouraged for normal
 // packets, but a quite efficient way for testing new messages and getting experimental
 // debug output.
-class MavLinkNamedValueInt : public MavLinkMessageBase {
+class MavLinkNamedValueInt : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 252;
     MavLinkNamedValueInt() { msgid = kMessageId; }
@@ -6857,6 +8129,7 @@ public:
     // Signed integer value
     int32_t value = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6866,7 +8139,8 @@ protected:
 // QGroundControl. WARNING: They consume quite some bandwidth, so use only for important
 // status and error messages. If implemented wisely, these messages are buffered on
 // the MCU and sent only at a limited rate (e.g. 10 Hz).
-class MavLinkStatustext : public MavLinkMessageBase {
+class MavLinkStatustext : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 253;
     MavLinkStatustext() { msgid = kMessageId; }
@@ -6874,7 +8148,16 @@ public:
     uint8_t severity = 0;
     // Status text message, without null termination character
     char text[50] = { 0 };
+    // Unique (opaque) identifier for this statustext message. May be used to reassemble
+    // a logical long-statustext message from a sequence of chunks. A value of zero
+    // indicates this is the only chunk in the sequence and the message can be emitted
+    // immediately.
+    uint16_t id = 0;
+    // This chunk's sequence number; indexing is from zero. Any null character in
+    // the text field is taken to mean this was the last chunk.
+    uint8_t chunk_seq = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
@@ -6882,7 +8165,8 @@ protected:
 
 // Send a debug value. The index is used to discriminate between values. These values
 // show up in the plot of QGroundControl as DEBUG N.
-class MavLinkDebug : public MavLinkMessageBase {
+class MavLinkDebug : public MavLinkMessageBase
+{
 public:
     const static uint8_t kMessageId = 254;
     MavLinkDebug() { msgid = kMessageId; }
@@ -6893,13 +8177,15 @@ public:
     // DEBUG value
     float value = 0;
     virtual std::string toJSon();
+
 protected:
     virtual int pack(char* buffer) const;
     virtual int unpack(const char* buffer);
 };
 
 // Navigate to waypoint.
-class MavCmdNavWaypoint : public MavLinkCommand {
+class MavCmdNavWaypoint : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 16;
     MavCmdNavWaypoint() { command = kCommandId; }
@@ -6911,7 +8197,8 @@ public:
     // 0 to pass through the WP, if > 0 radius to pass by WP. Positive value for clockwise
     // orbit, negative value for counter-clockwise orbit. Allows trajectory control.
     float PassRadius = 0;
-    // Desired yaw angle at waypoint (rotary wing). NaN for unchanged.
+    // Desired yaw angle at waypoint (rotary wing). NaN to use the current system
+    // yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).
     float Yaw = 0;
     // Latitude
     float Latitude = 0;
@@ -6919,18 +8206,22 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Loiter around this waypoint an unlimited amount of time
-class MavCmdNavLoiterUnlim : public MavLinkCommand {
+class MavCmdNavLoiterUnlim : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 17;
     MavCmdNavLoiterUnlim() { command = kCommandId; }
-    // Radius around waypoint. If positive loiter clockwise, else counter-clockwise
+    // Loiter radius around waypoint for forward-only moving vehicles (not multicopters).
+    // If positive loiter clockwise, else counter-clockwise
     float Radius = 0;
-    // Desired yaw angle. NaN for unchanged.
+    // Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw
+    // towards next waypoint, yaw to home, etc.).
     float Yaw = 0;
     // Latitude
     float Latitude = 0;
@@ -6938,65 +8229,96 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Loiter around this waypoint for X turns
-class MavCmdNavLoiterTurns : public MavLinkCommand {
+class MavCmdNavLoiterTurns : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 18;
     MavCmdNavLoiterTurns() { command = kCommandId; }
     // Number of turns.
     float Turns = 0;
-    // Radius around waypoint. If positive loiter clockwise, else counter-clockwise
+    // Leave loiter circle only once heading towards the next waypoint (0 = False)
+    float HeadingRequired = 0;
+    // Loiter radius around waypoint for forward-only moving vehicles (not multicopters).
+    // If positive loiter clockwise, else counter-clockwise
     float Radius = 0;
-    // Forward moving aircraft this sets exit xtrack location: 0 for center of loiter
-    // wp, 1 for exit location. Else, this is desired yaw angle. NaN for unchanged.
-    float ExitXtrackLocation = 0;
+    // Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only
+    // moving vehicles (not multicopters). 0 for the vehicle to converge towards the
+    // center xtrack when it leaves the loiter (the line between the centers of the
+    // current and next waypoint), 1 to converge to the direct line between the location
+    // that the vehicle exits the loiter radius and the next waypoint. Otherwise the
+    // angle (in degrees) between the tangent of the loiter circle and the center
+    // xtrack at which the vehicle must leave the loiter (and converge to the center
+    // xtrack). NaN to use the current system default xtrack behaviour.
+    float XtrackLocation = 0;
     // Latitude
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Loiter around this waypoint for X seconds
-class MavCmdNavLoiterTime : public MavLinkCommand {
+// Loiter at the specified latitude, longitude and altitude for a certain amount of
+// time. Multicopter vehicles stop at the point (within a vehicle-specific acceptance
+// radius). Forward-only moving vehicles (e.g. fixed-wing) circle the point with the
+// specified radius/direction. If the Heading Required parameter (2) is non-zero forward
+// moving aircraft will only leave the loiter circle once heading towards the next
+// waypoint.
+class MavCmdNavLoiterTime : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 19;
     MavCmdNavLoiterTime() { command = kCommandId; }
-    // Loiter time.
+    // Loiter time (only starts once Lat, Lon and Alt is reached).
     float Time = 0;
-    // Radius around waypoint. If positive loiter clockwise, else counter-clockwise.
+    // Leave loiter circle only once heading towards the next waypoint (0 = False)
+    float HeadingRequired = 0;
+    // Loiter radius around waypoint for forward-only moving vehicles (not multicopters).
+    // If positive loiter clockwise, else counter-clockwise.
     float Radius = 0;
-    // Forward moving aircraft this sets exit xtrack location: 0 for center of loiter
-    // wp, 1 for exit location. Else, this is desired yaw angle. NaN for unchanged.
-    float ExitXtrackLocation = 0;
+    // Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only
+    // moving vehicles (not multicopters). 0 for the vehicle to converge towards the
+    // center xtrack when it leaves the loiter (the line between the centers of the
+    // current and next waypoint), 1 to converge to the direct line between the location
+    // that the vehicle exits the loiter radius and the next waypoint. Otherwise the
+    // angle (in degrees) between the tangent of the loiter circle and the center
+    // xtrack at which the vehicle must leave the loiter (and converge to the center
+    // xtrack). NaN to use the current system default xtrack behaviour.
+    float XtrackLocation = 0;
     // Latitude
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Return to launch location
-class MavCmdNavReturnToLaunch : public MavLinkCommand {
+class MavCmdNavReturnToLaunch : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 20;
     MavCmdNavReturnToLaunch() { command = kCommandId; }
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Land at location.
-class MavCmdNavLand : public MavLinkCommand {
+class MavCmdNavLand : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 21;
     MavCmdNavLand() { command = kCommandId; }
@@ -7004,27 +8326,32 @@ public:
     float AbortAlt = 0;
     // Precision land mode.
     float LandMode = 0;
-    // Desired yaw angle. NaN for unchanged.
+    // Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw
+    // towards next waypoint, yaw to home, etc.).
     float YawAngle = 0;
     // Latitude.
     float Latitude = 0;
     // Longitude.
     float Longitude = 0;
     // Landing altitude (ground level in current frame).
-    float LandingAltitude = 0;
+    float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Takeoff from ground / hand
-class MavCmdNavTakeoff : public MavLinkCommand {
+// Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g.
+// VTOL quadplane) should take off using the currently configured mode.
+class MavCmdNavTakeoff : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 22;
     MavCmdNavTakeoff() { command = kCommandId; }
     // Minimum pitch (if airspeed sensor present), desired pitch without sensor
     float Pitch = 0;
-    // Yaw angle (if magnetometer present), ignored without magnetometer. NaN for
-    // unchanged.
+    // Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use
+    // the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to
+    // home, etc.).
     float Yaw = 0;
     // Latitude
     float Latitude = 0;
@@ -7032,12 +8359,14 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Land at local position (local frame only)
-class MavCmdNavLandLocal : public MavLinkCommand {
+class MavCmdNavLandLocal : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 23;
     MavCmdNavLandLocal() { command = kCommandId; }
@@ -7058,12 +8387,14 @@ public:
     float XPosition = 0;
     // Z-axis / ground level position
     float ZPosition = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Takeoff from local position (local frame only)
-class MavCmdNavTakeoffLocal : public MavLinkCommand {
+class MavCmdNavTakeoffLocal : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 24;
     MavCmdNavTakeoffLocal() { command = kCommandId; }
@@ -7080,12 +8411,14 @@ public:
     float XPosition = 0;
     // Z-axis position
     float ZPosition = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Vehicle following, i.e. this waypoint represents the position of a moving vehicle
-class MavCmdNavFollow : public MavLinkCommand {
+class MavCmdNavFollow : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 25;
     MavCmdNavFollow() { command = kCommandId; }
@@ -7104,6 +8437,7 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -7111,7 +8445,8 @@ protected:
 // Continue on the current course and climb/descend to specified altitude. When the
 // altitude is reached continue to the next command (i.e., don't proceed to the next
 // command until the desired altitude is reached.
-class MavCmdNavContinueAndChangeAlt : public MavLinkCommand {
+class MavCmdNavContinueAndChangeAlt : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 30;
     MavCmdNavContinueAndChangeAlt() { command = kCommandId; }
@@ -7121,6 +8456,7 @@ public:
     float Action = 0;
     // Desired altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -7130,17 +8466,25 @@ protected:
 // leave loiter) until the altitude has been reached. Additionally, if the Heading
 // Required parameter is non-zero the aircraft will not leave the loiter until heading
 // toward the next waypoint.
-class MavCmdNavLoiterToAlt : public MavLinkCommand {
+class MavCmdNavLoiterToAlt : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31;
     MavCmdNavLoiterToAlt() { command = kCommandId; }
-    // Heading Required (0 = False)
+    // Leave loiter circle only once heading towards the next waypoint (0 = False)
     float HeadingRequired = 0;
-    // Radius. If positive loiter clockwise, negative counter-clockwise, 0 means no
-    // change to standard loiter.
+    // Loiter radius around waypoint for forward-only moving vehicles (not multicopters).
+    // If positive loiter clockwise, negative counter-clockwise, 0 means no change
+    // to standard loiter.
     float Radius = 0;
-    // Forward moving aircraft this sets exit xtrack location: 0 for center of loiter
-    // wp, 1 for exit location
+    // Loiter circle exit location and/or path to next waypoint ("xtrack") for forward-only
+    // moving vehicles (not multicopters). 0 for the vehicle to converge towards the
+    // center xtrack when it leaves the loiter (the line between the centers of the
+    // current and next waypoint), 1 to converge to the direct line between the location
+    // that the vehicle exits the loiter radius and the next waypoint. Otherwise the
+    // angle (in degrees) between the tangent of the loiter circle and the center
+    // xtrack at which the vehicle must leave the loiter (and converge to the center
+    // xtrack). NaN to use the current system default xtrack behaviour.
     float XtrackLocation = 0;
     // Latitude
     float Latitude = 0;
@@ -7148,12 +8492,14 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Begin following a target
-class MavCmdDoFollow : public MavLinkCommand {
+class MavCmdDoFollow : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 32;
     MavCmdDoFollow() { command = kCommandId; }
@@ -7168,12 +8514,14 @@ public:
     // Time to land in which the MAV should go to the default position hold mode after
     // a message RX timeout.
     float TimeToLand = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Reposition the MAV after a follow target command has been sent
-class MavCmdDoFollowReposition : public MavLinkCommand {
+class MavCmdDoFollowReposition : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 33;
     MavCmdDoFollowReposition() { command = kCommandId; }
@@ -7191,13 +8539,15 @@ public:
     float XOffset = 0;
     // Y offset from target
     float YOffset = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Start orbiting on the circumference of a circle defined by the parameters. Setting
 // any value NaN results in using defaults.
-class MavCmdDoOrbit : public MavLinkCommand {
+class MavCmdDoOrbit : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 34;
     MavCmdDoOrbit() { command = kCommandId; }
@@ -7205,29 +8555,30 @@ public:
     float Radius = 0;
     // Tangential Velocity. NaN: Vehicle configuration default.
     float Velocity = 0;
-    // Yaw behavior of the vehicle. 0: vehicle front points to the center (default).
-    // 1: Hold last heading. 2: Leave yaw uncontrolled.
+    // Yaw behavior of the vehicle.
     float YawBehavior = 0;
     // Center point latitude (if no MAV_FRAME specified) / X coordinate according
     // to MAV_FRAME. NaN: Use current vehicle position or current center if already
     // orbiting.
-    float CenterPointLatitude = 0;
+    float Latitudepx = 0;
     // Center point longitude (if no MAV_FRAME specified) / Y coordinate according
     // to MAV_FRAME. NaN: Use current vehicle position or current center if already
     // orbiting.
-    float CenterPointLongitude = 0;
+    float Longitudepy = 0;
     // Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according
     // to MAV_FRAME. NaN: Use current vehicle position or current center if already
     // orbiting.
-    float CenterPointAltitude = 0;
+    float Altitudepz = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Sets the region of interest (ROI) for a sensor set or the vehicle itself. This
-// can then be used by the vehicles control system to control the vehicle attitude
+// can then be used by the vehicle's control system to control the vehicle attitude
 // and the attitude of various sensors such as cameras.
-class MavCmdNavRoi : public MavLinkCommand {
+class MavCmdNavRoi : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 80;
     MavCmdNavRoi() { command = kCommandId; }
@@ -7243,12 +8594,14 @@ public:
     float Y = 0;
     // z
     float Z = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Control autonomous path planning on the MAV.
-class MavCmdNavPathplanning : public MavLinkCommand {
+class MavCmdNavPathplanning : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 81;
     MavCmdNavPathplanning() { command = kCommandId; }
@@ -7262,41 +8615,47 @@ public:
     // Yaw angle at goal
     float Yaw = 0;
     // Latitude/X of goal
-    float LatitudepxOfGoal = 0;
+    float Latitudepx = 0;
     // Longitude/Y of goal
-    float LongitudepyOfGoal = 0;
+    float Longitudepy = 0;
     // Altitude/Z of goal
-    float AltitudepzOfGoal = 0;
+    float Altitudepz = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Navigate to waypoint using a spline path.
-class MavCmdNavSplineWaypoint : public MavLinkCommand {
+class MavCmdNavSplineWaypoint : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 82;
     MavCmdNavSplineWaypoint() { command = kCommandId; }
     // Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)
     float Hold = 0;
     // Latitude/X of goal
-    float LatitudepxOfGoal = 0;
+    float Latitudepx = 0;
     // Longitude/Y of goal
-    float LongitudepyOfGoal = 0;
+    float Longitudepy = 0;
     // Altitude/Z of goal
-    float AltitudepzOfGoal = 0;
+    float Altitudepz = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Takeoff from ground using VTOL mode, and transition to forward flight with specified
-// heading.
-class MavCmdNavVtolTakeoff : public MavLinkCommand {
+// heading. The command should be ignored by vehicles that dont support both VTOL
+// and fixed-wing flight (multicopters, boats,etc.).
+class MavCmdNavVtolTakeoff : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 84;
     MavCmdNavVtolTakeoff() { command = kCommandId; }
     // Front transition heading.
     float TransitionHeading = 0;
-    // Yaw angle. NaN for unchanged.
+    // Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards
+    // next waypoint, yaw to home, etc.).
     float YawAngle = 0;
     // Latitude
     float Latitude = 0;
@@ -7304,42 +8663,49 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Land using VTOL mode
-class MavCmdNavVtolLand : public MavLinkCommand {
+class MavCmdNavVtolLand : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 85;
     MavCmdNavVtolLand() { command = kCommandId; }
     // Approach altitude (with the same reference as the Altitude field). NaN if unspecified.
-    float Altitude = 0;
-    // Yaw angle. NaN for unchanged.
+    float ApproachAltitude = 0;
+    // Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards
+    // next waypoint, yaw to home, etc.).
     float Yaw = 0;
     // Latitude
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
     // Altitude (ground level)
-    float Altitude2 = 0;
+    float GroundAltitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // hand control over to an external controller
-class MavCmdNavGuidedEnable : public MavLinkCommand {
+class MavCmdNavGuidedEnable : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 92;
     MavCmdNavGuidedEnable() { command = kCommandId; }
     // On / Off (> 0.5f on)
     float Enable = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Delay the next navigation command a number of seconds or until a specified time
-class MavCmdNavDelay : public MavLinkCommand {
+class MavCmdNavDelay : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 93;
     MavCmdNavDelay() { command = kCommandId; }
@@ -7351,6 +8717,7 @@ public:
     float Minute = 0;
     // second (24h format, UTC)
     float Second = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -7359,7 +8726,8 @@ protected:
 // it detects a hanging payload has reached the ground, and then releases the payload.
 // If ground is not detected before the reaching the maximum descent value (param1),
 // the command will complete without releasing the payload.
-class MavCmdNavPayloadPlace : public MavLinkCommand {
+class MavCmdNavPayloadPlace : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 94;
     MavCmdNavPayloadPlace() { command = kCommandId; }
@@ -7371,57 +8739,68 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // NOP - This command is only used to mark the upper limit of the NAV/ACTION commands
 // in the enumeration
-class MavCmdNavLast : public MavLinkCommand {
+class MavCmdNavLast : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 95;
     MavCmdNavLast() { command = kCommandId; }
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Delay mission state machine.
-class MavCmdConditionDelay : public MavLinkCommand {
+class MavCmdConditionDelay : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 112;
     MavCmdConditionDelay() { command = kCommandId; }
     // Delay
     float Delay = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Ascend/descend at rate. Delay mission state machine until desired altitude reached.
-class MavCmdConditionChangeAlt : public MavLinkCommand {
+// Ascend/descend to target altitude at specified rate. Delay mission state machine
+// until desired altitude reached.
+class MavCmdConditionChangeAlt : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 113;
     MavCmdConditionChangeAlt() { command = kCommandId; }
     // Descent / Ascend rate.
     float Rate = 0;
-    // Finish Altitude
-    float FinishAltitude = 0;
+    // Target Altitude
+    float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Delay mission state machine until within desired distance of next NAV point.
-class MavCmdConditionDistance : public MavLinkCommand {
+class MavCmdConditionDistance : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 114;
     MavCmdConditionDistance() { command = kCommandId; }
     // Distance.
     float Distance = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Reach a certain target angle.
-class MavCmdConditionYaw : public MavLinkCommand {
+class MavCmdConditionYaw : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 115;
     MavCmdConditionYaw() { command = kCommandId; }
@@ -7433,22 +8812,26 @@ public:
     float Direction = 0;
     // 0: absolute angle, 1: relative offset
     float Relative = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // NOP - This command is only used to mark the upper limit of the CONDITION commands
 // in the enumeration
-class MavCmdConditionLast : public MavLinkCommand {
+class MavCmdConditionLast : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 159;
     MavCmdConditionLast() { command = kCommandId; }
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set system mode.
-class MavCmdDoSetMode : public MavLinkCommand {
+class MavCmdDoSetMode : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 176;
     MavCmdDoSetMode() { command = kCommandId; }
@@ -7460,13 +8843,15 @@ public:
     // Custom sub mode - this is system specific, please refer to the individual autopilot
     // specifications for details.
     float CustomSubmode = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Jump to the desired command in the mission list. Repeat this action only the specified
 // number of times
-class MavCmdDoJump : public MavLinkCommand {
+class MavCmdDoJump : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 177;
     MavCmdDoJump() { command = kCommandId; }
@@ -7474,12 +8859,14 @@ public:
     float Number = 0;
     // Repeat count
     float Repeat = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Change speed and/or throttle set points.
-class MavCmdDoChangeSpeed : public MavLinkCommand {
+class MavCmdDoChangeSpeed : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 178;
     MavCmdDoChangeSpeed() { command = kCommandId; }
@@ -7491,30 +8878,36 @@ public:
     float Throttle = 0;
     // 0: absolute, 1: relative
     float Relative = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Changes the home location either to the current location or a specified location.
-class MavCmdDoSetHome : public MavLinkCommand {
+class MavCmdDoSetHome : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 179;
     MavCmdDoSetHome() { command = kCommandId; }
     // Use current (1=use current location, 0=use specified location)
     float UseCurrent = 0;
+    // Yaw angle. NaN to use default heading
+    float Yaw = 0;
     // Latitude
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set a system parameter. Caution! Use of this command requires knowledge of the
 // numeric enumeration value of the parameter.
-class MavCmdDoSetParameter : public MavLinkCommand {
+class MavCmdDoSetParameter : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 180;
     MavCmdDoSetParameter() { command = kCommandId; }
@@ -7522,12 +8915,14 @@ public:
     float Number = 0;
     // Parameter value
     float Value = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set a relay to a condition.
-class MavCmdDoSetRelay : public MavLinkCommand {
+class MavCmdDoSetRelay : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 181;
     MavCmdDoSetRelay() { command = kCommandId; }
@@ -7535,12 +8930,14 @@ public:
     float Instance = 0;
     // Setting. (1=on, 0=off, others possible depending on system hardware)
     float Setting = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Cycle a relay on and off for a desired number of cycles with a desired period.
-class MavCmdDoRepeatRelay : public MavLinkCommand {
+class MavCmdDoRepeatRelay : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 182;
     MavCmdDoRepeatRelay() { command = kCommandId; }
@@ -7550,12 +8947,14 @@ public:
     float Count = 0;
     // Cycle time.
     float Time = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set a servo to a desired PWM value.
-class MavCmdDoSetServo : public MavLinkCommand {
+class MavCmdDoSetServo : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 183;
     MavCmdDoSetServo() { command = kCommandId; }
@@ -7563,13 +8962,15 @@ public:
     float Instance = 0;
     // Pulse Width Modulation.
     float Pwm = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Cycle a between its nominal setting and a desired PWM for a desired number of cycles
 // with a desired period.
-class MavCmdDoRepeatServo : public MavLinkCommand {
+class MavCmdDoRepeatServo : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 184;
     MavCmdDoRepeatServo() { command = kCommandId; }
@@ -7581,30 +8982,62 @@ public:
     float Count = 0;
     // Cycle time.
     float Time = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Terminate flight immediately
-class MavCmdDoFlighttermination : public MavLinkCommand {
+class MavCmdDoFlighttermination : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 185;
     MavCmdDoFlighttermination() { command = kCommandId; }
     // Flight termination activated if > 0.5
     float Terminate = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Change altitude set point.
-class MavCmdDoChangeAltitude : public MavLinkCommand {
+class MavCmdDoChangeAltitude : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 186;
     MavCmdDoChangeAltitude() { command = kCommandId; }
-    // Altitude.
+    // Altitude
     float Altitude = 0;
     // Frame of new altitude.
     float Frame = 0;
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// Sets actuators (e.g. servos) to a desired value. The actuator numbers are mapped
+// to specific outputs (e.g. on any MAIN or AUX PWM or UAVCAN) using a flight-stack
+// specific mechanism (i.e. a parameter).
+class MavCmdDoSetActuator : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 187;
+    MavCmdDoSetActuator() { command = kCommandId; }
+    // Actuator 1 value, scaled from [-1 to 1]. NaN to ignore.
+    float ActuatorP1 = 0;
+    // Actuator 2 value, scaled from [-1 to 1]. NaN to ignore.
+    float ActuatorP2 = 0;
+    // Actuator 3 value, scaled from [-1 to 1]. NaN to ignore.
+    float ActuatorP3 = 0;
+    // Actuator 4 value, scaled from [-1 to 1]. NaN to ignore.
+    float ActuatorP4 = 0;
+    // Actuator 5 value, scaled from [-1 to 1]. NaN to ignore.
+    float ActuatorP5 = 0;
+    // Actuator 6 value, scaled from [-1 to 1]. NaN to ignore.
+    float ActuatorP6 = 0;
+    // Index of actuator set (i.e if set to 1, Actuator 1 becomes Actuator 7)
+    float Index = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -7615,7 +9048,8 @@ protected:
 // the nearest (geographically) landing sequence in the mission will be used. The
 // Latitude/Longitude is optional, and may be set to 0 if not needed. If specified
 // then it will be used to help find the closest landing sequence.
-class MavCmdDoLandStart : public MavLinkCommand {
+class MavCmdDoLandStart : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 189;
     MavCmdDoLandStart() { command = kCommandId; }
@@ -7623,12 +9057,14 @@ public:
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Mission command to perform a landing from a rally point.
-class MavCmdDoRallyLand : public MavLinkCommand {
+class MavCmdDoRallyLand : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 190;
     MavCmdDoRallyLand() { command = kCommandId; }
@@ -7636,23 +9072,27 @@ public:
     float Altitude = 0;
     // Landing speed
     float Speed = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Mission command to safely abort an autonomous landing.
-class MavCmdDoGoAround : public MavLinkCommand {
+class MavCmdDoGoAround : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 191;
     MavCmdDoGoAround() { command = kCommandId; }
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Reposition the vehicle to a specific WGS84 global position.
-class MavCmdDoReposition : public MavLinkCommand {
+class MavCmdDoReposition : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 192;
     MavCmdDoReposition() { command = kCommandId; }
@@ -7660,21 +9100,24 @@ public:
     float Speed = 0;
     // Bitmask of option flags.
     float Bitmask = 0;
-    // Yaw heading, NaN for unchanged. For planes indicates loiter direction (0: clockwise,
-    // 1: counter clockwise)
+    // Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards
+    // next waypoint, yaw to home, etc.). For planes indicates loiter direction (0:
+    // clockwise, 1: counter clockwise)
     float Yaw = 0;
-    // Latitude (deg * 1E7)
+    // Latitude
     float Latitude = 0;
-    // Longitude (deg * 1E7)
+    // Longitude
     float Longitude = 0;
-    // Altitude (meters)
+    // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // If in a GPS controlled position mode, hold the current position or continue.
-class MavCmdDoPauseContinue : public MavLinkCommand {
+class MavCmdDoPauseContinue : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 193;
     MavCmdDoPauseContinue() { command = kCommandId; }
@@ -7682,68 +9125,116 @@ public:
     // mission. A VTOL capable vehicle should enter hover mode (multicopter and VTOL
     // planes). A plane should loiter with the default loiter radius.
     float Continue = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set moving direction to forward or reverse.
-class MavCmdDoSetReverse : public MavLinkCommand {
+class MavCmdDoSetReverse : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 194;
     MavCmdDoSetReverse() { command = kCommandId; }
     // Direction (0=Forward, 1=Reverse)
     float Reverse = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Sets the region of interest (ROI) to a location. This can then be used by the vehicles
+// Sets the region of interest (ROI) to a location. This can then be used by the vehicle's
 // control system to control the vehicle attitude and the attitude of various sensors
-// such as cameras.
-class MavCmdDoSetRoiLocation : public MavLinkCommand {
+// such as cameras. This command can be sent to a gimbal manager but not to a gimbal
+// device. A gimbal is not to react to this message.
+class MavCmdDoSetRoiLocation : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 195;
     MavCmdDoSetRoiLocation() { command = kCommandId; }
-    // Latitude
+    // Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0
+    // for all gimbal device components. (Send command multiple times for more than
+    // one but not all gimbals.)
+    float GimbalDeviceId = 0;
+    // Latitude of ROI location
     float Latitude = 0;
-    // Longitude
+    // Longitude of ROI location
     float Longitude = 0;
-    // Altitude
+    // Altitude of ROI location
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw
-// offset. This can then be used by the vehicles control system to control the vehicle
-// attitude and the attitude of various sensors such as cameras.
-class MavCmdDoSetRoiWpnextOffset : public MavLinkCommand {
+// offset. This can then be used by the vehicle's control system to control the vehicle
+// attitude and the attitude of various sensors such as cameras. This command can
+// be sent to a gimbal manager but not to a gimbal device. A gimbal device is not
+// to react to this message.
+class MavCmdDoSetRoiWpnextOffset : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 196;
     MavCmdDoSetRoiWpnextOffset() { command = kCommandId; }
-    // pitch offset from next waypoint
+    // Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0
+    // for all gimbal device components. (Send command multiple times for more than
+    // one but not all gimbals.)
+    float GimbalDeviceId = 0;
+    // Pitch offset from next waypoint, positive tilting up
     float PitchOffset = 0;
-    // roll offset from next waypoint
+    // roll offset from next waypoint, positive banking to the right
     float RollOffset = 0;
-    // yaw offset from next waypoint
+    // yaw offset from next waypoint, positive panning to the right
     float YawOffset = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Cancels any previous ROI command returning the vehicle/sensors to default flight
-// characteristics. This can then be used by the vehicles control system to control
-// the vehicle attitude and the attitude of various sensors such as cameras.
-class MavCmdDoSetRoiNone : public MavLinkCommand {
+// characteristics. This can then be used by the vehicle's control system to control
+// the vehicle attitude and the attitude of various sensors such as cameras. This
+// command can be sent to a gimbal manager but not to a gimbal device. A gimbal device
+// is not to react to this message. After this command the gimbal manager should go
+// back to manual input if available, and otherwise assume a neutral position.
+class MavCmdDoSetRoiNone : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 197;
     MavCmdDoSetRoiNone() { command = kCommandId; }
+    // Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0
+    // for all gimbal device components. (Send command multiple times for more than
+    // one but not all gimbals.)
+    float GimbalDeviceId = 0;
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// Mount tracks system with specified system ID. Determination of target vehicle position
+// may be done with GLOBAL_POSITION_INT or any other means. This command can be sent
+// to a gimbal manager but not to a gimbal device. A gimbal device is not to react
+// to this message.
+class MavCmdDoSetRoiSysid : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 198;
+    MavCmdDoSetRoiSysid() { command = kCommandId; }
+    // System ID
+    float SystemId = 0;
+    // Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0
+    // for all gimbal device components. (Send command multiple times for more than
+    // one but not all gimbals.)
+    float GimbalDeviceId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Control onboard camera system.
-class MavCmdDoControlVideo : public MavLinkCommand {
+class MavCmdDoControlVideo : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 200;
     MavCmdDoControlVideo() { command = kCommandId; }
@@ -7755,14 +9246,16 @@ public:
     float Interval = 0;
     // Recording: 0: disabled, 1: enabled compressed, 2: enabled raw
     float Recording = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Sets the region of interest (ROI) for a sensor set or the vehicle itself. This
-// can then be used by the vehicles control system to control the vehicle attitude
+// can then be used by the vehicle's control system to control the vehicle attitude
 // and the attitude of various sensors such as cameras.
-class MavCmdDoSetRoi : public MavLinkCommand {
+class MavCmdDoSetRoi : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 201;
     MavCmdDoSetRoi() { command = kCommandId; }
@@ -7778,6 +9271,7 @@ public:
     float MavRoiWpnext2 = 0;
     // MAV_ROI_WPNEXT: yaw offset from next waypoint, MAV_ROI_LOCATION: altitude
     float MavRoiWpnext3 = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -7785,7 +9279,8 @@ protected:
 // Configure digital camera. This is a fallback message for systems that have not
 // yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html
 // ).
-class MavCmdDoDigicamConfigure : public MavLinkCommand {
+class MavCmdDoDigicamConfigure : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 202;
     MavCmdDoDigicamConfigure() { command = kCommandId; }
@@ -7803,6 +9298,7 @@ public:
     float CommandIdentity = 0;
     // Main engine cut-off time before camera trigger. (0 means no cut-off)
     float EngineCutpoff = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -7810,7 +9306,8 @@ protected:
 // Control digital camera. This is a fallback message for systems that have not yet
 // implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html
 // ).
-class MavCmdDoDigicamControl : public MavLinkCommand {
+class MavCmdDoDigicamControl : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 203;
     MavCmdDoDigicamControl() { command = kCommandId; }
@@ -7829,12 +9326,14 @@ public:
     // Test shot identifier. If set to 1, image will only be captured, but not counted
     // towards internal frame count.
     float ShotId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Mission command to configure a camera or antenna mount
-class MavCmdDoMountConfigure : public MavLinkCommand {
+class MavCmdDoMountConfigure : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 204;
     MavCmdDoMountConfigure() { command = kCommandId; }
@@ -7847,35 +9346,38 @@ public:
     // stabilize yaw? (1 = yes, 0 = no)
     float StabilizeYaw = 0;
     // roll input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)
-    float RollInput = 0;
+    float RollInputMode = 0;
     // pitch input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)
-    float PitchInput = 0;
+    float PitchInputMode = 0;
     // yaw input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)
-    float YawInput = 0;
+    float YawInputMode = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Mission command to control a camera or antenna mount
-class MavCmdDoMountControl : public MavLinkCommand {
+class MavCmdDoMountControl : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 205;
     MavCmdDoMountControl() { command = kCommandId; }
     // pitch depending on mount mode (degrees or degrees/second depending on pitch
     // input).
-    float PitchDependingMount = 0;
+    float Pitch = 0;
     // roll depending on mount mode (degrees or degrees/second depending on roll input).
-    float RollDependingMount = 0;
+    float Roll = 0;
     // yaw depending on mount mode (degrees or degrees/second depending on yaw input).
-    float YawDependingMount = 0;
+    float Yaw = 0;
     // altitude depending on mount mode.
     float Altitude = 0;
-    // latitude in degrees * 1E7, set if appropriate mount mode.
-    float LatitudeDegreesP = 0;
-    // longitude in degrees * 1E7, set if appropriate mount mode.
-    float LongitudeDegreesP = 0;
+    // latitude, set if appropriate mount mode.
+    float Latitude = 0;
+    // longitude, set if appropriate mount mode.
+    float Longitude = 0;
     // Mount mode.
     float Mode = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -7883,7 +9385,8 @@ protected:
 // Mission command to set camera trigger distance for this flight. The camera is triggered
 // each time this distance is exceeded. This command can also be used to set the shutter
 // integration time for the camera.
-class MavCmdDoSetCamTriggDist : public MavLinkCommand {
+class MavCmdDoSetCamTriggDist : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 206;
     MavCmdDoSetCamTriggDist() { command = kCommandId; }
@@ -7893,34 +9396,40 @@ public:
     float Shutter = 0;
     // Trigger camera once immediately. (0 = no trigger, 1 = trigger)
     float Trigger = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Mission command to enable the geofence
-class MavCmdDoFenceEnable : public MavLinkCommand {
+class MavCmdDoFenceEnable : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 207;
     MavCmdDoFenceEnable() { command = kCommandId; }
     // enable? (0=disable, 1=enable, 2=disable_floor_only)
     float Enable = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Mission command to trigger a parachute
-class MavCmdDoParachute : public MavLinkCommand {
+// Mission item/command to release a parachute or enable/disable auto release.
+class MavCmdDoParachute : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 208;
     MavCmdDoParachute() { command = kCommandId; }
-    // action
+    // Action
     float Action = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Mission command to perform motor test.
-class MavCmdDoMotorTest : public MavLinkCommand {
+class MavCmdDoMotorTest : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 209;
     MavCmdDoMotorTest() { command = kCommandId; }
@@ -7937,23 +9446,27 @@ public:
     float MotorCount = 0;
     // Motor test order.
     float TestOrder = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Change to/from inverted flight.
-class MavCmdDoInvertedFlight : public MavLinkCommand {
+class MavCmdDoInvertedFlight : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 210;
     MavCmdDoInvertedFlight() { command = kCommandId; }
     // Inverted flight. (0=normal, 1=inverted)
     float Inverted = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Sets a desired vehicle turn angle and speed change.
-class MavCmdNavSetYawSpeed : public MavLinkCommand {
+class MavCmdNavSetYawSpeed : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 213;
     MavCmdNavSetYawSpeed() { command = kCommandId; }
@@ -7963,6 +9476,7 @@ public:
     float Speed = 0;
     // Final angle. (0=absolute, 1=relative)
     float Angle = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -7970,7 +9484,8 @@ protected:
 // Mission command to set camera trigger interval for this flight. If triggering is
 // enabled, the camera is triggered each time this interval expires. This command
 // can also be used to set the shutter integration time for the camera.
-class MavCmdDoSetCamTriggInterval : public MavLinkCommand {
+class MavCmdDoSetCamTriggInterval : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 214;
     MavCmdDoSetCamTriggInterval() { command = kCommandId; }
@@ -7979,12 +9494,14 @@ public:
     // Camera shutter integration time. Should be less than trigger cycle time. -1
     // or 0 to ignore.
     float ShutterIntegration = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Mission command to control a camera or antenna mount, using a quaternion as reference.
-class MavCmdDoMountControlQuat : public MavLinkCommand {
+class MavCmdDoMountControlQuat : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 220;
     MavCmdDoMountControlQuat() { command = kCommandId; }
@@ -7996,12 +9513,14 @@ public:
     float Qp3 = 0;
     // quaternion param q4, z (0 in null-rotation)
     float Qp4 = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // set id of master controller
-class MavCmdDoGuidedMaster : public MavLinkCommand {
+class MavCmdDoGuidedMaster : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 221;
     MavCmdDoGuidedMaster() { command = kCommandId; }
@@ -8009,12 +9528,14 @@ public:
     float SystemId = 0;
     // Component ID
     float ComponentId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set limits for external control
-class MavCmdDoGuidedLimits : public MavLinkCommand {
+class MavCmdDoGuidedLimits : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 222;
     MavCmdDoGuidedLimits() { command = kCommandId; }
@@ -8031,6 +9552,7 @@ public:
     // at the moment the command was executed, the command will be aborted and the
     // mission will continue. 0 means no horizontal move limit.
     float HorizpMoveLimit = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8038,7 +9560,8 @@ protected:
 // Control vehicle engine. This is interpreted by the vehicles engine controller to
 // change the target engine state. It is intended for vehicles with internal combustion
 // engines
-class MavCmdDoEngineControl : public MavLinkCommand {
+class MavCmdDoEngineControl : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 223;
     MavCmdDoEngineControl() { command = kCommandId; }
@@ -8050,6 +9573,7 @@ public:
     // gained the specified height. Used in VTOL vehicles during takeoff to start
     // engine after the aircraft is off the ground. Zero for no delay.
     float HeightDelay = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8057,22 +9581,26 @@ protected:
 // Set the mission item with sequence number seq as current item. This means that
 // the MAV will continue to this mission item on the shortest path (not following
 // the mission items in-between).
-class MavCmdDoSetMissionCurrent : public MavLinkCommand {
+class MavCmdDoSetMissionCurrent : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 224;
     MavCmdDoSetMissionCurrent() { command = kCommandId; }
     // Mission sequence value to set
     float Number = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // NOP - This command is only used to mark the upper limit of the DO commands in the
 // enumeration
-class MavCmdDoLast : public MavLinkCommand {
+class MavCmdDoLast : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 240;
     MavCmdDoLast() { command = kCommandId; }
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8080,7 +9608,8 @@ protected:
 // Trigger calibration. This command will be only accepted if in pre-flight mode.
 // Except for Temperature Calibration, only one sensor should be set in a single message
 // and all others should be zero.
-class MavCmdPreflightCalibration : public MavLinkCommand {
+class MavCmdPreflightCalibration : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 241;
     MavCmdPreflightCalibration() { command = kCommandId; }
@@ -8100,12 +9629,14 @@ public:
     float CompmotOrAirspeed = 0;
     // 1: ESC calibration, 3: barometer temperature calibration
     float EscOrBaro = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set sensor offsets. This command will be only accepted if in pre-flight mode.
-class MavCmdPreflightSetSensorOffsets : public MavLinkCommand {
+class MavCmdPreflightSetSensorOffsets : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 242;
     MavCmdPreflightSetSensorOffsets() { command = kCommandId; }
@@ -8124,24 +9655,28 @@ public:
     float P5thDimension = 0;
     // Generic dimension 6, in the sensor's raw units
     float P6thDimension = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Trigger UAVCAN config. This command will be only accepted if in pre-flight mode.
-class MavCmdPreflightUavcan : public MavLinkCommand {
+class MavCmdPreflightUavcan : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 243;
     MavCmdPreflightUavcan() { command = kCommandId; }
     // 1: Trigger actuator ID assignment and direction mapping.
     float ActuatorId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request storage of different parameter values and logs. This command will be only
 // accepted if in pre-flight mode.
-class MavCmdPreflightStorage : public MavLinkCommand {
+class MavCmdPreflightStorage : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 245;
     MavCmdPreflightStorage() { command = kCommandId; }
@@ -8154,12 +9689,14 @@ public:
     // Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging,
     // > 1: logging rate (e.g. set to 1000 for 1000 Hz logging)
     float LoggingRate = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request the reboot or shutdown of system components.
-class MavCmdPreflightRebootShutdown : public MavLinkCommand {
+class MavCmdPreflightRebootShutdown : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 246;
     MavCmdPreflightRebootShutdown() { command = kCommandId; }
@@ -8178,6 +9715,30 @@ public:
     float Wip2 = 0;
     // WIP: ID (e.g. camera ID -1 for all IDs)
     float Wip3 = 0;
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// Request a target system to start an upgrade of one (or all) of its components.
+// For example, the command might be sent to a companion computer to cause it to upgrade
+// a connected flight controller. The system doing the upgrade will report progress
+// using the normal command protocol sequence for a long running operation. Command
+// protocol information: https://mavlink.io/en/services/command.html.
+class MavCmdDoUpgrade : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 247;
+    MavCmdDoUpgrade() { command = kCommandId; }
+    // Component id of the component to be upgraded. If set to 0, all components should
+    // be upgraded.
+    float ComponentId = 0;
+    // 0: Do not reboot component after the action is executed, 1: Reboot component
+    // after the action is executed.
+    float Reboot = 0;
+    // WIP: upgrade progress report rate (can be used for more granular control).
+    float Wip = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8186,7 +9747,8 @@ protected:
 // to position, continue/resume mission. When param 1 indicates that the mission is
 // paused (MAV_GOTO_DO_HOLD), param 2 defines whether it holds in place or moves to
 // another position.
-class MavCmdOverrideGoto : public MavLinkCommand {
+class MavCmdOverrideGoto : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 252;
     MavCmdOverrideGoto() { command = kCommandId; }
@@ -8200,18 +9762,20 @@ public:
     float Frame = 0;
     // Desired yaw angle.
     float Yaw = 0;
-    // Latitude / X position.
-    float LatitudePX = 0;
-    // Longitude / Y position.
-    float LongitudePY = 0;
-    // Altitude / Z position.
-    float AltitudePZ = 0;
+    // Latitude/X position.
+    float Latitudepx = 0;
+    // Longitude/Y position.
+    float Longitudepy = 0;
+    // Altitude/Z position.
+    float Altitudepz = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // start running a mission
-class MavCmdMissionStart : public MavLinkCommand {
+class MavCmdMissionStart : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 300;
     MavCmdMissionStart() { command = kCommandId; }
@@ -8220,12 +9784,14 @@ public:
     // last_item: the last mission item to run (after this item is run, the mission
     // ends)
     float LastItem = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Arms / Disarms a component
-class MavCmdComponentArmDisarm : public MavLinkCommand {
+class MavCmdComponentArmDisarm : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 400;
     MavCmdComponentArmDisarm() { command = kCommandId; }
@@ -8235,21 +9801,59 @@ public:
     // force arming/disarming (e.g. allow arming to override preflight checks and
     // disarming in flight)
     float Force = 0;
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting
+// up dark areas external to the sytstem: e.g. a torch or searchlight (as opposed
+// to a light source for illuminating the system itself, e.g. an indicator light).
+class MavCmdIlluminatorOnOff : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 405;
+    MavCmdIlluminatorOnOff() { command = kCommandId; }
+    // 0: Illuminators OFF, 1: Illuminators ON
+    float Enable = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request the home position from the vehicle.
-class MavCmdGetHomePosition : public MavLinkCommand {
+class MavCmdGetHomePosition : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 410;
     MavCmdGetHomePosition() { command = kCommandId; }
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// Inject artificial failure for testing purposes. Note that autopilots should implement
+// an additional protection before accepting this command such as a specific param
+// setting.
+class MavCmdInjectFailure : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 420;
+    MavCmdInjectFailure() { command = kCommandId; }
+    // The unit which is affected by the failure.
+    float FailureUnit = 0;
+    // The type how the failure manifests itself.
+    float FailureType = 0;
+    // Instance affected by failure (0 to signal all).
+    float Instance = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Starts receiver pairing.
-class MavCmdStartRxPair : public MavLinkCommand {
+class MavCmdStartRxPair : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 500;
     MavCmdStartRxPair() { command = kCommandId; }
@@ -8257,6 +9861,7 @@ public:
     float Spektrum = 0;
     // RC type.
     float RcType = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8264,19 +9869,22 @@ protected:
 // Request the interval between messages for a particular MAVLink message ID. The
 // receiver should ACK the command and then emit its response in a MESSAGE_INTERVAL
 // message.
-class MavCmdGetMessageInterval : public MavLinkCommand {
+class MavCmdGetMessageInterval : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 510;
     MavCmdGetMessageInterval() { command = kCommandId; }
     // The MAVLink message ID
     float MessageId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set the interval between messages for a particular MAVLink message ID. This interface
 // replaces REQUEST_DATA_STREAM.
-class MavCmdSetMessageInterval : public MavLinkCommand {
+class MavCmdSetMessageInterval : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 511;
     MavCmdSetMessageInterval() { command = kCommandId; }
@@ -8288,76 +9896,101 @@ public:
     // Target address of message stream (if message has target address fields). 0:
     // Flight-stack default (recommended), 1: address of requestor, 2: broadcast.
     float ResponseTarget = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request the target system(s) emit a single instance of a specified message (i.e.
 // a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).
-class MavCmdRequestMessage : public MavLinkCommand {
+class MavCmdRequestMessage : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 512;
     MavCmdRequestMessage() { command = kCommandId; }
     // The MAVLink message ID of the requested message.
     float MessageId = 0;
-    // Index id (if appropriate). The use of this parameter (if any), must be defined
-    // in the requested message.
-    float IndexId = 0;
+    // Use for index ID, if required. Otherwise, the use of this parameter (if any)
+    // must be defined in the requested message. By default assumed not used (0).
+    float ReqParamP1 = 0;
+    // The use of this parameter (if any), must be defined in the requested message.
+    // By default assumed not used (0).
+    float ReqParamP2 = 0;
+    // The use of this parameter (if any), must be defined in the requested message.
+    // By default assumed not used (0).
+    float ReqParamP3 = 0;
+    // The use of this parameter (if any), must be defined in the requested message.
+    // By default assumed not used (0).
+    float ReqParamP4 = 0;
+    // The use of this parameter (if any), must be defined in the requested message.
+    // By default assumed not used (0).
+    float ReqParamP5 = 0;
     // Target address for requested message (if message has target address fields).
     // 0: Flight-stack default, 1: address of requestor, 2: broadcast.
     float ResponseTarget = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Request MAVLink protocol version compatibility
-class MavCmdRequestProtocolVersion : public MavLinkCommand {
+// Request MAVLink protocol version compatibility. All receivers should ACK the command
+// and then emit their capabilities in an PROTOCOL_VERSION message
+class MavCmdRequestProtocolVersion : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 519;
     MavCmdRequestProtocolVersion() { command = kCommandId; }
     // 1: Request supported protocol versions by all nodes on the network
     float Protocol = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request autopilot capabilities. The receiver should ACK the command and then emit
 // its capabilities in an AUTOPILOT_VERSION message
-class MavCmdRequestAutopilotCapabilities : public MavLinkCommand {
+class MavCmdRequestAutopilotCapabilities : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 520;
     MavCmdRequestAutopilotCapabilities() { command = kCommandId; }
     // 1: Request autopilot version
     float Version = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request camera information (CAMERA_INFORMATION).
-class MavCmdRequestCameraInformation : public MavLinkCommand {
+class MavCmdRequestCameraInformation : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 521;
     MavCmdRequestCameraInformation() { command = kCommandId; }
     // 0: No action 1: Request camera capabilities
     float Capabilities = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request camera settings (CAMERA_SETTINGS).
-class MavCmdRequestCameraSettings : public MavLinkCommand {
+class MavCmdRequestCameraSettings : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 522;
     MavCmdRequestCameraSettings() { command = kCommandId; }
     // 0: No Action 1: Request camera settings
     float Settings = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request storage information (STORAGE_INFORMATION). Use the command's target_component
 // to target a specific component's storage.
-class MavCmdRequestStorageInformation : public MavLinkCommand {
+class MavCmdRequestStorageInformation : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 525;
     MavCmdRequestStorageInformation() { command = kCommandId; }
@@ -8365,72 +9998,86 @@ public:
     float StorageId = 0;
     // 0: No Action 1: Request storage information
     float Information = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Format a storage medium. Once format is complete, a STORAGE_INFORMATION message
 // is sent. Use the command's target_component to target a specific component's storage.
-class MavCmdStorageFormat : public MavLinkCommand {
+class MavCmdStorageFormat : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 526;
     MavCmdStorageFormat() { command = kCommandId; }
     // Storage ID (1 for first, 2 for second, etc.)
     float StorageId = 0;
-    // 0: No action 1: Format storage
+    // Format storage (and reset image log). 0: No action 1: Format storage
     float Format = 0;
+    // Reset Image Log (without formatting storage medium). This will reset CAMERA_CAPTURE_STATUS.image_count
+    // and CAMERA_IMAGE_CAPTURED.image_index. 0: No action 1: Reset Image Log
+    float ResetImageLog = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request camera capture status (CAMERA_CAPTURE_STATUS)
-class MavCmdRequestCameraCaptureStatus : public MavLinkCommand {
+class MavCmdRequestCameraCaptureStatus : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 527;
     MavCmdRequestCameraCaptureStatus() { command = kCommandId; }
     // 0: No Action 1: Request camera capture status
     float CaptureStatus = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request flight information (FLIGHT_INFORMATION)
-class MavCmdRequestFlightInformation : public MavLinkCommand {
+class MavCmdRequestFlightInformation : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 528;
     MavCmdRequestFlightInformation() { command = kCommandId; }
     // 1: Request flight information
     float FlightInformation = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Reset all camera settings to Factory Default
-class MavCmdResetCameraSettings : public MavLinkCommand {
+class MavCmdResetCameraSettings : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 529;
     MavCmdResetCameraSettings() { command = kCommandId; }
     // 0: No Action 1: Reset all settings
     float Reset = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set camera running mode. Use NaN for reserved values. GCS will send a MAV_CMD_REQUEST_VIDEO_STREAM_STATUS
 // command after a mode change if the camera supports video streaming.
-class MavCmdSetCameraMode : public MavLinkCommand {
+class MavCmdSetCameraMode : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 530;
     MavCmdSetCameraMode() { command = kCommandId; }
     // Camera mode
     float CameraMode = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success).
-// Use NaN for reserved values.
-class MavCmdSetCameraZoom : public MavLinkCommand {
+class MavCmdSetCameraZoom : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 531;
     MavCmdSetCameraZoom() { command = kCommandId; }
@@ -8438,13 +10085,14 @@ public:
     float ZoomType = 0;
     // Zoom value. The range of valid values depend on the zoom type.
     float ZoomValue = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success).
-// Use NaN for reserved values.
-class MavCmdSetCameraFocus : public MavLinkCommand {
+class MavCmdSetCameraFocus : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 532;
     MavCmdSetCameraFocus() { command = kCommandId; }
@@ -8452,17 +10100,20 @@ public:
     float FocusType = 0;
     // Focus value
     float FocusValue = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.
-class MavCmdJumpTag : public MavLinkCommand {
+class MavCmdJumpTag : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 600;
     MavCmdJumpTag() { command = kCommandId; }
     // Tag.
     float Tag = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8472,7 +10123,8 @@ protected:
 // If this is not the case then a jump to a missing tag should complete the mission,
 // and a jump where there are multiple matching tags should always select the one
 // with the lowest mission sequence number.
-class MavCmdDoJumpTag : public MavLinkCommand {
+class MavCmdDoJumpTag : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 601;
     MavCmdDoJumpTag() { command = kCommandId; }
@@ -8480,13 +10132,47 @@ public:
     float Tag = 0;
     // Repeat count.
     float Repeat = 0;
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// High level setpoint to be sent to a gimbal manager to set a gimbal attitude. It
+// is possible to set combinations of the values below. E.g. an angle as well as a
+// desired angular rate can be used to get to this angle at a certain angular rate,
+// or an angular rate only will result in continuous turning. NaN is to be used to
+// signal unset. Note: a gimbal is never to react to this command but only the gimbal
+// manager.
+class MavCmdDoGimbalManagerTiltpan : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 1000;
+    MavCmdDoGimbalManagerTiltpan() { command = kCommandId; }
+    // Tilt/pitch rate (positive to tilt up).
+    float TiltRate = 0;
+    // Pan/yaw rate (positive to pan to the right).
+    float PanRate = 0;
+    // Tilt/pitch angle (positive to tilt up, relative to vehicle for PAN mode, relative
+    // to world horizon for HOLD mode).
+    float TiltAngle = 0;
+    // Pan/yaw angle (positive to pan to the right, relative to vehicle for PAN mode,
+    // absolute to North for HOLD mode).
+    float PanAngle = 0;
+    // Gimbal manager flags to use.
+    float GimbalManagerFlags = 0;
+    // Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0
+    // for all gimbal device components. (Send command multiple times for more than
+    // one but not all gimbals.)
+    float GimbalDeviceId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use
 // NaN for reserved values.
-class MavCmdImageStartCapture : public MavLinkCommand {
+class MavCmdImageStartCapture : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2000;
     MavCmdImageStartCapture() { command = kCommandId; }
@@ -8499,32 +10185,38 @@ public:
     // (param3 == 1). Increment the capture ID for each capture command to prevent
     // double captures when a command is re-transmitted. Use 0 to ignore it.
     float SequenceNumber = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Stop image capture sequence Use NaN for reserved values.
-class MavCmdImageStopCapture : public MavLinkCommand {
+class MavCmdImageStopCapture : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2001;
     MavCmdImageStopCapture() { command = kCommandId; }
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Re-request a CAMERA_IMAGE_CAPTURE message. Use NaN for reserved values.
-class MavCmdRequestCameraImageCapture : public MavLinkCommand {
+// Re-request a CAMERA_IMAGE_CAPTURED message.
+class MavCmdRequestCameraImageCapture : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2002;
     MavCmdRequestCameraImageCapture() { command = kCommandId; }
-    // Sequence number for missing CAMERA_IMAGE_CAPTURE message
+    // Sequence number for missing CAMERA_IMAGE_CAPTURED message
     float Number = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Enable or disable on-board camera triggering system.
-class MavCmdDoTriggerControl : public MavLinkCommand {
+class MavCmdDoTriggerControl : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2003;
     MavCmdDoTriggerControl() { command = kCommandId; }
@@ -8535,12 +10227,64 @@ public:
     // 1 to pause triggering, but without switching the camera off or retracting it.
     // -1 to ignore
     float Pause = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Starts video capture (recording). Use NaN for reserved values.
-class MavCmdVideoStartCapture : public MavLinkCommand {
+// If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT
+// is set), this command allows to initiate the tracking.
+class MavCmdCameraTrackPoint : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 2004;
+    MavCmdCameraTrackPoint() { command = kCommandId; }
+    // Point to track x value (normalized 0..1, 0 is left, 1 is right).
+    float PointX = 0;
+    // Point to track y value (normalized 0..1, 0 is top, 1 is bottom).
+    float PointY = 0;
+    // Point radius (normalized 0..1, 0 is image left, 1 is image right).
+    float Radius = 0;
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE
+// is set), this command allows to initiate the tracking.
+class MavCmdCameraTrackRectangle : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 2005;
+    MavCmdCameraTrackRectangle() { command = kCommandId; }
+    // Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right).
+    float TopLeftCorner = 0;
+    // Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).
+    float TopLeftCorner2 = 0;
+    // Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is
+    // right).
+    float BottomRightCorner = 0;
+    // Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom).
+    float BottomRightCorner2 = 0;
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// Stops ongoing tracking.
+class MavCmdCameraStopTracking : public MavLinkCommand
+{
+public:
+    const static uint16_t kCommandId = 2010;
+    MavCmdCameraStopTracking() { command = kCommandId; }
+
+protected:
+    virtual void pack();
+    virtual void unpack();
+};
+// Starts video capture (recording).
+class MavCmdVideoStartCapture : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2500;
     MavCmdVideoStartCapture() { command = kCommandId; }
@@ -8549,86 +10293,102 @@ public:
     // Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0
     // for no messages, otherwise frequency)
     float StatusFrequency = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-// Stop the current video capture (recording). Use NaN for reserved values.
-class MavCmdVideoStopCapture : public MavLinkCommand {
+// Stop the current video capture (recording).
+class MavCmdVideoStopCapture : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2501;
     MavCmdVideoStopCapture() { command = kCommandId; }
     // Video Stream ID (0 for all streams)
     float StreamId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Start video streaming
-class MavCmdVideoStartStreaming : public MavLinkCommand {
+class MavCmdVideoStartStreaming : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2502;
     MavCmdVideoStartStreaming() { command = kCommandId; }
     // Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
     float StreamId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Stop the given video stream
-class MavCmdVideoStopStreaming : public MavLinkCommand {
+class MavCmdVideoStopStreaming : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2503;
     MavCmdVideoStopStreaming() { command = kCommandId; }
     // Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
     float StreamId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request video stream information (VIDEO_STREAM_INFORMATION)
-class MavCmdRequestVideoStreamInformation : public MavLinkCommand {
+class MavCmdRequestVideoStreamInformation : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2504;
     MavCmdRequestVideoStreamInformation() { command = kCommandId; }
     // Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
     float StreamId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request video stream status (VIDEO_STREAM_STATUS)
-class MavCmdRequestVideoStreamStatus : public MavLinkCommand {
+class MavCmdRequestVideoStreamStatus : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2505;
     MavCmdRequestVideoStreamStatus() { command = kCommandId; }
     // Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
     float StreamId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)
-class MavCmdLoggingStart : public MavLinkCommand {
+class MavCmdLoggingStart : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2510;
     MavCmdLoggingStart() { command = kCommandId; }
     // Format: 0: ULog
     float Format = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request to stop streaming log data over MAVLink
-class MavCmdLoggingStop : public MavLinkCommand {
+class MavCmdLoggingStop : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2511;
     MavCmdLoggingStop() { command = kCommandId; }
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
-class MavCmdAirframeConfiguration : public MavLinkCommand {
+class MavCmdAirframeConfiguration : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2520;
     MavCmdAirframeConfiguration() { command = kCommandId; }
@@ -8636,23 +10396,27 @@ public:
     float LandingGearId = 0;
     // Landing gear position (Down: 0, Up: 1, NaN for no change)
     float LandingGearPosition = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request to start/stop transmitting over the high latency telemetry
-class MavCmdControlHighLatency : public MavLinkCommand {
+class MavCmdControlHighLatency : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2600;
     MavCmdControlHighLatency() { command = kCommandId; }
     // Control transmission over high latency telemetry (0: stop, 1: start)
     float Enable = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Create a panorama at the current position
-class MavCmdPanoramaCreate : public MavLinkCommand {
+class MavCmdPanoramaCreate : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 2800;
     MavCmdPanoramaCreate() { command = kCommandId; }
@@ -8664,18 +10428,21 @@ public:
     float HorizontalSpeed = 0;
     // Speed of the vertical rotation.
     float VerticalSpeed = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Request VTOL transition
-class MavCmdDoVtolTransition : public MavLinkCommand {
+class MavCmdDoVtolTransition : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 3000;
     MavCmdDoVtolTransition() { command = kCommandId; }
     // The target VTOL state. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be
     // used.
     float State = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8685,13 +10452,15 @@ protected:
 // or deny the request. If approved the progress of command_ack message should be
 // set with period of time that this authorization is valid in seconds or in case
 // it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
-class MavCmdArmAuthorizationRequest : public MavLinkCommand {
+class MavCmdArmAuthorizationRequest : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 3001;
     MavCmdArmAuthorizationRequest() { command = kCommandId; }
     // Vehicle system id, this way ground station can request arm authorization on
     // behalf of any vehicle
     float SystemId = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8699,10 +10468,12 @@ protected:
 // This command sets the submode to standard guided when vehicle is in guided mode.
 // The vehicle holds position and altitude and the user can input the desired velocities
 // along all three axes.
-class MavCmdSetGuidedSubmodeStandard : public MavLinkCommand {
+class MavCmdSetGuidedSubmodeStandard : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 4000;
     MavCmdSetGuidedSubmodeStandard() { command = kCommandId; }
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8711,7 +10482,8 @@ protected:
 // along a circle facing the center of the circle. The user can input the velocity
 // along the circle and change the radius. If no input is given the vehicle will hold
 // position.
-class MavCmdSetGuidedSubmodeCircle : public MavLinkCommand {
+class MavCmdSetGuidedSubmodeCircle : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 4001;
     MavCmdSetGuidedSubmodeCircle() { command = kCommandId; }
@@ -8723,35 +10495,39 @@ public:
     float UserDefined2 = 0;
     // User defined
     float UserDefined3 = 0;
-    // Unscaled target latitude of center of circle in CIRCLE_MODE
-    float UnscaledTargetLatitude = 0;
-    // Unscaled target longitude of center of circle in CIRCLE_MODE
-    float UnscaledTargetLongitude = 0;
+    // Target latitude of center of circle in CIRCLE_MODE
+    float Latitude = 0;
+    // Target longitude of center of circle in CIRCLE_MODE
+    float Longitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Delay mission state machine until gate has been reached.
-class MavCmdConditionGate : public MavLinkCommand {
+class MavCmdConditionGate : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 4501;
     MavCmdConditionGate() { command = kCommandId; }
     // Geometry: 0: orthogonal to path between previous and next waypoint.
     float Geometry = 0;
     // Altitude: 0: ignore altitude
-    float Altitude = 0;
+    float Usealtitude = 0;
     // Latitude
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
     // Altitude
-    float Altitude2 = 0;
+    float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Fence return point. There can only be one fence return point.
-class MavCmdNavFenceReturnPoint : public MavLinkCommand {
+class MavCmdNavFenceReturnPoint : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 5000;
     MavCmdNavFenceReturnPoint() { command = kCommandId; }
@@ -8761,13 +10537,15 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Fence vertex for an inclusion polygon (the polygon must not be self-intersecting).
 // The vehicle must stay within this area. Minimum of 3 vertices required.
-class MavCmdNavFencePolygonVertexInclusion : public MavLinkCommand {
+class MavCmdNavFencePolygonVertexInclusion : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 5001;
     MavCmdNavFencePolygonVertexInclusion() { command = kCommandId; }
@@ -8777,13 +10555,15 @@ public:
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Fence vertex for an exclusion polygon (the polygon must not be self-intersecting).
 // The vehicle must stay outside this area. Minimum of 3 vertices required.
-class MavCmdNavFencePolygonVertexExclusion : public MavLinkCommand {
+class MavCmdNavFencePolygonVertexExclusion : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 5002;
     MavCmdNavFencePolygonVertexExclusion() { command = kCommandId; }
@@ -8793,12 +10573,14 @@ public:
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Circular fence area. The vehicle must stay inside this area.
-class MavCmdNavFenceCircleInclusion : public MavLinkCommand {
+class MavCmdNavFenceCircleInclusion : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 5003;
     MavCmdNavFenceCircleInclusion() { command = kCommandId; }
@@ -8808,12 +10590,14 @@ public:
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Circular fence area. The vehicle must stay outside this area.
-class MavCmdNavFenceCircleExclusion : public MavLinkCommand {
+class MavCmdNavFenceCircleExclusion : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 5004;
     MavCmdNavFenceCircleExclusion() { command = kCommandId; }
@@ -8823,12 +10607,14 @@ public:
     float Latitude = 0;
     // Longitude
     float Longitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Rally point. You can have multiple rally points defined.
-class MavCmdNavRallyPoint : public MavLinkCommand {
+class MavCmdNavRallyPoint : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 5100;
     MavCmdNavRallyPoint() { command = kCommandId; }
@@ -8838,6 +10624,7 @@ public:
     float Longitude = 0;
     // Altitude
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
@@ -8848,17 +10635,20 @@ protected:
 // UAVCAN_NODE_STATUS has a matching message UAVCAN_NODE_INFO received earlier; if
 // not, this command should be sent again in order to request re-transmission of the
 // node information messages.
-class MavCmdUavcanGetNodeInfo : public MavLinkCommand {
+class MavCmdUavcanGetNodeInfo : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 5200;
     MavCmdUavcanGetNodeInfo() { command = kCommandId; }
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach
 // the required release position and velocity.
-class MavCmdPayloadPrepareDeploy : public MavLinkCommand {
+class MavCmdPayloadPrepareDeploy : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 30001;
     MavCmdPayloadPrepareDeploy() { command = kCommandId; }
@@ -8877,18 +10667,22 @@ public:
     // Minimum altitude clearance to the release position. A negative value indicates
     // the system can define the clearance at will.
     float AltitudeClearance = 0;
-    // Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT
-    float LatitudeUnscaledFor = 0;
-    // Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT
-    float LongitudeUnscaledFor = 0;
-    // Altitude (MSL), in meters
+    // Latitude. Note, if used in MISSION_ITEM (deprecated) the units are degrees
+    // (unscaled)
+    float Latitude = 0;
+    // Longitude. Note, if used in MISSION_ITEM (deprecated) the units are degrees
+    // (unscaled)
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // Control the payload deployment.
-class MavCmdPayloadControlDeploy : public MavLinkCommand {
+class MavCmdPayloadControlDeploy : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 30002;
     MavCmdPayloadControlDeploy() { command = kCommandId; }
@@ -8896,13 +10690,15 @@ public:
     // payload deployment mode. 100: delete first payload deployment request. 101:
     // delete all payload deployment requests.
     float OperationMode = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined waypoint item. Ground Station will show the Vehicle as flying through
 // this item.
-class MavCmdWaypointUser1 : public MavLinkCommand {
+class MavCmdWaypointUser1 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31000;
     MavCmdWaypointUser1() { command = kCommandId; }
@@ -8915,18 +10711,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined waypoint item. Ground Station will show the Vehicle as flying through
 // this item.
-class MavCmdWaypointUser2 : public MavLinkCommand {
+class MavCmdWaypointUser2 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31001;
     MavCmdWaypointUser2() { command = kCommandId; }
@@ -8939,18 +10737,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined waypoint item. Ground Station will show the Vehicle as flying through
 // this item.
-class MavCmdWaypointUser3 : public MavLinkCommand {
+class MavCmdWaypointUser3 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31002;
     MavCmdWaypointUser3() { command = kCommandId; }
@@ -8963,18 +10763,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined waypoint item. Ground Station will show the Vehicle as flying through
 // this item.
-class MavCmdWaypointUser4 : public MavLinkCommand {
+class MavCmdWaypointUser4 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31003;
     MavCmdWaypointUser4() { command = kCommandId; }
@@ -8987,18 +10789,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined waypoint item. Ground Station will show the Vehicle as flying through
 // this item.
-class MavCmdWaypointUser5 : public MavLinkCommand {
+class MavCmdWaypointUser5 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31004;
     MavCmdWaypointUser5() { command = kCommandId; }
@@ -9011,18 +10815,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined spatial item. Ground Station will not show the Vehicle as flying through
 // this item. Example: ROI item.
-class MavCmdSpatialUser1 : public MavLinkCommand {
+class MavCmdSpatialUser1 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31005;
     MavCmdSpatialUser1() { command = kCommandId; }
@@ -9035,18 +10841,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined spatial item. Ground Station will not show the Vehicle as flying through
 // this item. Example: ROI item.
-class MavCmdSpatialUser2 : public MavLinkCommand {
+class MavCmdSpatialUser2 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31006;
     MavCmdSpatialUser2() { command = kCommandId; }
@@ -9059,18 +10867,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined spatial item. Ground Station will not show the Vehicle as flying through
 // this item. Example: ROI item.
-class MavCmdSpatialUser3 : public MavLinkCommand {
+class MavCmdSpatialUser3 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31007;
     MavCmdSpatialUser3() { command = kCommandId; }
@@ -9083,18 +10893,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined spatial item. Ground Station will not show the Vehicle as flying through
 // this item. Example: ROI item.
-class MavCmdSpatialUser4 : public MavLinkCommand {
+class MavCmdSpatialUser4 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31008;
     MavCmdSpatialUser4() { command = kCommandId; }
@@ -9107,18 +10919,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined spatial item. Ground Station will not show the Vehicle as flying through
 // this item. Example: ROI item.
-class MavCmdSpatialUser5 : public MavLinkCommand {
+class MavCmdSpatialUser5 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31009;
     MavCmdSpatialUser5() { command = kCommandId; }
@@ -9131,18 +10945,20 @@ public:
     // User defined
     float UserDefined4 = 0;
     // Latitude unscaled
-    float LatitudeUnscaled = 0;
+    float Latitude = 0;
     // Longitude unscaled
-    float LongitudeUnscaled = 0;
-    // Altitude (MSL), in meters
+    float Longitude = 0;
+    // Altitude (MSL)
     float Altitude = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined command. Ground Station will not show the Vehicle as flying through
 // this item. Example: MAV_CMD_DO_SET_PARAMETER item.
-class MavCmdUser1 : public MavLinkCommand {
+class MavCmdUser1 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31010;
     MavCmdUser1() { command = kCommandId; }
@@ -9160,13 +10976,15 @@ public:
     float UserDefined6 = 0;
     // User defined
     float UserDefined7 = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined command. Ground Station will not show the Vehicle as flying through
 // this item. Example: MAV_CMD_DO_SET_PARAMETER item.
-class MavCmdUser2 : public MavLinkCommand {
+class MavCmdUser2 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31011;
     MavCmdUser2() { command = kCommandId; }
@@ -9184,13 +11002,15 @@ public:
     float UserDefined6 = 0;
     // User defined
     float UserDefined7 = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined command. Ground Station will not show the Vehicle as flying through
 // this item. Example: MAV_CMD_DO_SET_PARAMETER item.
-class MavCmdUser3 : public MavLinkCommand {
+class MavCmdUser3 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31012;
     MavCmdUser3() { command = kCommandId; }
@@ -9208,13 +11028,15 @@ public:
     float UserDefined6 = 0;
     // User defined
     float UserDefined7 = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined command. Ground Station will not show the Vehicle as flying through
 // this item. Example: MAV_CMD_DO_SET_PARAMETER item.
-class MavCmdUser4 : public MavLinkCommand {
+class MavCmdUser4 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31013;
     MavCmdUser4() { command = kCommandId; }
@@ -9232,13 +11054,15 @@ public:
     float UserDefined6 = 0;
     // User defined
     float UserDefined7 = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();
 };
 // User defined command. Ground Station will not show the Vehicle as flying through
 // this item. Example: MAV_CMD_DO_SET_PARAMETER item.
-class MavCmdUser5 : public MavLinkCommand {
+class MavCmdUser5 : public MavLinkCommand
+{
 public:
     const static uint16_t kCommandId = 31014;
     MavCmdUser5() { command = kCommandId; }
@@ -9256,6 +11080,7 @@ public:
     float UserDefined6 = 0;
     // User defined
     float UserDefined7 = 0;
+
 protected:
     virtual void pack();
     virtual void unpack();

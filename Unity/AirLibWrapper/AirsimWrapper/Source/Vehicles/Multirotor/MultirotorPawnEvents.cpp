@@ -2,5 +2,5 @@
 
 MultirotorPawnEvents::ActuatorsSignal& MultirotorPawnEvents::getActuatorSignal()
 {
-	return actuator_signal_;
+    return actuator_signal_;
 }

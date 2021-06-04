@@ -1,0 +1,47 @@
+name: Documentation Build & Deploy
+
+# Controls when the action will run.
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+          architecture: 'x64'
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install mkdocs pymdown-extensions    # Mkdocs requirements
+
+      - name: Build API reference docs
+        run: |
+          python3 -m venv .env                            # Virtual env to avoid dep. issues 
+          source .env/bin/activate
+          pip install Sphinx sphinx_rtd_theme numpy msgpack-rpc-python
+
+          pushd PythonClient >/dev/null
+          ./build_api_docs.sh
+          popd >/dev/null
+          cp -r PythonClient/docs/_build docs/api_docs/   # Copy generated files
+
+          deactivate
+
+      - name: Build AirSim Documentation
+        run: ./build_docs.sh
+
+      # Only on commits to 'master' branch
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build_docs
+

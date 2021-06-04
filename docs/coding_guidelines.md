@@ -7,6 +7,26 @@ We are using Modern C++11. Smart pointers, Lambdas, and C++11 multithreading pri
 The great thing about "standards" is that there are many to chose from: [ISO](https://isocpp.org/wiki/faq/coding-standards), [Sutter &amp; Stroustrup](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md), [ROS](http://wiki.ros.org/CppStyleGuide), [LINUX](https://www.kernel.org/doc/Documentation/CodingStyle), [Google's](https://google.github.io/styleguide/cppguide.html), [Microsoft's](https://msdn.microsoft.com/en-us/library/888a6zcz.aspx), [CERN's](http://atlas-computing.web.cern.ch/atlas-computing/projects/qa/draft_guidelines.html), [GCC's](https://gcc.gnu.org/wiki/CppConventions), [ARM's](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0475c/CJAJAJCJ.html), [LLVM's](http://llvm.org/docs/CodingStandards.html) and probably 
 thousands of others. Unfortunately most of these can't even agree on something as basic as how to name a class or a constant. This is probably due to the fact that these standards often carry lots of  legacy issues due to supporting existing code bases. The intention behind this document is to create guidance that remains as close to ISO, Sutter &amp; Stroustrup and ROS while resolving as many conflicts, disadvantages and inconsistencies as possible among them.
 
+
+## clang-format
+
+Formatting the syntax of C++ is normalized by the clang-format tool which has settings checked into
+this project in the file `.clang-format`. These settings are set to match the formatting guidelines
+listed below.  You can "format" a file using clang-format command line or by enabling Visual Studio
+automatic-clang formatting either during every edit or when you save the file.  All files have been
+formatted this way and the github workflow called `clang-format` will also ensure all pull requests
+are correctly formatted so it should stay clean.  Obviously this does not include external code like
+`Eigen` or `rpclib`.  
+
+If you find a bug in clang-format you can disable clang formatting of a specific block of code by
+using the following comments pair:
+
+```c++
+// clang-format off
+...
+// clang-format on
+```
+
 ## Naming Conventions
 
 Avoid using any sort of Hungarian notation on names and "_ptr" on pointers.
@@ -85,6 +105,10 @@ that only accept pointer types, for example, sockets API.  But we try to wrap th
 much as possible and avoid that style of programming from leaking into the larger code base.  
 
 Religiously check if you can use const everywhere, for example, `const float * const xP`. Avoid using prefix or suffix to indicate pointer types in variable names, i.e. use `my_obj` instead of `myobj_ptr` except in cases where it might make sense to differentiate variables better, for example, `int mynum = 5; int* mynum_ptr = mynum;`
+
+## Indentation
+
+The C++ code base uses four spaces for indentation (not tabs).
 
 ## This is Too Short, ye?
 

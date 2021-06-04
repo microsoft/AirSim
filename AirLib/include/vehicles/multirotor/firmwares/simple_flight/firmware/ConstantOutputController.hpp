@@ -8,9 +8,11 @@
 #include "Params.hpp"
 #include <memory>
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class ConstantOutputController : public IAxisController {
+class ConstantOutputController : public IAxisController
+{
 public:
     ConstantOutputController(TReal update_output = TReal(), TReal reset_output = TReal())
         : update_output_(update_output), reset_output_(reset_output)
@@ -47,6 +49,5 @@ private:
     TReal reset_output_;
     TReal output_;
 };
-
 
 } //namespace
