@@ -171,19 +171,23 @@ public:
     int checkerror()
     {
         int hr = GetSocketError();
+        bool retry = false;
 #ifdef _WIN32
         if (hr == WSAECONNRESET) {
+            retry = true;
+        }
+#else
+        if (hr == ECONNREFUSED || hr == ENOTCONN) {
+            retry = true;
+        }
+#endif
+        if (retry) {
             close();
             retries_++;
             if (retries_ < max_retries_) {
                 return reconnect();
             }
         }
-#else
-        if (hr == ECONNREFUSED || hr == ENOTCONN) {
-            close();
-        }
-#endif
         return hr;
     }
 
