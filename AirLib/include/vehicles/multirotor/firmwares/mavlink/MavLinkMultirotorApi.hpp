@@ -514,6 +514,8 @@ namespace airlib
             unused(lookahead);
             unused(drivetrain);
 
+            checkValidVehicle();
+
             // save current manual, cruise, and max velocity parameters
             bool result = false;
             mavlinkcom::MavLinkParameter manual_velocity_parameter, cruise_velocity_parameter, max_velocity_parameter;

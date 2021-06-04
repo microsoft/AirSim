@@ -60,6 +60,8 @@ class UdpClientPort::UdpSocketImpl
     sockaddr_in remoteaddr;
     bool hasRemote = false;
     bool closed_ = true;
+    int retries_ = 0;
+    const int max_retries_ = 10;
 
 public:
     bool isClosed()
@@ -152,12 +154,30 @@ public:
         return 0;
     }
 
+    int reconnect()
+    {
+        // try and reconnect
+        std::string localHost = inet_ntoa(localaddr.sin_addr);
+        std::string remoteHost = remoteAddress();
+        int remotePort = ntohs(remoteaddr.sin_port);
+        int localPort = 0;
+        int rc = connect(localHost, localPort, remoteHost, remotePort);
+        if (rc < 0) {
+            GetSocketError();
+        }
+        return 0;
+    }
+
     int checkerror()
     {
         int hr = GetSocketError();
 #ifdef _WIN32
         if (hr == WSAECONNRESET) {
             close();
+            retries_++;
+            if (retries_ < max_retries_) {
+                return reconnect();
+            }
         }
 #else
         if (hr == ECONNREFUSED || hr == ENOTCONN) {
@@ -170,7 +190,7 @@ public:
     // write to the serial port
     int write(const uint8_t* ptr, int count)
     {
-        if (remoteaddr.sin_port == 0) {
+        if (closed_ || remoteaddr.sin_port == 0) {
             // well if we are creating a server, we don't know when the client is going to connect, so skip this exception for now.
             //throw std::runtime_error("UdpClientPort cannot send until we've received something first so we can find out what port to send to.\n");
             return 0;
@@ -184,10 +204,12 @@ public:
 #endif
         if (hr == SOCKET_ERROR) {
             hr = checkerror();
-            // perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
-            remoteaddr.sin_port = 0;
-            auto msg = Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr);
-            throw std::runtime_error(msg);
+            if (hr != 0) {
+                // perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
+                remoteaddr.sin_port = 0;
+                auto msg = Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr);
+                throw std::runtime_error(msg);
+            }
         }
 
         return hr;
