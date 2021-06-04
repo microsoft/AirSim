@@ -49,6 +49,13 @@ namespace airlib_rpclib
             {
             }
 
+            Vector3r(x, y, z)
+            {
+                x_val = x;
+                y_val = y;
+                z_val = z;                
+            }
+
             Vector3r(const msr::airlib::Vector3r& s)
             {
                 x_val = s.x();
@@ -103,6 +110,14 @@ namespace airlib_rpclib
 
             Quaternionr()
             {
+            }
+
+            Quaternionr(w, x, y, z)
+            {
+                w_val = w;
+                x_val = x;
+                y_val = y;
+                z_val = z;                
             }
 
             Quaternionr(const msr::airlib::Quaternionr& s)

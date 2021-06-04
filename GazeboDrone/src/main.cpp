@@ -41,22 +41,22 @@ using namespace msr::airlib;
 
 msr::airlib::MultirotorRpcLibClient client;
 
-void cbLocalPose(ConstPosesStampedPtr& _msg)
+void cbLocalPose(ConstPosesStampedPtr& msg)
 {
     std::cout << std::fixed;
     std::cout << std::setprecision(3);
     static int count = 0;
-    for (int i = 0; i < _msg->pose_size(); i++) {
-        auto x = _msg->pose(i).position().x();
-        auto y = _msg->pose(i).position().y();
-        auto z = _msg->pose(i).position().z();
-        auto ow = _msg->pose(i).orientation().w();
-        auto ox = _msg->pose(i).orientation().x();
-        auto oy = _msg->pose(i).orientation().y();
-        auto oz = _msg->pose(i).orientation().z();
+    for (int i = 0; i < msg->pose_size(); i++) {
+        auto x = msg->pose(i).position().x();
+        auto y = msg->pose(i).position().y();
+        auto z = msg->pose(i).position().z();
+        auto ow = msg->pose(i).orientation().w();
+        auto ox = msg->pose(i).orientation().x();
+        auto oy = msg->pose(i).orientation().y();
+        auto oz = msg->pose(i).orientation().z();
         if (count % MESSAGE_THROTTLE == 0) {
             std::cout << "local (" << std::setw(2) << i << ") ";
-            std::cout << std::left << std::setw(32) << _msg->pose(i).name();
+            std::cout << std::left << std::setw(32) << msg->pose(i).name();
             std::cout << " x: " << std::right << std::setw(NWIDTH) << x;
             std::cout << " y: " << std::right << std::setw(NWIDTH) << y;
             std::cout << " z: " << std::right << std::setw(NWIDTH) << z;
@@ -67,16 +67,10 @@ void cbLocalPose(ConstPosesStampedPtr& _msg)
             std::cout << " oz: " << std::right << std::setw(NWIDTH) << oz;
             std::cout << std::endl;
         }
-        if (i == _msg->pose_size() - 1) {
-            msr::airlib::Vector3r p;
-            msr::airlib::Quaternionr o;
-            p.x() = x;
-            p.y() = -y;
-            p.z() = -z;
-            o.w() = ow;
-            o.x() = ox;
-            o.y() = -oy;
-            o.z() = -oz;
+        if (i == msg->pose_size() - 1) {
+            msr::airlib::Vector3r p(x, -y, -z);
+            msr::airlib::Quaternionr o(ow, ox, -oy, -oz);
+
             client.simSetVehiclePose(Pose(p, o), true);
         }
     }
@@ -87,7 +81,7 @@ void cbLocalPose(ConstPosesStampedPtr& _msg)
     ++count;
 }
 
-void cbGobalPose(ConstPosesStampedPtr& _msg)
+void cbGobalPose(ConstPosesStampedPtr& msg)
 {
     std::cout << std::fixed;
     std::cout << std::setprecision(4);
@@ -98,17 +92,17 @@ void cbGobalPose(ConstPosesStampedPtr& _msg)
     }
     ++count;
 
-    for (int i = 0; i < _msg->pose_size(); i++) {
+    for (int i = 0; i < msg->pose_size(); i++) {
         std::cout << "global (" << i << ") ";
-        std::cout << std::left << std::setw(32) << _msg->pose(i).name();
-        std::cout << " x: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << _msg->pose(i).position().x();
-        std::cout << " y: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << _msg->pose(i).position().y();
-        std::cout << " z: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << _msg->pose(i).position().z();
+        std::cout << std::left << std::setw(32) << msg->pose(i).name();
+        std::cout << " x: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << msg->pose(i).position().x();
+        std::cout << " y: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << msg->pose(i).position().y();
+        std::cout << " z: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << msg->pose(i).position().z();
 
-        std::cout << " ow: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << _msg->pose(i).orientation().w();
-        std::cout << " ox: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << _msg->pose(i).orientation().x();
-        std::cout << " oy: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << _msg->pose(i).orientation().y();
-        std::cout << " oz: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << _msg->pose(i).orientation().z();
+        std::cout << " ow: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << msg->pose(i).orientation().w();
+        std::cout << " ox: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << msg->pose(i).orientation().x();
+        std::cout << " oy: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << msg->pose(i).orientation().y();
+        std::cout << " oz: " << std::right << std::setfill(' ') << std::setw(NWIDTH) << msg->pose(i).orientation().z();
         std::cout << std::endl;
     }
     std::cout << std::endl;
@@ -127,8 +121,8 @@ int main(int _argc, char** _argv)
     node->Init();
 
     // Listen to Gazebo topics
-    gazebo::transport::SubscriberPtr subPose1 = node->Subscribe("~/pose/local/info", cbLocalPose);
-    gazebo::transport::SubscriberPtr subPose2 = node->Subscribe("~/pose/info", cbGobalPose);
+    gazebo::transport::SubscriberPtr sub_pose1 = node->Subscribe("~/pose/local/info", cbLocalPose);
+    gazebo::transport::SubscriberPtr sub_pose2 = node->Subscribe("~/pose/info", cbGobalPose);
 
     // Busy wait loop...replace with your own code as needed.
     while (true)
