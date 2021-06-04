@@ -64,8 +64,10 @@ private:
 
     bool getSettingsText(std::string& settingsText);
     bool getSettingsTextFromCommandLine(std::string& settingsText);
-    bool readSettingsTextFromFile(FString fileName, std::string& settingsText);
+    bool readSettingsTextFromFile(const FString& fileName, std::string& settingsText);
     std::string getSimModeFromUser();
+
+    static FString getLaunchPath(const std::string& filename);
 
 private:
     typedef common_utils::Utils Utils;

@@ -1,16 +1,27 @@
 # AirSim Settings
 
 ## Where are Settings Stored?
-AirSim is searching for the settings definition in 4 different ways in the following order. The first match will be used:
+AirSim is searching for the settings definition in the following order. The first match will be used:
 
-1. Looking at the (absolute) path specified by the `--settings` command line argument.  
-For example, in Windows: `AirSim.exe --settings 'C:\path\to\settings.json'`   
+1. Looking at the (absolute) path specified by the `--settings` command line argument.
+For example, in Windows: `AirSim.exe --settings 'C:\path\to\settings.json'`
 In Linux `./Blocks.sh --settings '/home/$USER/path/to/settings.json'`
-1. Looking for a json document passed as a command line argument by the `--settings` argument.  
-For example, in Windows: `AirSim.exe --settings '{"foo" : "bar"}'`   
+
+2. Looking for a json document passed as a command line argument by the `--settings` argument.
+For example, in Windows: `AirSim.exe --settings '{"foo" : "bar"}'`
 In Linux `./Blocks.sh --settings '{"foo" : "bar"}'`
-1. Looking in the folder of the executable for a file called `settings.json`.
-2. Looking in the users home folder for a file called `settings.json`. The AirSim subfolder is located at `Documents\AirSim` on Windows and `~/Documents/AirSim` on Linux systems.
+
+3. Looking in the folder of the executable for a file called `settings.json`.
+This will be a deep location where the actual executable of the Editor or binary is stored.
+For e.g. with the Blocks binary, the location searched is `<path-of-binary>/LinuxNoEditor/Blocks/Binaries/Linux/settings.json`.
+
+4. Searching for `settings.json` in the folder from where the executable is launched
+
+    This is a top-level directory containing the launch script or executable. For e.g. Linux: `<path-of-binary>/LinuxNoEditor/settings.json`, Windows: `<path-of-binary>/WindowsNoEditor/settings.json`
+
+    Note that this path changes depending on where its invoked from. On Linux, if executing the `Blocks.sh` script from inside LinuxNoEditor folder like `./Blocks.sh`, then the previous mentioned path is used. However, if launched from outside LinuxNoEditor folder such as `./LinuxNoEditor/Blocks.sh`, then `<path-of-binary>/settings.json` will be used.
+
+5. Looking in the AirSim subfolder for a file called `settings.json`. The AirSim subfolder is located at `Documents\AirSim` on Windows and `~/Documents/AirSim` on Linux systems.
 
 The file is in usual [json format](https://en.wikipedia.org/wiki/JSON). On first startup AirSim would create `settings.json` file with no settings at the users home folder. To avoid problems, always use ASCII format to save json file.
 
