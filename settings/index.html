@@ -377,16 +377,31 @@
               
                 <h1 id="airsim-settings">AirSim Settings<a class="headerlink" href="#airsim-settings" title="Permanent link">#</a></h1>
 <h2 id="where-are-settings-stored">Where are Settings Stored?<a class="headerlink" href="#where-are-settings-stored" title="Permanent link">#</a></h2>
-<p>AirSim is searching for the settings definition in 4 different ways in the following order. The first match will be used:</p>
+<p>AirSim is searching for the settings definition in the following order. The first match will be used:</p>
 <ol>
-<li>Looking at the (absolute) path specified by the <code>--settings</code> command line argument.<br />
-For example, in Windows: <code>AirSim.exe --settings 'C:\path\to\settings.json'</code> <br />
-In Linux <code>./Blocks.sh --settings '/home/$USER/path/to/settings.json'</code></li>
-<li>Looking for a json document passed as a command line argument by the <code>--settings</code> argument.<br />
-For example, in Windows: <code>AirSim.exe --settings '{"foo" : "bar"}'</code> <br />
-In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></li>
-<li>Looking in the folder of the executable for a file called <code>settings.json</code>.</li>
-<li>Looking in the users home folder for a file called <code>settings.json</code>. The AirSim subfolder is located at <code>Documents\AirSim</code> on Windows and <code>~/Documents/AirSim</code> on Linux systems.</li>
+<li>
+<p>Looking at the (absolute) path specified by the <code>--settings</code> command line argument.
+For example, in Windows: <code>AirSim.exe --settings 'C:\path\to\settings.json'</code>
+In Linux <code>./Blocks.sh --settings '/home/$USER/path/to/settings.json'</code></p>
+</li>
+<li>
+<p>Looking for a json document passed as a command line argument by the <code>--settings</code> argument.
+For example, in Windows: <code>AirSim.exe --settings '{"foo" : "bar"}'</code>
+In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></p>
+</li>
+<li>
+<p>Looking in the folder of the executable for a file called <code>settings.json</code>.
+This will be a deep location where the actual executable of the Editor or binary is stored.
+For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-binary&gt;/LinuxNoEditor/Blocks/Binaries/Linux/settings.json</code>.</p>
+</li>
+<li>
+<p>Searching for <code>settings.json</code> in the folder from where the executable is launched</p>
+<p>This is a top-level directory containing the launch script or executable. For e.g. Linux: <code>&lt;path-of-binary&gt;/LinuxNoEditor/settings.json</code>, Windows: <code>&lt;path-of-binary&gt;/WindowsNoEditor/settings.json</code></p>
+<p>Note that this path changes depending on where its invoked from. On Linux, if executing the <code>Blocks.sh</code> script from inside LinuxNoEditor folder like <code>./Blocks.sh</code>, then the previous mentioned path is used. However, if launched from outside LinuxNoEditor folder such as <code>./LinuxNoEditor/Blocks.sh</code>, then <code>&lt;path-of-binary&gt;/settings.json</code> will be used.</p>
+</li>
+<li>
+<p>Looking in the AirSim subfolder for a file called <code>settings.json</code>. The AirSim subfolder is located at <code>Documents\AirSim</code> on Windows and <code>~/Documents/AirSim</code> on Linux systems.</p>
+</li>
 </ol>
 <p>The file is in usual <a href="https://en.wikipedia.org/wiki/JSON">json format</a>. On first startup AirSim would create <code>settings.json</code> file with no settings at the users home folder. To avoid problems, always use ASCII format to save json file.</p>
 <h2 id="how-to-chose-between-car-and-multirotor">How to Chose Between Car and Multirotor?<a class="headerlink" href="#how-to-chose-between-car-and-multirotor" title="Permanent link">#</a></h2>
