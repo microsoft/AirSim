@@ -108,10 +108,10 @@ bool UDetectionComponent::calcBoundingFromViewInfo(AActor* actor, FBox2D& box_ou
 
     // do some voodoo rotation that is somehow mandatory and stolen from UGameplayStatics::ProjectWorldToScreen
     projection_data.ViewRotationMatrix = FInverseRotationMatrix(info.Rotation) * FMatrix(
-                                                                                    FPlane(0, 0, 1, 0),
-                                                                                    FPlane(1, 0, 0, 0),
-                                                                                    FPlane(0, 1, 0, 0),
-                                                                                    FPlane(0, 0, 0, 1));
+                                                                                     FPlane(0, 0, 1, 0),
+                                                                                     FPlane(1, 0, 0, 0),
+                                                                                     FPlane(0, 1, 0, 0),
+                                                                                     FPlane(0, 0, 0, 1));
 
     if (scene_capture_component_2D_->bUseCustomProjectionMatrix) {
         projection_data.ProjectionMatrix = scene_capture_component_2D_->CustomProjectionMatrix;
