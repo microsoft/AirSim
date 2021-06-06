@@ -41,7 +41,7 @@ const TArray<FDetectionInfo>& UDetectionComponent::getDetections()
 
     for (TActorIterator<AActor> actor_itr(GetWorld()); actor_itr; ++actor_itr) {
         AActor* actor = *actor_itr;
-        if (object_filter_.MatchesActor(actor)) {
+        if (object_filter_.matchesActor(actor)) {
             if (FVector::Distance(actor->GetActorLocation(), GetComponentLocation()) <= max_distance_to_camera_) {
                 FBox2D box_2D_out;
                 if (texture_target_ && calcBoundingFromViewInfo(actor, box_2D_out)) {

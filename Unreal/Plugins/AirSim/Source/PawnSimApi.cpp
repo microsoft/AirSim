@@ -324,8 +324,8 @@ void PawnSimApi::addDetectionFilterMeshName(const std::string& camera_name, Imag
 
         FString name = FString(mesh_name.c_str());
 
-        if (!detection_comp->ObjectFilter.WildcardMeshNames.Contains(name)) {
-            detection_comp->ObjectFilter.WildcardMeshNames.Add(name);
+        if (!detection_comp->object_filter_.wildcard_mesh_names_.Contains(name)) {
+            detection_comp->object_filter_.wildcard_mesh_names_.Add(name);
         }
     },
                                              true);
@@ -335,7 +335,7 @@ void PawnSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCa
 {
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type]() {
         const APIPCamera* camera = getCamera(camera_name);
-        camera->getDetectionComponent(image_type, false)->ObjectFilter.WildcardMeshNames.Empty();
+        camera->getDetectionComponent(image_type, false)->object_filter_.wildcard_mesh_names_.Empty();
     },
                                              true);
 }
@@ -344,7 +344,7 @@ void PawnSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageC
 {
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, radius_cm]() {
         const APIPCamera* camera = getCamera(camera_name);
-        camera->getDetectionComponent(image_type, false)->MaxDistanceToCamera = radius_cm;
+        camera->getDetectionComponent(image_type, false)->max_distance_to_camera_ = radius_cm;
     },
                                              true);
 }
@@ -355,7 +355,7 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
 
     UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, &result]() {
         const APIPCamera* camera = getCamera(camera_name);
-        const TArray<FDetectionInfo>& detections = camera->getDetectionComponent(image_type, false)->GetDetections();
+        const TArray<FDetectionInfo>& detections = camera->getDetectionComponent(image_type, false)->getDetections();
         result.resize(detections.Num());
 
         for (int i = 0; i < detections.Num(); i++) {
