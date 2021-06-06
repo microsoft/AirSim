@@ -15,7 +15,7 @@
 #include <Engine/EngineTypes.h>
 
 UDetectionComponent::UDetectionComponent()
-    : MaxDistanceToCamera(20000.f)
+    : max_distance_to_camera_(20000.f)
 {
     // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
     // off to improve performance if you don't need them.
@@ -26,8 +26,8 @@ UDetectionComponent::UDetectionComponent()
 void UDetectionComponent::BeginPlay()
 {
     Super::BeginPlay();
-    SceneCaptureComponent2D = CastChecked<USceneCaptureComponent2D>(GetAttachParent());
-    ObjectFilter = FObjectFilter();
+    scene_capture_component_2D_ = CastChecked<USceneCaptureComponent2D>(GetAttachParent());
+    object_filter_ = FObjectFilter();
 }
 
 void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -35,115 +35,115 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-const TArray<FDetectionInfo>& UDetectionComponent::GetDetections()
+const TArray<FDetectionInfo>& UDetectionComponent::getDetections()
 {
-    CachedDetections.Empty();
+    cached_detections_.Empty();
 
-    for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
-        AActor* Actor = *ActorItr;
-        if (ObjectFilter.MatchesActor(Actor)) {
-            if (FVector::Distance(Actor->GetActorLocation(), GetComponentLocation()) <= MaxDistanceToCamera) {
-                FBox2D Box2DOut;
-                if (TextureTarget && CalcBoundingFromViewInfo(Actor, Box2DOut)) {
-                    FDetectionInfo Detection;
-                    Detection.Actor = Actor;
-                    Detection.Box2D = Box2DOut;
+    for (TActorIterator<AActor> actor_itr(GetWorld()); actor_itr; ++actor_itr) {
+        AActor* actor = *actor_itr;
+        if (object_filter_.MatchesActor(actor)) {
+            if (FVector::Distance(actor->GetActorLocation(), GetComponentLocation()) <= max_distance_to_camera_) {
+                FBox2D box_2D_out;
+                if (texture_target_ && calcBoundingFromViewInfo(actor, box_2D_out)) {
+                    FDetectionInfo detection;
+                    detection.Actor = actor;
+                    detection.Box2D = box_2D_out;
 
-                    FBox Box3D = Actor->GetComponentsBoundingBox(true);
-                    Detection.Box3D = FBox(GetRelativeLocation(Box3D.Min), GetRelativeLocation(Box3D.Max));
+                    FBox box_3D = actor->GetComponentsBoundingBox(true);
+                    detection.Box3D = FBox(getRelativeLocation(box_3D.Min), getRelativeLocation(box_3D.Max));
 
-                    Detection.RelativeTransform = FTransform(GetRelativeRotation(Actor->GetActorLocation(), Actor->GetActorRotation()),
-                                                             GetRelativeLocation(Actor->GetActorLocation()));
-                    CachedDetections.Add(Detection);
+                    detection.RelativeTransform = FTransform(getRelativeRotation(actor->GetActorLocation(), actor->GetActorRotation()),
+                                                             getRelativeLocation(actor->GetActorLocation()));
+                    cached_detections_.Add(detection);
                 }
             }
         }
     }
 
-    return CachedDetections;
+    return cached_detections_;
 }
 
-bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut)
+bool UDetectionComponent::calcBoundingFromViewInfo(AActor* actor, FBox2D& box_out)
 {
-    FVector Origin;
-    FVector Extend;
-    Actor->GetActorBounds(false, Origin, Extend);
+    FVector origin;
+    FVector extend;
+    actor->GetActorBounds(false, origin, extend);
 
-    TArray<FVector> Points;
-    TArray<FVector2D> Points2D;
-    bool IsInCameraView = false;
+    TArray<FVector> points;
+    TArray<FVector2D> points_2D;
+    bool is_in_camera_view = false;
 
     // get render target for texture size
-    FRenderTarget* RenderTarget = TextureTarget->GameThread_GetRenderTargetResource();
+    FRenderTarget* render_target = texture_target_->GameThread_GetRenderTargetResource();
 
     // initialize viewinfo for projection matrix
-    FMinimalViewInfo Info;
-    Info.Location = SceneCaptureComponent2D->GetComponentTransform().GetLocation();
-    Info.Rotation = SceneCaptureComponent2D->GetComponentTransform().GetRotation().Rotator();
-    Info.FOV = SceneCaptureComponent2D->FOVAngle;
-    Info.ProjectionMode = SceneCaptureComponent2D->ProjectionType;
-    Info.AspectRatio = float(TextureTarget->SizeX) / float(TextureTarget->SizeY);
-    Info.OrthoNearClipPlane = 1;
-    Info.OrthoFarClipPlane = 100000;
-    Info.bConstrainAspectRatio = true;
+    FMinimalViewInfo info;
+    info.Location = scene_capture_component_2D_->GetComponentTransform().GetLocation();
+    info.Rotation = scene_capture_component_2D_->GetComponentTransform().GetRotation().Rotator();
+    info.FOV = scene_capture_component_2D_->FOVAngle;
+    info.ProjectionMode = scene_capture_component_2D_->ProjectionType;
+    info.AspectRatio = float(texture_target_->SizeX) / float(texture_target_->SizeY);
+    info.OrthoNearClipPlane = 1;
+    info.OrthoFarClipPlane = 100000;
+    info.bConstrainAspectRatio = true;
 
     // calculate 3D corner Points of bounding box
-    Points.Add(Origin + FVector(Extend.X, Extend.Y, Extend.Z));
-    Points.Add(Origin + FVector(-Extend.X, Extend.Y, Extend.Z));
-    Points.Add(Origin + FVector(Extend.X, -Extend.Y, Extend.Z));
-    Points.Add(Origin + FVector(-Extend.X, -Extend.Y, Extend.Z));
-    Points.Add(Origin + FVector(Extend.X, Extend.Y, -Extend.Z));
-    Points.Add(Origin + FVector(-Extend.X, Extend.Y, -Extend.Z));
-    Points.Add(Origin + FVector(Extend.X, -Extend.Y, -Extend.Z));
-    Points.Add(Origin + FVector(-Extend.X, -Extend.Y, -Extend.Z));
+    points.Add(origin + FVector(extend.X, extend.Y, extend.Z));
+    points.Add(origin + FVector(-extend.X, extend.Y, extend.Z));
+    points.Add(origin + FVector(extend.X, -extend.Y, extend.Z));
+    points.Add(origin + FVector(-extend.X, -extend.Y, extend.Z));
+    points.Add(origin + FVector(extend.X, extend.Y, -extend.Z));
+    points.Add(origin + FVector(-extend.X, extend.Y, -extend.Z));
+    points.Add(origin + FVector(extend.X, -extend.Y, -extend.Z));
+    points.Add(origin + FVector(-extend.X, -extend.Y, -extend.Z));
 
     // initialize pixel values
-    FVector2D MinPixel(TextureTarget->SizeX, TextureTarget->SizeY);
-    FVector2D MaxPixel(0, 0);
-    FIntRect ScreenRect(0, 0, TextureTarget->SizeX, TextureTarget->SizeY);
+    FVector2D min_pixel(texture_target_->SizeX, texture_target_->SizeY);
+    FVector2D max_pixel(0, 0);
+    FIntRect screen_rect(0, 0, texture_target_->SizeX, texture_target_->SizeY);
 
     // initialize projection data for sceneview
-    FSceneViewProjectionData ProjectionData;
-    ProjectionData.ViewOrigin = Info.Location;
+    FSceneViewProjectionData projection_data;
+    projection_data.ViewOrigin = info.Location;
 
     // do some voodoo rotation that is somehow mandatory and stolen from UGameplayStatics::ProjectWorldToScreen
-    ProjectionData.ViewRotationMatrix = FInverseRotationMatrix(Info.Rotation) * FMatrix(
+    projection_data.ViewRotationMatrix = FInverseRotationMatrix(info.Rotation) * FMatrix(
                                                                                     FPlane(0, 0, 1, 0),
                                                                                     FPlane(1, 0, 0, 0),
                                                                                     FPlane(0, 1, 0, 0),
                                                                                     FPlane(0, 0, 0, 1));
 
-    if (SceneCaptureComponent2D->bUseCustomProjectionMatrix) {
-        ProjectionData.ProjectionMatrix = SceneCaptureComponent2D->CustomProjectionMatrix;
+    if (scene_capture_component_2D_->bUseCustomProjectionMatrix) {
+        projection_data.ProjectionMatrix = scene_capture_component_2D_->CustomProjectionMatrix;
     }
     else {
-        ProjectionData.ProjectionMatrix = Info.CalculateProjectionMatrix();
+        projection_data.ProjectionMatrix = info.CalculateProjectionMatrix();
     }
-    ProjectionData.SetConstrainedViewRectangle(ScreenRect);
+    projection_data.SetConstrainedViewRectangle(screen_rect);
 
     // Project Points to pixels and get the corner pixels
-    for (FVector& Point : Points) {
+    for (FVector& point : points) {
         FVector2D Pixel(0, 0);
-        FSceneView::ProjectWorldToScreen((Point), ScreenRect, ProjectionData.ComputeViewProjectionMatrix(), Pixel);
-        IsInCameraView |= (Pixel != ScreenRect.Min) && (Pixel != ScreenRect.Max) && ScreenRect.Contains(FIntPoint(Pixel.X, Pixel.Y));
-        Points2D.Add(Pixel);
-        MaxPixel.X = FMath::Max(Pixel.X, MaxPixel.X);
-        MaxPixel.Y = FMath::Max(Pixel.Y, MaxPixel.Y);
-        MinPixel.X = FMath::Min(Pixel.X, MinPixel.X);
-        MinPixel.Y = FMath::Min(Pixel.Y, MinPixel.Y);
+        FSceneView::ProjectWorldToScreen((point), screen_rect, projection_data.ComputeViewProjectionMatrix(), Pixel);
+        is_in_camera_view |= (Pixel != screen_rect.Min) && (Pixel != screen_rect.Max) && screen_rect.Contains(FIntPoint(Pixel.X, Pixel.Y));
+        points_2D.Add(Pixel);
+        max_pixel.X = FMath::Max(Pixel.X, max_pixel.X);
+        max_pixel.Y = FMath::Max(Pixel.Y, max_pixel.Y);
+        min_pixel.X = FMath::Min(Pixel.X, min_pixel.X);
+        min_pixel.Y = FMath::Min(Pixel.Y, min_pixel.Y);
     }
 
     // If actor in camera view - check if it's actually visible or hidden
     // Check against 8 extend points
-    bool IsVisible = false;
-    if (IsInCameraView) {
-        FHitResult Result;
-        bool bWorldHit;
-        for (FVector& Point : Points) {
-            bWorldHit = GetWorld()->LineTraceSingleByChannel(Result, GetComponentLocation(), Point, ECC_WorldStatic);
-            if (bWorldHit) {
-                if (Result.Actor == Actor) {
-                    IsVisible = true;
+    bool is_visible = false;
+    if (is_in_camera_view) {
+        FHitResult result;
+        bool is_world_hit;
+        for (FVector& point : points) {
+            is_world_hit = GetWorld()->LineTraceSingleByChannel(result, GetComponentLocation(), point, ECC_WorldStatic);
+            if (is_world_hit) {
+                if (result.Actor == actor) {
+                    is_visible = true;
                     break;
                 }
             }
@@ -151,13 +151,13 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
 
         // If actor in camera view but didn't hit any point out of 8 extend points,
         // check against 10 random points
-        if (!IsVisible) {
+        if (!is_visible) {
             for (int i = 0; i < 10; i++) {
-                FVector Point = UKismetMathLibrary::RandomPointInBoundingBox(Origin, Extend);
-                bWorldHit = GetWorld()->LineTraceSingleByChannel(Result, GetComponentLocation(), Point, ECC_WorldStatic);
-                if (bWorldHit) {
-                    if (Result.Actor == Actor) {
-                        IsVisible = true;
+                FVector point = UKismetMathLibrary::RandomPointInBoundingBox(origin, extend);
+                is_world_hit = GetWorld()->LineTraceSingleByChannel(result, GetComponentLocation(), point, ECC_WorldStatic);
+                if (is_world_hit) {
+                    if (result.Actor == actor) {
+                        is_visible = true;
                         break;
                     }
                 }
@@ -165,24 +165,24 @@ bool UDetectionComponent::CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut
         }
     }
 
-    FBox2D BoxOutTemp = FBox2D(MinPixel, MaxPixel);
+    FBox2D box_out_temp = FBox2D(min_pixel, max_pixel);
 
-    BoxOut.Min.X = FMath::Clamp<float>(BoxOutTemp.Min.X, 0, TextureTarget->SizeX);
-    BoxOut.Min.Y = FMath::Clamp<float>(BoxOutTemp.Min.Y, 0, TextureTarget->SizeY);
-    BoxOut.Max.X = FMath::Clamp<float>(BoxOutTemp.Max.X, 0, TextureTarget->SizeX);
-    BoxOut.Max.Y = FMath::Clamp<float>(BoxOutTemp.Max.Y, 0, TextureTarget->SizeY);
+    box_out.Min.X = FMath::Clamp<float>(box_out_temp.Min.X, 0, texture_target_->SizeX);
+    box_out.Min.Y = FMath::Clamp<float>(box_out_temp.Min.Y, 0, texture_target_->SizeY);
+    box_out.Max.X = FMath::Clamp<float>(box_out_temp.Max.X, 0, texture_target_->SizeX);
+    box_out.Max.Y = FMath::Clamp<float>(box_out_temp.Max.Y, 0, texture_target_->SizeY);
 
-    return IsInCameraView && IsVisible;
+    return is_in_camera_view && is_visible;
 }
 
-FVector UDetectionComponent::GetRelativeLocation(FVector InLocation)
+FVector UDetectionComponent::getRelativeLocation(FVector in_location)
 {
-    return GetComponentTransform().InverseTransformPosition(InLocation);
+    return GetComponentTransform().InverseTransformPosition(in_location);
 }
 
-FRotator UDetectionComponent::GetRelativeRotation(FVector InLocation, FRotator InRotation)
+FRotator UDetectionComponent::getRelativeRotation(FVector in_location, FRotator in_rotation)
 {
-    FTransform CameraTransform(GetComponentRotation(), GetComponentLocation());
-    FTransform RelativeObjectTransform = CameraTransform.GetRelativeTransform(FTransform(InRotation, InLocation));
-    return RelativeObjectTransform.Rotator();
+    FTransform camera_transform(GetComponentRotation(), GetComponentLocation());
+    FTransform relative_object_transform = camera_transform.GetRelativeTransform(FTransform(in_rotation, in_location));
+    return relative_object_transform.Rotator();
 }

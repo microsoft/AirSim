@@ -42,29 +42,29 @@ public:
     // Called every frame
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-    const TArray<FDetectionInfo>& GetDetections();
+    const TArray<FDetectionInfo>& getDetections();
 
 private:
-    bool CalcBoundingFromViewInfo(AActor* Actor, FBox2D& BoxOut);
+    bool calcBoundingFromViewInfo(AActor* actor, FBox2D& box_out);
 
-    FVector GetRelativeLocation(FVector InLocation);
+    FVector getRelativeLocation(FVector in_location);
 
-    FRotator GetRelativeRotation(FVector InLocation, FRotator InRotation);
+    FRotator getRelativeRotation(FVector in_location, FRotator in_rotation);
 
 public:
     UPROPERTY()
-    FObjectFilter ObjectFilter;
+    FObjectFilter object_filter_;
 
     UPROPERTY(EditAnywhere, Category = "Tracked Actors")
-    float MaxDistanceToCamera;
+    float max_distance_to_camera_;
 
     UPROPERTY()
-    UTextureRenderTarget2D* TextureTarget;
+    UTextureRenderTarget2D* texture_target_;
 
 private:
     UPROPERTY()
-    USceneCaptureComponent2D* SceneCaptureComponent2D;
+    USceneCaptureComponent2D* scene_capture_component_2D_;
 
     UPROPERTY()
-    TArray<FDetectionInfo> CachedDetections;
+    TArray<FDetectionInfo> cached_detections_;
 };

@@ -42,7 +42,7 @@ APIPCamera::APIPCamera()
     image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
 
-    object_filter = FObjectFilter();
+    object_filter_ = FObjectFilter();
 }
 
 void APIPCamera::PostInitializeComponents()
@@ -470,7 +470,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
                 capture->TextureTarget = getRenderTarget(type, false);
                 capture->Activate();
                 if (detection != nullptr) {
-                    detection->TextureTarget = capture->TextureTarget;
+                    detection->texture_target_ = capture->TextureTarget;
                     detection->Activate();
                 }
             }
@@ -481,7 +481,7 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
                 capture->TextureTarget = nullptr;
                 if (detection != nullptr) {
                     detection->Deactivate();
-                    detection->TextureTarget = nullptr;
+                    detection->texture_target_ = nullptr;
                 }
             }
         }

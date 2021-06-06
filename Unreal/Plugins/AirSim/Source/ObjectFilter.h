@@ -17,44 +17,44 @@ struct AIRSIM_API FObjectFilter
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, Category = Mesh)
-    UStaticMesh* StaticMesh;
+    UStaticMesh* static_mesh_;
 
     UPROPERTY(EditAnywhere, Category = Mesh)
-    USkeletalMesh* SkeletalMesh;
+    USkeletalMesh* skeletal_mesh_;
 
     UPROPERTY(EditAnywhere, Category = Mesh)
-    TArray<FString> WildcardMeshNames;
+    TArray<FString> wildcard_mesh_names_;
 
     UPROPERTY(EditAnywhere, Category = Class)
-    TSubclassOf<AActor> ActorClass;
+    TSubclassOf<AActor> actor_class_;
 
     /* Will match for components that have the provided class or Actors that have
      * at least one component with the provided class.*/
     UPROPERTY(EditAnywhere, Category = Class)
-    TSubclassOf<UActorComponent> ComponentClass;
+    TSubclassOf<UActorComponent> component_class_;
 
     /* This will Match Actors that have the provided Tag or components if their
      * Owner has the provided Tag */
     UPROPERTY(EditAnywhere, Category = Tag)
-    FName ActorTag;
+    FName actor_tag_;
 
     UPROPERTY(EditAnywhere, Category = Tag)
-    FName ComponentTag;
+    FName component_tag_;
 
     /* This will only match with if the tested actor is the same as the provided
      * instance.*/
     UPROPERTY(EditInstanceOnly, Category = Instance)
-    AActor* ActorInstance;
+    AActor* actor_instance_;
 
     FObjectFilter();
 
-    bool MatchesActor(AActor* Actor) const;
+    bool matchesActor(AActor* actor) const;
 
-    bool MatchesComponent(UActorComponent* ActorComponent) const;
+    bool matchesComponent(UActorComponent* actor_component) const;
 
-    bool IsMatchAnyWildcard(FString ComponentName) const;
+    bool isMatchAnyWildcard(FString component_name) const;
 
-    friend bool operator==(const FObjectFilter& X, const FObjectFilter& Y);
+    friend bool operator==(const FObjectFilter& x, const FObjectFilter& y);
 
-    friend uint32 GetTypeHash(const FObjectFilter& Key);
+    friend uint32 getTypeHash(const FObjectFilter& key);
 };
