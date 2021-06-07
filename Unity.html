@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>AirSim with Unity - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "AirSim with Unity";
+    var mkdocs_page_input_path = "Unity.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="Unity.html">AirSim with Unity</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#warning-experimental-release">Warning: Experimental Release</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#windows">Windows</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#building-from-source">Building from source</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#install-unity">Install Unity</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#build-airsim">Build Airsim</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#build-unity-project">Build Unity Project</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#linux">Linux</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#download-and-install-unity-for-linux">Download and Install Unity for Linux</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#install-unity_1">Install Unity</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-airsim_1">Build Airsim</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#generate-airsimwrapper-shared-library">Generate AirsimWrapper Shared Library</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#building-custom-environments-for-airsim">Building Custom Environments For AirSim</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cross-compiling-to-linux">Cross-Compiling to Linux</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#linux-pre-requisites">Linux Pre-Requisites</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#package-unitydemo-binary-on-windows">Package UnityDemo Binary On Windows</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#install-necessary-components">Install Necessary Components</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#build-the-project">Build the Project</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#copy-the-airsimwrapper-library-to-the-project-plugins-folder">Copy The AirsimWrapper Library to the Project Plugins folder</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#run-the-project-binary">Run the Project Binary</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-airsim-api">Using Airsim API</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Get AirSim &raquo;</li>
+        
+      
+    
+    <li>AirSim with Unity</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/Unity.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="airsim-on-unity">AirSim on Unity<a class="headerlink" href="#airsim-on-unity" title="Permanent link">#</a></h1>
+<ul>
+<li>AirSim on Unity allows you to run your simulators in the <a href="https://unity3d.com/">Unity Engine</a>. This project comes with some sample Unity projects and a wrapper around the AirLib library to run as a <a href="https://docs.unity3d.com/Manual/NativePlugins.html">native plugin</a> in Unity. </li>
+<li>Included are two basic Unity Projects, one for a Car simulator and another for a Drone simulator. They are meant to be lightweight, and can be used to verify your setup is correct. </li>
+<li>Check out the <a href="https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation/">Unity blogpost</a> for overview on the release.  </li>
+</ul>
+<h3 id="warning-experimental-release">Warning: Experimental Release<a class="headerlink" href="#warning-experimental-release" title="Permanent link">#</a></h3>
+<p>This project is still in early development, expect some rough edges. We are working to fully support the full AirLib API and feature set, but some things may be missing. <a href="unity_api_support.html">Click here</a> for the list of currently supported APIs.</p>
+<h2 id="windows">Windows<a class="headerlink" href="#windows" title="Permanent link">#</a></h2>
+<h3 id="building-from-source">Building from source<a class="headerlink" href="#building-from-source" title="Permanent link">#</a></h3>
+<h4 id="install-unity">Install Unity<a class="headerlink" href="#install-unity" title="Permanent link">#</a></h4>
+<ul>
+<li>Download <strong>Unity Hub</strong> from <a href="https://unity3d.com/get-unity/download">this page</a>. </li>
+<li>Install <strong>Unity 2019.3.12</strong> using the Unity Hub from <a href="https://unity3d.com/get-unity/update?_ga=2.150316848.720992218.1588269226-65412882.1588269226">here</a>. <a href="https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html">Detailed instructions here</a>. </li>
+<li>Note: If you are using Unity for the first time, check out <a href="https://docs.unity3d.com/Manual/GettingStarted.html">the Getting started guide</a>. The <a href="https://docs.unity3d.com/Manual/UnityManual.html">Unity User Manual</a> has additional tips, resources, and FAQs.</li>
+</ul>
+<h4 id="build-airsim">Build Airsim<a class="headerlink" href="#build-airsim" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p>Install Visual Studio 2019. 
+<strong>Make sure</strong> to select <strong>Desktop Development with C++</strong> and <strong>Windows 10 SDK 10.0.18362</strong> (should be selected by default) while installing VS 2019. </p>
+</li>
+<li>
+<p>Start <code>x64 Native Tools Command Prompt for VS 2019</code>. </p>
+</li>
+<li>Clone the repo: <code>git clone https://github.com/Microsoft/AirSim.git</code>, and go the AirSim directory by <code>cd AirSim</code>. </li>
+<li>Run <code>build.cmd</code> from the command line. </li>
+</ul>
+<h4 id="build-unity-project">Build Unity Project<a class="headerlink" href="#build-unity-project" title="Permanent link">#</a></h4>
+<ul>
+<li>Go inside the AirSim\Unity directory: <code>cd Unity</code>. </li>
+<li>Build the unity project: <code>build.cmd</code>. </li>
+<li>Additionally, there is a free environment <code>Windridge City</code> which you can download from <a href="https://assetstore.unity.com/packages/3d/environments/roadways/windridge-city-132222">Unity Asset Store</a>. And, of course, you can always create your own environment.</li>
+</ul>
+<h2 id="linux">Linux<a class="headerlink" href="#linux" title="Permanent link">#</a></h2>
+<h4 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">#</a></h4>
+<pre class="highlight"><code>sudo apt-get install libboost-all-dev</code></pre>
+<h4 id="download-and-install-unity-for-linux">Download and Install Unity for Linux<a class="headerlink" href="#download-and-install-unity-for-linux" title="Permanent link">#</a></h4>
+<p><span style="color:red">Warning:</span> Unity Editor for Linux is still in Beta. Expect some rough edges.</p>
+<h4 id="install-unity_1">Install Unity<a class="headerlink" href="#install-unity_1" title="Permanent link">#</a></h4>
+<ul>
+<li>Download <strong>Unity Hub</strong> from <a href="https://unity3d.com/get-unity/download">this page</a>. </li>
+<li><a href="https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html">Install <strong>Unity 2019.3.12</strong> using the Unity Hub</a>. </li>
+<li>Note: If you are using Unity for the first time, check out <a href="https://docs.unity3d.com/Manual/GettingStarted.html">the Getting started guide</a>. The <a href="https://docs.unity3d.com/Manual/UnityManual.html">Unity User Manual</a> has additional tips, resources, and FAQs.</li>
+</ul>
+<h4 id="build-airsim_1">Build Airsim<a class="headerlink" href="#build-airsim_1" title="Permanent link">#</a></h4>
+<pre class="highlight"><code>git clone https://github.com/Microsoft/AirSim.git;
+cd AirSim;
+./setup.sh;
+./build.sh</code></pre>
+<h4 id="generate-airsimwrapper-shared-library">Generate AirsimWrapper Shared Library<a class="headerlink" href="#generate-airsimwrapper-shared-library" title="Permanent link">#</a></h4>
+<pre class="highlight"><code>cd AirSim/Unity
+./build.sh</code></pre>
+<p>This will generate the necessary shared library and copy it to the UnityDemo Plugins folder.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">#</a></h2>
+<ul>
+<li>Start Unity Hub, click on <code>Projects</code> on left pane, and then click on the <code>Add</code> button </li>
+<li>Select the folder <code>AirSim\Unity\UnityDemo</code>, and then hit the <code>OK</code> button. </li>
+<li>Click on the new project which showed up in the Unity Hub menu to open it in Unity. </li>
+<li>In the bottom pane, click on <code>Projects</code>-&gt;<code>Assets</code>-&gt;<code>Scenes</code>. Then, <strong>Double-click</strong> on <code>SimModeSelector</code>. This will load the SimModeSelector scene into the scene hierarchy pane. <em>DO NOT</em> add CarDemo or DroneDemo scene into the scene hierarchy pane.</li>
+<li>Hit the play button to start the simulation (and hit play again to stop the simulation. .  </li>
+<li>Alternatively, you can change the SimMode in your <code>Settings.json</code> file. (You can read more about <a href="settings.html"><code>Settings.json</code> here</a>)</li>
+<li>Controlling the car:  <br />
+Use <code>WASD</code> or the <code>Arrow keys</code> or the AirSim client.   </li>
+<li>Controlling the drone:  <br />
+Keyboard control is not currently available for drone flight.</li>
+<li>Changing camera views:  <br />
+Keys <code>0</code>, <code>1</code>, <code>2</code>, <code>3</code> are used to toggle windows of different camera views.</li>
+<li>Recording simulation data:  <br />
+Press <em>Record</em> button(Red button) located at the right bottom corner of the screen, to toggle recording of the simulation data. The recorded data can be found at <code>Documents\AirSim\(Date of recording)</code> on Windows and <code>~/Documents/AirSim/(Date of recording)</code> on Linux.</li>
+</ul>
+<h2 id="building-custom-environments-for-airsim">Building Custom Environments For AirSim<a class="headerlink" href="#building-custom-environments-for-airsim" title="Permanent link">#</a></h2>
+<p>To use environments other than <code>UnityDemo</code>, follow the instructions written <a href="custom_unity_environments.html">here</a></p>
+<h2 id="cross-compiling-to-linux">Cross-Compiling to Linux<a class="headerlink" href="#cross-compiling-to-linux" title="Permanent link">#</a></h2>
+<p>Unity Editor supports compiling projects to Linux systems.
+After following the steps to build AirSim and Unity on Windows, do the following:</p>
+<h4 id="linux-pre-requisites">Linux Pre-Requisites<a class="headerlink" href="#linux-pre-requisites" title="Permanent link">#</a></h4>
+<p>Before being able to run Unity Binaries with the Airsim plugin, be sure have airsim and airsim unity built on your linux machine by following the Linux build steps above.</p>
+<h3 id="package-unitydemo-binary-on-windows">Package UnityDemo Binary On Windows<a class="headerlink" href="#package-unitydemo-binary-on-windows" title="Permanent link">#</a></h3>
+<h4 id="install-necessary-components">Install Necessary Components<a class="headerlink" href="#install-necessary-components" title="Permanent link">#</a></h4>
+<p>In order to package your project for linux, the <strong>Linux Build Support</strong> Unity add-on must be installed.
+* Open <strong>Unity Hub</strong>, and click the <strong>Add component</strong> button in the dropdown window under <strong>more options</strong> to the right of your <strong>Unity 2018.2.15f1</strong> tab.
+<img alt="Adding components" src="images/unity_linux_components_1.PNG" />
+* Make sure the <strong>Linux Build Support</strong> Platform is selected
+<img alt="Adding components" src="images/unity_linux_components_2.PNG" />
+Once this component is successfully installed, you are ready to build Unity Projects for Linux!</p>
+<h4 id="build-the-project">Build the Project<a class="headerlink" href="#build-the-project" title="Permanent link">#</a></h4>
+<ul>
+<li>On your Windows machine, build the Unity Demo by navigating to the build settings option in the toolbar <code>File -&gt; Build Settings</code></li>
+<li>Make sure the following scenes are set to be built:<ol>
+<li>SimModeSelector</li>
+<li>CarDemo</li>
+<li>DroneDemo</li>
+</ol>
+</li>
+<li>Set the target operating system to linux, and choose the version appropriate for your system (x86 vs x86_64)</li>
+<li>Click <code>Build</code></li>
+<li>Transport the built project as well as the generated folder <code>"{project_name}_Data"</code> to your linux machine</li>
+</ul>
+<h4 id="copy-the-airsimwrapper-library-to-the-project-plugins-folder">Copy The AirsimWrapper Library to the Project Plugins folder<a class="headerlink" href="#copy-the-airsimwrapper-library-to-the-project-plugins-folder" title="Permanent link">#</a></h4>
+<ul>
+<li>On your linux machine, navigate to your AirSim repository, and run the following commands in a terminal window:
+    <pre class="highlight"><code>cp Unity/linux-build/libAirsimWrapper.so path/to/your/project/{project_name}_Data/Plugins/{os_version}</code></pre>
+This will generate the necessary shared library to allow Airsim to communicate with Unity and copy it to the plugins folder of your project binary.</li>
+</ul>
+<h4 id="run-the-project-binary">Run the Project Binary<a class="headerlink" href="#run-the-project-binary" title="Permanent link">#</a></h4>
+<ul>
+<li>Open a terminal and navigate to your project directory</li>
+<li>Set your project binary as an executable file:
+<pre class="highlight"><code>chmod +x "{project_name}.{configuration}"</code></pre></li>
+<li>Run the binary file
+<pre class="highlight"><code>./{project_name}.{configuration}</code></pre></li>
+</ul>
+<h3 id="using-airsim-api">Using Airsim API<a class="headerlink" href="#using-airsim-api" title="Permanent link">#</a></h3>
+<ul>
+<li>For quickstart with the Python APIs for the car or the drone, simply run the <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/hello_car.py"><code>hello_car.py</code></a> or the <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> script accordingly. </li>
+<li>Details of the AirSim C++ and Python APIs are <a href="apis.html">here</a>. </li>
+</ul>
+<h3 id="acknowledgements">Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permanent link">#</a></h3>
+<ul>
+<li>The drone object was provided by user 31415926 on <a href="https://sketchfab.com/models/055841df0fb24cd4abde06a91f7d360a">sketchfab</a>. It is licensed under the <a href="https://creativecommons.org/licenses/by/4.0/">CC License</a>.</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="custom_unity_environments.html" class="btn btn-neutral float-right" title="Custom Unity Environment">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="unreal_custenv.html" class="btn btn-neutral" title="Custom Unreal Environment"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="unreal_custenv.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="custom_unity_environments.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

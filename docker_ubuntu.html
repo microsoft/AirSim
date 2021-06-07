@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Docker on Linux - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Docker on Linux";
+    var mkdocs_page_input_path = "docker_ubuntu.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="docker_ubuntu.html">Docker on Linux</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#binaries">Binaries</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-the-docker-image">Build the docker image</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#running-an-unreal-binary-inside-a-docker-container">Running an unreal binary inside a docker container</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#source">Source</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#requirements_1">Requirements:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-unreal-engine-inside-docker">Build Unreal Engine inside docker:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#building-airsim-inside-ue4-docker-container">Building AirSim inside UE4 docker container:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#running-airsim-container">Running AirSim container</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#misc-packaging-unreal-environments-in-airsim_source-containers">[Misc] Packaging Unreal Environments in airsim_source containers</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#specifying-an-airsim-settingsjson">Specifying an airsim settings.json</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#airsim_binary-docker-image">airsim_binary docker image:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#airsim_source-docker-image">airsim_source docker image:</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Get AirSim &raquo;</li>
+        
+      
+    
+    <li>Docker on Linux</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/docker_ubuntu.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="airsim-on-docker-in-linux">AirSim on Docker in Linux<a class="headerlink" href="#airsim-on-docker-in-linux" title="Permanent link">#</a></h1>
+<p>We've two options for docker. You can either build an image for running <a href="#binaries">airsim linux binaries</a>, or for compiling Unreal Engine + AirSim <a href="#source">from source</a></p>
+<h2 id="binaries">Binaries<a class="headerlink" href="#binaries" title="Permanent link">#</a></h2>
+<h4 id="requirements">Requirements:<a class="headerlink" href="#requirements" title="Permanent link">#</a></h4>
+<ul>
+<li>Install <a href="https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-2.0)">nvidia-docker2</a></li>
+</ul>
+<h4 id="build-the-docker-image">Build the docker image<a class="headerlink" href="#build-the-docker-image" title="Permanent link">#</a></h4>
+<ul>
+<li>Below are the default arguments. <br />
+<code>--base_image</code>: This is image over which we'll install airsim. We've tested on Ubuntu 18.04 with CUDA 10.0.<br />
+   You can specify any <a href="https://hub.docker.com/r/nvidia/cudagl/">NVIDIA cudagl</a> at your own risk.  <br />
+<code>--target_image</code> is the desired name of your docker image.  <br />
+   Defaults to <code>airsim_binary</code> with same tag as the base image</li>
+</ul>
+<pre class="highlight"><code class="language-bash">$ cd Airsim/docker;
+$ python build_airsim_image.py \
+   --base_image=nvidia/cudagl:10.0-devel-ubuntu18.04 \
+   --target_image=airsim_binary:10.0-devel-ubuntu18.04</code></pre>
+<ul>
+<li>Verify you have an image by:
+ <code>$ docker images | grep airsim</code>   </li>
+</ul>
+<h4 id="running-an-unreal-binary-inside-a-docker-container">Running an unreal binary inside a docker container<a class="headerlink" href="#running-an-unreal-binary-inside-a-docker-container" title="Permanent link">#</a></h4>
+<ul>
+<li>Get <a href="https://github.com/Microsoft/AirSim/releases/tag/v1.2.0Linux">an unreal binary</a> or package your own project in Ubuntu. <br />
+Let's take the Blocks binary as an example. <br />
+You can download it by running</li>
+</ul>
+<pre class="highlight"><code class="language-bash">   $ cd Airsim/docker;
+   $ ./download_blocks_env_binary.sh</code></pre>
+<ul>
+<li>Running an unreal binary inside a docker container 
+   The syntax is:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">   $ ./run_airsim_image_binary.sh DOCKER_IMAGE_NAME UNREAL_BINARY_SHELL_SCRIPT UNREAL_BINARY_ARGUMENTS -- headless     </code></pre>
+<p>For blocks, you can do a <code>$ ./run_airsim_image_binary.sh airsim_binary:10.0-devel-ubuntu18.04 Blocks/Blocks.sh -windowed -ResX=1080 -ResY=720</code></p>
+<ul>
+<li><code>DOCKER_IMAGE_NAME</code>: Same as <code>target_image</code> parameter in previous step. By default, enter <code>airsim_binary:10.0-devel-ubuntu18.04</code>   </li>
+<li><code>UNREAL_BINARY_SHELL_SCRIPT</code>: for Blocks enviroment, it will be <code>Blocks/Blocks.sh</code></li>
+<li>
+<p><a href="https://docs.unrealengine.com/en-us/Programming/Basics/CommandLineArguments"><code>UNREAL_BINARY_ARGUMENTS</code></a>:
+      For airsim, most relevant would be <code>-windowed</code>, <code>-ResX</code>, <code>-ResY</code>. Click on link to see all options. </p>
+</li>
+<li>
+<p>Running in Headless mode:  <br />
+      Suffix <code>-- headless</code> at the end:
+<pre class="highlight"><code class="language-bash">$ ./run_airsim_image_binary.sh Blocks/Blocks.sh -- headless</code></pre></p>
+</li>
+<li>
+<p><a href="docker_ubuntu.html#airsim_binary-docker-image">Specifying a <code>settings.json</code></a></p>
+</li>
+</ul>
+<h2 id="source">Source<a class="headerlink" href="#source" title="Permanent link">#</a></h2>
+<h4 id="requirements_1">Requirements:<a class="headerlink" href="#requirements_1" title="Permanent link">#</a></h4>
+<ul>
+<li>Install <a href="https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-2.0)">nvidia-docker2</a></li>
+<li>Install <a href="https://docs.adamrehn.com/ue4-docker/configuration/configuring-linux">ue4-docker</a></li>
+</ul>
+<h4 id="build-unreal-engine-inside-docker">Build Unreal Engine inside docker:<a class="headerlink" href="#build-unreal-engine-inside-docker" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p>To get access to Unreal Engine's source code, register on Epic Games' website and link it to your github account, as explained in the <code>Required Steps</code> section <a href="https://docs.unrealengine.com/en-us/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow">here</a>.  <br />
+    Note that you don't need to do <code>Step 2: Downloading UE4 on Linux</code>! </p>
+</li>
+<li>
+<p>Build unreal engine 4.19.2 docker image. We're going to use CUDA 10.0 in our example.  <br />
+<code>$ ue4-docker build 4.19.2 --cuda=10.0 --no-full</code> <br />
+    [optional] <code>$ ue4-docker clean</code> to free up some space. <a href="https://docs.adamrehn.com/ue4-docker/commands/clean">Details here</a> </p>
+</li>
+<li><code>ue4-docker</code> supports all CUDA version listed on NVIDIA's cudagl dockerhub <a href="https://hub.docker.com/r/nvidia/cudagl/">here</a>.    </li>
+<li>
+<p>Please see <a href="https://docs.adamrehn.com/ue4-docker/building-images/advanced-build-options">this page</a> for advanced configurations using <code>ue4-docker</code>   </p>
+</li>
+<li>
+<p>Disk space:</p>
+</li>
+<li>The unreal images and containers can take up a lot of space, especially if you try more than one version.    </li>
+<li>Here's a list of useful links to monitor space used by docker and clean up intermediate builds:<ul>
+<li><a href="https://docs.adamrehn.com/ue4-docker/read-these-first/large-container-images-primer">Large container images primer</a>  </li>
+<li><a href="https://docs.docker.com/engine/reference/commandline/system_df/">$ <code>docker system df</code></a> <br />
+<a href="https://docs.docker.com/engine/reference/commandline/container_prune/">$ <code>docker container prune</code></a> <br />
+<a href="https://docs.docker.com/engine/reference/commandline/image_prune/">$ <code>docker image prune</code></a> <br />
+<a href="https://docs.docker.com/engine/reference/commandline/system_df/">$ <code>docker system prune</code></a>   </li>
+</ul>
+</li>
+</ul>
+<h4 id="building-airsim-inside-ue4-docker-container">Building AirSim inside UE4 docker container:<a class="headerlink" href="#building-airsim-inside-ue4-docker-container" title="Permanent link">#</a></h4>
+<ul>
+<li>Build AirSim docker image (which lays over the unreal image we just built) <br />
+  Below are the default arguments. <br />
+<code>--base_image</code>: This is image over which we'll install airsim. We've tested on <code>adamrehn/ue4-engine:4.19.2-cudagl10.0</code>. See <a href="https://docs.adamrehn.com/ue4-docker/building-images/available-container-images">ue4-docker</a> for other versions.   <br />
+<code>--target_image</code> is the desired name of your docker image.  <br />
+   Defaults to <code>airsim_source</code> with same tag as the base image</li>
+</ul>
+<pre class="highlight"><code class="language-bash">$ cd Airsim/docker;
+$ python build_airsim_image.py \
+   --source \
+   ----base_image adamrehn/ue4-engine:4.19.2-cudagl10.0 \
+   --target_image=airsim_source:4.19.2-cudagl10.0</code></pre>
+<h4 id="running-airsim-container">Running AirSim container<a class="headerlink" href="#running-airsim-container" title="Permanent link">#</a></h4>
+<ul>
+<li>Run the airsim source image we built by:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">   ./run_airsim_image_source.sh airsim_source:4.19.2-cudagl10.0</code></pre>
+<p>Syntax is <code>./run_airsim_image_source.sh DOCKER_IMAGE_NAME -- headless</code>
+   <code>-- headless</code>: suffix this to run in optional headless mode. </p>
+<ul>
+<li>Inside the container, you can see <code>UnrealEngine</code> and <code>AirSim</code> under <code>/home/ue4</code>. </li>
+<li>Start unreal engine inside the container: <br />
+<code>ue4@HOSTMACHINE:~$ /home/ue4/UnrealEngine/Engine/Binaries/Linux/UE4Editor</code></li>
+<li>See <a href="docker_ubuntu.html#airsim_source-docker-image">Specifying an airsim settings.json</a> below.</li>
+<li>Continue with <a href="build_linux.html#build-unreal-environment">AirSim's Linux docs</a>. </li>
+</ul>
+<h4 id="misc-packaging-unreal-environments-in-airsim_source-containers">[Misc] Packaging Unreal Environments in <code>airsim_source</code> containers<a class="headerlink" href="#misc-packaging-unreal-environments-in-airsim_source-containers" title="Permanent link">#</a></h4>
+<ul>
+<li>Let's take the Blocks environment as an example.  <br />
+    In the following script, specify the full path to your unreal uproject file by <code>project</code> and the directory where you want the binaries to be placed by <code>archivedirectory</code> </li>
+</ul>
+<pre class="highlight"><code class="language-bash">$ /home/ue4/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -platform=Linux -clientconfig=Shipping -serverconfig=Shipping -noP4 -cook -allmaps -build -stage -prereqs -pak -archive \
+-archivedirectory=/home/ue4/Binaries/Blocks/ \
+-project=/home/ue4/AirSim/Unreal/Environments/Blocks/Blocks.uproject</code></pre>
+<pre><code>This would create a Blocks binary in `/home/ue4/Binaries/Blocks/`.   
+You can test it by running `/home/ue4/Binaries/Blocks/LinuxNoEditor/Blocks.sh -windowed`
+</code></pre>
+<h3 id="specifying-an-airsim-settingsjson">Specifying an airsim settings.json<a class="headerlink" href="#specifying-an-airsim-settingsjson" title="Permanent link">#</a></h3>
+<h4 id="airsim_binary-docker-image"><code>airsim_binary</code> docker image:<a class="headerlink" href="#airsim_binary-docker-image" title="Permanent link">#</a></h4>
+<ul>
+<li>We're mapping the host machine's <code>PATH/TO/Airsim/docker/settings.json</code> to the docker container's <code>/home/airsim_user/Documents/AirSim/settings.json</code>.    </li>
+<li>Hence, we can load any settings file by simply modifying <code>PATH_TO_YOUR/settings.json</code> by modifying the following snippets in * <a href="https://github.com/Microsoft/AirSim/blob/master/docker/run_airsim_image_binary.sh"><code>run_airsim_image_binary.sh</code></a></li>
+</ul>
+<pre class="highlight"><code class="language-bash">nvidia-docker run -it \
+      -v $PATH_TO_YOUR/settings.json:/home/airsim_user/Documents/AirSim/settings.json \
+      -v $UNREAL_BINARY_PATH:$UNREAL_BINARY_PATH \
+      -e SDL_VIDEODRIVER=$SDL_VIDEODRIVER_VALUE \
+      -e SDL_HINT_CUDA_DEVICE='0' \
+      --net=host \
+      --env="DISPLAY=$DISPLAY" \
+      --env="QT_X11_NO_MITSHM=1" \
+      --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+      -env="XAUTHORITY=$XAUTH" \
+      --volume="$XAUTH:$XAUTH" \
+      --runtime=nvidia \
+      --rm \
+      $DOCKER_IMAGE_NAME \
+      /bin/bash -c "$UNREAL_BINARY_COMMAND"</code></pre>
+<h4 id="airsim_source-docker-image"><code>airsim_source</code> docker image:<a class="headerlink" href="#airsim_source-docker-image" title="Permanent link">#</a></h4>
+<ul>
+<li>We're mapping the host machine's <code>PATH/TO/Airsim/docker/settings.json</code> to the docker container's <code>/home/airsim_user/Documents/AirSim/settings.json</code>.    </li>
+<li>Hence, we can load any settings file by simply modifying <code>PATH_TO_YOUR/settings.json</code> by modifying the following snippets in <a href="https://github.com/Microsoft/AirSim/blob/master/docker/run_airsim_image_source.sh"><code>run_airsim_image_source.sh</code></a>:</li>
+</ul>
+<pre class="highlight"><code class="language-bash">   nvidia-docker run -it \
+      -v $(pwd)/settings.json:/home/airsim_user/Documents/AirSim/settings.json \
+      -e SDL_VIDEODRIVER=$SDL_VIDEODRIVER_VALUE \
+      -e SDL_HINT_CUDA_DEVICE='0' \
+      --net=host \
+      --env="DISPLAY=$DISPLAY" \
+      --env="QT_X11_NO_MITSHM=1" \
+      --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+      -env="XAUTHORITY=$XAUTH" \
+      --volume="$XAUTH:$XAUTH" \
+      --runtime=nvidia \
+      --rm \
+   $DOCKER_IMAGE_NAME</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="azure.html" class="btn btn-neutral float-right" title="AirSim on Azure">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="build_linux.html" class="btn btn-neutral" title="Build on Linux"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="build_linux.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="azure.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

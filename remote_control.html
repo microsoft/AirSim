@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Remote Control - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Remote Control";
+    var mkdocs_page_input_path = "remote_control.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="remote_control.html">Remote Control</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#rc-setup-for-default-config">RC Setup for Default Config</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#other-devices">Other Devices</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#note-on-frsky-taranis-x9d-plus">Note on FrSky Taranis X9D Plus</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#note-on-linux">Note on Linux</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rc-setup-for-px4">RC Setup for PX4</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-xbox-360-usb-gamepad">Using XBox 360 USB Gamepad</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-playstation-3-controller">Using Playstation 3 controller</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dji-controller">DJI Controller</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#faq">FAQ</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#im-using-default-config-and-airsim-says-my-rc-is-not-detected-on-usb">I'm using default config and AirSim says my RC is not detected on USB.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#vehicle-seems-unstable-when-using-xboxps3-controller">Vehicle seems unstable when using XBox/PS3 controller</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#where-is-rc-calibration-in-airsim">Where is RC calibration in AirSim?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#my-rc-is-not-working-with-px4-setup">My RC is not working with PX4 setup.</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Using AirSim &raquo;</li>
+        
+      
+    
+    <li>Remote Control</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/remote_control.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="remote-control">Remote Control<a class="headerlink" href="#remote-control" title="Permanent link">#</a></h1>
+<p>To fly manually, you need remote control or RC. If you don't have one then you can use <a href="apis.html">APIs</a> to fly programmatically or use so-called <a href="image_apis.html">Computer Vision mode</a> to move around using keyboard.</p>
+<h2 id="rc-setup-for-default-config">RC Setup for Default Config<a class="headerlink" href="#rc-setup-for-default-config" title="Permanent link">#</a></h2>
+<p>By default AirSim uses <a href="simple_flight.html">simple_flight</a> as its flight controller which connects to RC via USB port to your computer.</p>
+<p>You can either use XBox controller or <a href="https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html">FrSky Taranis X9D Plus</a>. Note that XBox 360 controller is not precise enough and is not recommended if you wanted more real world experience. See FAQ below if things are not working.</p>
+<h3 id="other-devices">Other Devices<a class="headerlink" href="#other-devices" title="Permanent link">#</a></h3>
+<p>AirSim can detect large variety of devices however devices other than above <em>might</em> need extra configuration. In future we will add ability to set this config through settings.json. For now, if things are not working then you might want to try workarounds such as <a href="http://www.x360ce.com/">x360ce</a> or change code in <a href="https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimJoyStick/SimJoyStick.cpp#L50">SimJoystick.cpp file</a>.</p>
+<h3 id="note-on-frsky-taranis-x9d-plus">Note on FrSky Taranis X9D Plus<a class="headerlink" href="#note-on-frsky-taranis-x9d-plus" title="Permanent link">#</a></h3>
+<p><a href="https://hobbyking.com/en_us/frsky-2-4ghz-accst-taranis-x9d-plus-and-x8r-combo-digital-telemetry-radio-system-mode-2.html">FrSky Taranis X9D Plus</a> is real UAV remote control with an advantage that it has USB port so it can be directly connected to PC. You can <a href="misc/AirSim_FrSkyTaranis.bin">download AirSim config file</a> and <a href="https://www.youtube.com/watch?v=qe-13Gyb0sw">follow this tutorial</a> to import it in your RC. You should then see "sim" model in RC with all channels configured properly.</p>
+<h3 id="note-on-linux">Note on Linux<a class="headerlink" href="#note-on-linux" title="Permanent link">#</a></h3>
+<p>Currently default config on Linux is for using Xbox controller. This means other devices might not work properly. In future we will add ability to configure RC in settings.json but for now you <em>might</em> have to change  code in <a href="https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimJoyStick/SimJoyStick.cpp#L340">SimJoystick.cpp file</a> to use other devices.</p>
+<h2 id="rc-setup-for-px4">RC Setup for PX4<a class="headerlink" href="#rc-setup-for-px4" title="Permanent link">#</a></h2>
+<p>AirSim supports PX4 flight controller however it requires different setup. There are many remote control options that you can use with quadrotors. We have successfully used FrSky Taranis X9D Plus, FlySky FS-TH9X and Futaba 14SG with AirSim. Following are the high level steps to configure your RC:</p>
+<ol>
+<li>If you are going to use Hardware-in-Loop mode, you need transmitter for your specific brand of RC and bind it. You can find this information in RC's user guide. </li>
+<li>For Hardware-in-Loop mode, you connect transmitter to Pixhawk. Usually you can find online doc or YouTube video tutorial on how to do that.</li>
+<li><a href="https://docs.qgroundcontrol.com/en/SetupView/Radio.html">Calibrate your RC in QGroundControl</a>.</li>
+</ol>
+<p>See <a href="https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html">PX4 RC configuration</a> and Please see <a href="https://docs.px4.io/master/en/getting_started/rc_transmitter_receiver.html#px4-compatible-receivers">this guide</a> for more information. </p>
+<h3 id="using-xbox-360-usb-gamepad">Using XBox 360 USB Gamepad<a class="headerlink" href="#using-xbox-360-usb-gamepad" title="Permanent link">#</a></h3>
+<p>You can also use an xbox controller in SITL mode, it just won't be as precise as a real RC controller.
+See <a href="xbox_controller.html">xbox controller</a> for details on how to set that up.</p>
+<h3 id="using-playstation-3-controller">Using Playstation 3 controller<a class="headerlink" href="#using-playstation-3-controller" title="Permanent link">#</a></h3>
+<p>A Playstation 3 controller is confirmed to work as an AirSim controller. On Windows, an emulator to make it look like an Xbox 360 controller, is required however. Many different solutions are available online, for example <a href="https://github.com/x360ce/x360ce">x360ce Xbox 360 Controller Emulator</a>.</p>
+<h3 id="dji-controller">DJI Controller<a class="headerlink" href="#dji-controller" title="Permanent link">#</a></h3>
+<p>Nils Tijtgat wrote an excellent blog on how to get the <a href="https://timebutt.github.io/static/using-a-phantom-dji-controller-in-airsim/">DJI controller working with AirSim</a>.</p>
+<h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h2>
+<h4 id="im-using-default-config-and-airsim-says-my-rc-is-not-detected-on-usb">I'm using default config and AirSim says my RC is not detected on USB.<a class="headerlink" href="#im-using-default-config-and-airsim-says-my-rc-is-not-detected-on-usb" title="Permanent link">#</a></h4>
+<p>This typically happens if you have multiple RCs and or XBox/Playstation gamepads etc connected. In Windows, hit Windows+S key and search for "Set up USB Game controllers" (in older versions of Windows try "joystick"). This will show you all game controllers connected to your PC. If you don't see yours than Windows haven't detected it and so you need to first solve that issue. If you do see yours but not at the top of the list (i.e. index 0) than you need to tell AirSim because AirSim by default tries to use RC at index 0. To do this, navigate to your <code>~/Documents/AirSim</code> folder, open up <code>settings.json</code> and add/modify following setting. Below tells AirSim to use RC at index = 2.
+<pre class="highlight"><code>{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+    "Vehicles": {
+        "SimpleFlight": {
+            "VehicleType": "SimpleFlight",
+            "RC": {
+              "RemoteControlID": 2
+            }
+        }
+    }
+}</code></pre></p>
+<h4 id="vehicle-seems-unstable-when-using-xboxps3-controller">Vehicle seems unstable when using XBox/PS3 controller<a class="headerlink" href="#vehicle-seems-unstable-when-using-xboxps3-controller" title="Permanent link">#</a></h4>
+<p>Regular gamepads are not very precise and have lot of random noise. Most of the times you may see significant offsets as well (i.e. output is not zero when sticks are at zero). So this behavior is expected.</p>
+<h4 id="where-is-rc-calibration-in-airsim">Where is RC calibration in AirSim?<a class="headerlink" href="#where-is-rc-calibration-in-airsim" title="Permanent link">#</a></h4>
+<p>We haven't implemented it yet. This means your RC firmware will need to have a capability to do calibration for now.</p>
+<h4 id="my-rc-is-not-working-with-px4-setup">My RC is not working with PX4 setup.<a class="headerlink" href="#my-rc-is-not-working-with-px4-setup" title="Permanent link">#</a></h4>
+<p>First you want to make sure your RC is working in <a href="https://docs.qgroundcontrol.com/en/SetupView/Radio.html">QGroundControl</a>. If it doesn't then it will sure not work in AirSim. The PX4 mode is suitable for folks who have at least intermediate level of experience to deal with various issues related to PX4 and we would generally refer you to get help from PX4 forums.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="xbox_controller.html" class="btn btn-neutral float-right" title="XBox Controller">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="using_car.html" class="btn btn-neutral" title="Car Mode"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="using_car.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="xbox_controller.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

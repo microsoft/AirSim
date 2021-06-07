@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Settings - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Settings";
+    var mkdocs_page_input_path = "settings.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="settings.html">Settings</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#where-are-settings-stored">Where are Settings Stored?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-chose-between-car-and-multirotor">How to Chose Between Car and Multirotor?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#available-settings-and-their-defaults">Available Settings and Their Defaults</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#simmode">SimMode</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#viewmode">ViewMode</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#timeofday">TimeOfDay</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#origingeopoint">OriginGeopoint</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#subwindows">SubWindows</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#recording">Recording</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#clockspeed">ClockSpeed</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#segmentation-settings">Segmentation Settings</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#wind-settings">Wind Settings</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#camera-director-settings">Camera Director Settings</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#camera-settings">Camera Settings</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#note-on-imagetype-element">Note on ImageType element</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#capturesettings">CaptureSettings</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#noisesettings">NoiseSettings</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#random-noise">Random noise</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#horizontal-bump-distortion">Horizontal bump distortion</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#horizontal-noise-lines">Horizontal noise lines</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#horizontal-line-distortion">Horizontal line distortion</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#gimbal">Gimbal</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#vehicles-settings">Vehicles Settings</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#common-vehicle-setting">Common Vehicle Setting</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-px4">Using PX4</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-px4-settings">Additional PX4 Settings</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-ardupilot">Using ArduPilot</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#other-settings">Other Settings</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#enginesound">EngineSound</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pawnpaths">PawnPaths</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#physicsenginename">PhysicsEngineName</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#localhostip-setting">LocalHostIp Setting</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#apiserverport">ApiServerPort</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#speedunitfactor">SpeedUnitFactor</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#speedunitlabel">SpeedUnitLabel</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Using AirSim &raquo;</li>
+        
+      
+    
+    <li>Settings</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/settings.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="airsim-settings">AirSim Settings<a class="headerlink" href="#airsim-settings" title="Permanent link">#</a></h1>
+<h2 id="where-are-settings-stored">Where are Settings Stored?<a class="headerlink" href="#where-are-settings-stored" title="Permanent link">#</a></h2>
+<p>AirSim is searching for the settings definition in the following order. The first match will be used:</p>
+<ol>
+<li>
+<p>Looking at the (absolute) path specified by the <code>--settings</code> command line argument.
+For example, in Windows: <code>AirSim.exe --settings 'C:\path\to\settings.json'</code>
+In Linux <code>./Blocks.sh --settings '/home/$USER/path/to/settings.json'</code></p>
+</li>
+<li>
+<p>Looking for a json document passed as a command line argument by the <code>--settings</code> argument.
+For example, in Windows: <code>AirSim.exe --settings '{"foo" : "bar"}'</code>
+In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></p>
+</li>
+<li>
+<p>Looking in the folder of the executable for a file called <code>settings.json</code>.
+This will be a deep location where the actual executable of the Editor or binary is stored.
+For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-binary&gt;/LinuxNoEditor/Blocks/Binaries/Linux/settings.json</code>.</p>
+</li>
+<li>
+<p>Searching for <code>settings.json</code> in the folder from where the executable is launched</p>
+<p>This is a top-level directory containing the launch script or executable. For e.g. Linux: <code>&lt;path-of-binary&gt;/LinuxNoEditor/settings.json</code>, Windows: <code>&lt;path-of-binary&gt;/WindowsNoEditor/settings.json</code></p>
+<p>Note that this path changes depending on where its invoked from. On Linux, if executing the <code>Blocks.sh</code> script from inside LinuxNoEditor folder like <code>./Blocks.sh</code>, then the previous mentioned path is used. However, if launched from outside LinuxNoEditor folder such as <code>./LinuxNoEditor/Blocks.sh</code>, then <code>&lt;path-of-binary&gt;/settings.json</code> will be used.</p>
+</li>
+<li>
+<p>Looking in the AirSim subfolder for a file called <code>settings.json</code>. The AirSim subfolder is located at <code>Documents\AirSim</code> on Windows and <code>~/Documents/AirSim</code> on Linux systems.</p>
+</li>
+</ol>
+<p>The file is in usual <a href="https://en.wikipedia.org/wiki/JSON">json format</a>. On first startup AirSim would create <code>settings.json</code> file with no settings at the users home folder. To avoid problems, always use ASCII format to save json file.</p>
+<h2 id="how-to-chose-between-car-and-multirotor">How to Chose Between Car and Multirotor?<a class="headerlink" href="#how-to-chose-between-car-and-multirotor" title="Permanent link">#</a></h2>
+<p>The default is to use multirotor. To use car simple set <code>"SimMode": "Car"</code> like this:</p>
+<pre class="highlight"><code>{
+  "SettingsVersion": 1.2,
+  "SimMode": "Car"
+}</code></pre>
+<p>To choose multirotor, set <code>"SimMode": "Multirotor"</code>. If you want to prompt user to select vehicle type then use <code>"SimMode": ""</code>.</p>
+<h2 id="available-settings-and-their-defaults">Available Settings and Their Defaults<a class="headerlink" href="#available-settings-and-their-defaults" title="Permanent link">#</a></h2>
+<p>Below are complete list of settings available along with their default values. If any of the settings is missing from json file, then default value is used. Some default values are simply specified as <code>""</code> which means actual value may be chosen based on the vehicle you are using. For example, <code>ViewMode</code> setting has default value <code>""</code> which translates to <code>"FlyWithMe"</code> for drones and <code>"SpringArmChase"</code> for cars.</p>
+<p><strong>WARNING:</strong> Do not copy paste all of below in your settings.json. We strongly recommend adding only those settings that you don't want default values. Only required element is <code>"SettingsVersion"</code>.</p>
+<pre class="highlight"><code class="language-json">{
+  "SimMode": "",
+  "ClockType": "",
+  "ClockSpeed": 1,
+  "LocalHostIp": "127.0.0.1",
+  "ApiServerPort": 41451,
+  "RecordUIVisible": true,
+  "LogMessagesVisible": true,
+  "ViewMode": "",
+  "RpcEnabled": true,
+  "EngineSound": true,
+  "PhysicsEngineName": "",
+  "SpeedUnitFactor": 1.0,
+  "SpeedUnitLabel": "m/s",
+  "Wind": { "X": 0, "Y": 0, "Z": 0 },
+  "CameraDirector": {
+    "FollowDistance": -3,
+    "X": NaN, "Y": NaN, "Z": NaN,
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+  },
+  "Recording": {
+    "RecordOnMove": false,
+    "RecordInterval": 0.05,
+    "Folder": "",
+    "Enabled": false,
+    "Cameras": [
+        { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false,  "VehicleName": "", "Compress": true }
+    ]
+  },
+  "CameraDefaults": {
+    "CaptureSettings": [
+      {
+        "ImageType": 0,
+        "Width": 256,
+        "Height": 144,
+        "FOV_Degrees": 90,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.64,
+        "AutoExposureMinBrightness": 0.03,
+        "MotionBlurAmount": 0,
+        "TargetGamma": 1.0,
+        "ProjectionMode": "",
+        "OrthoWidth": 5.12
+      }
+    ],
+    "NoiseSettings": [
+      {
+        "Enabled": false,
+        "ImageType": 0,
+
+        "RandContrib": 0.2,
+        "RandSpeed": 100000.0,
+        "RandSize": 500.0,
+        "RandDensity": 2,
+
+        "HorzWaveContrib":0.03,
+        "HorzWaveStrength": 0.08,
+        "HorzWaveVertSize": 1.0,
+        "HorzWaveScreenSize": 1.0,
+
+        "HorzNoiseLinesContrib": 1.0,
+        "HorzNoiseLinesDensityY": 0.01,
+        "HorzNoiseLinesDensityXY": 0.5,
+
+        "HorzDistortionContrib": 1.0,
+        "HorzDistortionStrength": 0.002
+      }
+    ],
+    "Gimbal": {
+      "Stabilization": 0,
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+    },
+    "X": NaN, "Y": NaN, "Z": NaN,
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+  },
+  "OriginGeopoint": {
+    "Latitude": 47.641468,
+    "Longitude": -122.140165,
+    "Altitude": 122
+  },
+  "TimeOfDay": {
+    "Enabled": false,
+    "StartDateTime": "",
+    "CelestialClockSpeed": 1,
+    "StartDateTimeDst": false,
+    "UpdateIntervalSecs": 60
+  },
+  "SubWindows": [
+    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "", "Visible": false},
+    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "", "Visible": false},
+    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "", "Visible": false}
+  ],
+  "SegmentationSettings": {
+    "InitMethod": "",
+    "MeshNamingMethod": "",
+    "OverrideExisting": false
+  },
+  "PawnPaths": {
+    "BareboneCar": {"PawnBP": "Class'/AirSim/VehicleAdv/Vehicle/VehicleAdvPawn.VehicleAdvPawn_C'"},
+    "DefaultCar": {"PawnBP": "Class'/AirSim/VehicleAdv/SUV/SuvCarPawn.SuvCarPawn_C'"},
+    "DefaultQuadrotor": {"PawnBP": "Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"},
+    "DefaultComputerVision": {"PawnBP": "Class'/AirSim/Blueprints/BP_ComputerVisionPawn.BP_ComputerVisionPawn_C'"}
+  },
+  "Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
+      "DefaultVehicleState": "Armed",
+      "AutoCreate": true,
+      "PawnPath": "",
+      "EnableCollisionPassthrogh": false,
+      "EnableCollisions": true,
+      "AllowAPIAlways": true,
+      "EnableTrace": false,
+      "RC": {
+        "RemoteControlID": 0,
+        "AllowAPIWhenDisconnected": false
+      },
+      "Cameras": {
+        //same elements as CameraDefaults above, key as name
+      },
+      "X": NaN, "Y": NaN, "Z": NaN,
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+    },
+    "PhysXCar": {
+      "VehicleType": "PhysXCar",
+      "DefaultVehicleState": "",
+      "AutoCreate": true,
+      "PawnPath": "",
+      "EnableCollisionPassthrogh": false,
+      "EnableCollisions": true,
+      "RC": {
+        "RemoteControlID": -1
+      },
+      "Cameras": {
+        "MyCamera1": {
+          //same elements as elements inside CameraDefaults above
+        },
+        "MyCamera2": {
+          //same elements as elements inside CameraDefaults above
+        },
+      },
+      "X": NaN, "Y": NaN, "Z": NaN,
+      "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+    }
+  }
+}</code></pre>
+<h2 id="simmode">SimMode<a class="headerlink" href="#simmode" title="Permanent link">#</a></h2>
+<p>SimMode determines which simulation mode will be used. Below are currently supported values:
+- <code>""</code>: prompt user to select vehicle type multirotor or car
+- <code>"Multirotor"</code>: Use multirotor simulation
+- <code>"Car"</code>: Use car simulation
+- <code>"ComputerVision"</code>: Use only camera, no vehicle or physics</p>
+<h2 id="viewmode">ViewMode<a class="headerlink" href="#viewmode" title="Permanent link">#</a></h2>
+<p>The ViewMode determines which camera to use as default and how camera will follow the vehicle. For multirotors, the default ViewMode is <code>"FlyWithMe"</code> while for cars the default ViewMode is <code>"SpringArmChase"</code>.</p>
+<ul>
+<li><code>FlyWithMe</code>: Chase the vehicle from behind with 6 degrees of freedom</li>
+<li><code>GroundObserver</code>: Chase the vehicle from 6' above the ground but with full freedom in XY plane.</li>
+<li><code>Fpv</code>: View the scene from front camera of vehicle</li>
+<li><code>Manual</code>: Don't move camera automatically. Use arrow keys and ASWD keys for move camera manually.</li>
+<li><code>SpringArmChase</code>: Chase the vehicle with camera mounted on (invisible) arm that is attached to the vehicle via spring (so it has some latency in movement).</li>
+<li><code>NoDisplay</code>: This will freeze rendering for main screen however rendering for subwindows, recording and APIs remain active. This mode is useful to save resources in "headless" mode where you are only interested in getting images and don't care about what gets rendered on main screen. This may also improve FPS for recording images.</li>
+</ul>
+<h2 id="timeofday">TimeOfDay<a class="headerlink" href="#timeofday" title="Permanent link">#</a></h2>
+<p>This setting controls the position of Sun in the environment. By default <code>Enabled</code> is false which means Sun's position is left at whatever was the default in the environment and it doesn't change over the time. If <code>Enabled</code> is true then Sun position is computed using longitude, latitude and altitude specified in <code>OriginGeopoint</code> section for the date specified in <code>StartDateTime</code> in the string format as <a href="https://en.cppreference.com/w/cpp/io/manip/get_time">%Y-%m-%d %H:%M:%S</a>, for example, <code>2018-02-12 15:20:00</code>. If this string is empty then current date and time is used. If <code>StartDateTimeDst</code> is true then we adjust for day light savings time. The Sun's position is then continuously updated at the interval specified in <code>UpdateIntervalSecs</code>. In some cases, it might be desirable to have celestial clock run faster or slower than simulation clock. This can be specified using <code>CelestialClockSpeed</code>, for example, value 100 means for every 1 second of simulation clock, Sun's position is advanced by 100 seconds so Sun will move in sky much faster.</p>
+<p>Also see <a href="apis.html#time-of-day-api">Time of Day API</a>.</p>
+<h2 id="origingeopoint">OriginGeopoint<a class="headerlink" href="#origingeopoint" title="Permanent link">#</a></h2>
+<p>This setting specifies the latitude, longitude and altitude of the Player Start component placed in the Unreal environment. The vehicle's home point is computed using this transformation. Note that all coordinates exposed via APIs are using NED system in SI units which means each vehicle starts at (0, 0, 0) in NED system. Time of Day settings are computed for geographical coordinates specified in <code>OriginGeopoint</code>.</p>
+<h2 id="subwindows">SubWindows<a class="headerlink" href="#subwindows" title="Permanent link">#</a></h2>
+<p>This setting determines what is shown in each of 3 subwindows which are visible when you press 0,1,2 keys. The <code>WindowID</code> can be 0 to 2, <code>CameraName</code> is any <a href="image_apis.html#available_cameras">available camera</a> on the vehicle. <code>ImageType</code> integer value determines what kind of image gets shown according to <a href="image_apis.html#available-imagetype">ImageType enum</a>. <code>VehicleName</code> string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.</p>
+<p>For example, for a single car vehicle, below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
+<pre class="highlight"><code class="language-json">  "SubWindows": [
+    {"WindowID": 0, "ImageType": 0, "CameraName": "3", "Visible": true},
+    {"WindowID": 1, "ImageType": 3, "CameraName": "0", "Visible": true},
+    {"WindowID": 2, "ImageType": 6, "CameraName": "4", "Visible": true}
+  ]</code></pre></p>
+<p>In case of multiple vehicles, different vehicles can be specified as follows-</p>
+<pre class="highlight"><code class="language-json">    "SubWindows": [
+        {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "Car1", "Visible": false},
+        {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "Car2", "Visible": false},
+        {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "Car1", "Visible": false}
+    ]</code></pre>
+<h2 id="recording">Recording<a class="headerlink" href="#recording" title="Permanent link">#</a></h2>
+<p>The recording feature allows you to record data such as position, orientation, velocity along with the captured image at specified intervals. You can start recording by pressing red Record button on lower right or the R key. The data is stored in the <code>Documents\AirSim</code> folder (or the folder specified using <code>Folder</code>), in a time stamped subfolder for each recording session, as tab separated file.</p>
+<ul>
+<li><code>RecordInterval</code>: specifies minimal interval in seconds between capturing two images.</li>
+<li><code>RecordOnMove</code>: specifies that do not record frame if there was vehicle's position or orientation hasn't changed.</li>
+<li><code>Folder</code>: Parent folder where timestamped subfolder with recordings are created. Absolute path of the directory must be specified. If not used, then <code>Documents/AirSim</code> folder will be used. E.g. <code>"Folder": "/home/&lt;user&gt;/Documents"</code></li>
+<li><code>Enabled</code>: Whether Recording should start from the beginning itself, setting to <code>true</code> will start recording automatically when the simulation starts. By default, it's set to <code>false</code></li>
+<li><code>Cameras</code>: this element controls which cameras are used to capture images. By default scene image from camera 0 is recorded as compressed png format. This setting is json array so you can specify multiple cameras to capture images, each with potentially different <a href="settings.html#image-capture-settings">image types</a>. <ul>
+<li>When <code>PixelsAsFloat</code> is true, image is saved as <a href="pfm.html">pfm</a> file instead of png file.</li>
+<li><code>VehicleName</code> option allows you to specify separate cameras for individual vehicles. If the <code>Cameras</code> element isn't present, <code>Scene</code> image from the default camera of each vehicle will be recorded.</li>
+<li>If you don't want to record any images and just the vehicle's physics data, then specify the <code>Cameras</code> element but leave it empty, like this: <code>"Cameras": []</code></li>
+</ul>
+</li>
+</ul>
+<p>For example, the <code>Cameras</code> element below records scene &amp; segmentation images for <code>Car1</code> &amp; scene for <code>Car2</code>-</p>
+<pre class="highlight"><code class="language-json">"Cameras": [
+    { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "VehicleName": "Car1", "Compress": true },
+    { "CameraName": "0", "ImageType": 5, "PixelsAsFloat": false, "VehicleName": "Car1", "Compress": true },
+    { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "VehicleName": "Car2", "Compress": true }
+]</code></pre>
+<h2 id="clockspeed">ClockSpeed<a class="headerlink" href="#clockspeed" title="Permanent link">#</a></h2>
+<p>This setting allows you to set the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simulation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collision is not detected. However slowing down simulation clock (i.e. values &lt; 1.0) generally improves the quality of simulation.</p>
+<h2 id="segmentation-settings">Segmentation Settings<a class="headerlink" href="#segmentation-settings" title="Permanent link">#</a></h2>
+<p>The <code>InitMethod</code> determines how object IDs are initialized at startup to generate <a href="image_apis.html#segmentation">segmentation</a>. The value "" or "CommonObjectsRandomIDs" (default) means assign random IDs to each object at startup. This will generate segmentation view with random colors assign to each object. The value "None" means don't initialize object IDs. This will cause segmentation view to have single solid colors. This mode is useful if you plan to set up object IDs using <a href="image_apis.html#segmentation">APIs</a> and it can save lot of delay at startup for large environments like CityEnviron.</p>
+<p>If <code>OverrideExisting</code> is false then initialization does not alter non-zero object IDs already assigned otherwise it does.</p>
+<p>If <code>MeshNamingMethod</code> is "" or "OwnerName" then we use mesh's owner name to generate random hash as object IDs. If it is "StaticMeshName" then we use static mesh's name to generate random hash as object IDs. Note that it is not possible to tell individual instances of the same static mesh apart this way, but the names are often more intuitive.</p>
+<h2 id="wind-settings">Wind Settings<a class="headerlink" href="#wind-settings" title="Permanent link">#</a></h2>
+<p>This setting specifies the wind speed in World frame, in NED direction. Values are in m/s. By default, speed is 0, i.e. no wind.</p>
+<h2 id="camera-director-settings">Camera Director Settings<a class="headerlink" href="#camera-director-settings" title="Permanent link">#</a></h2>
+<p>This element specifies the settings used for the camera following the vehicle in the ViewPort.</p>
+<ul>
+<li><code>FollowDistance</code>: Distance at which camera follows the vehicle, default is -8 (8 meters) for Car, -3 for others.</li>
+<li><code>X, Y, Z, Yaw, Roll, Pitch</code>: These elements allows you to specify the position and orientation of the camera relative to the vehicle. Position is in NED coordinates in SI units with origin set to Player Start location in Unreal environment. The orientation is specified in degrees.</li>
+</ul>
+<h2 id="camera-settings">Camera Settings<a class="headerlink" href="#camera-settings" title="Permanent link">#</a></h2>
+<p>The <code>CameraDefaults</code> element at root level specifies defaults used for all cameras. These defaults can be overridden for individual camera in <code>Cameras</code> element inside <code>Vehicles</code> as described later.</p>
+<h3 id="note-on-imagetype-element">Note on ImageType element<a class="headerlink" href="#note-on-imagetype-element" title="Permanent link">#</a></h3>
+<p>The <code>ImageType</code> element in JSON array determines which image type that settings applies to. The valid values are described in <a href="image_apis.html#available-imagetype">ImageType section</a>. In addition, we also support special value <code>ImageType: -1</code> to apply the settings to external camera (i.e. what you are looking at on the screen).</p>
+<p>For example, <code>CaptureSettings</code> element is json array so you can add settings for multiple image types easily.</p>
+<h3 id="capturesettings">CaptureSettings<a class="headerlink" href="#capturesettings" title="Permanent link">#</a></h3>
+<p>The <code>CaptureSettings</code> determines how different image types such as scene, depth, disparity, surface normals and segmentation views are rendered. The Width, Height and FOV settings should be self explanatory. The AutoExposureSpeed decides how fast eye adaptation works. We set to generally high value such as 100 to avoid artifacts in image capture. Similarly we set MotionBlurAmount to 0 by default to avoid artifacts in ground truth images. The <code>ProjectionMode</code> decides the projection used by the capture camera and can take value "perspective" (default) or "orthographic". If projection mode is "orthographic" then <code>OrthoWidth</code> determines width of projected area captured in meters.</p>
+<p>For explanation of other settings, please see <a href="https://docs.unrealengine.com/latest/INT/Engine/Rendering/PostProcessEffects/AutomaticExposure/">this article</a>.</p>
+<h3 id="noisesettings">NoiseSettings<a class="headerlink" href="#noisesettings" title="Permanent link">#</a></h3>
+<p>The <code>NoiseSettings</code> allows to add noise to the specified image type with a goal of simulating camera sensor noise, interference and other artifacts. By default no noise is added, i.e., <code>Enabled: false</code>. If you set <code>Enabled: true</code> then following different types of noise and interference artifacts are enabled, each can be further tuned using setting. The noise effects are implemented as shader created as post processing material in Unreal Engine called <a href="https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/CameraSensorNoise.uasset">CameraSensorNoise</a>.</p>
+<p>Demo of camera noise and interference simulation:</p>
+<p><a href="https://youtu.be/1BeCEZmQyp0"><img alt="AirSim Drone Demo Video" src="images/camera_noise_demo.png" /></a></p>
+<h4 id="random-noise">Random noise<a class="headerlink" href="#random-noise" title="Permanent link">#</a></h4>
+<p>This adds random noise blobs with following parameters.
+* <code>RandContrib</code>: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
+* <code>RandSpeed</code>: This determines how fast noise fluctuates, 1 means no fluctuation and higher values like 1E6 means full fluctuation.
+* <code>RandSize</code>: This determines how coarse noise is, 1 means every pixel has its own noise while higher value means more than 1 pixels share same noise value.
+* <code>RandDensity</code>: This determines how many pixels out of total will have noise, 1 means all pixels while higher value means lesser number of pixels (exponentially).</p>
+<h4 id="horizontal-bump-distortion">Horizontal bump distortion<a class="headerlink" href="#horizontal-bump-distortion" title="Permanent link">#</a></h4>
+<p>This adds horizontal bumps / flickering / ghosting effect.
+* <code>HorzWaveContrib</code>: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
+* <code>HorzWaveStrength</code>: This determines overall strength of the effect.
+* <code>HorzWaveVertSize</code>: This determines how many vertical pixels would be effected by the effect.
+* <code>HorzWaveScreenSize</code>: This determines how much of the screen is effected by the effect.</p>
+<h4 id="horizontal-noise-lines">Horizontal noise lines<a class="headerlink" href="#horizontal-noise-lines" title="Permanent link">#</a></h4>
+<p>This adds regions of noise on horizontal lines.
+* <code>HorzNoiseLinesContrib</code>: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
+* <code>HorzNoiseLinesDensityY</code>: This determines how many pixels in horizontal line gets affected.
+* <code>HorzNoiseLinesDensityXY</code>: This determines how many lines on screen gets affected.</p>
+<h4 id="horizontal-line-distortion">Horizontal line distortion<a class="headerlink" href="#horizontal-line-distortion" title="Permanent link">#</a></h4>
+<p>This adds fluctuations on horizontal line.
+* <code>HorzDistortionContrib</code>: This determines blend ratio of noise pixel with image pixel, 0 means no noise and 1 means only noise.
+* <code>HorzDistortionStrength</code>: This determines how large is the distortion.</p>
+<h3 id="gimbal">Gimbal<a class="headerlink" href="#gimbal" title="Permanent link">#</a></h3>
+<p>The <code>Gimbal</code> element allows to freeze camera orientation for pitch, roll and/or yaw. This setting is ignored unless <code>ImageType</code> is -1. The <code>Stabilization</code> is defaulted to 0 meaning no gimbal i.e. camera orientation changes with body orientation on all axis. The value of 1 means full stabilization. The value between 0 to 1 acts as a weight for fixed angles specified (in degrees, in world-frame) in <code>Pitch</code>, <code>Roll</code> and <code>Yaw</code> elements and orientation of the vehicle body. When any of the angles is omitted from json or set to NaN, that angle is not stabilized (i.e. it moves along with vehicle body).</p>
+<h2 id="vehicles-settings">Vehicles Settings<a class="headerlink" href="#vehicles-settings" title="Permanent link">#</a></h2>
+<p>Each simulation mode will go through the list of vehicles specified in this setting and create the ones that has <code>"AutoCreate": true</code>. Each vehicle specified in this setting has key which becomes the name of the vehicle. If <code>"Vehicles"</code> element is missing then this list is populated with default car named "PhysXCar" and default multirotor named "SimpleFlight".</p>
+<h3 id="common-vehicle-setting">Common Vehicle Setting<a class="headerlink" href="#common-vehicle-setting" title="Permanent link">#</a></h3>
+<ul>
+<li><code>VehicleType</code>: This could be any one of the following - <code>PhysXCar</code>, <code>SimpleFlight</code>, <code>PX4Multirotor</code>, <code>ComputerVision</code>, <code>ArduCopter</code> &amp; <code>ArduRover</code>. There is no default value therefore this element must be specified.</li>
+<li><code>PawnPath</code>: This allows to override the pawn blueprint to use for the vehicle. For example, you may create new pawn blueprint derived from ACarPawn for a warehouse robot in your own project outside the AirSim code and then specify its path here. See also <a href="#PawnPaths">PawnPaths</a>.</li>
+<li><code>DefaultVehicleState</code>: Possible value for multirotors is <code>Armed</code> or <code>Disarmed</code>.</li>
+<li><code>AutoCreate</code>: If true then this vehicle would be spawned (if supported by selected sim mode).</li>
+<li><code>RC</code>: This sub-element allows to specify which remote controller to use for vehicle using <code>RemoteControlID</code>. The value of -1 means use keyboard (not supported yet for multirotors). The value &gt;= 0 specifies one of many remote controllers connected to the system. The list of available RCs can be seen in Game Controllers panel in Windows, for example.</li>
+<li><code>X, Y, Z, Yaw, Roll, Pitch</code>: These elements allows you to specify the initial position and orientation of the vehicle. Position is in NED coordinates in SI units with origin set to Player Start location in Unreal environment. The orientation is specified in degrees.</li>
+<li><code>IsFpvVehicle</code>: This setting allows to specify which vehicle camera will follow and the view that will be shown when ViewMode is set to Fpv. By default, AirSim selects the first vehicle in settings as FPV vehicle.</li>
+<li><code>Sensors</code>: This element specifies the sensors associated with the vehicle, see <a href="sensors.html">Sensors page</a> for details.</li>
+<li><code>Cameras</code>: This element specifies camera settings for vehicle. The key in this element is name of the <a href="image_apis.html#available_cameras">available camera</a> and the value is same as <code>CameraDefaults</code> as described above. For example, to change FOV for the front center camera to 120 degrees, you can use this for <code>Vehicles</code> setting:</li>
+</ul>
+<pre class="highlight"><code class="language-json">"Vehicles": {
+    "FishEyeDrone": {
+      "VehicleType": "SimpleFlight",
+      "Cameras": {
+        "front-center": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "FOV_Degrees": 120
+            }
+          ]
+        }
+      }
+    }
+}</code></pre>
+<h3 id="using-px4">Using PX4<a class="headerlink" href="#using-px4" title="Permanent link">#</a></h3>
+<p>By default we use <a href="simple_flight.html">simple_flight</a> so you don't have to do separate HITL or SITL setups. We also support <a href="px4_setup.html">"PX4"</a> for advanced users. To use PX4 with AirSim, you can use the following for <code>Vehicles</code> setting:</p>
+<pre class="highlight"><code>"Vehicles": {
+    "PX4": {
+      "VehicleType": "PX4Multirotor",
+    }
+}</code></pre>
+<h4 id="additional-px4-settings">Additional PX4 Settings<a class="headerlink" href="#additional-px4-settings" title="Permanent link">#</a></h4>
+<p>The defaults for PX4 is to enable hardware-in-loop setup. There are various other settings available for PX4 as follows with their default values:</p>
+<pre class="highlight"><code>"Vehicles": {
+    "PX4": {
+      "VehicleType": "PX4Multirotor",
+      "Lockstep": true,
+      "ControlIp": "127.0.0.1",
+      "ControlPortLocal": 14540,
+      "ControlPortRemote": 14580,
+      "LogViewerHostIp": "127.0.0.1",
+      "LogViewerPort": 14388,
+      "OffboardCompID": 1,
+      "OffboardSysID": 134,
+      "QgcHostIp": "127.0.0.1",
+      "QgcPort": 14550,
+      "SerialBaudRate": 115200,
+      "SerialPort": "*",
+      "SimCompID": 42,
+      "SimSysID": 142,
+      "TcpPort": 4560,
+      "UdpIp": "127.0.0.1",
+      "UdpPort": 14560,
+      "UseSerial": true,
+      "UseTcp": false,
+      "VehicleCompID": 1,
+      "VehicleSysID": 135,
+      "Model": "Generic",
+      "LocalHostIp": "127.0.0.1",
+      "Logs": "d:\\temp\\mavlink",
+      "Sensors": {
+        ...
+      }
+      "Parameters": {
+        ...
+      }
+    }
+}</code></pre>
+<p>These settings define the MavLink SystemId and ComponentId for the Simulator (SimSysID, SimCompID),
+and for the vehicle (VehicleSysID, VehicleCompID) and the node that allows remote control of the
+drone from another app this is called the offboard node (OffboardSysID, OffboardCompID).</p>
+<p>If you want the simulator to also forward mavlink messages to your ground control app (like
+QGroundControl) you can also set the UDP address for that in case you want to run that on a
+different machine (QgcHostIp, QgcPort).  The default is local host so QGroundControl should "just
+work" if it is running on the same machine.</p>
+<p>You can connect the simulator to the LogViewer app, provided in this repo, by setting the UDP
+address for that (LogViewerHostIp, LogViewerPort).</p>
+<p>And for each flying drone added to the simulator there is a named block of additional settings.  In
+the above you see the default name "PX4".   You can change this name from the Unreal Editor when you
+add a new BP_FlyingPawn asset.  You will see these properties grouped under the category "MavLink".
+The MavLink node for this pawn can be remote over UDP or it can be connected to a local serial port.
+If serial then set UseSerial to true, otherwise set UseSerial to false.  For serial connections you
+also need to set the appropriate SerialBaudRate.  The default of 115200 works with Pixhawk version 2
+over USB.</p>
+<p>When communicating with the PX4 drone over serial port both the HIL_* messages and vehicle control
+messages share the same serial port. When communicating over UDP or TCP PX4 requires two separate
+channels.  If UseTcp is false, then UdpIp, UdpPort are used to send HIL_* messages, otherwise the
+TcpPort is used.  TCP support in PX4 was added in 1.9.2 with the <code>lockstep</code> feature because the
+guarantee of message delivery that TCP provides is required for the proper functioning of lockstep.
+AirSim becomes a TCP server in that case, and waits for a connection from the PX4 app.  The second
+channel for controlling the vehicle is defined by (ControlIp, ControlPort) and is always a UDP
+channel.</p>
+<p>The <code>Sensors</code> section can provide customized settings for simulated sensors, see
+<a href="sensors.html">Sensors</a>. The <code>Parameters</code> section can set PX4 parameters during initialization of the
+PX4 connection. See <a href="px4_sitl.html">Setting up PX4 Software-in-Loop</a> for an example.</p>
+<h3 id="using-ardupilot">Using ArduPilot<a class="headerlink" href="#using-ardupilot" title="Permanent link">#</a></h3>
+<p><a href="https://ardupilot.org/">ArduPilot</a> Copter &amp; Rover vehicles are supported in latest AirSim master &amp; releases <code>v1.3.0</code> and later. For settings and how to use, please see <a href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">ArduPilot SITL with AirSim</a></p>
+<h2 id="other-settings">Other Settings<a class="headerlink" href="#other-settings" title="Permanent link">#</a></h2>
+<h3 id="enginesound">EngineSound<a class="headerlink" href="#enginesound" title="Permanent link">#</a></h3>
+<p>To turn off the engine sound use <a href="settings.html">setting</a> <code>"EngineSound": false</code>. Currently this setting applies only to car.</p>
+<h3 id="pawnpaths">PawnPaths<a class="headerlink" href="#pawnpaths" title="Permanent link">#</a></h3>
+<p>This allows you to specify your own vehicle pawn blueprints, for example, you can replace the default car in AirSim with your own car. Your vehicle BP can reside in Content folder of your own Unreal project (i.e. outside of AirSim plugin folder). For example, if you have a car BP located in file <code>Content\MyCar\MySedanBP.uasset</code> in your project then you can set <code>"DefaultCar": {"PawnBP":"Class'/Game/MyCar/MySedanBP.MySedanBP_C'"}</code>. The <code>XYZ.XYZ_C</code> is a special notation required to specify class for BP <code>XYZ</code>. Please note that your BP must be derived from CarPawn class. By default this is not the case but you can re-parent the BP using the "Class Settings" button in toolbar in UE editor after you open the BP and then choosing "Car Pawn" for Parent Class settings in Class Options. It is also a good idea to disable "Auto Possess Player" and "Auto Possess AI" as well as set AI Controller Class to None in BP details. Please make sure your asset is included for cooking in packaging options if you are creating binary.</p>
+<h3 id="physicsenginename">PhysicsEngineName<a class="headerlink" href="#physicsenginename" title="Permanent link">#</a></h3>
+<p>For cars, we support only PhysX for now (regardless of value in this setting). For multirotors, we support <code>"FastPhysicsEngine"</code> and <code>"ExternalPhysicsEngine"</code>. <code>"ExternalPhysicsEngine"</code> allows the drone to be controlled via setVehiclePose (), keeping the drone in place until the next call. It is especially useful for moving the AirSim drone using an external simulator or on a saved path.</p>
+<h3 id="localhostip-setting">LocalHostIp Setting<a class="headerlink" href="#localhostip-setting" title="Permanent link">#</a></h3>
+<p>Now when connecting to remote machines you may need to pick a specific Ethernet adapter to reach those machines, for example, it might be
+over Ethernet or over Wi-Fi, or some other special virtual adapter or a VPN.  Your PC may have multiple networks, and those networks might not
+be allowed to talk to each other, in which case the UDP messages from one network will not get through to the others.</p>
+<p>So the LocalHostIp allows you to configure how you are reaching those machines.  The default of 127.0.0.1 is not able to reach external machines,
+this default is only used when everything you are talking to is contained on a single PC.</p>
+<h3 id="apiserverport">ApiServerPort<a class="headerlink" href="#apiserverport" title="Permanent link">#</a></h3>
+<p>This setting determines the server port that used by airsim clients, default port is 41451.
+By specifying different ports, the user can run multiple environments in parallel to accelerate data collection process.</p>
+<h3 id="speedunitfactor">SpeedUnitFactor<a class="headerlink" href="#speedunitfactor" title="Permanent link">#</a></h3>
+<p>Unit conversion factor for speed related to <code>m/s</code>, default is 1. Used in conjunction with SpeedUnitLabel. This may be only used for display purposes for example on-display speed when car is being driven. For example, to get speed in <code>miles/hr</code> use factor 2.23694.</p>
+<h3 id="speedunitlabel">SpeedUnitLabel<a class="headerlink" href="#speedunitlabel" title="Permanent link">#</a></h3>
+<p>Unit label for speed, default is <code>m/s</code>.  Used in conjunction with SpeedUnitFactor.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="camera_views.html" class="btn btn-neutral float-right" title="Camera Views">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="dev_workflow.html" class="btn btn-neutral" title="Development Workflow"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="dev_workflow.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="camera_views.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

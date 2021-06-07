@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>AirSim on Azure - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "AirSim on Azure";
+    var mkdocs_page_input_path = "azure.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="azure.html">AirSim on Azure</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#automatically-deploy-your-azure-vm">Automatically Deploy Your Azure VM</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#regarding-the-deployment-of-the-azure-vm">Regarding the deployment of the Azure VM</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-and-debug-from-visual-studio-code-and-remote-ssh">Code and debug from Visual Studio Code and Remote SSH</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-and-debug-from-a-local-visual-studio-code-and-connect-to-airsim-via-forwarded-ports">Code and debug from a local Visual Studio Code and connect to AirSim via forwarded ports</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running-with-docker">Running with Docker</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#building-the-docker-image">Building the docker image</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#using-a-different-airsim-binary">Using a different AirSim binary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#maintaining-this-development-environment">Maintaining this development environment</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Get AirSim &raquo;</li>
+        
+      
+    
+    <li>AirSim on Azure</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/azure.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="airsim-development-environment-on-azure">AirSim Development Environment on Azure<a class="headerlink" href="#airsim-development-environment-on-azure" title="Permanent link">#</a></h1>
+<p>This document explains how to automate the creation of a development environment on Azure and code and debug a Python application connected to AirSim using Visual Studio Code</p>
+<h2 id="automatically-deploy-your-azure-vm">Automatically Deploy Your Azure VM<a class="headerlink" href="#automatically-deploy-your-azure-vm" title="Permanent link">#</a></h2>
+<p>Click the blue button to start the Azure deployment (The template is pre-filled with the recommended virtual machine size for the use cases of the following two tutorials)</p>
+<p><a href="https://aka.ms/AA8umgt" target="_blank">
+    <img src="https://azuredeploy.net/deploybutton.png"/>
+</a><br />
+<em>Note: the VM deployment and configuration process may take 20+ minutes to complete</em></p>
+<h3 id="regarding-the-deployment-of-the-azure-vm">Regarding the deployment of the Azure VM<a class="headerlink" href="#regarding-the-deployment-of-the-azure-vm" title="Permanent link">#</a></h3>
+<ul>
+<li>
+<p>When using an Azure Trial account, the default vCPU quota is not enough to allocate the required VM to run AirSim. If that's the case, you will see an error when trying to create the VM and will have to submit a request for Quota increase. <strong>Be sure to understand how and how much you are going to be charged for the use of the VM</strong></p>
+</li>
+<li>
+<p>To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the <a href="https://portal.azure.com">Azure Portal</a> or use the following command from the Azure CLI:
+<pre class="highlight"><code class="language-bash">az vm deallocate --resource-group MyResourceGroup --name MyVMName</code></pre></p>
+</li>
+</ul>
+<h2 id="code-and-debug-from-visual-studio-code-and-remote-ssh">Code and debug from Visual Studio Code and Remote SSH<a class="headerlink" href="#code-and-debug-from-visual-studio-code-and-remote-ssh" title="Permanent link">#</a></h2>
+<ul>
+<li>Install Visual Studio Code</li>
+<li>Install the <em>Remote - SSH</em> extension</li>
+<li>Press <code>F1</code> and run the <code>Remote - SSH: Connect to host...</code> command</li>
+<li>Add the recently create VM details. For instance, <code>AzureUser@11.22.33.44</code></li>
+<li>Run the <code>Remote - SSH: Connect to host...</code> command again, and now select the newly added connection.</li>
+<li>Once connected, click on the <code>Clone Repository</code> button in Visual Studio Code, and either clone this repository in the remote VM and open <em>just the <code>azure</code> folder</em>, or create a brand new repository, clone it and copy the contents of the <code>azure</code> folder from this repository in it. It is important to open that directory so Visual Studio Code can use the specific <code>.vscode</code> directory for the scenario and not the general AirSim <code>.vscode</code> directory. It contains the recommended extensions to install, the task to start AirSim remotely and the launch configuration for the Python application.</li>
+<li>Install all the recommended extensions</li>
+<li>Press <code>F1</code> and select the <code>Tasks: Run Task</code> option. Then, select the <code>Start AirSim</code> task from Visual Studio Code to execute the <code>start-airsim.ps1</code> script from Visual Studio Code.</li>
+<li>Open the <code>multirotor.py</code> file inside the <code>app</code> directory</li>
+<li>Start debugging with Python</li>
+<li>When finished, remember to stop an deallocate the Azure VM to avoid extra charges</li>
+</ul>
+<h2 id="code-and-debug-from-a-local-visual-studio-code-and-connect-to-airsim-via-forwarded-ports">Code and debug from a local Visual Studio Code and connect to AirSim via forwarded ports<a class="headerlink" href="#code-and-debug-from-a-local-visual-studio-code-and-connect-to-airsim-via-forwarded-ports" title="Permanent link">#</a></h2>
+<p><em>Note: this scenario, will be using two Visual Studio Code instances. 
+The first one will be used as a bridge to forward ports via SSH to the Azure VM and execute remote processes, and the second one will 
+be used for local Python development.
+To be able to reach the VM from the local Python code, it is required to keep the <code>Remote - SSH</code> instance of Visual Studio Code opened, while working with the local Python environment on the second instance</em></p>
+<ul>
+<li>Open the first Visual Studio Code instance</li>
+<li>Follow the steps in the previous section to connect via <code>Remote - SSH</code></li>
+<li>In the <em>Remote Explorer</em>, add the port <code>41451</code> as a forwarded port to localhost</li>
+<li>Either run the <code>Start AirSim</code> task on the Visual Studio Code with the remote session as explained in the previous scenario or manually start the AirSim binary in the VM</li>
+<li>Open a second Visual Studio Code instance, without disconnecting or closing the first one</li>
+<li>Either clone this repository locally and open <em>just the <code>azure</code> folder</em> in Visual Studio Code, or create a brand new repository, clone it and copy the contents of the <code>azure</code> folder from this repository in it.</li>
+<li>Run <code>pip install -r requirements.txt</code> inside the <code>app</code> directory</li>
+<li>Open the <code>multirotor.py</code> file inside the <code>app</code> directory </li>
+<li>Start debugging with Python</li>
+<li>When finished, remember to stop an deallocate the Azure VM to avoid extra charges</li>
+</ul>
+<h2 id="running-with-docker">Running with Docker<a class="headerlink" href="#running-with-docker" title="Permanent link">#</a></h2>
+<p>Once both the AirSim environment and the Python application are ready, you can package everything as a Docker image. The sample project inside the <code>azure</code> directory is already prepared to run a prebuilt AirSim binary and Python code using Docker.</p>
+<p>This would be a perfect scenario when you want to run the simulation at scale. For instance, you could have several different configurations for the same simulation and execute them in a parallel, unattended way using a Docker image on Azure Container Services</p>
+<p>Since AirSim requires access to the host GPU, it is required to use a Docker runtime that supports it. For more information about running AirSim in Docker, click <a href="docker_ubuntu.html">here</a>.</p>
+<p>When using Azure Container Services to run this image, the only extra-requirement is to add GPU support to the Container Group where it will be deployed. </p>
+<p>It can use either public docker images from DockerHub or images deployed to a private Azure Container Registry</p>
+<h3 id="building-the-docker-image">Building the docker image<a class="headerlink" href="#building-the-docker-image" title="Permanent link">#</a></h3>
+<pre class="highlight"><code class="language-bash">docker build -t &lt;your-registry-url&gt;/&lt;your-image-name&gt; -f ./docker/Dockerfile .`</code></pre>
+<h2 id="using-a-different-airsim-binary">Using a different AirSim binary<a class="headerlink" href="#using-a-different-airsim-binary" title="Permanent link">#</a></h2>
+<p>To use a different AirSim binary, first check the official documentation on <a href="build_windows.html">How to Build AirSim on Windows</a> and <a href="build_linux.html">How to Build AirSim on Linux</a> if you also want to run it with Docker</p>
+<p>Once you have a zip file with the new AirSim environment (or prefer to use one from the <a href="https://github.com/microsoft/AirSim/releases">Official Releases</a>), you need to modify some of the scripts in the <code>azure</code> directory of the repository to point to the new environment:
+- In <a href="https://github.com/microsoft/AirSim/blob/master/azure/azure-env-creation/configure-vm.ps1"><code>azure/azure-env-creation/configure-vm.ps1</code></a>, modify all the parameters starting with <code>$airSimBinary</code> with the new values
+- In <a href="https://github.com/microsoft/AirSim/blob/master/azure/start-airsim.ps1"><code>azure/start-airsim.ps1</code></a>, modify <code>$airSimExecutable</code> and <code>$airSimProcessName</code> with the new values</p>
+<p>If you are using the docker image, you also need a linux binary zip file and modify the following Docker-related files:
+- In <a href="https://github.com/microsoft/AirSim/blob/master/azure/docker/Dockerfile"><code>azure/docker/Dockerfile</code></a>, modify the <code>AIRSIM_BINARY_ZIP_URL</code> and <code>AIRSIM_BINARY_ZIP_FILENAME</code> ENV declarations with the new values
+- In <a href="https://github.com/microsoft/AirSim/blob/master/azure/docker/docker-entrypoint.sh"><code>azure/docker/docker-entrypoint.sh</code></a>, modify <code>AIRSIM_EXECUTABLE</code> with the new value </p>
+<h2 id="maintaining-this-development-environment">Maintaining this development environment<a class="headerlink" href="#maintaining-this-development-environment" title="Permanent link">#</a></h2>
+<p>Several components of this development environment (ARM templates, initialization scripts and VSCode tasks) directly depend on the current directory structures file names and repository locations. When planning to modify/fork any of those, make sure to check every script and template to make any required adjustment.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="unreal_custenv.html" class="btn btn-neutral float-right" title="Custom Unreal Environment">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="docker_ubuntu.html" class="btn btn-neutral" title="Docker on Linux"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="docker_ubuntu.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="unreal_custenv.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

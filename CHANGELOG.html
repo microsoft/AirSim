@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Changelog - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Changelog";
+    var mkdocs_page_input_path = "CHANGELOG.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="CHANGELOG.html">Changelog</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#may-2021">May 2021</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#apr-2021">Apr 2021</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mar-2021">Mar 2021</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#feb-2021">Feb 2021</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#jan-2021">Jan 2021</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#dec-2020">Dec 2020</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#nov-2020">Nov 2020</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#oct-2020">Oct 2020</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sep-2020">Sep 2020</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#july-2020">July 2020</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#may-2020">May 2020</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#april-2020">April 2020</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#march-2020">March 2020</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#november-2018">November, 2018</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#june-2018">June, 2018</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#april-2018">April, 2018</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#jan-2018">Jan 2018</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#nov-2017">Nov 2017</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sep-2017">Sep 2017</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#aug-2017">Aug 2017</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#feb-2017">Feb 2017</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Changelog</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/CHANGELOG.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="whats-new">What's new<a class="headerlink" href="#whats-new" title="Permanent link">#</a></h1>
+<p>Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review <a href="https://github.com/Microsoft/AirSim/commits/master">commit history</a>.</p>
+<h3 id="may-2021">May 2021<a class="headerlink" href="#may-2021" title="Permanent link">#</a></h3>
+<ul>
+<li>Latest release <code>v1.5.0</code> for <a href="https://github.com/microsoft/AirSim/releases/tag/v1.5.0-windows">Windows</a> and <a href="https://github.com/microsoft/AirSim/releases/tag/v1.5.0-linux">Linux</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3603">fix px4 connection for wsl 2.</a></li>
+</ul>
+<h3 id="apr-2021">Apr 2021<a class="headerlink" href="#apr-2021" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/3626">External physics engine</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3364">ArduPilot Sensor Updates</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3596">Add new build configuration "--RelWithDebInfo" which makes it easier to debug</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3196">Add ApiServerPort to available AirSim settings</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3536">ROS: Use the same settings as AirSim</a></li>
+</ul>
+<h3 id="mar-2021">Mar 2021<a class="headerlink" href="#mar-2021" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/3475">Add moveByVelocityZBodyFrame</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2390">Spawn vehicles via RPC</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2909">Unity weather parameters, weather HUD, and a visual effect for snow</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3242">Rotor output API</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2861">Extend Recording to multiple vehicles</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2810">Combine Lidar Segmentation API into getLidarData</a></li>
+</ul>
+<h3 id="feb-2021">Feb 2021<a class="headerlink" href="#feb-2021" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/3383">Add Ubuntu 20.04 to Actions CI</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3386">add tcp server support to MavLinkTest</a></li>
+</ul>
+<h3 id="jan-2021">Jan 2021<a class="headerlink" href="#jan-2021" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/3102">Added continueForFrames</a></li>
+<li>Latest release <code>v1.4.0</code> for <a href="https://github.com/microsoft/AirSim/releases/tag/v1.4.0-windows">Windows</a> and <a href="https://github.com/microsoft/AirSim/releases/tag/v1.4.0-linux">Linux</a></li>
+</ul>
+<h3 id="dec-2020">Dec 2020<a class="headerlink" href="#dec-2020" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/3224">Add Actions script to build and deploy to gh-pages</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3215">Gym environments and stable-baselines integration for RL</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3039">Programmable camera distortion</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3209">Voxel grid construction</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3202">Event camera simulation</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3180">Add Github Actions CI Checks</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/3169">Added moveByVelocityBodyFrame</a></li>
+</ul>
+<h3 id="nov-2020">Nov 2020<a class="headerlink" href="#nov-2020" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/3156">fix auto-detect of pixhawk 4 hardware</a></li>
+</ul>
+<h3 id="oct-2020">Oct 2020<a class="headerlink" href="#oct-2020" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/2953">[Travis] Add Ubuntu 20.04, OSX XCode 11.5 jobs</a></li>
+</ul>
+<h3 id="sep-2020">Sep 2020<a class="headerlink" href="#sep-2020" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/2841">Add Vehicle option for Subwindow settings</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2881">Disable cameras after fetching images, projection matrix</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2867">Add Wind simulation</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2996">New <code>simRunConsoleCommand</code> API</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2898">UE4: Fixes and improvements to World APIs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2963">UE4: Fix random crash with Plotting APIs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2932">Add backwards-compatibility layer for <code>simSetCameraPose</code></a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2946">Disable LogMessages if set to false</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2939">ROS: Removed double inclusion of <code>static_transforms.launch</code></a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2986">Add retry loop when connecting PX4 SITL control channel</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2902">Allow for enabling physics when spawning a new object</a></li>
+</ul>
+<h3 id="july-2020">July 2020<a class="headerlink" href="#july-2020" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/2897">Add Python APIs for new Object functions</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2877">UE4: Fix Broken List Level Option</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2522">Linux build improvements</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2668">Allow passing the settings.json file location via <code>--settings</code> argument</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2807">Distance Sensor Upgrades and fixes</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2766">Update to min CMake version required for VS 2019</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2845">Fix: Non-linear bias corrupts SurfaceNormals, Segmentation image</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2855">Fix: <code>simGetSegmentationObjectID</code> will always return -1</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2651">Initial implementation of simLoadLevel, simGet/SetObjectScale, simSpawn|DestroyObject APIs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2710">Upgrade <code>setCameraOrientation</code> API to <code>setCameraPose</code></a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2743">ROS: All sensors and car support</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2705">Get rid of potential div-0 errors so we can set dt = 0 for pausing</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2642">ROS: Add mavros_msgs to build dependencies</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2803">Move Wiki pages to docs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2834">Add Recording APIs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2865">Update Dockerfiles and documentation to Ubuntu 18.04</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2816">Azure development environment and documentation</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2706">ROS: Add airsim_node to install list</a></li>
+</ul>
+<h3 id="may-2020">May 2020<a class="headerlink" href="#may-2020" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/2649">Fix more issues with PX4 master</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2672">Reduce warnings level in Unity build</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2669">Support for Unreal Engine 4.25</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2328">Unity crash fix, upgrade to 2019.3.12, Linux build improvements</a></li>
+</ul>
+<h3 id="april-2020">April 2020<a class="headerlink" href="#april-2020" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://github.com/microsoft/AirSim/pull/2634">Fix issues with PX4 latest master branch</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2614">Fix Lidar DrawDebugPoints causing crash</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2565">Add docstrings for Python API</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2625">Add missing noise, weather texture materials</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2584">Update AirSim.uplugin version to 1.3.1</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2610">Camera Roll angle control using Q,E keys in CV mode, manual camera</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2572">Remove broken GCC build</a></li>
+<li>New API - <a href="https://github.com/microsoft/AirSim/pull/2506"><code>simSetTraceLine()</code></a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2571">ROS package compilation fixes and updates</a></li>
+<li>Latest release <code>v1.3.1</code> for <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.1-windows">Windows</a> and <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.1-linux">Linux</a></li>
+<li>APIs added and fixed - <a href="https://github.com/microsoft/AirSim/pull/2534"><code>simSetCameraFov</code></a>, <a href="https://github.com/microsoft/AirSim/pull/2516"><code>rotateToYaw</code></a></li>
+<li><a href="https://pypi.org/project/airsim/">airsim</a> Python package update to <code>1.2.8</code></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2518">NoDisplay ViewMode render state fix</a></li>
+</ul>
+<h3 id="march-2020">March 2020<a class="headerlink" href="#march-2020" title="Permanent link">#</a></h3>
+<ul>
+<li>Latest release <code>v1.3.0</code> for <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.0-Windows">Windows</a> and <a href="https://github.com/microsoft/AirSim/releases/tag/v1.3.0-linux">Linux</a></li>
+<li>Upgraded to Unreal Engine 4.24, Visual Studio 2019, Clang 8, C++ 17 standard</li>
+<li>Mac OSX Catalina support</li>
+<li>Updated <a href="https://pypi.org/project/airsim/">airsim</a> Python package, with lots of new APIs</li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2494">Removed legacy API wrappers</a></li>
+<li><a href="px4_setup.html">Support for latest PX4 stable release</a></li>
+<li>Support for <a href="https://ardupilot.org/ardupilot/">ArduPilot</a> - <a href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">Copter, Rover vehicles</a></li>
+<li><a href="Unity.html">Updated Unity support</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2493">Removed simChar* APIs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2304">Plotting APIs for Debugging</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2297">Low-level Multirotor APIs</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2325">Updated Eigen version to 3.3.7</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2403">Distance Sensor API fix</a></li>
+<li>Add <a href="retexturing.html"><code>simSwapTextures</code></a> API</li>
+<li>Fix <a href="https://github.com/microsoft/AirSim/pull/2299"><code>simContinueForTime</code></a>, <a href="https://github.com/microsoft/AirSim/pull/2292"><code>simPause</code></a> APIs</li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2143">Lidar Sensor Trace Casting fix</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2146">Fix rare <code>reset()</code> bug which causes Unreal crash</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2011">Lidar sensor improvements, add <code>simGetLidarSegmentation</code> API</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2185">Add RpcLibPort in settings</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/1695">Recording thread deadlock fix</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/2147">Prevent environment crash when Sun is not present</a></li>
+<li><a href="https://github.com/microsoft/AirSim/pull/1959">Africa Tracking feautre, add <code>simListSceneObjects()</code> API, fix camera projection matrix</a></li>
+<li>ROS wrapper for multirotors is available. See <a href="airsim_ros_pkgs.html">airsim_ros_pkgs</a> for the ROS API, and <a href="airsim_tutorial_pkgs.html">airsim_tutorial_pkgs</a> for tutorials.</li>
+<li><a href="sensors.html">Added sensor APIs for Barometer, IMU, GPS, Magnetometer, Distance Sensor</a></li>
+<li>Added support for <a href="docker_ubuntu.html">docker in ubuntu</a></li>
+</ul>
+<h3 id="november-2018">November, 2018<a class="headerlink" href="#november-2018" title="Permanent link">#</a></h3>
+<ul>
+<li>Added Weather Effects and <a href="apis.html#weather-apis">APIs</a></li>
+<li>Added <a href="apis.html#time-of-day-api">Time of Day API</a></li>
+<li>An experimental integration of <a href="https://github.com/Microsoft/AirSim/tree/master/Unity">AirSim on Unity</a> is now available. Learn more in <a href="https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation">Unity blog post</a>. </li>
+<li><a href="https://github.com/Microsoft/AirSim/releases/tag/v1.2.1">New environments</a>: Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)</li>
+<li>Highly efficient <a href="settings.html#viewmode">NoDisplay view mode</a> to turn off main screen rendering so you can capture images at high rate</li>
+<li><a href="https://github.com/Microsoft/AirSim/pull/1479">Enable/disable sensors</a> via settings</li>
+<li><a href="lidar.html">Lidar Sensor</a></li>
+<li><a href="https://github.com/Microsoft/AirSim/commit/474214364676b6631c01b3ed79d00c83ba5bccf5">Support for Flysky FS-SM100 RC</a> USB adapter</li>
+<li>Case Study: <a href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Driverless</a></li>
+<li><a href="multi_vehicle.html">Multi-Vehicle Capability</a></li>
+<li><a href="https://github.com/Microsoft/AirSim/pull/1181">Custom speed units</a></li>
+<li><a href="https://github.com/Microsoft/AirSim/pull/1135">ROS publisher</a></li>
+<li><a href="https://github.com/Microsoft/AirSim/pull/1161">simSetObjectPose API</a></li>
+<li><a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/airsim/client.py#L137">Character Control APIs</a> (works on TalkingHeads binaries in release)</li>
+<li><a href="https://github.com/Microsoft/AirSim/pull/1387">Arducopter Solo Support</a></li>
+<li><a href="https://github.com/Microsoft/AirSim/pull/1434">Linux install without sudo access</a></li>
+<li><a href="https://github.com/Microsoft/AirSim/pull/1298">Kinect like ROS publisher</a></li>
+</ul>
+<h3 id="june-2018">June, 2018<a class="headerlink" href="#june-2018" title="Permanent link">#</a></h3>
+<ul>
+<li>Development workflow doc</li>
+<li>Better Python 2 compatibility</li>
+<li>OSX setup fixes</li>
+<li>Almost complete rewrite of our APIs with new threading model, merging old APIs and creating few newer ones</li>
+</ul>
+<h3 id="april-2018">April, 2018<a class="headerlink" href="#april-2018" title="Permanent link">#</a></h3>
+<ul>
+<li>Upgraded to Unreal Engine 4.18 and Visual Studio 2017</li>
+<li>API framework refactoring to support world-level APIs</li>
+<li>Latest PX4 firmware now supported</li>
+<li>CarState with more information</li>
+<li>ThrustMaster wheel support</li>
+<li>pause and continueForTime APIs for drone as well as car</li>
+<li>Allow drone simulation run at higher clock rate without any degradation</li>
+<li>Forward-only mode fully functional for drone (do orbits while looking at center)</li>
+<li>Better PID tuning to reduce wobble for drones</li>
+<li>Ability to set arbitrary vehicle blueprint for drone as well as car</li>
+<li>gimbal stabilization via settings</li>
+<li>Ability to segment skinned and skeletal meshes by their name</li>
+<li>moveByAngleThrottle API</li>
+<li>Car physics tuning for better maneuverability</li>
+<li>Configure additional cameras via settings</li>
+<li>Time of day with geographically computed sun position</li>
+<li>Better car steering via keyboard</li>
+<li>Added MeshNamingMethod in segmentation setting </li>
+<li>gimbal API</li>
+<li>getCameraParameters API</li>
+<li>Ability turn off main rendering to save GPU resources</li>
+<li>Projection mode for capture settings</li>
+<li>getRCData, setRCData APIs</li>
+<li>Ability to turn off segmentation using negative IDs</li>
+<li>OSX build improvements</li>
+<li>Segmentation working for very large environments with initial IDs</li>
+<li>Better and extensible hash calculation for segmentation IDs</li>
+<li>Extensible PID controller for custom integration methods</li>
+<li>Sensor architecture now enables renderer specific features like ray casting</li>
+<li>Laser altimeter sensor</li>
+</ul>
+<h3 id="jan-2018">Jan 2018<a class="headerlink" href="#jan-2018" title="Permanent link">#</a></h3>
+<ul>
+<li>Config system rewrite, enable flexible config we are targeting in future</li>
+<li>Multi-Vehicle support Phase 1, core infrastructure changes</li>
+<li>MacOS support</li>
+<li>Infrared view</li>
+<li>5 types of noise and interference for cameras</li>
+<li>WYSIWIG capture settings for cameras, preview recording settings in main view</li>
+<li>Azure support Phase 1, enable configurability of instances for headless mode</li>
+<li>Full kinematics APIs, ability to get pose, linear and angular velocities + accelerations via APIs</li>
+<li>Record multiple images from multiple cameras</li>
+<li>New segmentation APIs, ability to set configure object IDs, search via regex</li>
+<li>New object pose APIs, ability to get pose of objects (like animals) in environment</li>
+<li>Camera infrastructure enhancements, ability to add new image types like IR with just few lines</li>
+<li>Clock speed APIs for drone as well as car, simulation can be run with speed factor of 0 &lt; x &lt; infinity</li>
+<li>Support for Logitech G920 wheel</li>
+<li>Physics tuning of the car, Car doesn’t roll over, responds to steering with better curve, releasing gas paddle behavior more realistic</li>
+<li>Debugging APIs</li>
+<li>Stress tested to 24+ hours of continuous runs</li>
+<li>Support for Landscape and sky segmentation</li>
+<li>Manual navigation with accelerated controls in CV mode, user can explore environment much more easily</li>
+<li>Collison APIs</li>
+<li>Recording enhancements, log several new data points including ground truth, multiple images, controls state</li>
+<li>Planner and Perspective Depth views</li>
+<li>Disparity view</li>
+<li>New Image APIs supports float, png or numpy formats</li>
+<li>6 config settings for image capture, ability to set auto-exposure, motion blur, gamma etc</li>
+<li>Full multi-camera support through out including sub-windows, recording, APIs etc</li>
+<li>Command line script to build all environments in one shot</li>
+<li>Remove submodules, use rpclib as download</li>
+</ul>
+<h3 id="nov-2017">Nov 2017<a class="headerlink" href="#nov-2017" title="Permanent link">#</a></h3>
+<ul>
+<li>We now have the <a href="using_car.html">car model</a>.</li>
+<li>No need to build the code. Just download <a href="https://github.com/Microsoft/AirSim/releases">binaries</a> and you are good to go!</li>
+<li>The <a href="reinforcement_learning.html">reinforcement learning example</a> with AirSim</li>
+<li>New built-in flight controller called <a href="simple_flight.html">simple_flight</a> that "just works" without any additional setup. It is also now <em>default</em>. </li>
+<li>AirSim now also generates <a href="image_apis.html">depth as well as disparity images</a> that are in camera plane. </li>
+<li>We also have official Linux build now!</li>
+</ul>
+<h2 id="sep-2017">Sep 2017<a class="headerlink" href="#sep-2017" title="Permanent link">#</a></h2>
+<ul>
+<li>We have added <a href="using_car.html">car model</a>!</li>
+</ul>
+<h2 id="aug-2017">Aug 2017<a class="headerlink" href="#aug-2017" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="simple_flight.html">simple_flight</a> is now default flight controller for drones. If you want to use PX4, you will need to modify settings.json as per <a href="px4_setup.html">PX4 setup doc</a>.</li>
+<li>Linux build is official and currently uses Unreal 4.17 due to various bug fixes required</li>
+<li>ImageType enum has breaking changes with several new additions and clarifying existing ones</li>
+<li>SubWindows are now configurable from settings.json</li>
+<li>PythonClient is now complete and has parity with C++ APIs. Some of these would have breaking changes.</li>
+</ul>
+<h2 id="feb-2017">Feb 2017<a class="headerlink" href="#feb-2017" title="Permanent link">#</a></h2>
+<ul>
+<li>First release!</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="use_precompiled.html" class="btn btn-neutral float-right" title="Download Binaries">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="index.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="use_precompiled.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

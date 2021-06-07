@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Reinforcement Learning - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Reinforcement Learning";
+    var mkdocs_page_input_path = "reinforcement_learning.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="reinforcement_learning.html">Reinforcement Learning</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#disclaimer">Disclaimer</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#gym-wrapper">Gym wrapper</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rl-with-car">RL with Car</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rl-with-quadrotor">RL with Quadrotor</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#related">Related</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Contributed Tutorials &raquo;</li>
+        
+      
+    
+    <li>Reinforcement Learning</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/reinforcement_learning.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="reinforcement-learning-in-airsim">Reinforcement Learning in AirSim<a class="headerlink" href="#reinforcement-learning-in-airsim" title="Permanent link">#</a></h1>
+<p>We below describe how we can implement DQN in AirSim using an OpenAI gym wrapper around AirSim API, and using stable baselines implementations of standard RL algorithms. We recommend installing stable-baselines3 in order to run these examples (please see https://github.com/DLR-RM/stable-baselines3)</p>
+<h4 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permanent link">#</a></h4>
+<p>This is still in active development. What we share below is a framework that can be extended and tweaked to obtain better performance.</p>
+<h4 id="gym-wrapper">Gym wrapper<a class="headerlink" href="#gym-wrapper" title="Permanent link">#</a></h4>
+<p>In order to use AirSim as a gym environment, we extend and reimplement the base methods such as <code>step</code>, <code>_get_obs</code>, <code>_compute_reward</code> and <code>reset</code> specific to AirSim and the task of interest. The sample environments used in these examples for car and drone can be seen in <code>PythonClient/reinforcement_learning/*_env.py</code></p>
+<h2 id="rl-with-car">RL with Car<a class="headerlink" href="#rl-with-car" title="Permanent link">#</a></h2>
+<p><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient/reinforcement_learning">Source code</a></p>
+<p>This example works with AirSimNeighborhood environment available in <a href="https://github.com/Microsoft/AirSim/releases">releases</a>.</p>
+<p>First, we need to get the images from simulation and transform them appropriately. Below, we show how a depth image can be obtained from the ego camera and transformed to an 84X84 input to the network. (you can use other sensor modalities, and sensor inputs as well – of course you’ll have to modify the code accordingly).</p>
+<pre class="highlight"><code>responses = client.simGetImages([ImageRequest(0, AirSimImageType.DepthPerspective, True, False)])
+current_state = transform_input(responses)</code></pre>
+<p>We further define the six actions (brake, straight with throttle, full-left with throttle, full-right with throttle, half-left with throttle, half-right with throttle) that an agent can execute. This is done via the function <code>interpret_action</code>:</p>
+<pre class="highlight"><code>def interpret_action(action):
+    car_controls.brake = 0
+    car_controls.throttle = 1
+    if action == 0:
+        car_controls.throttle = 0
+        car_controls.brake = 1
+    elif action == 1:
+        car_controls.steering = 0
+    elif action == 2:
+        car_controls.steering = 0.5
+    elif action == 3:
+        car_controls.steering = -0.5
+    elif action == 4:
+        car_controls.steering = 0.25
+    else:
+        car_controls.steering = -0.25
+    return car_controls</code></pre>
+<p>We then define the reward function in <code>_compute_reward</code> as a convex combination of how fast the vehicle is travelling and how much it deviates from the center line. The agent gets a high reward when its moving fast and staying in the center of the lane.</p>
+<pre class="highlight"><code>def _compute_reward(car_state):
+    MAX_SPEED = 300
+    MIN_SPEED = 10
+    thresh_dist = 3.5
+    beta = 3
+
+    z = 0
+    pts = [np.array([0, -1, z]), np.array([130, -1, z]), np.array([130, 125, z]), np.array([0, 125, z]), np.array([0, -1, z]), np.array([130, -1, z]), np.array([130, -128, z]), np.array([0, -128, z]), np.array([0, -1, z])]
+    pd = car_state.position
+    car_pt = np.array(list(pd.values()))
+
+    dist = 10000000
+    for i in range(0, len(pts)-1):
+        dist = min(dist, np.linalg.norm(np.cross((car_pt - pts[i]), (car_pt - pts[i+1])))/np.linalg.norm(pts[i]-pts[i+1]))
+
+    #print(dist)
+    if dist &gt; thresh_dist:
+        reward = -3
+    else:
+        reward_dist = (math.exp(-beta*dist) - 0.5)
+        reward_speed = (((car_state.speed - MIN_SPEED)/(MAX_SPEED - MIN_SPEED)) - 0.5)
+        reward = reward_dist + reward_speed
+
+    return reward</code></pre>
+<p>The compute reward function also subsequently determines if the episode has terminated (e.g. due to collision). We look at the speed of the vehicle and if it is less than a threshold than the episode is considered to be terminated.</p>
+<pre class="highlight"><code>done = 0
+if reward &lt; -1:
+    done = 1
+if car_controls.brake == 0:
+    if car_state.speed &lt;= 5:
+        done = 1
+return done</code></pre>
+<p>The main loop then sequences through obtaining the image, computing the action to take according to the current policy, getting a reward and so forth.
+If the episode terminates then we reset the vehicle to the original state via <code>reset()</code>:</p>
+<pre class="highlight"><code>client.reset()
+client.enableApiControl(True)
+client.armDisarm(True)
+car_control = interpret_action(1) // Reset position and drive straight for one second
+client.setCarControls(car_control)
+time.sleep(1)</code></pre>
+<p>Once the gym-styled environment wrapper is defined as in <code>car_env.py</code>, we then make use of stable-baselines3 to run a DQN training loop. The DQN training can be configured as follows, seen in <code>dqn_car.py</code>.</p>
+<pre class="highlight"><code>model = DQN(
+    "CnnPolicy",
+    env,
+    learning_rate=0.00025,
+    verbose=1,
+    batch_size=32,
+    train_freq=4,
+    target_update_interval=10000,
+    learning_starts=200000,
+    buffer_size=500000,
+    max_grad_norm=10,
+    exploration_fraction=0.1,
+    exploration_final_eps=0.01,
+    device="cuda",
+    tensorboard_log="./tb_logs/",
+)</code></pre>
+<p>A training environment and an evaluation envrionment (see <code>EvalCallback</code> in <code>dqn_car.py</code>) can be defined. The evaluation environoment can be different from training, with different termination conditions/scene configuration. A tensorboard log directory is also defined as part of the DQN parameters. Finally, <code>model.learn()</code> starts the DQN training loop. Similarly, implementations of PPO, A3C etc. can be used from stable-baselines3.</p>
+<p>Note that the simulation needs to be up and running before you execute <code>dqn_car.py</code>. The video below shows first few episodes of DQN training.</p>
+<p><a href="https://youtu.be/fv-oFPAqSZ4"><img alt="Reinforcement Learning - Car" src="images/dqn_car.png" /></a></p>
+<h2 id="rl-with-quadrotor">RL with Quadrotor<a class="headerlink" href="#rl-with-quadrotor" title="Permanent link">#</a></h2>
+<p><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient/reinforcement_learning">Source code</a></p>
+<p>This example works with AirSimMountainLandscape environment available in <a href="https://github.com/Microsoft/AirSim/releases">releases</a>.</p>
+<p>We can similarly apply RL for various autonomous flight scenarios with quadrotors. Below is an example on how RL could be used to train quadrotors to follow high tension power lines (e.g. application for energy infrastructure inspection).
+There are seven discrete actions here that correspond to different directions in which the quadrotor can move in (six directions + one hovering action).</p>
+<pre class="highlight"><code>def interpret_action(self, action):
+    if action == 0:
+        quad_offset = (self.step_length, 0, 0)
+    elif action == 1:
+        quad_offset = (0, self.step_length, 0)
+    elif action == 2:
+        quad_offset = (0, 0, self.step_length)
+    elif action == 3:
+        quad_offset = (-self.step_length, 0, 0)
+    elif action == 4:
+        quad_offset = (0, -self.step_length, 0)
+    elif action == 5:
+        quad_offset = (0, 0, -self.step_length)
+    else:
+        quad_offset = (0, 0, 0)</code></pre>
+<p>The reward again is a function how how fast the quad travels in conjunction with how far it gets from the known powerlines.</p>
+<pre class="highlight"><code>def compute_reward(quad_state, quad_vel, collision_info):
+    thresh_dist = 7
+    beta = 1
+
+    z = -10
+    pts = [np.array([-0.55265, -31.9786, -19.0225]),np.array([48.59735, -63.3286, -60.07256]),np.array([193.5974, -55.0786, -46.32256]),np.array([369.2474, 35.32137, -62.5725]),np.array([541.3474, 143.6714, -32.07256]),]
+
+    quad_pt = np.array(list((self.state["position"].x_val, self.state["position"].y_val,self.state["position"].z_val,)))
+
+    if self.state["collision"]:
+        reward = -100
+    else:
+        dist = 10000000
+        for i in range(0, len(pts) - 1):
+            dist = min(dist, np.linalg.norm(np.cross((quad_pt - pts[i]), (quad_pt - pts[i + 1]))) / np.linalg.norm(pts[i] - pts[i + 1]))
+
+        if dist &gt; thresh_dist:
+            reward = -10
+        else:
+            reward_dist = math.exp(-beta * dist) - 0.5
+            reward_speed = (np.linalg.norm([self.state["velocity"].x_val, self.state["velocity"].y_val, self.state["velocity"].z_val,])- 0.5)
+            reward = reward_dist + reward_speed</code></pre>
+<p>We consider an episode to terminate if it drifts too much away from the known power line coordinates, and then reset the drone to its starting point.</p>
+<p>Once the gym-styled environment wrapper is defined as in <code>drone_env.py</code>, we then make use of stable-baselines3 to run a DQN training loop. The DQN training can be configured as follows, seen in <code>dqn_drone.py</code>.</p>
+<pre class="highlight"><code>model = DQN(
+    "CnnPolicy",
+    env,
+    learning_rate=0.00025,
+    verbose=1,
+    batch_size=32,
+    train_freq=4,
+    target_update_interval=10000,
+    learning_starts=10000,
+    buffer_size=500000,
+    max_grad_norm=10,
+    exploration_fraction=0.1,
+    exploration_final_eps=0.01,
+    device="cuda",
+    tensorboard_log="./tb_logs/",
+)</code></pre>
+<p>A training environment and an evaluation envrionment (see <code>EvalCallback</code> in <code>dqn_drone.py</code>) can be defined. The evaluation environoment can be different from training, with different termination conditions/scene configuration. A tensorboard log directory is also defined as part of the DQN parameters. Finally, <code>model.learn()</code> starts the DQN training loop. Similarly, implementations of PPO, A3C etc. can be used from stable-baselines3.</p>
+<p>Here is the video of first few episodes during the training.</p>
+<p><a href="https://youtu.be/uKm15Y3M1Nk"><img alt="Reinforcement Learning - Quadrotor" src="images/dqn_quadcopter.png" /></a></p>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">#</a></h2>
+<p>Please also see <a href="https://aka.ms/AutonomousDrivingCookbook">The Autonomous Driving Cookbook</a> by Microsoft Deep Learning and Robotics Garage Chapter.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="point_clouds.html" class="btn btn-neutral float-right" title="Building Point Clouds">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="upgrade_settings.html" class="btn btn-neutral" title="Upgrading Settings"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="upgrade_settings.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="point_clouds.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

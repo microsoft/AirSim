@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Image APIs - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Image APIs";
+    var mkdocs_page_input_path = "image_apis.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="image_apis.html">Image APIs</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#getting-a-single-image">Getting a Single Image</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#python">Python</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#c">C++</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-images-with-more-flexibility">Getting Images with More Flexibility</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#python_1">Python</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#using-airsim-images-with-numpy">Using AirSim Images with NumPy</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#quick-tips">Quick Tips</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#c_1">C++</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ready-to-run-complete-examples">Ready to Run Complete Examples</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#python_2">Python</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#c_2">C++</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#available-cameras">Available Cameras</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#car">Car</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#multirotor">Multirotor</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#computer-vision-mode">Computer Vision Mode</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#backward-compatibility-for-camera-names">Backward compatibility for camera names</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#computer-vision-mode_1">"Computer Vision" Mode</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#setting-pose-in-computer-vision-mode">Setting Pose in Computer Vision Mode</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#camera-apis">Camera APIs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#gimbal">Gimbal</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#changing-resolution-and-camera-parameters">Changing Resolution and Camera Parameters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-does-pixel-values-mean-in-different-image-types">What Does Pixel Values Mean in Different Image Types?</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#available-imagetype-values">Available ImageType Values</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#depthplanar-and-depthperspective">DepthPlanar and DepthPerspective</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#depthvis">DepthVis</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#disparitynormalized">DisparityNormalized</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#segmentation">Segmentation</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#unsetting-object-id">Unsetting object ID</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#how-to-find-mesh-names">How to Find Mesh Names?</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#changing-colors-for-object-ids">Changing Colors for Object IDs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#startup-object-ids">Startup Object IDs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#getting-object-id-for-mesh">Getting Object ID for Mesh</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#infrared">Infrared</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example-code">Example Code</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Using AirSim &raquo;</li>
+        
+      
+    
+    <li>Image APIs</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/image_apis.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="image-apis">Image APIs<a class="headerlink" href="#image-apis" title="Permanent link">#</a></h1>
+<p>Please read <a href="apis.html">general API doc</a> first if you are not familiar with AirSim APIs.</p>
+<h2 id="getting-a-single-image">Getting a Single Image<a class="headerlink" href="#getting-a-single-image" title="Permanent link">#</a></h2>
+<p>Here's a sample code to get a single image from camera named "0". The returned value is bytes of png format image. To get uncompressed and other format as well as available cameras please see next sections.</p>
+<h3 id="python">Python<a class="headerlink" href="#python" title="Permanent link">#</a></h3>
+<pre class="highlight"><code class="language-python">import airsim #pip install airsim
+
+# for car use CarClient() 
+client = airsim.MultirotorClient()
+
+png_image = client.simGetImage("0", airsim.ImageType.Scene)
+# do something with image</code></pre>
+<h3 id="c">C++<a class="headerlink" href="#c" title="Permanent link">#</a></h3>
+<pre class="highlight"><code class="language-cpp">#include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
+
+int getOneImage() 
+{
+    using namespace msr::airlib;
+
+    // for car use CarRpcLibClient
+    MultirotorRpcLibClient client;
+
+    std::vector&lt;uint8_t&gt; png_image = client.simGetImage("0", VehicleCameraBase::ImageType::Scene);
+    // do something with images
+}</code></pre>
+<h2 id="getting-images-with-more-flexibility">Getting Images with More Flexibility<a class="headerlink" href="#getting-images-with-more-flexibility" title="Permanent link">#</a></h2>
+<p>The <code>simGetImages</code> API which is slightly more complex to use than <code>simGetImage</code> API, for example, you can get left camera view, right camera view and depth image from left camera in a single API call. The <code>simGetImages</code> API also allows you to get uncompressed images as well as floating point single channel images (instead of 3 channel (RGB), each 8 bit).</p>
+<h3 id="python_1">Python<a class="headerlink" href="#python_1" title="Permanent link">#</a></h3>
+<pre class="highlight"><code class="language-python">import airsim #pip install airsim
+
+# for car use CarClient() 
+client = airsim.MultirotorClient()
+
+responses = client.simGetImages([
+    # png format
+    airsim.ImageRequest(0, airsim.ImageType.Scene), 
+    # uncompressed RGB array bytes
+    airsim.ImageRequest(1, airsim.ImageType.Scene, False, False),
+    # floating point uncompressed image
+    airsim.ImageRequest(1, airsim.ImageType.DepthPlanar, True)])
+
+ # do something with response which contains image data, pose, timestamp etc</code></pre>
+<h4 id="using-airsim-images-with-numpy">Using AirSim Images with NumPy<a class="headerlink" href="#using-airsim-images-with-numpy" title="Permanent link">#</a></h4>
+<p>If you plan to use numpy for image manipulation, you should get uncompressed RGB image and then convert to numpy like this:</p>
+<pre class="highlight"><code class="language-python">responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
+response = responses[0]
+
+# get numpy array
+img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
+
+# reshape array to 4 channel image array H X W X 4
+img_rgb = img1d.reshape(response.height, response.width, 3)
+
+# original image is fliped vertically
+img_rgb = np.flipud(img_rgb)
+
+# write to png 
+airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) </code></pre>
+<h4 id="quick-tips">Quick Tips<a class="headerlink" href="#quick-tips" title="Permanent link">#</a></h4>
+<ul>
+<li>
+<p>The API <code>simGetImage</code> returns <code>binary string literal</code> which means you can simply dump it in binary file to create a .png file. However if you want to process it in any other way than you can handy function <code>airsim.string_to_uint8_array</code>. This converts binary string literal to NumPy uint8 array.</p>
+</li>
+<li>
+<p>The API <code>simGetImages</code> can accept request for multiple image types from any cameras in single call. You can specify if image is png compressed, RGB uncompressed or float array. For png compressed images, you get <code>binary string literal</code>. For float array you get Python list of float64. You can convert this float array to NumPy 2D array using
+    <pre class="highlight"><code>airsim.list_to_2d_float_array(response.image_data_float, response.width, response.height)</code></pre>
+    You can also save float array to .pfm file (Portable Float Map format) using <code>airsim.write_pfm()</code> function.</p>
+</li>
+<li>
+<p>If you are looking to query position and orientation information in sync with a call to one of the image APIs, you can use <code>client.simPause(True)</code> and <code>client.simPause(False)</code> to pause the simulation while calling the image API and querying the desired physics state, ensuring that the physics state remains the same immediately after the image API call.</p>
+</li>
+</ul>
+<h3 id="c_1">C++<a class="headerlink" href="#c_1" title="Permanent link">#</a></h3>
+<pre class="highlight"><code class="language-cpp">int getStereoAndDepthImages() 
+{
+    using namespace msr::airlib;
+
+    typedef VehicleCameraBase::ImageRequest ImageRequest;
+    typedef VehicleCameraBase::ImageResponse ImageResponse;
+    typedef VehicleCameraBase::ImageType ImageType;
+
+    // for car use
+    // CarRpcLibClient client;
+    MultirotorRpcLibClient client;
+
+    // get right, left and depth images. First two as png, second as float16.
+    std::vector&lt;ImageRequest&gt; request = { 
+        //png format
+        ImageRequest("0", ImageType::Scene),
+        //uncompressed RGB array bytes
+        ImageRequest("1", ImageType::Scene, false, false),       
+        //floating point uncompressed image  
+        ImageRequest("1", ImageType::DepthPlanar, true) 
+    };
+
+    const std::vector&lt;ImageResponse&gt;&amp; response = client.simGetImages(request);
+    // do something with response which contains image data, pose, timestamp etc
+}</code></pre>
+<h2 id="ready-to-run-complete-examples">Ready to Run Complete Examples<a class="headerlink" href="#ready-to-run-complete-examples" title="Permanent link">#</a></h2>
+<h3 id="python_2">Python<a class="headerlink" href="#python_2" title="Permanent link">#</a></h3>
+<p>For a more complete ready to run sample code please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/hello_drone.py">sample code in AirSimClient project</a> for multirotors or <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/hello_car.py">HelloCar sample</a>. This code also demonstrates simple activities such as saving images in files or using <code>numpy</code> to manipulate images.</p>
+<h3 id="c_2">C++<a class="headerlink" href="#c_2" title="Permanent link">#</a></h3>
+<p>For a more complete ready to run sample code please see <a href="https://github.com/Microsoft/AirSim/tree/master/HelloDrone//main.cpp">sample code in HelloDrone project</a> for multirotors or <a href="https://github.com/Microsoft/AirSim/tree/master/HelloCar//main.cpp">HelloCar project</a>. </p>
+<p>See also <a href="https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp">other example code</a> that generates specified number of stereo images along with ground truth depth and disparity and saving it to <a href="pfm.html">pfm format</a>.</p>
+<h2 id="available-cameras">Available Cameras<a class="headerlink" href="#available-cameras" title="Permanent link">#</a></h2>
+<h3 id="car">Car<a class="headerlink" href="#car" title="Permanent link">#</a></h3>
+<p>The cameras on car can be accessed by following names in API calls: <code>front_center</code>, <code>front_right</code>, <code>front_left</code>, <code>fpv</code> and <code>back_center</code>. Here FPV camera is driver's head position in the car.</p>
+<h3 id="multirotor">Multirotor<a class="headerlink" href="#multirotor" title="Permanent link">#</a></h3>
+<p>The cameras in CV mode can be accessed by following names in API calls: <code>front_center</code>, <code>front_right</code>, <code>front_left</code>, <code>bottom_center</code> and <code>back_center</code>. </p>
+<h3 id="computer-vision-mode">Computer Vision Mode<a class="headerlink" href="#computer-vision-mode" title="Permanent link">#</a></h3>
+<p>Camera names are same as in multirotor.</p>
+<h3 id="backward-compatibility-for-camera-names">Backward compatibility for camera names<a class="headerlink" href="#backward-compatibility-for-camera-names" title="Permanent link">#</a></h3>
+<p>Before AirSim v1.2, cameras were accessed using ID numbers instead of names. For backward compatibility you can still use following ID numbers for above camera names in same order as above: <code>"0"</code>, <code>"1"</code>, <code>"2"</code>, <code>"3"</code>, <code>"4"</code>. In addition, camera name <code>""</code> is also available to access the default camera which is generally the camera <code>"0"</code>.</p>
+<h2 id="computer-vision-mode_1">"Computer Vision" Mode<a class="headerlink" href="#computer-vision-mode_1" title="Permanent link">#</a></h2>
+<p>You can use AirSim in so-called "Computer Vision" mode. In this mode, physics engine is disabled and there is no vehicle, just cameras (If you want to have the vehicle but without its kinematics, you can use the Multirotor mode with the Physics Engine <a href="settings.html##physicsenginename">ExternalPhysicsEngine</a>). You can move around using keyboard (use F1 to see help on keys). You can press Record button to continuously generate images. Or you can call APIs to move cameras around and take images.</p>
+<p>To active this mode, edit <a href="settings.html">settings.json</a> that you can find in your <code>Documents\AirSim</code> folder (or <code>~/Documents/AirSim</code> on Linux) and make sure following values exist at root level:</p>
+<pre class="highlight"><code class="language-json">{
+  "SettingsVersion": 1.2,
+  "SimMode": "ComputerVision"
+}</code></pre>
+<p><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">Here's the Python code example</a> to move camera around and capture images.</p>
+<p>This mode was inspired from <a href="http://unrealcv.org/">UnrealCV project</a>.</p>
+<h3 id="setting-pose-in-computer-vision-mode">Setting Pose in Computer Vision Mode<a class="headerlink" href="#setting-pose-in-computer-vision-mode" title="Permanent link">#</a></h3>
+<p>To move around the environment using APIs you can use <code>simSetVehiclePose</code> API. This API takes position and orientation and sets that on the invisible vehicle where the front-center camera is located. All rest of the cameras move along keeping the relative position. If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values. The <code>simGetVehiclePose</code> allows to retrieve the current pose. You can also use <code>simGetGroundTruthKinematics</code> to get the quantities kinematics quantities for the movement. Many other non-vehicle specific APIs are also available such as segmentation APIs, collision APIs and camera APIs.</p>
+<h2 id="camera-apis">Camera APIs<a class="headerlink" href="#camera-apis" title="Permanent link">#</a></h2>
+<p>The <code>simGetCameraInfo</code> returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">example usage</a>.</p>
+<p>The <code>simSetCameraPose</code> sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy <code>airsim.to_quaternion()</code> function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:
+<pre class="highlight"><code>camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #PRY in radians
+client.simSetCameraPose(0, camera_pose);</code></pre></p>
+<h3 id="gimbal">Gimbal<a class="headerlink" href="#gimbal" title="Permanent link">#</a></h3>
+<p>You can set stabilization for pitch, roll or yaw for any camera <a href="settings.html#gimbal">using settings</a>.</p>
+<p>Please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">example usage</a>.</p>
+<h2 id="changing-resolution-and-camera-parameters">Changing Resolution and Camera Parameters<a class="headerlink" href="#changing-resolution-and-camera-parameters" title="Permanent link">#</a></h2>
+<p>To change resolution, FOV etc, you can use <a href="settings.html">settings.json</a>. For example, below addition in settings.json sets parameters for scene capture and uses "Computer Vision" mode described above. If you omit any setting then below default values will be used. For more information see <a href="settings.html">settings doc</a>. If you are using stereo camera, currently the distance between left and right is fixed at 25 cm.</p>
+<pre class="highlight"><code class="language-json">{
+  "SettingsVersion": 1.2,
+  "CameraDefaults": {
+      "CaptureSettings": [
+        {
+          "ImageType": 0,
+          "Width": 256,
+          "Height": 144,
+          "FOV_Degrees": 90,
+          "AutoExposureSpeed": 100,
+          "MotionBlurAmount": 0
+        }
+    ]
+  },
+  "SimMode": "ComputerVision"
+}</code></pre>
+<h2 id="what-does-pixel-values-mean-in-different-image-types">What Does Pixel Values Mean in Different Image Types?<a class="headerlink" href="#what-does-pixel-values-mean-in-different-image-types" title="Permanent link">#</a></h2>
+<h3 id="available-imagetype-values">Available ImageType Values<a class="headerlink" href="#available-imagetype-values" title="Permanent link">#</a></h3>
+<pre class="highlight"><code class="language-cpp">  Scene = 0, 
+  DepthPlanar = 1, 
+  DepthPerspective = 2,
+  DepthVis = 3, 
+  DisparityNormalized = 4,
+  Segmentation = 5,
+  SurfaceNormals = 6,
+  Infrared = 7</code></pre>
+<h3 id="depthplanar-and-depthperspective">DepthPlanar and DepthPerspective<a class="headerlink" href="#depthplanar-and-depthperspective" title="Permanent link">#</a></h3>
+<p>You normally want to retrieve the depth image as float (i.e. set <code>pixels_as_float = true</code>) and specify <code>ImageType = DepthPlanar</code> or <code>ImageType = DepthPerspective</code> in <code>ImageRequest</code>. For <code>ImageType = DepthPlanar</code>, you get depth in camera plane, i.e., all points that are plane-parallel to the camera have same depth. For <code>ImageType = DepthPerspective</code>, you get depth from camera using a projection ray that hits that pixel. Depending on your use case, planner depth or perspective depth may be the ground truth image that you want. For example, you may be able to feed perspective depth to ROS package such as <code>depth_image_proc</code> to generate a point cloud. Or planner depth may be more compatible with estimated depth image generated by stereo algorithms such as SGM.</p>
+<h3 id="depthvis">DepthVis<a class="headerlink" href="#depthvis" title="Permanent link">#</a></h3>
+<p>When you specify <code>ImageType = DepthVis</code> in <code>ImageRequest</code>, you get an image that helps depth visualization. In this case, each pixel value is interpolated from black to white depending on depth in camera plane in meters. The pixels with pure white means depth of 100m or more while pure black means depth of 0 meters.</p>
+<h3 id="disparitynormalized">DisparityNormalized<a class="headerlink" href="#disparitynormalized" title="Permanent link">#</a></h3>
+<p>You normally want to retrieve disparity image as float (i.e. set <code>pixels_as_float = true</code> and specify <code>ImageType = DisparityNormalized</code> in <code>ImageRequest</code>) in which case each pixel is <code>(Xl - Xr)/Xmax</code>, which is thereby normalized to values between 0 to 1.</p>
+<h3 id="segmentation">Segmentation<a class="headerlink" href="#segmentation" title="Permanent link">#</a></h3>
+<p>When you specify <code>ImageType = Segmentation</code> in <code>ImageRequest</code>, you get an image that gives you ground truth segmentation of the scene. At the startup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is then mapped to a specific color in <a href="https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_palette.png">the pallet</a>. The RGB values for each object ID can be found in <a href="seg_rgbs.txt">this file</a>.</p>
+<p>You can assign a specific value (limited to the range 0-255) to a specific mesh using APIs. For example, below Python code sets the object ID for the mesh called "Ground" to 20 in Blocks environment and hence changes its color in Segmentation view:</p>
+<pre class="highlight"><code class="language-python">success = client.simSetSegmentationObjectID("Ground", 20);</code></pre>
+<p>The return value is a boolean type that lets you know if the mesh was found.</p>
+<p>Notice that typical Unreal environments, like Blocks, usually have many other meshes that comprises of same object, for example, "Ground_2", "Ground_3" and so on. As it is tedious to set object ID for all of these meshes, AirSim also supports regular expressions. For example, the code below sets all meshes which have names starting with "ground" (ignoring case) to 21 with just one line:</p>
+<pre class="highlight"><code class="language-python">success = client.simSetSegmentationObjectID("ground[\w]*", 21, True);</code></pre>
+<p>The return value is true if at least one mesh was found using regular expression matching.</p>
+<p>It is recommended that you request uncompressed image using this API to ensure you get precise RGB values for segmentation image:
+<pre class="highlight"><code class="language-python">responses = client.simGetImages([ImageRequest(0, AirSimImageType.Segmentation, False, False)])
+img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) #get numpy array
+img_rgb = img1d.reshape(response.height, response.width, 3) #reshape array to 3 channel image array H X W X 3
+img_rgb = np.flipud(img_rgb) #original image is fliped vertically
+
+#find unique colors
+print(np.unique(img_rgb[:,:,0], return_counts=True)) #red
+print(np.unique(img_rgb[:,:,1], return_counts=True)) #green
+print(np.unique(img_rgb[:,:,2], return_counts=True)) #blue  </code></pre></p>
+<p>A complete ready-to-run example can be found in <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/segmentation.py">segmentation.py</a>.</p>
+<h4 id="unsetting-object-id">Unsetting object ID<a class="headerlink" href="#unsetting-object-id" title="Permanent link">#</a></h4>
+<p>An object's ID can be set to -1 to make it not show up on the segmentation image.</p>
+<h4 id="how-to-find-mesh-names">How to Find Mesh Names?<a class="headerlink" href="#how-to-find-mesh-names" title="Permanent link">#</a></h4>
+<p>To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for the ground in Blocks environment in right panel in the editor:</p>
+<p><img alt="record screenshot" src="images/unreal_editor_blocks.png" /></p>
+<p>If you don't know how to open Unreal Environment in Unreal Editor then try following the guide for <a href="build_windows.html">building from source</a>.</p>
+<p>Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs. There are <a href="settings.html#segmentation-settings">few settings</a> available to change object ID generation behavior.</p>
+<h4 id="changing-colors-for-object-ids">Changing Colors for Object IDs<a class="headerlink" href="#changing-colors-for-object-ids" title="Permanent link">#</a></h4>
+<p>At present the color for each object ID is fixed as in <a href="https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_palette.png">this pallet</a>. We will be adding ability to change colors for object IDs to desired values shortly. In the meantime you can open the segmentation image in your favorite image editor and get the RGB values you are interested in.</p>
+<h4 id="startup-object-ids">Startup Object IDs<a class="headerlink" href="#startup-object-ids" title="Permanent link">#</a></h4>
+<p>At the start, AirSim assigns object ID to each object found in environment of type <code>UStaticMeshComponent</code> or <code>ALandscapeProxy</code>. It then either uses mesh name or owner name (depending on settings), lower cases it, removes any chars below ASCII 97 to remove numbers and some punctuations, sums int value of all chars and modulo 255 to generate the object ID. In other words, all object with same alphabet chars would get same object ID. This heuristic is simple and effective for many Unreal environments but may not be what you want. In that case, please use above APIs to change object IDs to your desired values. There are <a href="settings.html#segmentation-settings">few settings</a> available to change this behavior.</p>
+<h4 id="getting-object-id-for-mesh">Getting Object ID for Mesh<a class="headerlink" href="#getting-object-id-for-mesh" title="Permanent link">#</a></h4>
+<p>The <code>simGetSegmentationObjectID</code> API allows you get object ID for given mesh name.</p>
+<h3 id="infrared">Infrared<a class="headerlink" href="#infrared" title="Permanent link">#</a></h3>
+<p>Currently this is just a map from object ID to grey scale 0-255. So any mesh with object ID 42 shows up with color (42, 42, 42). Please see <a href="#segmentation">segmentation section</a> for more details on how to set object IDs. Typically noise setting can be applied for this image type to get slightly more realistic effect. We are still working on adding other infrared artifacts and any contributions are welcome.</p>
+<h2 id="example-code">Example Code<a class="headerlink" href="#example-code" title="Permanent link">#</a></h2>
+<p>A complete example of setting vehicle positions at random locations and orientations and then taking images can be found in <a href="https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp">GenerateImageGenerator.hpp</a>. This example generates specified number of stereo images and ground truth disparity image and saving it to <a href="pfm.html">pfm format</a>.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="apis_cpp.html" class="btn btn-neutral float-right" title="C++ APIs">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="apis.html" class="btn btn-neutral" title="Core APIs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="apis.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="apis_cpp.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

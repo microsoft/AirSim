@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>MavLinkCom - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "MavLinkCom";
+    var mkdocs_page_input_path = "mavlinkcom.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">MavLink and PX4</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="mavlinkcom.html">MavLinkCom</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#design">Design</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinknode">MavLinkNode</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinkmessage">MavLinkMessage</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#strongly-typed-message-and-command-classes">Strongly typed message and command classes</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinkmessagebase">MavLinkMessageBase</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinkcommand">MavLinkCommand</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinkconnection">MavLinkConnection</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinkvehicle">MavLinkVehicle</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinktcpserver">MavLinkTcpServer</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinkftpclient">MavLinkFtpClient</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinkvideoclient">MavLinkVideoClient</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mavlinkvideoserver">MavLinkVideoServer</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#advanced-connections">Advanced Connections</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>MavLink and PX4 &raquo;</li>
+        
+      
+        
+          <li>External Flight Controllers &raquo;</li>
+        
+      
+    
+    <li>MavLinkCom</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/mavlinkcom.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="welcome-to-mavlinkcom">Welcome to MavLinkCom<a class="headerlink" href="#welcome-to-mavlinkcom" title="Permanent link">#</a></h1>
+<p>MavLinkCom is a cross-platform C++ library that helps connect to and communicate with <a href="https://github.com/mavlink/mavlink">MavLink</a> based vehicles.
+Specifically this library is designed to work well with <a href="https://github.com/PX4/Firmware">PX4</a> based drones.</p>
+<h2 id="design">Design<a class="headerlink" href="#design" title="Permanent link">#</a></h2>
+<p>You can view and edit the <a href="mavlinkcom_design/Design.dgml">Design.dgml</a> diagram in Visual Studio.<br />
+<img alt="Overview" src="mavlinkcom_design/images/overview.png" /></p>
+<p>The following are the most important classes in this library.</p>
+<h3 id="mavlinknode">MavLinkNode<a class="headerlink" href="#mavlinknode" title="Permanent link">#</a></h3>
+<p>This is the base class for all MavLinkNodes (subclasses include MavLinkVehicle, MavLinkVideoClient and MavLinkVideoServer).
+The node connects to your mavlink enabled vehicle via a MavLinkConnection and provides methods for sending MavLinkMessages and MavLinkCommands
+and for subscribing to receive messages.  This base class also stores the local system id and component id your app wants to use to identify
+itself to your remote vehicle.  You can also call startHeartbeat to send regular heartbeat messages to keep the connection alive.</p>
+<h3 id="mavlinkmessage">MavLinkMessage<a class="headerlink" href="#mavlinkmessage" title="Permanent link">#</a></h3>
+<p>This is the encoded MavLinkMessage.  For those who have used the mavlink.h C API, this is similar to mavlink_message_t.  You do
+not create these manually, they are encoded from a strongly typed MavLinkMessageBase subclass.</p>
+<h3 id="strongly-typed-message-and-command-classes">Strongly typed message and command classes<a class="headerlink" href="#strongly-typed-message-and-command-classes" title="Permanent link">#</a></h3>
+<p>The MavLinkComGenerator parses the mavlink common.xml message definitions and generates all the MavLink* MavLinkMessageBase subclasses
+as well as a bunch of handy mavlink enums and a bunch of strongly typed MavLinkCommand subclasses.</p>
+<h3 id="mavlinkmessagebase">MavLinkMessageBase<a class="headerlink" href="#mavlinkmessagebase" title="Permanent link">#</a></h3>
+<p>This is the base class for a set of strongly typed message classes that are code generated by the MavLinkComGenerator project.
+This replaces the C messages defined in the mavlink C API and provides a slightly more object oriented way to send and receive messages
+via sendMessage on MavLinkNode.  These classes have encode/decode methods that convert to and from the MavLinkMessage class. </p>
+<h3 id="mavlinkcommand">MavLinkCommand<a class="headerlink" href="#mavlinkcommand" title="Permanent link">#</a></h3>
+<p>This is the base class for a set of strongly typed command classes that are code generated by the MavLinkComGenerator project.
+This replaces the C definitions defined in the mavlink C API and provides a more object oriented way to send commands via the sendCommand
+method on MavLinkNode.  The MavLinkNode takes care of turning these into the underlying mavlink COMMAND_LONG message.</p>
+<h3 id="mavlinkconnection">MavLinkConnection<a class="headerlink" href="#mavlinkconnection" title="Permanent link">#</a></h3>
+<p>This class provides static helper methods for creating connections to remote MavLink nodes, over serial ports, as well as UDP, or TCP sockets.
+This class provides a way to subscribe to receive messages from that node in a pub/sub way so you can have multiple subscribers on the
+same connection.  MavLinkVehicle uses this to track various messages that define the overall vehicle state.</p>
+<h3 id="mavlinkvehicle">MavLinkVehicle<a class="headerlink" href="#mavlinkvehicle" title="Permanent link">#</a></h3>
+<p>MavLinkVehicle is a MavLinkNode that tracks various messages that define the overall vehicle state and provides a VehicleState struct
+containing a snapshot of that state, including home position, current orientation, local position, global position, and so on.
+This class also provides a bunch of helper methods that wrap commonly used commands providing simple method calls to do things like
+arm, disarm, takeoff, land, go to a local coordinate, and fly under offbaord control either by position or velocity control.</p>
+<h3 id="mavlinktcpserver">MavLinkTcpServer<a class="headerlink" href="#mavlinktcpserver" title="Permanent link">#</a></h3>
+<p>This helper class provides a way to setup a "server" that accepts MavLinkConnections from remote nodes.  You can use this class
+to get a connection that you can then give to MavLinkVideoServer to serve images over MavLink.</p>
+<h3 id="mavlinkftpclient">MavLinkFtpClient<a class="headerlink" href="#mavlinkftpclient" title="Permanent link">#</a></h3>
+<p>This helper class takes a given MavLinkConnection and provides FTP client support for the MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL
+for vehicles that support the FTP capability.  This class provides simple methods to list directory contents, and the get and put
+files.</p>
+<h3 id="mavlinkvideoclient">MavLinkVideoClient<a class="headerlink" href="#mavlinkvideoclient" title="Permanent link">#</a></h3>
+<p>This helper class takes a given MavLinkConnection and provides helper methods for requesting video from remote node and 
+packaging up the MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE and MAVLINK_MSG_ID_ENCAPSULATED_DATA messages into simple to use
+MavLinkVideoFrames.</p>
+<h3 id="mavlinkvideoserver">MavLinkVideoServer<a class="headerlink" href="#mavlinkvideoserver" title="Permanent link">#</a></h3>
+<p>This helper class takes a given MavLinkConnection and provides the server side of the MavLinkVideoClient protocol, including helper methods 
+for notifying when there is a video request to process (hasVideoRequest) and a method to send video frames (sendFrame) which 
+will generate the right MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE and MAVLINK_MSG_ID_ENCAPSULATED_DATA sequence.</p>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
+<p>The following code from the UnitTest project shows how to connect to a <a href="http://www.pixhawk.org/">Pixhawk</a> flight controller over USB serial port, 
+then wait for the first heartbeat message to be received:</p>
+<pre class="highlight"><code class="language-c++">auto connection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
+MavLinkHeartbeat heartbeat;
+if (!waitForHeartbeat(10000, heartbeat)) {
+    throw std::runtime_error("Received no heartbeat from PX4 after 10 seconds");
+}</code></pre>
+<p>The following code connects to serial port, and then forwards all messages to and from QGroundControl to that drone using another connection
+that is joined to the drone stream.
+<pre class="highlight"><code class="language-c++">auto droneConnection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
+auto proxyConnection = MavLinkConnection::connectRemoteUdp("qgc", "127.0.0.1", "127.0.0.1", 14550);
+droneConnection-&gt;join(proxyConnection);</code></pre>
+The following code then takes that connection and turns on heartBeats and starts tracking vehicle information using local
+system id 166 and component id 1.
+<pre class="highlight"><code class="language-c++">auto vehicle = std::make_shared&lt;MavLinkVehicle&gt;(166, 1);
+vehicle-&gt;connect(connection);
+vehicle-&gt;startHeartbeat();
+
+std::this_thread::sleep_for(std::chrono::seconds(5));
+
+VehicleState state = vehicle-&gt;getVehicleState();
+printf("Home position is %s, %f,%f,%f\n", state.home.is_set ? "set" : "not set", 
+    state.home.global_pos.lat, state.home.global_pos.lon, state.home.global_pos.alt);</code></pre>
+The following code uses the vehicle object to arm the drone and take off and wait for the takeoff altitude to be reached:
+<pre class="highlight"><code class="language-c++">bool rc = false;
+if (!vehicle-&gt;armDisarm(true).wait(3000, &amp;rc) || !rc) {
+    printf("arm command failed\n");
+    return;
+}
+if (!vehicle-&gt;takeoff(targetAlt).wait(3000, &amp;rc) || !rc) {
+    printf("takeoff command failed\n");
+    return;
+}
+int version = vehicle-&gt;getVehicleStateVersion();
+while (true) {
+    int newVersion = vehicle-&gt;getVehicleStateVersion();
+    if (version != newVersion) {
+        VehicleState state = vehicle-&gt;getVehicleState();
+        float alt = state.local_est.pos.z;
+        if (alt &gt;= targetAlt - delta &amp;&amp; alt &lt;= targetAlt + delta)
+        {           
+            reached = true;
+            printf("Target altitude reached\n");
+            break;
+        }
+    } else {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}</code></pre>
+The following code uses offboard control to make the drone fly in a circle with camera pointed at the center.
+Here we use the subscribe method to check each new local position message to indicate so we can compute the new 
+velocity vector as soon as that new position is received.  We request a high rate for those messages using 
+setMessageInterval to ensure smooth circular orbit.
+<pre class="highlight"><code class="language-c++">vehicle-&gt;setMessageInterval((int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED, 30);
+vehicle-&gt;requestControl();
+int subscription = vehicle-&gt;getConnection()-&gt;subscribe(
+    [&amp;](std::shared_ptr&lt;MavLinkConnection&gt; connection, const MavLinkMessage&amp; m) {
+        if (m.msgid == (int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED)
+        {
+            // convert generic msg to strongly typed message.
+            MavLinkLocalPositionNed localPos;
+            localPos.decode(msg); 
+            float x = localPos.x;
+            float y = localPos.y;
+            float dx = x - cx;
+            float dy = y - cy;
+            float angle = atan2(dy, dx);
+            if (angle &lt; 0) angle += M_PI * 2;
+            float tangent = angle + M_PI_2;
+            double newvx = orbitSpeed * cos(tangent);
+            double newvy = orbitSpeed * sin(tangent);
+            float heading = angle + M_PI;
+            vehicle-&gt;moveByLocalVelocityWithAltHold(newvx, newvy, altitude, true, heading);
+        }
+    });</code></pre>
+The following code stops flying the drone in offboard mode and tells the drone to loiter at its current location.
+This version of the code shows how to use the AsyncResult without blocking on a wait call.
+<pre class="highlight"><code class="language-c++">    vehicle-&gt;releaseControl();
+    if (vehicle-&gt;loiter().then([=](bool rc) {
+        printf("loiter command %s\n", rc ? "succeeded" : "failed");
+    }</code></pre></p>
+<p>The following code gets all configurable parameters from the drone and prints them:</p>
+<p><pre class="highlight"><code class="language-c++">    auto list = vehicle-&gt;getParamList();
+    auto end = list.end();
+    int count = 0;
+    for (auto iter = list.begin(); iter &lt; end; iter++)
+    {
+        count++;
+        MavLinkParameter p = *iter;
+        if (p.type == MAV_PARAM_TYPE_REAL32 || p.type == MAV_PARAM_TYPE_REAL64) {
+            printf("%s=%f\n", p.name.c_str(), p.value);
+        }
+        else {
+            printf("%s=%d\n", p.name.c_str(), static_cast&lt;int&gt;(p.value));
+        }
+    }</code></pre>
+The following code sets a parameter on the Pixhawk to disable the USB safety check (this is handy if you are controlling
+the Pixhawk over USB using another onboard computer that is part of the drone itself).  You should NOT do this if you
+are connecting your PC or laptop to the drone over USB.</p>
+<pre class="highlight"><code class="language-c++">    MavLinkParameter  p;
+    p.name = "CBRK_USB_CHK";
+    p.value = 197848;
+    if (!vehicle-&gt;setParameter(p).wait(3000,&amp;rc) || !rc) {
+        printf("Setting the CBRK_USB_CHK failed");
+    }</code></pre>
+<p>MavLinkVehicle actually has a helper method for this called allowFlightControlOverUsb, so now you know how it is implemented :-) </p>
+<h2 id="advanced-connections">Advanced Connections<a class="headerlink" href="#advanced-connections" title="Permanent link">#</a></h2>
+<p>You can wire up different configurations of mavlink pipelines using the MavLinkConnection class "join" method as shown below.</p>
+<p>Example 1, we connect to PX4 over serial, and proxy those messages through to QGroundControl and the LogViewer who are listening on remote ports.  </p>
+<p><img alt="Serial to QGC" src="mavlinkcom_design/images/example1.png" /></p>
+<p>Example 2: simulation can talk to jMavSim and jMavSim connects to PX4.  jMavSim can also manage multiple connections, so it can talk to unreal simulator. 
+Another MavLinkConnection can be joined to proxy connections that jMavSim doesn't support, like the LogViewer or a remote camera node.</p>
+<p><img alt="Serial to QGC" src="mavlinkcom_design/images/example2.png" /></p>
+<p>Example 3: we use MavLinkConnection to connect to PX4 over serial, then join additional connections for all our remote nodes including jMavSim.</p>
+<p><img alt="Serial to QGC" src="mavlinkcom_design/images/example3.png" /></p>
+<p>Example 4: We can also do distributed systems to control the drone remotely:</p>
+<p><img alt="Serial to QGC" src="mavlinkcom_design/images/example4.png" /></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mavlinkcom_mocap.html" class="btn btn-neutral float-right" title="MavLink MoCap">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="log_viewer.html" class="btn btn-neutral" title="MavLink LogViewer"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="log_viewer.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="mavlinkcom_mocap.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

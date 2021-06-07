@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>PX4 Multi-vehicle in SITL - AirSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "PX4 Multi-vehicle in SITL";
+    var mkdocs_page_input_path = "px4_multi_vehicle.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> AirSim</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Home</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="use_precompiled.html">Download Binaries</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_windows.html">Build on Windows</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="build_linux.html">Build on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="docker_ubuntu.html">Docker on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="azure.html">AirSim on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_custenv.html">Custom Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="Unity.html">AirSim with Unity</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_unity_environments.html">Custom Unity Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unity_api_support.html">Unity APIs</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Using AirSim</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="apis.html">Core APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="image_apis.html">Image APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="apis_cpp.html">C++ APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="api_docs/html/index.html">API Reference Docs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="dev_workflow.html">Development Workflow</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="camera_views.html">Camera Views</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="using_car.html">Car Mode</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="remote_control.html">Remote Control</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="xbox_controller.html">XBox Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="steering_wheel_installation.html">Steering Wheel</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="multi_vehicle.html">Multiple Vehicles</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="sensors.html">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lidar.html">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="distance_sensor.html">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="InfraredCamera.html">Infrared Camera</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_ros_pkgs.html">ROS: AirSim ROS Wrapper</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="airsim_tutorial_pkgs.html">ROS: AirSim Tutorial Packages</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="retexturing.html">Domain Randomization</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="meshes.html">Mesh Vertex Buffers</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="playback.html">Playing Logs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="voxel_grid.html">Voxel Grid Generator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="event_sim.html">Event camera</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Design</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="flight_controller.html">Flight Controller</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="simple_flight.html">Simple Flight</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hello_drone.html">Hello Drone</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">MavLink and PX4</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="px4_setup.html">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl.html">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_sitl_wsl2.html">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_lockstep.html">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="px4_multi_vehicle.html">PX4 Multi-vehicle in SITL</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#setting-up-multiple-instances-of-px4-software-in-loop">Setting up multiple instances of PX4 Software-in-Loop</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#starting-sitl-instances-with-px4-console">Starting SITL instances with PX4 console</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_build.html">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="px4_logging.html">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="log_viewer.html">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom.html">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="mavlinkcom_mocap.html">MavLink MoCap</a>
+                </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Upgrading</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_upgrade.html">Upgrading Unreal</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_apis.html">Upgrading APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="upgrade_settings.html">Upgrading Settings</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="reinforcement_learning.html">Reinforcement Learning</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="point_clouds.html">Building Point Clouds</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="drone_survey.html">Surveying Using Drone</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="orbit.html">Orbit Trajectory</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Misc</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="custom_drone.html">AirSim on Real Drones</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="cmake_linux.html">Installing cmake on Linux</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="hard_drive.html">Tips for Busy HDD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="pfm.html">pfm format</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_proj.html">Setting up Unreal Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="unreal_blocks.html">Blocks Environment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="who_is_using.html">Who is Using AirSim</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="working_with_plugin_contents.html">Working with UE Plugin Contents</a>
+                    </li>
+                    <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Support</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="SUPPORT.html">Support</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="create_issue.html">Create Issue</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contribute</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">AirSim</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>MavLink and PX4 &raquo;</li>
+        
+      
+        
+          <li>External Flight Controllers &raquo;</li>
+        
+      
+    
+    <li>PX4 Multi-vehicle in SITL</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/px4_multi_vehicle.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="setting-up-multi-vehicle-px4-simulation">Setting up multi-vehicle PX4 simulation<a class="headerlink" href="#setting-up-multi-vehicle-px4-simulation" title="Permanent link">#</a></h1>
+<p>The <a href="px4_sitl.html">PX4 SITL stack</a> comes with a <code>sitl_multiple_run.sh</code> shell script that runs multiple instances of the PX4 binary. This would allow the SITL stack to listen to connections from multiple AirSim vehicles on multiple TCP ports starting from 4560.
+However, the provided script does not let us view the PX4 console. If you want to run the instances manually while being able to view each instance's console (<strong>Recommended</strong>) see <a href="px4_multi_vehicle.html#starting-sitl-instances-with-px4-console">this section</a> </p>
+<h2 id="setting-up-multiple-instances-of-px4-software-in-loop">Setting up multiple instances of PX4 Software-in-Loop<a class="headerlink" href="#setting-up-multiple-instances-of-px4-software-in-loop" title="Permanent link">#</a></h2>
+<p><strong>Note</strong> you have to build PX4 with <code>make px4_sitl_default none_iris</code> as shown <a href="px4_sitl.html#setting-up-px4-software-in-loop">here</a> before trying to run multiple PX4 instances.</p>
+<ol>
+<li>
+<p>From your bash (or Cygwin) terminal go to the PX4 Firmware directory and run the <code>sitl_multiple_run.sh</code> script while specifying the number of vehicles you need
+    <pre class="highlight"><code>cd PX4-Autopilot
+./Tools/sitl_multiple_run.sh 2    # 2 here is the number of vehicles/instances </code></pre>
+    This starts multiple instances that listen to TCP ports 4560 to 4560+i where 'i' is the number of vehicles/instances specified</p>
+</li>
+<li>
+<p>You should get a confirmation message that says that old instances have been stopped and new instances have been started
+    <pre class="highlight"><code>killing running instances
+starting instance 0 in /cygdrive/c/PX4/home/PX4/Firmware/build/px4_sitl_default/instance_0
+starting instance 1 in /cygdrive/c/PX4/home/PX4/Firmware/build/px4_sitl_default/instance_1</code></pre></p>
+</li>
+<li>
+<p>Now edit <a href="settings.html">AirSim settings</a> file to make sure you have matching TCP port settings for the set number of vehicles and to make sure that both vehicles do not spawn on the same point. </p>
+<p>For example, these settings would spawn two PX4Multirotors where one of them would try to connect to PX4 SITL at port <code>4560</code> and the other at port <code>4561</code>. It also makes sure the vehicles spawn at <code>0,1,0</code> and <code>0,-1,0</code> to avoid collision:
+<pre class="highlight"><code class="language-json">{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+    "Vehicles": {
+        "Drone1": {
+            "VehicleType": "PX4Multirotor",
+            "UseSerial": false,
+            "UseTcp": true,
+            "TcpPort": 4560,
+            "ControlPortLocal": 14540,
+            "ControlPortRemote": 14580,
+            "X": 0, "Y": 1, "Z": 0
+        },
+        "Drone2": {
+            "VehicleType": "PX4Multirotor",
+            "UseSerial": false,
+            "UseTcp": true,
+            "TcpPort": 4561,
+            "ControlPortLocal": 14540,
+            "ControlPortRemote": 14580,       
+            "X": 0, "Y": -1, "Z": 0
+        }
+    }
+  }</code></pre>
+You can add more than two vehicles but you will need to make sure you adjust the TCP port for each (ie: vehicle 3's port would be <code>4562</code> and so on..) and adjust the spawn point.</p>
+</li>
+<li>
+<p>Now run your Unreal AirSim environment and it should connect to SITL PX4 via TCP.
+If you are running the instances with the <a href="px4_multi_vehicle.html#Starting-sitl-instances-with-px4-console">PX4 console visible</a>, you should see a bunch of messages from each SITL PX4 window.
+Specifically, the following messages tell you that AirSim is connected properly and GPS fusion is stable:
+    <pre class="highlight"><code>INFO  [simulator] Simulator connected on UDP port 14560
+INFO  [mavlink] partner IP: 127.0.0.1
+INFO  [ecl/EKF] EKF GPS checks passed (WGS-84 origin set)
+INFO  [ecl/EKF] EKF commencing GPS fusion</code></pre></p>
+<p>If you do not see these messages then check your port settings.</p>
+</li>
+<li>
+<p>You should also be able to use QGroundControl with SITL mode.  Make sure
+there is no Pixhawk hardware plugged in, otherwise QGroundControl will choose
+to use that instead.  Note that as we don't have a physical board, an RC cannot be connected directly to it. So the alternatives are either use XBox 360 Controller or connect your RC using USB (for example, in case of FrSky Taranis X9D Plus) or using trainer USB cable to your PC. This makes your RC look like a joystick. You will need to do extra set up in QGroundControl to use virtual joystick for RC control.  You do not need to do this unless you plan to fly a drone manually in AirSim.  Autonomous flight using the Python
+API does not require RC, see <a href="px4_sitl.html#No-Remote-Control"><code>No Remote Control</code></a>.</p>
+</li>
+</ol>
+<h2 id="starting-sitl-instances-with-px4-console">Starting SITL instances with PX4 console<a class="headerlink" href="#starting-sitl-instances-with-px4-console" title="Permanent link">#</a></h2>
+<p>If you want to start your SITL instances while being able to view the PX4 console, you will need to run the shell scripts found <a href="https://github.com/microsoft/AirSim/tree/master/PX4Scripts">here</a> rather than <code>sitl_multiple_run.sh</code>.
+Here is how you would do so:</p>
+<p><strong>Note</strong> This script also assumes PX4 is built with <code>make px4_sitl_default none_iris</code> as shown <a href="px4_sitl.html#setting-up-px4-software-in-loop">here</a> before trying to run multiple PX4 instances.</p>
+<ol>
+<li>From your bash (or Cygwin) terminal go to the PX4 directory and get the scripts (place them in a subdirectory called Scripts win the PX4 directory as shown)
+    <pre class="highlight"><code>cd PX4
+mkdir -p Scripts
+cd Scripts
+wget https://github.com/microsoft/AirSim/raw/master/PX4Scripts/sitl_kill.sh
+wget https://github.com/microsoft/AirSim/raw/master/PX4Scripts/run_airsim_sitl.sh</code></pre>
+    <strong>Note</strong> the shell scripts expect the <code>Scripts</code> and <code>Firmware</code> directories to be within the same parent directory. Also, you may need to make the scripts executable by running <code>chmod +x sitl_kill.sh</code> and <code>chmod +x run_airsim_sitl.sh</code>.</li>
+<li>
+<p>Run the <code>sitl_kill.sh</code> script to kill all active PX4 SITL instances 
+    <pre class="highlight"><code>./sitl_kill.sh</code></pre></p>
+</li>
+<li>
+<p>Run the <code>run_airsim_sitl.sh</code> script while specifying which instance you would like to run in the current terminal window (the first instance would be numbered 0)
+    <pre class="highlight"><code>./run_airsim_sitl.sh 0 # first instance = 0</code></pre></p>
+<p>You should see the PX4 instance starting and waiting for AirSim's connection as it would with a single instance.
+<pre class="highlight"><code>______  __   __    ___
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+INFO  [px4] Calling startup script: /bin/sh /cygdrive/c/PX4/home/PX4/Firmware/etc/init.d-posix/rcS 0
+INFO  [dataman] Unknown restart, data manager file './dataman' size is 11798680 bytes
+INFO  [simulator] Waiting for simulator to connect on TCP port 4560</code></pre>
+4. Open a new terminal and go to the Scripts directory and start the next instance
+<pre class="highlight"><code>cd PX4
+cd Scripts
+./run_airsim_sitl.sh 1  # ,2,3,4,..,etc</code></pre></p>
+</li>
+<li>
+<p>Repeat step 4 for as many instances as you would like to start</p>
+</li>
+<li>
+<p>Run your Unreal AirSim environment and it should connect to SITL PX4 via TCP (assuming your settings.json file has the right ports).</p>
+</li>
+</ol>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="px4_build.html" class="btn btn-neutral float-right" title="Building PX4">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="px4_lockstep.html" class="btn btn-neutral" title="PX4 Lockstep"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim/" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="px4_lockstep.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="px4_build.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
