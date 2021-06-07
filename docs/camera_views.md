@@ -12,7 +12,14 @@ Press F1 key to see keyboard shortcuts for turning on/off any or all views. You 
 
 ## Controlling Manual Camera
 
-You can switch to manual camera control by pressing the M key. While manual camera control mode is selected, you can use arrow keys to move the camera forward/back and left/right, page up/down to move up/down, W/A/S/D to control pitch up/down and yaw left/right, left shift to increase movement speed, and left control to decrease movement speed.
+You can switch to manual camera control by pressing the M key. While manual camera control mode is selected, you can use the following keys to control the camera:
+|Key|Action|
+---|---
+|Arrow keys|move the camera forward/back and left/right|
+|Page up/down|move the camera up/down|
+|W/A/S/D|control pitch up/down and yaw left/right|
+|Left shift|increase movement speed|
+|Left control|decrease movement speed|
 
 ## Configuring Sub-Windows
 
