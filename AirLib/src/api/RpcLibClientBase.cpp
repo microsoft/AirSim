@@ -138,6 +138,7 @@ __pragma(warning(disable : 4239))
 
             auto server_ver = getServerVersion();
             auto client_ver = getClientVersion();
+            //this is a test
             auto server_min_ver = getMinRequiredServerVersion();
             auto client_min_ver = getMinRequiredClientVersion();
 
