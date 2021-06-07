@@ -20,6 +20,7 @@ namespace LogViewer.Model
     class MavlinkLog : IDataLog
     {
         string file;
+        ulong startTicks = 0;
         DateTime startTime;
         TimeSpan duration;
         List<Message> data = new List<Message>();
@@ -37,7 +38,6 @@ namespace LogViewer.Model
 
         public MavlinkLog()
         {
-            MaxSize = 1000000;
         }
 
         public LogItemSchema Schema
@@ -54,13 +54,25 @@ namespace LogViewer.Model
             get { return duration; }
         }
 
+        public ulong StartTicks { get; private set; }
+
         public IEnumerable<DataValue> GetDataValues(LogItemSchema schema, DateTime startTime, TimeSpan duration)
         {
             if (schema != null)
             {
+                bool first = true;
+                ulong startTicks = 0;
+                ulong previousTicks = 0;
                 foreach (var msg in GetMessages(startTime, duration))
                 {
-                    DataValue value = GetDataValue(schema, msg);
+                    if (first)
+                    {
+                        startTicks = previousTicks = msg.Ticks;
+                        first = false;
+                    }
+
+                    previousTicks = msg.Ticks;
+                    DataValue value = GetDataValue(schema, msg, startTicks);
                     if (value != null)
                     {
                         yield return value;
@@ -69,7 +81,7 @@ namespace LogViewer.Model
             }
         }
 
-        internal DataValue GetDataValue(LogItemSchema schema, Message msg)
+        internal DataValue GetDataValue(LogItemSchema schema, Message msg, ulong startTicks)
         {
             // we support 3 levels of nesting, so schema could be the row, the column or an array item.
             LogItemSchema rowSchema = schema;
@@ -94,7 +106,8 @@ namespace LogViewer.Model
                 if (fi != null)
                 {
                     object value = fi.GetValue(row);
-                    DataValue data = new DataValue() { X = msg.Timestamp.Ticks / 10, UserData = msg }; // microseconds (Ticks are in 100 nanoseconds).
+                    double x = (double)(msg.Ticks - startTicks);
+                    DataValue data = new DataValue() { X = x, UserData = msg }; // microseconds.
                     
                     // byte array is special (we treat this like text).
                     if (value is byte[])
@@ -248,6 +261,7 @@ namespace LogViewer.Model
             private CancellationToken token;
             private bool disposed;
             private bool waiting;
+            private ulong startTicks;
             private System.Threading.Semaphore available = new System.Threading.Semaphore(0, 1);
 
             internal MavlinkQueryEnumerator(MavlinkLog log, LogItemSchema schema, CancellationToken token)
@@ -255,12 +269,13 @@ namespace LogViewer.Model
                 this.log = log;
                 this.schema = schema;
                 this.token = token;
+                this.startTicks = log.StartTicks;
                 this.log.AddQuery(this);
             }
 
             internal void Add(Message msg)
             {
-                DataValue d = this.log.GetDataValue(schema, msg);
+                DataValue d = this.log.GetDataValue(schema, msg, startTicks);
                 if (d != null)
                 {
                     next = d;
@@ -384,7 +399,7 @@ namespace LogViewer.Model
             };
 
             if (e.TypedPayload == null) {
-                Type msgType = MAVLink.MAVLINK_MESSAGE_INFO[(int)e.MsgId];
+                Type msgType = MavLinkMessage.GetMavlinkType((uint)e.MsgId);
                 if (msgType != null)
                 {
                     byte[] msgBuf = new byte[256];
@@ -405,10 +420,7 @@ namespace LogViewer.Model
             lock (data)
             {
                 this.data.Add(msg);
-                if (this.data.Count > MaxSize)
-                {
-                    this.data.RemoveAt(0);
-                }
+                
                 if (msg.TypedValue is MAVLink.mavlink_param_value_t)
                 {
                     MAVLink.mavlink_param_value_t param = (MAVLink.mavlink_param_value_t)msg.TypedValue;
@@ -431,8 +443,6 @@ namespace LogViewer.Model
             }
             return msg;
         }
-
-        public int MaxSize { get; set; }
 
         public DateTime GetTime(ulong timeMs)
         {
@@ -574,7 +584,8 @@ namespace LogViewer.Model
             this.duration = TimeSpan.Zero;
             bool first = true;
             // QT time is milliseconds from the following epoch.
-            byte[] msgBuf = new byte[256];
+            const int BUFFER_SIZE = 8000;
+            byte[] msgBuf = new byte[BUFFER_SIZE];
             GCHandle handle = GCHandle.Alloc(msgBuf, GCHandleType.Pinned);
             IntPtr ptr = handle.AddrOfPinnedObject();
             
@@ -582,36 +593,44 @@ namespace LogViewer.Model
 
             await Task.Run(() =>
             {
+                long length = 0;
                 // MAVLINK_MSG_ID
                 using (Stream s = File.OpenRead(file))
                 {
+                    length = s.Length;
                     BinaryReader reader = new BinaryReader(s);
-                    while (s.Position < s.Length)
+                    while (s.Position < length)
                     {
-                        progress.ShowProgress(0, s.Length, s.Position);
-
+                        progress.ShowProgress(0, length, s.Position);
                         try
                         {
                             MavLinkMessage header = new MavLinkMessage();
                             header.ReadHeader(reader);
 
-                            while (!header.IsValid())
-                            {
-                                // hmm. looks like a bad record, so now what?
-                                header.ShiftHeader(reader);
-                            }
-
+                            Array.Clear(msgBuf, 0, BUFFER_SIZE);
                             int read = s.Read(msgBuf, 0, header.Length);
+
                             if (read == header.Length)
                             {
+                                int id = (int)header.MsgId;
                                 header.Crc = reader.ReadUInt16();
 
-                                if (!header.IsValidCrc(msgBuf, read))
+                                bool checkCrc = true;
+                                if (id == MAVLink.mavlink_telemetry.MessageId)
+                                {
+                                    if (header.Crc == 0)  // telemetry has no crc.
+                                    {
+                                        checkCrc = false;
+                                        continue;
+                                    }                                     
+                                }
+
+                                if (checkCrc && !header.IsValidCrc(msgBuf, read))
                                 {
                                     continue;
                                 }
 
-                                Type msgType = MAVLink.MAVLINK_MESSAGE_INFO[(int)header.MsgId];
+                                Type msgType = MavLinkMessage.GetMavlinkType((uint)header.MsgId);
                                 if (msgType != null)
                                 {
                                     // convert to proper mavlink structure.
@@ -621,7 +640,8 @@ namespace LogViewer.Model
                                 Message message = AddMessage(header);
                                 if (first)
                                 {
-                                    startTime = message.Timestamp; 
+                                    startTime = message.Timestamp;
+                                    startTicks = message.Ticks;
                                     first = false;
                                 }
                             }
@@ -632,6 +652,7 @@ namespace LogViewer.Model
                         }
                     }
                 }
+                progress.ShowProgress(0, length, length);
                 handle.Free();
             });
             this.duration = lastTime - startTime;
@@ -655,33 +676,29 @@ namespace LogViewer.Model
                 name = name.Substring(7);
             }
 
-            LogItemSchema item = new LogItemSchema() { Name = name, Type = t.Name, ChildItems = new List<LogItemSchema>(), Parent = this.schema };
+            LogItemSchema item = new LogItemSchema() { Name = name, Type = t.Name };
 
             foreach (FieldInfo fi in t.GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
-                var field = new LogItemSchema() { Name = fi.Name, Type = fi.FieldType.Name, Parent = item };
-                item.ChildItems.Add(field);
+                var field = new LogItemSchema() { Name = fi.Name, Type = fi.FieldType.Name };
+                item.AddChild(field);
 
                 object value = fi.GetValue(message);
                 // byte[] array is special, we return that as binhex encoded binary data.
                 if (fi.FieldType.IsArray && fi.FieldType != typeof(byte[]))
                 {
-                    field.ChildItems = new List<Model.LogItemSchema>();
+                    field.IsArray = true;
                     Type itemType = fi.FieldType.GetElementType();
                     Array a = (Array)value;
                     for (int i = 0, n = a.Length; i < n; i++)
                     {
-                        field.ChildItems.Add(new LogItemSchema() { Name = i.ToString(), Type = itemType.Name, Parent = field });
+                        field.AddChild(new LogItemSchema() { Name = i.ToString(), Type = itemType.Name });
                     }
                 }
             }
             schemaCache[t] = item;
 
-            if (schema.ChildItems == null)
-            {
-                schema.ChildItems = new List<LogItemSchema>();
-            }
-            schema.ChildItems.Add(item);
+            schema.AddChild(item);
 
             if (SchemaChanged != null)
             {

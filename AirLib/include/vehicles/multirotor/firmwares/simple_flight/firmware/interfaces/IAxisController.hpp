@@ -6,9 +6,11 @@
 #include "IStateEstimator.hpp"
 #include "IBoardClock.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class IAxisController : public IUpdatable {
+class IAxisController : public IUpdatable
+{
 public:
     virtual void initialize(unsigned int axis, const IGoal* goal, const IStateEstimator* state_estimator) = 0;
     virtual TReal getOutput() = 0;

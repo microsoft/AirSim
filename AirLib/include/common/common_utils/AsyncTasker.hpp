@@ -7,14 +7,16 @@
 #include "ctpl_stl.h"
 #include <functional>
 
-class AsyncTasker {
+class AsyncTasker
+{
 public:
     AsyncTasker(unsigned int thread_count = 4)
-        : threads_(thread_count), error_handler_([](std::exception e) {unused(e);})
+        : threads_(thread_count), error_handler_([](std::exception e) { unused(e); })
     {
     }
 
-    void setErrorHandler(std::function<void(std::exception&)> errorHandler) {
+    void setErrorHandler(std::function<void(std::exception&)> errorHandler)
+    {
         error_handler_ = errorHandler;
     }
 
@@ -23,8 +25,7 @@ public:
         if (iterations < 1)
             return;
 
-        if (iterations == 1)
-        {
+        if (iterations == 1) {
             threads_.push([=](int i) {
                 unused(i);
                 try {
@@ -55,6 +56,5 @@ private:
     ctpl::thread_pool threads_;
     std::function<void(std::exception&)> error_handler_;
 };
-
 
 #endif

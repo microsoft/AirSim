@@ -6,11 +6,13 @@
 
 #include <cmath>
 
-namespace common_utils {
+namespace common_utils
+{
 
-class OnlineStats {
+class OnlineStats
+{
 public:
-    OnlineStats() 
+    OnlineStats()
     {
         clear();
     }
@@ -32,7 +34,7 @@ public:
         delta_n2 = delta_n * delta_n;
         term1 = delta * delta_n * n1;
         m1 += delta_n;
-        m4 += term1 * delta_n2 * (n*n - 3*n + 3) + 6 * delta_n2 * m2 - 4 * delta_n * m3;
+        m4 += term1 * delta_n2 * (n * n - 3 * n + 3) + 6 * delta_n2 * m2 - 4 * delta_n * m3;
         m3 += term1 * delta_n * (n - 2) - 3 * delta_n * m2;
         m2 += term1;
     }
@@ -49,7 +51,7 @@ public:
 
     double variance() const
     {
-        return m2/(n-1.0f);
+        return m2 / (n - 1.0f);
     }
 
     double standardDeviation() const
@@ -59,12 +61,12 @@ public:
 
     double skewness() const
     {
-        return sqrt(double(n)) * m3/ pow(m2, 1.5f);
+        return sqrt(double(n)) * m3 / pow(m2, 1.5f);
     }
 
     double kurtosis() const
     {
-        return double(n)*m4 / (m2*m2) - 3.0f;
+        return double(n) * m4 / (m2 * m2) - 3.0f;
     }
 
     OnlineStats operator+(const OnlineStats& rhs)
@@ -74,29 +76,28 @@ public:
         combined.n = this->n + rhs.n;
 
         double delta = rhs.m1 - this->m1;
-        double delta2 = delta*delta;
-        double delta3 = delta*delta2;
-        double delta4 = delta2*delta2;
+        double delta2 = delta * delta;
+        double delta3 = delta * delta2;
+        double delta4 = delta2 * delta2;
 
-        combined.m1 = (this->n*this->m1 + rhs.n*rhs.m1) / combined.n;
+        combined.m1 = (this->n * this->m1 + rhs.n * rhs.m1) / combined.n;
 
-        combined.m2 = this->m2 + rhs.m2 + 
-            delta2 * this->n * rhs.n / combined.n;
+        combined.m2 = this->m2 + rhs.m2 +
+                      delta2 * this->n * rhs.n / combined.n;
 
-        combined.m3 = this->m3 + rhs.m3 + 
-            delta3 * this->n * rhs.n * (this->n - rhs.n)/(combined.n*combined.n);
-        combined.m3 += 3.0f*delta * (this->n*rhs.m2 - rhs.n*this->m2) / combined.n;
+        combined.m3 = this->m3 + rhs.m3 +
+                      delta3 * this->n * rhs.n * (this->n - rhs.n) / (combined.n * combined.n);
+        combined.m3 += 3.0f * delta * (this->n * rhs.m2 - rhs.n * this->m2) / combined.n;
 
-        combined.m4 = this->m4 + rhs.m4 + delta4*this->n*rhs.n * (this->n*this->n - this->n*rhs.n + rhs.n*rhs.n) / 
-            (combined.n*combined.n*combined.n);
-        combined.m4 += 6.0f*delta2 * (this->n*this->n*rhs.m2 + rhs.n*rhs.n*this->m2)/(combined.n*combined.n) + 
-            4.0f*delta*(this->n*rhs.m3 - rhs.n*this->m3) / combined.n;
+        combined.m4 = this->m4 + rhs.m4 + delta4 * this->n * rhs.n * (this->n * this->n - this->n * rhs.n + rhs.n * rhs.n) / (combined.n * combined.n * combined.n);
+        combined.m4 += 6.0f * delta2 * (this->n * this->n * rhs.m2 + rhs.n * rhs.n * this->m2) / (combined.n * combined.n) +
+                       4.0f * delta * (this->n * rhs.m3 - rhs.n * this->m3) / combined.n;
 
         return combined;
     }
 
     OnlineStats& operator+=(const OnlineStats& rhs)
-    { 
+    {
         OnlineStats combined = *this + rhs;
         *this = combined;
         return *this;
@@ -108,5 +109,5 @@ private:
 
 }; //class
 
-}  //namespace
+} //namespace
 #endif

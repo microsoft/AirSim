@@ -8,60 +8,63 @@
 #include "Common.hpp"
 #include <atomic>
 
-namespace msr { namespace airlib {
+namespace msr
+{
+namespace airlib
+{
 
-class SteppableClock : public ClockBase {
-public:
-    static constexpr real_T DefaultStepSize = 20E-3f;
-
-    //Debug clock allows to advance the clock manually in arbitrary way
-    //TTimePoint is nano seconds passed since some fixed point in time
-    //step is how much we would advance the clock by default when calling step()
-    //by default we advance by 20ms
-    SteppableClock(TTimeDelta step = DefaultStepSize, TTimePoint start = 0)
-        : current_(start), step_(step)
+    class SteppableClock : public ClockBase
     {
-        start_ = current_ = start ? start : Utils::getTimeSinceEpochNanos();
-    }
+    public:
+        static constexpr real_T DefaultStepSize = 20E-3f;
 
-    virtual ~SteppableClock() {}
+        //Debug clock allows to advance the clock manually in arbitrary way
+        //TTimePoint is nano seconds passed since some fixed point in time
+        //step is how much we would advance the clock by default when calling step()
+        //by default we advance by 20ms
+        SteppableClock(TTimeDelta step = DefaultStepSize, TTimePoint start = 0)
+            : current_(start), step_(step)
+        {
+            start_ = current_ = start ? start : Utils::getTimeSinceEpochNanos();
+        }
 
-    TTimePoint stepBy(TTimeDelta amount)
-    {
-        current_ = addTo(current_, amount);
-        return current_;
-    }
+        virtual ~SteppableClock() {}
 
-    virtual TTimePoint step() override
-    {
-        ClockBase::step();
+        TTimePoint stepBy(TTimeDelta amount)
+        {
+            current_ = addTo(current_, amount);
+            return current_;
+        }
 
-        current_ = addTo(current_, step_);
-        return current_;
-    }
+        virtual TTimePoint step() override
+        {
+            ClockBase::step();
 
-    TTimeDelta getStepSize() const
-    {
-        return step_;
-    }
+            current_ = addTo(current_, step_);
+            return current_;
+        }
 
-    virtual TTimePoint nowNanos() const override
-    {
-        return current_;
-    }
+        TTimeDelta getStepSize() const
+        {
+            return step_;
+        }
 
-    virtual TTimePoint getStart() const override
-    {
-        return start_;
-    }
+        virtual TTimePoint nowNanos() const override
+        {
+            return current_;
+        }
 
+        virtual TTimePoint getStart() const override
+        {
+            return start_;
+        }
 
-private:
-    std::atomic<TTimePoint> current_;
-    std::atomic<TTimePoint> start_;
+    private:
+        std::atomic<TTimePoint> current_;
+        std::atomic<TTimePoint> start_;
 
-    TTimeDelta step_;
-};
-
-}} //namespace
+        TTimeDelta step_;
+    };
+}
+} //namespace
 #endif

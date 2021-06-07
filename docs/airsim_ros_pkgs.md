@@ -54,7 +54,7 @@ Let's look at the ROS API for both nodes:
 ### AirSim ROS Wrapper Node
 #### Publishers:
 - `/airsim_node/origin_geo_point` [airsim_ros_pkgs/GPSYaw](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GPSYaw.msg)   
-GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/docs/settings/) file under the `OriginGeopoint` key. 
+GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/settings/) file under the `OriginGeopoint` key. 
   
 - `/airsim_node/VEHICLE_NAME/global_gps` [sensor_msgs/NavSatFix](https://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html)   
 This the current GPS coordinates of the drone in airsim. 
@@ -184,7 +184,7 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
   Listens to odometry published by `airsim_node`
 
 #### Publishers:
-- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](airsim_ros_pkgs/VelCmd)   
+- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/VelCmd.msg)   
   Sends velocity command to `airsim_node`
 
 ### Global params
@@ -212,7 +212,8 @@ Upon completion, you will be able to build and run the ros wrapper as in a nativ
 
 ##### WSL1 vs WSL2
 
-WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 and is therefore much preferred  for building the code in terms of speed. 
+WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 (if you use the native file system in `/home/...` rather
+than Windows mounted folders under `/mnt/...`) and is therefore much preferred for building the code in terms of speed. 
 
 Once installed, you can switch between WSL1 or WSL2 versions as you prefer.
 
@@ -222,18 +223,20 @@ Once installed, you can switch between WSL1 or WSL2 versions as you prefer.
 
 2. Congratulations, you now have a working Ubuntu subsystem under Windows, you can now go to [Ubuntu 16 / 18 instructions](#setup) and then [How to run Airsim on Windows and ROS wrapper on WSL](#how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl)!
 
-    **Note**:
+!!! note
 
     You can run XWindows applications (including SITL) by installing [VcXsrv](https://sourceforge.net/projects/vcxsrv/)  on Windows. 
     To use it find and run `XLaunch` from the Windows start menu.    
     Select `Multiple Windows` in first popup, `Start no client` in second popup, **only** `Clipboard` in third popup. Do **not** select `Native Opengl` (and if you are not able to connect select `Disable access control`).  
-    You will need to set the DISPLAY variable to point to your display: in WSL it is 127.0.0.1:0, in WSL2 it will be the ip address of the PC's network port and can be set by using the code below. Also in WSL2 you may have to disable the firewall for public networks, or create an exception in order for VcXsrv to communicate with WSL2:
+    You will need to set the DISPLAY variable to point to your display: in WSL it is `127.0.0.1:0`, in WSL2 it will be the ip address of the PC's network port and can be set by using the code below. Also in WSL2 you may have to disable the firewall for public networks, or create an exception in order for VcXsrv to communicate with WSL2:
 
     `export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0`
 
-    **tip**: If you add this line to your ~/.bashrc file you won't need to run this command again  
-    **tip**: For code editing you can install VSCode inside WSL.  
-    **Note**: Windows 10 includes "Windows Defender" virus scanner. It will slow down WSL quite a bit. Disabling it greatly improves disk performance but increases your risk to viruses so disable at your own risk. Here is one of many resources/videos that show you how to disable it: https://www.youtube.com/watch?v=FmjblGay3AM  
+!!! tip
+
+    - If you add this line to your ~/.bashrc file you won't need to run this command again  
+    - For code editing you can install VSCode inside WSL.  
+    - Windows 10 includes "Windows Defender" virus scanner. It will slow down WSL quite a bit. Disabling it greatly improves disk performance but increases your risk to viruses so disable at your own risk. Here is one of many resources/videos that show you how to disable it: [How to Disable or Enable Windows Defender on Windows 10](https://youtu.be/FmjblGay3AM)
 
 ##### File System Access between WSL and Windows10
 
@@ -253,7 +256,6 @@ From within Windows, the WSL distribution's files are located at (type in window
    `\\wsl$\Ubuntu-18.04`
    
 #### How to run Airsim on Windows and ROS wrapper on WSL
-You need to have the same setting.json content for the simulator and WSL (e.g., in each Documents\Airsim folder).
 For WSL 1 execute:  
 `export WSL_HOST_IP=127.0.0.1`  
 and for WSL 2:  

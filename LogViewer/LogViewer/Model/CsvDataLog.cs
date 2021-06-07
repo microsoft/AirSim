@@ -74,7 +74,6 @@ namespace LogViewer.Model
                             {
                                 // create the schema
                                 this.schema = new LogItemSchema() { Name = "CsvLog", Type = "Root" };
-                                List<LogItemSchema> children = new List<Model.LogItemSchema>();
                                 LogItemSchema row = null;
 
                                 foreach (String name in reader.ColumnNames)
@@ -93,31 +92,30 @@ namespace LogViewer.Model
                                         LogItemSchema group = null;
                                         if (!map.ContainsKey(key))
                                         {
-                                            group = new LogItemSchema() { Name = key, Parent = this.schema, Type = key, ChildItems = new List<LogItemSchema>() };
-                                            children.Add(group);
+                                            group = new LogItemSchema() { Name = key, Type = key };
+                                            this.schema.AddChild(group);
                                             map[key] = group;
                                         }
                                         else
                                         {
                                             group = map[key];
                                         }
-                                        var leaf = new LogItemSchema() { Name = field, Parent = group, Type = "Double" };
-                                        group.ChildItems.Add(leaf);
+                                        var leaf = new LogItemSchema() { Name = field, Type = "Double" };
+                                        group.AddChild(leaf);
                                         map[name] = leaf;
                                     }
                                     else
                                     {
                                         if (row == null)
                                         {
-                                            row = new LogItemSchema() { Name = "Other", Parent = this.schema, Type = "Other", ChildItems = new List<LogItemSchema>() };
-                                            children.Add(row);
+                                            row = new LogItemSchema() { Name = "Other", Type = "Other" };
+                                            this.schema.AddChild(row);
                                         }
-                                        var leaf = new LogItemSchema() { Name = name, Parent = row, Type = "Double" };
-                                        row.ChildItems.Add(leaf);
+                                        var leaf = new LogItemSchema() { Name = name, Type = "Double" };
+                                        row.AddChild(leaf);
                                         map[name] = leaf;
                                     }
                                 }
-                                this.schema.ChildItems = children;
                             }
 
                             if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "row")

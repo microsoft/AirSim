@@ -11,11 +11,12 @@
 #include "PidController.hpp"
 #include "common/common_utils/Utils.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class PositionController : 
-    public IAxisController,
-    public IGoal  //for internal child controller
+class PositionController : public IAxisController
+    ,
+                           public IGoal //for internal child controller
 {
 public:
     PositionController(Params* params, const IBoardClock* clock = nullptr)
@@ -34,14 +35,14 @@ public:
 
         //initialize parent PID
         pid_.reset(new PidController<float>(clock_,
-            PidConfig<float>(params_->position_pid.p[axis], params_->position_pid.i[axis], params_->position_pid.d[axis])));
+                                            PidConfig<float>(params_->position_pid.p[axis], params_->position_pid.i[axis], params_->position_pid.d[axis])));
 
         //initialize child controller
         velocity_controller_.reset(new VelocityController(params_, clock_));
         velocity_controller_->initialize(axis, this, state_estimator_);
 
         //we will be setting goal for child controller so we need these two things
-        velocity_mode_  = GoalMode::getUnknown();
+        velocity_mode_ = GoalMode::getUnknown();
         velocity_mode_[axis] = GoalModeType::VelocityWorld;
     }
 
@@ -85,7 +86,7 @@ public:
         return velocity_goal_;
     }
 
-    virtual const GoalMode& getGoalMode() const  override
+    virtual const GoalMode& getGoalMode() const override
     {
         return velocity_mode_;
     }
@@ -104,8 +105,6 @@ private:
     const IBoardClock* clock_;
     std::unique_ptr<PidController<float>> pid_;
     std::unique_ptr<VelocityController> velocity_controller_;
-
 };
-
 
 } //namespace

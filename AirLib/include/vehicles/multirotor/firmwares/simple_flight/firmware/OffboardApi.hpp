@@ -9,16 +9,16 @@
 #include "RemoteControl.hpp"
 #include "Params.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class OffboardApi : 
-    public IUpdatable,
-    public IOffboardApi {
+class OffboardApi : public IUpdatable
+    , public IOffboardApi
+{
 public:
-    OffboardApi(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs, 
-        IStateEstimator* state_estimator, ICommLink* comm_link)
-        : params_(params), rc_(params, clock, board_inputs, &vehicle_state_, state_estimator, comm_link), 
-          state_estimator_(state_estimator), comm_link_(comm_link), clock_(clock), landed_(true)
+    OffboardApi(const Params* params, const IBoardClock* clock, const IBoardInputPins* board_inputs,
+                IStateEstimator* state_estimator, ICommLink* comm_link)
+        : params_(params), rc_(params, clock, board_inputs, &vehicle_state_, state_estimator, comm_link), state_estimator_(state_estimator), comm_link_(comm_link), clock_(clock), landed_(true)
     {
     }
 
@@ -28,7 +28,7 @@ public:
 
         vehicle_state_.setState(params_->default_vehicle_state, state_estimator_->getGeoPoint());
         rc_.reset();
-        has_api_control_ = false; 
+        has_api_control_ = false;
         landed_ = true;
         takenoff_ = false;
         goal_timestamp_ = clock_->millis();
@@ -54,7 +54,6 @@ public:
 
                 //do not update goal_timestamp_
             }
-
         }
         //else leave the goal set by IOffboardApi API
 
@@ -73,7 +72,7 @@ public:
     {
         return goal_mode_;
     }
-    
+
     virtual bool canRequestApiControl(std::string& message) override
     {
         if (rc_.allowApiControl())
@@ -99,7 +98,8 @@ public:
             comm_link_->log("requestApiControl was successful", ICommLink::kLogLevelInfo);
 
             return true;
-        } else {
+        }
+        else {
             comm_link_->log("requestApiControl failed", ICommLink::kLogLevelError);
             return false;
         }
@@ -119,12 +119,12 @@ public:
             goal_timestamp_ = clock_->millis();
             is_api_timedout_ = false;
             return true;
-        } else {
+        }
+        else {
             message = "requestApiControl() must be called before using API control";
             comm_link_->log(message, ICommLink::kLogLevelError);
             return false;
         }
-
     }
 
     virtual bool arm(std::string& message) override
@@ -135,9 +135,7 @@ public:
                 comm_link_->log(message, ICommLink::kLogLevelInfo);
                 return true;
             }
-            else if ((vehicle_state_.getState() == VehicleStateType::Inactive
-                || vehicle_state_.getState() == VehicleStateType::Disarmed
-                || vehicle_state_.getState() == VehicleStateType::BeingDisarmed)) {
+            else if ((vehicle_state_.getState() == VehicleStateType::Inactive || vehicle_state_.getState() == VehicleStateType::Disarmed || vehicle_state_.getState() == VehicleStateType::BeingDisarmed)) {
 
                 vehicle_state_.setState(VehicleStateType::Armed, state_estimator_->getHomeGeoPoint());
                 goal_ = Axis4r(0, 0, 0, params_->rc.min_angling_throttle);
@@ -158,14 +156,11 @@ public:
             comm_link_->log(message, ICommLink::kLogLevelError);
             return false;
         }
-
     }
 
     virtual bool disarm(std::string& message) override
     {
-        if (has_api_control_ && (vehicle_state_.getState() == VehicleStateType::Active
-            || vehicle_state_.getState() == VehicleStateType::Armed
-            || vehicle_state_.getState() == VehicleStateType::BeingArmed)) {
+        if (has_api_control_ && (vehicle_state_.getState() == VehicleStateType::Active || vehicle_state_.getState() == VehicleStateType::Armed || vehicle_state_.getState() == VehicleStateType::BeingArmed)) {
 
             vehicle_state_.setState(VehicleStateType::Disarmed);
             goal_ = Axis4r(0, 0, 0, 0);
@@ -196,7 +191,7 @@ public:
     {
         return state_estimator_->getHomeGeoPoint();
     }
-    
+
     virtual GeoPoint getGeoPoint() const override
     {
         return state_estimator_->getGeoPoint();
@@ -214,11 +209,11 @@ private:
         goal_mode_ = rc_.getGoalMode();
     }
 
-    void detectLanding() {
+    void detectLanding()
+    {
 
         // if we are not trying to move by setting motor outputs
-        if (takenoff_)
-        {
+        if (takenoff_) {
             //if (!isGreaterThanArmedThrottle(goal_.throttle())) {
             float checkThrottle = rc_.getMotorOutput();
             if (!isGreaterThanArmedThrottle(checkThrottle)) {
@@ -238,23 +233,23 @@ private:
     void detectTakingOff()
     {
         // if we are not trying to move by setting motor outputs
-        if (!takenoff_)
-        {
+        if (!takenoff_) {
             float checkThrottle = rc_.getMotorOutput();
-            //TODO: better handling of landed & takenoff states 
+            //TODO: better handling of landed & takenoff states
             if (isGreaterThanArmedThrottle(checkThrottle) &&
-              std::abs(state_estimator_->getLinearVelocity().z()) > 0.01f) {
+                std::abs(state_estimator_->getLinearVelocity().z()) > 0.01f) {
                 takenoff_ = true;
                 landed_ = false;
             }
-
         }
     }
 
-    bool isAlmostZero(float v) {
+    bool isAlmostZero(float v)
+    {
         return std::abs(v) < kMovementTolerance;
     }
-    bool isGreaterThanArmedThrottle(float throttle) {
+    bool isGreaterThanArmedThrottle(float throttle)
+    {
         return throttle > params_->min_armed_throttle();
     }
 
@@ -267,7 +262,7 @@ private:
     const IBoardClock* clock_;
 
     VehicleState vehicle_state_;
-    
+
     Axis4r goal_;
     GoalMode goal_mode_;
     uint64_t goal_timestamp_;
@@ -276,6 +271,5 @@ private:
     bool is_api_timedout_;
     bool landed_, takenoff_;
 };
-
 
 } //namespace
