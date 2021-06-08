@@ -316,6 +316,69 @@ void PawnSimApi::reportState(msr::airlib::StateReporter& reporter)
     reporter.writeValue("unreal pos", Vector3r(unrealPosition.X, unrealPosition.Y, unrealPosition.Z));
 }
 
+void PawnSimApi::addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, mesh_name]() {
+        const APIPCamera* camera = getCamera(camera_name);
+        UDetectionComponent* detection_comp = camera->getDetectionComponent(image_type, false);
+
+        FString name = FString(mesh_name.c_str());
+
+        if (!detection_comp->object_filter_.wildcard_mesh_names_.Contains(name)) {
+            detection_comp->object_filter_.wildcard_mesh_names_.Add(name);
+        }
+    },
+                                             true);
+}
+
+void PawnSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type]() {
+        const APIPCamera* camera = getCamera(camera_name);
+        camera->getDetectionComponent(image_type, false)->object_filter_.wildcard_mesh_names_.Empty();
+    },
+                                             true);
+}
+
+void PawnSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, radius_cm]() {
+        const APIPCamera* camera = getCamera(camera_name);
+        camera->getDetectionComponent(image_type, false)->max_distance_to_camera_ = radius_cm;
+    },
+                                             true);
+}
+
+std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
+{
+    std::vector<msr::airlib::DetectionInfo> result;
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, image_type, &result]() {
+        const APIPCamera* camera = getCamera(camera_name);
+        const TArray<FDetectionInfo>& detections = camera->getDetectionComponent(image_type, false)->getDetections();
+        result.resize(detections.Num());
+
+        for (int i = 0; i < detections.Num(); i++) {
+            result[i].name = std::string(TCHAR_TO_UTF8(*(detections[i].Actor->GetFName().ToString())));
+
+            Vector3r nedWrtOrigin = ned_transform_.toGlobalNed(detections[i].Actor->GetActorLocation());
+            result[i].geo_point = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
+                                                                         AirSimSettings::singleton().origin_geopoint);
+
+            result[i].box2D.min = Vector2r(detections[i].Box2D.Min.X, detections[i].Box2D.Min.Y);
+            result[i].box2D.max = Vector2r(detections[i].Box2D.Max.X, detections[i].Box2D.Max.Y);
+
+            result[i].box3D.min = ned_transform_.toLocalNed(detections[i].Box3D.Min);
+            result[i].box3D.max = ned_transform_.toLocalNed(detections[i].Box3D.Max);
+
+            result[i].relative_pose = toPose(detections[i].RelativeTransform.GetTranslation(), detections[i].RelativeTransform.GetRotation());
+        }
+    },
+                                             true);
+
+    return result;
+}
+
 //void playBack()
 //{
 //if (params_.pawn->GetRootPrimitiveComponent()->IsAnySimulatingPhysics()) {

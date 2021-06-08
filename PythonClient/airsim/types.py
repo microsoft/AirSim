@@ -72,6 +72,14 @@ class WeatherParameter:
     Fog = 7
     Enabled = 8
 
+class Vector2r(MsgpackMixin):
+    x_val = 0.0
+    y_val = 0.0
+
+    def __init__(self, x_val = 0.0, y_val = 0.0):
+        self.x_val = x_val
+        self.y_val = y_val
+
 class Vector3r(MsgpackMixin):
     x_val = 0.0
     y_val = 0.0
@@ -443,6 +451,21 @@ class DistanceSensorData(MsgpackMixin):
     max_distance = 0.0
     relative_pose = Pose()
 
+class Box2D(MsgpackMixin):
+    min = Vector2r()
+    max = Vector2r()
+
+class Box3D(MsgpackMixin):
+    min = Vector3r()
+    max = Vector3r()
+
+class DetectionInfo(MsgpackMixin):
+    name = ''
+    geo_point = GeoPoint()
+    box2D = Box2D()
+    box3D = Box3D()
+    relative_pose = Pose()
+    
 class PIDGains():
     """
     Struct to store values of PID gains. Used to transmit controller gain values while instantiating

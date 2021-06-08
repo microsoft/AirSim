@@ -25,6 +25,7 @@ class PawnSimApi : public msr::airlib::VehicleSimApiBase
 {
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
+    typedef msr::airlib::Vector2r Vector2r;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Pose Pose;
     typedef msr::airlib::Quaternionr Quaternionr;
@@ -34,6 +35,7 @@ public: //types
     typedef msr::airlib::Utils Utils;
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
+    typedef msr::airlib::DetectionInfo DetectionInfo;
 
     struct Params
     {
@@ -99,6 +101,11 @@ public: //implementation of VehicleSimApiBase
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
     virtual std::string getRecordFileLine(bool is_header_line) const override;
     virtual void reportState(msr::airlib::StateReporter& reporter) override;
+
+    virtual void addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name) override;
+    virtual void setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm) override;
+    virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type) override;
+    virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
 
 protected: //additional interface for derived class
     virtual void pawnTick(float dt);
