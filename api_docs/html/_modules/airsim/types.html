@@ -229,6 +229,14 @@
     <span class="n">Fog</span> <span class="o">=</span> <span class="mi">7</span>
     <span class="n">Enabled</span> <span class="o">=</span> <span class="mi">8</span></div>
 
+<div class="viewcode-block" id="Vector2r"><a class="viewcode-back" href="../../index.html#airsim.types.Vector2r">[docs]</a><span class="k">class</span> <span class="nc">Vector2r</span><span class="p">(</span><span class="n">MsgpackMixin</span><span class="p">):</span>
+    <span class="n">x_val</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">y_val</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_val</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_val</span> <span class="o">=</span> <span class="n">x_val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_val</span> <span class="o">=</span> <span class="n">y_val</span></div>
+
 <div class="viewcode-block" id="Vector3r"><a class="viewcode-back" href="../../index.html#airsim.types.Vector3r">[docs]</a><span class="k">class</span> <span class="nc">Vector3r</span><span class="p">(</span><span class="n">MsgpackMixin</span><span class="p">):</span>
     <span class="n">x_val</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">y_val</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -600,6 +608,21 @@
     <span class="n">max_distance</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">relative_pose</span> <span class="o">=</span> <span class="n">Pose</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="Box2D"><a class="viewcode-back" href="../../index.html#airsim.types.Box2D">[docs]</a><span class="k">class</span> <span class="nc">Box2D</span><span class="p">(</span><span class="n">MsgpackMixin</span><span class="p">):</span>
+    <span class="nb">min</span> <span class="o">=</span> <span class="n">Vector2r</span><span class="p">()</span>
+    <span class="nb">max</span> <span class="o">=</span> <span class="n">Vector2r</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Box3D"><a class="viewcode-back" href="../../index.html#airsim.types.Box3D">[docs]</a><span class="k">class</span> <span class="nc">Box3D</span><span class="p">(</span><span class="n">MsgpackMixin</span><span class="p">):</span>
+    <span class="nb">min</span> <span class="o">=</span> <span class="n">Vector3r</span><span class="p">()</span>
+    <span class="nb">max</span> <span class="o">=</span> <span class="n">Vector3r</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DetectionInfo"><a class="viewcode-back" href="../../index.html#airsim.types.DetectionInfo">[docs]</a><span class="k">class</span> <span class="nc">DetectionInfo</span><span class="p">(</span><span class="n">MsgpackMixin</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">geo_point</span> <span class="o">=</span> <span class="n">GeoPoint</span><span class="p">()</span>
+    <span class="n">box2D</span> <span class="o">=</span> <span class="n">Box2D</span><span class="p">()</span>
+    <span class="n">box3D</span> <span class="o">=</span> <span class="n">Box3D</span><span class="p">()</span>
+    <span class="n">relative_pose</span> <span class="o">=</span> <span class="n">Pose</span><span class="p">()</span></div>
+    
 <div class="viewcode-block" id="PIDGains"><a class="viewcode-back" href="../../index.html#airsim.types.PIDGains">[docs]</a><span class="k">class</span> <span class="nc">PIDGains</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Struct to store values of PID gains. Used to transmit controller gain values while instantiating</span>
