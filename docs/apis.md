@@ -152,7 +152,7 @@ Other parameters are same as in [settings](settings.md#timeofday).
 
 ### Line-of-sight and world extent APIs
 To test line-of-sight in the sim from a vehicle to a point or between two points, see simTestLineOfSightToPoint(lat, lon, alt, vehicle_name) and simTestLineOfSightBetweenPoints(lat1, lon1, alt1, lat2, lon2, alt2), respectively.
-Sim world extent, in the form of a vector of two GeoPoints, can be retrieved using getWorldExtents().
+Sim world extent, in the form of a vector of two GeoPoints, can be retrieved using simGetWorldExtents().
 
 ### Weather APIs
 By default all weather effects are disabled. To enable weather effect, first call:

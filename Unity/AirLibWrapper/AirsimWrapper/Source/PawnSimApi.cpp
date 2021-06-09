@@ -103,6 +103,39 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
     return std::vector<DetectionInfo>();
 }
 
+bool PawnSimApi::testLineOfSightToPoint(msr::airlib::GeoPoint& point) const
+{
+    unused(point);
+
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "testLineOfSightToPoint is not supported on unity")
+                                    .c_str());
+
+    return false;
+}
+
+bool PawnSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& point1, msr::airlib::GeoPoint& point2) const
+{
+    unused(point1);
+    unused(point2);
+
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "testLineOfSightBetweenPoints is not supported on unity")
+                                    .c_str());
+
+    return false;
+}
+
+void PawnSimApi::getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const
+{
+    unused(min);
+    unused(max);
+
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "getWorldExtents is not supported on unity")
+                                    .c_str());
+}
+
 void PawnSimApi::OnCollision(msr::airlib::CollisionInfo collisionInfo)
 {
     state_.collision_info.has_collided = collisionInfo.has_collided;

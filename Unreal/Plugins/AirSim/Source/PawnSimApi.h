@@ -122,11 +122,11 @@ public: //Unreal specific methods
     APIPCamera* getCamera(const std::string& camera_name);
     int getCameraCount();
 
-    virtual bool testLineOfSightToPoint(GeoPoint &point) const;
-    virtual bool testLineOfSightBetweenPoints(GeoPoint &point1, GeoPoint &point2) const;
-    virtual void getWorldExtents(msr::airlib::GeoPoint &min, msr::airlib::GeoPoint &max) const;
+    virtual bool testLineOfSightToPoint(GeoPoint& point) const;
+    virtual bool testLineOfSightBetweenPoints(GeoPoint& point1, GeoPoint& point2) const;
+    virtual void getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const;
 
-	//if enabled, this would show some flares
+    //if enabled, this would show some flares
     void displayCollisionEffect(FVector hit_location, const FHitResult& hit);
 
     //return the attached pawn

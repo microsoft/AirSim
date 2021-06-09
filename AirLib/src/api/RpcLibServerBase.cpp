@@ -152,7 +152,7 @@ namespace airlib
         pimpl_->server.bind("simGetImage", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name) -> vector<uint8_t> {
             return getVehicleSimApi(vehicle_name)->getImage(camera_name, type);
         });
-        
+
         pimpl_->server.bind("simTestLineOfSightToPoint", [&](double lat, double lon, float alt, const std::string& vehicle_name) -> bool {
             GeoPoint point(lat, lon, alt);
 
