@@ -166,13 +166,13 @@ namespace airlib
             return getVehicleSimApi("")->testLineOfSightBetweenPoints(point1, point2);
         });
 
-        pimpl_->server.bind("simGetWorldExtents", [&]() -> vector<RpcLibAdapatorsBase::GeoPoint> {
+        pimpl_->server.bind("simGetWorldExtents", [&]() -> vector<RpcLibAdaptorsBase::GeoPoint> {
             msr::airlib::GeoPoint min;
             msr::airlib::GeoPoint max;
             getVehicleSimApi("")->getWorldExtents(min, max);
-            vector<RpcLibAdapatorsBase::GeoPoint> result;
-            result.push_back(RpcLibAdapatorsBase::GeoPoint(min));
-            result.push_back(RpcLibAdapatorsBase::GeoPoint(max));
+            vector<RpcLibAdaptorsBase::GeoPoint> result;
+            result.push_back(RpcLibAdaptorsBase::GeoPoint(min));
+            result.push_back(RpcLibAdaptorsBase::GeoPoint(max));
 
             return result;
         });

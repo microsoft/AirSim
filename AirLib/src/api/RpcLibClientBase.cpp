@@ -283,7 +283,7 @@ __pragma(warning(disable : 4239))
 
         vector<msr::airlib::GeoPoint> RpcLibClientBase::simGetWorldExtents()
         {
-            vector<RpcLibAdapatorsBase::GeoPoint> raw_result = pimpl_->client.call("simGetWorldExtents").as<vector<RpcLibAdapatorsBase::GeoPoint>>();
+            vector<RpcLibAdaptorsBase::GeoPoint> raw_result = pimpl_->client.call("simGetWorldExtents").as<vector<RpcLibAdaptorsBase::GeoPoint>>();
             vector<msr::airlib::GeoPoint> final_result;
 
             // Convert

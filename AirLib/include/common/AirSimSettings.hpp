@@ -684,9 +684,6 @@ namespace airlib
                     }
                 }
             }
-            if (recording_setting.requests.size() == 0)
-                recording_setting.requests.push_back(msr::airlib::ImageCaptureBase::ImageRequest(
-                    "", ImageType::Scene, false, true));
         }
 
         static void initializeCaptureSettings(std::map<int, CaptureSetting>& capture_settings)
