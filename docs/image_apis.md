@@ -25,14 +25,13 @@ png_image = client.simGetImage("0", airsim.ImageType.Scene)
 
 int getOneImage() 
 {
-    using namespace std;
     using namespace msr::airlib;
     
-    //for car use CarRpcLibClient
-    msr::airlib::MultirotorRpcLibClient client;
+    // for car use CarRpcLibClient
+    MultirotorRpcLibClient client;
 
-    vector<uint8_t> png_image = client.simGetImage("0", VehicleCameraBase::ImageType::Scene);
-    //do something with images
+    std::vector<uint8_t> png_image = client.simGetImage("0", VehicleCameraBase::ImageType::Scene);
+    // do something with images
 }
 ```
 
@@ -54,7 +53,7 @@ responses = client.simGetImages([
     # uncompressed RGB array bytes
     airsim.ImageRequest(1, airsim.ImageType.Scene, False, False),
     # floating point uncompressed image
-    airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
+    airsim.ImageRequest(1, airsim.ImageType.DepthPlanar, True)])
  
  # do something with response which contains image data, pose, timestamp etc
 ```
@@ -64,7 +63,7 @@ responses = client.simGetImages([
 If you plan to use numpy for image manipulation, you should get uncompressed RGB image and then convert to numpy like this:
 
 ```python
-responses = client.simGetImages([ImageRequest("0", airsim.ImageType.Scene, False, False)])
+responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
 response = responses[0]
 
 # get numpy array
@@ -89,34 +88,35 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb)
     ```
     You can also save float array to .pfm file (Portable Float Map format) using `airsim.write_pfm()` function.
 
+- If you are looking to query position and orientation information in sync with a call to one of the image APIs, you can use `client.simPause(True)` and `client.simPause(False)` to pause the simulation while calling the image API and querying the desired physics state, ensuring that the physics state remains the same immediately after the image API call.
+
 ### C++
 
 ```cpp
 int getStereoAndDepthImages() 
 {
-    using namespace std;
     using namespace msr::airlib;
     
     typedef VehicleCameraBase::ImageRequest ImageRequest;
     typedef VehicleCameraBase::ImageResponse ImageResponse;
     typedef VehicleCameraBase::ImageType ImageType;
 
-    //for car use
-    //msr::airlib::CarRpcLibClient client;
-    msr::airlib::MultirotorRpcLibClient client;
+    // for car use
+    // CarRpcLibClient client;
+    MultirotorRpcLibClient client;
 
-    //get right, left and depth images. First two as png, second as float16.
-    vector<ImageRequest> request = { 
+    // get right, left and depth images. First two as png, second as float16.
+    std::vector<ImageRequest> request = { 
         //png format
         ImageRequest("0", ImageType::Scene),
         //uncompressed RGB array bytes
         ImageRequest("1", ImageType::Scene, false, false),       
         //floating point uncompressed image  
-        ImageRequest("1", ImageType::DepthPlanner, true) 
+        ImageRequest("1", ImageType::DepthPlanar, true) 
     };
 
-    const vector<ImageResponse>& response = client.simGetImages(request);
-    //do something with response which contains image data, pose, timestamp etc
+    const std::vector<ImageResponse>& response = client.simGetImages(request);
+    // do something with response which contains image data, pose, timestamp etc
 }
 ```
 
@@ -145,7 +145,7 @@ Before AirSim v1.2, cameras were accessed using ID numbers instead of names. For
 
 ## "Computer Vision" Mode
 
-You can use AirSim in so-called "Computer Vision" mode. In this mode, physics engine is disabled and there is no vehicle, just cameras. You can move around using keyboard (use F1 to see help on keys). You can press Record button to continuously generate images. Or you can call APIs to move cameras around and take images.
+You can use AirSim in so-called "Computer Vision" mode. In this mode, physics engine is disabled and there is no vehicle, just cameras (If you want to have the vehicle but without its kinematics, you can use the Multirotor mode with the Physics Engine [ExternalPhysicsEngine](settings.md##physicsenginename)). You can move around using keyboard (use F1 to see help on keys). You can press Record button to continuously generate images. Or you can call APIs to move cameras around and take images.
 
 To active this mode, edit [settings.json](settings.md) that you can find in your `Documents\AirSim` folder (or `~/Documents/AirSim` on Linux) and make sure following values exist at root level:
 
@@ -166,9 +166,10 @@ To move around the environment using APIs you can use `simSetVehiclePose` API. T
 ## Camera APIs
 The `simGetCameraInfo` returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see [example usage](https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py).
 
-The `simSetCameraOrientation` sets the orientation for the specified camera as quaternion in NED frame. The handy `airsim.to_quaternion()` function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch, you can use:
+The `simSetCameraPose` sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy `airsim.to_quaternion()` function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:
 ```
-client.simSetCameraOrientation(0, airsim.to_quaternion(0.261799, 0, 0)); #radians
+camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #PRY in radians
+client.simSetCameraPose(0, camera_pose);
 ```
 
 ### Gimbal
@@ -202,7 +203,7 @@ To change resolution, FOV etc, you can use [settings.json](settings.md). For exa
 ### Available ImageType Values
 ```cpp
   Scene = 0, 
-  DepthPlanner = 1, 
+  DepthPlanar = 1, 
   DepthPerspective = 2,
   DepthVis = 3, 
   DisparityNormalized = 4,
@@ -211,8 +212,8 @@ To change resolution, FOV etc, you can use [settings.json](settings.md). For exa
   Infrared = 7
 ```                
 
-### DepthPlanner and DepthPerspective
-You normally want to retrieve the depth image as float (i.e. set `pixels_as_float = true`) and specify `ImageType = DepthPlanner` or `ImageType = DepthPerspective` in `ImageRequest`. For `ImageType = DepthPlanner`, you get depth in camera plan, i.e., all points that are in plan parallel to camera have same depth. For `ImageType = DepthPerspective`, you get depth from camera using a projection ray that hits that pixel. Depending on your use case, planner depth or perspective depth may be the ground truth image that you want. For example, you may be able to feed perspective depth to ROS package such as `depth_image_proc` to generate a point cloud. Or planner depth may be more compatible with estimated depth image generated by stereo algorithms such as SGM.
+### DepthPlanar and DepthPerspective
+You normally want to retrieve the depth image as float (i.e. set `pixels_as_float = true`) and specify `ImageType = DepthPlanar` or `ImageType = DepthPerspective` in `ImageRequest`. For `ImageType = DepthPlanar`, you get depth in camera plane, i.e., all points that are plane-parallel to the camera have same depth. For `ImageType = DepthPerspective`, you get depth from camera using a projection ray that hits that pixel. Depending on your use case, planner depth or perspective depth may be the ground truth image that you want. For example, you may be able to feed perspective depth to ROS package such as `depth_image_proc` to generate a point cloud. Or planner depth may be more compatible with estimated depth image generated by stereo algorithms such as SGM.
 
 ### DepthVis
 When you specify `ImageType = DepthVis` in `ImageRequest`, you get an image that helps depth visualization. In this case, each pixel value is interpolated from black to white depending on depth in camera plane in meters. The pixels with pure white means depth of 100m or more while pure black means depth of 0 meters.
@@ -221,7 +222,7 @@ When you specify `ImageType = DepthVis` in `ImageRequest`, you get an image that
 You normally want to retrieve disparity image as float (i.e. set `pixels_as_float = true` and specify `ImageType = DisparityNormalized` in `ImageRequest`) in which case each pixel is `(Xl - Xr)/Xmax`, which is thereby normalized to values between 0 to 1.
 
 ### Segmentation
-When you specify `ImageType = Segmentation` in `ImageRequest`, you get an image that gives you ground truth segmentation of the scene. At the startup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is than mapped to a specific color in [the pallet](https://github.com/Microsoft/AirSim/tree/master/Unreal//Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). The RGB values for each object ID can be found in [this file](seg_rgbs.txt).
+When you specify `ImageType = Segmentation` in `ImageRequest`, you get an image that gives you ground truth segmentation of the scene. At the startup, AirSim assigns value 0 to 255 to each mesh available in environment. This value is then mapped to a specific color in [the pallet](https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_palette.png). The RGB values for each object ID can be found in [this file](seg_rgbs.txt).
 
 You can assign a specific value (limited to the range 0-255) to a specific mesh using APIs. For example, below Python code sets the object ID for the mesh called "Ground" to 20 in Blocks environment and hence changes its color in Segmentation view:
 
@@ -258,7 +259,7 @@ A complete ready-to-run example can be found in [segmentation.py](https://github
 An object's ID can be set to -1 to make it not show up on the segmentation image.
 
 #### How to Find Mesh Names?
-To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for he ground in Blocks environment in right panel in the editor:
+To get desired ground truth segmentation you will need to know the names of the meshes in your Unreal environment. To do this, you will need to open up Unreal Environment in Unreal Editor and then inspect the names of the meshes you are interested in using the World Outliner. For example, below we see the mesh names for the ground in Blocks environment in right panel in the editor:
 
 ![record screenshot](images/unreal_editor_blocks.png)
 
@@ -267,7 +268,7 @@ If you don't know how to open Unreal Environment in Unreal Editor then try follo
 Once you decide on the meshes you are interested, note down their names and use above API to set their object IDs. There are [few settings](settings.md#segmentation-settings) available to change object ID generation behavior.
 
 #### Changing Colors for Object IDs
-At present the color for each object ID is fixed as in [this palate](https://github.com/Microsoft/AirSim/tree/master/Unreal//Plugins/AirSim/Content/HUDAssets/seg_color_pallet.png). We will be adding ability to change colors for object IDs to desired values shortly. In the meantime you can open the segmentation image in your favorite image editor and get the RGB values you are interested in.
+At present the color for each object ID is fixed as in [this pallet](https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Content/HUDAssets/seg_color_palette.png). We will be adding ability to change colors for object IDs to desired values shortly. In the meantime you can open the segmentation image in your favorite image editor and get the RGB values you are interested in.
 
 #### Startup Object IDs
 At the start, AirSim assigns object ID to each object found in environment of type `UStaticMeshComponent` or `ALandscapeProxy`. It then either uses mesh name or owner name (depending on settings), lower cases it, removes any chars below ASCII 97 to remove numbers and some punctuations, sums int value of all chars and modulo 255 to generate the object ID. In other words, all object with same alphabet chars would get same object ID. This heuristic is simple and effective for many Unreal environments but may not be what you want. In that case, please use above APIs to change object IDs to your desired values. There are [few settings](settings.md#segmentation-settings) available to change this behavior.

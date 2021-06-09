@@ -12,31 +12,35 @@ MavLinkConnection::MavLinkConnection()
     pImpl.reset(new MavLinkConnectionImpl());
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnection::connectSerial(const std::string& nodeName, const std::string& portName, int baudrate, const std::string& initString)
+std::shared_ptr<MavLinkConnection> MavLinkConnection::connectSerial(const std::string& nodeName, const std::string& portName, int baudrate, const std::string& initString)
 {
     return MavLinkConnectionImpl::connectSerial(nodeName, portName, baudrate, initString);
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnection::connectLocalUdp(const std::string& nodeName, const std::string& localAddr, int localPort)
+std::shared_ptr<MavLinkConnection> MavLinkConnection::connectLocalUdp(const std::string& nodeName, const std::string& localAddr, int localPort)
 {
     return MavLinkConnectionImpl::connectLocalUdp(nodeName, localAddr, localPort);
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnection::connectRemoteUdp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteAddr, int remotePort)
+std::shared_ptr<MavLinkConnection> MavLinkConnection::connectRemoteUdp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteAddr, int remotePort)
 {
     return MavLinkConnectionImpl::connectRemoteUdp(nodeName, localAddr, remoteAddr, remotePort);
 }
 
-std::shared_ptr<MavLinkConnection>  MavLinkConnection::connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort)
+std::shared_ptr<MavLinkConnection> MavLinkConnection::connectTcp(const std::string& nodeName, const std::string& localAddr, const std::string& remoteIpAddr, int remotePort)
 {
     return MavLinkConnectionImpl::connectTcp(nodeName, localAddr, remoteIpAddr, remotePort);
+}
+
+std::string MavLinkConnection::acceptTcp(const std::string& nodeName, const std::string& localAddr, int listeningPort)
+{
+    return pImpl->acceptTcp(shared_from_this(), nodeName, localAddr, listeningPort);
 }
 
 void MavLinkConnection::startListening(const std::string& nodeName, std::shared_ptr<Port> connectedPort)
 {
     pImpl->startListening(shared_from_this(), nodeName, connectedPort);
 }
-
 
 // log every message that is "sent" using sendMessage.
 void MavLinkConnection::startLoggingSendMessage(std::shared_ptr<MavLinkLog> log)
@@ -47,6 +51,17 @@ void MavLinkConnection::startLoggingSendMessage(std::shared_ptr<MavLinkLog> log)
 void MavLinkConnection::stopLoggingSendMessage()
 {
     pImpl->stopLoggingSendMessage();
+}
+
+// log every message that is "received"
+void MavLinkConnection::startLoggingReceiveMessage(std::shared_ptr<MavLinkLog> log)
+{
+    pImpl->startLoggingReceiveMessage(log);
+}
+
+void MavLinkConnection::stopLoggingReceiveMessage()
+{
+    pImpl->stopLoggingReceiveMessage();
 }
 
 void MavLinkConnection::close()
@@ -99,12 +114,18 @@ int MavLinkConnection::subscribe(MessageHandler handler)
     return pImpl->subscribe(handler);
 }
 
-void MavLinkConnection::unsubscribe(int id) 
+void MavLinkConnection::unsubscribe(int id)
 {
     pImpl->unsubscribe(id);
 }
 
-MavLinkConnection::~MavLinkConnection() {
+bool MavLinkConnection::isPublishThread() const
+{
+    return pImpl->isPublishThread();
+}
+
+MavLinkConnection::~MavLinkConnection()
+{
     pImpl->close();
     pImpl = nullptr;
 }
@@ -119,8 +140,6 @@ void MavLinkConnection::getTelemetry(MavLinkTelemetry& result)
 {
     pImpl->getTelemetry(result);
 }
-
-
 
 //MavLinkConnection::MavLinkConnection(MavLinkConnection&&) = default;
 //MavLinkConnection& MavLinkConnection::operator=(MavLinkConnection&&) = default;

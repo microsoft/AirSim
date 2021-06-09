@@ -4,7 +4,7 @@ Below is the guide on how to perform different development activities while work
 
 ## Development Environment
 ### OS
-We highly recommend Windows 10 and Visual Studio 2017 as your development environment. The support for other OSes and IDE is unfortunately not as mature on the Unreal Engine side and you may risk severe loss of productivity trying to do workarounds and jumping through the hoops.
+We highly recommend Windows 10 and Visual Studio 2019 as your development environment. The support for other OSes and IDE is unfortunately not as mature on the Unreal Engine side and you may risk severe loss of productivity trying to do workarounds and jumping through the hoops.
 
 ### Hardware
 We recommend GPUs such as NVidia 1080 or NVidia Titan series with powerful desktop such as one with 64GB RAM, 6+ cores, SSDs and 2-3 displays (ideally 4K). We have found HP Z840 work quite well for our needs. The development experience on high-end laptops is generally sub-par compared to powerful desktops however they might be useful in a pinch. You generally want laptops with discrete NVidia GPU (at least M2000 or better) with 64GB RAM, SSDs and hopefully 4K display. We have found models such as Lenovo P50 work well for our needs. Laptops with only integrated graphics might not work well.
@@ -20,7 +20,7 @@ The first step is accomplished by build.cmd available in AirSim root. This comma
 Below are the steps we use to make changes in AirSim and test them out. The best way to do development in AirSim code is to use [Blocks project](unreal_blocks.md). This is the light weight project so compile time is relatively faster. Generally the workflow is,
 
 ```
-REM //Use x64 Native Tools Command Prompt for VS 2017
+REM //Use x64 Native Tools Command Prompt for VS 2019
 REM //Navigate to AirSim repo folder
 
 git pull                          
@@ -36,7 +36,7 @@ After you are done with you code changes, you might want to push your changes ba
 
 
 ```
-REM //Use x64 Native Tools Command Prompt for VS 2017
+REM //Use x64 Native Tools Command Prompt for VS 2019
 REM //run this from Unreal\Environments\Blocks 
 
 update_to_git.bat
@@ -66,7 +66,7 @@ First make sure your project's .uproject file is referencing the plugin. Then ma
 You are in luck! We have `build_all_ue_projects.bat` which exactly does that. Don't treat it as black box (at least not yet), open it up and see what it does.  It has 4 variables that are being set from command line args. If these args is not supplied they are set to default values in next set of statements. You might want to change default values for the paths. This batch file builds AirSim plugin, deploys it to all listed projects (see CALL statements later in the batch file), runs packaging for those projects and puts final binaries in specified folder - all in one step! This is what we use to create our own binary releases.
 
 #### How do I contribute back to AirSim?
-Before making any changes make sure you have created your feature branch. After you test your code changes in Blocks environment, follow the [usual steps](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) to make contributions just like any other GitHub projects. If you are not familiar with Git Branch-Rebase-Merge workflow, please [read this first](http://shitalshah.com/p/git-workflow-branch-rebase-squash-merge/).
+Before making any changes make sure you have created your feature branch. After you test your code changes in Blocks environment, follow the [usual steps](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) to make contributions just like any other GitHub projects. Please use rebase and squash merge, for more information see [An introduction to Git merge and rebase: what they are, and how to use them](https://www.freecodecamp.org/news/an-introduction-to-git-merge-and-rebase-what-they-are-and-how-to-use-them-131b863785f/).
 
 
 

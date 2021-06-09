@@ -22,18 +22,28 @@ IncludeEigen()
 
 project(AirsimWrapper VERSION 0)
 
+find_package(Boost REQUIRED COMPONENTS filesystem)
+if(Boost_FOUND)
+    MESSAGE("Boost information:") 
+    MESSAGE("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}") 
+    MESSAGE("  Boost_LIBRARIES: ${Boost_LIBRARIES}") 
+    MESSAGE("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}") 
+endif()
+
+include_directories(${Boost_INCLUDE_DIRS})
+
 # RPC includes & source files
 BuildRpc()
 # MavLink source files
 BuildMavLink()
 #AirLib source files
-BuildAirlib()
+BuildAirLib()
 #AirsimWrapper source files
 BuildAirsimWrapper()
 
 
 ###################### Link source files to library ######################################
-if (${MACOSX})
+if (${APPLE})
 	add_library(
 	    ${PROJECT_NAME} MODULE
 	    ${RPC_LIBRARY_SOURCE_FILES}
@@ -53,7 +63,7 @@ else ()
     )
 endif ()
 
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}  -lstdc++ -lpthread -lboost_filesystem)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}  -lstdc++ -lpthread ${Boost_LIBRARIES})
 
 
 

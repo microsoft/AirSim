@@ -1,0 +1,4 @@
+string[] vehicle_names
+bool waitOnLastTask 
+---
+bool success

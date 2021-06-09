@@ -6,8 +6,6 @@ using System.IO;
 
 public class AirSim : ModuleRules
 {
-    const string readmurl = "https://github.com/Microsoft/AirSim/blob/master/docs/install_eigen.md";
-
     private string ModulePath
     {
         get { return ModuleDirectory; }
@@ -47,35 +45,26 @@ public class AirSim : ModuleRules
         switch (mode)
         {
             case CompileMode.HeaderOnlyNoRpc:
-#if UE_4_19_OR_LATER
                 PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
                 PublicDefinitions.Add("AIRLIB_NO_RPC=1");
-#else
-                Definitions.Add("AIRLIB_HEADER_ONLY=1");
-                Definitions.Add("AIRLIB_NO_RPC=1");
-#endif
                 AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 break;
+
             case CompileMode.HeaderOnlyWithRpc:
-#if UE_4_19_OR_LATER
                 PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
-#else
-                Definitions.Add("AIRLIB_HEADER_ONLY=1");
-#endif
                 AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
+
             case CompileMode.CppCompileNoRpc:
                 LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
-#if UE_4_19_OR_LATER
                 PublicDefinitions.Add("AIRLIB_NO_RPC=1");
-#else
-                Definitions.Add("AIRLIB_NO_RPC=1");
-#endif
                 break;
+
             case CompileMode.CppCompileWithRpc:
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
+
             default:
                 throw new System.Exception("CompileMode specified in plugin's Build.cs file is not recognized");
         }
@@ -89,25 +78,19 @@ public class AirSim : ModuleRules
 
         bEnableExceptions = true;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "PhysXVehicles", "PhysXVehicleLib", "PhysX", "APEX", "Landscape" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "AssetRegistry", "PhysicsCore", "PhysXVehicles", "PhysXVehicleLib", "PhysX", "APEX", "Landscape" });
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
 
         //suppress VC++ proprietary warnings
-#if UE_4_19_OR_LATER
         PublicDefinitions.Add("_SCL_SECURE_NO_WARNINGS=1");
         PublicDefinitions.Add("_CRT_SECURE_NO_WARNINGS=1");
         PublicDefinitions.Add("HMD_MODULE_INCLUDED=0");
-#else
-        Definitions.Add("_SCL_SECURE_NO_WARNINGS=1");
-        Definitions.Add("_CRT_SECURE_NO_WARNINGS=1");
-        Definitions.Add("HMD_MODULE_INCLUDED=0");
-#endif
 
         PublicIncludePaths.Add(Path.Combine(AirLibPath, "include"));
         PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
         AddOSLibDependencies(Target);
 
-        SetupCompileMode(CompileMode.CppCompileWithRpc, Target);
+        SetupCompileMode(CompileMode.HeaderOnlyWithRpc, Target);
     }
 
     private void AddOSLibDependencies(ReadOnlyTargetRules Target)
@@ -169,11 +152,7 @@ public class AirSim : ModuleRules
             // Include path
             PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
         }
-#if UE_4_19_OR_LATER
         PublicDefinitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
-#else
-        Definitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
-#endif
 
         return isLibrarySupported;
     }

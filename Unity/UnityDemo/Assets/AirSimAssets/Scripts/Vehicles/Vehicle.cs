@@ -67,6 +67,8 @@ namespace AirSimUnity {
                 Application.Quit();
 #endif
             }
+
+            AirSimGlobal.Instance.Weather.AttachToVehicle(this);
         }
 
         //Ensure to call this method as the first statement, from derived class `FixedUpdate()` method.
@@ -187,7 +189,7 @@ namespace AirSimUnity {
 
         public UnityTransform GetTransform()
         {
-            return new UnityTransform(new AirSimQuaternion(currentPose.orientation.x, currentPose.orientation.y, currentPose.orientation.z, currentPose.orientation.w), 
+            return new UnityTransform(new AirSimQuaternion(currentPose.orientation.x, currentPose.orientation.y, currentPose.orientation.z, currentPose.orientation.w),
                 new AirSimVector(currentPose.position.x, currentPose.position.y, currentPose.position.z),
                 new AirSimVector(scale3D.x, scale3D.y, scale3D.z));
         }
@@ -264,13 +266,35 @@ namespace AirSimUnity {
             return info;
         }
 
-        public bool SetCameraOrientation(string cameraName, AirSimQuaternion orientation) {
+        public bool SetCameraPose(string cameraName, AirSimPose pose) {
             foreach (DataCaptureScript capture in captureCameras) {
                 if (capture.GetCameraName() == cameraName) {
-                    capture.SetOrientation(orientation);
+                    capture.SetPose(pose);
                     return true;
                 }
             }
+            return false;
+        }
+
+        public bool SetCameraFoV(string cameraName, float fov_degrees) {
+            foreach(DataCaptureScript capture in captureCameras) {
+                if (capture.GetCameraName() == cameraName) {
+                    capture.SetFoV(fov_degrees);
+                    return true;;
+                }
+            }
+            return false;
+        }
+
+        public bool SetDistortionParam(string cameraName, string paramName, float value)
+        {
+            // not implemented
+            return false;
+        }
+
+        public bool GetDistortionParams(string cameraName)
+        {
+            // not implemented
             return false;
         }
 
@@ -318,7 +342,7 @@ namespace AirSimUnity {
             //Setting the initial get pose(HomePoint in AirLib) values to that of vehicle's location in the scene for initial setup in AirLib
             DataManager.SetToAirSim(transform.position, ref currentPose.position);
             DataManager.SetToAirSim(transform.rotation, ref currentPose.orientation);
-            
+
             collisionInfo.SetDefaultValues();
             SetUpCameras();
             captureResetEvent = new AutoResetEvent(false);

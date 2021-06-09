@@ -6,14 +6,16 @@
 
 #include <random>
 
-namespace common_utils {
+namespace common_utils
+{
 
-template<typename TReturn, typename TDistribution, unsigned int Seed=42>
-class RandomGenerator {
+template <typename TReturn, typename TDistribution, unsigned int Seed = 42>
+class RandomGenerator
+{
 public:
     //for uniform distribution supply min and max (inclusive)
     //for gaussian distribution supply mean and sigma
-    template<typename... DistArgs>
+    template <typename... DistArgs>
     RandomGenerator(DistArgs... dist_args)
         : dist_(dist_args...), rand_(Seed)
     {
@@ -47,6 +49,5 @@ typedef RandomGenerator<unsigned int, std::uniform_int_distribution<unsigned int
 //TODO: below we should have float instead of double but VC++2017 has a bug :(
 typedef RandomGenerator<float, std::normal_distribution<double>> RandomGeneratorGaussianF;
 typedef RandomGenerator<double, std::normal_distribution<double>> RandomGeneratorGaussianD;
-
 }
 #endif

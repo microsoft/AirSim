@@ -11,15 +11,15 @@ using namespace AirSimUnity;
 
 namespace AirSimUnity
 {
-	class UnityImageCapture : public msr::airlib::ImageCaptureBase
-	{
-	public:
-		typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
-		UnityImageCapture(std::string vehicle_name);
-		virtual ~UnityImageCapture();
-		virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const;
+class UnityImageCapture : public msr::airlib::ImageCaptureBase
+{
+public:
+    typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
+    UnityImageCapture(std::string vehicle_name);
+    virtual ~UnityImageCapture();
+    virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const;
 
-	private:
-		std::string vehicle_name_;
-	};
+private:
+    std::string vehicle_name_;
+};
 }

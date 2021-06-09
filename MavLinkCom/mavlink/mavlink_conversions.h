@@ -1,4 +1,6 @@
 #pragma once
+// clang-format off
+#ifndef MAVLINK_NO_CONVERSION_HELPERS
 
 /* enable math defines on Windows */
 #ifdef _MSC_VER
@@ -36,10 +38,10 @@
  */
 MAVLINK_HELPER void mavlink_quaternion_to_dcm(const float quaternion[4], float dcm[3][3])
 {
-    double a = quaternion[0];
-    double b = quaternion[1];
-    double c = quaternion[2];
-    double d = quaternion[3];
+    double a = (double)quaternion[0];
+    double b = (double)quaternion[1];
+    double c = (double)quaternion[2];
+    double d = (double)quaternion[3];
     double aSq = a * a;
     double bSq = b * b;
     double cSq = c * c;
@@ -67,7 +69,7 @@ MAVLINK_HELPER void mavlink_quaternion_to_dcm(const float quaternion[4], float d
 MAVLINK_HELPER void mavlink_dcm_to_euler(const float dcm[3][3], float* roll, float* pitch, float* yaw)
 {
     float phi, theta, psi;
-    theta = asin(-dcm[2][0]);
+    theta = asinf(-dcm[2][0]);
 
     if (fabsf(theta - (float)M_PI_2) < 1.0e-3f) {
         phi = 0.0f;
@@ -207,3 +209,6 @@ MAVLINK_HELPER void mavlink_euler_to_dcm(float roll, float pitch, float yaw, flo
     dcm[2][2] = cosPhi * cosThe;
 }
 
+#endif // MAVLINK_NO_CONVERSION_HELPERS
+
+// clang-format on

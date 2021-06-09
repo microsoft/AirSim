@@ -53,5 +53,12 @@ The new APIs since AirSim 1.2 allows you to specify `vehicle_name`. This name co
 
 [Example code for multirotors](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/multi_agent_drone.py)
 
+Using APIs for multi-vehicles requires specifying the `vehicle_name`, which needs to be hardcoded in the script or requires parsing of the settings file. There's also a simple API `listVehicles()` which returns a list (vector in C++) of strings containing names of the current vehicles. For example, with the above settings for 2 Cars -
+
+```
+>>> client.listVehicles()
+['Car1', 'Car2']
+```
+
 ### Demo
 [![AirSimMultiple Vehicles Demo Video](images/demo_multi_vehicles.png)](https://youtu.be/35dgcuLuF5M)

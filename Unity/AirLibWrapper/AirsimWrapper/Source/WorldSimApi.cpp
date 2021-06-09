@@ -4,64 +4,109 @@
 #include "UnityUtilities.hpp"
 
 WorldSimApi::WorldSimApi(SimModeBase* simmode, std::string vehicle_name)
-	: simmode_(simmode), vehicle_name_(vehicle_name)
-{}
+    : simmode_(simmode), vehicle_name_(vehicle_name)
+{
+}
 
 WorldSimApi::~WorldSimApi()
-{}
+{
+}
 
 bool WorldSimApi::isPaused() const
 {
-	return simmode_->isPaused();
+    return simmode_->isPaused();
 }
 
 void WorldSimApi::reset()
 {
-	simmode_->reset();
+    simmode_->reset();
 }
 
 void WorldSimApi::pause(bool is_paused)
 {
-	simmode_->pause(is_paused);
+    simmode_->pause(is_paused);
 }
 
 void WorldSimApi::continueForTime(double seconds)
 {
-	simmode_->continueForTime(seconds);
+    simmode_->continueForTime(seconds);
+}
+
+void WorldSimApi::continueForFrames(uint32_t frames)
+{
+    simmode_->continueForFrames(frames);
 }
 
 void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
-    float celestial_clock_speed, float update_interval_secs, bool move_sun)
+                               float celestial_clock_speed, float update_interval_secs, bool move_sun)
 {
-    simmode_->setTimeOfDay(is_enabled, start_datetime, is_start_datetime_dst,
-        celestial_clock_speed, update_interval_secs, move_sun);
+    simmode_->setTimeOfDay(is_enabled, start_datetime, is_start_datetime_dst, celestial_clock_speed, update_interval_secs, move_sun);
 }
 
 bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
 {
-	return SetSegmentationObjectId(mesh_name.c_str(), object_id, is_name_regex);
+    return SetSegmentationObjectId(mesh_name.c_str(), object_id, is_name_regex);
 }
 
 int WorldSimApi::getSegmentationObjectID(const std::string& mesh_name) const
 {
-	return GetSegmentationObjectId(mesh_name.c_str());
+    return GetSegmentationObjectId(mesh_name.c_str());
 }
 
 void WorldSimApi::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
 {
-	PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
+    PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
+}
+
+std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
+{
+    std::unique_ptr<std::vector<std::string>> result;
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "swapTextures is not supported on unity")
+                                    .c_str());
+    return result;
+}
+
+std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_regex) const
+{
+    std::vector<std::string> result;
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simListSceneObject is not supported on unity")
+                                    .c_str());
+    return result;
 }
 
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
-	AirSimUnity::AirSimPose airSimPose = GetPose(object_name.c_str());
-	return UnityUtilities::Convert_to_Pose(airSimPose);
+    AirSimUnity::AirSimPose airSimPose = GetPose(object_name.c_str());
+    return UnityUtilities::Convert_to_Pose(airSimPose);
+}
+
+msr::airlib::Vector3r WorldSimApi::getObjectScale(const std::string& object_name) const
+{
+    return Vector3r();
+}
+msr::airlib::Vector3r WorldSimApi::getObjectScaleInternal(const std::string& object_name) const
+{
+    return Vector3r();
+}
+bool WorldSimApi::setObjectScale(const std::string& object_name, const Vector3r& scale)
+{
+    return false;
 }
 
 bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimApi::Pose& pose, bool teleport)
 {
-	AirSimUnity::AirSimPose airSimPose = UnityUtilities::Convert_to_AirSimPose(pose);
-	return SetPose(airSimPose, false, object_name.c_str());
+    AirSimUnity::AirSimPose airSimPose = UnityUtilities::Convert_to_AirSimPose(pose);
+    return SetPose(airSimPose, false, object_name.c_str());
+}
+
+bool WorldSimApi::runConsoleCommand(const std::string& command)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simrunConsoleCommand is not supported on unity")
+                                    .c_str());
+    return false;
 }
 
 void WorldSimApi::enableWeather(bool enable)
@@ -76,78 +121,126 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     //TODO: implement weather for Unity
 }
 
-#pragma region Character
-// Not implemented, just added for compilation.
-
-void WorldSimApi::charSetFaceExpression(const std::string& expression_name, float value, const std::string& character_name)
+bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
 {
+    return false;
 }
 
-float WorldSimApi::charGetFaceExpression(const std::string& expression_name, const std::string& character_name) const
+//----------------Plotting APIs-----------/
+void WorldSimApi::simFlushPersistentMarkers()
 {
-	return 0.0f;
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simFlushPersistentMarkers is not supported on unity")
+                                    .c_str());
 }
 
-std::vector<std::string> WorldSimApi::charGetAvailableFaceExpressions()
+void WorldSimApi::simPlotPoints(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float size, float duration, bool is_persistent)
 {
-	return std::vector<std::string>();
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simPlotPoints is not supported on unity")
+                                    .c_str());
 }
 
-void WorldSimApi::charSetSkinDarkness(float value, const std::string& character_name)
+void WorldSimApi::simPlotLineStrip(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
 {
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simPlotLineStrip is not supported on unity")
+                                    .c_str());
 }
 
-float WorldSimApi::charGetSkinDarkness(const std::string& character_name) const
+void WorldSimApi::simPlotLineList(const std::vector<Vector3r>& points, const std::vector<float>& color_rgba, float thickness, float duration, bool is_persistent)
 {
-	return 0.0f;
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simPlotLineList is not supported on unity")
+                                    .c_str());
 }
 
-void WorldSimApi::charSetSkinAgeing(float value, const std::string& character_name)
+void WorldSimApi::simPlotArrows(const std::vector<Vector3r>& points_start, const std::vector<Vector3r>& points_end, const std::vector<float>& color_rgba, float thickness, float arrow_size, float duration, bool is_persistent)
 {
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simPlotArrows is not supported on unity")
+                                    .c_str());
 }
 
-float WorldSimApi::charGetSkinAgeing(const std::string& character_name) const
+void WorldSimApi::simPlotStrings(const std::vector<std::string>& strings, const std::vector<Vector3r>& positions, float scale, const std::vector<float>& color_rgba, float duration)
 {
-	return 0.0f;
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simPlotStrings is not supported on unity")
+                                    .c_str());
 }
 
-void WorldSimApi::charSetHeadRotation(const msr::airlib::Quaternionr& q, const std::string& character_name)
+void WorldSimApi::simPlotTransforms(const std::vector<Pose>& poses, float scale, float thickness, float duration, bool is_persistent)
 {
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simPlotTransforms is not supported on unity")
+                                    .c_str());
 }
 
-msr::airlib::Quaternionr WorldSimApi::charGetHeadRotation(const std::string& character_name) const
+void WorldSimApi::simPlotTransformsWithNames(const std::vector<Pose>& poses, const std::vector<std::string>& names, float tf_scale, float tf_thickness, float text_scale, const std::vector<float>& text_color_rgba, float duration)
 {
-	return msr::airlib::Quaternionr();
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "simPlotTransformsWithNames is not supported on unity")
+                                    .c_str());
 }
 
-void WorldSimApi::charSetBonePose(const std::string& bone_name, const msr::airlib::Pose& pose, const std::string& character_name)
+std::vector<WorldSimApi::MeshPositionVertexBuffersResponse> WorldSimApi::getMeshPositionVertexBuffers() const
 {
+    std::vector<MeshPositionVertexBuffersResponse> result;
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "getMeshPositionVertexBuffers is not supported on unity")
+                                    .c_str());
+    return result;
 }
 
-msr::airlib::Pose WorldSimApi::charGetBonePose(const std::string& bone_name, const std::string& character_name) const
+// Recording APIs
+void WorldSimApi::startRecording()
 {
-	return Pose();
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "startRecording is not supported on unity")
+                                    .c_str());
 }
 
-void WorldSimApi::charResetBonePose(const std::string& bone_name, const std::string& character_name)
+void WorldSimApi::stopRecording()
 {
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "stopRecording is not supported on unity")
+                                    .c_str());
 }
 
-void WorldSimApi::charSetFacePreset(const std::string& preset_name, float value, const std::string& character_name)
+bool WorldSimApi::isRecording() const
 {
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "isRecording is not supported on unity")
+                                    .c_str());
+    return false;
 }
 
-void WorldSimApi::charSetFacePresets(const std::unordered_map<std::string, float>& presets, const std::string& character_name)
+void WorldSimApi::setWind(const Vector3r& wind) const
 {
+    simmode_->setWind(wind);
 }
 
-void WorldSimApi::charSetBonePoses(const std::unordered_map<std::string, msr::airlib::Pose>& poses, const std::string& character_name)
+std::vector<std::string> WorldSimApi::listVehicles() const
 {
+    auto vehicle_names = (simmode_->getApiProvider()->getVehicleSimApis()).keys();
+    // Remove '' from the list, representing default vehicle
+    auto position = std::find(vehicle_names.begin(), vehicle_names.end(), "");
+    if (position != vehicle_names.end())
+        vehicle_names.erase(position);
+    return vehicle_names;
 }
 
-std::unordered_map<std::string, msr::airlib::Pose> WorldSimApi::charGetBonePoses(const std::vector<std::string>& bone_names, const std::string& character_name) const
+bool WorldSimApi::addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const WorldSimApi::Pose& pose, const std::string& pawn_path)
 {
-	return std::unordered_map<std::string, Pose>();
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "addVehicle is not supported on unity")
+                                    .c_str());
+    return false;
+}
+
+std::string WorldSimApi::getSettingsString() const
+{
+    return msr::airlib::AirSimSettings::singleton().settings_text_;
 }
 
 #pragma endregion

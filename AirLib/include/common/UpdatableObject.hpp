@@ -8,9 +8,12 @@
 #include "StateReporter.hpp"
 #include "ClockFactory.hpp"
 
-namespace msr { namespace airlib {
+namespace msr
+{
+namespace airlib
+{
 
-/*
+    /*
 UpdatableObject provides generalized framework for things that needs to be "ticked". For example,
 physics objects that needs to update its position every 10ms.
 Typically this objects will take their current state, do some processing and produce new state
@@ -24,56 +27,89 @@ Do not call reset() from constructor or initialization because that will produce
 init->reset calls for base-derived class that would be incorrect.
 */
 
-
-class UpdatableObject {
-public:
-    virtual void reset()
+    class UpdatableObject
     {
-        if (reset_called && !update_called)
-            throw std::runtime_error("Multiple reset() calls detected without call to update()");
+    public:
+        void reset()
+        {
+            if (reset_in_progress)
+                return;
 
-        reset_called = true;
-    }
-    virtual void update()
-    {
-        if (!reset_called)
-            throw std::runtime_error("reset() must be called first before update()");
-        update_called = true;
-    }
+            reset_in_progress = true;
+            //TODO: Do we need this check anymore? Maybe reset() should be idempotent.
 
-    virtual ~UpdatableObject() = default;
+            if (reset_called && !update_called)
+                failResetUpdateOrdering("Multiple reset() calls detected without call to update()");
 
-    virtual void reportState(StateReporter& reporter)
-    {
-        unused(reporter);
-        //default implementation doesn't do anything
-    }
+            reset_called = true;
 
-    virtual UpdatableObject* getPhysicsBody()
-    {
-        return nullptr;
-    }
+            resetImplementation();
+            reset_in_progress = false;
+        }
 
-    virtual ClockBase* clock()
-    {
-        return ClockFactory::get();
-    }
-    virtual const ClockBase* clock() const
-    {
-        return ClockFactory::get();
-    }
+        virtual void update()
+        {
+            if (!reset_called)
+                failResetUpdateOrdering("reset() must be called first before update()");
+            update_called = true;
+        }
 
-protected:
-    void clearResetUpdateAsserts()
-    {
-        reset_called = false;
-        update_called = false;
-    }
+        virtual ~UpdatableObject() = default;
 
-private:
-    bool reset_called = false;
-    bool update_called = false;
-};
+        virtual void reportState(StateReporter& reporter)
+        {
+            unused(reporter);
+            //default implementation doesn't do anything
+        }
 
-}} //namespace
+        virtual UpdatableObject* getPhysicsBody()
+        {
+            return nullptr;
+        }
+
+        virtual ClockBase* clock()
+        {
+            return ClockFactory::get();
+        }
+        virtual const ClockBase* clock() const
+        {
+            return ClockFactory::get();
+        }
+
+        UpdatableObject* getParent()
+        {
+            return parent_;
+        }
+
+        void setParent(UpdatableObject* container)
+        {
+            parent_ = container;
+        }
+
+        std::string getName()
+        {
+            return name_;
+        }
+
+        void setName(const std::string& name)
+        {
+            this->name_ = name;
+        }
+
+    protected:
+        virtual void resetImplementation() = 0;
+        virtual void failResetUpdateOrdering(std::string err)
+        {
+            throw std::runtime_error(err);
+        }
+
+    private:
+        bool reset_called = false;
+        bool update_called = false;
+        bool reset_in_progress = false;
+        UpdatableObject* parent_ = nullptr;
+        std::string name_;
+    };
+}
+} //namespace
 #endif

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "SimModeWorldMultiRotor.h"
-#include "ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Logging/MessageLog.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
@@ -14,7 +14,7 @@
 #include "common/ClockFactory.hpp"
 #include <memory>
 #include "vehicles/multirotor/api/MultirotorRpcLibServer.hpp"
-
+#include "common/SteppableClock.hpp"
 
 void ASimModeWorldMultiRotor::BeginPlay()
 {
@@ -83,7 +83,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeWorldMultiRotor::createApiSe
     return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::MultirotorRpcLibServer(
-        getApiProvider(), getSettings().api_server_address));
+        getApiProvider(), getSettings().api_server_address, getSettings().api_port));
 #endif
 }
 
@@ -95,8 +95,9 @@ void ASimModeWorldMultiRotor::getExistingVehiclePawns(TArray<AActor*>& pawns) co
 bool ASimModeWorldMultiRotor::isVehicleTypeSupported(const std::string& vehicle_type) const
 {
     return ((vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) ||
-        (vehicle_type == AirSimSettings::kVehicleTypePX4) ||
-		(vehicle_type == AirSimSettings::kVehicleTypeArduCopterSolo));
+            (vehicle_type == AirSimSettings::kVehicleTypePX4) ||
+            (vehicle_type == AirSimSettings::kVehicleTypeArduCopterSolo) ||
+            (vehicle_type == AirSimSettings::kVehicleTypeArduCopter));
 }
 
 std::string ASimModeWorldMultiRotor::getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const
@@ -126,13 +127,13 @@ std::unique_ptr<PawnSimApi> ASimModeWorldMultiRotor::createVehicleSimApi(
     const PawnSimApi::Params& pawn_sim_api_params) const
 {
     auto vehicle_sim_api = std::unique_ptr<PawnSimApi>(new MultirotorPawnSimApi(pawn_sim_api_params));
-    vehicle_sim_api->initialize(); 
+    vehicle_sim_api->initialize();
     //For multirotors the vehicle_sim_api are in PhysicsWOrld container and then get reseted when world gets reseted
     //vehicle_sim_api->reset();
     return vehicle_sim_api;
 }
 msr::airlib::VehicleApiBase* ASimModeWorldMultiRotor::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
-    const PawnSimApi* sim_api) const
+                                                                    const PawnSimApi* sim_api) const
 {
     const auto multirotor_sim_api = static_cast<const MultirotorPawnSimApi*>(sim_api);
     return multirotor_sim_api->getVehicleApi();

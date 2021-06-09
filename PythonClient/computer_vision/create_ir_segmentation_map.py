@@ -129,10 +129,8 @@ def set_segmentation_ids(segIdDict, tempEmissivityNew, client):
 
     #First set everything to 0.
     success = client.simSetSegmentationObjectID("[\w]*", 0, True);
-    if success != True:
-        msg = 'There was a problem setting all segmentation object IDs to 0. '
-        msg += 'Please try again.'
-        print(msg)
+    if not success:
+        print('There was a problem setting all segmentation object IDs to 0. ')
         sys.exit(1)
 
     #Next set all objects of interest provided to corresponding object IDs
@@ -143,13 +141,9 @@ def set_segmentation_ids(segIdDict, tempEmissivityNew, client):
 
         success = client.simSetSegmentationObjectID("[\w]*"+key+"[\w]*", 
                                                     objectID, True);
-        if success != True:
-            msg = 'There was a problem setting "' + key
-            msg += '" segmentation object ID to ' + str(objectID) + '. '
-            msg += 'Please try again.'
-            print(msg)
-            sys.exit(1)
-
+        if not success:
+            print('There was a problem setting {0} segmentation object ID to {1!s}, or no {0} was found.'.format(key, objectID))
+            
     time.sleep(0.1)
 
 
@@ -158,7 +152,7 @@ if __name__ == '__main__':
     #Connect to AirSim, UAV mode.
     client = MultirotorClient()
     client.confirmConnection()
-
+    
     segIdDict = {'Base_Terrain':'soil',
                  'elephant':'elephant',
                  'zebra':'zebra',
@@ -173,8 +167,7 @@ if __name__ == '__main__':
     #Choose temperature values for winter or summer.
     #"""
     #winter
-    tempEmissivity = numpy.array([['nothing',0,0],
-                                  ['elephant',290,0.96], 
+    tempEmissivity = numpy.array([['elephant',290,0.96], 
                                   ['zebra',298,0.98],
                                   ['rhinoceros',291,0.96],
                                   ['hippopotamus',290,0.96],
@@ -189,8 +182,7 @@ if __name__ == '__main__':
     #"""
     """
     #summer
-    tempEmissivity = numpy.array([['nothing',0,0],
-                                  ['elephant',298,0.96], 
+    tempEmissivity = numpy.array([['elephant',298,0.96], 
                                   ['zebra',307,0.98],
                                   ['rhinoceros',299,0.96],
                                   ['hippopotamus',298,0.96],
@@ -205,7 +197,12 @@ if __name__ == '__main__':
     """
 
     #Read camera response.
-    response = numpy.load('camera_response.npy')
+    response = None
+    camResponseFile = 'camera_response.npy'
+    try:
+      numpy.load(camResponseFile)
+    except:
+      print("{} not found. Using default response.".format(camResponseFile))
 
     #Calculate radiance.
     tempEmissivityNew = get_new_temp_emiss_from_radiance(tempEmissivity, 

@@ -1,0 +1,18 @@
+name: MacOS Build
+
+# Controls when the action will run.
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup
+        run: ./setup.sh
+
+      - name: Build AirLib
+        run: ./build.sh

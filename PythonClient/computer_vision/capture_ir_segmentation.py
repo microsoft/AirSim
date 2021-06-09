@@ -7,6 +7,70 @@ import random
 import glob
 from airsim import *
 
+def rotation_matrix_from_angles(pry):
+    pitch = pry[0]
+    roll = pry[1]
+    yaw = pry[2]
+    sy = numpy.sin(yaw)
+    cy = numpy.cos(yaw)
+    sp = numpy.sin(pitch)
+    cp = numpy.cos(pitch)
+    sr = numpy.sin(roll)
+    cr = numpy.cos(roll)
+    
+    Rx = numpy.array([
+        [1, 0, 0],
+        [0, cr, -sr],
+        [0, sr, cr]
+    ])
+    
+    Ry = numpy.array([
+        [cp, 0, sp],
+        [0, 1, 0],
+        [-sp, 0, cp]
+    ])
+    
+    Rz = numpy.array([
+        [cy, -sy, 0],
+        [sy, cy, 0],
+        [0, 0, 1]
+    ])
+    
+    #Roll is applied first, then pitch, then yaw.
+    RyRx = numpy.matmul(Ry, Rx)
+    return numpy.matmul(Rz, RyRx)
+
+def project_3d_point_to_screen(subjectXYZ, camXYZ, camQuaternion, camProjMatrix4x4, imageWidthHeight):
+    #Turn the camera position into a column vector.
+    camPosition = numpy.transpose([camXYZ])
+
+    #Convert the camera's quaternion rotation to yaw, pitch, roll angles.
+    pitchRollYaw = utils.to_eularian_angles(camQuaternion)
+    
+    #Create a rotation matrix from camera pitch, roll, and yaw angles.
+    camRotation = rotation_matrix_from_angles(pitchRollYaw)
+    
+    #Change coordinates to get subjectXYZ in the camera's local coordinate system.
+    XYZW = numpy.transpose([subjectXYZ])
+    XYZW = numpy.add(XYZW, -camPosition)
+    print("XYZW: " + str(XYZW))
+    XYZW = numpy.matmul(numpy.transpose(camRotation), XYZW)
+    print("XYZW derot: " + str(XYZW))
+    
+    #Recreate the perspective projection of the camera.
+    XYZW = numpy.concatenate([XYZW, [[1]]])    
+    XYZW = numpy.matmul(camProjMatrix4x4, XYZW)
+    XYZW = XYZW / XYZW[3]
+    
+    #Move origin to the upper-left corner of the screen and multiply by size to get pixel values. Note that screen is in y,-z plane.
+    normX = (1 - XYZW[0]) / 2
+    normY = (1 + XYZW[1]) / 2
+    
+    return numpy.array([
+        imageWidthHeight[0] * normX,
+        imageWidthHeight[1] * normY
+    ]).reshape(2,)
+   
 def get_image(x, y, z, pitch, roll, yaw, client):
     """
     title::
@@ -77,7 +141,7 @@ def main(client,
          roll=0,
          yaw=0,
          z=-122,
-         writeIR=False,
+         writeIR=True,
          writeScene=False,
          irFolder='',
          sceneFolder=''):
@@ -116,11 +180,11 @@ def main(client,
     i = 0
     for o in objectList:
         startTime = time.time()
-        currentTime = time.time() - startTime
+        elapsedTime = 0
         pose = client.simGetObjectPose(o);
 
         #Capture images for a certain amount of time in seconds (half hour now)
-        while currentTime < 1800:
+        while elapsedTime < 1800:
             #Capture image - pose.position x_val access may change w/ AirSim
             #version (pose.position.x_val new, pose.position[b'x_val'] old)
             vector, angle, ir, scene = get_image(pose.position.x_val, 
@@ -142,10 +206,17 @@ def main(client,
                             scene)
 
             i += 1
-            currentTime = time.time() - startTime
+            elapsedTime = time.time() - startTime
             pose = client.simGetObjectPose(o);
-
-
+            camInfo = client.simGetCameraInfo("0")
+            object_xy_in_pic = project_3d_point_to_screen(
+                [pose.position.x_val, pose.position.y_val, pose.position.z_val],
+                [camInfo.pose.position.x_val, camInfo.pose.position.y_val, camInfo.pose.position.z_val],
+                camInfo.pose.orientation,
+                camInfo.proj_mat.matrix,
+                ir.shape[:2][::-1]
+            )
+            print("Object projected to pixel\n{!s}.".format(object_xy_in_pic))
 
 if __name__ == '__main__':
     
@@ -153,29 +224,34 @@ if __name__ == '__main__':
     client = MultirotorClient()
     client.confirmConnection()
 
-    #Tags for poachers in each of the three groups in Africa enviornment.
-    objectList = ['Poacher1A', 'Poacher1B', 'Poacher1C']
-
+    #Look for objects with names that match a regular expression.
+    poacherList = client.simListSceneObjects('.*?Poacher.*?')
+    elephantList = client.simListSceneObjects('.*?Elephant.*?')
+    crocList = client.simListSceneObjects('.*?Croc.*?')
+    hippoList = client.simListSceneObjects('.*?Hippo.*?')
+    
+    objectList = elephantList
+    
     #Sample calls to main, varying camera angle and altitude.
     #straight down, 400ft
     main(client, 
          objectList, 
-         folder=r'auto\winter\400ft\down') 
+         irFolder=r'auto\winter\400ft\down') 
     #straight down, 200ft
     main(client, 
          objectList, 
          z=-61, 
-         folder=r'auto\winter\200ft\down') 
+         irFolder=r'auto\winter\200ft\down') 
     #45 degrees, 200ft -- note that often object won't be scene since position
     #is set exactly to object's
     main(client, 
          objectList, 
          z=-61, 
          pitch=numpy.radians(315), 
-         folder=r'auto\winter\200ft\45') 
+         irFolder=r'auto\winter\200ft\45') 
     #45 degrees, 400ft -- note that often object won't be scene since position
     #is set exactly to object's
     main(client, 
          objectList, 
          pitch=numpy.radians(315), 
-         folder=r'auto\winter\400ft\45') 
+         irFolder=r'auto\winter\400ft\45') 

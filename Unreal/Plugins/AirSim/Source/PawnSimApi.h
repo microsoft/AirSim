@@ -19,12 +19,13 @@
 #include "api/VehicleSimApiBase.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
 
-
 #include "PawnEvents.h"
 
-class PawnSimApi : public msr::airlib::VehicleSimApiBase {
+class PawnSimApi : public msr::airlib::VehicleSimApiBase
+{
 public: //types
     typedef msr::airlib::GeoPoint GeoPoint;
+    typedef msr::airlib::Vector2r Vector2r;
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::Pose Pose;
     typedef msr::airlib::Quaternionr Quaternionr;
@@ -34,9 +35,11 @@ public: //types
     typedef msr::airlib::Utils Utils;
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
+    typedef msr::airlib::DetectionInfo DetectionInfo;
 
-    struct Params {
-        APawn* pawn; 
+    struct Params
+    {
+        APawn* pawn;
         const NedTransform* global_transform;
         PawnEvents* pawn_events;
         common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
@@ -50,11 +53,11 @@ public: //types
         }
 
         Params(APawn* pawn_val, const NedTransform* global_transform_val, PawnEvents* pawn_events_val,
-            const common_utils::UniqueValueMap<std::string, APIPCamera*> cameras_val, UClass* pip_camera_class_val,
-            UParticleSystem* collision_display_template_val, const msr::airlib::GeoPoint home_geopoint_val,
-            std::string vehicle_name_val)
+               const common_utils::UniqueValueMap<std::string, APIPCamera*> cameras_val, UClass* pip_camera_class_val,
+               UParticleSystem* collision_display_template_val, const msr::airlib::GeoPoint home_geopoint_val,
+               std::string vehicle_name_val)
         {
-            pawn = pawn_val; 
+            pawn = pawn_val;
             global_transform = global_transform_val;
             pawn_events = pawn_events_val;
             cameras = cameras_val;
@@ -68,7 +71,7 @@ public: //types
 public: //implementation of VehicleSimApiBase
     virtual void initialize() override;
 
-    virtual void reset() override;
+    virtual void resetImplementation() override;
     virtual void update() override;
 
     virtual const UnrealImageCapture* getImageCapture() const override;
@@ -77,7 +80,11 @@ public: //implementation of VehicleSimApiBase
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
-    virtual void setCameraOrientation(const std::string& camera_name, const Quaternionr& orientation) override;
+    virtual void setCameraPose(const std::string& camera_name, const Pose& pose) override;
+    virtual void setCameraFoV(const std::string& camera_name, float fov_degrees) override;
+    virtual void setDistortionParam(const std::string& camera_name, const std::string& param_name, float value) override;
+    virtual std::vector<float> getDistortionParams(const std::string& camera_name) override;
+
     virtual CollisionInfo getCollisionInfo() const override;
     virtual int getRemoteControlID() const override;
     virtual msr::airlib::RCData getRCData() const override;
@@ -86,6 +93,7 @@ public: //implementation of VehicleSimApiBase
         return params_.vehicle_name;
     }
     virtual void toggleTrace() override;
+    virtual void setTraceLine(const std::vector<float>& color_rgba, float thickness) override;
 
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
@@ -93,6 +101,11 @@ public: //implementation of VehicleSimApiBase
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
     virtual std::string getRecordFileLine(bool is_header_line) const override;
     virtual void reportState(msr::airlib::StateReporter& reporter) override;
+
+    virtual void addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name) override;
+    virtual void setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const float radius_cm) override;
+    virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type) override;
+    virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
 
 protected: //additional interface for derived class
     virtual void pawnTick(float dt);
@@ -132,14 +145,14 @@ public: //Unreal specific methods
     void setRCForceFeedback(float rumble_strength, float auto_center);
 
 private: //methods
-    bool canTeleportWhileMove()  const;
+    bool canTeleportWhileMove() const;
     void allowPassthroughToggleInput();
     void detectUsbRc();
     void setupCamerasFromSettings(const common_utils::UniqueValueMap<std::string, APIPCamera*>& cameras);
     void createCamerasFromSettings();
     //on collision, pawns should update this
     void onCollision(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp,
-        bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
+                     bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit);
 
     //these methods are for future usage
     void plot(std::istream& s, FColor color, const Vector3r& offset);
@@ -168,14 +181,15 @@ private: //vars
     mutable SimJoyStick joystick_;
     mutable SimJoyStick::State joystick_state_;
 
-    struct State {
+    struct State
+    {
         FVector start_location;
         FRotator start_rotation;
         FVector last_position;
         FVector last_debug_position;
         FVector current_position;
         FVector current_debug_position;
-        FVector debug_position_offset;        
+        FVector debug_position_offset;
         bool tracing_enabled;
         bool collisions_enabled;
         bool passthrough_enabled;
@@ -187,9 +201,12 @@ private: //vars
         FVector ground_offset;
         FVector transformation_offset;
     };
-    
+
     State state_, initial_state_;
 
     std::unique_ptr<msr::airlib::Kinematics> kinematics_;
     std::unique_ptr<msr::airlib::Environment> environment_;
+
+    FColor trace_color_ = FColor::Purple;
+    float trace_thickness_ = 3.0f;
 };

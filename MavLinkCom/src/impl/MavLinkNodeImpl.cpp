@@ -5,6 +5,7 @@
 #include "Utils.hpp"
 #include "MavLinkMessages.hpp"
 #include "Semaphore.hpp"
+#include "ThreadUtils.hpp"
 
 using namespace mavlink_utils;
 
@@ -17,7 +18,6 @@ MavLinkNodeImpl::MavLinkNodeImpl(int localSystemId, int localComponentId)
     local_system_id = localSystemId;
     local_component_id = localComponentId;
 }
-
 
 MavLinkNodeImpl::~MavLinkNodeImpl()
 {
@@ -45,29 +45,11 @@ void MavLinkNodeImpl::startHeartbeat()
     }
 }
 
-
 void MavLinkNodeImpl::sendHeartbeat()
 {
+    CurrentThread::setThreadName("MavLinkThread");
     while (heartbeat_running_) {
-        MavLinkHeartbeat heartbeat;
-        // send a heart beat so that the remote node knows we are still alive
-        // (otherwise drone will trigger a failsafe operation).	
-        heartbeat.autopilot = static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_GENERIC);
-        heartbeat.type = static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_GCS);
-        heartbeat.mavlink_version = 3;
-        heartbeat.base_mode = 0; // ignored by PX4
-        heartbeat.custom_mode = 0; // ignored by PX4
-        heartbeat.system_status = 0; // ignored by PX4
-        try 
-        {
-            sendMessage(heartbeat);
-        }
-        catch (std::exception& e)
-        {
-            // ignore any failures here because we are running in our own thread here.
-            Utils::log(Utils::stringf("Caught and ignoring exception sending heartbeat: %s", e.what()));
-        }
-        
+        sendOneHeartbeat();
         std::this_thread::sleep_for(std::chrono::milliseconds(heartbeatMilliseconds));
     }
 }
@@ -77,15 +59,13 @@ void MavLinkNodeImpl::handleMessage(std::shared_ptr<MavLinkConnection> connectio
 {
     unused(connection);
 
-    switch (msg.msgid)
-    {
+    switch (msg.msgid) {
     case static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_HEARTBEAT):
         // we received a heartbeat, so let's get the capabilities.
-        if (!req_cap_)
-        {
+        if (!req_cap_) {
             req_cap_ = true;
             MavCmdRequestAutopilotCapabilities cmd{};
-            cmd.p1 = 1;
+            cmd.param1 = 1;
             sendCommand(cmd);
         }
         break;
@@ -95,7 +75,7 @@ void MavLinkNodeImpl::handleMessage(std::shared_ptr<MavLinkConnection> connectio
         break;
     }
 
-    // this is for the subclasses to play with.  We put nothing here so we are not dependent on the 
+    // this is for the subclasses to play with.  We put nothing here so we are not dependent on the
     // subclasses remembering to call this base implementation.
 }
 
@@ -136,6 +116,7 @@ AsyncResult<MavLinkAutopilotVersion> MavLinkNodeImpl::getCapabilities()
 
     int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
         unused(connection);
+        unused(m);
         result.setResult(cap_);
     });
 
@@ -143,13 +124,13 @@ AsyncResult<MavLinkAutopilotVersion> MavLinkNodeImpl::getCapabilities()
 
     // request capabilities, it will respond with AUTOPILOT_VERSION.
     MavCmdRequestAutopilotCapabilities cmd{};
-    cmd.p1 = 1;
+    cmd.param1 = 1;
     sendCommand(cmd);
 
     return result;
 }
 
-AsyncResult<MavLinkHeartbeat>  MavLinkNodeImpl::waitForHeartbeat()
+AsyncResult<MavLinkHeartbeat> MavLinkNodeImpl::waitForHeartbeat()
 {
     Utils::log("Waiting for heartbeat from PX4...");
 
@@ -163,37 +144,56 @@ AsyncResult<MavLinkHeartbeat>  MavLinkNodeImpl::waitForHeartbeat()
 
     int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
         unused(connection);
-        if (m.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_HEARTBEAT))
-        {
+        if (m.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_HEARTBEAT)) {
             MavLinkHeartbeat heartbeat;
             heartbeat.decode(m);
             result.setResult(heartbeat);
         }
     });
     result.setState(subscription);
-    
+
     return result;
+}
+
+void MavLinkNodeImpl::sendOneHeartbeat()
+{
+    MavLinkHeartbeat heartbeat;
+    // send a heart beat so that the remote node knows we are still alive
+    // (otherwise drone will trigger a failsafe operation).
+    heartbeat.autopilot = static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_GENERIC);
+    heartbeat.type = static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_GCS);
+    heartbeat.mavlink_version = 3;
+    heartbeat.base_mode = 0; // ignored by PX4
+    heartbeat.custom_mode = 0; // ignored by PX4
+    heartbeat.system_status = 0; // ignored by PX4
+    try {
+        sendMessage(heartbeat);
+    }
+    catch (std::exception& e) {
+        // ignore any failures here because we are running in our own thread here.
+        Utils::log(Utils::stringf("Caught and ignoring exception sending heartbeat: %s", e.what()));
+    }
 }
 
 void MavLinkNodeImpl::setMessageInterval(int msgId, int frequency)
 {
     float intervalMicroseconds = 1000000.0f / frequency;
     MavCmdSetMessageInterval cmd{};
-    cmd.TheMavlinkMessage = static_cast<float>(msgId);
-    cmd.TheIntervalBetween = intervalMicroseconds;
+    cmd.MessageId = static_cast<float>(msgId);
+    cmd.Interval = intervalMicroseconds;
     sendCommand(cmd);
 }
 
-union param_value_u {
-    int8_t      b;
-    int16_t     s;
-    int32_t		i;
-    uint8_t     ub;
-    uint16_t    us;
-    uint32_t   ui;
-    float		f;
+union param_value_u
+{
+    int8_t b;
+    int16_t s;
+    int32_t i;
+    uint8_t ub;
+    uint16_t us;
+    uint32_t ui;
+    float f;
 };
-
 
 float UnpackParameter(uint8_t type, float param_value)
 {
@@ -201,8 +201,7 @@ float UnpackParameter(uint8_t type, float param_value)
     pu.f = param_value;
 
     float value = 0;
-    switch (static_cast<MAV_PARAM_TYPE>(type))
-    {
+    switch (static_cast<MAV_PARAM_TYPE>(type)) {
     case MAV_PARAM_TYPE::MAV_PARAM_TYPE_UINT8:
         value = static_cast<float>(pu.ub);
         break;
@@ -242,13 +241,11 @@ float UnpackParameter(uint8_t type, float param_value)
     return value;
 }
 
-
 float PackParameter(uint8_t type, float param_value)
 {
     param_value_u pu;
     pu.f = 0;
-    switch (static_cast<MAV_PARAM_TYPE>(type))
-    {
+    switch (static_cast<MAV_PARAM_TYPE>(type)) {
     case MAV_PARAM_TYPE::MAV_PARAM_TYPE_UINT8:
         pu.ub = static_cast<uint8_t>(param_value);
         break;
@@ -288,6 +285,13 @@ float PackParameter(uint8_t type, float param_value)
     return pu.f;
 }
 
+void MavLinkNodeImpl::assertNotPublishingThread()
+{
+    auto con = ensureConnection();
+    if (con->isPublishThread()) {
+        throw std::runtime_error("Cannot perform blocking operation on the connection publish thread");
+    }
+}
 
 std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 {
@@ -298,13 +302,14 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
     size_t paramCount = 0;
 
     auto con = ensureConnection();
+    assertNotPublishingThread();
+
     int subscription = con->subscribe([&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
         unused(connection);
-        if (message.msgid == MavLinkParamValue::kMessageId)
-        {
+        if (message.msgid == MavLinkParamValue::kMessageId) {
             MavLinkParamValue param;
             param.decode(message);
-            MavLinkParameter  p;
+            MavLinkParameter p;
             p.index = param.param_index;
             p.type = param.param_type;
             char buf[17];
@@ -314,8 +319,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
             p.value = param.param_value;
             result.push_back(p);
             paramCount = param.param_count;
-            if (param.param_index == param.param_count - 1)
-            {
+            if (param.param_index == param.param_count - 1) {
                 done = true;
             }
             if (waiting) {
@@ -324,7 +328,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
         }
     });
 
-    //MAVLINK_MSG_ID_PARAM_REQUEST_LIST	
+    //MAVLINK_MSG_ID_PARAM_REQUEST_LIST
     MavLinkParamRequestList cmd;
     cmd.target_system = getTargetSystemId();
     cmd.target_component = getTargetComponentId();
@@ -332,8 +336,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
 
     while (!done) {
         waiting = true;
-        if (!paramReceived.timed_wait(3000))
-        {
+        if (!paramReceived.timed_wait(3000)) {
             // timeout, so we'll drop through to the code below which will try and fix this...
             done = true;
         }
@@ -344,12 +347,10 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
     // note that UDP does not guarantee delivery of messages, so we have to also check if some parameters are missing and get them individually.
     std::vector<size_t> missing;
 
-    for (size_t i = 0; i < paramCount; i++)
-    {		
+    for (size_t i = 0; i < paramCount; i++) {
         // nested loop is inefficient, but it is needed because UDP also doesn't guarantee in-order delivery
         bool found = false;
-        for (auto iter = result.begin(), end = result.end(); iter != end; iter++)
-        {
+        for (auto iter = result.begin(), end = result.end(); iter != end; iter++) {
             MavLinkParameter p = *iter;
             if (static_cast<size_t>(p.index) == i) {
                 found = true;
@@ -362,8 +363,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
     }
 
     // ok, now fetch the missing parameters.
-    for (auto iter = missing.begin(), end = missing.end(); iter != end; iter++)
-    {
+    for (auto iter = missing.begin(), end = missing.end(); iter != end; iter++) {
         size_t index = *iter;
         MavLinkParameter r;
         if (getParameterByIndex(static_cast<int16_t>(*iter)).wait(2000, &r)) {
@@ -374,8 +374,7 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
         }
     }
 
-
-    std::sort(result.begin(), result.end(), [&](const MavLinkParameter & p1, const MavLinkParameter & p2) {
+    std::sort(result.begin(), result.end(), [&](const MavLinkParameter& p1, const MavLinkParameter& p2) {
         return p1.name.compare(p2.name) < 0;
     });
 
@@ -384,19 +383,15 @@ std::vector<MavLinkParameter> MavLinkNodeImpl::getParamList()
     return result;
 }
 
-
 MavLinkParameter MavLinkNodeImpl::getCachedParameter(const std::string& name)
 {
-    if (this->parameters_.size() == 0)
-    {
+    if (this->parameters_.size() == 0) {
         throw std::runtime_error("Error: please call getParamList during initialization so we have cached snapshot of the parameter values");
     }
 
-    for (int i = static_cast<int>(this->parameters_.size()) - 1; i >= 0; i--)
-    {
+    for (int i = static_cast<int>(this->parameters_.size()) - 1; i >= 0; i--) {
         MavLinkParameter p = this->parameters_[i];
-        if (p.name == name)
-        {
+        if (p.name == name) {
             return p;
         }
     }
@@ -426,13 +421,11 @@ AsyncResult<MavLinkParameter> MavLinkNodeImpl::getParameter(const std::string& n
 
     int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
         unused(connection);
-        if (message.msgid == MavLinkParamValue::kMessageId)
-        {
+        if (message.msgid == MavLinkParamValue::kMessageId) {
             MavLinkParamValue param;
             param.decode(message);
-            if (std::strncmp(param.param_id, cmd.param_id, size) == 0)
-            {
-                MavLinkParameter  result;
+            if (std::strncmp(param.param_id, cmd.param_id, size) == 0) {
+                MavLinkParameter result;
                 result.name = name;
                 result.type = param.param_type;
                 result.index = param.param_index;
@@ -463,13 +456,11 @@ AsyncResult<MavLinkParameter> MavLinkNodeImpl::getParameterByIndex(int16_t index
 
     int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
         unused(connection);
-        if (message.msgid == MavLinkParamValue::kMessageId)
-        {
+        if (message.msgid == MavLinkParamValue::kMessageId) {
             MavLinkParamValue param;
             param.decode(message);
-            if (param.param_index == index)
-            {
-                MavLinkParameter  result;
+            if (param.param_index == index) {
+                MavLinkParameter result;
                 char buf[17];
                 std::memset(buf, 0, 17);
                 std::memcpy(buf, param.param_id, 16);
@@ -487,7 +478,7 @@ AsyncResult<MavLinkParameter> MavLinkNodeImpl::getParameterByIndex(int16_t index
     return asyncResult;
 }
 
-AsyncResult<bool> MavLinkNodeImpl::setParameter(MavLinkParameter  p)
+AsyncResult<bool> MavLinkNodeImpl::setParameter(MavLinkParameter p)
 {
     int size = static_cast<int>(p.name.size());
     if (size > 16) {
@@ -497,13 +488,13 @@ AsyncResult<bool> MavLinkNodeImpl::setParameter(MavLinkParameter  p)
         size++; // we can include the null terminator.
     }
     auto con = ensureConnection();
+    assertNotPublishingThread();
     AsyncResult<bool> result([=](int state) {
         con->unsubscribe(state);
     });
     bool gotit = false;
     MavLinkParameter q;
-    for (size_t i = 0; i < 3; i++)
-    {
+    for (size_t i = 0; i < 3; i++) {
         if (getParameter(p.name).wait(2000, &q)) {
             gotit = true;
             break;
@@ -523,12 +514,10 @@ AsyncResult<bool> MavLinkNodeImpl::setParameter(MavLinkParameter  p)
     // confirmation of the PARAM_SET is to receive the updated PARAM_VALUE.
     int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
         unused(connection);
-        if (message.msgid == MavLinkParamValue::kMessageId)
-        {
+        if (message.msgid == MavLinkParamValue::kMessageId) {
             MavLinkParamValue param;
             param.decode(message);
-            if (std::strncmp(param.param_id, setparam.param_id, size) == 0)
-            {
+            if (std::strncmp(param.param_id, setparam.param_id, size) == 0) {
                 bool rc = param.param_value == setparam.param_value;
                 result.setResult(rc);
             }
@@ -571,8 +560,9 @@ void MavLinkNodeImpl::sendCommand(MavLinkCommand& command)
     try {
         sendMessage(cmd);
     }
-    catch (std::exception e) {
+    catch (const std::exception& e) {
         // silently fail since we are on a background thread here...
+        unused(e);
     }
 }
 
@@ -586,14 +576,12 @@ AsyncResult<bool> MavLinkNodeImpl::sendCommandAndWaitForAck(MavLinkCommand& comm
 
     uint16_t cmd = command.command;
 
-    int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage&  message) {
+    int subscription = con->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
         unused(connection);
-        if (message.msgid == MavLinkCommandAck::kMessageId)
-        {
+        if (message.msgid == MavLinkCommandAck::kMessageId) {
             MavLinkCommandAck ack;
             ack.decode(message);
-            if (ack.command == cmd)
-            {
+            if (ack.command == cmd) {
                 MAV_RESULT ackResult = static_cast<MAV_RESULT>(ack.result);
                 if (ackResult == MAV_RESULT::MAV_RESULT_TEMPORARILY_REJECTED) {
                     Utils::log(Utils::stringf("### command %d result: MAV_RESULT_TEMPORARILY_REJECTED", cmd));

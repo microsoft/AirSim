@@ -11,22 +11,21 @@
 #include "FileSystem.hpp"
 #include "Utils.hpp"
 
-#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus >= 201700L))
 #include <filesystem>
-#define USE_CPP_FILESYSTEM
-#else
-#undef USE_CPP_FILESYSTEM
-#endif
-
+using namespace std::filesystem;
 
 using namespace mavlink_utils;
 using namespace mavlinkcom;
 
-// from main.cpp.
-
-static std::vector<Command*> const * all_commands_;
-std::vector<Command*> const * Command::getAllCommand() { return all_commands_;  }
-void Command::setAllCommand(std::vector<Command*> const * all_commands) { all_commands_ = all_commands; }
+static std::vector<Command*> const* all_commands_;
+std::vector<Command*> const* Command::getAllCommand()
+{
+    return all_commands_;
+}
+void Command::setAllCommand(std::vector<Command*> const* all_commands)
+{
+    all_commands_ = all_commands;
+}
 
 void mavlink_quaternion_to_euler(const float quaternion[4], float* roll, float* pitch, float* yaw);
 void PrintHeartbeat(const MavLinkMessage& msg);
@@ -34,7 +33,6 @@ void PrintHeartbeat(const MavLinkMessage& msg);
 Command::Command()
 {
 }
-
 
 Command::~Command()
 {
@@ -48,9 +46,8 @@ void Command::Execute(std::shared_ptr<MavLinkVehicle> com)
         Close();
     }
     this->vehicle = com;
-    
-    if (subscription == 0)
-    {
+
+    if (subscription == 0) {
         subscription = com->getConnection()->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& msg) {
             unused(connection);
             try {
@@ -66,7 +63,8 @@ void Command::Execute(std::shared_ptr<MavLinkVehicle> com)
     }
 }
 
-void Command::Close() {
+void Command::Close()
+{
 
     if (subscription != 0 && vehicle != nullptr) {
         vehicle->getConnection()->unsubscribe(subscription);
@@ -75,36 +73,30 @@ void Command::Close() {
     vehicle = nullptr;
 }
 
-
 std::vector<std::string> Command::parseArgs(std::string s)
 {
     auto start = s.begin();
     std::vector<std::string> result;
     auto theEnd = s.end();
     auto it = s.begin();
-    while (it != theEnd)
-    {
+    while (it != theEnd) {
         char ch = *it;
         if (ch == ' ' || ch == '\t' || ch == ',') {
-            if (start < it)
-            {
+            if (start < it) {
                 result.push_back(std::string(start, it));
             }
             it++;
             start = it;
         }
-        else if (*it == '"')
-        {
+        else if (*it == '"') {
             // treat literals as one word
             it++;
             start = it;
-            while (*it != '"' && it != theEnd)
-            {
+            while (*it != '"' && it != theEnd) {
                 it++;
             }
             auto end = it;
-            if (start < it)
-            {
+            if (start < it) {
                 result.push_back(std::string(start, end));
             }
             if (*it == '"') {
@@ -116,8 +108,7 @@ std::vector<std::string> Command::parseArgs(std::string s)
             it++;
         }
     }
-    if (start < theEnd)
-    {
+    if (start < theEnd) {
         result.push_back(std::string(start, s.end()));
     }
     return result;
@@ -131,8 +122,7 @@ Command* Command::create(const std::vector<std::string>& args)
     const auto& cmdTable = *all_commands_;
 
     Command* selected = nullptr;
-    for (size_t i = 0; i < cmdTable.size(); i++)
-    {
+    for (size_t i = 0; i < cmdTable.size(); i++) {
         Command* command = cmdTable.at(i);
         if (command->Parse(args))
             return command;
@@ -147,12 +137,12 @@ Command* Command::create(const std::string& line)
     return create(args);
 }
 
-bool ArmDisarmCommand::Parse(const std::vector<std::string>& args) {
+bool ArmDisarmCommand::Parse(const std::vector<std::string>& args)
+{
     this->arm = false;
     if (args.size() > 0) {
         std::string cmd = args[0];
-        if (cmd == "arm")
-        {
+        if (cmd == "arm") {
             this->arm = true;
             return true;
         }
@@ -164,10 +154,8 @@ bool ArmDisarmCommand::Parse(const std::vector<std::string>& args) {
     return false;
 }
 
-
-
-
-void ArmDisarmCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
+void ArmDisarmCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
 
     bool rc = false;
     if (com->allowFlightControlOverUsb().wait(3000, &rc)) {
@@ -198,8 +186,7 @@ bool GetParamsCommand::Parse(const std::vector<std::string>& args)
         std::string cmd = args[0];
         if (cmd == "params") {
 
-            if (args.size() > 1)
-            {
+            if (args.size() > 1) {
                 OpenLog(args[1].c_str());
             }
             return true;
@@ -213,11 +200,10 @@ void GetParamsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         auto list = com->getParamList();
         auto end = list.end();
         int count = 0;
-        for (auto iter = list.begin(); iter < end; iter++)
-        {
+        for (auto iter = list.begin(); iter < end; iter++) {
             count++;
             MavLinkParameter p = *iter;
-            if (p.type == static_cast<int>(MAV_PARAM_TYPE::MAV_PARAM_TYPE_REAL32) || 
+            if (p.type == static_cast<int>(MAV_PARAM_TYPE::MAV_PARAM_TYPE_REAL32) ||
                 p.type == static_cast<int>(MAV_PARAM_TYPE::MAV_PARAM_TYPE_REAL64)) {
                 if (ptr != nullptr) {
                     fprintf(ptr, "%s=%f\n", p.name.c_str(), p.value);
@@ -250,15 +236,12 @@ bool GetSetParamCommand::Parse(const std::vector<std::string>& args)
         if (cmd == "param") {
             get = false;
             value = 0;
-            if (args.size() > 1)
-            {
+            if (args.size() > 1) {
                 cmd = args[1];
                 if (cmd == "set") {
-                    if (args.size() > 2)
-                    {
+                    if (args.size() > 2) {
                         name = args[2];
-                        if (args.size() > 3)
-                        {
+                        if (args.size() > 3) {
                             value = static_cast<float>(atof(args[3].c_str()));
                         }
                         else {
@@ -271,11 +254,9 @@ bool GetSetParamCommand::Parse(const std::vector<std::string>& args)
                         return false;
                     }
                 }
-                else if (cmd == "get")
-                {
+                else if (cmd == "get") {
                     get = true;
-                    if (args.size() > 2)
-                    {
+                    if (args.size() > 2) {
                         name = args[2];
                     }
                     else {
@@ -294,9 +275,9 @@ void GetSetParamCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     if (get) {
         try {
-            MavLinkParameter  p;
+            MavLinkParameter p;
             if (com->getParameter(name).wait(2000, &p)) {
-                if (p.type == static_cast<int>(MAV_PARAM_TYPE::MAV_PARAM_TYPE_REAL32) || 
+                if (p.type == static_cast<int>(MAV_PARAM_TYPE::MAV_PARAM_TYPE_REAL32) ||
                     p.type == static_cast<int>(MAV_PARAM_TYPE::MAV_PARAM_TYPE_REAL64)) {
                     printf("%s=%f\n", p.name.c_str(), p.value);
                 }
@@ -308,14 +289,13 @@ void GetSetParamCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
                 printf("timeout, parameter %s not found\n", p.name.c_str());
             }
         }
-        catch (const std::exception& e)
-        {
+        catch (const std::exception& e) {
             printf("Exception: %s\n", e.what());
         }
     }
     else {
         try {
-            MavLinkParameter  p;
+            MavLinkParameter p;
             p.name = name;
             p.index = -1;
             p.value = value;
@@ -323,8 +303,7 @@ void GetSetParamCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
             com->setParameter(p);
             printf("success\n");
         }
-        catch (const std::exception& e)
-        {
+        catch (const std::exception& e) {
             printf("Exception: %s\n", e.what());
         }
     }
@@ -336,8 +315,7 @@ bool TakeOffCommand::Parse(const std::vector<std::string>& args)
         std::string cmd = args[0];
         if (cmd == "takeoff") {
             altitude = 0;
-            if (args.size() > 1)
-            {
+            if (args.size() > 1) {
                 altitude = static_cast<float>(atof(args[1].c_str()));
                 if (altitude > 0) {
                     return true;
@@ -369,11 +347,11 @@ void TakeOffCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         else {
             printf("failed\n");
         }
-    } else {
+    }
+    else {
         printf("Timeout waiting for ACK from takeoff command\n");
     }
 }
-
 
 bool DumpLogCommandsCommand::Parse(const std::vector<std::string>& args)
 {
@@ -385,7 +363,7 @@ bool DumpLogCommandsCommand::Parse(const std::vector<std::string>& args)
         if (args.size() > 1) {
             log_folder_ = std::string(args.at(1));
             return true;
-        } 
+        }
         else {
             printf("Usage: dumplogcommands <log_folder>\n");
         }
@@ -406,8 +384,7 @@ void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::
         if (log_start_timestamp == 0)
             log_start_timestamp = log_timestamp;
 
-        switch (msg.msgid)
-        {
+        switch (msg.msgid) {
         case MavLinkStatustext::kMessageId: {
             MavLinkStatustext status_msg;
             status_msg.decode(msg);
@@ -445,7 +422,7 @@ void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::
                 if (std::isnan(x_start)) {
                     x_start = pos_msg.x;
                     y_start = pos_msg.y;
-                    z_start = pos_msg.z; 
+                    z_start = pos_msg.z;
                 }
                 else {
                     pos_log_file << log_timestamp - command_start_timestamp << "\t" << heading << "\t";
@@ -466,15 +443,6 @@ void DumpLogCommandsCommand::processLogCommands(MavLinkFileLog& log, const std::
 void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     unused(com);
-//TODO: make below future proof (i.e. usable by C++17 compiler) - also change same in main.cpp
-#if defined(USE_CPP_FILESYSTEM)
-//can't use experimental stuff on Linux because of potential ABI issues
-#if defined(_WIN32) || ((defined __cplusplus) && (__cplusplus < 201700L))
-    using namespace std::experimental::filesystem;
-#else
-    using namespace std::filesystem;
-#endif
-
     path dirPath(log_folder_);
 
     for (directory_iterator next(dirPath), end; next != end; ++next) {
@@ -491,11 +459,7 @@ void DumpLogCommandsCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     }
 
     printf("dumplogcommands is done\n");
-#else
-    printf("dumplogcommands is available only with C++17 features\n");
-#endif
 }
-
 
 bool PlayLogCommand::Parse(const std::vector<std::string>& args)
 {
@@ -507,8 +471,7 @@ bool PlayLogCommand::Parse(const std::vector<std::string>& args)
 
     std::string cmd = args[0];
     if (cmd == "playlog") {
-        for (size_t i = 1; i < args.size(); i++)
-        {
+        for (size_t i = 1; i < args.size(); i++) {
             std::string arg = args.at(i);
             if (arg == "-sync") {
                 this->_syncParams = true;
@@ -532,7 +495,7 @@ bool PlayLogCommand::Parse(const std::vector<std::string>& args)
 
 void SyncParamValue(std::shared_ptr<MavLinkVehicle> com, std::vector<MavLinkParameter>& params, MavLinkParamValue& param)
 {
-    MavLinkParameter  p;
+    MavLinkParameter p;
     p.index = param.param_index;
     p.type = param.param_type;
     char buf[17];
@@ -541,13 +504,14 @@ void SyncParamValue(std::shared_ptr<MavLinkVehicle> com, std::vector<MavLinkPara
     p.name = buf;
     p.value = param.param_value;
 
-    for (auto iter = params.begin(), end = params.end(); iter != end; iter++)
-    {
+    for (auto iter = params.begin(), end = params.end(); iter != end; iter++) {
         MavLinkParameter q = *iter;
         if (q.name == p.name) {
             if (q.value != p.value) {
                 printf("Parameter %s has different value %f, recorded value was %f\n",
-                    p.name.c_str(), q.value, p.value);
+                       p.name.c_str(),
+                       q.value,
+                       p.value);
                 if (p.name.substr(0, 3) == "MC_") {
                     // these PID values are important, so set these to match
                     bool r;
@@ -610,10 +574,9 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
             playback_start_timestamp -= waitMicros;
         }
 
-        switch (msg.msgid)
-        {
+        switch (msg.msgid) {
         case MavLinkStatustext::kMessageId: {
-            
+
             MavLinkStatustext status_msg;
             status_msg.decode(msg);
             if (std::strstr(status_msg.text, kCommandLogPrefix) == status_msg.text) {
@@ -632,7 +595,8 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
                     }
                     currentCommand = command;
                     currentCommand->Execute(com);
-                } catch (std::exception& e) {
+                }
+                catch (std::exception& e) {
                     printf("Error: %s\n", e.what());
                 }
             }
@@ -679,8 +643,7 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
             break;
         }
-        case MavLinkParamValue::kMessageId:
-        {
+        case MavLinkParamValue::kMessageId: {
             if (this->_syncParams) {
                 MavLinkParamValue param;
                 param.decode(msg);
@@ -698,36 +661,33 @@ void PlayLogCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
 void TakeOffCommand::HandleMessage(const MavLinkMessage& msg)
 {
-    if (msg.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_GPS_RAW_INT))
-    {
-        // The global position, as returned by the Global Positioning System (GPS).		
+    if (msg.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_GPS_RAW_INT)) {
+        // The global position, as returned by the Global Positioning System (GPS).
         MavLinkGpsRawInt rawGps;
         rawGps.decode(msg);
         float lat = static_cast<float>(static_cast<double>(rawGps.lat) / 1e7);
         float lon = static_cast<float>(static_cast<double>(rawGps.lon) / 1e7);
         float alt = static_cast<float>(static_cast<double>(rawGps.alt) / 1000);
-        if (!reached && alt >= targetAlt - delta && alt <= targetAlt + delta)
-        {
+        if (!reached && alt >= targetAlt - delta && alt <= targetAlt + delta) {
             reached = true;
             Close(); // stop listening.
             printf("Target altitude reached at lat=%f, long=%f, alt=%f\n", lat, lon, alt);
         }
     }
-    else if (msg.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_EXTENDED_SYS_STATE))
-    {
+    else if (msg.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_EXTENDED_SYS_STATE)) {
         // Provides state for additional features
         // The general system state
         MavLinkExtendedSysState status;
         status.decode(msg);
-        if (!offground && status.landed_state == static_cast<uint8_t>(MAV_LANDED_STATE::MAV_LANDED_STATE_IN_AIR))
-        {
+        if (!offground && status.landed_state == static_cast<uint8_t>(MAV_LANDED_STATE::MAV_LANDED_STATE_IN_AIR)) {
             printf("Drone has left the ground\n");
             offground = true;
         }
     }
 }
 
-bool LandCommand::Parse(const std::vector<std::string>& args) {
+bool LandCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "land") {
@@ -737,7 +697,8 @@ bool LandCommand::Parse(const std::vector<std::string>& args) {
     return false;
 }
 
-void LandCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
+void LandCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
 
     // subscribe to get subsequent messages so we can track our progress towards the requested altitude.
     Command::Execute(com);
@@ -753,21 +714,20 @@ void LandCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
         else {
             printf("failed\n");
         }
-    } else {
+    }
+    else {
         printf("timeout waiting for ACT from land command\n");
     }
 }
 
 void LandCommand::HandleMessage(const MavLinkMessage& message)
 {
-    if (message.msgid == MavLinkExtendedSysState::kMessageId)
-    {
+    if (message.msgid == MavLinkExtendedSysState::kMessageId) {
         // Provides state for additional features
         // The general system state
         MavLinkExtendedSysState status;
         status.decode(message);
-        if (!landed && status.landed_state == static_cast<uint8_t>(MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND))
-        {
+        if (!landed && status.landed_state == static_cast<uint8_t>(MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND)) {
             printf("Drone has landed\n");
             Close();
             landed = true;
@@ -775,7 +735,8 @@ void LandCommand::HandleMessage(const MavLinkMessage& message)
     }
 }
 
-bool RtlCommand::Parse(const std::vector<std::string>& args) {
+bool RtlCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "rtl") {
@@ -784,7 +745,8 @@ bool RtlCommand::Parse(const std::vector<std::string>& args) {
     }
     return false;
 }
-void RtlCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
+void RtlCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
 
     // subscribe to get subsequent messages so we can track our progress towards the requested altitude.
     Command::Execute(com);
@@ -806,14 +768,12 @@ void RtlCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
 
 void RtlCommand::HandleMessage(const MavLinkMessage& message)
 {
-    if (message.msgid == MavLinkExtendedSysState::kMessageId)
-    {
+    if (message.msgid == MavLinkExtendedSysState::kMessageId) {
         // Provides state for additional features
         // The general system state
         MavLinkExtendedSysState status;
         status.decode(message);
-        if (!landed && status.landed_state == static_cast<uint8_t>(MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND))
-        {
+        if (!landed && status.landed_state == static_cast<uint8_t>(MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND)) {
             printf("Drone has landed\n");
             Close();
             landed = true;
@@ -821,7 +781,8 @@ void RtlCommand::HandleMessage(const MavLinkMessage& message)
     }
 }
 
-bool LoiterCommand::Parse(const std::vector<std::string>& args) {
+bool LoiterCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "loiter") {
@@ -846,7 +807,8 @@ void LoiterCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     }
 }
 
-bool RequestImageCommand::Parse(const std::vector<std::string>& args) {
+bool RequestImageCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "req_img") {
@@ -867,18 +829,17 @@ void RequestImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
 void RequestImageCommand::HandleMessage(const MavLinkMessage& msg)
 {
-    if (msg.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_ENCAPSULATED_DATA))
-    {
+    if (msg.msgid == static_cast<uint8_t>(MavLinkMessageIds::MAVLINK_MSG_ID_ENCAPSULATED_DATA)) {
         MavLinkVideoClient::MavLinkVideoFrame image;
-        if (stream->readNextFrame(image))
-        {
+        if (stream->readNextFrame(image)) {
             printf("image received of size %d\n", static_cast<int>(image.data.size()));
             Close();
         }
     }
 }
 
-bool MissionCommand::Parse(const std::vector<std::string>& args) {
+bool MissionCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "mission") {
@@ -887,7 +848,8 @@ bool MissionCommand::Parse(const std::vector<std::string>& args) {
     }
     return false;
 }
-void MissionCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
+void MissionCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
 
     Command::Execute(com);
     printf("Executing preprogrammed mission (if there is one)...\n");
@@ -896,14 +858,12 @@ void MissionCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
 
 void MissionCommand::HandleMessage(const MavLinkMessage& message)
 {
-    if (message.msgid == MavLinkExtendedSysState::kMessageId)
-    {
+    if (message.msgid == MavLinkExtendedSysState::kMessageId) {
         // Provides state for additional features
         // The general system state
         MavLinkExtendedSysState status;
         status.decode(message);
-        if (!landed && status.landed_state == static_cast<uint8_t>(MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND))
-        {
+        if (!landed && status.landed_state == static_cast<uint8_t>(MAV_LANDED_STATE::MAV_LANDED_STATE_ON_GROUND)) {
             printf("Drone has landed\n");
             Close();
             landed = true;
@@ -911,7 +871,8 @@ void MissionCommand::HandleMessage(const MavLinkMessage& message)
     }
 }
 
-bool PositionCommand::Parse(const std::vector<std::string>& args) {
+bool PositionCommand::Parse(const std::vector<std::string>& args)
+{
 
     this->printLocalPosition = true;
     this->printGlobalosition = true;
@@ -920,8 +881,7 @@ bool PositionCommand::Parse(const std::vector<std::string>& args) {
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "pos" || cmd == "position") {
-            if (args.size() > 1)
-            {
+            if (args.size() > 1) {
                 std::string arg = args[1];
                 if (arg == "home") {
                     this->setHome = true;
@@ -966,7 +926,6 @@ void PositionCommand::HandleMessage(const MavLinkMessage& message)
         MavLinkLocalPositionNed pos;
         pos.decode(message);
         printf("Local Position: x=%f, y=%f, z=%f\n", pos.x, pos.y, pos.z);
-
     }
 }
 
@@ -976,8 +935,7 @@ bool FakeGpsCommand::Parse(const std::vector<std::string>& args)
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "fakegps") {
-            if (args.size() > 1)
-            {
+            if (args.size() > 1) {
                 std::string arg = args[1];
                 if (arg == "start") {
                     start();
@@ -996,14 +954,16 @@ bool FakeGpsCommand::Parse(const std::vector<std::string>& args)
     return false;
 }
 
-void FakeGpsCommand::stop() {
+void FakeGpsCommand::stop()
+{
     started = false;
     if (hil_thread.joinable()) {
         hil_thread.join();
     }
 }
 
-void FakeGpsCommand::start() {
+void FakeGpsCommand::start()
+{
     stop();
     started = true;
     Utils::cleanupThread(hil_thread);
@@ -1020,7 +980,7 @@ void FakeGpsCommand::Execute(std::shared_ptr<MavLinkVehicle> mav)
 float FakeGpsCommand::addNoise(float x, float scale)
 {
     // generate random between 0 and 1
-    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX); 
+    float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
     // move to range -1 to 1
     r = (r * 2) - 1;
     // scale it
@@ -1036,7 +996,7 @@ void FakeGpsCommand::GpsThread()
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    MavLinkParameter  p;
+    MavLinkParameter p;
     p.name = "MAV_USEHILGPS";
     p.index = -1;
     p.value = 1;
@@ -1053,9 +1013,9 @@ void FakeGpsCommand::GpsThread()
         // MAVLINK_MSG_ID_HIL_GPS
         MavLinkHilGps gps;
         gps.time_usec = usec;
-        gps.alt = static_cast<int32_t>(addNoise(122.0f,1) * 1E3);
-        gps.lat = static_cast<int32_t>(addNoise(47.642406f,0.000001f) * 1E7);
-        gps.lon = static_cast<int32_t>(addNoise(-122.140977f,0.000001f) * 1E7);
+        gps.alt = static_cast<int32_t>(addNoise(122.0f, 1) * 1E3);
+        gps.lat = static_cast<int32_t>(addNoise(47.642406f, 0.000001f) * 1E7);
+        gps.lon = static_cast<int32_t>(addNoise(-122.140977f, 0.000001f) * 1E7);
         gps.eph = static_cast<uint16_t>(addNoise(1, 0.1f) * 100);
         gps.epv = static_cast<uint16_t>(addNoise(1, 0.1f) * 100);
         gps.fix_type = 3;
@@ -1063,7 +1023,7 @@ void FakeGpsCommand::GpsThread()
         gps.vd = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
         gps.ve = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
         gps.vn = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
-        gps.vel = static_cast<uint16_t>(std::abs(addNoise(0, 0.1f) * 100));// cm/s
+        gps.vel = static_cast<uint16_t>(std::abs(addNoise(0, 0.1f) * 100)); // cm/s
         gps.cog = static_cast<int16_t>(addNoise(0, 0.3f) * 100); // degrees * 100
         if (com != nullptr) {
             com->sendMessage(gps);
@@ -1087,8 +1047,7 @@ bool HilCommand::Parse(const std::vector<std::string>& args)
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "hil") {
-            if (args.size() > 1)
-            {
+            if (args.size() > 1) {
                 std::string arg = args[1];
                 if (arg == "start") {
                     start();
@@ -1107,7 +1066,8 @@ bool HilCommand::Parse(const std::vector<std::string>& args)
     return false;
 }
 
-void HilCommand::stop() {
+void HilCommand::stop()
+{
 
     started = false;
     if (hil_thread.joinable()) {
@@ -1115,7 +1075,8 @@ void HilCommand::stop() {
     }
 }
 
-void HilCommand::start() {
+void HilCommand::start()
+{
     stop();
     started = true;
 
@@ -1151,14 +1112,13 @@ void HilCommand::HilThread()
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode 
+    // add MAV_MODE_FLAG_HIL_ENABLED flag to current mode
     int mode = com->getVehicleState().mode;
     mode |= static_cast<int>(MAV_MODE_FLAG::MAV_MODE_FLAG_HIL_ENABLED);
     MavCmdDoSetMode cmd;
     cmd.command = static_cast<uint16_t>(MAV_CMD::MAV_CMD_DO_SET_MODE);
     cmd.Mode = static_cast<float>(mode);
     com->sendCommand(cmd);
-
 
     while (started) {
         slices++;
@@ -1198,7 +1158,7 @@ void HilCommand::HilThread()
             gps.vd = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
             gps.ve = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
             gps.vn = static_cast<int16_t>(addNoise(0, 0.1f) * 100); // cm/s
-            gps.vel = static_cast<uint16_t>(std::abs(addNoise(0, 0.1f) * 100));// cm/s
+            gps.vel = static_cast<uint16_t>(std::abs(addNoise(0, 0.1f) * 100)); // cm/s
             gps.cog = static_cast<int16_t>(addNoise(0, 0.3f) * 100); // degrees * 100
             if (com != nullptr) {
                 com->sendMessage(gps);
@@ -1216,7 +1176,8 @@ void HilCommand::HilThread()
     com->sendCommand(cmd);
 }
 
-bool BatteryCommand::Parse(const std::vector<std::string>& args) {
+bool BatteryCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "battery") {
@@ -1234,8 +1195,7 @@ void BatteryCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
 void BatteryCommand::HandleMessage(const MavLinkMessage& message)
 {
-    if (!got_battery_ && MavLinkBatteryStatus::kMessageId)
-    {
+    if (!got_battery_ && MavLinkBatteryStatus::kMessageId) {
         MavLinkBatteryStatus status;
         status.decode(message);
         got_battery_ = true;
@@ -1243,8 +1203,8 @@ void BatteryCommand::HandleMessage(const MavLinkMessage& message)
     }
 }
 
-
-bool StatusCommand::Parse(const std::vector<std::string>& args) {
+bool StatusCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "status") {
@@ -1264,7 +1224,6 @@ void StatusCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
 extern void PrintSystemStatus(MavLinkSysStatus& status);
 
-
 // Enumeration of landed detector states
 const static char* MAV_LANDED_STATE_NAMES[]{
     // MAV landed state is unknown
@@ -1275,19 +1234,16 @@ const static char* MAV_LANDED_STATE_NAMES[]{
     "MAV_LANDED_STATE_IN_AIR",
 };
 
-
 void StatusCommand::HandleMessage(const MavLinkMessage& message)
 {
-    if (printStatus && MavLinkSysStatus::kMessageId)
-    {
+    if (printStatus && MavLinkSysStatus::kMessageId) {
         MavLinkSysStatus status;
         status.decode(message);
 
         PrintSystemStatus(status);
         printStatus = false;
     }
-    if (printExtStatus && message.msgid == MavLinkExtendedSysState::kMessageId)
-    {
+    if (printExtStatus && message.msgid == MavLinkExtendedSysState::kMessageId) {
         MavLinkExtendedSysState status;
         status.decode(message);
 
@@ -1313,23 +1269,21 @@ void StatusCommand::HandleMessage(const MavLinkMessage& message)
         float alt = static_cast<float>(home.altitude) / 1E3f;
         printf("Home Position: lat=%f, lon=%f, alt=%f\n", lat, lon, alt);
     }
-
 }
 
-bool SendImageCommand::Parse(const std::vector<std::string>& args) {
+bool SendImageCommand::Parse(const std::vector<std::string>& args)
+{
     fileName = "";
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "sendimage") {
-            if (args.size() == 4)
-            {
+            if (args.size() == 4) {
                 fileName = Utils::trim(args[1], '"');
                 width = atoi(args[2].c_str());
                 height = atoi(args[3].c_str());
                 return true;
             }
-            else
-            {
+            else {
                 printf("sendimage is missing some argument\n");
             }
         }
@@ -1337,7 +1291,8 @@ bool SendImageCommand::Parse(const std::vector<std::string>& args) {
     return false;
 }
 
-class StreamBuffer {
+class StreamBuffer
+{
     size_t size = 0;
 
 public:
@@ -1346,8 +1301,7 @@ public:
 
     void Write(char* bytes, size_t len)
     {
-        if (length + len > size)
-        {
+        if (length + len > size) {
             size_t newLen = size * 2;
             if (newLen < size + len) {
                 newLen = size + len;
@@ -1366,7 +1320,8 @@ public:
         length += len;
     }
 
-    ~StreamBuffer() {
+    ~StreamBuffer()
+    {
         if (buffer != nullptr) {
             delete[] buffer;
         }
@@ -1376,8 +1331,7 @@ public:
 void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     unused(com);
-    if (logViewer.get() == nullptr)
-    {
+    if (logViewer.get() == nullptr) {
         printf("sendimage needs a logviewer (use -log on the command line)\n");
         return;
     }
@@ -1399,8 +1353,7 @@ void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     }
 
     FILE* fptr = fopen(fileName.c_str(), "rb");
-    if (fptr == nullptr)
-    {
+    if (fptr == nullptr) {
         printf("Error opening file '%s'\n", fileName.c_str());
         return;
     }
@@ -1428,7 +1381,8 @@ void SendImageCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     stream.sendFrame(reinterpret_cast<uint8_t*>(sbuf.buffer), static_cast<uint32_t>(len), width, height, type, 100);
 }
 
-bool CapabilitiesCommand::Parse(const std::vector<std::string>& args) {
+bool CapabilitiesCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "cap" || cmd == "capabilities") {
@@ -1440,8 +1394,7 @@ bool CapabilitiesCommand::Parse(const std::vector<std::string>& args) {
 void CapabilitiesCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     MavLinkAutopilotVersion ver;
-    if (com->getCapabilities().wait(10000, &ver)) 
-    {
+    if (com->getCapabilities().wait(10000, &ver)) {
         printf("AUTOPILOT_VERSION: \n");
         printf("    capabilities: %lx\n", static_cast<long unsigned int>(ver.capabilities));
 
@@ -1493,7 +1446,8 @@ void CapabilitiesCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     }
 }
 
-bool GotoCommand::Parse(const std::vector<std::string>& args) {
+bool GotoCommand::Parse(const std::vector<std::string>& args)
+{
     cruise_speed_ = 0;
     if (args.size() > 0) {
         std::string cmd = args[0];
@@ -1519,7 +1473,7 @@ bool GotoCommand::Parse(const std::vector<std::string>& args) {
                 }
 
                 if (args.size() == 5) {
-                    cruise_speed_ = static_cast<float>(atof(args[4].c_str()));		
+                    cruise_speed_ = static_cast<float>(atof(args[4].c_str()));
                     if (cruise_speed_ < 0 || cruise_speed_ > 10) {
                         printf("### invalid speed, 0 < speed < 10\n");
                         return false;
@@ -1535,7 +1489,8 @@ bool GotoCommand::Parse(const std::vector<std::string>& args) {
     return false;
 }
 
-void GotoCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
+void GotoCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
     this->channel = com;
     this->requestedControl = false;
     this->targetReached = false;
@@ -1572,8 +1527,7 @@ void GotoCommand::Close()
 
 void GotoCommand::HandleMessage(const MavLinkMessage& message)
 {
-    switch (message.msgid)
-    {
+    switch (message.msgid) {
     case MavLinkLocalPositionNed::kMessageId: // MAVLINK_MSG_ID_LOCAL_POSITION_NED:
     {
         // The filtered local position
@@ -1591,10 +1545,10 @@ void GotoCommand::HandleMessage(const MavLinkMessage& message)
             return;
         }
 
-        if (!this->requestedControl || ! channel->hasOffboardControl()) {
+        if (!this->requestedControl || !channel->hasOffboardControl()) {
             return;
         }
-        
+
         if (!this->hasLocalPosition) {
             this->hasLocalPosition = true;
             HasLocalPosition();
@@ -1605,10 +1559,9 @@ void GotoCommand::HandleMessage(const MavLinkMessage& message)
         if (targetPosition) {
             // must send these regularly to keep offboard control.
             channel->moveToLocalPosition(tx, ty, tz, is_yaw, static_cast<float>(theading * M_PI / 180));
-            
+
             if (this->hasLocalPosition) {
-                if (!targetReached && std::abs(x - tx) < nearDelta && std::abs(y - ty) < nearDelta)
-                {
+                if (!targetReached && std::abs(x - tx) < nearDelta && std::abs(y - ty) < nearDelta) {
                     targetReached = true;
                 }
                 if (targetReached && !settled && (fabs(this->vx) + std::abs(this->vy) + std::abs(this->vz) < almostStationery)) {
@@ -1651,10 +1604,10 @@ void GotoCommand::HandleMessage(const MavLinkMessage& message)
 
 void GotoCommand::UpdateTarget()
 {
-
 }
 
-void GotoCommand::HasLocalPosition() {
+void GotoCommand::HasLocalPosition()
+{
     Goto(tx, ty, tz, -1, yaw);
 }
 
@@ -1703,7 +1656,8 @@ void GotoCommand::TargetReached()
     printf("target reached\n");
 }
 
-bool OrbitCommand::Parse(const std::vector<std::string>& args) {
+bool OrbitCommand::Parse(const std::vector<std::string>& args)
+{
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "orbit") {
@@ -1715,8 +1669,7 @@ bool OrbitCommand::Parse(const std::vector<std::string>& args) {
                     return false;
                 }
             }
-            else
-            {
+            else {
                 printf("orbit - expecting radius argument\n");
                 return false;
             }
@@ -1734,7 +1687,8 @@ bool OrbitCommand::Parse(const std::vector<std::string>& args) {
     return false;
 }
 
-void OrbitCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
+void OrbitCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
+{
 
     if (!com->isLocalControlSupported()) {
         throw std::runtime_error(Utils::stringf("Your drone does not support the MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED capability."));
@@ -1746,14 +1700,15 @@ void OrbitCommand::Execute(std::shared_ptr<MavLinkVehicle> com) {
     startAngle = 0;
     startTime = 0;
     orbits = 0;
-    halfWay = false;    
-    previousAngle = 0;	
+    halfWay = false;
+    previousAngle = 0;
     orbitSpeed = 0;
     printf("waiting for local position...\n");
     GotoCommand::Execute(com);
 }
 
-void OrbitCommand::HasLocalPosition() {
+void OrbitCommand::HasLocalPosition()
+{
 
     // fly to radius
     flyingToRadius = true;
@@ -1768,7 +1723,8 @@ void OrbitCommand::HasLocalPosition() {
     printf("Flying to orbit rim...\n");
 }
 
-double pin(double value, double max) {
+double pin(double value, double max)
+{
     if (value > max) {
         return max;
     }
@@ -1794,11 +1750,10 @@ void OrbitCommand::UpdateTarget()
             orbiting = true;
             orbitSpeed = 0;
             flyingToRadius = false;
-        }		
+        }
         MoveAltHold(static_cast<float>(newvx), static_cast<float>(newvy), cz, 180);
     }
-    else if (orbiting)
-    {
+    else if (orbiting) {
         // heading points to center of circle.
         float dx = x - cx;
         float dy = y - cy;
@@ -1808,7 +1763,7 @@ void OrbitCommand::UpdateTarget()
             angle += static_cast<float>(M_PI * 2);
         }
 
-        float actualRadius = sqrtf((dx*dx) + (dy*dy));
+        float actualRadius = sqrtf((dx * dx) + (dy * dy));
         float degrees = static_cast<float>(angle * 180 / M_PI);
         if (degrees > 360) {
             degrees -= 360;
@@ -1818,8 +1773,7 @@ void OrbitCommand::UpdateTarget()
         float heading = degrees + 180; // point the camera towards the center of the circle.
 
         float correction = (radius - actualRadius) / radius;
-        if (previousCorrection != 0)
-        {
+        if (previousCorrection != 0) {
             if (std::fabs(correction) > std::fabs(previousCorrection)) {
                 if (correctionFactor < 30) {
                     correctionFactor++;
@@ -1854,8 +1808,7 @@ void OrbitCommand::UpdateTarget()
 
         MoveAltHold(static_cast<float>(newvx), static_cast<float>(newvy), cz, heading);
 
-        if (logViewer.get() != nullptr)
-        {
+        if (logViewer.get() != nullptr) {
             // monitor the sin curves so we can see how on track or off track it actually is.
             // the shape of the curve will also tell us if we are progressing at a consistent
             // speed, the more deformed the sin curve the worse our progress.
@@ -1874,20 +1827,16 @@ void OrbitCommand::UpdateTarget()
     }
 }
 
-
 void OrbitCommand::MeasureTime(float degrees)
 {
-    if (startTime == 0)
-    {
+    if (startTime == 0) {
         startAngle = degrees;
         startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     }
-    else if (!halfWay && std::fabs(startAngle - degrees) >= 180)
-    {
+    else if (!halfWay && std::fabs(startAngle - degrees) >= 180) {
         halfWay = true;
     }
-    else if (halfWay && degrees < previousAngle)
-    {
+    else if (halfWay && degrees < previousAngle) {
         // degrees just flipped from 359 to 0.
         auto endTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         auto durationMs = endTime - startTime;
@@ -1897,7 +1846,6 @@ void OrbitCommand::MeasureTime(float degrees)
     }
     previousAngle = degrees;
 }
-
 
 bool RotateCommand::Parse(const std::vector<std::string>& args)
 {
@@ -1910,20 +1858,17 @@ bool RotateCommand::Parse(const std::vector<std::string>& args)
                 cmd_ = arg;
 
                 // this enables us to test what happens when offboard control is lost and resumed.
-                if (arg == "resume" || arg == "pause")
-                {
+                if (arg == "resume" || arg == "pause") {
                     return true;
                 }
                 speed_ = static_cast<float>(atof(arg.c_str()));
             }
-            else 
-            {
+            else {
                 speed_ = 10;
             }
             return true;
         }
     }
-
 
     return false;
 }
@@ -1934,16 +1879,13 @@ void RotateCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         throw std::runtime_error(Utils::stringf("Your drone does not support the MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED capability."));
     }
 
-    if (cmd_ == "resume")
-    {
+    if (cmd_ == "resume") {
         this->Resume();
     }
-    else if (cmd_ == "pause")
-    {
+    else if (cmd_ == "pause") {
         this->Pause();
     }
-    else
-    {
+    else {
         start_ = false;
         printf("rotating at current position at %f degrees/second\n", static_cast<float>(speed_));
         GotoCommand::Execute(com);
@@ -1980,8 +1922,6 @@ void RotateCommand::UpdateTarget()
     }
 }
 
-
-
 bool SquareCommand::Parse(const std::vector<std::string>& args)
 {
     if (args.size() > 0) {
@@ -1995,7 +1935,7 @@ bool SquareCommand::Parse(const std::vector<std::string>& args)
                     printf("invalid length '%f', expecting 1 < length < 100 ", length_);
                     return false;
                 }
-            } 
+            }
             if (args.size() > 2) {
                 speed_ = static_cast<float>(atof(args[2].c_str()));
                 if (speed_ < 0.1 || speed_ > 10) {
@@ -2008,7 +1948,6 @@ bool SquareCommand::Parse(const std::vector<std::string>& args)
         }
     }
 
-
     return false;
 }
 
@@ -2018,14 +1957,15 @@ void SquareCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
         throw std::runtime_error(Utils::stringf("Your drone does not support the MAV_PROTOCOL_CAPABILITY_SET_POSITION_TARGET_LOCAL_NED capability."));
     }
     started_ = false;
-    leg_ = 0;	
+    leg_ = 0;
     near = speed_;
     printf("executing a square pattern of length %f and at %f m/s\n", length_, speed_);
     GotoCommand::Execute(com);
 }
 
-void SquareCommand::setNextTarget() {
-    
+void SquareCommand::setNextTarget()
+{
+
     switch (leg_) {
     case 0:
         printf("Driving north\n");
@@ -2051,7 +1991,7 @@ void SquareCommand::setNextTarget() {
     case 3:
         printf("Driving west\n");
         tx = sx_;
-        ty = sy_ ;
+        ty = sy_;
         tz = sz_;
         tvx = 0;
         theading = 0;
@@ -2059,15 +1999,15 @@ void SquareCommand::setNextTarget() {
     default:
         break;
     }
-
-
 }
 
 void SquareCommand::HasLocalPosition()
 {
     if (!started_) {
         theading = 0;
-        sx_ = x; sy_ = y; sz_ = z;
+        sx_ = x;
+        sy_ = y;
+        sz_ = z;
         started_ = true;
         // ok, now we can start moving by velocity
         setNextTarget();
@@ -2079,10 +2019,9 @@ void SquareCommand::UpdateTarget()
     if (started_) {
         float dx = tx - x;
         float dy = ty - y;
-        float dist = sqrtf((dx*dx) + (dy*dy));
+        float dist = sqrtf((dx * dx) + (dy * dy));
 
-        if (std::abs(dx) < near && std::abs(dy) < near)
-        {
+        if (std::abs(dx) < near && std::abs(dy) < near) {
             leg_++;
             if (leg_ == 4) leg_ = 0;
             setNextTarget();
@@ -2090,8 +2029,7 @@ void SquareCommand::UpdateTarget()
             // recompute to new target.
             dx = tx - x;
             dy = ty - y;
-            dist = sqrtf((dx*dx) + (dy*dy));
-
+            dist = sqrtf((dx * dx) + (dy * dy));
         }
 
         if (dist > speed_) {
@@ -2117,22 +2055,19 @@ bool WiggleCommand::Parse(const std::vector<std::string>& args)
             wiggle_size_ = 2;
             wiggle_angle_ = 10;
 
-            if (args.size() > 1)
-            {
+            if (args.size() > 1) {
                 wiggle_size_ = static_cast<float>(atof(args[1].c_str()));
             }
-            if (args.size() > 2)
-            {
+            if (args.size() > 2) {
                 wiggle_angle_ = static_cast<float>(atof(args[2].c_str()));
             }
-            if (args.size() > 3)
-            {
+            if (args.size() > 3) {
                 auto axis = args[3];
                 if (axis == "x") {
                     xaxis_ = true;
                 }
             }
-            
+
             return true;
         }
     }
@@ -2159,7 +2094,7 @@ void WiggleCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
     meter_.reset();
 
-    // start by moving right with 10 degree roll.    
+    // start by moving right with 10 degree roll.
     targetAngle_ = wiggle_angle_;
     ready_ = false;
     started_ = true;
@@ -2167,16 +2102,13 @@ void WiggleCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
 void WiggleCommand::HandleMessage(const MavLinkMessage& message)
 {
-    if (!started_)
-    {
+    if (!started_) {
         // haven't started yet.
         return;
     }
 
-    switch (message.msgid)
-    {
-    case MavLinkAttitudeTarget::kMessageId:
-    {
+    switch (message.msgid) {
+    case MavLinkAttitudeTarget::kMessageId: {
         _current.decode(message);
         if (!ready_) {
             ready_ = true;
@@ -2191,8 +2123,7 @@ void WiggleCommand::HandleMessage(const MavLinkMessage& message)
         }
         break;
     }
-    case MavLinkLocalPositionNed::kMessageId:
-    {
+    case MavLinkLocalPositionNed::kMessageId: {
         if (!ready_) {
             return;
         }
@@ -2219,7 +2150,7 @@ void WiggleCommand::HandleMessage(const MavLinkMessage& message)
 
 void WiggleCommand::wiggleX(const MavLinkLocalPositionNed& pos)
 {
-    // track how our actual pitch is coming along compared to our target 
+    // track how our actual pitch is coming along compared to our target
     float roll, pitch;
 
     // and check position
@@ -2235,8 +2166,7 @@ void WiggleCommand::wiggleX(const MavLinkLocalPositionNed& pos)
     float thrust = start_thrust_ + ctrl;
 
     // passed the midpoint.
-    if ((previous_ > 0 && pos.vx < 0) || (previous_ < 0 && pos.vx > 0))
-    {
+    if ((previous_ > 0 && pos.vx < 0) || (previous_ < 0 && pos.vx > 0)) {
         DebugOutput("wiggle velocity flipped");
         flipped_ = true;
     }
@@ -2254,16 +2184,14 @@ void WiggleCommand::wiggleX(const MavLinkLocalPositionNed& pos)
 
     // see if we just crossed the wiggle distance threshold.
     // (pitch affects the x-position).
-    if (flipped_ && targetAngle_ > 0 && dx > wiggle_size_)
-    {
+    if (flipped_ && targetAngle_ > 0 && dx > wiggle_size_) {
         flipped_ = false;
         // reverse direction with a -30 degrees quick stop
         targetAngle_ = static_cast<float>(-wiggle_angle_);
         pitch = targetAngle_;
         DebugOutput("wiggle reversing direction");
     }
-    else if (flipped_ && targetAngle_ < 0 && dx < -wiggle_size_)
-    {
+    else if (flipped_ && targetAngle_ < 0 && dx < -wiggle_size_) {
         flipped_ = false;
         // reverse direction with a 30 degrees quick stop
         targetAngle_ = static_cast<float>(wiggle_angle_);
@@ -2278,12 +2206,11 @@ void WiggleCommand::wiggleX(const MavLinkLocalPositionNed& pos)
     //DebugOutput("ctrl=%f, sz=%f, z=%f, dz=%f, new thrust=%f", ctrl, sz_, z, sz_ - z, thrust);
     roll = static_cast<float>(roll * 180.0f / M_PI);
     vehicle->moveByAttitude(roll, pitch, 0.0f, 0, 0, 0, thrust);
-
 }
 void WiggleCommand::wiggleY(const MavLinkLocalPositionNed& pos)
 {
 
-    // track how our actual roll is coming along compared to our target 
+    // track how our actual roll is coming along compared to our target
     float roll, pitch;
 
     // and check position
@@ -2299,8 +2226,7 @@ void WiggleCommand::wiggleY(const MavLinkLocalPositionNed& pos)
     float thrust = start_thrust_ + ctrl;
 
     // passed the midpoint.
-    if ((previous_ > 0 && pos.vy < 0) || (previous_ < 0 && pos.vy > 0))
-    {
+    if ((previous_ > 0 && pos.vy < 0) || (previous_ < 0 && pos.vy > 0)) {
         DebugOutput("wiggle velocity flipped");
         flipped_ = true;
     }
@@ -2318,16 +2244,14 @@ void WiggleCommand::wiggleY(const MavLinkLocalPositionNed& pos)
 
     // see if we just crossed the wiggle distance threshold.
     // (roll affects the y-position).
-    if (flipped_ && targetAngle_ > 0 && dy < -wiggle_size_)
-    {
+    if (flipped_ && targetAngle_ > 0 && dy < -wiggle_size_) {
         flipped_ = false;
         // reverse direction with a -30 degrees quick stop
         targetAngle_ = static_cast<float>(-wiggle_angle_);
         roll = targetAngle_;
         DebugOutput("wiggle reversing direction");
     }
-    else if (flipped_ && targetAngle_ < 0 && dy > wiggle_size_)
-    {
+    else if (flipped_ && targetAngle_ < 0 && dy > wiggle_size_) {
         flipped_ = false;
         // reverse direction with a 30 degrees quick stop
         targetAngle_ = static_cast<float>(wiggle_angle_);
@@ -2342,10 +2266,9 @@ void WiggleCommand::wiggleY(const MavLinkLocalPositionNed& pos)
     //DebugOutput("ctrl=%f, sz=%f, z=%f, dz=%f, new thrust=%f", ctrl, sz_, z, sz_ - z, thrust);
     pitch = static_cast<float>(pitch * 180.0f / M_PI);
     vehicle->moveByAttitude(roll, pitch, 0.0f, 0, 0, 0, thrust);
-
 }
 
-void WiggleCommand::Close() 
+void WiggleCommand::Close()
 {
     started_ = false;
     ready_ = false;
@@ -2354,7 +2277,6 @@ void WiggleCommand::Close()
     }
     Command::Close();
 }
-
 
 // for testing PID controller.
 //class AltHoldCommand : public Command
@@ -2369,28 +2291,23 @@ bool AltHoldCommand::Parse(const std::vector<std::string>& args)
     if (args.size() > 0) {
         std::string cmd = args[0];
         if (cmd == "hold") {
-            if (args.size() > 1)
-            {
+            if (args.size() > 1) {
                 sz_ = static_cast<float>(atof(args[1].c_str()));
             }
-            else 
-            {
+            else {
                 printf("hold - missing altitude parameter.\n");
                 return false;
             }
             kp_ = 1;
             ki_ = 0;
             kd_ = 0;
-            if (args.size() > 2)
-            {
+            if (args.size() > 2) {
                 kp_ = static_cast<float>(atof(args[2].c_str()));
             }
-            if (args.size() > 3)
-            {
+            if (args.size() > 3) {
                 ki_ = static_cast<float>(atof(args[3].c_str()));
             }
-            if (args.size() > 4)
-            {
+            if (args.size() > 4) {
                 kd_ = static_cast<float>(atof(args[4].c_str()));
             }
             return true;
@@ -2435,16 +2352,13 @@ void AltHoldCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 
 void AltHoldCommand::HandleMessage(const MavLinkMessage& message)
 {
-    if (!started_)
-    {
+    if (!started_) {
         // haven't started yet.
         return;
     }
 
-    switch (message.msgid)
-    {
-    case MavLinkAttitudeTarget::kMessageId:
-    {
+    switch (message.msgid) {
+    case MavLinkAttitudeTarget::kMessageId: {
         _current.decode(message);
         if (!ready_) {
             start_thrust_ = _current.thrust;
@@ -2454,8 +2368,7 @@ void AltHoldCommand::HandleMessage(const MavLinkMessage& message)
         }
         break;
     }
-    case MavLinkLocalPositionNed::kMessageId:
-    {
+    case MavLinkLocalPositionNed::kMessageId: {
         if (!ready_) {
             return;
         }
@@ -2465,21 +2378,19 @@ void AltHoldCommand::HandleMessage(const MavLinkMessage& message)
         // and check position
         //double dx = this->sx_ - pos.x;
         //double dy = this->sy_ - pos.y;
-        double z = pos.z; 
+        double z = pos.z;
 
         float ctrl = thrust_controller_.control(static_cast<float>(z));
         float thrust = start_thrust_ + ctrl;
 
-
         printf("thrust:%f\tctrl:%f\n", thrust, ctrl);
-
 
         // try and keep x & y on target by using pitch & roll, but only use a little bit since it shouldn't wander
         // too much in that direction.
         float pitch = fmax(-0.2f, fmin(0.2f, pos.vx / 5.0f));
         float roll = fmax(-0.2f, fmin(0.2f, -pos.vy / 5.0f));
 
-        // adjust thrust so we keep steady height target 
+        // adjust thrust so we keep steady height target
         thrust = static_cast<float>(fmax(0.01, fmin(1.0, thrust)));
 
         //DebugOutput("ctrl=%f, sz=%f, z=%f, dz=%f, new thrust=%f", ctrl, sz_, z, sz_ - z, thrust);
@@ -2491,7 +2402,8 @@ void AltHoldCommand::HandleMessage(const MavLinkMessage& message)
     }
 }
 
-std::string replaceAll(std::string s, char toFind, char toReplace) {
+std::string replaceAll(std::string s, char toFind, char toReplace)
+{
     size_t pos = s.find_first_of(toFind, 0);
     while (pos != std::string::npos) {
         s.replace(pos, 1, 1, toReplace);
@@ -2500,14 +2412,16 @@ std::string replaceAll(std::string s, char toFind, char toReplace) {
     return s;
 }
 
-std::string normalize(std::string arg) {
+std::string normalize(std::string arg)
+{
     if (FileSystem::kPathSeparator == '\\') {
         return replaceAll(arg, '/', '\\'); // make sure user input matches what FileSystem will do when resolving paths.
     }
     return arg;
 }
 
-std::string toPX4Path(std::string arg) {
+std::string toPX4Path(std::string arg)
+{
     if (FileSystem::kPathSeparator == '\\') {
         return replaceAll(arg, '\\', '/'); // PX4 uses '/'
     }
@@ -2620,7 +2534,6 @@ bool FtpCommand::Parse(const std::vector<std::string>& args)
     return (cmd != none);
 }
 
-
 void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
 {
     if (client == nullptr) {
@@ -2630,8 +2543,7 @@ void FtpCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     if (!client->isSupported()) {
         printf("ftp commands are not supported by your drone\n");
     }
-    switch (cmd)
-    {
+    switch (cmd) {
     case FtpCommand::list:
         doList();
         break;
@@ -2670,7 +2582,8 @@ void FtpCommand::startMonitor()
     monitorThread = std::thread{ &FtpCommand::monitor, this };
 }
 
-void FtpCommand::stopMonitor() {
+void FtpCommand::stopMonitor()
+{
 
     if (monitorThread.joinable()) {
         progress.complete = true;
@@ -2678,15 +2591,16 @@ void FtpCommand::stopMonitor() {
     }
 }
 
-void FtpCommand::Close() {
+void FtpCommand::Close()
+{
     Command::Close();
     if (client != nullptr) {
         client->cancel();
     }
 }
 
-
-void FtpCommand::doList() {
+void FtpCommand::doList()
+{
 
     std::vector<MavLinkFileInfo> files;
 
@@ -2697,8 +2611,7 @@ void FtpCommand::doList() {
     printf("\n");
 
     int count = 0;
-    for (auto iter = files.begin(); iter != files.end(); iter++)
-    {
+    for (auto iter = files.begin(); iter != files.end(); iter++) {
         count++;
         auto info = *iter;
         if (info.is_directory) {
@@ -2719,15 +2632,17 @@ void FtpCommand::doList() {
     }
 }
 
-void FtpCommand::doGet() {
-    
+void FtpCommand::doGet()
+{
+
     std::string fsTarget = normalize(target);
     std::string leaf = FileSystem::getFileName(fsTarget);
     bool wildcards;
     if (!parse(leaf, wildcards)) {
         printf("wildcard pattern '%s' is too complex\n", leaf.c_str());
-    } else if (wildcards) {
-        std::vector<MavLinkFileInfo> files;		
+    }
+    else if (wildcards) {
+        std::vector<MavLinkFileInfo> files;
         FileSystem::removeLeaf(fsTarget);
         std::string dir = toPX4Path(fsTarget);
         printf("getting all files in: %s matching '%s' ", dir.c_str(), leaf.c_str());
@@ -2739,13 +2654,11 @@ void FtpCommand::doGet() {
 
         int count = 0;
         int matching = 0;
-        for (auto iter = files.begin(); iter != files.end(); iter++)
-        {
+        for (auto iter = files.begin(); iter != files.end(); iter++) {
             count++;
             auto info = *iter;
             if (!info.is_directory) {
-                if (matches(leaf, info.name))
-                {
+                if (matches(leaf, info.name)) {
                     matching++;
                     printf("Getting %8d %s", info.size, info.name.c_str());
                     std::string sourceFile = FileSystem::combine(source, info.name);
@@ -2768,7 +2681,6 @@ void FtpCommand::doGet() {
                 printf("no matching files\n");
             }
         }
-
     }
     else {
         printf("Getting %s", target.c_str());
@@ -2789,7 +2701,8 @@ void FtpCommand::doGet() {
     }
 }
 
-void FtpCommand::doPut() {
+void FtpCommand::doPut()
+{
     startMonitor();
     printf("Writing %s", target.c_str());
     client->put(progress, toPX4Path(target), source);
@@ -2807,7 +2720,8 @@ void FtpCommand::doPut() {
     }
 }
 
-void FtpCommand::doRemove() {
+void FtpCommand::doRemove()
+{
     std::string fsTarget = normalize(target);
     std::string leaf = FileSystem::getFileName(fsTarget);
     if (leaf.size() > 0 && (leaf[0] == '/' || leaf[0] == '\\')) {
@@ -2816,7 +2730,8 @@ void FtpCommand::doRemove() {
     bool wildcards = false;
     if (!parse(leaf, wildcards)) {
         printf("wildcard pattern '%s' is too complex\n", leaf.c_str());
-    } else if (wildcards) {
+    }
+    else if (wildcards) {
         std::vector<MavLinkFileInfo> files;
         FileSystem::removeLeaf(fsTarget);
         std::string dir = toPX4Path(fsTarget);
@@ -2828,15 +2743,14 @@ void FtpCommand::doRemove() {
 
         int count = 0;
         int matching = 0;
-        for (auto iter = files.begin(); iter != files.end(); iter++)
-        {
+        for (auto iter = files.begin(); iter != files.end(); iter++) {
             count++;
             auto info = *iter;
             if (!info.is_directory) {
                 if (matches(leaf, info.name)) {
                     matching++;
                     printf("Removing %s ", info.name.c_str());
-                    std::string targetFile = FileSystem::combine(normalize(dir), info.name); 
+                    std::string targetFile = FileSystem::combine(normalize(dir), info.name);
                     startMonitor();
                     client->remove(progress, toPX4Path(targetFile));
                     stopMonitor();
@@ -2855,7 +2769,6 @@ void FtpCommand::doRemove() {
                 printf("no matching files\n");
             }
         }
-
     }
     else {
         printf("Removing %s ", target.c_str());
@@ -2873,8 +2786,8 @@ void FtpCommand::doRemove() {
     }
 }
 
-
-void FtpCommand::doMkdir() {
+void FtpCommand::doMkdir()
+{
     printf("Creating directory %s ", target.c_str());
     startMonitor();
     client->mkdir(progress, target);
@@ -2888,7 +2801,8 @@ void FtpCommand::doMkdir() {
     }
 }
 
-void FtpCommand::doRmdir() {
+void FtpCommand::doRmdir()
+{
     printf("Removing directory %s ", target.c_str());
     startMonitor();
     client->rmdir(progress, target);
@@ -2902,7 +2816,8 @@ void FtpCommand::doRmdir() {
     }
 }
 
-void FtpCommand::monitor() {
+void FtpCommand::monitor()
+{
     std::string msg = progress.message;
     double percent = 0;
 
@@ -2922,15 +2837,13 @@ void FtpCommand::monitor() {
     }
 }
 
-
 bool FtpCommand::parse(const std::string& name, bool& wildcards) const
 {
     // we only support very simple patterns for now.
     // each wildcard must be separated by literal.
     wildcards = false;
     size_t wildcardpos = -1;
-    for (size_t i = 0, s = name.size(); i < s; i++)
-    {
+    for (size_t i = 0, s = name.size(); i < s; i++) {
         char ch = name[i];
         if (ch == '*' || ch == '?') {
             if (wildcards && wildcardpos + 1 == i) {
@@ -2949,8 +2862,7 @@ bool FtpCommand::matches(const std::string& pattern, const std::string& name) co
     size_t p = 0;
     size_t ps = pattern.size();
     // we only support simple matching for now, we can add full regex later if we need it.
-    for (size_t i = 0, s = name.size(); i < s; i++)
-    {
+    for (size_t i = 0, s = name.size(); i < s; i++) {
         if (p >= ps) {
             return false;
         }
@@ -3007,7 +2919,7 @@ void NshCommand::send(std::string& msg)
 {
     MavLinkSerialControl ctrl;
     ctrl.device = static_cast<uint8_t>(SERIAL_CONTROL_DEV::SERIAL_CONTROL_DEV_SHELL);
-    ctrl.flags = static_cast<uint8_t>(SERIAL_CONTROL_FLAG::SERIAL_CONTROL_FLAG_RESPOND) | 
+    ctrl.flags = static_cast<uint8_t>(SERIAL_CONTROL_FLAG::SERIAL_CONTROL_FLAG_RESPOND) |
                  static_cast<uint8_t>(SERIAL_CONTROL_FLAG::SERIAL_CONTROL_FLAG_EXCLUSIVE);
     ctrl.baudrate = 0;
     ctrl.timeout = 0;
@@ -3038,8 +2950,7 @@ void NshCommand::HandleMessage(const MavLinkMessage& msg)
         MavLinkSerialControl ctrl;
         ctrl.decode(msg);
         int len = ctrl.count;
-        if (len > 0)
-        {
+        if (len > 0) {
             if (len > 3 && ctrl.data[len - 1] == 'K' && ctrl.data[len - 2] == '[' && ctrl.data[len - 3] == '\x1b') {
                 // this is an ERASE_END_LINE command which we ignore.
                 len -= 3;
@@ -3048,8 +2959,6 @@ void NshCommand::HandleMessage(const MavLinkMessage& msg)
         }
     }
 }
-
-
 
 bool SetMessageIntervalCommand::Parse(const std::vector<std::string>& args)
 {
@@ -3061,7 +2970,7 @@ bool SetMessageIntervalCommand::Parse(const std::vector<std::string>& args)
         cmd = Utils::toLower(cmd);
         if (cmd == "setmessageinterval") {
             msgid_ = atoi(args[1].c_str());
-            frequency_ = atoi(args[2].c_str());		
+            frequency_ = atoi(args[2].c_str());
             if (msgid_ <= 0) {
                 printf("invalid message id %d.\n", msgid_);
                 return false;
@@ -3120,5 +3029,4 @@ void WaitForAltitudeCommand::Execute(std::shared_ptr<MavLinkVehicle> com)
     else {
         printf("timeout waiting for set altitude\n");
     }
-
 }

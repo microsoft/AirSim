@@ -7,28 +7,41 @@
 #include <memory>
 #include <string>
 
- #include "common/Common.hpp"
+#include "common/Common.hpp"
 
 class SimJoyStick
 {
 public:
-    struct AxisMap {
-        enum class AxisType : int {
-            Auto = 0, LeftX, LeftY, LeftZ, RightX, RightY, RightZ
+    struct AxisMap
+    {
+        enum class AxisType : int
+        {
+            Auto = 0,
+            LeftX,
+            LeftY,
+            LeftZ,
+            RightX,
+            RightY,
+            RightZ
         };
-        enum class AxisDirection : int {
-            Auto = 0, Normal, Reverse
+        enum class AxisDirection : int
+        {
+            Auto = 0,
+            Normal,
+            Reverse
         };
 
         AxisType rc_axis = AxisType::Auto;
         float min_val = -1000, max_val = 1000;
         AxisDirection direction = AxisDirection::Auto;
     };
-    struct AxisMaps {
+    struct AxisMaps
+    {
         AxisMap left_x, left_y, left_z, right_x, right_y, right_z;
     } axis_maps;
 
-    struct State {
+    struct State
+    {
         float left_x, left_y, left_z;
         float right_x, right_y, right_z;
 
@@ -50,9 +63,9 @@ public:
 
     // strength ranges from 0 to 1
     void setWheelRumble(int index, double strength);
-    
+
     SimJoyStick();
-    ~SimJoyStick();    //required for pimpl
+    ~SimJoyStick(); //required for pimpl
 private:
     static bool initialized_success_;
     //bool api_control_enabled_ = false;

@@ -38,7 +38,7 @@ class OrbitNavigator:
         # center is just a direction vector, so normalize it to compute the actual cx,cy locations.
         cx = float(center[0])
         cy = float(center[1])
-        length = math.sqrt(cx*cx)+(cy*cy)
+        length = math.sqrt((cx*cx) + (cy*cy))
         cx /= length
         cy /= length
         cx *= self.radius
@@ -53,7 +53,7 @@ class OrbitNavigator:
         start = time.time()
         count = 0
         while count < 100:
-            pos = self.home
+            pos = self.client.getMultirotorState().kinematics_estimated.position
             if abs(pos.z_val - self.home.z_val) > 1:                                
                 count = 0
                 self.home = pos
@@ -63,7 +63,7 @@ class OrbitNavigator:
             else:
                 count += 1
 
-        self.center = self.client.getMultirotorState().kinematics_estimated.position
+        self.center = pos
         self.center.x_val += cx
         self.center.y_val += cy
 
