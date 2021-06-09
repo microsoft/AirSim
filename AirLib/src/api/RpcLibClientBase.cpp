@@ -445,13 +445,6 @@ __pragma(warning(disable : 4239))
             pimpl_->client.call("simSetCameraPose", camera_name, RpcLibAdaptorsBase::Pose(pose), vehicle_name, external);
         }
 
-        void RpcLibClientBase::simSetCameraOrientation(const std::string& camera_name, const Quaternionr& orientation, const std::string& vehicle_name, bool external)
-        {
-            std::cout << "`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code." << std::endl;
-            Pose pose{ Vector3r::Zero(), orientation };
-            RpcLibClientBase::simSetCameraPose(camera_name, pose, vehicle_name, external);
-        }
-
         void RpcLibClientBase::simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name, bool external)
         {
             pimpl_->client.call("simSetCameraFov", camera_name, fov_degrees, vehicle_name, external);
