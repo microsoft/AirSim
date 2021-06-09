@@ -472,7 +472,8 @@ void ASimModeBase::initializeExternalCameras()
         //get pose
         FVector position = transform.fromLocalNed(setting.position) - transform.fromLocalNed(Vector3r::Zero());
         FTransform camera_transform(FRotator(setting.rotation.pitch, setting.rotation.yaw, setting.rotation.roll),
-            position, FVector(1., 1., 1.));
+                                    position,
+                                    FVector(1., 1., 1.));
 
         //spawn and attach camera to pawn
         camera_spawn_params.Name = FName(("external_" + camera_setting_pair.first).c_str());
@@ -512,14 +513,12 @@ bool ASimModeBase::isRecording() const
 
 const APIPCamera* ASimModeBase::getCamera(const std::string& camera_name, const std::string& vehicle_name, bool external) const
 {
-    return external ? getExternalCamera(camera_name) :
-                      getVehicleSimApi(vehicle_name)->getCamera(camera_name);
+    return external ? getExternalCamera(camera_name) : getVehicleSimApi(vehicle_name)->getCamera(camera_name);
 }
 
 const UnrealImageCapture* ASimModeBase::getImageCapture(const std::string& vehicle_name, bool external) const
 {
-    return external ? external_image_capture_.get() :
-                      getVehicleSimApi(vehicle_name)->getImageCapture();
+    return external ? external_image_capture_.get() : getVehicleSimApi(vehicle_name)->getImageCapture();
 }
 
 //API server start/stop

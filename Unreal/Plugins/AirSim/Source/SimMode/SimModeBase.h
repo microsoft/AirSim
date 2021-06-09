@@ -103,7 +103,7 @@ public:
         return const_cast<APIPCamera*>(
             static_cast<const ASimModeBase*>(this)->getExternalCamera(camera_name));
     }
-    
+
     APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false)
     {
         return const_cast<APIPCamera*>(

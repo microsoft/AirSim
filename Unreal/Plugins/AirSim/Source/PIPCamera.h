@@ -55,10 +55,12 @@ public:
     UDetectionComponent* getDetectionComponent(const ImageType type, bool if_active) const;
 
     msr::airlib::Pose getPose() const;
-    
+
 private: //members
-    UPROPERTY() UMaterialParameterCollection* distortion_param_collection_;
-    UPROPERTY() UMaterialParameterCollectionInstance* distortion_param_instance_;
+    UPROPERTY()
+    UMaterialParameterCollection* distortion_param_collection_;
+    UPROPERTY()
+    UMaterialParameterCollectionInstance* distortion_param_instance_;
 
     UPROPERTY()
     TArray<USceneCaptureComponent2D*> captures_;

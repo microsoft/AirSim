@@ -135,7 +135,6 @@ const NedTransform& PawnSimApi::getNedTransform() const
     return ned_transform_;
 }
 
-
 msr::airlib::RCData PawnSimApi::getRCData() const
 {
     AirSimRCData rcDataFromUnity = GetRCData(getVehicleName().c_str());
@@ -230,7 +229,6 @@ void PawnSimApi::allowPassthroughToggleInput()
     state_.passthrough_enabled = !state_.passthrough_enabled;
     PrintLogMessage("enable_passthrough_on_collisions: ", state_.passthrough_enabled ? "true" : "false", params_.vehicle_name.c_str(), ErrorLogSeverity::Information);
 }
-
 
 //parameters in NED frame
 PawnSimApi::Pose PawnSimApi::getPose() const

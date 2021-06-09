@@ -53,9 +53,13 @@ namespace airlib
             bool external;
 
             SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene, bool visible_val = false,
-                const std::string& camera_name_val = "", const std::string& vehicle_name_val = "", bool external_val = false)
-                : window_index(window_index_val), image_type(image_type_val), visible(visible_val),
-                  camera_name(camera_name_val), vehicle_name(vehicle_name_val), external(external_val)
+                             const std::string& camera_name_val = "", const std::string& vehicle_name_val = "", bool external_val = false)
+                : window_index(window_index_val)
+                , image_type(image_type_val)
+                , visible(visible_val)
+                , camera_name(camera_name_val)
+                , vehicle_name(vehicle_name_val)
+                , external(external_val)
             {
             }
         };
@@ -1348,7 +1352,6 @@ namespace airlib
                 }
             }
         }
-
     };
 }
 } //namespace

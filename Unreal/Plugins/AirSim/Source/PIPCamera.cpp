@@ -311,7 +311,7 @@ std::vector<float> APIPCamera::getDistortionParams() const
 {
     std::vector<float> param_values(5, 0.0);
 
-    auto getParamValue = [this](const auto &name, float &val) {
+    auto getParamValue = [this](const auto& name, float& val) {
         distortion_param_instance_->GetScalarParameterValue(FName(name), val);
     };
 

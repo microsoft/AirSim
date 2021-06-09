@@ -338,7 +338,8 @@ void ASimHUD::initializeSubWindows()
             subwindow_cameras_[setting.window_index] = camera;
         else
             UAirBlueprintLib::LogMessageString("Invalid Camera settings in <SubWindows> element",
-                std::to_string(setting.window_index), LogDebugLevel::Failure);
+                                               std::to_string(setting.window_index),
+                                               LogDebugLevel::Failure);
     }
 }
 
