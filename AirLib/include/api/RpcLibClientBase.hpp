@@ -111,6 +111,10 @@ namespace airlib
         vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name = "");
         vector<uint8_t> simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name = "");
 
+        bool simTestLineOfSightToPoint(double lat, double lon, float alt, const std::string& vehicle_name = "");
+        bool simTestLineOfSightBetweenPoints(double lat1, double lon1, float alt1, double lat2, double lon2, float alt2);
+        vector<msr::airlib::GeoPoint> simGetWorldExtents();
+
         vector<MeshPositionVertexBuffersResponse> simGetMeshPositionVertexBuffers();
         bool simAddVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "");
 
