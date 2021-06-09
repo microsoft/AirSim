@@ -286,7 +286,7 @@ namespace airlib
 
         pimpl_->server.bind("simSetCameraPose", [&](const std::string& camera_name, const RpcLibAdaptorsBase::Pose& pose,
             const std::string& vehicle_name, bool external) -> void {
-            getWorldSimApi()->setCameraPose(camera_name, pose.to(), external);
+            getWorldSimApi()->setCameraPose(camera_name, pose.to(), vehicle_name, external);
         });
 
         pimpl_->server.bind("simSetCameraFov", [&](const std::string& camera_name, float fov_degrees,
