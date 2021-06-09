@@ -104,6 +104,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#time-of-day-api">Time of Day API</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#line-of-sight-and-world-extent-apis">Line-of-sight and world extent APIs</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#weather-apis">Weather APIs</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#recording-apis">Recording APIs</a>
@@ -488,6 +490,9 @@ For vision problems that can benefit from domain randomization, there is also an
 <pre class="highlight"><code>simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True)</code></pre>
 <p>The <code>is_enabled</code> parameter must be <code>True</code> to enable time of day effect. If it is <code>False</code> then sun position is reset to its original in the environment.</p>
 <p>Other parameters are same as in <a href="settings.html#timeofday">settings</a>.</p>
+<h3 id="line-of-sight-and-world-extent-apis">Line-of-sight and world extent APIs<a class="headerlink" href="#line-of-sight-and-world-extent-apis" title="Permanent link">#</a></h3>
+<p>To test line-of-sight in the sim from a vehicle to a point or between two points, see simTestLineOfSightToPoint(lat, lon, alt, vehicle_name) and simTestLineOfSightBetweenPoints(lat1, lon1, alt1, lat2, lon2, alt2), respectively.
+Sim world extent, in the form of a vector of two GeoPoints, can be retrieved using simGetWorldExtents().</p>
 <h3 id="weather-apis">Weather APIs<a class="headerlink" href="#weather-apis" title="Permanent link">#</a></h3>
 <p>By default all weather effects are disabled. To enable weather effect, first call:</p>
 <pre class="highlight"><code>simEnableWeather(True)</code></pre>
