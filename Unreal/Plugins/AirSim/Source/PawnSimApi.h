@@ -89,14 +89,14 @@ public: //implementation of VehicleSimApiBase
     virtual float getFocalLength() override;
     virtual void setFocalLength(float focal_length) override;
     virtual void enableManualFocus(bool enable) override;
-    virtual  float getFocusDistance() override;
+    virtual float getFocusDistance() override;
     virtual void setFocusDistance(float focus_distance) override;
-    virtual  float getFocusAperture() override;
+    virtual float getFocusAperture() override;
     virtual void setFocusAperture(float focus_aperture) override;
     virtual void enableFocusPlane(bool enable) override;
     virtual std::string getCurrentFieldOfView() override;
     //end CinemAirSim
-    
+
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;
