@@ -71,10 +71,13 @@ void APIPCamera::PostInitializeComponents()
     captures_[Utils::toNumeric(ImageType::SurfaceNormals)] =
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
 
-    detections_[Utils::toNumeric(ImageType::Scene)] =
-        UAirBlueprintLib::GetActorComponent<UDetectionComponent>(this, TEXT("DetectionComponent"));
-    if (detections_[Utils::toNumeric(ImageType::Scene)]) {
-        detections_[Utils::toNumeric(ImageType::Scene)]->Deactivate();
+    for (unsigned int i = 0; i < imageTypeCount(); ++i) {
+        detections_[i] = NewObject<UDetectionComponent>(this);
+        if (detections_[i]) {
+            detections_[i]->SetupAttachment(captures_[i]);
+            detections_[i]->RegisterComponent();
+            detections_[i]->Deactivate();
+        }
     }
 }
 
@@ -233,6 +236,10 @@ void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
         //use final color for all calculations
         captures_[image_type] = nullptr;
         render_targets_[image_type] = nullptr;
+    }
+
+    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
+        detections_[image_type] = nullptr;
     }
 }
 
