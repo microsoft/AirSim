@@ -201,6 +201,13 @@ private:
     template <typename T>
     static void InitializeObjectStencilID(T* mesh, bool override_existing = true)
     {
+        SetRenderCustomDepth(mesh, true);
+
+        if (!override_existing && mesh->CustomDepthStencilValue != 0) {
+            // If value is non-zero and don't want to override
+            return;
+        }
+
         std::string mesh_name = common_utils::Utils::toLower(GetMeshName(mesh));
         if (mesh_name == "" || common_utils::Utils::startsWith(mesh_name, "default_")) {
             //common_utils::Utils::DebugBreak();
@@ -214,9 +221,8 @@ private:
                 continue; //numerics and other punctuations
             hash += char_num;
         }
-        if (override_existing || mesh->CustomDepthStencilValue == 0) { //if value is already set then don't bother
-            SetObjectStencilID(mesh, hash % 256);
-        }
+
+        SetObjectStencilID(mesh, hash % 256);
     }
 
     template <typename T>
@@ -268,6 +274,21 @@ private:
                 comp->SetCustomDepthStencilValue(object_id);
                 comp->SetRenderCustomDepth(true);
             }
+        }
+    }
+
+    template <typename T>
+    static void SetRenderCustomDepth(T* mesh, bool enable)
+    {
+        mesh->SetRenderCustomDepth(enable);
+    }
+
+    static void SetRenderCustomDepth(ALandscapeProxy* mesh, bool enable)
+    {
+        mesh->bRenderCustomDepth = enable;
+
+        for (ULandscapeComponent* comp : mesh->LandscapeComponents) {
+            comp->SetRenderCustomDepth(enable);
         }
     }
 
