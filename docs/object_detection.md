@@ -66,3 +66,6 @@ Cylinder: <DetectionInfo> {   'box2D': <Box2D> {   'max': <Vector2r> {   'x_val'
     'y_val': 0.29999998211860657,
     'z_val': 1.0199999809265137}}}
  ```
+ 
+ ![113001312-5babfb00-9179-11eb-926e-cd6e562c92ac](https://user-images.githubusercontent.com/15960497/121812071-335b7500-cc6f-11eb-8914-c5288e1cbb47.png)
+![113001322-5d75be80-9179-11eb-8d3f-443b68f7cba7](https://user-images.githubusercontent.com/15960497/121812072-348ca200-cc6f-11eb-9032-b79cbb672cf0.png)
