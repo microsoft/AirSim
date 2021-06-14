@@ -236,9 +236,6 @@ void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
         //use final color for all calculations
         captures_[image_type] = nullptr;
         render_targets_[image_type] = nullptr;
-    }
-
-    for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         detections_[image_type] = nullptr;
     }
 }
