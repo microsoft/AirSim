@@ -1,7 +1,7 @@
 # Object Detection
 
 ## About
-This feature let you generate object detection using exiting cameras in AirSim, similar to detection DNN.   
+This feature let you generate object detection using existing cameras in AirSim, similar to detection DNN.   
 Using the API you can control which object to detect by name and radius from camera.   
 One can control these settings for each camera, image type and vehicle combination separately.
 
@@ -9,7 +9,7 @@ One can control these settings for each camera, image type and vehicle combinati
 - Set mesh name  to detect in wildcard format   
 ```simAddDetectionFilterMeshName(camera_name, image_type, mesh_name, vehicle_name = '')```   
 
-- Clear all mesh names previosly added   
+- Clear all mesh names previously added   
 ```simClearDetectionMeshNames(camera_name, image_type, vehicle_name = '')```   
 
 - Set detection radius in cm   
@@ -31,15 +31,18 @@ DetectionInfo
 ## Usage example
 Python script [detection.py](https://github.com/microsoft/AirSim/blob/master/PythonClient/detection/detection.py) shows how to set detection parameters and show the result in OpenCV capture.
 
-A miniml example using API with Blocks enviromnet:
+A minimal example using API with Blocks enviromnet to detect Cylinder objects:
 ```python
 camera_name = "0"
 image_type = airsim.ImageType.Scene
 
+client = airsim.MultirotorClient()
+client.confirmConnection()
+
 client.simSetDetectionFilterRadius(camera_name, image_type, 80 * 100) # in [cm]
 client.simAddDetectionFilterMeshName(camera_name, image_type, "Cylinder_*") 
 client.simGetDetections(camera_name, image_type)
-client.simClearDetectionMeshNames(camera_name, image_type)
+detections = client.simClearDetectionMeshNames(camera_name, image_type)
 ```
 
 Output result:
@@ -65,4 +68,6 @@ Cylinder: <DetectionInfo> {   'box2D': <Box2D> {   'max': <Vector2r> {   'x_val'
     'position': <Vector3r> {   'x_val': 4.400000095367432,
     'y_val': 0.29999998211860657,
     'z_val': 1.0199999809265137}}}
- ```
+```
+![image](images/detection_ue4.png)
+![image](images/detection_python.png)
