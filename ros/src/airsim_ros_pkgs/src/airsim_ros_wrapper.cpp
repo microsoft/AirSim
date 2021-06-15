@@ -1388,7 +1388,7 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 // publish camera transforms
 // camera poses are obtained from airsim's client API which are in (local) NED frame.
 // We first do a change of basis to camera optical frame (Z forward, X right, Y down)
-void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, const std::string& frame_id, const std::string& child_frame_id)
+void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id)
 {
     geometry_msgs::TransformStamped cam_tf_body_msg;
     cam_tf_body_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
