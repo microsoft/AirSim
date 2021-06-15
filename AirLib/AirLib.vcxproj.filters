@@ -321,7 +321,7 @@
     <ClInclude Include="include\vehicles\multirotor\firmwares\simple_flight\AirSimSimpleFlightEstimator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\car\api\CarRpcLibAdapators.hpp">
+    <ClInclude Include="include\vehicles\car\api\CarRpcLibAdaptors.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\car\api\CarRpcLibClient.hpp">
@@ -330,7 +330,7 @@
     <ClInclude Include="include\vehicles\car\api\CarRpcLibServer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibAdapators.hpp">
+    <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibAdaptors.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibClient.hpp">
@@ -339,7 +339,7 @@
     <ClInclude Include="include\vehicles\multirotor\api\MultirotorRpcLibServer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\api\RpcLibAdapatorsBase.hpp">
+    <ClInclude Include="include\api\RpcLibAdaptorsBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vehicles\car\api\CarApiBase.hpp">

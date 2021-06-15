@@ -11,11 +11,12 @@
 #include "PidController.hpp"
 #include "common/common_utils/Utils.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class VelocityController : 
-    public IAxisController,
-    public IGoal  //for internal child controller
+class VelocityController : public IAxisController
+    ,
+                           public IGoal //for internal child controller
 {
 public:
     VelocityController(Params* params, const IBoardClock* clock = nullptr)
@@ -30,14 +31,15 @@ public:
         state_estimator_ = state_estimator;
 
         PidConfig<float> pid_config(params_->velocity_pid.p[axis],
-            params_->velocity_pid.i[axis], params_->velocity_pid.d[axis]);
+                                    params_->velocity_pid.i[axis],
+                                    params_->velocity_pid.d[axis]);
         pid_config.iterm_discount = params_->velocity_pid.iterm_discount[axis];
         pid_config.output_bias = params_->velocity_pid.output_bias[axis];
 
         pid_.reset(new PidController<float>(clock_, pid_config));
 
         //we will be setting goal for child controller so we need these two things
-        child_mode_  = GoalMode::getUnknown();
+        child_mode_ = GoalMode::getUnknown();
         switch (axis_) {
         case 0:
             child_controller_.reset(new AngleLevelController(params_, clock_));
@@ -93,8 +95,7 @@ public:
         pid_->update();
 
         //use this to drive child controller
-        switch (axis_)
-        {
+        switch (axis_) {
         case 0: //+vy is +ve roll
             child_goal_[axis_] = pid_->getOutput() * params_->angle_level_pid.max_limit[axis_];
             child_controller_->update();
@@ -107,7 +108,7 @@ public:
 
             break;
         case 1: //+vx is -ve pitch
-            child_goal_[axis_] = - pid_->getOutput() * params_->angle_level_pid.max_limit[axis_];
+            child_goal_[axis_] = -pid_->getOutput() * params_->angle_level_pid.max_limit[axis_];
             child_controller_->update();
             output_ = child_controller_->getOutput();
             break;
@@ -131,7 +132,7 @@ public:
         return child_goal_;
     }
 
-    virtual const GoalMode& getGoalMode() const  override
+    virtual const GoalMode& getGoalMode() const override
     {
         return child_mode_;
     }
@@ -150,8 +151,6 @@ private:
     const IBoardClock* clock_;
     std::unique_ptr<PidController<float>> pid_;
     std::unique_ptr<IAxisController> child_controller_;
-
 };
-
 
 } //namespace

@@ -16,7 +16,7 @@ constexpr char AirsimROSWrapper::DMODEL_YML_NAME[];
 
 const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_string_map_ = {
     { 0, "Scene" },
-    { 1, "DepthPlanner" },
+    { 1, "DepthPlanar" },
     { 2, "DepthPerspective" },
     { 3, "DepthVis" },
     { 4, "DisparityNormalized" },
@@ -32,13 +32,14 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHan
     host_ip_(host_ip)
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
+    , airsim_settings_parser_(host_ip)
     , tf_listener_(tf_buffer_)
 {
     ros_clock_.clock.fromSec(0);
     is_used_lidar_timer_cb_queue_ = false;
     is_used_img_timer_cb_queue_ = false;
 
-    if (AirSimSettings::singleton().simmode_name != "Car") {
+    if (AirSimSettings::singleton().simmode_name != AirSimSettings::kSimModeTypeCar) {
         airsim_mode_ = AIRSIM_MODE::DRONE;
         ROS_INFO("Setting ROS wrapper to DRONE mode");
     }
@@ -61,7 +62,7 @@ void AirsimROSWrapper::initialize_airsim()
             airsim_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::MultirotorRpcLibClient(host_ip_));
         }
         else {
-            airsim_client_ = std::move(std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::CarRpcLibClient(host_ip_)));
+            airsim_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::CarRpcLibClient(host_ip_));
         }
         airsim_client_->confirmConnection();
         airsim_client_images_.confirmConnection();
@@ -172,7 +173,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         for (auto& curr_camera_elem : vehicle_setting->cameras) {
             auto& camera_setting = curr_camera_elem.second;
             auto& curr_camera_name = curr_camera_elem.first;
-            // vehicle_setting_vec_.push_back(*vehicle_setting.get());
+
             set_nans_to_zeros_in_pose(*vehicle_setting, camera_setting);
             append_static_camera_tf(vehicle_ros.get(), curr_camera_name, camera_setting);
             // camera_setting.gimbal
@@ -191,7 +192,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     if (capture_setting.image_type == 0 || capture_setting.image_type == 5 || capture_setting.image_type == 6 || capture_setting.image_type == 7) {
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, false, false));
                     }
-                    // if {DepthPlanner, DepthPerspective,DepthVis, DisparityNormalized}, get float image
+                    // if {DepthPlanar, DepthPerspective,DepthVis, DisparityNormalized}, get float image
                     else {
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
                     }
@@ -244,8 +245,9 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                 case SensorBase::SensorType::Lidar: {
                     std::cout << "Lidar" << std::endl;
                     auto lidar_setting = *static_cast<LidarSetting*>(sensor_setting.get());
-                    set_nans_to_zeros_in_pose(*vehicle_setting, lidar_setting);
-                    append_static_lidar_tf(vehicle_ros.get(), sensor_name, lidar_setting);
+                    msr::airlib::LidarSimpleParams params;
+                    params.initializeFromSettings(lidar_setting);
+                    append_static_lidar_tf(vehicle_ros.get(), sensor_name, params);
                     sensor_publisher.publisher = nh_private_.advertise<sensor_msgs::PointCloud2>(curr_vehicle_name + "/lidar/" + sensor_name, 10);
                     break;
                 }
@@ -1160,27 +1162,6 @@ void AirsimROSWrapper::set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_s
         camera_setting.rotation.roll = vehicle_setting.rotation.roll;
 }
 
-void AirsimROSWrapper::set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, LidarSetting& lidar_setting) const
-{
-    if (std::isnan(lidar_setting.position.x()))
-        lidar_setting.position.x() = vehicle_setting.position.x();
-
-    if (std::isnan(lidar_setting.position.y()))
-        lidar_setting.position.y() = vehicle_setting.position.y();
-
-    if (std::isnan(lidar_setting.position.z()))
-        lidar_setting.position.z() = vehicle_setting.position.z();
-
-    if (std::isnan(lidar_setting.rotation.yaw))
-        lidar_setting.rotation.yaw = vehicle_setting.rotation.yaw;
-
-    if (std::isnan(lidar_setting.rotation.pitch))
-        lidar_setting.rotation.pitch = vehicle_setting.rotation.pitch;
-
-    if (std::isnan(lidar_setting.rotation.roll))
-        lidar_setting.rotation.roll = vehicle_setting.rotation.roll;
-}
-
 void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting)
 {
     geometry_msgs::TransformStamped vehicle_tf_msg;
@@ -1207,20 +1188,18 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
     vehicle_ros->static_tf_msg_vec.emplace_back(vehicle_tf_msg);
 }
 
-void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const LidarSetting& lidar_setting)
+void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const msr::airlib::LidarSimpleParams& lidar_setting)
 {
     geometry_msgs::TransformStamped lidar_tf_msg;
     lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name + "/" + odom_frame_id_;
     lidar_tf_msg.child_frame_id = vehicle_ros->vehicle_name + "/" + lidar_name;
-    lidar_tf_msg.transform.translation.x = lidar_setting.position.x();
-    lidar_tf_msg.transform.translation.y = lidar_setting.position.y();
-    lidar_tf_msg.transform.translation.z = lidar_setting.position.z();
-    tf2::Quaternion quat;
-    quat.setRPY(lidar_setting.rotation.roll, lidar_setting.rotation.pitch, lidar_setting.rotation.yaw);
-    lidar_tf_msg.transform.rotation.x = quat.x();
-    lidar_tf_msg.transform.rotation.y = quat.y();
-    lidar_tf_msg.transform.rotation.z = quat.z();
-    lidar_tf_msg.transform.rotation.w = quat.w();
+    lidar_tf_msg.transform.translation.x = lidar_setting.relative_pose.position.x();
+    lidar_tf_msg.transform.translation.y = lidar_setting.relative_pose.position.y();
+    lidar_tf_msg.transform.translation.z = lidar_setting.relative_pose.position.z();
+    lidar_tf_msg.transform.rotation.x = lidar_setting.relative_pose.orientation.x();
+    lidar_tf_msg.transform.rotation.y = lidar_setting.relative_pose.orientation.y();
+    lidar_tf_msg.transform.rotation.z = lidar_setting.relative_pose.orientation.z();
+    lidar_tf_msg.transform.rotation.w = lidar_setting.relative_pose.orientation.w();
 
     if (isENU_) {
         std::swap(lidar_tf_msg.transform.translation.x, lidar_tf_msg.transform.translation.y);
@@ -1324,7 +1303,8 @@ cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse& img_response)
 }
 
 sensor_msgs::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
-                                                                  const std::string& frame_id)
+                                                                  const ros::Time curr_ros_time,
+                                                                  const std::string frame_id)
 {
     sensor_msgs::ImagePtr img_msg_ptr = boost::make_shared<sensor_msgs::Image>();
     img_msg_ptr->data = img_response.image_data_uint8;
@@ -1341,7 +1321,8 @@ sensor_msgs::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const ImageRes
 }
 
 sensor_msgs::ImagePtr AirsimROSWrapper::get_depth_img_msg_from_response(const ImageResponse& img_response,
-                                                                        const std::string& frame_id)
+                                                                        const ros::Time curr_ros_time,
+                                                                        const std::string frame_id)
 {
     // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error,
     // hence the dependency on opencv and cv_bridge. however, this is an extremely fast op, so no big deal.
@@ -1358,7 +1339,7 @@ sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& c
                                                             const CaptureSetting& capture_setting) const
 {
     sensor_msgs::CameraInfo cam_info_msg;
-    cam_info_msg.header.frame_id = camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type) + "_optical";
+    cam_info_msg.header.frame_id = camera_name + "_optical";
     cam_info_msg.height = capture_setting.height;
     cam_info_msg.width = capture_setting.width;
     float f_x = (capture_setting.width / 2.0) / tan(math_common::deg2rad(capture_setting.fov_degrees / 2.0));
@@ -1372,13 +1353,13 @@ sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& c
 void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name)
 {
     // todo add option to use airsim time (image_response.TTimePoint) like Gazebo /use_sim_time param
-
+    ros::Time curr_ros_time = ros::Time::now();
     int img_response_idx_internal = img_response_idx;
 
     for (const auto& curr_img_response : img_response_vec) {
         // todo publishing a tf for each capture type seems stupid. but it foolproofs us against render thread's async stuff, I hope.
         // Ideally, we should loop over cameras and then captures, and publish only one tf.
-        publish_camera_tf(curr_img_response, vehicle_name, curr_img_response.camera_name);
+        publish_camera_tf(curr_img_response, curr_ros_time, vehicle_name, curr_img_response.camera_name);
 
         // todo simGetCameraInfo is wrong + also it's only for image type -1.
         // msr::airlib::CameraInfo camera_info = airsim_client_.simGetCameraInfo(curr_img_response.camera_name);
@@ -1388,14 +1369,16 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         camera_info_msg_vec_[img_response_idx_internal].header.stamp = airsim_timestamp_to_ros(curr_img_response.time_stamp);
         cam_info_pub_vec_[img_response_idx_internal].publish(camera_info_msg_vec_[img_response_idx_internal]);
 
-        // DepthPlanner / DepthPerspective / DepthVis / DisparityNormalized
+        // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
         if (curr_img_response.pixels_as_float) {
             image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response,
+                                                                                              curr_ros_time,
                                                                                               curr_img_response.camera_name + "_optical"));
         }
         // Scene / Segmentation / SurfaceNormals / Infrared
         else {
             image_pub_vec_[img_response_idx_internal].publish(get_img_msg_from_response(curr_img_response,
+                                                                                        curr_ros_time,
                                                                                         curr_img_response.camera_name + "_optical"));
         }
         img_response_idx_internal++;

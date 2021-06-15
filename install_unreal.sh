@@ -18,12 +18,12 @@ echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
 	popd >/dev/null
-    exit 0
+    exit 1                      # Exit code 1 so that install_run_all.sh will not proceed further
 fi
 
 #install unreal
 if [[ !(-d "$UnrealDir") ]]; then
-	git clone -b 4.24 https://github.com/EpicGames/UnrealEngine.git "$UnrealDir"
+	git clone -b 4.25 https://github.com/EpicGames/UnrealEngine.git "$UnrealDir"
 	pushd "$UnrealDir" >/dev/null
 
 	./Setup.sh

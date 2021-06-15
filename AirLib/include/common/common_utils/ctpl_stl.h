@@ -16,10 +16,9 @@
 *
 *********************************************************/
 
-
 #ifndef __ctpl_stl_thread_pool_H__
 #define __ctpl_stl_thread_pool_H__
-
+// clang-format off
 #include <functional>
 #include <thread>
 #include <atomic>
@@ -250,5 +249,5 @@ namespace ctpl {
     };
 
 }
-
+// clang-format on
 #endif // __ctpl_stl_thread_pool_H__

@@ -1,13 +1,14 @@
 #ifndef common_utils_OnlineStats_hpp
 #define common_utils_OnlineStats_hpp
 
-namespace common_utils {
+namespace common_utils
+{
 
-class ColorUtils {
+class ColorUtils
+{
 public:
-
     static void valToRGB(double val0To1, unsigned char& r, unsigned char& g, unsigned char& b)
-    {//actual visible spectrum is 375 to 725 but outside of 400-700 things become too black
+    { //actual visible spectrum is 375 to 725 but outside of 400-700 things become too black
         wavelengthToRGB(val0To1 * (700 - 400) + 400, r, g, b);
     }
 
@@ -19,7 +20,8 @@ public:
     * @return RGB color encoded in int. each color is represented with 8 bits and has a layout of
     * 00000000RRRRRRRRGGGGGGGGBBBBBBBB where MSB is at the leftmost
     */
-    static void wavelengthToRGB(double wavelength, unsigned char& r, unsigned char& g, unsigned char& b) {
+    static void wavelengthToRGB(double wavelength, unsigned char& r, unsigned char& g, unsigned char& b)
+    {
         double x, y, z;
         cie1931WavelengthToXYZFit(wavelength, x, y, z);
         double dr, dg, db;
@@ -40,8 +42,9 @@ public:
     * @param xyz XYZ values in a double array in the order of X, Y, Z. each value in the range of [0.0, 1.0]
     * @return RGB values in a double array, in the order of R, G, B. each value in the range of [0.0, 1.0]
     */
-    static void srgbXYZ2RGB(double x, double y, double z, double& r, double& g, double& b) {
-        double rl = 3.2406255 * x + -1.537208  * y + -0.4986286 * z;
+    static void srgbXYZ2RGB(double x, double y, double z, double& r, double& g, double& b)
+    {
+        double rl = 3.2406255 * x + -1.537208 * y + -0.4986286 * z;
         double gl = -0.9689307 * x + 1.8757561 * y + 0.0415175 * z;
         double bl = 0.0557101 * x + -0.2040211 * y + 1.0569959 * z;
 
@@ -53,7 +56,8 @@ public:
     /**
     * helper function for {@link #srgbXYZ2RGB(double[])}
     */
-    static double srgbXYZ2RGBPostprocess(double c) {
+    static double srgbXYZ2RGBPostprocess(double c)
+    {
         // clip if c is out of range
         c = c > 1 ? 1 : (c < 0 ? 0 : c);
 
@@ -73,7 +77,8 @@ public:
     * @param wavelength wavelength in nm
     * @return XYZ in a double array in the order of X, Y, Z. each value in the range of [0.0, 1.0]
     */
-    static void cie1931WavelengthToXYZFit(double wavelength, double& x, double& y, double& z) {
+    static void cie1931WavelengthToXYZFit(double wavelength, double& x, double& y, double& z)
+    {
         double wave = wavelength;
 
         {
@@ -81,28 +86,23 @@ public:
             double t2 = (wave - 599.8) * ((wave < 599.8) ? 0.0264 : 0.0323);
             double t3 = (wave - 501.1) * ((wave < 501.1) ? 0.0490 : 0.0382);
 
-            x = 0.362 * std::exp(-0.5 * t1 * t1)
-                + 1.056 * std::exp(-0.5 * t2 * t2)
-                - 0.065 * std::exp(-0.5 * t3 * t3);
+            x = 0.362 * std::exp(-0.5 * t1 * t1) + 1.056 * std::exp(-0.5 * t2 * t2) - 0.065 * std::exp(-0.5 * t3 * t3);
         }
 
         {
             double t1 = (wave - 568.8) * ((wave < 568.8) ? 0.0213 : 0.0247);
             double t2 = (wave - 530.9) * ((wave < 530.9) ? 0.0613 : 0.0322);
 
-            y = 0.821 * std::exp(-0.5 * t1 * t1)
-                + 0.286 * std::exp(-0.5 * t2 * t2);
+            y = 0.821 * std::exp(-0.5 * t1 * t1) + 0.286 * std::exp(-0.5 * t2 * t2);
         }
 
         {
             double t1 = (wave - 437.0) * ((wave < 437.0) ? 0.0845 : 0.0278);
             double t2 = (wave - 459.0) * ((wave < 459.0) ? 0.0385 : 0.0725);
 
-            z = 1.217 * std::exp(-0.5 * t1 * t1)
-                + 0.681 * std::exp(-0.5 * t2 * t2);
+            z = 1.217 * std::exp(-0.5 * t1 * t1) + 0.681 * std::exp(-0.5 * t2 * t2);
         }
     }
-
 };
 
 } //namespace

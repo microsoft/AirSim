@@ -14,10 +14,11 @@
 #include "PositionController.hpp"
 #include "common/common_utils/Utils.hpp"
 
+namespace simple_flight
+{
 
-namespace simple_flight {
-
-class CascadeController : public IController {
+class CascadeController : public IController
+{
 public:
     CascadeController(Params* params, const IBoardClock* clock, ICommLink* comm_link)
         : params_(params), clock_(clock), comm_link_(comm_link)
@@ -41,7 +42,6 @@ public:
             if (axis_controllers_[axis] != nullptr)
                 axis_controllers_[axis]->reset();
         }
-
     }
 
     virtual void update() override
@@ -52,7 +52,7 @@ public:
         const auto& goal_val = goal_->getGoalValue();
 
         //common_utils::Utils::log(common_utils::Utils::stringf("Pos: %s", state_estimator_->getPosition().toString().c_str()));
-        
+
         //if (!goal_mode.equals4(last_goal_mode_)) {
         //    common_utils::Utils::log(common_utils::Utils::stringf("GoalMode: %s", goal_mode.toString().c_str()));
         //}
@@ -87,8 +87,7 @@ public:
                     axis_controllers_[axis].reset(new ConstantOutputController());
                     break;
                 default:
-                    throw std::invalid_argument("Axis controller type is not yet implemented for axis " 
-                        + std::to_string(axis));
+                    throw std::invalid_argument("Axis controller type is not yet implemented for axis " + std::to_string(axis));
                 }
                 last_goal_mode_[axis] = goal_mode[axis];
 
@@ -144,5 +143,4 @@ private:
 
     std::unique_ptr<IAxisController> axis_controllers_[Axis4r::AxisCount()];
 };
-
 }

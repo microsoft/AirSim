@@ -50,6 +50,11 @@ namespace MavLinkComGenerator
         [XmlAttribute]
         public string label { get; set; }
 
+        [XmlAttribute]
+        public bool reserved { get; set; }
+
+        [XmlAttribute]
+        public string @default { get; set; }
     }
 
     public class MavEnumEntry

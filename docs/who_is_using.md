@@ -1,7 +1,7 @@
 # Who is Using AirSim?
 
 #### Would you like to see your own group or project here? 
-Just add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick details and link to your website or paper or send us email at msrair at microsoft.com.
+Just add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick details and link to your website. 
 
 * [NASA Ames Research Center – Systems Analysis Office](https://www.nasa.gov/ames)
 * [Astrobotic](https://www.astrobotic.com/technology)
@@ -21,4 +21,7 @@ Just add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick
 * [National University of Ireland, Galway (NUIG)](http://www.nuigalway.ie/)
 * [Soda Mobility Technologies](http://sodacar.com)
 * [University of Cambridge](https://github.com/proroklab/private_flocking)
+* [Skoods - AI Autonomous cars competition](https://www.skoods.org/)
+* [Teledyne Scientific](https://arxiv.org/abs/2001.09822)
+* [BladeStack Systems](https://www.bladestack.nl)
 

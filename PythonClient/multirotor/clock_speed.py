@@ -3,8 +3,8 @@ import airsim
 
 import time
 
-# change clock speed in settings.json
-# "ClockSpeed": 0.5
+# Run this script with clock speed in settings.json
+# "ClockSpeed": 1 then change it to 0.5
 
 # connect to the AirSim simulator
 client = airsim.MultirotorClient()
@@ -12,11 +12,21 @@ client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
 
-client.moveByVelocityZAsync(0, 0, -20, 3).join()
+vx = vy = 0
+z = -20
+duration = 3
+
+# with ClockSpeed = 0.5 you will see that this takes 6s (system time) and not 3s
+client.moveByVelocityZAsync(vx, vy, z, duration).join()
 
 
 while True:
-    client.moveByVelocityZAsync(5, 5, -2, 1).join()
+    vx = vy = 5
+    z = -20
+    duration = 5
+    # with ClockSpeed = 0.5 you will see that this takes 10s (system time)
+    #and not 5s in each iteration
+    client.moveByVelocityZAsync(vx, vy, z, duration).join()
     time.sleep(10)
 
 client.armDisarm(False)

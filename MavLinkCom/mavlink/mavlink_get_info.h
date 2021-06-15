@@ -1,5 +1,5 @@
 #pragma once
-
+// clang-format off
 #ifdef MAVLINK_USE_MESSAGE_INFO
 #define MAVLINK_HAVE_GET_MESSAGE_INFO
 
@@ -68,4 +68,4 @@ MAVLINK_HELPER const mavlink_message_info_t *mavlink_get_message_info_by_name(co
 }
 #endif // MAVLINK_USE_MESSAGE_INFO
 
-
+// clang-format on

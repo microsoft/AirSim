@@ -2,7 +2,6 @@
 #include "Engine/World.h"
 #include "ManualPoseController.h"
 
-
 AComputerVisionPawn::AComputerVisionPawn()
 {
     static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
@@ -29,10 +28,9 @@ AComputerVisionPawn::AComputerVisionPawn()
 }
 
 void AComputerVisionPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
-    FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+                                    FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-    pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation,
-        HitNormal, NormalImpulse, Hit);
+    pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 }
 
 void AComputerVisionPawn::initializeForBeginPlay()
@@ -55,13 +53,15 @@ void AComputerVisionPawn::initializeForBeginPlay()
     camera_front_right_->AttachToComponent(camera_front_right_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
     camera_spawn_params.Name = "camera_bottom_center";
-    camera_bottom_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, 
-        FTransform(FRotator(-90, 0, 0), FVector::ZeroVector), camera_spawn_params);
+    camera_bottom_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_,
+                                                                     FTransform(FRotator(-90, 0, 0), FVector::ZeroVector),
+                                                                     camera_spawn_params);
     camera_bottom_center_->AttachToComponent(camera_bottom_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
     camera_spawn_params.Name = "camera_back_center";
-    camera_back_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, 
-        FTransform(FRotator(0, -180, 0), FVector::ZeroVector), camera_spawn_params);
+    camera_back_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_,
+                                                                   FTransform(FRotator(0, -180, 0), FVector::ZeroVector),
+                                                                   camera_spawn_params);
     camera_back_center_->AttachToComponent(camera_back_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
 
     manual_pose_controller_ = NewObject<UManualPoseController>(this, "ComputerVision_ManualPoseController");
@@ -77,7 +77,6 @@ const common_utils::UniqueValueMap<std::string, APIPCamera*> AComputerVisionPawn
     cameras.insert_or_assign("front_left", camera_front_left_);
     cameras.insert_or_assign("bottom_center", camera_bottom_center_);
     cameras.insert_or_assign("back_center", camera_back_center_);
-
 
     cameras.insert_or_assign("0", camera_front_center_);
     cameras.insert_or_assign("1", camera_front_right_);
@@ -123,6 +122,3 @@ void AComputerVisionPawn::BeginPlay()
 {
     Super::BeginPlay();
 }
-
-
-

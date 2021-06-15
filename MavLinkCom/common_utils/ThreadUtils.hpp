@@ -4,19 +4,18 @@
 #include <thread>
 #include <string>
 
-namespace mavlink_utils {
+namespace mavlink_utils
+{
 
-	class CurrentThread
-	{
-	public:
-		// make the current thread run with maximum priority.
-		static bool setMaximumPriority();
+class CurrentThread
+{
+public:
+    // make the current thread run with maximum priority.
+    static bool setMaximumPriority();
 
-        // set a nice name on the current thread which aids in debugging.
-        static bool setThreadName(const std::string& name);
-
-	};
-
+    // set a nice name on the current thread which aids in debugging.
+    static bool setThreadName(const std::string& name);
+};
 }
 
 #endif
