@@ -16,7 +16,6 @@
 #include "physics/Kinematics.hpp"
 #include "api/RpcLibServerBase.hpp"
 
-
 std::unique_ptr<msr::airlib::ApiServerBase> ASimModeComputerVision::createApiServer() const
 {
 #ifdef AIRLIB_NO_RPC
@@ -71,7 +70,7 @@ std::unique_ptr<PawnSimApi> ASimModeComputerVision::createVehicleSimApi(
 }
 
 msr::airlib::VehicleApiBase* ASimModeComputerVision::getVehicleApi(const PawnSimApi::Params& pawn_sim_api_params,
-    const PawnSimApi* sim_api) const
+                                                                   const PawnSimApi* sim_api) const
 {
     //we don't have real vehicle so no vehicle API
     return nullptr;

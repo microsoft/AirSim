@@ -3,16 +3,16 @@
 This document explains how to automate the creation of a development environment on Azure and code and debug a Python application connected to AirSim using Visual Studio Code
 
 ## Automatically Deploy Your Azure VM
-Use [this](https://github.com/microsoft/AirSim/blob/master/azure/azure-env-creation/vm-arm-template.json) template to create, deploy and configure an Azure VM to work with AirSim 
+Click the blue button to start the Azure deployment (The template is pre-filled with the recommended virtual machine size for the use cases of the following two tutorials)
 
-*Note: the VM deployment and configuration process may take 20+ minutes to complete*
 
 <a href="https://aka.ms/AA8umgt" target="_blank">
     <img src="https://azuredeploy.net/deploybutton.png"/>
-</a>
+</a>  
+*Note: the VM deployment and configuration process may take 20+ minutes to complete*
 
 ### Regarding the deployment of the Azure VM
-- When using an Azure Trial account, the default vCPU quota may not be enough to allocate the required VM to run AirSim. If that's the case, you will see an error when trying to create the VM and will have to make a support request to increase the default quota.
+- When using an Azure Trial account, the default vCPU quota is not enough to allocate the required VM to run AirSim. If that's the case, you will see an error when trying to create the VM and will have to submit a request for Quota increase. **Be sure to understand how and how much you are going to be charged for the use of the VM**
 
 - To avoid charges for the Virtual Machine usage while not in use, remember to deallocate its resources from the [Azure Portal](https://portal.azure.com) or use the following command from the Azure CLI:
 ```bash
@@ -55,7 +55,7 @@ Once both the AirSim environment and the Python application are ready, you can p
 
 This would be a perfect scenario when you want to run the simulation at scale. For instance, you could have several different configurations for the same simulation and execute them in a parallel, unattended way using a Docker image on Azure Container Services
 
-Since AirSim requires access to the host GPU, it is required to use a Docker runtime that supports it. For more information about running AirSim in Docker, click [here](https://github.com/microsoft/AirSim/blob/master/docs/docker_ubuntu.md).
+Since AirSim requires access to the host GPU, it is required to use a Docker runtime that supports it. For more information about running AirSim in Docker, click [here](docker_ubuntu.md).
 
 When using Azure Container Services to run this image, the only extra-requirement is to add GPU support to the Container Group where it will be deployed. 
 

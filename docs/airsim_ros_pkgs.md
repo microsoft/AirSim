@@ -3,17 +3,16 @@
 A ROS wrapper over the AirSim C++ client library. 
 
 ##  Setup 
-- Install gcc >= 8.0.0
-`sudo apt-get install gcc-8 g++-8`
-Verify version by `gcc --version`
+- Install gcc >= 8.0.0: `sudo apt-get install gcc-8 g++-8`  
+Verify installation by `gcc-8 --version`
 
 - Ubuntu 16.04
-  * Install [ROS kinetic](https://wiki.ros.org/kinetic/Installation/Ubuntu)
-  * Install tf2 sensor and mavros packages: `sudo apt-get install ros-kinetic-tf2-sensor-msgs ros-kinetic-mavros*`
+    * Install [ROS kinetic](https://wiki.ros.org/kinetic/Installation/Ubuntu)
+    * Install tf2 sensor and mavros packages: `sudo apt-get install ros-kinetic-tf2-sensor-msgs ros-kinetic-tf2-geometry-msgs ros-kinetic-mavros*`
 
 - Ubuntu 18.04
-  * Install [ROS melodic](https://wiki.ros.org/melodic/Installation/Ubuntu)
-  * Install tf2 sensor and mavros packages: `sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-mavros*`
+    * Install [ROS melodic](https://wiki.ros.org/melodic/Installation/Ubuntu)
+    * Install tf2 sensor and mavros packages: `sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-tf2-geometry-msgs ros-melodic-mavros*`
 
 - Install [catkin_tools](https://catkin-tools.readthedocs.io/en/latest/installing.html)
     `sudo apt-get install python-catkin-tools` or
@@ -46,6 +45,7 @@ source devel/setup.bash;
 roslaunch airsim_ros_pkgs airsim_node.launch;
 roslaunch airsim_ros_pkgs rviz.launch;
 ```
+   **Note**: If you get an error running `roslaunch airsim_ros_pkgs airsim_node.launch`, run `catkin clean` and try again
 
 # Using AirSim ROS wrapper
 The ROS wrapper is composed of two ROS nodes - the first is a wrapper over AirSim's multirotor C++ client library, and the second is a simple PD position controller.    
@@ -54,7 +54,7 @@ Let's look at the ROS API for both nodes:
 ### AirSim ROS Wrapper Node
 #### Publishers:
 - `/airsim_node/origin_geo_point` [airsim_ros_pkgs/GPSYaw](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GPSYaw.msg)   
-GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/docs/settings/) file under the `OriginGeopoint` key. 
+GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/settings/) file under the `OriginGeopoint` key. 
   
 - `/airsim_node/VEHICLE_NAME/global_gps` [sensor_msgs/NavSatFix](https://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html)   
 This the current GPS coordinates of the drone in airsim. 
@@ -69,18 +69,19 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
 
 - `/tf` [tf2_msgs/TFMessage](https://docs.ros.org/api/tf2_msgs/html/msg/TFMessage.html)
 
-- `/airsim_node/VEHICLE_NAME/altimeter/SENSOR_NAME` [airsim_ros_pkgs::Altimeter] This the current altimeter reading for altitude, pressure, and QNH (https://en.wikipedia.org/wiki/QNH)
+- `/airsim_node/VEHICLE_NAME/altimeter/SENSOR_NAME` [airsim_ros_pkgs/Altimeter](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/msg/Altimeter.msg)  
+This the current altimeter reading for altitude, pressure, and [QNH](https://en.wikipedia.org/wiki/QNH)
   
-- `/airsim_node/VEHICLE_NAME/imu/SENSOR_NAME` [sensor_msgs::Imu] (http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html)
-  IMU sensor data
+- `/airsim_node/VEHICLE_NAME/imu/SENSOR_NAME` [sensor_msgs::Imu](http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html)  
+IMU sensor data
 
-- `/airsim_node/VEHICLE_NAME/magnetometer/SENSOR_NAME` [sensor_msgs::MagneticField] (http://docs.ros.org/api/sensor_msgs/html/msg/MagneticField.html)
+- `/airsim_node/VEHICLE_NAME/magnetometer/SENSOR_NAME` [sensor_msgs::MagneticField](http://docs.ros.org/api/sensor_msgs/html/msg/MagneticField.html)  
   Meausrement of magnetic field vector/compass
 
-- `/airsim_node/VEHICLE_NAME/distance/SENSOR_NAME` [sensor_msgs::Range] (http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)
+- `/airsim_node/VEHICLE_NAME/distance/SENSOR_NAME` [sensor_msgs::Range](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)  
   Meausrement of distance from an active ranger, such as infrared or IR
 
-- `/airsim_node/VEHICLE_NAME/lidar/SENSOR_NAME` [sensor_msgs::PointCloud2] (http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html)
+- `/airsim_node/VEHICLE_NAME/lidar/SENSOR_NAME` [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html)  
   LIDAR pointcloud
 
 #### Subscribers: 
@@ -96,8 +97,8 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
 - `/gimbal_angle_quat_cmd` [airsim_ros_pkgs/GimbalAngleQuatCmd](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GimbalAngleQuatCmd.msg)   
   Gimbal set point in quaternion.    
 
-- `/airsim_node/VEHICLE_NAME/car_cmd` [airsim_ros_pkgs/CarControls]
-  Throttle, brake, steering and gear selections for control. Both automatic and manual transmission control possible, see the car_joy.py script for use.
+- `/airsim_node/VEHICLE_NAME/car_cmd` [airsim_ros_pkgs/CarControls](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/msg/CarControls.msg)  
+Throttle, brake, steering and gear selections for control. Both automatic and manual transmission control possible, see the [`car_joy.py`](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/scripts/car_joy) script for use.
 
 #### Services:
 - `/airsim_node/VEHICLE_NAME/land` [airsim_ros_pkgs/Takeoff](https://docs.ros.org/api/std_srvs/html/srv/Empty.html)
@@ -172,7 +173,7 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
   Target gps position + yaw.   
   In **absolute** altitude. 
 
-- `/airsim_node/VEHICLE_NAME/local_position_goal` [Request: [srv/SetLocalPosition](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/SetLocalPosition.srv)   
+- `/airsim_node/VEHICLE_NAME/local_position_goal` [Request: [srv/SetLocalPosition](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/srv/SetLocalPosition.srv)]   
   Target local position + yaw in global NED frame.   
 
 #### Subscribers:
@@ -183,7 +184,7 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
   Listens to odometry published by `airsim_node`
 
 #### Publishers:
-- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](airsim_ros_pkgs/VelCmd)   
+- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/VelCmd.msg)   
   Sends velocity command to `airsim_node`
 
 ### Global params
@@ -198,17 +199,73 @@ Odometry in NED frame (default name: odom_local_ned, launch name and frame type 
   Maximum yaw rate (degrees/second)
 
 ### Misc
-#### Windows Subsytem for Linux on Windows 10
-- WSL setup:
-  * Get [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-  * Get [Ubuntu 16.04](https://www.microsoft.com/en-us/p/ubuntu-1604-lts/9pjn388hp8c9?activetab=pivot:overviewtab) or [Ubuntu 18.04](https://www.microsoft.com/en-us/p/ubuntu-1804-lts/9n9tngvndl3q?activetab=pivot%3Aoverviewtab)  
-  * Go to Ubuntu 16 / 18 instructions!
 
 
-- Setup for X apps (like RViz, rqt_image_view, terminator) in Windows + WSL
-  * Install [Xming X Server](https://sourceforge.net/projects/xming/). 
-  * Find and run `XLaunch` from the Windows start menu.   
-  Select `Multiple Windows` in first popup, `Start no client` in second popup, **only** `Clipboard` in third popup. Do **not** select `Native Opengl`.  
-  * Open Ubuntu 16.04 / 18.04 session by typing `Ubuntu 16.04`  / `Ubuntu 18.04` in Windows start menu.  
-  * Recommended: Install [terminator](http://www.ubuntugeek.com/terminator-multiple-gnome-terminals-in-one-window.html) : `$ sudo apt-get install terminator.` 
-    - You can open terminator in a new window by entering `$ DISPLAY=:0 terminator -u`. 
+#### Setting up the Build Environment on Windows10 using WSL1 or WSL2
+
+
+These setup instructions describe how to setup "Bash on Ubuntu on Windows" (aka "Windows Subsystem for Linux").
+
+It involves enabling the built-in Windows Linux environment (WSL) in Windows10, installing a compatible Linux OS image, and finally installing the build environment as if it were a normal Linux system.
+
+Upon completion, you will be able to build and run the ros wrapper as in a native linux machine.
+
+##### WSL1 vs WSL2
+
+WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 (if you use the native file system in `/home/...` rather
+than Windows mounted folders under `/mnt/...`) and is therefore much preferred for building the code in terms of speed. 
+
+Once installed, you can switch between WSL1 or WSL2 versions as you prefer.
+
+##### WSL Setup steps
+
+1. Follow the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Check that the ROS version you want to use is supported by the Ubuntu version you want to install.
+
+2. Congratulations, you now have a working Ubuntu subsystem under Windows, you can now go to [Ubuntu 16 / 18 instructions](#setup) and then [How to run Airsim on Windows and ROS wrapper on WSL](#how-to-run-airsim-on-windows-and-ros-wrapper-on-wsl)!
+
+!!! note
+
+    You can run XWindows applications (including SITL) by installing [VcXsrv](https://sourceforge.net/projects/vcxsrv/)  on Windows. 
+    To use it find and run `XLaunch` from the Windows start menu.    
+    Select `Multiple Windows` in first popup, `Start no client` in second popup, **only** `Clipboard` in third popup. Do **not** select `Native Opengl` (and if you are not able to connect select `Disable access control`).  
+    You will need to set the DISPLAY variable to point to your display: in WSL it is `127.0.0.1:0`, in WSL2 it will be the ip address of the PC's network port and can be set by using the code below. Also in WSL2 you may have to disable the firewall for public networks, or create an exception in order for VcXsrv to communicate with WSL2:
+
+    `export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0`
+
+!!! tip
+
+    - If you add this line to your ~/.bashrc file you won't need to run this command again  
+    - For code editing you can install VSCode inside WSL.  
+    - Windows 10 includes "Windows Defender" virus scanner. It will slow down WSL quite a bit. Disabling it greatly improves disk performance but increases your risk to viruses so disable at your own risk. Here is one of many resources/videos that show you how to disable it: [How to Disable or Enable Windows Defender on Windows 10](https://youtu.be/FmjblGay3AM)
+
+##### File System Access between WSL and Windows10
+
+
+From within WSL, the Windows drives are referenced in the /mnt directory. For example, in order to list documents within your (<username>) documents folder:
+
+
+    `ls /mnt/c/'Documents and Settings'/<username>/Documents`
+    or
+    `ls /mnt/c/Users/<username>/Documents`
+
+
+From within Windows, the WSL distribution's files are located at (type in windows Explorer address bar):
+
+   `\\wsl$\<distribution name>`
+   e.g.
+   `\\wsl$\Ubuntu-18.04`
+   
+#### How to run Airsim on Windows and ROS wrapper on WSL
+For WSL 1 execute:  
+`export WSL_HOST_IP=127.0.0.1`  
+and for WSL 2:  
+`export WSL_HOST_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')`  
+Now, as in the [running section for linux](#running), execute the following:  
+```
+source devel/setup.bash
+roslaunch airsim_ros_pkgs airsim_node.launch output:=screen host:=$WSL_HOST_IP
+roslaunch airsim_ros_pkgs rviz.launch
+```
+
+
+

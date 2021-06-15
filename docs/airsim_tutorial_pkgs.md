@@ -19,7 +19,9 @@ If your default GCC isn't 8 or greater (check using `gcc --version`), then compi
 catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
 ```
 
-Note: For running examples, and also whenever a new terminal is opened, sourcing the `setup.bash` file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the `source PATH_TO/AirSim/ros/devel/setup.bash` to your `~/.profile` or `~/.bashrc` to avoid the need to run the command every time a new terminal is opened
+!!! note
+
+    For running examples, and also whenever a new terminal is opened, sourcing the `setup.bash` file is necessary. If you're using the ROS wrapper frequently, it might be helpful to add the `source PATH_TO/AirSim/ros/devel/setup.bash` to your `~/.profile` or `~/.bashrc` to avoid the need to run the command every time a new terminal is opened
 
 ## Examples
 
@@ -38,7 +40,7 @@ Note: For running examples, and also whenever a new terminal is opened, sourcing
  $ source PATH_TO/AirSim/ros/devel/setup.bash
  $ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch
  ```
- The above would start rviz with tf's, registered RGBD cloud using [depth_image_proc](https://wiki.ros.org/depth_image_proc) using the [`depth_to_pointcloud` launch file](https://github.com/microsoft/AirSim/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch), and the lidar point cloud. 
+ The above would start rviz with tf's, registered RGBD cloud using [depth_image_proc](https://wiki.ros.org/depth_image_proc) using the [`depth_to_pointcloud` launch file](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch), and the lidar point cloud. 
 
 
 ### Two drones, with cameras, lidar, IMU each

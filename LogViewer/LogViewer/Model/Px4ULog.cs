@@ -12,7 +12,7 @@ namespace LogViewer.Model.ULog
 {
     public abstract class Message
     {
-        public abstract double GetTimestamp();
+        public abstract ulong GetTimestamp();
     }
 
     public enum FieldType
@@ -174,9 +174,15 @@ namespace LogViewer.Model.ULog
         public int id;
         public List<MessageField> fields = new List<MessageField>();
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
+        }
+
+        public MessageFormat(string name, List<MessageField> fields)
+        {
+            this.fields = fields;
+            this.name = name;
         }
 
         public MessageFormat(string fmt)
@@ -215,22 +221,27 @@ namespace LogViewer.Model.ULog
         byte logLevel;
         long timestamp;
         string msg;
+        ushort tag;
 
-        public MessageLogging(byte logLevel, long timestamp, string msg)
+        public byte LogLevel => logLevel;
+        public long Timestamp => timestamp;
+        public string Contents => msg;
+        public ushort Tag => tag;
+
+        public MessageLogging(byte logLevel, long timestamp, string msg, ushort tag = 0)
         {
             this.logLevel = logLevel;
             this.timestamp = timestamp;
             this.msg = msg;
+            this.tag = tag;
         }
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
-            return timestamp;
+            return (ulong)timestamp;
         }
-
-
     }
-
+    
     class MessageData : Message
     {
         internal MessageSubscription subscription;
@@ -238,6 +249,7 @@ namespace LogViewer.Model.ULog
         UInt16 msgId;
         byte[] value;
         Dictionary<string, object> values;
+        Dictionary<string, MessageFormat> nestedFormats;
 
         public MessageData(UInt16 msgId, byte[] value, MessageSubscription s)
         {
@@ -247,12 +259,17 @@ namespace LogViewer.Model.ULog
             this.format = s.format;
         }
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
+            if (values == null)
+            {
+                ParseValues();
+            }
+
             object ts = null;
             if (values.TryGetValue("timestamp", out ts))
             {
-                return Convert.ToDouble(ts);
+                return Convert.ToUInt64(ts);
             }
             return 0;
         }
@@ -264,7 +281,7 @@ namespace LogViewer.Model.ULog
                 ParseValues();
             }
 
-            double x = GetTimestamp();
+            ulong x = GetTimestamp();
             double y = 0;
 
             object o = null;
@@ -274,7 +291,7 @@ namespace LogViewer.Model.ULog
             }
             return new DataValue()
             {
-                X = x,
+                X = (double)x,
                 Y = y,
                 UserData = this,
                 Label = GetLabel(field, y)
@@ -282,38 +299,69 @@ namespace LogViewer.Model.ULog
         }
 
 
-        static string[] NavStateNames = {
-            "NAVIGATION_STATE_MANUAL",
-            "NAVIGATION_STATE_ALTCTL",
-            "NAVIGATION_STATE_POSCTL",
-            "NAVIGATION_STATE_AUTO_MISSION",
-            "NAVIGATION_STATE_AUTO_LOITER",
-            "NAVIGATION_STATE_AUTO_RTL",
-            "NAVIGATION_STATE_AUTO_RCRECOVER",
-            "NAVIGATION_STATE_AUTO_RTGS",
-            "NAVIGATION_STATE_AUTO_LANDENGFAIL",
-            "NAVIGATION_STATE_AUTO_LANDGPSFAIL",
-            "NAVIGATION_STATE_ACRO",
-            "NAVIGATION_STATE_UNUSED",
-            "NAVIGATION_STATE_DESCEND",
-            "NAVIGATION_STATE_TERMINATION",
-            "NAVIGATION_STATE_OFFBOARD",
-            "NAVIGATION_STATE_STAB",
-            "NAVIGATION_STATE_RATTITUDE",
-            "NAVIGATION_STATE_AUTO_TAKEOFF",
-            "NAVIGATION_STATE_AUTO_LAND",
-            "NAVIGATION_STATE_AUTO_FOLLOW_TARGET",
-            "NAVIGATION_STATE_MAX"
+        public enum NavStates {
+            NAVIGATION_STATE_MANUAL = 0, //		# Manual mode
+            NAVIGATION_STATE_ALTCTL = 1, //		# Altitude control mode
+            NAVIGATION_STATE_POSCTL = 2, //		# Position control mode
+            NAVIGATION_STATE_AUTO_MISSION = 3, //		# Auto mission mode
+            NAVIGATION_STATE_AUTO_LOITER = 4, //		# Auto loiter mode
+            NAVIGATION_STATE_AUTO_RTL = 5, //		# Auto return to launch mode
+            NAVIGATION_STATE_AUTO_LANDENGFAIL = 8, // 	# Auto land on engine failure
+            NAVIGATION_STATE_AUTO_LANDGPSFAIL = 9, //	# Auto land on gps failure (e.g. open loop loiter down)
+            NAVIGATION_STATE_ACRO = 10, //		# Acro mode
+            NAVIGATION_STATE_UNUSED = 11, //		# Free slot
+            NAVIGATION_STATE_DESCEND = 12, //		# Descend mode (no position control)
+            NAVIGATION_STATE_TERMINATION = 13, //		# Termination mode
+            NAVIGATION_STATE_OFFBOARD = 14, //
+            NAVIGATION_STATE_STAB = 15, //		# Stabilized mode
+            NAVIGATION_STATE_UNUSED2 = 16, //		# Free slot
+            NAVIGATION_STATE_AUTO_TAKEOFF = 17, //	# Takeoff
+            NAVIGATION_STATE_AUTO_LAND = 18, //		# Land
+            NAVIGATION_STATE_AUTO_FOLLOW_TARGET = 19, //	# Auto Follow
+            NAVIGATION_STATE_AUTO_PRECLAND = 20, //	# Precision land with landing target
+            NAVIGATION_STATE_ORBIT = 21, //       # Orbit in a circle
+            NAVIGATION_STATE_MAX = 22, //
         };
+
+        public enum ArmingStates {
+            ARMING_STATE_INIT = 0,
+            ARMING_STATE_STANDBY = 1,
+            ARMING_STATE_ARMED = 2,
+            ARMING_STATE_STANDBY_ERROR = 3,
+            ARMING_STATE_SHUTDOWN = 4,
+            ARMING_STATE_IN_AIR_RESTORE = 5,
+            ARMING_STATE_MAX = 6
+        }
+
+        [Flags]
+        public enum FailureDetectorFlags
+        {
+            FAILURE_NONE = 0, //
+            FAILURE_ROLL = 1, // 	        # (1 << 0)
+            FAILURE_PITCH = 2, //	        # (1 << 1)
+            FAILURE_ALT = 4, // 	        # (1 << 2)
+            FAILURE_EXT = 8, // 	        # (1 << 3)
+            FAILURE_ARM_ESC = 16, //      # (1 << 4)
+        }
 
         string GetLabel(MessageField field, double y)
         {
-            if (field.name == "nav_state" && this.format.name == "vehicle_status")
+            if (this.format.name == "vehicle_status")
             {
-                int i = (int)y;
-                if (i < NavStateNames.Length)
+                if (field.name == "nav_state")
                 {
-                    return NavStateNames[i];
+                    NavStates s = (NavStates)y;
+                    return s.ToString();
+                }
+                else if (field.name == "arming_state")
+                {
+                    ArmingStates s = (ArmingStates)y;
+                    return s.ToString();
+                }
+                else if (field.name == "failure_detector_status")
+                {
+                    FailureDetectorFlags s = (FailureDetectorFlags)y;
+                    return s.ToString();
                 }
             }
             return null;
@@ -420,37 +468,52 @@ namespace LogViewer.Model.ULog
                     object value = values[fieldName];
                     if (field.arraySize > 0)
                     {
-                        // cook up a MessageData just for the array.
-                        MessageData array = new MessageData(this.msgId, null, this.subscription);
-                        StringBuilder fieldTypes = new StringBuilder();
-                        fieldTypes.Append(fieldName);
-                        fieldTypes.Append(':');
+                        if (nestedFormats == null)
+                        {
+                            nestedFormats = new Dictionary<string, MessageFormat>();
+                        }
 
+                        MessageFormat format = null;
+                        if (!nestedFormats.TryGetValue(fieldName, out format))
+                        {
+                            List<MessageField> fields = new List<MessageField>();
+
+                            object tv;
+                            // we need to copy the timestamp down so the data renders with time sync.
+                            if (this.values.TryGetValue("timestamp", out tv))
+                            {
+                                fields.Add(new MessageField("double timestamp"));
+                            }
+
+                            for (int i = 0; i < field.arraySize; i++)
+                            {
+                                var name = i.ToString();
+                                fields.Add(new MessageField(MessageField.GetFieldTypeName(field.type) + " " + name));
+                            }
+
+                            format = new MessageFormat(fieldName, fields);
+                            nestedFormats[fieldName] = format;
+                        }
+
+                        MessageData array = new MessageData(this.msgId, null, this.subscription);
+                        array.format = format;
                         var values = new Dictionary<string, object>();
-                        bool first = true;
                         object ts = null;
+                        int offset = 0;
                         // we need to copy the timestamp down so the data renders with time sync.
                         if (this.values.TryGetValue("timestamp", out ts))
                         {
-                            fieldTypes.Append("double timestamp");
                             values["timestamp"] = ts;
-                            first = false;
+                            offset++;
                         }
 
                         Array data = (Array)value;
                         for (int i = 0; i < field.arraySize; i++)
                         {
-                            if (!first)
-                            {
-                                fieldTypes.Append(';');
-                            }
-                            fieldTypes.Append(MessageField.GetFieldTypeName(field.type));
-                            fieldTypes.Append(' ');
-                            fieldTypes.Append(i.ToString());
-                            values[i.ToString()] = data.GetValue(i);
-                            first = false;
+                            string name = format.fields[i + offset].name;
+                            values[name] = data.GetValue(i);
                         }
-                        array.format = new MessageFormat(fieldTypes.ToString());
+
                         array.values = values;
                         return array;
                     }
@@ -516,33 +579,66 @@ namespace LogViewer.Model.ULog
     class MessageInfo : Message
     {
         string key;
-        byte[] value;
+        bool isContinued;
+        string value;
 
-        public MessageInfo(string key, byte[] value)
+        public MessageInfo(string key, bool isContinued, string value)
         {
             this.key = key;
             this.value = value;
+            this.isContinued = isContinued;
         }
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
         
     }
 
-    class MessageParameter : Message
+    class MessageParameter<T> : Message
     {
-        string key;
-        byte[] value;
+        string name;
+        T value;
 
-        public MessageParameter(string key, byte[] value)
+        public MessageParameter(string name, T value)
         {
-            this.key = key;
+            this.name = name;
             this.value = value;
         }
 
+        public string Name => name;
+        public T Value => value;
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
+        {
+            return 0;
+        }
+    }
+
+    [Flags]
+    enum UlogParameterDefaultType
+    {
+        system = 1,
+        current_setup = 2
+    }
+
+    class MessageParameterDefault<T> : Message
+    {
+        UlogParameterDefaultType type;
+        string name;
+        T value;
+
+        public MessageParameterDefault(UlogParameterDefaultType type, string name, T value)
+        {
+            this.type = type;
+            this.name = name;
+            this.value = value;
+        }
+        public string Key => name;
+        public T Value => value;
+
+
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -558,7 +654,7 @@ namespace LogViewer.Model.ULog
         }
 
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -574,7 +670,7 @@ namespace LogViewer.Model.ULog
         }
 
 
-        public override double GetTimestamp()
+        public override ulong GetTimestamp()
         {
             return 0;
         }
@@ -602,12 +698,16 @@ namespace LogViewer.Model.ULog
             FORMAT = 'F',
             DATA = 'D',
             INFO = 'I',
+            INFO_MULTIPLE = 'M',
             PARAMETER = 'P',
+            PARAMETER_DEFAULT = 'Q',
             ADD_LOGGED_MSG = 'A',
             REMOVE_LOGGED_MSG = 'R',
             SYNC = 'S',
             DROPOUT = 'O',
             LOGGING = 'L',
+            LOGGING_TAGGED = 'C',
+            FLAG_BITS = 'B',
         };
 
         BinaryReader reader;
@@ -652,31 +752,34 @@ namespace LogViewer.Model.ULog
                 if (m is MessageData)
                 {
                     MessageData data = (MessageData)m;
-                    if (data.subscription.id == root.Id)
+                    //if (data.subscription.id == root.Id)
                     {
                         MessageFormat f = data.format;
                         // matching root schema, so drill down if necessary.
                         for (int i = 1, n = path.Count; i < n; i++)
                         {
                             bool found = false;
-                            LogItemSchema child = path[i];
-                            foreach (var field in f.fields)
+                            if (path[i].Name == f.name && i + 1 < n)
                             {
-                                if (field.name == child.Name)
+                                LogItemSchema child = path[i + 1];
+                                foreach (var field in f.fields)
                                 {
-                                    found = true;
-                                    if (i + 1 < n && child.HasChildren)
+                                    if (field.name == child.Name)
                                     {
-                                        // still need to drill down, so we need a MessageData and MessageFormat for the child item.
-                                        data = data.GetNestedData(field.name);
-                                        f = data.format;
+                                        found = true;
+                                        if (i + 1 < n && child.HasChildren)
+                                        {
+                                            // still need to drill down, so we need a MessageData and MessageFormat for the child item.
+                                            data = data.GetNestedData(field.name);
+                                            f = data.format;
+                                        }
+                                        else
+                                        {
+                                            yield return data.GetValue(field);
+                                            found = false; // done drilling down
+                                        }
+                                        break;
                                     }
-                                    else
-                                    {
-                                        yield return data.GetValue(field);
-                                        found = false; // done drilling down
-                                    }
-                                    break;
                                 }
                             }
                             if (!found)
@@ -691,7 +794,67 @@ namespace LogViewer.Model.ULog
 
         public IEnumerable<Flight> GetFlights()
         {
-            return new Flight[0];
+            MessageField field = new MessageField("uint8_t arming_state");
+            List <Flight> actualFlights = new List<Flight>();
+            Flight current = null;
+            bool flying = false;
+            Px4ULog log = null;
+            int length = this.msgs.Count;
+            for (int i = 0; i < length; i++)
+            {
+                var msg = this.msgs[i];
+                bool lastMessage = (i == length - 1);
+                if (msg is MessageData md)
+                {
+                    if (md.format.name == "vehicle_status")
+                    {
+                        var data = md.GetValue(field);
+                        if (data != null)
+                        {
+                            var s = (MessageData.ArmingStates)data.Y;
+                            if (s == MessageData.ArmingStates.ARMING_STATE_ARMED)
+                            {
+                                flying = true;
+                            } 
+                            else
+                            {
+                                flying = false;
+                            }
+                        }
+                    }
+                }
+                if (flying)
+                {
+                    if (current == null)
+                    {
+                        log = new Px4ULog()
+                        {
+                            file = this.file,
+                            formats = this.formats,
+                            logStartTimestamp = (long)msg.GetTimestamp(),
+                            msgs = new List<Message>(),
+                            schema = this.schema,
+                            startTime = GetTime(msg.GetTimestamp()),
+                            subscriptions = this.subscriptions,
+                            version = this.version
+                        };
+                        current = new Flight() { Name = string.Format("Flight {0}", actualFlights.Count + 1), StartTime = log.startTime, Log = log };
+                    }
+                    log.msgs.Add(msg);
+
+                }
+
+                if ((!flying || lastMessage) && current != null)
+                {
+                    var now = GetTime(msg.GetTimestamp());
+                    current.Duration = now - current.StartTime;
+                    actualFlights.Add(current);
+                    log = null;
+                    current = null;
+                }
+            }
+
+            return actualFlights;
         }
 
         public IEnumerable<LogEntry> GetRows(string typeName, DateTime startTime, TimeSpan duration)
@@ -719,7 +882,8 @@ namespace LogViewer.Model.ULog
 
         public DateTime GetTime(ulong timeMs)
         {
-            throw new NotImplementedException();
+            var delta = timeMs - (ulong)this.logStartTimestamp;
+            return this.startTime + new TimeSpan((long)delta * 10); // microseconds to 100 nanosecond ticks.
         }
 
         public IEnumerable<DataValue> LiveQuery(LogItemSchema schema, CancellationToken token)
@@ -730,13 +894,13 @@ namespace LogViewer.Model.ULog
         public async Task Load(string file, ProgressUtility progress)
         {
             this.file = file;
-            this.startTime = DateTime.MinValue;
+            this.startTime = File.GetCreationTime(file);
             this.duration = TimeSpan.Zero;
             DateTime lastTime = DateTime.MinValue;
 
             await Task.Run(() =>
             {
-                this.msgs = new List<ULog.Message>();
+                var msgs = new List<ULog.Message>();
 
                 using (Stream s = File.OpenRead(file))
                 {
@@ -764,7 +928,7 @@ namespace LogViewer.Model.ULog
                     }
                     this.reader = null;
                 }
-
+                this.msgs = msgs;
                 CreateSchema();
             });
             this.duration = lastTime - startTime;
@@ -773,13 +937,13 @@ namespace LogViewer.Model.ULog
 
         private void CreateSchema()
         {
-            LogItemSchema schema = new LogItemSchema() { Name = "Px4ULog", Type = "Root", ChildItems = new List<Model.LogItemSchema>() };
+            LogItemSchema schema = new LogItemSchema() { Name = "Px4ULog", Type = "Root" };
             // only need to show formats that we actually have subscriptions on.
             foreach (var sub in this.subscriptions.Values)
             {
                 // we can have "multi_id" subscriptions on the same format.
                 var element = CreateSchemaItem(sub, sub.format);
-                schema.ChildItems.Add(element);
+                schema.AddChild(element);
             }
 
             this.schema = schema;
@@ -787,31 +951,29 @@ namespace LogViewer.Model.ULog
 
         LogItemSchema CreateSchemaItem(MessageSubscription sub, MessageFormat fmt)
         {
-            LogItemSchema element = new LogItemSchema() { Name = fmt.name, Parent = schema, Id = sub.id };
+            LogItemSchema element = new LogItemSchema() { Name = fmt.name, Id = sub.id };
             foreach (var f in fmt.fields)
             {
-                LogItemSchema column = new LogItemSchema() { Name = f.name, Parent = element, Type = f.typeName + (f.arraySize > 0 ? "[" + f.arraySize + "]" : ""), Id = sub.id };
+                LogItemSchema column = new LogItemSchema() { Name = f.name, Type = f.typeName + (f.arraySize > 0 ? "[" + f.arraySize + "]" : ""), Id = sub.id };
                 if (f.type == FieldType.Struct)
                 {
                     // nested
                     var child = CreateSchemaItem(sub, f.structType);
-                    column.ChildItems = child.ChildItems;
+                    foreach (var item in child.CopyChildren())
+                    {
+                        column.AddChild(item);
+                    }
                 }
                 else if (f.arraySize > 0)
                 {
-                    List<LogItemSchema> arrayItems = new List<LogItemSchema>();
+                    column.IsArray = true;
                     // break out the elements of the array as separate items.
                     for (int i = 0; i < f.arraySize; i++)
                     {
-                        arrayItems.Add(new LogItemSchema() { Name = i.ToString(), Parent = column, Type = f.typeName, Id = sub.id });
+                        column.AddChild(new LogItemSchema() { Name = i.ToString(), Type = f.typeName, Id = sub.id });
                     }
-                    column.ChildItems = arrayItems;
                 }
-                if (element.ChildItems == null)
-                {
-                    element.ChildItems = new List<Model.LogItemSchema>();
-                }
-                element.ChildItems.Add(column);
+                element.AddChild(column);
             }
             return element;
         }
@@ -819,16 +981,17 @@ namespace LogViewer.Model.ULog
 
         private void ReadFileHeader()
         {
-            if (reader.ReadByte() == 'U' &&
-                reader.ReadByte() == 'L' &&
-                reader.ReadByte() == 'o' &&
-                reader.ReadByte() == 'g' &&
-                reader.ReadByte() == 0x1 &&
-                reader.ReadByte() == 0x12 &&
-                reader.ReadByte() == 0x35)
+            byte[] magic = reader.ReadBytes(8);
+            var logStartTimestamp = reader.ReadInt64();
+            if (magic[0] == 'U' &&
+                magic[1] == 'L' &&
+                magic[2] == 'o' &&
+                magic[3] == 'g' &&
+                magic[4] == 0x1 &&
+                magic[5]== 0x12 &&
+                magic[6] == 0x35)
             {
-                version = reader.ReadByte();
-                logStartTimestamp = reader.ReadInt64();
+                // good header
             }
             else
             {
@@ -839,17 +1002,26 @@ namespace LogViewer.Model.ULog
         private Message ReadMessage()
         {
             UInt16 len = reader.ReadUInt16();
-            ULogMessageType msgType = (ULogMessageType)reader.ReadByte();
+            byte type = reader.ReadByte();
+            ULogMessageType msgType = (ULogMessageType)type;
+            // Debug.WriteLine(msgType);
             switch (msgType)
             {
+                case 0:
+                    // not sure what these are about!
+                    return null;
                 case ULogMessageType.FORMAT:
                     return ReadMessageFormat(len);
                 case ULogMessageType.DATA:
                     return ReadDataMessage(len);
                 case ULogMessageType.INFO:
                     return ReadInfoMessage(len);
+                case ULogMessageType.INFO_MULTIPLE:
+                    return ReadInfoMessageMultiple(len);
                 case ULogMessageType.PARAMETER:
                     return ReadParameter(len);
+                case ULogMessageType.PARAMETER_DEFAULT:
+                    return ReadParameterDefault(len);
                 case ULogMessageType.ADD_LOGGED_MSG:
                     return ReadAddLoggedMessage(len);
                 case ULogMessageType.REMOVE_LOGGED_MSG:
@@ -860,9 +1032,24 @@ namespace LogViewer.Model.ULog
                     return ReadDropOutMessage(len);
                 case ULogMessageType.LOGGING:
                     return ReadLoggingMessage(len);
+                case ULogMessageType.LOGGING_TAGGED:
+                    return ReadLoggingMessageTagged(len);
+                case ULogMessageType.FLAG_BITS:
+                    return ReadFlagBits(len);
                 default:
                     throw new FormatException("found unexpected ulog message type: " + msgType.ToString());
             }
+        }
+
+        private Message ReadFlagBits(ushort len)
+        {
+            const byte ULOG_INCOMPAT_FLAG0_DATA_APPENDED_MASK = 1;
+            const byte ULOG_COMPAT_FLAG0_DEFAULT_PARAMETERS_MASK = 1;
+
+            byte[] msg = reader.ReadBytes(len);
+            bool contains_appended_data = (msg[8] & ULOG_INCOMPAT_FLAG0_DATA_APPENDED_MASK) != 0;
+            bool has_unknown_incompat_bits = (msg[0] & ~0x1) != 0;
+            return null;
         }
 
         internal Message ReadMessageFormat(ushort len)
@@ -880,6 +1067,15 @@ namespace LogViewer.Model.ULog
             long timestamp = reader.ReadInt64();
             string msg = reader.ReadAsciiString(len - 9);
             return new MessageLogging(logLevel, timestamp, msg);
+        }
+
+        public MessageLogging ReadLoggingMessageTagged(ushort len)
+        {
+            byte logLevel = reader.ReadByte();
+            ushort tag = reader.ReadUInt16();
+            long timestamp = reader.ReadInt64();
+            string msg = reader.ReadAsciiString(len - 9);
+            return new MessageLogging(logLevel, timestamp, msg, tag);
         }
 
         public MessageData ReadDataMessage(ushort len)
@@ -913,21 +1109,159 @@ namespace LogViewer.Model.ULog
         internal MessageInfo ReadInfoMessage(ushort len)
         {
             int keyLen = reader.ReadByte();
-            string key = reader.ReadAsciiString(keyLen);
+            string key = reader.ReadAsciiString(keyLen); 
+            int space = key.IndexOf(' ');
+            if (space < 0)
+            {
+                throw new Exception("Expecting space separated parameter type/value pair, but found " + key);
+            }
+            string type = key.Substring(0, space);
+            string name = key.Substring(space + 1);
             int valueSize = len - keyLen - 1;
-            byte[] value = new byte[valueSize];
-            reader.Read(value, 0, valueSize);
-            return new MessageInfo(key, value);
+
+            if (type == "int32_t")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for int32_t parameter value but got " + valueSize);
+                }
+                int value = reader.ReadInt32();
+                return new MessageInfo(name, false, value.ToString());
+            }
+            else if (type == "float")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for float parameter value but got " + valueSize);
+                }
+                float value = reader.ReadSingle();
+                return new MessageInfo(name, false, value.ToString());
+            }
+            else
+            {
+                byte[] value = new byte[valueSize];
+                reader.Read(value, 0, valueSize);
+                return new MessageInfo(name, false, Encoding.UTF8.GetString(value));
+            }
         }
 
-        internal MessageParameter ReadParameter(ushort len)
+        internal MessageInfo ReadInfoMessageMultiple(ushort len)
+        {
+            bool isContinued = reader.ReadByte() != 0;
+            int keyLen = reader.ReadByte();
+            string key = reader.ReadAsciiString(keyLen);
+            int space = key.IndexOf(' ');
+            if (space < 0)
+            {
+                throw new Exception("Expecting space separated parameter type/value pair, but found " + key);
+            }
+            string type = key.Substring(0, space);
+            string name = key.Substring(space + 1);
+            int valueSize = len - keyLen - 2;
+
+            if (type == "int32_t")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for int32_t parameter value but got " + valueSize);
+                }
+                int value = reader.ReadInt32();
+                return new MessageInfo(name, isContinued, value.ToString());
+            }
+            else if (type == "float")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for float parameter value but got " + valueSize);
+                }
+                float value = reader.ReadSingle();
+                return new MessageInfo(name, isContinued, value.ToString());
+            }
+            else
+            {
+                byte[] value = new byte[valueSize];
+                reader.Read(value, 0, valueSize);
+                return new MessageInfo(name, isContinued, Encoding.UTF8.GetString(value));
+            }
+        }
+
+        internal Message ReadParameter(ushort len)
         {
             int keyLen = reader.ReadByte();
             string key = reader.ReadAsciiString(keyLen);
             int valueSize = len - keyLen - 1;
-            byte[] value = new byte[valueSize];
-            reader.Read(value, 0, valueSize);
-            return new MessageParameter(key, value);
+            int space = key.IndexOf(' ');
+            if (space < 0)
+            {
+                throw new Exception("Expecting space separated parameter type/value pair, but found " + key);
+            }
+            string type = key.Substring(0, space);
+            string name = key.Substring(space + 1);
+
+            if (type == "int32_t")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for int32_t parameter value but got " + valueSize);
+                }
+                int value = reader.ReadInt32();
+                return new MessageParameter<int>(name, value);
+            }
+            else if (type == "float")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for float parameter value but got " + valueSize);
+                }
+                float value = reader.ReadSingle();
+                return new MessageParameter<float>(name, value);
+            }
+            else
+            {
+                byte[] value = new byte[valueSize];
+                reader.Read(value, 0, valueSize);
+                return new MessageParameter<string>(name, Encoding.UTF8.GetString(value));
+            }
+        }
+
+        internal Message ReadParameterDefault(ushort len)
+        {
+            var defaultType = (UlogParameterDefaultType)reader.ReadByte();
+            int keyLen = reader.ReadByte();
+            int valueSize = len - keyLen - 2;
+            string key = reader.ReadAsciiString(keyLen);
+            int space = key.IndexOf(' ');
+            if (space < 0)
+            {
+                throw new Exception("Expecting space separated parameter type/value pair, but found " + key);
+            }
+            string type = key.Substring(0, space);
+            string name = key.Substring(space + 1);
+
+            if (type == "int32_t")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for int32_t parameter value but got " + valueSize);
+                }
+                int value = reader.ReadInt32();
+                return new MessageParameterDefault<int>(defaultType, name, value);
+            }
+            else if (type == "float")
+            {
+                if (valueSize != 4)
+                {
+                    throw new Exception("Expecting 4 bytes for float parameter value but got " + valueSize);
+                }
+                float value = reader.ReadSingle();
+                return new MessageParameterDefault<float>(defaultType, name, value);
+            }
+            else
+            {
+                byte[] value = new byte[valueSize];
+                reader.Read(value, 0, valueSize);
+                return new MessageParameter<string>(name, Encoding.UTF8.GetString(value));
+            }
         }
 
         public Message ReadAddLoggedMessage(ushort len)
@@ -936,7 +1270,10 @@ namespace LogViewer.Model.ULog
             UInt16 msgId = reader.ReadUInt16();
             string msgName = reader.ReadAsciiString(len - 3);
             MessageFormat fmt = formats[msgName];
-            subscriptions[msgId] = new MessageSubscription(msgId, fmt, multi_id);
+            if (!subscriptions.ContainsKey(msgId))
+            {
+                subscriptions[msgId] = new MessageSubscription(msgId, fmt, multi_id);
+            }
             return null;
         }
 

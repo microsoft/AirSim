@@ -15,7 +15,7 @@ The following are the most important classes in this library.
 This is the base class for all MavLinkNodes (subclasses include MavLinkVehicle, MavLinkVideoClient and MavLinkVideoServer).
 The node connects to your mavlink enabled vehicle via a MavLinkConnection and provides methods for sending MavLinkMessages and MavLinkCommands
 and for subscribing to receive messages.  This base class also stores the local system id and component id your app wants to use to identify
-itself to your remove vehicle.  You can also call startHeartbeat to send regular heartbeat messages to keep the connection alive.
+itself to your remote vehicle.  You can also call startHeartbeat to send regular heartbeat messages to keep the connection alive.
 
 ### MavLinkMessage
 
@@ -80,96 +80,102 @@ will generate the right MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE and MAVLINK_M
 The following code from the UnitTest project shows how to connect to a [Pixhawk](http://www.pixhawk.org/) flight controller over USB serial port, 
 then wait for the first heartbeat message to be received:
 
-    auto connection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
-	MavLinkHeartbeat heartbeat;
-	if (!waitForHeartbeat(10000, heartbeat)) {
-		throw std::runtime_error("Received no heartbeat from PX4 after 10 seconds");
-	}
-
+```c++
+auto connection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
+MavLinkHeartbeat heartbeat;
+if (!waitForHeartbeat(10000, heartbeat)) {
+	throw std::runtime_error("Received no heartbeat from PX4 after 10 seconds");
+}
+```
 	
 The following code connects to serial port, and then forwards all messages to and from QGroundControl to that drone using another connection
 that is joined to the drone stream.
-
-    auto droneConnection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
-	auto proxyConnection = MavLinkConnection::connectRemoteUdp("qgc", "127.0.0.1", "127.0.0.1", 14550);
-	droneConnection->join(proxyConnection);
-
+```c++
+auto droneConnection = MavLinkConnection::connectSerial("drone", "/dev/ttyACM0", 115200, "sh /etc/init.d/rc.usb\n");
+auto proxyConnection = MavLinkConnection::connectRemoteUdp("qgc", "127.0.0.1", "127.0.0.1", 14550);
+droneConnection->join(proxyConnection);
+```
 The following code then takes that connection and turns on heartBeats and starts tracking vehicle information using local
 system id 166 and component id 1.
+```c++
+auto vehicle = std::make_shared<MavLinkVehicle>(166, 1);
+vehicle->connect(connection);
+vehicle->startHeartbeat();
 
-	auto vehicle = std::make_shared<MavLinkVehicle>(166, 1);
-	vehicle->connect(connection);
-	vehicle->startHeartbeat();
+std::this_thread::sleep_for(std::chrono::seconds(5));
 
-	std::this_thread::sleep_for(std::chrono::seconds(5));
-	
-	VehicleState state = vehicle->getVehicleState();
-	printf("Home position is %s, %f,%f,%f\n", state.home.is_set ? "set" : "not set", 
-		state.home.global_pos.lat, state.home.global_pos.lon, state.home.global_pos.alt);
-
+VehicleState state = vehicle->getVehicleState();
+printf("Home position is %s, %f,%f,%f\n", state.home.is_set ? "set" : "not set", 
+	state.home.global_pos.lat, state.home.global_pos.lon, state.home.global_pos.alt);
+```
 The following code uses the vehicle object to arm the drone and take off and wait for the takeoff altitude to be reached:
-
-	bool rc = false;
-	if (!vehicle->armDisarm(true).wait(3000, &rc) || !rc) {
-		printf("arm command failed\n");
-		return;
-	}
-	if (!vehicle->takeoff(targetAlt).wait(3000, &rc) || !rc) {
-		printf("takeoff command failed\n");
-		return;
-	}
-	int version = vehicle->getVehicleStateVersion();
-	while (true) {
-		int newVersion = vehicle->getVehicleStateVersion();
-		if (version != newVersion) {
-			VehicleState state = vehicle->getVehicleState();
-			float alt = state.local_est.pos.z;
-			if (alt >= targetAlt - delta && alt <= targetAlt + delta)
-			{			
-				reached = true;
-				printf("Target altitude reached\n");
-				break;
-			}
-		} else {
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+```c++
+bool rc = false;
+if (!vehicle->armDisarm(true).wait(3000, &rc) || !rc) {
+	printf("arm command failed\n");
+	return;
+}
+if (!vehicle->takeoff(targetAlt).wait(3000, &rc) || !rc) {
+	printf("takeoff command failed\n");
+	return;
+}
+int version = vehicle->getVehicleStateVersion();
+while (true) {
+	int newVersion = vehicle->getVehicleStateVersion();
+	if (version != newVersion) {
+		VehicleState state = vehicle->getVehicleState();
+		float alt = state.local_est.pos.z;
+		if (alt >= targetAlt - delta && alt <= targetAlt + delta)
+		{			
+			reached = true;
+			printf("Target altitude reached\n");
+			break;
 		}
+	} else {
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
-	
+}
+```	
 The following code uses offboard control to make the drone fly in a circle with camera pointed at the center.
 Here we use the subscribe method to check each new local position message to indicate so we can compute the new 
 velocity vector as soon as that new position is received.  We request a high rate for those messages using 
 setMessageInterval to ensure smooth circular orbit.
-	
-	vehicle->setMessageInterval((int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED, 30);
-	vehicle->requestControl();
-	int subscription = vehicle->getConnection()->subscribe(
-		[&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
-			if (m.msgid == (int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED)
-			{
-				float x = localPos.x;
-				float y = localPos.y;
-				float dx = x - cx;
-				float dy = y - cy;
-				float angle = atan2(dy, dx);
-				if (angle < 0) angle += M_PI * 2;
-				float tangent = angle + M_PI_2;
-				double newvx = orbitSpeed * cos(tangent);
-				double newvy = orbitSpeed * sin(tangent);
-				float heading = angle + M_PI;
-				vehicle->moveByLocalVelocityWithAltHold(newvx, newvy, altitude, true, heading);
-			}
-		});
-
+```c++
+vehicle->setMessageInterval((int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED, 30);
+vehicle->requestControl();
+int subscription = vehicle->getConnection()->subscribe(
+	[&](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& m) {
+		if (m.msgid == (int)MavLinkMessageIds::MAVLINK_MSG_ID_LOCAL_POSITION_NED)
+		{
+			// convert generic msg to strongly typed message.
+			MavLinkLocalPositionNed localPos;
+			localPos.decode(msg); 
+			float x = localPos.x;
+			float y = localPos.y;
+			float dx = x - cx;
+			float dy = y - cy;
+			float angle = atan2(dy, dx);
+			if (angle < 0) angle += M_PI * 2;
+			float tangent = angle + M_PI_2;
+			double newvx = orbitSpeed * cos(tangent);
+			double newvy = orbitSpeed * sin(tangent);
+			float heading = angle + M_PI;
+			vehicle->moveByLocalVelocityWithAltHold(newvx, newvy, altitude, true, heading);
+		}
+	});
+```
 The following code stops flying the drone in offboard mode and tells the drone to loiter at its current location.
 This version of the code shows how to use the AsyncResult without blocking on a wait call.
-
+```c++
 	vehicle->releaseControl();
 	if (vehicle->loiter().then([=](bool rc) {
 		printf("loiter command %s\n", rc ? "succeeded" : "failed");
 	}
-	
+```
+
 The following code gets all configurable parameters from the drone and prints them:
 
+```c++
     auto list = vehicle->getParamList();
 	auto end = list.end();
 	int count = 0;
@@ -184,17 +190,19 @@ The following code gets all configurable parameters from the drone and prints th
 			printf("%s=%d\n", p.name.c_str(), static_cast<int>(p.value));
 		}
 	}
-
+```
 The following code sets a parameter on the Pixhawk to disable the USB safety check (this is handy if you are controlling
 the Pixhawk over USB using another onboard computer that is part of the drone itself).  You should NOT do this if you
 are connecting your PC or laptop to the drone over USB.
 
+```c++
     MavLinkParameter  p;
     p.name = "CBRK_USB_CHK";
     p.value = 197848;
     if (!vehicle->setParameter(p).wait(3000,&rc) || !rc) {
 		printf("Setting the CBRK_USB_CHK failed");
 	}
+```
 
 MavLinkVehicle actually has a helper method for this called allowFlightControlOverUsb, so now you know how it is implemented :-) 
 

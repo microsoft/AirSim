@@ -37,7 +37,7 @@ public:
     virtual void Tick(float Delta) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
-        FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+                           FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
     //interface
     void initializeForBeginPlay(bool engine_sound);
@@ -71,33 +71,43 @@ private:
     typedef msr::airlib::AirSimSettings AirSimSettings;
 
     UClass* pip_camera_class_;
-    
+
     PawnEvents pawn_events_;
 
     bool is_low_friction_;
     UPhysicalMaterial* slippery_mat_;
     UPhysicalMaterial* non_slippery_mat_;
 
-    UPROPERTY() USceneComponent* camera_front_center_base_;
-    UPROPERTY() USceneComponent* camera_front_left_base_;
-    UPROPERTY() USceneComponent* camera_front_right_base_;
-    UPROPERTY() USceneComponent* camera_driver_base_;
-    UPROPERTY() USceneComponent* camera_back_center_base_;
+    UPROPERTY()
+    USceneComponent* camera_front_center_base_;
+    UPROPERTY()
+    USceneComponent* camera_front_left_base_;
+    UPROPERTY()
+    USceneComponent* camera_front_right_base_;
+    UPROPERTY()
+    USceneComponent* camera_driver_base_;
+    UPROPERTY()
+    USceneComponent* camera_back_center_base_;
 
-    UPROPERTY() APIPCamera* camera_front_center_;
-    UPROPERTY() APIPCamera* camera_front_left_;
-    UPROPERTY() APIPCamera* camera_front_right_;
-    UPROPERTY() APIPCamera* camera_driver_;
-    UPROPERTY() APIPCamera* camera_back_center_;
+    UPROPERTY()
+    APIPCamera* camera_front_center_;
+    UPROPERTY()
+    APIPCamera* camera_front_left_;
+    UPROPERTY()
+    APIPCamera* camera_front_right_;
+    UPROPERTY()
+    APIPCamera* camera_driver_;
+    UPROPERTY()
+    APIPCamera* camera_back_center_;
 
     UTextRenderComponent* speed_text_render_;
     UTextRenderComponent* gear_text_render_;
     UAudioComponent* engine_sound_audio_;
-    
+
     msr::airlib::CarApiBase::CarControls keyboard_controls_;
 
     FText last_speed_;
     FText last_gear_;
-    FColor	last_gear_display_color_;
-    FColor	last_gear_display_reverse_color_;
+    FColor last_gear_display_color_;
+    FColor last_gear_display_reverse_color_;
 };

@@ -38,39 +38,84 @@ The default sensor list can be configured in settings json:
 ```json
 "DefaultSensors": {
     "Barometer": {
-         "SensorType": 1,
-         "Enabled" : true
+        "SensorType": 1,
+        "Enabled" : true,
+        "PressureFactorSigma": 0.001825,
+        "PressureFactorTau": 3600,
+        "UncorrelatedNoiseSigma": 2.7,
+        "UpdateLatency": 0,
+        "UpdateFrequency": 50,
+        "StartupDelay": 0
+
     },
     "Imu": {
-         "SensorType": 2,
-         "Enabled" : true
+        "SensorType": 2,
+        "Enabled" : true,
+        "AngularRandomWalk": 0.3,
+        "GyroBiasStabilityTau": 500,
+        "GyroBiasStability": 4.6,
+        "VelocityRandomWalk": 0.24,
+        "AccelBiasStabilityTau": 800,
+        "AccelBiasStability": 36
     },
     "Gps": {
-         "SensorType": 3,
-         "Enabled" : true
+        "SensorType": 3,
+        "Enabled" : true,
+        "EphTimeConstant": 0.9,
+        "EpvTimeConstant": 0.9,
+        "EphInitial": 25,
+        "EpvInitial": 25,
+        "EphFinal": 0.1,
+        "EpvFinal": 0.1,
+        "EphMin3d": 3,
+        "EphMin2d": 4,
+        "UpdateLatency": 0.2,
+        "UpdateFrequency": 50,
+        "StartupDelay": 1
     },
     "Magnetometer": {
-         "SensorType": 4,
-         "Enabled" : true
+        "SensorType": 4,
+        "Enabled" : true,
+        "NoiseSigma": 0.005,
+        "ScaleFactor": 1,
+        "NoiseBias": 0,
+        "UpdateLatency": 0,
+        "UpdateFrequency": 50,
+        "StartupDelay": 0
     },
     "Distance": {
-         "SensorType": 5,
-         "Enabled" : true
+        "SensorType": 5,
+        "Enabled" : true,
+        "MinDistance": 0.2,
+        "MaxDistance": 40,
+        "X": 0, "Y": 0, "Z": -1,
+        "Yaw": 0, "Pitch": 0, "Roll": 0,
+        "DrawDebugPoints": false
     },
     "Lidar2": {
-         "SensorType": 6,
-         "Enabled" : true,
-         "NumberOfChannels": 4,
-         "PointsPerSecond": 10000
+        "SensorType": 6,
+        "Enabled" : true,
+        "NumberOfChannels": 16,
+        "RotationsPerSecond": 10,
+        "PointsPerSecond": 100000,
+        "X": 0, "Y": 0, "Z": -1,
+        "Roll": 0, "Pitch": 0, "Yaw" : 0,
+        "VerticalFOVUpper": -15,
+        "VerticalFOVLower": -25,
+        "HorizontalFOVStart": -20,
+        "HorizontalFOVEnd": 20,
+        "DrawDebugPoints": true,
+        "DataFrame": "SensorLocalFrame"
     }
 },
 ```
 
 ## Configuring vehicle-specific sensor list
 
-If a vehicle provides its sensor list, it **must** provide the whole list. Selective add/remove/update of the default sensor list is **NOT** supported.
-A vehicle specific sensor list can be specified in the vehicle settings part of the json.
-e.g.,
+A vehicle can override a subset of the default sensors listed above. A Lidar and Distance sensor are
+not added to a vehicle by default, so those you need to add this way. Each sensor must have a valid
+"SensorType" and a subset of the properties can be defined that override the default values shown
+above and you can set Enabled to false to disable a specific type of sensor.
 
 ```json
 "Vehicles": {
@@ -80,6 +125,11 @@ e.g.,
         "AutoCreate": true,
         ...
         "Sensors": {
+            "Barometer":{
+                "SensorType": 1,
+                "Enabled": true,
+                "PressureFactorSigma": 0.0001825
+            },
             "MyLidar1": {
                 "SensorType": 6,
                 "Enabled" : true,
@@ -102,33 +152,12 @@ e.g.,
 ```
 
 ### Sensor specific settings
-Each sensor-type has its own set of settings as well.
-Please see [lidar](lidar.md) for example of Lidar specific settings.
 
-#### Distance Sensor
+For detailed information on the meaning of these sensor settings
+see the following pages:
 
-By default, Distance Sensor points to the front of the vehicle. It can be pointed in any direction by modifying the settings
-
-Configurable Parameters -
-
-Parameter        | Description
------------------|------------
-X Y Z            | Position of the sensor relative to the vehicle (in NED, in meters) (Default (0,0,0)-Multirotor, (0,0,-1)-Car)
-Yaw Pitch Roll   | Orientation of the sensor relative to the vehicle (degrees) (Default (0,0,0))
-MinDistance      | Minimum distance measured by distance sensor (metres, only used to fill Mavlink message for PX4) (Default 0.2m)
-MaxDistance      | Maximum distance measured by distance sensor (metres) (Default 40.0m)
-
-For example, to make the sensor point towards the ground (for altitude measurement similar to barometer), the orientation can be modified as follows -
-
-```json
-"Distance": {
-    "SensorType": 5,
-    "Enabled" : true,
-    "Yaw": 0, "Pitch": -90, "Roll": 0
-}
-```
-
-**Note:** For Cars, the sensor is placed 1 meter above the vehicle center by default. This is required since otherwise the sensor gives strange data due it being inside the vehicle. This doesn't affect the sensor values say when measuring the distance between 2 cars. See [`PythonClient/car/distance_sensor_multi.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/distance_sensor_multi.py) for an example usage.
+- [Lidar sensor settings](lidar.md)
+- [Distance sensor settings](distance_sensor.md)
 
 ##### Server side visualization for debugging
 
@@ -146,7 +175,7 @@ Be default, the points hit by distance sensor are not drawn on the viewport. To 
 ## Sensor APIs
 Jump straight to [`hello_drone.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py) or [`hello_drone.cpp`](https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp) for example usage, or see follow below for the full API.
 
-##### Barometer
+### Barometer
 ```cpp
 msr::airlib::BarometerBase::Output getBarometerData(const std::string& barometer_name, const std::string& vehicle_name);
 ```
@@ -155,7 +184,7 @@ msr::airlib::BarometerBase::Output getBarometerData(const std::string& barometer
 barometer_data = client.getBarometerData(barometer_name = "", vehicle_name = "")
 ```
 
-##### IMU
+### IMU
 ```cpp
 msr::airlib::ImuBase::Output getImuData(const std::string& imu_name = "", const std::string& vehicle_name = "");
 ```
@@ -164,7 +193,7 @@ msr::airlib::ImuBase::Output getImuData(const std::string& imu_name = "", const 
 imu_data = client.getImuData(imu_name = "", vehicle_name = "")
 ```
 
-##### GPS
+### GPS
 ```cpp
 msr::airlib::GpsBase::Output getGpsData(const std::string& gps_name = "", const std::string& vehicle_name = "");
 ```
@@ -172,7 +201,7 @@ msr::airlib::GpsBase::Output getGpsData(const std::string& gps_name = "", const 
 gps_data = client.getGpsData(gps_name = "", vehicle_name = "")
 ```
 
-##### Magnetometer
+### Magnetometer
 ```cpp
 msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string& magnetometer_name = "", const std::string& vehicle_name = "");
 ```
@@ -180,7 +209,7 @@ msr::airlib::MagnetometerBase::Output getMagnetometerData(const std::string& mag
 magnetometer_data = client.getMagnetometerData(magnetometer_name = "", vehicle_name = "")
 ```
 
-##### Distance sensor
+### Distance sensor
 ```cpp
 msr::airlib::DistanceSensorData getDistanceSensorData(const std::string& distance_sensor_name = "", const std::string& vehicle_name = "");
 ```
@@ -188,5 +217,5 @@ msr::airlib::DistanceSensorData getDistanceSensorData(const std::string& distanc
 distance_sensor_data = client.getDistanceSensorData(distance_sensor_name = "", vehicle_name = "")
 ```
 
-##### Lidar
+### Lidar
 See the [lidar page](lidar.md) for Lidar API.

@@ -150,7 +150,7 @@ namespace AirSimUnity {
                     frameData.Add(c.r);
                     frameData.Add(c.g);
                     frameData.Add(c.b);
-                    frameData.Add(c.a);
+                    // frameData.Add(c.a);     // Unreal is just sending RGB images, so don't include Alpha channel here
                 }
             }
             RenderTexture.active = null;

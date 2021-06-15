@@ -5,13 +5,13 @@
 #include "physics/Kinematics.hpp"
 #include "CarPawn.h"
 
-
-class CarPawnApi {
+class CarPawnApi
+{
 public:
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
 
-    CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics, 
-                msr::airlib::CarApiBase* vehicle_api);
+    CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics,
+               msr::airlib::CarApiBase* vehicle_api);
 
     void updateMovement(const msr::airlib::CarApiBase::CarControls& controls);
 

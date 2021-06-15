@@ -14,7 +14,7 @@ In "software-in-loop" simulation (SITL or SIL) mode the firmware runs in your co
 
 ## What Flight Controllers are Supported?
 
-AirSim has built-in flight controller called [simple_flight](simple_flight.md) and it is used by default. You don't need to do anything to use or configure it. AirSim also supports [PX4](px4_setup.md) as another flight controller for advanced users. In the future, we also plan to support [ROSFlight](https://rosflight.org/) and [Hackflight](https://github.com/simondlevy/hackflight).
+AirSim has built-in flight controller called [simple_flight](simple_flight.md) and it is used by default. You don't need to do anything to use or configure it. AirSim also supports [PX4](px4_setup.md) & [ArduPilot](https://ardupilot.org/dev/docs/sitl-with-airsim.html) as external flight controllers for advanced users.
 
 ## Using AirSim Without Flight Controller
 
