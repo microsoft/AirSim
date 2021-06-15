@@ -18,7 +18,7 @@ Please see instructions [here](docker_ubuntu.md)
 
 - Make sure you are [registered with Epic Games](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html). This is required to get source code access for Unreal Engine.
 
-- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.24 at present. We recommend using 4.25.
+- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.25 at present. We recommend using 4.25.
 
 ```bash
 # go to the folder where you clone GitHub projects
