@@ -55,7 +55,7 @@ namespace airlib
             const GroundTruth& ground_truth = getGroundTruth();
 
             output.angular_velocity = ground_truth.kinematics->twist.angular;
-            output.linear_acceleration = ground_truth.kinematics->accelerations.linear - ground_truth.environment->getState().gravity;
+            output.linear_acceleration = ground_truth.kinematics->accelerations.linear + ground_truth.environment->getState().gravity;
             output.orientation = ground_truth.kinematics->pose.orientation;
 
             //acceleration is in world frame so transform to body frame
