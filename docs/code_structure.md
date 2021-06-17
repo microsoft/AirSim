@@ -19,14 +19,14 @@ The vehicle-specific APIs are defined in the `api/` subfolder, along-with requir
 
 ## Unreal/Plugins/AirSim
 
-This is the only portion of project which is dependent on Unreal engine. We have kept it isolated so we can implement simulator for other platforms as well (for example, Unity). The Unreal code takes advantage of its UObject based classes including Blueprints. The `Source/` folder contains the C++ files, while the `Content/` folder has the blueprints and assets. Some main components are described below:
+This is the only portion of project which is dependent on Unreal engine. We have kept it isolated so we can implement simulator for other platforms as well, as has been done for [Unity](https://microsoft.github.io/AirSim/Unity.html). The Unreal code takes advantage of its UObject based classes including Blueprints. The `Source/` folder contains the C++ files, while the `Content/` folder has the blueprints and assets. Some main components are described below:
 
-1. *SimMode_ classes*: We wish to support various simulator modes such as pure Computer Vision mode where there is no drone. The SimMode classes help implement many different modes. The vehicle classes are located in [`Vehicles/`](https://github.com/microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Source/Vehicles)
-2. *PawnSimApi*: This is the base class for all vehicle pawn visualizations. Each vehicle has their own child (Multirotor|Car|ComputerVision)Pawn class.
+1. *SimMode_ classes*: The SimMode classes help implement many different modes, such as pure Computer Vision mode, where there is no vehicle or simulation for a specific vehicle (currently car and multirotor). The vehicle classes are located in [`Vehicles/`](https://github.com/microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Source/Vehicles)
+2. *PawnSimApi*: This is the [base class](https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/PawnSimApi.cpp) for all vehicle pawn visualizations. Each vehicle has their own child (Multirotor|Car|ComputerVision)Pawn class.
 3. [UnrealSensors](https://github.com/microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Source/UnrealSensors): Contains implementation of Distance and Lidar sensors.
 4. *WorldSimApi*: Implements most of the environment and vehicle-agnostic APIs
 
-Apart from these, `PIPCamera` contains the camera initialization, and `UnrealImageCapture` & `RenderRequest` the image rendering code. `AirBlueprintLib` has a lot of utility and wrapper methods used to interface with the UE4 engine.
+Apart from these, [`PIPCamera`](https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/PIPCamera.cpp) contains the camera initialization, and [`UnrealImageCapture`](https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/UnrealImageCapture.cpp) & [`RenderRequest`](https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/RenderRequest.cpp) the image rendering code. [`AirBlueprintLib`](https://github.com/microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/AirBlueprintLib.cpp) has a lot of utility and wrapper methods used to interface with the UE4 engine.
 
 ## MavLinkCom
 
