@@ -144,8 +144,6 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#adding-new-apis-to-airsim">Adding New APIs to AirSim</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#some-internals">Some Internals</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#references-and-examples">References and Examples</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#faq">FAQ</a>
@@ -218,6 +216,8 @@
                     <li class="toctree-l1"><a class="reference internal" href="design.html">Architecture</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="code_structure.html">Code Structure</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="adding_new_apis.html">Adding new APIs</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="coding_guidelines.html">Coding Guidelines</a>
                     </li>
@@ -563,9 +563,7 @@ client.takeoffAsync().join()</code></pre>
 <p>Generally speaking, APIs therefore shouldn't allow you to do something that cannot be done on real vehicle (for example, getting the ground truth). But, of course, simulator has much more information and it would be useful in applications that may not care about running things on real vehicle. For this reason, we clearly delineate between sim-only APIs by attaching <code>sim</code> prefix, for example, <code>simGetGroundTruthKinematics</code>. This way you can avoid using these simulation-only APIs if you care about running your code on real vehicles.</p>
 <p>The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. This module then can talk to the flight controllers such as PX4 using exact same code and flight controller protocol. The code you write for testing in the simulator remains unchanged. See <a href="custom_drone.html">AirLib on custom drones</a>.</p>
 <h2 id="adding-new-apis-to-airsim">Adding New APIs to AirSim<a class="headerlink" href="#adding-new-apis-to-airsim" title="Permanent link">#</a></h2>
-<p>Adding new APIs requires modifying the source code. Much of the changes are mechanical and required for various levels of abstractions that AirSim supports. <a href="https://github.com/Microsoft/AirSim/commit/f0e83c29e7685e1021185e3c95bfdaffb6cb85dc">This commit</a> demonstrates how to add a simple API <code>simPrintLogMessage</code> that prints message in simulator window.</p>
-<h2 id="some-internals">Some Internals<a class="headerlink" href="#some-internals" title="Permanent link">#</a></h2>
-<p>The APIs use <a href="https://github.com/msgpack-rpc/msgpack-rpc">msgpack-rpc protocol</a> over TCP/IP through <a href="http://rpclib.net/">rpclib</a> developed by <a href="https://github.com/sztomi">TamÃ¡s Szelei</a> which allows you to use variety of programming languages including C++, C#, Python, Java etc. When AirSim starts, it opens port 41451 (this can be changed via <a href="settings.html">settings</a>) and listens for incoming request. The Python or C++ client code connects to this port and sends RPC calls using <a href="https://msgpack.org">msgpack serialization format</a>.</p>
+<p>See the <a href="adding_new_apis.html">Adding New APIs</a> page</p>
 <h2 id="references-and-examples">References and Examples<a class="headerlink" href="#references-and-examples" title="Permanent link">#</a></h2>
 <ul>
 <li><a href="apis_cpp.html">C++ API Examples</a></li>
