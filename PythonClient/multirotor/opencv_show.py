@@ -35,7 +35,7 @@ print (cameraTypeMap[cameraType])
 
 client = airsim.MultirotorClient()
 
-print("Connected: now whiled this script is running, you can open another")
+print("Connected: now while this script is running, you can open another")
 print("console and run a script that flies the drone and this script will")
 print("show the depth view while the drone is flying.")
 

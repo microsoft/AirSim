@@ -87,8 +87,8 @@ public:
 
         bool found = false;
         struct addrinfo* result = NULL;
-        std::string serviceName = std::to_string(port);
-        int rc = getaddrinfo(ipAddress.c_str(), serviceName.c_str(), &hints, &result);
+        std::string service_name = std::to_string(port);
+        int rc = getaddrinfo(ipAddress.c_str(), service_name.c_str(), &hints, &result);
         if (rc != 0) {
             auto msg = Utils::stringf("UdpClientPort getaddrinfo failed with error: %d\n", rc);
             throw std::runtime_error(msg);
@@ -165,11 +165,11 @@ public:
     int reconnect()
     {
         // try and reconnect
-        std::string localHost = inet_ntoa(localaddr.sin_addr);
-        std::string remoteHost = remoteAddress();
-        int remotePort = ntohs(remoteaddr.sin_port);
-        int localPort = 0;
-        int rc = connect(localHost, localPort, remoteHost, remotePort);
+        std::string local_host = inet_ntoa(localaddr.sin_addr);
+        std::string remote_host = remoteAddress();
+        int local_port = 0;
+        int remote_port = ntohs(remoteaddr.sin_port);
+        int rc = connect(local_host, local_port, remote_host, remote_port);
         if (rc < 0) {
             GetSocketError();
         }
@@ -231,7 +231,7 @@ public:
     {
         sockaddr_in other;
 
-        int bytesRead = 0;
+        int bytes_read = 0;
         // try and receive something, up until port is closed anyway.
 
         while (!closed_) {
