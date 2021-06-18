@@ -151,7 +151,7 @@ The `is_enabled` parameter must be `True` to enable time of day effect. If it is
 Other parameters are same as in [settings](settings.md#timeofday).
 
 ### Line-of-sight and world extent APIs
-To test line-of-sight in the sim from a vehicle to a point or between two points, see simTestLineOfSightToPoint(lat, lon, alt, vehicle_name) and simTestLineOfSightBetweenPoints(lat1, lon1, alt1, lat2, lon2, alt2), respectively.
+To test line-of-sight in the sim from a vehicle to a point or between two points, see simTestLineOfSightToPoint(point, vehicle_name) and simTestLineOfSightBetweenPoints(point1, point2), respectively.
 Sim world extent, in the form of a vector of two GeoPoints, can be retrieved using simGetWorldExtents().
 
 ### Weather APIs

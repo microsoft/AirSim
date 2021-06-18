@@ -18,10 +18,10 @@ print("home:\n%s" % home)
 target = home
 target.latitude -= 1
 
-result = client.simTestLineOfSightToPoint(target.latitude, target.longitude, target.altitude)
+result = client.simTestLineOfSightToPoint(target)
 print("test line of sight from vehicle to\n%s\n\t:%s" %(target, result))
 
-result = client.simTestLineOfSightBetweenPoints(home.latitude, home.longitude, home.altitude, target.latitude, target.longitude, target.altitude)
+result = client.simTestLineOfSightBetweenPoints(home, target)
 print("test line of sight from home to\n%s\n\t:%s" %(target, result))
 
 result = client.simGetWorldExtents()
