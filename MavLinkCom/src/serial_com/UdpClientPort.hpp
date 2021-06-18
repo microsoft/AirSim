@@ -36,6 +36,7 @@ public:
     int remotePort();
 
 private:
+    void reconnect();
     class UdpSocketImpl;
     std::unique_ptr<UdpSocketImpl> impl_;
 };
