@@ -28,7 +28,7 @@ done
 # llvm tools
 if [ "$(uname)" == "Darwin" ]; then # osx
     brew update
-    brew style --fix Formula
+    brew style --fix /usr/local/Homebrew/Library/Taps/llvm-hs/homebrew-llvm/Formula
     brew tap llvm-hs/homebrew-llvm
     brew install llvm@8
 else #linux
