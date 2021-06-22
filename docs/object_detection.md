@@ -1,12 +1,12 @@
 # Object Detection
 
 ## About
-This feature let you generate object detection using existing cameras in AirSim, similar to detection DNN.   
+This feature lets you generate object detection using existing cameras in AirSim, similar to detection DNN.   
 Using the API you can control which object to detect by name and radius from camera.   
 One can control these settings for each camera, image type and vehicle combination separately.
 
 ## API
-- Set mesh name  to detect in wildcard format   
+- Set mesh name to detect in wildcard format   
 ```simAddDetectionFilterMeshName(camera_name, image_type, mesh_name, vehicle_name = '')```   
 
 - Clear all mesh names previously added   
@@ -29,9 +29,9 @@ DetectionInfo
     relative_pose = Pose()
 ```
 ## Usage example
-Python script [detection.py](https://github.com/microsoft/AirSim/blob/master/PythonClient/detection/detection.py) shows how to set detection parameters and show the result in OpenCV capture.
+Python script [detection.py](https://github.com/microsoft/AirSim/blob/master/PythonClient/detection/detection.py) shows how to set detection parameters and shows the result in OpenCV capture.
 
-A minimal example using API with Blocks enviromnet to detect Cylinder objects:
+A minimal example using API with Blocks environment to detect Cylinder objects:
 ```python
 camera_name = "0"
 image_type = airsim.ImageType.Scene
