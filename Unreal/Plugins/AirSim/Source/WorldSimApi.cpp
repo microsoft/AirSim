@@ -5,6 +5,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 #include "DrawDebugHelpers.h"
+#include "Runtime/Engine/Classes/Components/LineBatchComponent.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include <cstdlib>
 #include <ctime>
@@ -626,4 +627,93 @@ std::vector<std::string> WorldSimApi::listVehicles() const
 std::string WorldSimApi::getSettingsString() const
 {
     return msr::airlib::AirSimSettings::singleton().settings_text_;
+}
+
+bool WorldSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& lla1, msr::airlib::GeoPoint& lla2) const
+{
+    bool hit;
+
+    // We need to run this code on the main game thread, since it iterates over actors
+    UAirBlueprintLib::RunCommandOnGameThread([this, lla1, lla2, &hit]() {
+        // This default NedTransform is part of how we anchor the AirSim primary LLA origin at 0, 0, 0 in Unreal
+        NedTransform zero_based_ned_transform(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(simmode_));
+        FCollisionQueryParams collision_params(SCENE_QUERY_STAT(LineOfSight), true);
+
+        const auto& settings = msr::airlib::AirSimSettings::singleton();
+        msr::airlib::Vector3r ned = msr::airlib::EarthUtils::GeodeticToNedFast(lla1, settings.origin_geopoint.home_geo_point);
+        FVector point1 = zero_based_ned_transform.fromGlobalNed(ned);
+        ned = msr::airlib::EarthUtils::GeodeticToNedFast(lla2, settings.origin_geopoint.home_geo_point);
+        FVector point2 = zero_based_ned_transform.fromGlobalNed(ned);
+
+        hit = simmode_->GetWorld()->LineTraceTestByChannel(point1, point2, ECC_Visibility, collision_params);
+
+        if (msr::airlib::AirSimSettings::singleton().show_los_debug_lines_) {
+            FLinearColor color;
+            if (hit) {
+                // No LOS, so draw red line
+                color = FLinearColor{ 1.0f, 0, 0, 0.4f };
+            }
+            else {
+                // Yes LOS, so draw green line
+                color = FLinearColor{ 0, 1.0f, 0, 0.4f };
+            }
+
+            simmode_->GetWorld()->PersistentLineBatcher->DrawLine(point1, point2, color, SDPG_World, 4, 999999);
+        }
+    },
+                                                                         true);
+
+    return !hit;
+}
+
+void WorldSimApi::getWorldExtents(msr::airlib::GeoPoint& lla_min_out, msr::airlib::GeoPoint& lla_max_out) const
+{
+    // We need to run this code on the main game thread, since it iterates over actors
+    //FGraphEventRef task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]() {
+    UAirBlueprintLib::RunCommandOnGameThread([this, &lla_min_out, &lla_max_out]() {
+        // This default NedTransform is part of how we anchor the AirSim primary LLA origin at 0, 0, 0 in Unreal
+        NedTransform zero_based_ned_transform(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(simmode_));
+
+        // Testing actor enum for world bounds...
+        FVector world_min{ FLT_MAX, FLT_MAX, FLT_MAX };
+        FVector world_max{ FLT_MIN, FLT_MIN, FLT_MIN };
+        for (TActorIterator<AActor> actor_itr(simmode_->GetWorld()); actor_itr; ++actor_itr) {
+            // Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+            AActor* actor = *actor_itr;
+            FVector origin;
+            FVector extent;
+            actor->GetActorBounds(false, origin, extent);
+            FString name = actor->GetFullName();
+            std::string stdName = std::string(TCHAR_TO_UTF8(*name));
+
+            if (extent[0] > 20000.0f) {
+                common_utils::Utils::log("In world bounds calculation, skipping gigantic object: " + stdName, common_utils::Utils::kLogLevelWarn);
+                continue;
+            }
+
+            for (int coord = 0; coord < 3; coord++) {
+                float min = origin[coord] - extent[coord];
+                float max = origin[coord] + extent[coord];
+                if (min < world_min[coord]) {
+                    world_min[coord] = min;
+                }
+                if (max > world_max[coord]) {
+                    world_max[coord] = max;
+                }
+            }
+        }
+
+        // TODO think more about how best to determine/indicate ground level, if anyone cares
+
+        // Convert Uvectors to LLAs
+        const auto& settings = msr::airlib::AirSimSettings::singleton();
+        msr::airlib::Vector3r ned = zero_based_ned_transform.toGlobalNed(world_min);
+        lla_min_out = msr::airlib::EarthUtils::nedToGeodeticFast(ned, settings.origin_geopoint.home_geo_point);
+
+        ned = zero_based_ned_transform.toGlobalNed(world_max);
+        lla_max_out = msr::airlib::EarthUtils::nedToGeodeticFast(ned, settings.origin_geopoint.home_geo_point);
+    },
+                                                                         true);
+
+    common_utils::Utils::log("Extent min: " + lla_min_out.to_string() + ".  Max: " + lla_max_out.to_string(), common_utils::Utils::kLogLevelInfo);
 }

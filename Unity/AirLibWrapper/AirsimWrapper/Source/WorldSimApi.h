@@ -69,6 +69,9 @@ public:
 
     virtual std::string getSettingsString() const override;
 
+	virtual bool testLineOfSightBetweenPoints(msr::airlib::GeoPoint& point1, msr::airlib::GeoPoint& point2) const override;
+    virtual void getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const override;
+
 private:
     SimModeBase* simmode_;
     std::string vehicle_name_;
