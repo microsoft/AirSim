@@ -108,7 +108,7 @@ Religiously check if you can use const everywhere, for example, `const float * c
 
 ## Null Checking
 
-When checking if a pointer is null, it is preferable to use `IsValid(ptr)`. In addition to checking for a null pointer, this function will also return whether a UObject is properly initialized. This is useful in situations where a UObject is in the process of being garbage collected but still set to a non-null value.
+In Unreal C++ code, when checking if a pointer is null, it is preferable to use `IsValid(ptr)`. In addition to checking for a null pointer, this function will also return whether a UObject is properly initialized. This is useful in situations where a UObject is in the process of being garbage collected but still set to a non-null value.
 
 ## Indentation
 
