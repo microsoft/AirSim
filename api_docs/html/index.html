@@ -838,6 +838,17 @@ Returns Segmentation ID of each point’s collided object in the last Lidar upda
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="airsim.client.VehicleClient.simGetWorldExtents">
+<span class="sig-name descname"><span class="pre">simGetWorldExtents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetWorldExtents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetWorldExtents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of GeoPoints representing the minimum and maximum extents of the world</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list[GeoPoint]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simIsPause">
 <span class="sig-name descname"><span class="pre">simIsPause</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simIsPause"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simIsPause" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the simulation is paused</p>
@@ -1350,6 +1361,46 @@ so Sun will move in sky much faster</p></li>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="airsim.client.VehicleClient.simTestLineOfSightBetweenPoints">
+<span class="sig-name descname"><span class="pre">simTestLineOfSightBetweenPoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simTestLineOfSightBetweenPoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simTestLineOfSightBetweenPoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the target point is visible from the perspective of the source point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point1</strong> (<a class="reference internal" href="#airsim.types.GeoPoint" title="airsim.types.GeoPoint"><em>GeoPoint</em></a>) – source point</p></li>
+<li><p><strong>point2</strong> (<a class="reference internal" href="#airsim.types.GeoPoint" title="airsim.types.GeoPoint"><em>GeoPoint</em></a>) – target point</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Success</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="airsim.client.VehicleClient.simTestLineOfSightToPoint">
+<span class="sig-name descname"><span class="pre">simTestLineOfSightToPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simTestLineOfSightToPoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simTestLineOfSightToPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the target point is visible from the perspective of the inputted vehicle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<a class="reference internal" href="#airsim.types.GeoPoint" title="airsim.types.GeoPoint"><em>GeoPoint</em></a>) – target point</p></li>
+<li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of vehicle</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Success</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
 </dd>
 </dl>
 </dd></dl>
