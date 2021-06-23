@@ -634,7 +634,7 @@ bool WorldSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& lla1, msr:
     bool hit;
 
     // We need to run this code on the main game thread, since it iterates over actors
-    UAirBlueprintLib::RunCommandOnGameThread([this, lla1, lla2, &hit]() {
+    UAirBlueprintLib::RunCommandOnGameThread([this, &lla1, &lla2, &hit]() {
         // This default NedTransform is part of how we anchor the AirSim primary LLA origin at 0, 0, 0 in Unreal
         NedTransform zero_based_ned_transform(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(simmode_));
         FCollisionQueryParams collision_params(SCENE_QUERY_STAT(LineOfSight), true);
@@ -647,7 +647,7 @@ bool WorldSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& lla1, msr:
 
         hit = simmode_->GetWorld()->LineTraceTestByChannel(point1, point2, ECC_Visibility, collision_params);
 
-        if (msr::airlib::AirSimSettings::singleton().show_los_debug_lines_) {
+        if (settings.show_los_debug_lines_) {
             FLinearColor color;
             if (hit) {
                 // No LOS, so draw red line
@@ -661,15 +661,16 @@ bool WorldSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& lla1, msr:
             simmode_->GetWorld()->PersistentLineBatcher->DrawLine(point1, point2, color, SDPG_World, 4, 999999);
         }
     },
-                                                                         true);
+                                             true);
 
     return !hit;
 }
 
-void WorldSimApi::getWorldExtents(msr::airlib::GeoPoint& lla_min_out, msr::airlib::GeoPoint& lla_max_out) const
+std::vector<msr::airlib::GeoPoint> WorldSimApi::getWorldExtents() const
 {
+    msr::airlib::GeoPoint& lla_min_out;
+    msr::airlib::GeoPoint& lla_max_out;
     // We need to run this code on the main game thread, since it iterates over actors
-    //FGraphEventRef task = FFunctionGraphTask::CreateAndDispatchWhenReady([&]() {
     UAirBlueprintLib::RunCommandOnGameThread([this, &lla_min_out, &lla_max_out]() {
         // This default NedTransform is part of how we anchor the AirSim primary LLA origin at 0, 0, 0 in Unreal
         NedTransform zero_based_ned_transform(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(simmode_));
@@ -683,23 +684,17 @@ void WorldSimApi::getWorldExtents(msr::airlib::GeoPoint& lla_min_out, msr::airli
             FVector origin;
             FVector extent;
             actor->GetActorBounds(false, origin, extent);
-            FString name = actor->GetFullName();
-            std::string stdName = std::string(TCHAR_TO_UTF8(*name));
 
             if (extent[0] > 20000.0f) {
+                FString name = actor->GetFullName();
+                std::string stdName = std::string(TCHAR_TO_UTF8(*name));
                 common_utils::Utils::log("In world bounds calculation, skipping gigantic object: " + stdName, common_utils::Utils::kLogLevelWarn);
                 continue;
             }
 
             for (int coord = 0; coord < 3; coord++) {
-                float min = origin[coord] - extent[coord];
-                float max = origin[coord] + extent[coord];
-                if (min < world_min[coord]) {
-                    world_min[coord] = min;
-                }
-                if (max > world_max[coord]) {
-                    world_max[coord] = max;
-                }
+                world_min[coord] = std::min(world_min[coord], origin[coord] - extent[coord]);
+                world_max[coord] = std::max(world_max[coord], origin[coord] + extent[coord]);
             }
         }
 
@@ -708,12 +703,18 @@ void WorldSimApi::getWorldExtents(msr::airlib::GeoPoint& lla_min_out, msr::airli
         // Convert Uvectors to LLAs
         const auto& settings = msr::airlib::AirSimSettings::singleton();
         msr::airlib::Vector3r ned = zero_based_ned_transform.toGlobalNed(world_min);
-        lla_min_out = msr::airlib::EarthUtils::nedToGeodeticFast(ned, settings.origin_geopoint.home_geo_point);
+        lla_min_out = msr::airlib::EarthUtils::nedToGeodetic(ned, settings.origin_geopoint);
 
         ned = zero_based_ned_transform.toGlobalNed(world_max);
-        lla_max_out = msr::airlib::EarthUtils::nedToGeodeticFast(ned, settings.origin_geopoint.home_geo_point);
+        lla_max_out = msr::airlib::EarthUtils::nedToGeodetic(ned, settings.origin_geopoint);
     },
-                                                                         true);
+                                             true);
 
     common_utils::Utils::log("Extent min: " + lla_min_out.to_string() + ".  Max: " + lla_max_out.to_string(), common_utils::Utils::kLogLevelInfo);
+
+    std::vector<msr::airlib::GeoPoint> result;
+    result.push_back(lla_min_out);
+    result.push_back(lla_max_out);
+
+    return result;
 }

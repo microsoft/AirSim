@@ -321,7 +321,7 @@ bool PawnSimApi::testLineOfSightToPoint(GeoPoint& lla) const
             }
         }
     },
-                                                                         true);
+                                             true);
 
     return !hit;
 }

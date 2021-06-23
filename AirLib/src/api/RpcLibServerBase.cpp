@@ -167,14 +167,11 @@ namespace airlib
         });
 
         pimpl_->server.bind("simGetWorldExtents", [&]() -> vector<RpcLibAdaptorsBase::GeoPoint> {
-            msr::airlib::GeoPoint min;
-            msr::airlib::GeoPoint max;
-            getWorldSimApi()->getWorldExtents(min, max);
-            vector<RpcLibAdaptorsBase::GeoPoint> result;
-            result.push_back(RpcLibAdaptorsBase::GeoPoint(min));
-            result.push_back(RpcLibAdaptorsBase::GeoPoint(max));
+            std::vector<msr::airlib::GeoPoint> result = getWorldSimApi()->getWorldExtents(); // Returns vector with min, max
+            std::vector<RpcLibAdaptorsBase::GeoPoint> conv_result;
 
-            return result;
+            RpcLibAdaptorsBase::from(result, conv_result);
+            return conv_result;
         });
 
         pimpl_->server.bind("simGetMeshPositionVertexBuffers", [&]() -> vector<RpcLibAdaptorsBase::MeshPositionVertexBuffersResponse> {

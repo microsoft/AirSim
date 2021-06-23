@@ -75,7 +75,7 @@ public:
     virtual std::string getSettingsString() const override;
 
     virtual bool testLineOfSightBetweenPoints(msr::airlib::GeoPoint& point1, msr::airlib::GeoPoint& point2) const;
-    virtual void getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const;
+    virtual std::vector<msr::airlib::GeoPoint> getWorldExtents() const;
 
 private:
     AActor* createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);

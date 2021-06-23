@@ -87,7 +87,7 @@ namespace airlib
         virtual std::string getSettingsString() const = 0;
 
         virtual bool testLineOfSightBetweenPoints(msr::airlib::GeoPoint& point1, msr::airlib::GeoPoint& point2) const = 0;
-        virtual void getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const = 0;
+        virtual vector<msr::airlib::GeoPoint> getWorldExtents() const = 0;
     };
 }
 } //namespace
