@@ -806,3 +806,73 @@ std::vector<uint8_t> WorldSimApi::getImage(const std::string& camera_name, Image
     else
         return std::vector<uint8_t>();
 }
+
+void WorldSimApi::addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name,
+                                             const std::string& vehicle_name, bool external)
+{
+    const APIPCamera* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, &mesh_name]() {
+        camera->getDetectionComponent(image_type, false)->addMeshName(mesh_name);
+    },
+                                             true);
+}
+
+void WorldSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, float radius_cm,
+                                           const std::string& vehicle_name, bool external)
+{
+    const APIPCamera* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, radius_cm]() {
+        camera->getDetectionComponent(image_type, false)->setFilterRadius(radius_cm);
+    },
+                                             true);
+}
+
+void WorldSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                          const std::string& vehicle_name, bool external)
+{
+    const APIPCamera* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, image_type]() {
+        camera->getDetectionComponent(image_type, false)->clearMeshNames();
+    },
+                                             true);
+}
+
+std::vector<msr::airlib::DetectionInfo> WorldSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                                                   const std::string& vehicle_name, bool external)
+{
+    std::vector<msr::airlib::DetectionInfo> result;
+
+    const APIPCamera* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    const NedTransform& ned_transform = external ? simmode_->getGlobalNedTransform()
+                                                 : simmode_->getVehicleSimApi(vehicle_name)->getNedTransform();
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, &result, &ned_transform]() {
+        const TArray<FDetectionInfo>& detections = camera->getDetectionComponent(image_type, false)->getDetections();
+        result.resize(detections.Num());
+
+        for (int i = 0; i < detections.Num(); i++) {
+            result[i].name = std::string(TCHAR_TO_UTF8(*(detections[i].Actor->GetFName().ToString())));
+
+            Vector3r nedWrtOrigin = ned_transform.toGlobalNed(detections[i].Actor->GetActorLocation());
+            result[i].geo_point = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
+                                                                         AirSimSettings::singleton().origin_geopoint);
+
+            result[i].box2D.min = Vector2r(detections[i].Box2D.Min.X, detections[i].Box2D.Min.Y);
+            result[i].box2D.max = Vector2r(detections[i].Box2D.Max.X, detections[i].Box2D.Max.Y);
+
+            result[i].box3D.min = ned_transform.toLocalNed(detections[i].Box3D.Min);
+            result[i].box3D.max = ned_transform.toLocalNed(detections[i].Box3D.Max);
+
+            const Vector3r& position = ned_transform.toLocalNed(detections[i].RelativeTransform.GetTranslation());
+            const Quaternionr& orientation = ned_transform.toNed(detections[i].RelativeTransform.GetRotation());
+
+            result[i].relative_pose = Pose(position, orientation);
+        }
+    },
+                                             true);
+
+    return result;
+}

@@ -213,21 +213,21 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simGetSegmentationObjectID", mesh_name).as<int>();
         }
 
-        void RpcLibClientBase::simAddDetectionFilterMeshName(const std::string& camera_name, const std::string& mesh_name, const std::string& vehicle_name)
+        void RpcLibClientBase::simAddDetectionFilterMeshName(const std::string& camera_name, const std::string& mesh_name, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simAddDetectionFilterMeshName", camera_name, mesh_name, vehicle_name);
+            pimpl_->client.call("simAddDetectionFilterMeshName", camera_name, mesh_name, vehicle_name, external);
         }
-        void RpcLibClientBase::simSetDetectionFilterRadius(const std::string& camera_name, const float radius_cm, const std::string& vehicle_name)
+        void RpcLibClientBase::simSetDetectionFilterRadius(const std::string& camera_name, const float radius_cm, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simSetDetectionFilterRadius", camera_name, radius_cm, vehicle_name);
+            pimpl_->client.call("simSetDetectionFilterRadius", camera_name, radius_cm, vehicle_name, external);
         }
-        void RpcLibClientBase::simClearDetectionMeshNames(const std::string& camera_name, const std::string& vehicle_name)
+        void RpcLibClientBase::simClearDetectionMeshNames(const std::string& camera_name, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simClearDetectionMeshNames", camera_name, vehicle_name);
+            pimpl_->client.call("simClearDetectionMeshNames", camera_name, vehicle_name, external);
         }
-        vector<DetectionInfo> RpcLibClientBase::simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name)
+        vector<DetectionInfo> RpcLibClientBase::simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name, bool external)
         {
-            const auto& result = pimpl_->client.call("simGetDetections", camera_name, image_type, vehicle_name).as<vector<RpcLibAdaptorsBase::DetectionInfo>>();
+            const auto& result = pimpl_->client.call("simGetDetections", camera_name, image_type, vehicle_name, external).as<vector<RpcLibAdaptorsBase::DetectionInfo>>();
             return RpcLibAdaptorsBase::DetectionInfo::to(result);
         }
 

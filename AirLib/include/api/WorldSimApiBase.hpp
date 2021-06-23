@@ -89,7 +89,7 @@ namespace airlib
         virtual bool testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const = 0;
         virtual vector<msr::airlib::GeoPoint> getWorldExtents() const = 0;
 
-        // Image APIs
+        // Camera APIs
         virtual CameraInfo getCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const = 0;
         virtual void setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose,
                                    const std::string& vehicle_name = "", bool external = false) = 0;
@@ -97,13 +97,22 @@ namespace airlib
                                   const std::string& vehicle_name = "", bool external = false) = 0;
         virtual void setDistortionParam(const std::string& camera_name, const std::string& param_name, float value,
                                         const std::string& vehicle_name = "", bool external = false) = 0;
-        virtual std::vector<float> getDistortionParams(const std::string& camera_name, const std::string& vehicle_name = "",
-                                                       bool external = false) const = 0;
+        virtual std::vector<float> getDistortionParams(const std::string& camera_name,
+                                                       const std::string& vehicle_name = "", bool external = false) const = 0;
 
         virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,
                                                                        const std::string& vehicle_name = "", bool external = false) const = 0;
         virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
                                               const std::string& vehicle_name = "", bool external = false) const = 0;
+
+        virtual void addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name,
+                                                const std::string& vehicle_name = "", bool external = false) = 0;
+        virtual void setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, float radius_cm,
+                                              const std::string& vehicle_name = "", bool external = false) = 0;
+        virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                             const std::string& vehicle_name = "", bool external = false) = 0;
+        virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                                         const std::string& vehicle_name = "", bool external = false) = 0;
     };
 }
 } //namespace
