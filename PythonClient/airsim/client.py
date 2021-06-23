@@ -510,7 +510,7 @@ class VehicleClient:
         """
         return self.client.call('simGetSegmentationObjectID', mesh_name)
 
-    def simAddDetectionFilterMeshName(self, camera_name, image_type, mesh_name, vehicle_name = ''):
+    def simAddDetectionFilterMeshName(self, camera_name, image_type, mesh_name, vehicle_name = '', external = False):
         """
         Add mesh name to detect in wild card format
 
@@ -521,11 +521,12 @@ class VehicleClient:
             image_type (ImageType): Type of image required
             mesh_name (str): mesh name in wild card format
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
 
         """
-        self.client.call('simAddDetectionFilterMeshName', camera_name, image_type, mesh_name, vehicle_name)
+        self.client.call('simAddDetectionFilterMeshName', camera_name, image_type, mesh_name, vehicle_name, external)
     
-    def simSetDetectionFilterRadius(self, camera_name, image_type, radius_cm, vehicle_name = ''):
+    def simSetDetectionFilterRadius(self, camera_name, image_type, radius_cm, vehicle_name = '', external = False):
         """
         Set detection radius for all cameras
 
@@ -534,10 +535,11 @@ class VehicleClient:
             image_type (ImageType): Type of image required
             radius_cm (int): Radius in [cm]
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
         """
-        self.client.call('simSetDetectionFilterRadius', camera_name, image_type, radius_cm, vehicle_name)
+        self.client.call('simSetDetectionFilterRadius', camera_name, image_type, radius_cm, vehicle_name, external)
      
-    def simClearDetectionMeshNames(self, camera_name, image_type, vehicle_name = ''):
+    def simClearDetectionMeshNames(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Clear all mesh names from detection filter
 
@@ -545,11 +547,12 @@ class VehicleClient:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
 
         """
-        self.client.call('simClearDetectionMeshNames', camera_name, image_type, vehicle_name)
+        self.client.call('simClearDetectionMeshNames', camera_name, image_type, vehicle_name, external)
 
-    def simGetDetections(self, camera_name, image_type, vehicle_name = ''):
+    def simGetDetections(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Get current detections
 
@@ -557,11 +560,12 @@ class VehicleClient:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             DetectionInfo array
         """
-        responses_raw = self.client.call('simGetDetections', camera_name, image_type, vehicle_name)
+        responses_raw = self.client.call('simGetDetections', camera_name, image_type, vehicle_name, external)
         return [DetectionInfo.from_msgpack(response_raw) for response_raw in responses_raw]
 
     def simPrintLogMessage(self, message, message_param = "", severity = 0):
