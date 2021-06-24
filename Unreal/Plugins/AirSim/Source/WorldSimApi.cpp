@@ -731,10 +731,10 @@ std::vector<msr::airlib::GeoPoint> WorldSimApi::getWorldExtents() const
     return result;
 }
 
-msr::airlib::CameraInfo WorldSimApi::getCameraInfo(const std::string& camera_name, const std::string& vehicle_name, bool external) const
+msr::airlib::CameraInfo WorldSimApi::getCameraInfo(const CameraDetails& camera_details) const
 {
     msr::airlib::CameraInfo info;
-    const auto* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
     UAirBlueprintLib::RunCommandOnGameThread([camera, &info]() {
         info = camera->getCameraInfo();
     },
@@ -743,40 +743,37 @@ msr::airlib::CameraInfo WorldSimApi::getCameraInfo(const std::string& camera_nam
     return info;
 }
 
-void WorldSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose,
-                                const std::string& vehicle_name, bool external)
+void WorldSimApi::setCameraPose(const msr::airlib::Pose& pose, const CameraDetails& camera_details)
 {
-    auto* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    APIPCamera* camera = simmode_->getCamera(camera_details);
     UAirBlueprintLib::RunCommandOnGameThread([camera, &pose]() {
         camera->setCameraPose(pose);
     },
                                              true);
 }
 
-void WorldSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees,
-                               const std::string& vehicle_name, bool external)
+void WorldSimApi::setCameraFoV(float fov_degrees, const CameraDetails& camera_details)
 {
-    auto* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    APIPCamera* camera = simmode_->getCamera(camera_details);
     UAirBlueprintLib::RunCommandOnGameThread([camera, &fov_degrees]() {
         camera->setCameraFoV(fov_degrees);
     },
                                              true);
 }
 
-void WorldSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value,
-                                     const std::string& vehicle_name, bool external)
+void WorldSimApi::setDistortionParam(const std::string& param_name, float value, const CameraDetails& camera_details)
 {
-    auto* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    APIPCamera* camera = simmode_->getCamera(camera_details);
     UAirBlueprintLib::RunCommandOnGameThread([camera, &param_name, &value]() {
         camera->setDistortionParam(param_name, value);
     },
                                              true);
 }
 
-std::vector<float> WorldSimApi::getDistortionParams(const std::string& camera_name, const std::string& vehicle_name, bool external) const
+std::vector<float> WorldSimApi::getDistortionParams(const CameraDetails& camera_details) const
 {
     std::vector<float> param_values;
-    const auto* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
     UAirBlueprintLib::RunCommandOnGameThread([camera, &param_values]() {
         param_values = camera->getDistortionParams();
     },
@@ -790,7 +787,7 @@ std::vector<WorldSimApi::ImageCaptureBase::ImageResponse> WorldSimApi::getImages
 {
     std::vector<ImageCaptureBase::ImageResponse> responses;
 
-    const auto* camera = simmode_->getImageCapture(vehicle_name, external);
+    const UnrealImageCapture* camera = simmode_->getImageCapture(vehicle_name, external);
     camera->getImages(requests, responses);
 
     return responses;
@@ -807,10 +804,9 @@ std::vector<uint8_t> WorldSimApi::getImage(const std::string& camera_name, Image
         return std::vector<uint8_t>();
 }
 
-void WorldSimApi::addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name,
-                                             const std::string& vehicle_name, bool external)
+void WorldSimApi::addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details)
 {
-    const APIPCamera* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
 
     UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, &mesh_name]() {
         camera->getDetectionComponent(image_type, false)->addMeshName(mesh_name);
@@ -818,10 +814,9 @@ void WorldSimApi::addDetectionFilterMeshName(const std::string& camera_name, Ima
                                              true);
 }
 
-void WorldSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, float radius_cm,
-                                           const std::string& vehicle_name, bool external)
+void WorldSimApi::setDetectionFilterRadius(ImageCaptureBase::ImageType image_type, float radius_cm, const CameraDetails& camera_details)
 {
-    const APIPCamera* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
 
     UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, radius_cm]() {
         camera->getDetectionComponent(image_type, false)->setFilterRadius(radius_cm);
@@ -829,10 +824,9 @@ void WorldSimApi::setDetectionFilterRadius(const std::string& camera_name, Image
                                              true);
 }
 
-void WorldSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
-                                          const std::string& vehicle_name, bool external)
+void WorldSimApi::clearDetectionMeshNames(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details)
 {
-    const APIPCamera* camera = simmode_->getCamera(camera_name, vehicle_name, external);
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
 
     UAirBlueprintLib::RunCommandOnGameThread([camera, image_type]() {
         camera->getDetectionComponent(image_type, false)->clearMeshNames();
@@ -840,14 +834,14 @@ void WorldSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageC
                                              true);
 }
 
-std::vector<msr::airlib::DetectionInfo> WorldSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
-                                                                   const std::string& vehicle_name, bool external)
+std::vector<msr::airlib::DetectionInfo> WorldSimApi::getDetections(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details)
 {
     std::vector<msr::airlib::DetectionInfo> result;
 
-    const APIPCamera* camera = simmode_->getCamera(camera_name, vehicle_name, external);
-    const NedTransform& ned_transform = external ? simmode_->getGlobalNedTransform()
-                                                 : simmode_->getVehicleSimApi(vehicle_name)->getNedTransform();
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
+    const NedTransform& ned_transform = camera_details.external
+                                            ? simmode_->getGlobalNedTransform()
+                                            : simmode_->getVehicleSimApi(camera_details.vehicle_name)->getNedTransform();
 
     UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, &result, &ned_transform]() {
         const TArray<FDetectionInfo>& detections = camera->getDetectionComponent(image_type, false)->getDetections();

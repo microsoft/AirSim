@@ -199,16 +199,16 @@ namespace airlib
         });
 
         pimpl_->server.bind("simAddDetectionFilterMeshName", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& mesh_name, const std::string& vehicle_name, bool external) -> void {
-            getWorldSimApi()->addDetectionFilterMeshName(camera_name, type, mesh_name, vehicle_name, external);
+            getWorldSimApi()->addDetectionFilterMeshName(type, mesh_name, CameraDetails(camera_name, vehicle_name, external));
         });
         pimpl_->server.bind("simSetDetectionFilterRadius", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const float radius_cm, const std::string& vehicle_name, bool external) -> void {
-            getWorldSimApi()->setDetectionFilterRadius(camera_name, type, radius_cm, vehicle_name, external);
+            getWorldSimApi()->setDetectionFilterRadius(type, radius_cm, CameraDetails(camera_name, vehicle_name, external));
         });
         pimpl_->server.bind("simClearDetectionMeshNames", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name, bool external) -> void {
-            getWorldSimApi()->clearDetectionMeshNames(camera_name, type, vehicle_name, external);
+            getWorldSimApi()->clearDetectionMeshNames(type, CameraDetails(camera_name, vehicle_name, external));
         });
         pimpl_->server.bind("simGetDetections", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name, bool external) -> vector<RpcLibAdaptorsBase::DetectionInfo> {
-            const auto& response = getWorldSimApi()->getDetections(camera_name, type, vehicle_name, external);
+            const auto& response = getWorldSimApi()->getDetections(type, CameraDetails(camera_name, vehicle_name, external));
             return RpcLibAdaptorsBase::DetectionInfo::from(response);
         });
 
@@ -269,24 +269,24 @@ namespace airlib
         });
 
         pimpl_->server.bind("simGetCameraInfo", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::CameraInfo {
-            const auto& camera_info = getWorldSimApi()->getCameraInfo(camera_name, vehicle_name, external);
+            const auto& camera_info = getWorldSimApi()->getCameraInfo(CameraDetails(camera_name, vehicle_name, external));
             return RpcLibAdaptorsBase::CameraInfo(camera_info);
         });
 
         pimpl_->server.bind("simSetDistortionParam", [&](const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name, bool external) -> void {
-            getWorldSimApi()->setDistortionParam(camera_name, param_name, value, vehicle_name, external);
+            getWorldSimApi()->setDistortionParam(param_name, value, CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simGetDistortionParams", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> std::vector<float> {
-            return getWorldSimApi()->getDistortionParams(camera_name, vehicle_name, external);
+            return getWorldSimApi()->getDistortionParams(CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simSetCameraPose", [&](const std::string& camera_name, const RpcLibAdaptorsBase::Pose& pose, const std::string& vehicle_name, bool external) -> void {
-            getWorldSimApi()->setCameraPose(camera_name, pose.to(), vehicle_name, external);
+            getWorldSimApi()->setCameraPose(pose.to(), CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simSetCameraFov", [&](const std::string& camera_name, float fov_degrees, const std::string& vehicle_name, bool external) -> void {
-            getWorldSimApi()->setCameraFoV(camera_name, fov_degrees, vehicle_name, external);
+            getWorldSimApi()->setCameraFoV(fov_degrees, CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simGetCollisionInfo", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::CollisionInfo {

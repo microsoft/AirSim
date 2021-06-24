@@ -511,9 +511,10 @@ bool ASimModeBase::isRecording() const
     return FRecordingThread::isRecording();
 }
 
-const APIPCamera* ASimModeBase::getCamera(const std::string& camera_name, const std::string& vehicle_name, bool external) const
+const APIPCamera* ASimModeBase::getCamera(const msr::airlib::CameraDetails& camera_details) const
 {
-    return external ? getExternalCamera(camera_name) : getVehicleSimApi(vehicle_name)->getCamera(camera_name);
+    return camera_details.external ? getExternalCamera(camera_details.camera_name)
+                                   : getVehicleSimApi(camera_details.vehicle_name)->getCamera(camera_details.camera_name);
 }
 
 const UnrealImageCapture* ASimModeBase::getImageCapture(const std::string& vehicle_name, bool external) const

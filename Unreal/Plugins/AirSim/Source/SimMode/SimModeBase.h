@@ -104,10 +104,11 @@ public:
             static_cast<const ASimModeBase*>(this)->getExternalCamera(camera_name));
     }
 
-    APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false)
+    const APIPCamera* getCamera(const msr::airlib::CameraDetails& camera_details) const;
+
+    APIPCamera* getCamera(const msr::airlib::CameraDetails& camera_details)
     {
-        return const_cast<APIPCamera*>(
-            static_cast<const ASimModeBase*>(this)->getCamera(camera_name, vehicle_name, external));
+        return const_cast<APIPCamera*>(static_cast<const ASimModeBase*>(this)->getCamera(camera_details));
     }
 
     const UnrealImageCapture* getExternalImageCapture() const
@@ -115,7 +116,6 @@ public:
         return external_image_capture_.get();
     }
 
-    const APIPCamera* getCamera(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const;
     const UnrealImageCapture* getImageCapture(const std::string& vehicle_name = "", bool external = false) const;
 
     TMap<FString, FAssetData> asset_map;

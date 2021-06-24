@@ -17,6 +17,7 @@ public:
     typedef msr::airlib::Vector3r Vector3r;
     typedef msr::airlib::MeshPositionVertexBuffersResponse MeshPositionVertexBuffersResponse;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
+    typedef msr::airlib::CameraDetails CameraDetails;
 
     WorldSimApi(ASimModeBase* simmode);
     virtual ~WorldSimApi() = default;
@@ -80,29 +81,21 @@ public:
     virtual std::vector<msr::airlib::GeoPoint> getWorldExtents() const override;
 
     // Camera APIs
-    virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const override;
-    virtual void setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose,
-                               const std::string& vehicle_name = "", bool external = false) override;
-    virtual void setCameraFoV(const std::string& camera_name, float fov_degrees,
-                              const std::string& vehicle_name = "", bool external = false) override;
-    virtual void setDistortionParam(const std::string& camera_name, const std::string& param_name, float value,
-                                    const std::string& vehicle_name = "", bool external = false) override;
-    virtual std::vector<float> getDistortionParams(const std::string& camera_name, const std::string& vehicle_name = "",
-                                                   bool external = false) const override;
+    virtual msr::airlib::CameraInfo getCameraInfo(const CameraDetails& camera_details) const override;
+    virtual void setCameraPose(const msr::airlib::Pose& pose, const CameraDetails& camera_details) override;
+    virtual void setCameraFoV(float fov_degrees, const CameraDetails& camera_details) override;
+    virtual void setDistortionParam(const std::string& param_name, float value, const CameraDetails& camera_details) override;
+    virtual std::vector<float> getDistortionParams(const CameraDetails& camera_details) const override;
 
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,
                                                                    const std::string& vehicle_name = "", bool external = false) const override;
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
                                           const std::string& vehicle_name = "", bool external = false) const override;
 
-    virtual void addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name,
-                                            const std::string& vehicle_name = "", bool external = false) override;
-    virtual void setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, float radius_cm,
-                                          const std::string& vehicle_name = "", bool external = false) override;
-    virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
-                                         const std::string& vehicle_name = "", bool external = false) override;
-    virtual std::vector<msr::airlib::DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
-                                                                  const std::string& vehicle_name = "", bool external = false) override;
+    virtual void addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details) override;
+    virtual void setDetectionFilterRadius(ImageCaptureBase::ImageType image_type, float radius_cm, const CameraDetails& camera_details) override;
+    virtual void clearDetectionMeshNames(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) override;
+    virtual std::vector<msr::airlib::DetectionInfo> getDetections(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) override;
 
 private:
     AActor* createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);
