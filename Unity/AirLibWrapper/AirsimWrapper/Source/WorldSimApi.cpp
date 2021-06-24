@@ -330,4 +330,55 @@ std::vector<uint8_t> WorldSimApi::getImage(const std::string& camera_name, Image
         return std::vector<uint8_t>();
 }
 
+void WorldSimApi::addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name,
+                                             const std::string& vehicle_name, bool external)
+{
+    unused(camera_name);
+    unused(image_type);
+    unused(mesh_name);
+
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "addDetectionFilterMeshName is not supported on unity")
+                                    .c_str());
+}
+
+void WorldSimApi::setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, float radius_cm,
+                                           const std::string& vehicle_name, bool external)
+{
+    unused(camera_name);
+    unused(image_type);
+    unused(radius_cm);
+    unused(external);
+
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "setDetectionFilterRadius is not supported on unity")
+                                    .c_str());
+}
+
+void WorldSimApi::clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                          const std::string& vehicle_name, bool external)
+{
+    unused(camera_name);
+    unused(image_type);
+    unused(external);
+
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "clearDetectionMeshNames is not supported on unity")
+                                    .c_str());
+}
+
+std::vector<msr::airlib::DetectionInfo> WorldSimApi::getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                                                   const std::string& vehicle_name, bool external)
+{
+    unused(camera_name);
+    unused(image_type);
+    unused(external);
+
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "getDetections is not supported on unity")
+                                    .c_str());
+
+    return std::vector<msr::airlib::DetectionInfo>();
+}
+
 #pragma endregion

@@ -73,7 +73,7 @@ public:
     virtual bool testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const override;
     virtual std::vector<msr::airlib::GeoPoint> getWorldExtents() const override;
 
-    // Image APIs
+    // Camera APIs
     virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false) const override;
     virtual void setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose,
                                const std::string& vehicle_name = "", bool external = false) override;
@@ -88,6 +88,15 @@ public:
                                                                    const std::string& vehicle_name = "", bool external = false) const override;
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, msr::airlib::ImageCaptureBase::ImageType image_type,
                                           const std::string& vehicle_name = "", bool external = false) const override;
+
+    virtual void addDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& mesh_name,
+                                            const std::string& vehicle_name = "", bool external = false) override;
+    virtual void setDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType image_type, float radius_cm,
+                                          const std::string& vehicle_name = "", bool external = false) override;
+    virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                         const std::string& vehicle_name = "", bool external = false) override;
+    virtual std::vector<msr::airlib::DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
+                                                                  const std::string& vehicle_name = "", bool external = false) override;
 
 private:
     SimModeBase* simmode_;
