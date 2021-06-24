@@ -103,7 +103,7 @@ public:
     virtual void clearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType image_type) override;
     virtual std::vector<DetectionInfo> getDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
 
-    virtual bool testLineOfSightToPoint(GeoPoint& point) const override;
+    virtual bool testLineOfSightToPoint(const msr::airlib::GeoPoint& point) const override;
 
 private:
     Params params_;

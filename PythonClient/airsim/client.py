@@ -263,6 +263,42 @@ class VehicleClient:
         """
         responses_raw = self.client.call('simGetImages', requests, vehicle_name)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
+        
+    def simTestLineOfSightToPoint(self, point, vehicle_name = ''):
+        """
+        Returns whether the target point is visible from the perspective of the inputted vehicle
+
+        Args:
+            point (GeoPoint): target point
+            vehicle_name (str, optional): Name of vehicle
+
+        Returns:
+            [bool]: Success
+        """
+        return self.client.call('simTestLineOfSightToPoint', point, vehicle_name)
+        
+    def simTestLineOfSightBetweenPoints(self, point1, point2):
+        """
+        Returns whether the target point is visible from the perspective of the source point
+
+        Args:
+            point1 (GeoPoint): source point
+            point2 (GeoPoint): target point
+
+        Returns:
+            [bool]: Success
+        """
+        return self.client.call('simTestLineOfSightBetweenPoints', point1, point2)
+        
+    def simGetWorldExtents(self):
+        """
+        Returns a list of GeoPoints representing the minimum and maximum extents of the world
+
+        Returns:
+            list[GeoPoint]
+        """
+        responses_raw = self.client.call('simGetWorldExtents')
+        return [GeoPoint.from_msgpack(response_raw) for response_raw in responses_raw]
 
     def simRunConsoleCommand(self, command):
         """

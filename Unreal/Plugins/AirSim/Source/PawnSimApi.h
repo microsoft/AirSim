@@ -122,7 +122,7 @@ public: //Unreal specific methods
     APIPCamera* getCamera(const std::string& camera_name);
     int getCameraCount();
 
-    virtual bool testLineOfSightToPoint(GeoPoint& point) const;
+    virtual bool testLineOfSightToPoint(const msr::airlib::GeoPoint& point) const;
 
     //if enabled, this would show some flares
     void displayCollisionEffect(FVector hit_location, const FHitResult& hit);
