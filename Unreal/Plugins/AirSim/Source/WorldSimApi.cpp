@@ -668,8 +668,8 @@ bool WorldSimApi::testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& lla1
 
 std::vector<msr::airlib::GeoPoint> WorldSimApi::getWorldExtents() const
 {
-    msr::airlib::GeoPoint& lla_min_out;
-    msr::airlib::GeoPoint& lla_max_out;
+    msr::airlib::GeoPoint lla_min_out;
+    msr::airlib::GeoPoint lla_max_out;
     // We need to run this code on the main game thread, since it iterates over actors
     UAirBlueprintLib::RunCommandOnGameThread([this, &lla_min_out, &lla_max_out]() {
         // This default NedTransform is part of how we anchor the AirSim primary LLA origin at 0, 0, 0 in Unreal
