@@ -629,7 +629,7 @@ std::string WorldSimApi::getSettingsString() const
     return msr::airlib::AirSimSettings::singleton().settings_text_;
 }
 
-bool WorldSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& lla1, msr::airlib::GeoPoint& lla2) const
+bool WorldSimApi::testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& lla1, const msr::airlib::GeoPoint& lla2) const
 {
     bool hit;
 
