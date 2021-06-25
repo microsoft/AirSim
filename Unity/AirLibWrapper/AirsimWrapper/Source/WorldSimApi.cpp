@@ -243,7 +243,7 @@ std::string WorldSimApi::getSettingsString() const
     return msr::airlib::AirSimSettings::singleton().settings_text_;
 }
 
-bool WorldSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& point1, msr::airlib::GeoPoint& point2) const
+bool WorldSimApi::testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const
 {
     unused(point1);
     unused(point2);
@@ -255,14 +255,15 @@ bool WorldSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& point1, ms
     return false;
 }
 
-void WorldSimApi::getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const
+std::vector<msr::airlib::GeoPoint> WorldSimApi::getWorldExtents() const
 {
-    unused(min);
-    unused(max);
+    std::vector<msr::airlib::GeoPoint> result;
 
     throw std::invalid_argument(common_utils::Utils::stringf(
                                     "getWorldExtents is not supported on unity")
                                     .c_str());
+
+    return result;
 }
 
 #pragma endregion
