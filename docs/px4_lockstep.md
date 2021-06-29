@@ -39,7 +39,9 @@ in the simulated flight if you look at the updates on screen in realtime.
 
 # Disabling LockStep
 
-PX4 is configured to use lockstep by default. To disable this feature, first [disable it in 
+If you are running PX4 in cygwin, there is an [open issue with 
+lockstep](https://github.com/microsoft/AirSim/issues/3415). PX4 is configured to use lockstep by 
+default. To disable this feature, first [disable it in 
 PX4](https://docs.px4.io/master/en/simulation/#disable-lockstep-simulation):
 
 1. Navigate to `boards/px4/sitl/` in your local PX4 repository
