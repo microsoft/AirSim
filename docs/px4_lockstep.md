@@ -51,14 +51,15 @@ PX4](https://docs.px4.io/master/en/simulation/#disable-lockstep-simulation):
     ```
     set(ENABLE_LOCKSTEP_SCHEDULER no)
     ```
-1. Disable it in AirSim by setting `LockStep` to `false`:
+1. Disable it in AirSim by setting `LockStep` to `false` and either removing any `"ClockType": 
+"SteppableClock"` setting or resetting `ClockType` back to default:
     ```
         {
             ...
+            "ClockType": "",
             "Vehicles": {
                 "PX4": {
                     "VehicleType": "PX4Multirotor",
-                    "UseTcp": true,
                     "LockStep": false,
                     ...
     ```
