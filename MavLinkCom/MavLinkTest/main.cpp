@@ -5,6 +5,7 @@
 
 #include "Utils.hpp"
 #include "FileSystem.hpp"
+#include "MavLinkTcpServer.hpp"
 #include "MavLinkConnection.hpp"
 #include "MavLinkVehicle.hpp"
 #include "MavLinkMessages.hpp"
@@ -28,26 +29,27 @@ using namespace std::filesystem;
 /* enable math defines on Windows */
 
 #ifndef M_PI_2
-#define M_PI_2     1.57079632679489661923   // pi/2
+#define M_PI_2 1.57079632679489661923 // pi/2
 #endif
 
-static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
-static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board
-static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 board
-static const int pixhawkFMUV5ProductId = 50;     ///< Product ID for Pixhawk V5 board
-static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
+static const int pixhawkVendorId = 9900; ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
+static const int pixhawkFMUV4ProductId = 18; ///< Product ID for Pixhawk V2 board
+static const int pixhawkFMUV2ProductId = 17; ///< Product ID for Pixhawk V2 board
+static const int pixhawkFMUV5ProductId = 50; ///< Product ID for Pixhawk V5 board
+static const int pixhawkFMUV2OldBootloaderProductId = 22; ///< Product ID for Bootloader on older Pixhawk V2 boards
 //static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
 
-#define MAV_AUTOPILOT_ENUM_END (static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_ASLUAV)+1)
-#define MAV_TYPE_ENUM_END (static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_ADSB)+1)
-#define MAV_STATE_ENUM_END (static_cast<uint8_t>(MAV_STATE::MAV_STATE_POWEROFF)+1)
+#define MAV_AUTOPILOT_ENUM_END (static_cast<uint8_t>(MAV_AUTOPILOT::MAV_AUTOPILOT_ASLUAV) + 1)
+#define MAV_TYPE_ENUM_END (static_cast<uint8_t>(MAV_TYPE::MAV_TYPE_ADSB) + 1)
+#define MAV_STATE_ENUM_END (static_cast<uint8_t>(MAV_STATE::MAV_STATE_POWEROFF) + 1)
 
 typedef mavlink_utils::Utils Utils;
 typedef mavlink_utils::FileSystem FileSystem;
 typedef unsigned int uint;
 using namespace mavlinkcom;
 
-struct FlagName {
+struct FlagName
+{
 public:
     int Flag;
     const char* Name;
@@ -62,7 +64,8 @@ public:
 
 #ifdef _WIN32
 #include <Windows.h>
-void DebugOutput(const char* message, ...) {
+void DebugOutput(const char* message, ...)
+{
     va_list args;
     va_start(args, message);
 
@@ -74,10 +77,10 @@ void DebugOutput(const char* message, ...) {
 
     va_end(args);
 }
-#else 
+#else
 // how do you write to the debug output windows on Unix ?
- __attribute__((__format__ (__printf__, 1, 0))) 
-void DebugOutput(const char* message, ...) {
+__attribute__((__format__(__printf__, 1, 0))) void DebugOutput(const char* message, ...)
+{
     va_list args;
     va_start(args, message);
 
@@ -101,21 +104,35 @@ std::string defaultLocalAddress{ "127.0.0.1" };
 // The remote app is connected to Pixhawk, and is also "serving" UDP packets, this tells us what remote
 // connection to create to talke to that server.
 bool offboard = false;
+bool udp = false;
+bool tcp = false;
 PortAddress offboardEndPoint;
-#define DEFAULT_OFFBOARD_PORT 14560
+#define DEFAULT_OFFBOARD_UDP_PORT 14560
+#define DEFAULT_OFFBOARD_TCP_PORT 4560
+
+// SITL setup info
+const uint8_t sim_sysid = 142;
+const int sim_compid = 42;
+#define DEFAULT_SITL_PORT 14580
+bool sitl = false;
+PortAddress sitlEndPoint;
+
+// The local ethernet interface to use (default localhost).
+PortAddress localEndPoint;
 
 // this is used if you want to connect MavLinkTest to the serial port of the Pixhawk directly
 bool serial = false;
 std::string comPort;
 int baudRate = 115200;
 
-// server mode is when you want another app to connect to Pixhawk and publish data back to this process.
+// server mode on UDP is when you want another app to connect to Pixhawk and publish data back to this process.
 // this server will be listening for UDP packets, this is mutually exclusive with 'offboard' as this
-// server will become the primary "droneConnection".  For example, jMAVSim can talk to this server 
-// using their the -qgc option.
+// server will become the primary "droneConnection".  For example, jMAVSim can talk to this server
+// using their the -qgc option.  Server mode on TCP means mavlinktest will do an "accept" socket which is
+// what PX4 is waiting for when it is running in TCP mode.  Here the serverEndPoint is different from the
+// offboardEndPoint.  The serverEndPoint specifies which local address to use in case your computer has
+// multiple network interfaces.
 bool server = false;
-PortAddress serverEndPoint;
-#define DEFAULT_SERVER_PORT 14550
 
 bool connectLogViewer = false;
 PortAddress logViewerEndPoint;
@@ -125,8 +142,8 @@ PortAddress logViewerEndPoint;
 std::vector<PortAddress> proxyEndPoints;
 #define DEFAULT_PROXY_PORT 14580
 
-// this switch controls whether we turn off the RC remote active link loss detection 
-// if you do not have radio connected this is needed to stop "failsafe" override in pixhawk 
+// this switch controls whether we turn off the RC remote active link loss detection
+// if you do not have radio connected this is needed to stop "failsafe" override in pixhawk
 // from kicking in when you try and fly.
 bool noRadio = false;
 bool unitTest = false;
@@ -149,7 +166,9 @@ std::stringstream initScript;
 std::shared_ptr<MavLinkConnection> droneConnection;
 std::shared_ptr<MavLinkConnection> logConnection;
 std::shared_ptr<MavLinkVehicle> mavLinkVehicle;
+std::shared_ptr<MavLinkNode> hilNode; // for simulation.
 
+std::vector<PortAddress> usedPorts;
 
 void ConvertLogFileToJson(std::string logFile)
 {
@@ -174,27 +193,33 @@ void ConvertLogFileToJson(std::string logFile)
         jsonLog.close();
         printf("done\n");
     }
-    catch (std::exception&ex) {
+    catch (std::exception& ex) {
         printf("error: %s\n", ex.what());
     }
 }
 
-class CsvWriter {
+class CsvWriter
+{
     std::ofstream csvFile;
     bool begin;
     std::string delimiter;
+
 public:
-    CsvWriter(std::string fileName, std::string tabDelimiter) {
+    CsvWriter(std::string fileName, std::string tabDelimiter)
+    {
         csvFile.open(fileName.c_str());
         this->delimiter = tabDelimiter;
     }
-    ~CsvWriter() {
+    ~CsvWriter()
+    {
         csvFile.close();
     }
-    void BeginRow() {
+    void BeginRow()
+    {
         begin = true;
     }
-    void WriteValue(const std::string& value) {
+    void WriteValue(const std::string& value)
+    {
         if (begin) {
             begin = false;
         }
@@ -203,7 +228,8 @@ public:
         }
         csvFile << value;
     }
-    void WriteValue(double value) {
+    void WriteValue(double value)
+    {
         if (begin) {
             begin = false;
         }
@@ -212,7 +238,8 @@ public:
         }
         csvFile << value;
     }
-    void EndRow() {
+    void EndRow()
+    {
         csvFile << std::endl;
     }
 };
@@ -235,8 +262,7 @@ void ConvertLogFileToCsv(std::string logFile, int filter)
         bool headers = true;
         uint64_t timestamp;
         while (log.read(msg, timestamp)) {
-            if (msg.msgid == filter)
-            {
+            if (msg.msgid == filter) {
                 MavLinkMessageBase* strongTypedMsg = MavLinkMessageBase::lookup(msg);
                 if (strongTypedMsg != nullptr) {
                     strongTypedMsg->timestamp = timestamp;
@@ -251,13 +277,11 @@ void ConvertLogFileToCsv(std::string logFile, int filter)
                     if (headers) {
                         headers = false;
                         csv.BeginRow();
-                        for (auto it = doc.begin(); it != doc.end(); ++it)
-                        {
+                        for (auto it = doc.begin(); it != doc.end(); ++it) {
                             auto v = it.value();
                             if (v.is_object()) {
                                 // flatten inner mavlink object
-                                for (auto itm = v.begin(); itm != v.end(); ++itm)
-                                {
+                                for (auto itm = v.begin(); itm != v.end(); ++itm) {
                                     csv.WriteValue(itm.key());
                                 }
                             }
@@ -268,13 +292,11 @@ void ConvertLogFileToCsv(std::string logFile, int filter)
                         csv.EndRow();
                     }
                     csv.BeginRow();
-                    for (auto it = doc.begin(); it != doc.end(); ++it)
-                    {
+                    for (auto it = doc.begin(); it != doc.end(); ++it) {
                         auto v = it.value();
                         if (v.is_object()) {
                             // flatten inner mavlink object
-                            for (auto itm = v.begin(); itm != v.end(); ++itm)
-                            {
+                            for (auto itm = v.begin(); itm != v.end(); ++itm) {
                                 auto vm = itm.value();
                                 if (vm.is_number()) {
                                     csv.WriteValue(vm.get<double>());
@@ -308,16 +330,16 @@ void ConvertLogFileToCsv(std::string logFile, int filter)
                     delete strongTypedMsg;
                 }
             }
-
         };
         printf("done\n");
     }
-    catch (std::exception&ex) {
+    catch (std::exception& ex) {
         printf("error: %s\n", ex.what());
     }
 }
 
-void LoadInitScript(std::string fileName) {
+void LoadInitScript(std::string fileName)
+{
 
     std::ifstream fs;
     std::string line;
@@ -382,9 +404,9 @@ void ConvertLogFilesToCsv(std::string directory)
     }
 }
 
-void OpenLogFiles() {
-    if (logDirectory.size() > 0)
-    {
+void OpenLogFiles()
+{
+    if (logDirectory.size() > 0) {
         std::time_t result = std::time(nullptr);
         auto local = std::localtime(&result);
 
@@ -408,10 +430,10 @@ void OpenLogFiles() {
         auto outfile = FileSystem::combine(path, output);
         outLogFile = std::make_shared<MavLinkFileLog>();
         outLogFile->openForWriting(outfile, jsonLogFormat);
-
     }
 }
-void CloseLogFiles() {
+void CloseLogFiles()
+{
     if (inLogFile != nullptr) {
         inLogFile->close();
         inLogFile = nullptr;
@@ -421,7 +443,6 @@ void CloseLogFiles() {
         outLogFile = nullptr;
     }
 }
-
 
 const static FlagName MavSysSensorFlags[] = {
     { static_cast<int>(MAV_SYS_STATUS_SENSOR::MAV_SYS_STATUS_SENSOR_3D_GYRO), "MAV_SYS_STATUS_SENSOR_3D_GYRO - 0x01 3D gyro" },
@@ -472,8 +493,7 @@ const static char* AutoPilotNames[]{
     "MAV_AUTOPILOT_ASLUAV, ASLUAV autopilot -- http://www.asl.ethz.ch"
 };
 
-const static char* MavTypeNames[]
-{
+const static char* MavTypeNames[]{
     "MAV_TYPE_GENERIC-  Generic micro air vehicle.",
     "MAV_TYPE_FIXED_WING-  Fixed wing aircraft.",
     "MAV_TYPE_QUADROTOR-  Quadrotor",
@@ -527,8 +547,8 @@ const static char* MavStateNames[]{
     "MAV_STATE_ENUM_END - ",
 };
 
-
-enum PX4_CUSTOM_MAIN_MODE {
+enum PX4_CUSTOM_MAIN_MODE
+{
     PX4_CUSTOM_MAIN_MODE_MANUAL = 1,
     PX4_CUSTOM_MAIN_MODE_ALTCTL,
     PX4_CUSTOM_MAIN_MODE_POSCTL,
@@ -539,7 +559,8 @@ enum PX4_CUSTOM_MAIN_MODE {
     PX4_CUSTOM_MAIN_MODE_RATTITUDE
 };
 
-enum PX4_CUSTOM_SUB_MODE_AUTO {
+enum PX4_CUSTOM_SUB_MODE_AUTO
+{
     PX4_CUSTOM_SUB_MODE_AUTO_READY = 1,
     PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF,
     PX4_CUSTOM_SUB_MODE_AUTO_LOITER,
@@ -550,35 +571,34 @@ enum PX4_CUSTOM_SUB_MODE_AUTO {
     PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET
 };
 
-const static FlagName  CustomModeNames[]{
-    { PX4_CUSTOM_MAIN_MODE_MANUAL,		     "PX4_CUSTOM_MAIN_MODE_MANUAL"},
-    { PX4_CUSTOM_MAIN_MODE_ALTCTL,		     "PX4_CUSTOM_MAIN_MODE_ALTCTL"},
-    { PX4_CUSTOM_MAIN_MODE_POSCTL,		     "PX4_CUSTOM_MAIN_MODE_POSCTL"},
-    { PX4_CUSTOM_MAIN_MODE_AUTO,			 "PX4_CUSTOM_MAIN_MODE_AUTO"},
-    { PX4_CUSTOM_MAIN_MODE_ACRO,			 "PX4_CUSTOM_MAIN_MODE_ACRO"},
-    { PX4_CUSTOM_MAIN_MODE_OFFBOARD,		 "PX4_CUSTOM_MAIN_MODE_OFFBOARD"},
-    { PX4_CUSTOM_MAIN_MODE_STABILIZED,	     "PX4_CUSTOM_MAIN_MODE_STABILIZED"},
-    { PX4_CUSTOM_MAIN_MODE_RATTITUDE,		 "PX4_CUSTOM_MAIN_MODE_RATTITUDE"},
-    { 0,		 nullptr }
+const static FlagName CustomModeNames[]{
+    { PX4_CUSTOM_MAIN_MODE_MANUAL, "PX4_CUSTOM_MAIN_MODE_MANUAL" },
+    { PX4_CUSTOM_MAIN_MODE_ALTCTL, "PX4_CUSTOM_MAIN_MODE_ALTCTL" },
+    { PX4_CUSTOM_MAIN_MODE_POSCTL, "PX4_CUSTOM_MAIN_MODE_POSCTL" },
+    { PX4_CUSTOM_MAIN_MODE_AUTO, "PX4_CUSTOM_MAIN_MODE_AUTO" },
+    { PX4_CUSTOM_MAIN_MODE_ACRO, "PX4_CUSTOM_MAIN_MODE_ACRO" },
+    { PX4_CUSTOM_MAIN_MODE_OFFBOARD, "PX4_CUSTOM_MAIN_MODE_OFFBOARD" },
+    { PX4_CUSTOM_MAIN_MODE_STABILIZED, "PX4_CUSTOM_MAIN_MODE_STABILIZED" },
+    { PX4_CUSTOM_MAIN_MODE_RATTITUDE, "PX4_CUSTOM_MAIN_MODE_RATTITUDE" },
+    { 0, nullptr }
 };
 
 const static FlagName CustomSubModeNames[]{
-    { PX4_CUSTOM_SUB_MODE_AUTO_READY,			 "PX4_CUSTOM_SUB_MODE_AUTO_READY"},
-    { PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF,		     "PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF"},
-    { PX4_CUSTOM_SUB_MODE_AUTO_LOITER,		     "PX4_CUSTOM_SUB_MODE_AUTO_LOITER"},
-    { PX4_CUSTOM_SUB_MODE_AUTO_MISSION,		     "PX4_CUSTOM_SUB_MODE_AUTO_MISSION"},
-    { PX4_CUSTOM_SUB_MODE_AUTO_RTL,			     "PX4_CUSTOM_SUB_MODE_AUTO_RTL"},
-    { PX4_CUSTOM_SUB_MODE_AUTO_LAND,			 "PX4_CUSTOM_SUB_MODE_AUTO_LAND"},
-    { PX4_CUSTOM_SUB_MODE_AUTO_RTGS,			 "PX4_CUSTOM_SUB_MODE_AUTO_RTGS"},
-    { PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET,	 "PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET"},
-    { 0,		 nullptr }
+    { PX4_CUSTOM_SUB_MODE_AUTO_READY, "PX4_CUSTOM_SUB_MODE_AUTO_READY" },
+    { PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF, "PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF" },
+    { PX4_CUSTOM_SUB_MODE_AUTO_LOITER, "PX4_CUSTOM_SUB_MODE_AUTO_LOITER" },
+    { PX4_CUSTOM_SUB_MODE_AUTO_MISSION, "PX4_CUSTOM_SUB_MODE_AUTO_MISSION" },
+    { PX4_CUSTOM_SUB_MODE_AUTO_RTL, "PX4_CUSTOM_SUB_MODE_AUTO_RTL" },
+    { PX4_CUSTOM_SUB_MODE_AUTO_LAND, "PX4_CUSTOM_SUB_MODE_AUTO_LAND" },
+    { PX4_CUSTOM_SUB_MODE_AUTO_RTGS, "PX4_CUSTOM_SUB_MODE_AUTO_RTGS" },
+    { PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET, "PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET" },
+    { 0, nullptr }
 };
 
+void PrintFlags(const FlagName* flagNames, int value)
+{
 
-void PrintFlags(const FlagName* flagNames, int value) {
-
-    for (int i = 0; ; i++)
-    {
+    for (int i = 0;; i++) {
         if (flagNames[i].Name == NULL)
             break;
 
@@ -588,10 +608,10 @@ void PrintFlags(const FlagName* flagNames, int value) {
     }
 }
 
-void PrintEnum(const FlagName* enumNames, int value) {
+void PrintEnum(const FlagName* enumNames, int value)
+{
 
-    for (int i = 0; ; i++)
-    {
+    for (int i = 0;; i++) {
         if (enumNames[i].Name == NULL)
             break;
 
@@ -618,7 +638,6 @@ void PrintSystemStatus(MavLinkSysStatus& status)
     printf("    drop_rate_comm = %d\n", static_cast<int>(status.drop_rate_comm));
     printf("    errors_comm = %d\n", static_cast<int>(status.errors_comm));
     printf("    battery_remaining = %d\n", static_cast<int>(status.battery_remaining));
-
 }
 
 void PrintCustomMode(const MavLinkHeartbeat& heartbeat)
@@ -635,7 +654,8 @@ void PrintCustomMode(const MavLinkHeartbeat& heartbeat)
     }
 }
 
-void PrintHeartbeat(const MavLinkMessage& msg) {
+void PrintHeartbeat(const MavLinkMessage& msg)
+{
 
     MavLinkHeartbeat heartbeat;
     heartbeat.decode(msg);
@@ -662,17 +682,16 @@ void PrintHeartbeat(const MavLinkMessage& msg) {
 
     Utils::log(Utils::stringf("    VEHICLE SYSTEM ID: %i\n", msg.sysid));
     Utils::log(Utils::stringf("    VEHICLE COMPONENT ID: %i\n", msg.compid));
-
 }
 
 uint32_t gCustom = 0;
 
-void CheckHeartbeat(const MavLinkMessage& msg) {
+void CheckHeartbeat(const MavLinkMessage& msg)
+{
     MavLinkHeartbeat heartbeat;
     heartbeat.decode(msg);
 
-    if (gCustom != heartbeat.custom_mode)
-    {
+    if (gCustom != heartbeat.custom_mode) {
         gCustom = heartbeat.custom_mode;
         PrintCustomMode(heartbeat);
     }
@@ -706,14 +725,13 @@ void mavlink_dcm_to_euler(const float dcm[3][3], float* roll, float* pitch, floa
     if (fabsf(theta - static_cast<float>(M_PI_2)) < 1.0e-3f) {
         phi = 0.0f;
         psi = (atan2f(dcm[1][2] - dcm[0][1],
-            dcm[0][2] + dcm[1][1]) + phi);
-
+                      dcm[0][2] + dcm[1][1]) +
+               phi);
     }
     else if (fabsf(theta + static_cast<float>(M_PI_2)) < 1.0e-3f) {
         phi = 0.0f;
         psi = atan2f(dcm[1][2] - dcm[0][1],
-            dcm[0][2] + dcm[1][1] - phi);
-
+                     dcm[0][2] + dcm[1][1] - phi);
     }
     else {
         phi = atan2f(dcm[2][1], dcm[2][2]);
@@ -733,13 +751,17 @@ void mavlink_quaternion_to_euler(const float quaternion[4], float* roll, float* 
 
 extern void mavlink_euler_to_quaternion(float roll, float pitch, float yaw, float quaternion[4]);
 
-void PrintUsage() {
+void PrintUsage()
+{
     printf("Usage: PX4 options\n");
     printf("Connects to PX4 either over udp or serial COM port\n");
     printf("Options: \n");
-    printf("    -udp:ipaddr[:port]]                    - connect to remote drone via this udp address, the remote app is the UDP server (default port 14550)\n");
-    printf("    -server:ipaddr[:port]                  - start mavlink server on this local port (so jMAVSim can connect to it using -udp)\n");
+    printf("    -udp[:ipaddr[:port]]                   - connect to remote drone at this udp address (default port localhost:14550)\n");
+    printf("    -tcp[:ipaddr[:port]]                   - connect to remote drone at this tcp address (default port localhost:4560)\n");
+    printf("    -local[:ipaddr]                        - connect to remote drone via this local address (default localhost)\n");
+    printf("    -server                                - start mavlink server on specified -udp or -tcp local address\n");
     printf("    -serial[:comPortName][, baudrate]]     - open serial port\n");
+    printf("    -sitl[:ipaddr[:port]]                  - when talking to a SITL PX4 provide socket port number here for control channel (default localhost:14580)\n");
     printf("    -logviewer:ipaddr[:port]               - for sending mavlink information to Log Viewer\n");
     printf("    -proxy:ipaddr[:port]                   - send all mavlink messages to and from remote node\n");
     printf("    -local:ipaddr                          - specify local NIC address (default 127.0.0.1)\n");
@@ -766,80 +788,87 @@ bool ParseCommandLine(int argc, const char* argv[])
     const char* convertOption = "convert";
 
     // parse command line
-    for (int i = 1; i < argc; i++)
-    {
+    for (int i = 1; i < argc; i++) {
         const char* arg = argv[i];
-        if (arg[0] == '-' || arg[0] == '/')
-        {
+        if (arg[0] == '-' || arg[0] == '/') {
             std::string option(arg + 1);
             std::vector<std::string> parts = Utils::split(option, ":,", 2);
             std::string lower = Utils::toLower(parts[0]);
-            if (lower == "udp")
-            {
+            if (lower == "udp") {
+                udp = true;
                 offboard = true;
-                offboardEndPoint.port = DEFAULT_OFFBOARD_PORT;
-                if (parts.size() > 1)
-                {
+                offboardEndPoint.port = DEFAULT_OFFBOARD_UDP_PORT;
+                if (parts.size() > 1) {
                     offboardEndPoint.addr = parts[1];
-                    if (parts.size() > 2)
-                    {
+                    if (parts.size() > 2) {
                         offboardEndPoint.port = atoi(parts[2].c_str());
                     }
                 }
             }
-            else if (lower == "server")
-            {
-                server = true;
-                serverEndPoint.port = DEFAULT_SERVER_PORT;
-                if (parts.size() > 1)
-                {
-                    serverEndPoint.addr = parts[1];
-                    if (parts.size() > 2)
-                    {
-                        serverEndPoint.port = atoi(parts[2].c_str());
+            else if (lower == "tcp") {
+                tcp = true;
+                offboard = true;
+                offboardEndPoint.port = DEFAULT_OFFBOARD_TCP_PORT;
+                if (parts.size() > 1) {
+                    offboardEndPoint.addr = parts[1];
+                    if (parts.size() > 2) {
+                        offboardEndPoint.port = atoi(parts[2].c_str());
                     }
                 }
             }
-            else if (lower == "proxy")
-            {
+            else if (lower == "local") {
+                localEndPoint.port = 0; // any port.
+                if (parts.size() > 1) {
+                    localEndPoint.addr = parts[1];
+                    if (parts.size() > 2) {
+                        localEndPoint.port = atoi(parts[2].c_str());
+                    }
+                }
+            }
+            else if (lower == "server") {
+                server = true;
+            }
+            else if (lower == "sitl") {
+                sitl = true;
+                sitlEndPoint.port = 0; // any port.
+                if (parts.size() > 1) {
+                    sitlEndPoint.addr = parts[1];
+                    if (parts.size() > 2) {
+                        sitlEndPoint.port = atoi(parts[2].c_str());
+                    }
+                }
+            }
+            else if (lower == "proxy") {
                 PortAddress ep;
                 ep.port = DEFAULT_PROXY_PORT;
 
-                if (parts.size() > 1)
-                {
+                if (parts.size() > 1) {
                     ep.addr = parts[1];
-                    if (parts.size() > 2)
-                    {
+                    if (parts.size() > 2) {
                         ep.port = atoi(parts[2].c_str());
                     }
                 }
                 proxyEndPoints.push_back(ep);
             }
-            else if (lower == "logviewer")
-            {
+            else if (lower == "logviewer") {
                 connectLogViewer = true;
                 logViewerEndPoint.port = DEFAULT_LOGVIEWER_PORT;
-                if (parts.size() > 1)
-                {
+                if (parts.size() > 1) {
                     logViewerEndPoint.addr = parts[1];
-                    if (parts.size() > 2)
-                    {
+                    if (parts.size() > 2) {
                         logViewerEndPoint.port = atoi(parts[2].c_str());
                     }
                 }
             }
-            else if (lower == logDirOption)
-            {
-                if (parts.size() > 1)
-                {
+            else if (lower == logDirOption) {
+                if (parts.size() > 1) {
                     std::string fileName(arg + 1 + strlen(logDirOption) + 1);
                     logDirectory = fileName;
                 }
             }
             else if (lower == logformatOption) {
 
-                if (parts.size() > 1)
-                {
+                if (parts.size() > 1) {
                     std::string format(arg + 1 + strlen(logformatOption) + 1);
                     format = Utils::toLower(format);
                     if (format == "json") {
@@ -854,8 +883,7 @@ bool ParseCommandLine(int argc, const char* argv[])
             }
             else if (lower == convertOption) {
                 convertExisting = true;
-                if (parts.size() > 1)
-                {
+                if (parts.size() > 1) {
                     std::string format(arg + 1 + strlen(convertOption) + 1);
                     format = Utils::toLower(format);
                     if (format == "json") {
@@ -871,8 +899,7 @@ bool ParseCommandLine(int argc, const char* argv[])
                 }
             }
             else if (lower == filterOption) {
-                if (parts.size() > 1)
-                {
+                if (parts.size() > 1) {
                     std::string filters(arg + 1 + strlen(filterOption) + 1);
                     std::vector<std::string> fparts = Utils::split(filters, ",", 1);
                     for (auto ptr = fparts.begin(), end = fparts.end(); ptr != end; ptr++) {
@@ -891,43 +918,34 @@ bool ParseCommandLine(int argc, const char* argv[])
 #if defined(USE_CPP_FILESYSTEM)
             else if (lower == initOption) {
 
-                if (parts.size() > 1)
-                {
+                if (parts.size() > 1) {
                     std::string fileName(arg + 1 + strlen(initOption) + 1);
                     LoadInitScript(fileName);
                 }
             }
 #endif
-            else if (lower == "local")
-            {
-                if (parts.size() > 1)
-                {
+            else if (lower == "local") {
+                if (parts.size() > 1) {
                     defaultLocalAddress = parts[1];
                 }
             }
-            else if (lower == "serial")
-            {
+            else if (lower == "serial") {
                 serial = true;
-                if (parts.size() > 1)
-                {
+                if (parts.size() > 1) {
                     comPort = parts[1];
-                    if (parts.size() > 2)
-                    {
+                    if (parts.size() > 2) {
                         baudRate = atoi(parts[2].c_str());
-                        if (baudRate == 0)
-                        {
+                        if (baudRate == 0) {
                             printf("### Error: invalid baud rate in -serial argument\n");
                             return false;
                         }
                     }
                 }
             }
-            else if (lower == "h" || lower == "?" || lower == "help" || lower == "-help")
-            {
+            else if (lower == "h" || lower == "?" || lower == "help" || lower == "-help") {
                 return false;
             }
-            else if (lower == "noradio")
-            {
+            else if (lower == "noradio") {
                 noRadio = true;
             }
             else if (lower == "test") {
@@ -945,22 +963,18 @@ bool ParseCommandLine(int argc, const char* argv[])
             else if (lower == "telemetry") {
                 telemetry = true;
             }
-            else if (lower == wifiOption)
-            {
-                if (parts.size() > 1)
-                {
+            else if (lower == wifiOption) {
+                if (parts.size() > 1) {
                     std::string name(arg + 1 + strlen(wifiOption) + 1);
                     ifaceName = name;
                 }
             }
-            else
-            {
+            else {
                 printf("### Error: unexpected argument: %s\n", arg);
                 return false;
             }
         }
-        else
-        {
+        else {
             printf("### Error: unexpected argument: %s\n", arg);
             return false;
         }
@@ -968,22 +982,19 @@ bool ParseCommandLine(int argc, const char* argv[])
     return true;
 }
 
-
-void HexDump(uint8_t *buffer, uint len)
+void HexDump(uint8_t* buffer, uint len)
 {
     for (uint i = 0; i < len; i += 16) {
 
         uint j = 0;
-        for (j = i; j < i + 16 && j < len; j++)
-        {
+        for (j = i; j < i + 16 && j < len; j++) {
             uint8_t b = buffer[i + j];
             printf("%02x ", b);
         }
         while (j < 16) {
             printf("   ");
         }
-        for (j = i; j < i + 16 && j < len; j++)
-        {
+        for (j = i; j < i + 16 && j < len; j++) {
             uint8_t b = buffer[j];
             if (b < 0x20 || b == 0x7f || b == 0xfe) {
                 b = '.';
@@ -1001,7 +1012,7 @@ std::shared_ptr<MavLinkConnection> connectProxy(const PortAddress& endPoint, std
 {
     printf("Connecting to UDP Proxy address %s:%d\n", endPoint.addr.c_str(), endPoint.port);
 
-    std::shared_ptr<MavLinkConnection> proxyConnection = MavLinkConnection::connectRemoteUdp(name, defaultLocalAddress, endPoint.addr, endPoint.port);
+    std::shared_ptr<MavLinkConnection> proxyConnection = MavLinkConnection::connectRemoteUdp(name, localEndPoint.addr, endPoint.addr, endPoint.port);
 
     // forward all PX4 messages to the remote proxy and all messages from remote proxy to PX4.
     droneConnection->join(proxyConnection);
@@ -1009,15 +1020,14 @@ std::shared_ptr<MavLinkConnection> connectProxy(const PortAddress& endPoint, std
     return proxyConnection;
 }
 
-std::string findPixhawk() {
+std::string findPixhawk()
+{
 
     auto result = MavLinkConnection::findSerialPorts(0, 0);
-    for (auto iter = result.begin(); iter != result.end(); iter++)
-    {
+    for (auto iter = result.begin(); iter != result.end(); iter++) {
         SerialPortInfo info = *iter;
         if (info.vid == pixhawkVendorId) {
-            if (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId || info.pid == pixhawkFMUV5ProductId)
-            {
+            if (info.pid == pixhawkFMUV4ProductId || info.pid == pixhawkFMUV2ProductId || info.pid == pixhawkFMUV2OldBootloaderProductId || info.pid == pixhawkFMUV5ProductId) {
                 printf("Auto Selecting COM port: %S\n", info.displayName.c_str());
 
                 std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -1036,26 +1046,53 @@ std::shared_ptr<MavLinkConnection> connectSerial()
     return MavLinkConnection::connectSerial("drone", name, baudRate, "sh /etc/init.d/rc.usb\n");
 }
 
-
 std::shared_ptr<MavLinkConnection> connectOffboard()
 {
-    if (offboardEndPoint.addr == "") {
-        offboardEndPoint.addr = defaultLocalAddress;
-    }
     printf("Connecting to offboard drone at address %s:%d\n", offboardEndPoint.addr.c_str(), offboardEndPoint.port);
     return MavLinkConnection::connectRemoteUdp("drone", defaultLocalAddress, offboardEndPoint.addr, offboardEndPoint.port);
 }
 
-std::shared_ptr<MavLinkConnection> connectServer(const PortAddress& endPoint, std::string name)
+std::shared_ptr<MavLinkConnection> connectServer(std::string name)
 {
-    printf("Connecting to UDP Server address %s:%d\n", endPoint.addr.c_str(), endPoint.port);
+    if (localEndPoint.addr == "") {
+        localEndPoint.addr = defaultLocalAddress;
+    }
+    if (localEndPoint.port == 0) {
+        localEndPoint.port = offboardEndPoint.port;
+    }
 
-    std::shared_ptr<MavLinkConnection> serverConnection = MavLinkConnection::connectLocalUdp(name, endPoint.addr, endPoint.port);
+    std::shared_ptr<MavLinkConnection> serverConnection;
+
+    if (tcp) {
+        if (localEndPoint.port == 0) {
+            localEndPoint.port = DEFAULT_OFFBOARD_TCP_PORT;
+        }
+        printf("Waiting for drone to connect to server at address %s:%d...\n", localEndPoint.addr.c_str(), localEndPoint.port);
+        MavLinkTcpServer server(localEndPoint.addr, localEndPoint.port);
+        serverConnection = server.acceptTcp(name);
+    }
+    else {
+        if (localEndPoint.port == 0) {
+            localEndPoint.port = DEFAULT_OFFBOARD_UDP_PORT;
+        }
+        printf("Starting UDP Server on address %s:%d\n", localEndPoint.addr.c_str(), localEndPoint.port);
+        serverConnection = MavLinkConnection::connectLocalUdp(name, localEndPoint.addr, localEndPoint.port);
+    }
+
+    if (droneConnection != nullptr) {
+        // then we have a serial connection as the primary droneConnection, so publish all PX4 messages out to the server
+        droneConnection->join(serverConnection);
+    }
+    else {
+        // no local serial connection, so this is the primary droneConnection.
+        droneConnection = serverConnection;
+    }
 
     return serverConnection;
 }
 
-void runTelemetry() {
+void runTelemetry()
+{
     while (telemetry) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         if (droneConnection != nullptr) {
@@ -1071,12 +1108,14 @@ void runTelemetry() {
     }
 }
 
-void startTelemetry() {
+void startTelemetry()
+{
     Utils::cleanupThread(telemetry_thread);
     telemetry_thread = std::thread(&runTelemetry);
 }
 
-void stopTelemetry() {
+void stopTelemetry()
+{
     telemetry = false;
     if (telemetry_thread.joinable()) {
         telemetry_thread.join();
@@ -1085,53 +1124,64 @@ void stopTelemetry() {
 
 bool connect()
 {
-    if (offboard && serial)
-    {
+    if (offboard && serial) {
         printf("Cannot connect to local -serial pixhawk and -udp drone at the same time \n");
         return false;
     }
-    if (!offboard && !serial && !server) {
-        printf("Must specify one of -serial, -udp or -server otherwise we don't have a drone connection\n");
-        return false;
-    }
-    if (offboard && server)
-    {
-        printf("Cannot have offboard and server, must pick one of this as the primary drone connection\n");
+    if (!offboard && !serial) {
+        printf("Must specify one of -serial, -udp or -tcp otherwise we don't have a drone connection\n");
         return false;
     }
 
-    std::vector<PortAddress> usedPorts;
+    if (offboardEndPoint.addr == "") {
+        offboardEndPoint.addr = defaultLocalAddress;
+    }
+
+    if (localEndPoint.addr == "") {
+        localEndPoint.addr = defaultLocalAddress;
+    }
 
     if (serial) {
         droneConnection = connectSerial();
     }
-    else if (offboard)
-    {
+    else if (!server) {
         droneConnection = connectOffboard();
         usedPorts.push_back(offboardEndPoint);
     }
 
-    if (server)
-    {
-        if (serverEndPoint.addr == "") {
-            serverEndPoint.addr = defaultLocalAddress;
-        }
-
-        std::shared_ptr<MavLinkConnection> serverConnection = connectServer(serverEndPoint, "server");
-        usedPorts.push_back(serverEndPoint);
-
-        if (droneConnection != nullptr) {
-            // then we have a serial connection as the primary droneConnection, so publish all PX4 messages out to the server 
-            droneConnection->join(serverConnection);
-        }
-        else {
-            // no local serial connection, so this is the primary droneConnection.
-            droneConnection = serverConnection;
-        }
+    if (server) {
+        std::shared_ptr<MavLinkConnection> serverConnection = connectServer("server");
+        usedPorts.push_back(localEndPoint);
     }
 
-    if (droneConnection == nullptr)
-    {
+    return true;
+}
+
+void connectSitl(std::shared_ptr<MavLinkVehicle> mavLinkVehicle)
+{
+
+    if (sitlEndPoint.port != 0) {
+        sitlEndPoint.port = DEFAULT_SITL_PORT;
+    }
+
+    // need a retry loop here because we don't know how quickly px4 will start accepting these connections...
+    for (int retries = 60; retries >= 0; retries--) {
+        try {
+            auto gcsConnection = mavlinkcom::MavLinkConnection::connectRemoteUdp("gcs",
+                                                                                 localEndPoint.addr,
+                                                                                 sitlEndPoint.addr,
+                                                                                 sitlEndPoint.port);
+            mavLinkVehicle->connect(gcsConnection);
+        }
+        catch (std::exception&) {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    }
+}
+
+bool setupDrone()
+{
+    if (droneConnection == nullptr) {
         // failed to connect
         return false;
     }
@@ -1139,21 +1189,34 @@ bool connect()
     if (verbose) {
         droneConnection->subscribe([=](std::shared_ptr<MavLinkConnection> con, const MavLinkMessage& msg) {
             printf("Received msg %d from drone\n", static_cast<int>(msg.msgid));
-            });
+        });
     }
 
     if (outLogFile != nullptr) {
         droneConnection->startLoggingSendMessage(outLogFile);
     }
-    mavLinkVehicle->connect(droneConnection);
 
-    if (!server) {
-        // local connection, then we own sending the heartbeat.
-        mavLinkVehicle->startHeartbeat();
+    if (sitl) {
+        // then we need 2 mavlink channels, one for sending/receiving HIL_* messages and the other
+        // for controlling the drone.
+        hilNode = std::make_shared<mavlinkcom::MavLinkNode>(sim_sysid, sim_compid);
+        hilNode->connect(droneConnection);
+        hilNode->startHeartbeat();
+
+        printf("TODO: for SITL to work, mavlinktest needs to simulate HIL_SENSOR messages...\n");
+
+        // this is the control channel.
+        mavLinkVehicle = std::make_shared<MavLinkVehicle>(LocalSystemId, LocalComponentId);
+        connectSitl(mavLinkVehicle);
+    }
+    else {
+        mavLinkVehicle = std::make_shared<MavLinkVehicle>(LocalSystemId, LocalComponentId);
+        mavLinkVehicle->connect(droneConnection);
     }
 
-    if (connectLogViewer)
-    {
+    mavLinkVehicle->startHeartbeat();
+
+    if (connectLogViewer) {
         if (logViewerEndPoint.addr == "") {
             logViewerEndPoint.addr = defaultLocalAddress;
         }
@@ -1167,22 +1230,21 @@ bool connect()
         logConnection = nullptr;
     }
 
-    for (auto ptr = proxyEndPoints.begin(), end = proxyEndPoints.end(); ptr != end; ptr++)
-    {
+    for (auto ptr = proxyEndPoints.begin(), end = proxyEndPoints.end(); ptr != end; ptr++) {
+        bool ok = true;
         PortAddress proxyEndPoint = *ptr;
-        for (auto ep = usedPorts.begin(), endep = usedPorts.end(); ep != endep; ep++)
-        {
+        for (auto ep = usedPorts.begin(), endep = usedPorts.end(); ep != endep; ep++) {
             PortAddress used = *ep;
-            if (used.addr == proxyEndPoint.addr && used.port == proxyEndPoint.port)
-            {
+            if (used.addr == proxyEndPoint.addr && used.port == proxyEndPoint.port) {
                 printf("Cannot proxy to address that is already used: %s:%d\n", used.addr.c_str(), used.port);
-                return false;
+                ok = false;
             }
         }
-        usedPorts.push_back(proxyEndPoint);
-        connectProxy(proxyEndPoint, "proxy");
+        if (ok) {
+            usedPorts.push_back(proxyEndPoint);
+            connectProxy(proxyEndPoint, "proxy");
+        }
     }
-
 
     return true;
 }
@@ -1200,10 +1262,10 @@ const char* IgnoreStateTable[] = {
     nullptr
 };
 
-void handleStatus(const MavLinkStatustext& statustext) {
+void handleStatus(const MavLinkStatustext& statustext)
+{
     std::string msg = statustext.text;
-    for (size_t i = 0; IgnoreStateTable[i] != nullptr; i++)
-    {
+    for (size_t i = 0; IgnoreStateTable[i] != nullptr; i++) {
         if (msg == IgnoreStateTable[i]) {
             return;
         }
@@ -1213,10 +1275,10 @@ void handleStatus(const MavLinkStatustext& statustext) {
     Utils::log(Utils::stringf("STATUS: sev=%d, '%s'\n", static_cast<int>(statustext.severity), safeText.c_str()));
 }
 
-int console(std::stringstream& script) {
+int console(std::stringstream& script)
+{
 
     std::string line;
-    mavLinkVehicle = std::make_shared<MavLinkVehicle>(LocalSystemId, LocalComponentId);
     std::shared_ptr<MavLinkNode> logViewer = nullptr;
     Command* currentCommand = nullptr;
     OrbitCommand* orbit = new OrbitCommand();
@@ -1251,12 +1313,7 @@ int console(std::stringstream& script) {
     cmdTable.push_back(new BatteryCommand());
     cmdTable.push_back(new WaitForAltitudeCommand());
 
-    if (!connect()) {
-        return 1;
-    }
-
     droneConnection->subscribe([=](std::shared_ptr<MavLinkConnection> connection, const MavLinkMessage& message) {
-
         MavLinkStatustext statustext;
         if (inLogFile != nullptr && inLogFile->isOpen()) {
             std::lock_guard<std::mutex> lock(logLock);
@@ -1316,11 +1373,9 @@ int console(std::stringstream& script) {
         }
     }
 
-    if (noRadio)
-    {
+    if (noRadio) {
         MavLinkParameter p = mavLinkVehicle->getCachedParameter("NAV_RCL_ACT");
-        if (p.value != 0)
-        {
+        if (p.value != 0) {
             p.value = 0;
             mavLinkVehicle->setParameter(p);
         }
@@ -1330,8 +1385,7 @@ int console(std::stringstream& script) {
         currentCommand = nshCommand;
         currentCommand->Execute(mavLinkVehicle);
     }
-    else
-    {
+    else {
         if (!noparams) {
             printf("Downloading drone parameters so we know how to control it properly...\n");
             try {
@@ -1344,7 +1398,6 @@ int console(std::stringstream& script) {
         mavLinkVehicle->setStabilizedFlightMode();
     }
 
-
     printf("Ready...\n");
     script << "status\n";
 
@@ -1354,47 +1407,38 @@ int console(std::stringstream& script) {
             std::getline(script, line);
         }
         else {
+            printf("mavlink> ");
             std::getline(std::cin, line);
         }
 
         line = mavlink_utils::Utils::trim(line, ' ');
 
-
-        if (line.length() > 0)
-        {
-            if (line.length() == 0)
-            {
+        if (line.length() > 0) {
+            if (line.length() == 0) {
                 continue;
             }
             std::vector<std::string> args = Command::parseArgs(line);
             std::string cmd = args[0];
 
-            if (cmd == "x")
-            {
+            if (cmd == "x") {
                 break;
             }
-            else if (cmd == "disconnect")
-            {
+            else if (cmd == "disconnect") {
                 mavLinkVehicle->close();
             }
-            else if (cmd == "connect")
-            {
+            else if (cmd == "connect") {
                 connect();
             }
-            else if (cmd == "?" || cmd == "help")
-            {
-                for (size_t i = 0; i < cmdTable.size(); i++)
-                {
+            else if (cmd == "?" || cmd == "help") {
+                for (size_t i = 0; i < cmdTable.size(); i++) {
                     Command* command = cmdTable[i];
-                    if (args.size() > 1 && args[1] == command->Name)
-                    {
+                    if (args.size() > 1 && args[1] == command->Name) {
                         command->PrintHelp();
                         break;
                     }
                     else {
                         printf("%s\n", command->Name.c_str());
                     }
-
                 }
             }
             else {
@@ -1404,7 +1448,7 @@ int console(std::stringstream& script) {
                     auto str = std::string(Command::kCommandLogPrefix) + line;
                     MavLinkStatustext st;
                     strncpy(st.text, str.c_str(), 50);
-                    MavLinkMessage m; 
+                    MavLinkMessage m;
                     st.encode(m);
                     droneConnection->prepareForSending(m);
                     std::lock_guard<std::mutex> lock(logLock);
@@ -1417,13 +1461,11 @@ int console(std::stringstream& script) {
                 }
                 currentCommand = selected;
 
-                if (currentCommand != NULL)
-                {
+                if (currentCommand != NULL) {
                     try {
                         currentCommand->Execute(mavLinkVehicle);
                     }
-                    catch (const std::exception& e)
-                    {
+                    catch (const std::exception& e) {
                         const char* reason = e.what();
                         if (reason == nullptr) {
                             reason = "(unknown)";
@@ -1431,15 +1473,11 @@ int console(std::stringstream& script) {
                         printf("Error: %s\n", reason);
                     }
                 }
-                else
-                {
+                else {
                     printf("Unknown command.  Type '?' to get list of commands\n");
                 }
-
             }
-
         }
-
     }
 
     stopTelemetry();
@@ -1451,14 +1489,13 @@ int console(std::stringstream& script) {
     return 0;
 }
 
-void completion(int state) {
-
+void completion(int state)
+{
 }
 
 int main(int argc, const char* argv[])
 {
-    if (!ParseCommandLine(argc, argv))
-    {
+    if (!ParseCommandLine(argc, argv)) {
         PrintUsage();
         return 1;
     }
@@ -1481,8 +1518,7 @@ int main(int argc, const char* argv[])
     OpenLogFiles();
 
     if (serial) {
-        if (comPort.size() == 0 || comPort == "*")
-        {
+        if (comPort.size() == 0 || comPort == "*") {
             comPort = findPixhawk();
             if (comPort == "") {
                 printf("### Error: PX4 not found on your SerialPort, or it is not available");
@@ -1491,21 +1527,26 @@ int main(int argc, const char* argv[])
         }
     }
 
-
-    if (unitTest) {
-        UnitTests test;
-        test.RunAll(comPort, baudRate);
-        return 0;
-    }
-
     try {
+        if (unitTest) {
+            UnitTests test;
+            test.RunAll(comPort, baudRate);
+            return 0;
+        }
+
+        if (!connect()) {
+            return 1;
+        }
+
+        if (!setupDrone()) {
+            return 1;
+        }
+
         return console(initScript);
     }
-    catch (const std::exception& e)
-    {
+    catch (const std::exception& e) {
         printf("Exception: %s\n", e.what());
     }
 
     CloseLogFiles();
 }
-

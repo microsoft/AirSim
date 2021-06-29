@@ -1,7 +1,7 @@
 macro(BuildRpc)
 
 
-set(RPC_SOURCE_DIR ${AIRSIM_ROOT}/external/rpclib/rpclib-2.2.1)
+set(RPC_SOURCE_DIR ${AIRSIM_ROOT}/external/rpclib/rpclib-2.3.0)
 include(${RPC_SOURCE_DIR}/cmake/policies.cmake)
 include(${RPC_SOURCE_DIR}/cmake/msvc_support.cmake)
 include(${RPC_SOURCE_DIR}/cmake/coverage.cmake)
@@ -35,7 +35,7 @@ set(RPCLIB_DEFAULT_PORT 8080
   CACHE STRING "Default port used for running tests and examples")
 set(RPCLIB_DEFAULT_BUFFER_SIZE "1024 << 10" 
   CACHE STRING "Default buffer size")
-set(RPCLIB_CXX_STANDARD 11 CACHE STRING 
+set(RPCLIB_CXX_STANDARD 14 CACHE STRING 
   "C++ version used to build rpclib (Currently: Only 11 and 14 supported)")
 
 if(RPCLIB_GENERATE_COMPDB)

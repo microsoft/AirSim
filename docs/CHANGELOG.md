@@ -2,6 +2,56 @@
 
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
+### May 2021
+
+* Latest release `v1.5.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.5.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.5.0-linux)
+* [fix px4 connection for wsl 2.](https://github.com/microsoft/AirSim/pull/3603)
+
+### Apr 2021
+
+* [External physics engine](https://github.com/microsoft/AirSim/pull/3626)
+* [ArduPilot Sensor Updates](https://github.com/microsoft/AirSim/pull/3364)
+* [Add new build configuration "--RelWithDebInfo" which makes it easier to debug](https://github.com/microsoft/AirSim/pull/3596)
+* [Add ApiServerPort to available AirSim settings](https://github.com/microsoft/AirSim/pull/3196)
+* [ROS: Use the same settings as AirSim](https://github.com/microsoft/AirSim/pull/3536)
+
+### Mar 2021
+
+* [Add moveByVelocityZBodyFrame](https://github.com/microsoft/AirSim/pull/3475)
+* [Spawn vehicles via RPC](https://github.com/microsoft/AirSim/pull/2390)
+* [Unity weather parameters, weather HUD, and a visual effect for snow](https://github.com/microsoft/AirSim/pull/2909)
+* [Rotor output API](https://github.com/microsoft/AirSim/pull/3242)
+* [Extend Recording to multiple vehicles](https://github.com/microsoft/AirSim/pull/2861)
+* [Combine Lidar Segmentation API into getLidarData](https://github.com/microsoft/AirSim/pull/2810)
+
+### Feb 2021
+
+* [Add Ubuntu 20.04 to Actions CI](https://github.com/microsoft/AirSim/pull/3383)
+* [add tcp server support to MavLinkTest](https://github.com/microsoft/AirSim/pull/3386)
+
+### Jan 2021
+
+* [Added continueForFrames](https://github.com/microsoft/AirSim/pull/3102)
+* Latest release `v1.4.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.4.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.4.0-linux)
+
+### Dec 2020
+
+* [Add Actions script to build and deploy to gh-pages](https://github.com/microsoft/AirSim/pull/3224)
+* [Gym environments and stable-baselines integration for RL](https://github.com/microsoft/AirSim/pull/3215)
+* [Programmable camera distortion](https://github.com/microsoft/AirSim/pull/3039)
+* [Voxel grid construction](https://github.com/microsoft/AirSim/pull/3209)
+* [Event camera simulation](https://github.com/microsoft/AirSim/pull/3202)
+* [Add Github Actions CI Checks](https://github.com/microsoft/AirSim/pull/3180)
+* [Added moveByVelocityBodyFrame](https://github.com/microsoft/AirSim/pull/3169)
+
+### Nov 2020
+
+* [fix auto-detect of pixhawk 4 hardware](https://github.com/microsoft/AirSim/pull/3156)
+
+### Oct 2020
+
+* [\[Travis\] Add Ubuntu 20.04, OSX XCode 11.5 jobs](https://github.com/microsoft/AirSim/pull/2953)
+
 ### Sep 2020
 
 * [Add Vehicle option for Subwindow settings](https://github.com/microsoft/AirSim/pull/2841)
@@ -93,7 +143,7 @@ Below is summarized list of important changes. This does not include minor/less 
 * Added [Time of Day API](apis.md#time-of-day-api)
 * An experimental integration of [AirSim on Unity](https://github.com/Microsoft/AirSim/tree/master/Unity) is now available. Learn more in [Unity blog post](https://blogs.unity3d.com/2018/11/14/airsim-on-unity-experiment-with-autonomous-vehicle-simulation). 
 * [New environments](https://github.com/Microsoft/AirSim/releases/tag/v1.2.1): Forest, Plains (windmill farm), TalkingHeads (human head simulation), TrapCam (animal detection via camera)
-* Highly efficient [NoDisplay view mode](https://github.com/Microsoft/AirSim/blob/master/docs/settings.md#viewmode) to turn off main screen rendering so you can capture images at high rate
+* Highly efficient [NoDisplay view mode](settings.md#viewmode) to turn off main screen rendering so you can capture images at high rate
 * [Enable/disable sensors](https://github.com/Microsoft/AirSim/pull/1479) via settings
 * [Lidar Sensor](lidar.md)
 * [Support for Flysky FS-SM100 RC](https://github.com/Microsoft/AirSim/commit/474214364676b6631c01b3ed79d00c83ba5bccf5) USB adapter
@@ -182,7 +232,7 @@ Below is summarized list of important changes. This does not include minor/less 
 * No need to build the code. Just download [binaries](https://github.com/Microsoft/AirSim/releases) and you are good to go!
 * The [reinforcement learning example](reinforcement_learning.md) with AirSim
 * New built-in flight controller called [simple_flight](simple_flight.md) that "just works" without any additional setup. It is also now *default*. 
-* AirSim now also generates [depth as well as disparity images](image_apis.md) that is in camera plan. 
+* AirSim now also generates [depth as well as disparity images](image_apis.md) that are in camera plane. 
 * We also have official Linux build now!
 
 ## Sep 2017

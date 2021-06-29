@@ -10,7 +10,7 @@
 
 #ifndef H_PRETTY_PRINT
 #define H_PRETTY_PRINT
-
+// clang-format off
 #include <cstddef>
 #include <iterator>
 #include <memory>
@@ -440,6 +440,5 @@ namespace std
     }
 }
 
-
-
-#endif  // H_PRETTY_PRINT
+// clang-format on
+#endif // H_PRETTY_PRINT

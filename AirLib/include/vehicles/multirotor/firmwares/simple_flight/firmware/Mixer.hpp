@@ -5,9 +5,11 @@
 #include "Params.hpp"
 #include "interfaces/CommonStructs.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class Mixer {
+class Mixer
+{
 public:
     Mixer(const Params* params)
         : params_(params)
@@ -20,14 +22,10 @@ public:
             motor_outputs.assign(params_->motor.motor_count, controls.throttle());
             return;
         }
-        
+
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index) {
             motor_outputs[motor_index] =
-                controls.throttle() * mixerQuadX[motor_index].throttle
-                + controls.pitch() * mixerQuadX[motor_index].pitch
-                + controls.roll() * mixerQuadX[motor_index].roll
-                + controls.yaw() * mixerQuadX[motor_index].yaw
-                ;
+                controls.throttle() * mixerQuadX[motor_index].throttle + controls.pitch() * mixerQuadX[motor_index].pitch + controls.roll() * mixerQuadX[motor_index].roll + controls.yaw() * mixerQuadX[motor_index].yaw;
         }
 
         float min_motor = *std::min_element(motor_outputs.begin(), motor_outputs.begin() + kMotorCount);
@@ -45,8 +43,8 @@ public:
         }
 
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index)
-            motor_outputs[motor_index] = std::max(params_->motor.min_motor_output, 
-                std::min(motor_outputs[motor_index], params_->motor.max_motor_output));
+            motor_outputs[motor_index] = std::max(params_->motor.min_motor_output,
+                                                  std::min(motor_outputs[motor_index], params_->motor.max_motor_output));
     }
 
 private:
@@ -55,7 +53,8 @@ private:
     const Params* params_;
 
     // Custom mixer data per motor
-    typedef struct motorMixer_t {
+    typedef struct motorMixer_t
+    {
         float throttle;
         float roll;
         float pitch;
@@ -63,14 +62,13 @@ private:
     } motorMixer_t;
 
     //only thing that this matrix does is change the sign
-    const motorMixer_t mixerQuadX[4] = { //QuadX config
-        { 1.0f, -1.0f, 1.0f, 1.0f },          // FRONT_R
-        { 1.0f, 1.0f, -1.0f, 1.0f },          // REAR_L
-        { 1.0f, 1.0f, 1.0f, -1.0f },          // FRONT_L
-        { 1.0f, -1.0f, -1.0f, -1.0f },          // REAR_R
+    const motorMixer_t mixerQuadX[4] = {
+        //QuadX config
+        { 1.0f, -1.0f, 1.0f, 1.0f }, // FRONT_R
+        { 1.0f, 1.0f, -1.0f, 1.0f }, // REAR_L
+        { 1.0f, 1.0f, 1.0f, -1.0f }, // FRONT_L
+        { 1.0f, -1.0f, -1.0f, -1.0f }, // REAR_R
     };
-
 };
-
 
 } //namespace

@@ -6,7 +6,6 @@
 2. Run the Epic Games Launcher, open the `Unreal Engine` tab on the left pane.
 Click on the `Install` button on the top right, which should show the option to download **Unreal Engine >= 4.25**. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then **make sure the version you are using is set to `current`** by clicking down arrow next to the Launch button for the version.
 
-   **Note**: AirSim also works with UE >= 4.25, however, we recommend 4.25.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ![Unreal Engine Tab UI Screenshot](images/ue_install.png)
@@ -47,7 +46,7 @@ Once AirSim is set up by following above steps, you can,
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available.
 
 # AirSim on Unity (Experimental)
-[Unity](https://unity3d.com/) is another great game engine platform and we have an **experimental** integration of [AirSim with Unity](https://microsoft.github.com/AirSim/Unity). Please note that this is work in progress and all features may not work yet.
+[Unity](https://unity3d.com/) is another great game engine platform and we have an **experimental** integration of [AirSim with Unity](Unity.md). Please note that this is work in progress and all features may not work yet.
 
 # FAQ
 

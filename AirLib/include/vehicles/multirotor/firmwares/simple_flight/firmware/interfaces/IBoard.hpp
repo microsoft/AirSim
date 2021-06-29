@@ -6,15 +6,15 @@
 #include "IBoardOutputPins.hpp"
 #include "IBoardSensors.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-class IBoard : 
-    public IUpdatable,
-    public IBoardClock, 
-    public IBoardInputPins, 
-    public IBoardOutputPins,
-    public IBoardSensors {
-
+class IBoard : public IUpdatable
+    , public IBoardClock
+    , public IBoardInputPins
+    , public IBoardOutputPins
+    , public IBoardSensors
+{
 };
 
 } //namespace

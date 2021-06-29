@@ -8,7 +8,7 @@ We've two options - you can either build inside docker containers or your host m
 
 ## Docker
 
-Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/docs/docker_ubuntu.md)
+Please see instructions [here](docker_ubuntu.md)
 
 ## Host machine
 
@@ -16,7 +16,7 @@ Please see instructions [here](https://github.com/Microsoft/AirSim/blob/master/d
 
 #### Linux - Build Unreal Engine
 
-- Make sure you are [registered with Epic Games](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/1/index.html). This is required to get source code access for Unreal Engine.
+- Make sure you are [registered with Epic Games](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html). This is required to get source code access for Unreal Engine.
 
 - Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.25 at present. We recommend using 4.25.
 
@@ -35,7 +35,7 @@ make
 2. Run the Epic Games Launcher, open the `Library` tab on the left pane.
 Click on the `Add Versions` which should show the option to download **Unreal 4.25** as shown below. If you have multiple versions of Unreal installed then **make sure 4.25 is set to `current`** by clicking down arrow next to the Launch button for the version.
 
-   **Note**: AirSim also works with UE >= 4.25, however, we recommend 4.25.
+   **Note**: AirSim also works with UE >= 4.24, however, we recommend 4.25.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ### Build AirSim
@@ -106,7 +106,7 @@ Alternatively, you can use [APIs](apis.md) for programmatic control or use the s
     You can also take a look at the `Diagnostics.txt` file.
 
 - How do I use an IDE on Linux?
-    * You can use Qt Creator or CodeLite. Instructions for Qt Creator are available [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpAnIDE/index.html).
+    * You can use Qt Creator or CodeLite. Instructions for Qt Creator are available [here](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpQtCreator/index.html).
 
 - Can I cross compile for Linux from a Windows machine?
     * Yes, you can, but we haven't tested it. You can find the instructions [here](https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html).

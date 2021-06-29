@@ -24,8 +24,9 @@ using namespace mavlink_utils;
 
 // File names are unicode (std::wstring), because users can create folders containing unicode characters on both
 // Windows, OSX and Linux.
-std::string FileSystem::createDirectory(std::string fullPath) {
-    
+std::string FileSystem::createDirectory(std::string fullPath)
+{
+
 #ifdef _WIN32
 #ifndef ONECORE
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
@@ -44,31 +45,33 @@ std::string FileSystem::createDirectory(std::string fullPath) {
     return fullPath;
 }
 
-void FileSystem::remove(std::string fileName) {
+void FileSystem::remove(std::string fileName)
+{
 
 #ifdef _WIN32
-	// WIN32 will create the wrong file names if we don't first convert them to UTF-16.
-	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-	std::wstring wide_path = converter.from_bytes(fileName);
-	if (!DeleteFile(wide_path.c_str())) {
-		int hr = GetLastError();
-		if (hr != ERROR_FILE_NOT_FOUND) {
-			throw std::runtime_error(Utils::stringf("Failed to delete file '%s', error=%d.", fileName.c_str(), hr));
-		}
-	}
+    // WIN32 will create the wrong file names if we don't first convert them to UTF-16.
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::wstring wide_path = converter.from_bytes(fileName);
+    if (!DeleteFile(wide_path.c_str())) {
+        int hr = GetLastError();
+        if (hr != ERROR_FILE_NOT_FOUND) {
+            throw std::runtime_error(Utils::stringf("Failed to delete file '%s', error=%d.", fileName.c_str(), hr));
+        }
+    }
 #else
-	
-	int hr = unlink(fileName.c_str());
-	if (hr != 0) {
-		hr = errno;
-		if (hr != ENOENT) {
-			throw std::runtime_error(Utils::stringf("Failed to delete file '%s', error=%d.", fileName.c_str(), hr));
-		}
-	}
+
+    int hr = unlink(fileName.c_str());
+    if (hr != 0) {
+        hr = errno;
+        if (hr != ENOENT) {
+            throw std::runtime_error(Utils::stringf("Failed to delete file '%s', error=%d.", fileName.c_str(), hr));
+        }
+    }
 #endif
 }
 
-std::string FileSystem::getUserDocumentsFolder() {
+std::string FileSystem::getUserDocumentsFolder()
+{
 #ifdef _WIN32
 #ifndef ONECORE
     // Windows users can move the Documents folder to any location they want
@@ -76,16 +79,15 @@ std::string FileSystem::getUserDocumentsFolder() {
     wchar_t szPath[MAX_PATH];
 
     if (0 == SHGetFolderPath(NULL,
-        CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE,
-        NULL,
-        0,
-        szPath))
-    {
+                             CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE,
+                             NULL,
+                             0,
+                             szPath)) {
         std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
         return converter.to_bytes(szPath);
     }
 #endif
-    // fall back in case SHGetFolderPath failed for some reason.
+// fall back in case SHGetFolderPath failed for some reason.
 #endif
     return combine(getUserHomeFolder(), "Documents");
 }
@@ -93,73 +95,71 @@ std::string FileSystem::getUserDocumentsFolder() {
 std::string FileSystem::getFullPath(const std::string fileName)
 {
 #ifdef _WIN32
-	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-	std::wstring wide_path = converter.from_bytes(fileName);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::wstring wide_path = converter.from_bytes(fileName);
 
     // convert from std::path '/' to windows backslash.
     size_t length = wide_path.size();
-    for (size_t i = 0; i < length; i++)
-    {
+    for (size_t i = 0; i < length; i++) {
         if (wide_path[i] == '/') {
             wide_path[i] = kPathSeparator;
         }
     }
 
-	wchar_t szPath[MAX_PATH];
-	int len = GetFullPathName(wide_path.c_str(), MAX_PATH, szPath, NULL);
-	if (len == 0)
-	{
-		int hr = GetLastError();
-		throw std::runtime_error(Utils::stringf("getFullPath of '%s' failed with error=%d.", fileName.c_str(), hr));
-	}
+    wchar_t szPath[MAX_PATH];
+    int len = GetFullPathName(wide_path.c_str(), MAX_PATH, szPath, NULL);
+    if (len == 0) {
+        int hr = GetLastError();
+        throw std::runtime_error(Utils::stringf("getFullPath of '%s' failed with error=%d.", fileName.c_str(), hr));
+    }
 
-	szPath[len] = '\0';
-	return converter.to_bytes(szPath);
-	
+    szPath[len] = '\0';
+    return converter.to_bytes(szPath);
+
 #else
 
-	char buf[PATH_MAX];
-	char* cwd = getcwd(buf, PATH_MAX);
+    char buf[PATH_MAX];
+    char* cwd = getcwd(buf, PATH_MAX);
 
-	std::string path = cwd;
+    std::string path = cwd;
 
-	size_t size = fileName.size();
-	if (size == 0) {
-		return path;
-	}
-	if (fileName[0] == kPathSeparator) {
-		return fileName;
-	}
+    size_t size = fileName.size();
+    if (size == 0) {
+        return path;
+    }
+    if (fileName[0] == kPathSeparator) {
+        return fileName;
+    }
 
-	return resolve(path, fileName);
+    return resolve(path, fileName);
 #endif
 }
 
 bool FileSystem::isDirectory(const std::string path)
 {
 #ifdef _WIN32
-	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-	std::wstring wide_path = converter.from_bytes(path);
-	unsigned long attrib = GetFileAttributes(wide_path.c_str());
-	return (attrib != INVALID_FILE_ATTRIBUTES && (attrib & FILE_ATTRIBUTE_DIRECTORY));
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::wstring wide_path = converter.from_bytes(path);
+    unsigned long attrib = GetFileAttributes(wide_path.c_str());
+    return (attrib != INVALID_FILE_ATTRIBUTES && (attrib & FILE_ATTRIBUTE_DIRECTORY));
 #else
-	struct stat buf;
-	int rc = ::stat(path.c_str(), &buf);
-	return rc == 0 && S_ISDIR(buf.st_mode);
+    struct stat buf;
+    int rc = ::stat(path.c_str(), &buf);
+    return rc == 0 && S_ISDIR(buf.st_mode);
 #endif
 }
 
 bool FileSystem::exists(const std::string path)
 {
 #ifdef _WIN32
-	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-	std::wstring wide_path = converter.from_bytes(path);
-	unsigned long attrib = GetFileAttributes(wide_path.c_str());
-	return (attrib != INVALID_FILE_ATTRIBUTES);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+    std::wstring wide_path = converter.from_bytes(path);
+    unsigned long attrib = GetFileAttributes(wide_path.c_str());
+    return (attrib != INVALID_FILE_ATTRIBUTES);
 #else
-	struct stat buf;
-	int rc = ::stat(path.c_str(), &buf);
-	return rc == 0;
+    struct stat buf;
+    int rc = ::stat(path.c_str(), &buf);
+    return rc == 0;
 #endif
 }
 #endif

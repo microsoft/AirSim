@@ -23,4 +23,6 @@ Just add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick
 * [University of Cambridge](https://github.com/proroklab/private_flocking)
 * [Skoods - AI Autonomous cars competition](https://www.skoods.org/)
 * [Teledyne Scientific](https://arxiv.org/abs/2001.09822)
+* [BladeStack Systems](https://www.bladestack.nl)
+* [Unizar (Universidad de Zaragoza)](https://sites.google.com/unizar.es/poc-team/home)
 

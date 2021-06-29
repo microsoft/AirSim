@@ -54,7 +54,7 @@ Let's look at the ROS API for both nodes:
 ### AirSim ROS Wrapper Node
 #### Publishers:
 - `/airsim_node/origin_geo_point` [airsim_ros_pkgs/GPSYaw](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/GPSYaw.msg)   
-GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/docs/settings/) file under the `OriginGeopoint` key. 
+GPS coordinates corresponding to global NED frame. This is set in the airsim's [settings.json](https://microsoft.github.io/AirSim/settings/) file under the `OriginGeopoint` key. 
   
 - `/airsim_node/VEHICLE_NAME/global_gps` [sensor_msgs/NavSatFix](https://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html)   
 This the current GPS coordinates of the drone in airsim. 
@@ -184,7 +184,7 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
   Listens to odometry published by `airsim_node`
 
 #### Publishers:
-- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](airsim_ros_pkgs/VelCmd)   
+- `/vel_cmd_world_frame` [airsim_ros_pkgs/VelCmd](https://github.com/microsoft/AirSim/tree/master/ros/src/airsim_ros_pkgs/msg/VelCmd.msg)   
   Sends velocity command to `airsim_node`
 
 ### Global params
@@ -212,7 +212,8 @@ Upon completion, you will be able to build and run the ros wrapper as in a nativ
 
 ##### WSL1 vs WSL2
 
-WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 and is therefore much preferred  for building the code in terms of speed. 
+WSL2 is the latest version of the Windows10 Subsystem for Linux. It is many times faster than WSL1 (if you use the native file system in `/home/...` rather
+than Windows mounted folders under `/mnt/...`) and is therefore much preferred for building the code in terms of speed. 
 
 Once installed, you can switch between WSL1 or WSL2 versions as you prefer.
 
@@ -255,7 +256,6 @@ From within Windows, the WSL distribution's files are located at (type in window
    `\\wsl$\Ubuntu-18.04`
    
 #### How to run Airsim on Windows and ROS wrapper on WSL
-You need to have the same setting.json content for the simulator and WSL (e.g., in each Documents\Airsim folder).
 For WSL 1 execute:  
 `export WSL_HOST_IP=127.0.0.1`  
 and for WSL 2:  

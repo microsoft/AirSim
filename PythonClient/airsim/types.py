@@ -19,10 +19,33 @@ class MsgpackMixin:
         #return cls(**msgpack.unpack(encoded))
         return obj
 
+class _ImageType(type):
+    @property
+    def Scene(cls):
+        return 0
+    def DepthPlanar(cls):
+        return 1
+    def DepthPerspective(cls):
+        return 2
+    def DepthVis(cls):
+        return 3
+    def DisparityNormalized(cls):
+        return 4
+    def Segmentation(cls):
+        return 5
+    def SurfaceNormals(cls):
+        return 6
+    def Infrared(cls):
+        return 7
 
-class ImageType:
+    def __getattr__(self, key):
+        if key == 'DepthPlanner':
+            print('\033[31m'+"DepthPlanner has been (correctly) renamed to DepthPlanar. Please use ImageType.DepthPlanar instead."+'\033[0m')
+            raise AttributeError
+
+class ImageType(metaclass=_ImageType):
     Scene = 0
-    DepthPlanner = 1
+    DepthPlanar = 1
     DepthPerspective = 2
     DepthVis = 3
     DisparityNormalized = 4
@@ -48,6 +71,14 @@ class WeatherParameter:
     Dust = 6
     Fog = 7
     Enabled = 8
+
+class Vector2r(MsgpackMixin):
+    x_val = 0.0
+    y_val = 0.0
+
+    def __init__(self, x_val = 0.0, y_val = 0.0):
+        self.x_val = x_val
+        self.y_val = y_val
 
 class Vector3r(MsgpackMixin):
     x_val = 0.0
@@ -359,6 +390,10 @@ class MultirotorState(MsgpackMixin):
     ready_message = ""
     can_arm = False
 
+class RotorStates(MsgpackMixin):
+    timestamp = np.uint64(0)
+    rotors = []
+
 class ProjectionMatrix(MsgpackMixin):
     matrix = []
 
@@ -371,6 +406,7 @@ class LidarData(MsgpackMixin):
     point_cloud = 0.0
     time_stamp = np.uint64(0)
     pose = Pose()
+    segmentation = 0
 
 class ImuData(MsgpackMixin):
     time_stamp = np.uint64(0)
@@ -415,6 +451,21 @@ class DistanceSensorData(MsgpackMixin):
     max_distance = 0.0
     relative_pose = Pose()
 
+class Box2D(MsgpackMixin):
+    min = Vector2r()
+    max = Vector2r()
+
+class Box3D(MsgpackMixin):
+    min = Vector3r()
+    max = Vector3r()
+
+class DetectionInfo(MsgpackMixin):
+    name = ''
+    geo_point = GeoPoint()
+    box2D = Box2D()
+    box3D = Box3D()
+    relative_pose = Pose()
+    
 class PIDGains():
     """
     Struct to store values of PID gains. Used to transmit controller gain values while instantiating

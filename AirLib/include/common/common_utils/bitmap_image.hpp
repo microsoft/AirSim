@@ -18,11 +18,10 @@
 *****************************************************************************
 */
 
-
 #ifndef INCLUDE_BITMAP_IMAGE_HPP
 #define INCLUDE_BITMAP_IMAGE_HPP
 
-
+// clang-format off
 
 #include <algorithm>
 #include <cmath>
@@ -4995,5 +4994,5 @@ const rgb_t yarg_colormap[1000] = {
 
 
 }} //namespace
-
+// clang-format on
 #endif

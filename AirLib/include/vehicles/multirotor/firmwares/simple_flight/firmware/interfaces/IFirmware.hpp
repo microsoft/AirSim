@@ -4,10 +4,11 @@
 #include "IOffboardApi.hpp"
 #include "IStateEstimator.hpp"
 
+namespace simple_flight
+{
 
-namespace simple_flight {
-
-class IFirmware : public IUpdatable {
+class IFirmware : public IUpdatable
+{
 public:
     virtual IOffboardApi& offboardApi() = 0;
 };
