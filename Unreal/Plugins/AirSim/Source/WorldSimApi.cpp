@@ -640,9 +640,15 @@ bool WorldSimApi::testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& lla1
         FCollisionQueryParams collision_params(SCENE_QUERY_STAT(LineOfSight), true);
 
         const auto& settings = msr::airlib::AirSimSettings::singleton();
-        msr::airlib::Vector3r ned = msr::airlib::EarthUtils::GeodeticToNedFast(lla1, settings.origin_geopoint.home_geo_point);
+        msr::airlib::GeodeticConverter converter(settings.origin_geopoint.home_geo_point.latitude,
+                                                 settings.origin_geopoint.home_geo_point.longitude,
+                                                 settings.origin_geopoint.home_geo_point.altitude);
+        double north, east, down;
+        converter.geodetic2Ned(lla1.latitude, lla1.longitude, lla1.altitude, &north, &east, &down);
+        msr::airlib::Vector3r ned(north, east, down);
         FVector point1 = zero_based_ned_transform.fromGlobalNed(ned);
-        ned = msr::airlib::EarthUtils::GeodeticToNedFast(lla2, settings.origin_geopoint.home_geo_point);
+        converter.geodetic2Ned(lla2.latitude, lla2.longitude, lla2.altitude, &north, &east, &down);
+        ned = msr::airlib::Vector3r(north, east, down);
         FVector point2 = zero_based_ned_transform.fromGlobalNed(ned);
 
         hit = simmode_->GetWorld()->LineTraceTestByChannel(point1, point2, ECC_Visibility, collision_params);

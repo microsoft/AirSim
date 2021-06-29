@@ -300,7 +300,12 @@ bool PawnSimApi::testLineOfSightToPoint(const msr::airlib::GeoPoint& lla) const
 
         // Transform from LLA to NED
         const auto& settings = AirSimSettings::singleton();
-        Vector3r ned = msr::airlib::EarthUtils::GeodeticToNedFast(lla, settings.origin_geopoint.home_geo_point);
+        msr::airlib::GeodeticConverter converter(settings.origin_geopoint.home_geo_point.latitude,
+                                                 settings.origin_geopoint.home_geo_point.longitude,
+                                                 settings.origin_geopoint.home_geo_point.altitude);
+        double north, east, down;
+        converter.geodetic2Ned(lla.latitude, lla.longitude, lla.altitude, &north, &east, &down);
+        msr::airlib::Vector3r ned(north, east, down);
         FVector target_location = zero_based_ned_transform.fromGlobalNed(ned);
 
         hit = params_.pawn->GetWorld()->LineTraceTestByChannel(params_.pawn->GetActorLocation(), target_location, ECC_Visibility, collision_params);

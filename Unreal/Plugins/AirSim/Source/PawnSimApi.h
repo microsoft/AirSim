@@ -10,6 +10,7 @@
 #include "common/Common.hpp"
 #include "common/common_utils/Signal.hpp"
 #include "common/CommonStructs.hpp"
+#include "common/GeodeticConverter.hpp"
 #include "PIPCamera.h"
 #include "physics/Kinematics.hpp"
 #include "NedTransform.h"

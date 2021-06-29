@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "common/CommonStructs.hpp"
+#include "common/GeodeticConverter.hpp"
 #include "api/WorldSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
 #include "Components/StaticMeshComponent.h"
