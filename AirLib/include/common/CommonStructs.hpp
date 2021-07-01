@@ -434,6 +434,14 @@ namespace airlib
             : camera_name(camera_name_val), vehicle_name(vehicle_name_val), external(external_val)
         {
         }
+
+        std::string to_string() const
+        {
+            return Utils::stringf("CameraDetails: camera_name=%s, vehicle_name=%s, external=%d",
+                                  camera_name.c_str(),
+                                  vehicle_name.c_str(),
+                                  external);
+        }
     };
 }
 } //namespace
