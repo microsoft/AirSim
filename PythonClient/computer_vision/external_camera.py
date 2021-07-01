@@ -1,9 +1,10 @@
+import setup_path
 import airsim
 import os
 import tempfile
 
 """
-A simple script to test all the camera APIs. Change the cmaera name and whether it's an external camera
+A simple script to test all the camera APIs. Change the camera name and whether it's an external camera
 
 Example Settings for external camera -
 
@@ -45,7 +46,7 @@ print(cam_info)
 airsim.wait_key('Press any key to get images')
 
 requests = [airsim.ImageRequest(CAM_NAME, airsim.ImageType.Scene),
-            airsim.ImageRequest(CAM_NAME, airsim.ImageType.DepthPlanner),
+            airsim.ImageRequest(CAM_NAME, airsim.ImageType.DepthPlanar),
             airsim.ImageRequest(CAM_NAME, airsim.ImageType.DepthVis),
             airsim.ImageRequest(CAM_NAME, airsim.ImageType.Segmentation),
             airsim.ImageRequest(CAM_NAME, airsim.ImageType.SurfaceNormals)]
