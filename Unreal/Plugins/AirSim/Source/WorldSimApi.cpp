@@ -793,11 +793,13 @@ std::vector<WorldSimApi::ImageCaptureBase::ImageResponse> WorldSimApi::getImages
     return responses;
 }
 
-std::vector<uint8_t> WorldSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
-                                           const std::string& vehicle_name, bool external) const
+std::vector<uint8_t> WorldSimApi::getImage(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) const
 {
-    std::vector<ImageCaptureBase::ImageRequest> request{ ImageCaptureBase::ImageRequest(camera_name, image_type) };
-    const auto& response = getImages(request);
+    std::vector<ImageCaptureBase::ImageRequest> request{
+        ImageCaptureBase::ImageRequest(camera_details.camera_name, image_type)
+    };
+
+    const auto& response = getImages(request, camera_details.vehicle_name, camera_details.external);
     if (response.size() > 0)
         return response.at(0).image_data_uint8;
     else

@@ -150,7 +150,7 @@ namespace airlib
         });
 
         pimpl_->server.bind("simGetImage", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name, bool external) -> vector<uint8_t> {
-            return getWorldSimApi()->getImage(camera_name, type, vehicle_name, external);
+            return getWorldSimApi()->getImage(type, CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simTestLineOfSightToPoint", [&](const RpcLibAdaptorsBase::GeoPoint& point, const std::string& vehicle_name) -> bool {

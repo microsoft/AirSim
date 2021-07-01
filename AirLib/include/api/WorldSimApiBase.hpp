@@ -97,9 +97,8 @@ namespace airlib
         virtual std::vector<float> getDistortionParams(const CameraDetails& camera_details) const = 0;
 
         virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,
-                                                                       const std::string& vehicle_name = "", bool external = false) const = 0;
-        virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type,
-                                              const std::string& vehicle_name = "", bool external = false) const = 0;
+                                                                       const std::string& vehicle_name, bool external) const = 0;
+        virtual std::vector<uint8_t> getImage(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) const = 0;
 
         virtual void addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details) = 0;
         virtual void setDetectionFilterRadius(ImageCaptureBase::ImageType image_type, float radius_cm, const CameraDetails& camera_details) = 0;
