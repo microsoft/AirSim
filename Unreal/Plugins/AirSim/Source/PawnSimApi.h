@@ -142,8 +142,8 @@ public: //Unreal specific methods
     APIPCamera* getCamera(const std::string& camera_name);
     int getCameraCount();
 
-    virtual bool testLineOfSightToPoint(GeoPoint& point) const;
-    virtual bool testLineOfSightBetweenPoints(GeoPoint& point1, GeoPoint& point2) const;
+    virtual bool testLineOfSightToPoint(const msr::airlib::GeoPoint& point) const;
+    virtual bool testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const;
     virtual void getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const;
 
     //if enabled, this would show some flares

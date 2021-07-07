@@ -371,14 +371,14 @@ __pragma(warning(disable : 4239))
         //End CinemAirSim
 
         // Minor TODO: consider msgpack magic for GeoPoint, so we can have one arg instead of three
-        bool RpcLibClientBase::simTestLineOfSightToPoint(double lat, double lon, float alt, const std::string& vehicle_name)
+        bool RpcLibClientBase::simTestLineOfSightToPoint(const msr::airlib::GeoPoint& point, const std::string& vehicle_name)
         {
-            return pimpl_->client.call("simTestLineOfSightToPoint", lat, lon, alt, vehicle_name).as<bool>();
+            return pimpl_->client.call("simTestLineOfSightToPoint", RpcLibAdaptorsBase::GeoPoint(point), vehicle_name).as<bool>();
         }
 
-        bool RpcLibClientBase::simTestLineOfSightBetweenPoints(double lat1, double lon1, float alt1, double lat2, double lon2, float alt2)
+        bool RpcLibClientBase::simTestLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2)
         {
-            return pimpl_->client.call("simTestLineOfSightBetweenPoints", lat1, lon1, alt1, lat2, lon2, alt2).as<bool>();
+            return pimpl_->client.call("simTestLineOfSightBetweenPoints", RpcLibAdaptorsBase::GeoPoint(point1), RpcLibAdaptorsBase::GeoPoint(point2)).as<bool>();
         }
 
         vector<msr::airlib::GeoPoint> RpcLibClientBase::simGetWorldExtents()

@@ -192,6 +192,87 @@ namespace airlib
                 throw std::invalid_argument("Rotor count other than 6 is not supported by this method!");
         }
 
+        static void initializeRotorOctoX(vector<RotorPose>& rotor_poses /* the result we are building */,
+                                         uint rotor_count /* must be 8 */,
+                                         real_T arm_lengths[],
+                                         real_T rotor_z /* z relative to center of gravity */)
+        {
+            Vector3r unit_z(0, 0, -1); //NED frame
+            if (rotor_count == 8) {
+                rotor_poses.clear();
+                /* Note: rotor_poses are built in this order: rotor 0 is CW
+              See OCTO X configuration on http://ardupilot.org/copter/docs/connect-escs-and-motors.html
+
+                     x-axis
+                  
+                 (4)  |  (0) 
+                      |
+            (6)       |       (2)
+            __________|__________  y-axis
+                      |
+            (5)       |       (7)
+                      |
+                 (1)  |  (3)
+
+            0 CW: 67.5 from +Y
+            1 CW: 67.5 from -Y 
+            2 CCW: 22.5 from +Y
+            3 CCW: 22.5 from -X
+            4 CCW: 22.5 from +X
+            5 CCW: 22.5 from -Y
+            6 CW: 67.5 from +X
+            7 CW: 67.5 from -X
+            
+            */
+
+                // vectors below are rotated according to NED left hand rule (so the vectors are rotated counter clockwise).
+                Quaternionr octo_rot22(AngleAxisr(M_PIf / 8, unit_z)); // 22.5 degrees
+                Quaternionr octo_rot67(AngleAxisr(3 * M_PIf / 8, unit_z)); // 67.5 degrees
+
+                rotor_poses.emplace_back(VectorMath::rotateVector(
+                                             Vector3r(0, arm_lengths[0], rotor_z), octo_rot67, true),
+                                         unit_z,
+                                         RotorTurningDirection::RotorTurningDirectionCW);
+
+                rotor_poses.emplace_back(VectorMath::rotateVector(
+                                             Vector3r(0, -arm_lengths[1], rotor_z), octo_rot67, true),
+                                         unit_z,
+                                         RotorTurningDirection::RotorTurningDirectionCW);
+
+                rotor_poses.emplace_back(VectorMath::rotateVector(
+                                             Vector3r(0, arm_lengths[2], rotor_z), octo_rot22, true),
+                                         unit_z,
+                                         RotorTurningDirection::RotorTurningDirectionCCW);
+
+                rotor_poses.emplace_back(VectorMath::rotateVector(
+                                             Vector3r(-arm_lengths[3], 0, rotor_z), octo_rot22, true),
+                                         unit_z,
+                                         RotorTurningDirection::RotorTurningDirectionCCW);
+
+                rotor_poses.emplace_back(VectorMath::rotateVector(
+                                             Vector3r(arm_lengths[4], 0, rotor_z), octo_rot22, true),
+                                         unit_z,
+                                         RotorTurningDirection::RotorTurningDirectionCCW);
+
+                rotor_poses.emplace_back(VectorMath::rotateVector(
+                                             Vector3r(0, -arm_lengths[5], rotor_z), octo_rot22, true),
+                                         unit_z,
+                                         RotorTurningDirection::RotorTurningDirectionCCW);
+
+                rotor_poses.emplace_back(VectorMath::rotateVector(
+                                             Vector3r(arm_lengths[6], 0, rotor_z), octo_rot67, true),
+                                         unit_z,
+                                         RotorTurningDirection::RotorTurningDirectionCW);
+
+                rotor_poses.emplace_back(VectorMath::rotateVector(
+                                             Vector3r(-arm_lengths[7], 0, rotor_z), octo_rot67, true),
+                                         unit_z,
+                                         RotorTurningDirection::RotorTurningDirectionCW);
+            }
+            else
+                throw std::invalid_argument("Rotor count other than 8 is not supported by this method!");
+        }
+
         /// Initialize the rotor_poses given the rotor_count, the arm lengths and the arm angles (relative to forwards vector).
         /// Also provide the direction you want to spin each rotor and the z-offset of the rotors relative to the center of gravity.
         static void initializeRotors(vector<RotorPose>& rotor_poses, uint rotor_count, real_T arm_lengths[], real_T arm_angles[], RotorTurningDirection rotor_directions[], real_T rotor_z /* z relative to center of gravity */)
@@ -289,6 +370,39 @@ namespace airlib
 
             //computer rotor poses
             initializeRotorHexX(params.rotor_poses, params.rotor_count, arm_lengths.data(), rotor_z);
+
+            //compute inertia matrix
+            computeInertiaMatrix(params.inertia, params.body_box, params.rotor_poses, box_mass, motor_assembly_weight);
+        }
+
+        void setupFrameGenericOcto(Params& params)
+        {
+            //set up arm lengths
+            //dimensions are for F450 frame: http://artofcircuits.com/product/quadcopter-frame-hj450-with-power-distribution
+            params.rotor_count = 8;
+            std::vector<real_T> arm_lengths(params.rotor_count, 0.2275f);
+
+            //set up mass
+            //this has to be between max_thrust*rotor_count/10 (2.5kg using default parameters in RotorParams.hpp) and (idle throttle percentage)*max_thrust*rotor_count/10 (1.25kg using default parameters and SimpleFlight)
+            //any value above the maximum would result in the motors not being able to lift the body even at max thrust,
+            //and any value below the minimum would cause the drone to fly upwards on idling throttle (50% of the max throttle if using SimpleFlight)
+
+            params.mass = 1.0f; //can be varied from 0.800 to 1.600
+            real_T motor_assembly_weight = 0.055f; //weight for MT2212 motor for F450 frame  0.148
+            real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
+
+            // using rotor_param default, but if you want to change any of the rotor_params, call calculateMaxThrust() to recompute the max_thrust
+            // given new thrust coefficients, motor max_rpm and propeller diameter.
+            params.rotor_params.calculateMaxThrust();
+
+            //set up dimensions of core body box or abdomen (not including arms).
+            params.body_box.x() = 0.180f;
+            params.body_box.y() = 0.11f;
+            params.body_box.z() = 0.040f;
+            real_T rotor_z = 2.5f / 100;
+
+            //computer rotor poses
+            initializeRotorOctoX(params.rotor_poses, params.rotor_count, arm_lengths.data(), rotor_z);
 
             //compute inertia matrix
             computeInertiaMatrix(params.inertia, params.body_box, params.rotor_poses, box_mass, motor_assembly_weight);

@@ -103,7 +103,7 @@ std::vector<PawnSimApi::DetectionInfo> PawnSimApi::getDetections(const std::stri
     return std::vector<DetectionInfo>();
 }
 
-bool PawnSimApi::testLineOfSightToPoint(msr::airlib::GeoPoint& point) const
+bool PawnSimApi::testLineOfSightToPoint(const msr::airlib::GeoPoint& point) const
 {
     unused(point);
 
@@ -114,7 +114,7 @@ bool PawnSimApi::testLineOfSightToPoint(msr::airlib::GeoPoint& point) const
     return false;
 }
 
-bool PawnSimApi::testLineOfSightBetweenPoints(msr::airlib::GeoPoint& point1, msr::airlib::GeoPoint& point2) const
+bool PawnSimApi::testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const
 {
     unused(point1);
     unused(point2);

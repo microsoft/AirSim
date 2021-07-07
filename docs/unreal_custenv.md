@@ -8,7 +8,7 @@ There is no `Epic Games Launcher` for Linux which means that if you need to crea
 
 ## Step by Step Instructions
 
-1. Make sure AirSim is built and Unreal 4.24 is installed as described in [build instructions](build_windows.md).
+1. Make sure AirSim is built and Unreal 4.25 is installed as described in [build instructions](build_windows.md).
 1. In `Epic Games Launcher` click the Learn tab then scroll down and find `Landscape Mountains`. Click the `Create Project` and download this content (~2GB download).
 
     ![current version](images/landscape_mountains.png)

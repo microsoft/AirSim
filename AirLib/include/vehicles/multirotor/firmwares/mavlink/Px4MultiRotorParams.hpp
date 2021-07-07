@@ -50,6 +50,9 @@ namespace airlib
             else if (connection_info_.model == "Hexacopter") {
                 setupFrameGenericHex(params);
             }
+            else if (connection_info_.model == "Octocopter") {
+                setupFrameGenericOcto(params);
+            }
             else //Generic
                 setupFrameGenericQuad(params);
         }
