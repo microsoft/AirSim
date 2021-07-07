@@ -96,6 +96,7 @@ void ASimModeWorldBase::pause(bool is_paused)
 
 void ASimModeWorldBase::continueForTime(double seconds)
 {
+    int64 start_frame_number = UKismetSystemLibrary::GetFrameCount();
     if (physics_world_->isPaused()) {
         physics_world_->pause(false);
         UGameplayStatics::SetGamePaused(this->GetWorld(), false);
@@ -103,6 +104,10 @@ void ASimModeWorldBase::continueForTime(double seconds)
 
     physics_world_->continueForTime(seconds);
     while (!physics_world_->isPaused()) {
+        continue;
+    }
+    // wait if no new frame is renderd
+    while (start_frame_number == UKismetSystemLibrary::GetFrameCount()) {
         continue;
     }
     UGameplayStatics::SetGamePaused(this->GetWorld(), true);

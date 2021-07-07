@@ -370,7 +370,7 @@ int PawnSimApi::getCameraCount()
     return cameras_.valsSize();
 }
 
-bool PawnSimApi::testLineOfSightToPoint(GeoPoint& lla) const
+bool PawnSimApi::testLineOfSightToPoint(const msr::airlib::GeoPoint& lla) const
 {
     bool hit;
 
@@ -413,7 +413,7 @@ bool PawnSimApi::testLineOfSightToPoint(GeoPoint& lla) const
     return !hit;
 }
 
-bool PawnSimApi::testLineOfSightBetweenPoints(GeoPoint& lla1, GeoPoint& lla2) const
+bool PawnSimApi::testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& lla1, const msr::airlib::GeoPoint& lla2) const
 {
     bool hit;
 

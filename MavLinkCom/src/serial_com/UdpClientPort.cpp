@@ -60,6 +60,8 @@ class UdpClientPort::UdpSocketImpl
     sockaddr_in remoteaddr;
     bool hasRemote = false;
     bool closed_ = true;
+    int retries_ = 0;
+    const int max_retries_ = 10;
 
 public:
     bool isClosed()
@@ -85,8 +87,8 @@ public:
 
         bool found = false;
         struct addrinfo* result = NULL;
-        std::string serviceName = std::to_string(port);
-        int rc = getaddrinfo(ipAddress.c_str(), serviceName.c_str(), &hints, &result);
+        std::string service_name = std::to_string(port);
+        int rc = getaddrinfo(ipAddress.c_str(), service_name.c_str(), &hints, &result);
         if (rc != 0) {
             auto msg = Utils::stringf("UdpClientPort getaddrinfo failed with error: %d\n", rc);
             throw std::runtime_error(msg);
@@ -124,6 +126,14 @@ public:
             remoteaddr.sin_port = 0;
         }
 
+        // This timeout is important as it allows the MavLinkConnection readPackets
+        // thread to iterate and notice the connection is now closed. This allows
+        // AirSim to shutdown properly when drone is not connected.
+        struct timeval tv;
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
+        setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<char*>(&tv), sizeof(tv));
+
         // bind socket to local address.
         socklen_t addrlen = sizeof(sockaddr_in);
         int rc = bind(sock, reinterpret_cast<sockaddr*>(&localaddr), addrlen);
@@ -152,25 +162,47 @@ public:
         return 0;
     }
 
+    int reconnect()
+    {
+        // try and reconnect
+        std::string local_host = inet_ntoa(localaddr.sin_addr);
+        std::string remote_host = remoteAddress();
+        int local_port = 0;
+        int remote_port = ntohs(remoteaddr.sin_port);
+        int rc = connect(local_host, local_port, remote_host, remote_port);
+        if (rc < 0) {
+            GetSocketError();
+        }
+        return 0;
+    }
+
     int checkerror()
     {
         int hr = GetSocketError();
+        bool retry = false;
 #ifdef _WIN32
         if (hr == WSAECONNRESET) {
-            close();
+            retry = true;
         }
 #else
         if (hr == ECONNREFUSED || hr == ENOTCONN) {
-            close();
+            retry = true;
         }
 #endif
+        if (retry) {
+            close();
+            retries_++;
+            if (retries_ < max_retries_) {
+                return reconnect();
+            }
+        }
         return hr;
     }
 
     // write to the serial port
     int write(const uint8_t* ptr, int count)
     {
-        if (remoteaddr.sin_port == 0) {
+        if (closed_ || remoteaddr.sin_port == 0) {
             // well if we are creating a server, we don't know when the client is going to connect, so skip this exception for now.
             //throw std::runtime_error("UdpClientPort cannot send until we've received something first so we can find out what port to send to.\n");
             return 0;
@@ -184,10 +216,12 @@ public:
 #endif
         if (hr == SOCKET_ERROR) {
             hr = checkerror();
-            // perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
-            remoteaddr.sin_port = 0;
-            auto msg = Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr);
-            throw std::runtime_error(msg);
+            if (hr != 0) {
+                // perhaps the client is gone, and may want to come back on a different port, in which case let's reset our remote port to allow that.
+                remoteaddr.sin_port = 0;
+                auto msg = Utils::stringf("UdpClientPort socket send failed with error: %d\n", hr);
+                throw std::runtime_error(msg);
+            }
         }
 
         return hr;
@@ -197,7 +231,7 @@ public:
     {
         sockaddr_in other;
 
-        int bytesRead = 0;
+        int bytes_read = 0;
         // try and receive something, up until port is closed anyway.
 
         while (!closed_) {
@@ -216,6 +250,9 @@ public:
                 else if (hr == WSAEINTR) {
                     // skip this, it is was interrupted, and if user is closing the port closed_ will be true.
                     continue;
+                }
+                else if (hr == WSAETIMEDOUT) {
+                    // skip this, the receive just timed out, no problem, we'll try again later.
                 }
 #else
                 if (hr == EINTR) {
