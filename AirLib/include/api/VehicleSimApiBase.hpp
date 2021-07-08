@@ -71,9 +71,6 @@ namespace airlib
         virtual std::string getCurrentFieldOfView() = 0;
         //end CinemAirSim
 
-        virtual bool testLineOfSightToPoint(GeoPoint& point) const = 0;
-        virtual bool testLineOfSightBetweenPoints(GeoPoint& point1, GeoPoint& point2) const = 0;
-        virtual void getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const = 0;
         virtual bool testLineOfSightToPoint(const GeoPoint& point) const = 0;
         virtual bool testLineOfSightBetweenPoints(const GeoPoint& point1, const GeoPoint& point2) const = 0;
         virtual void getWorldExtents(GeoPoint& min, GeoPoint& max) const = 0;

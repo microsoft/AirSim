@@ -233,11 +233,6 @@ namespace airlib
         });
         //end CinemAirSim
 
-        pimpl_->server.bind("simTestLineOfSightToPoint", [&](double lat, double lon, float alt, const std::string& vehicle_name) -> bool {
-            GeoPoint point(lat, lon, alt);
-
-            return getVehicleSimApi(vehicle_name)->testLineOfSightToPoint(point);
-
         pimpl_->server.bind("simTestLineOfSightToPoint", [&](const RpcLibAdaptorsBase::GeoPoint& point, const std::string& vehicle_name) -> bool {
             return getVehicleSimApi(vehicle_name)->testLineOfSightToPoint(point.to());
         });

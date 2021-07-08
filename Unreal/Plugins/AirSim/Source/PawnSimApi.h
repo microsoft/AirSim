@@ -77,7 +77,6 @@ public: //implementation of VehicleSimApiBase
     virtual const UnrealImageCapture* getImageCapture() const override;
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const override;
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const override;
-
     //CinemAirSim
     virtual std::vector<std::string> getPresetLensSettings() override;
     virtual std::string getLensSettings() override;
@@ -96,7 +95,6 @@ public: //implementation of VehicleSimApiBase
     virtual void enableFocusPlane(bool enable) override;
     virtual std::string getCurrentFieldOfView() override;
     //end CinemAirSim
-
     virtual Pose getPose() const override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
     virtual msr::airlib::CameraInfo getCameraInfo(const std::string& camera_name) const override;

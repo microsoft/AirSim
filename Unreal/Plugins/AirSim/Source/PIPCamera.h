@@ -9,12 +9,11 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/AirSimSettings.hpp"
 #include "NedTransform.h"
+#include "DetectionComponent.h"
 
 //CinemAirSim
 #include <CineCameraActor.h>
 #include <CineCameraComponent.h>
-
-#include "DetectionComponent.h"
 
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
@@ -22,7 +21,7 @@
 #include "PIPCamera.generated.h"
 
 UCLASS()
-class AIRSIM_API APIPCamera : public ACineCameraActor //CinemAirSim
+class AIRSIM_API APIPCamera : public ACineCameraActor
 {
     GENERATED_BODY()
 
@@ -93,7 +92,6 @@ private: //members
     UPROPERTY()
     TArray<UDetectionComponent*> detections_;
 
-    //CinemAirSim
     UPROPERTY()
     UCineCameraComponent* camera_;
     //TMap<int, UMaterialInstanceDynamic*> noise_materials_;
@@ -128,7 +126,5 @@ private: //methods
     void setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings);
     void setDistortionMaterial(int image_type, UObject* outer, FPostProcessSettings& obj);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
-
-    //CinemAirSim
     static void updateCameraSetting(UCineCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
 };

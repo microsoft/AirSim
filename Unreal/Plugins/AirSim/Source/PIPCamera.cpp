@@ -52,7 +52,6 @@ void APIPCamera::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
 
-    //CinemAirSim
     camera_ = UAirBlueprintLib::GetActorComponent<UCineCameraComponent>(this, TEXT("CameraComponent"));
     captures_.Init(nullptr, imageTypeCount());
     render_targets_.Init(nullptr, imageTypeCount());
@@ -338,13 +337,13 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
             }
             setDistortionMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings);
             setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
-            CopyCameraSettingsToSceneCapture(camera_, captures_[image_type]); //CinemAirSim
+            CopyCameraSettingsToSceneCapture(camera_, captures_[image_type]);
         }
         else { //camera component
             updateCameraSetting(camera_, capture_setting, ned_transform);
             setDistortionMaterial(image_type, camera_, camera_->PostProcessSettings);
             setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
-            CopyCameraSettingsToAllSceneCapture(camera_); //CinemAirSim
+            CopyCameraSettingsToAllSceneCapture(camera_);
         }
     }
 }
