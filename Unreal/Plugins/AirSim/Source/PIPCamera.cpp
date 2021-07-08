@@ -360,7 +360,7 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
 
             case ImageType::Segmentation:
             case ImageType::SurfaceNormals:
-                updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], true, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, true);
+                updateCaptureComponentSetting(captures_[image_type], render_targets_[image_type], false, image_type_to_pixel_format_map_[image_type], capture_setting, ned_transform, false);
                 break;
 
             default:

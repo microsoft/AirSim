@@ -1065,7 +1065,7 @@ namespace airlib
             capture_setting.motion_blur_amount = settings_json.getFloat("MotionBlurAmount", capture_setting.motion_blur_amount);
             capture_setting.image_type = settings_json.getInt("ImageType", 0);
             capture_setting.target_gamma = settings_json.getFloat("TargetGamma",
-                                                                  capture_setting.image_type == 0 ? CaptureSetting::kSceneTargetGamma : Utils::nan<float>());
+                                                                  capture_setting.image_type == 0 || capture_setting.image_type == 5 ? CaptureSetting::kSceneTargetGamma : Utils::nan<float>());
 
             std::string projection_mode = Utils::toLower(settings_json.getString("ProjectionMode", ""));
             if (projection_mode == "" || projection_mode == "perspective")
