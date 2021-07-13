@@ -32,7 +32,7 @@ You can download it by running
    $ ./download_blocks_env_binary.sh
 ```
 
-This currently downloads release `v1.3.1` Linux Blocks binary, modify it to fetch the binary required.
+Modify it to fetch the specific binary required.
 
 - Running an unreal binary inside a docker container
    The syntax is:
