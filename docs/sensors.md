@@ -15,7 +15,7 @@ Each sensor is associated with a integer enum specifying its sensor type.
 
 ## Default sensors
 
-If no sensors are specified in the `settings.json`, the the following sensors are enabled by default based on the sim mode.
+If no sensors are specified in the `settings.json`, then the following sensors are enabled by default based on the sim mode.
 
 ### Multirotor
 * Imu
