@@ -146,7 +146,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.100000001
       Style: Flat Squares
-      Topic: /airsim_node/front_left_custom/DepthPlanner/registered/points
+      Topic: /airsim_node/front_left_custom/DepthPlanar/registered/points
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true

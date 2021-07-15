@@ -1,4 +1,4 @@
-import setup_path 
+import setup_path
 import airsim
 
 import numpy as np
@@ -11,7 +11,6 @@ import cv2
 client = airsim.MultirotorClient()
 client.confirmConnection()
 client.enableApiControl(True)
-client.armDisarm(True)
 
 state = client.getMultirotorState()
 s = pprint.pformat(state)
@@ -34,6 +33,8 @@ s = pprint.pformat(gps_data)
 print("gps_data: %s" % s)
 
 airsim.wait_key('Press any key to takeoff')
+print("Taking off...")
+client.armDisarm(True)
 client.takeoffAsync().join()
 
 state = client.getMultirotorState()
@@ -82,8 +83,8 @@ for idx, response in enumerate(responses):
 
 airsim.wait_key('Press any key to reset to original state')
 
-client.armDisarm(False)
 client.reset()
+client.armDisarm(False)
 
 # that's enough fun for now. let's quit cleanly
 client.enableApiControl(False)

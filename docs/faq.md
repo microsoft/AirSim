@@ -62,14 +62,14 @@ It depends on how big your Unreal Environment is. The Blocks environment that co
 #### How do I report issues?
 It's a good idea to include your configuration like below. If you can also include logs, that could also expedite the investigation.
 
-````
+```
 Operating System: Windows 10 64bit
 CPU: Intel Core i7
 GPU: Nvidia GTX 1080
 RAM: 32 GB
 Flight Controller: Pixhawk v2
 Remote Control: Futaba
-````
+```
 
 If you have modified the default `~/Document/AirSim/settings.json`, please include your
 settings also.

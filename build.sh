@@ -26,7 +26,8 @@ done
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
 # check for rpclib
-if [ ! -d "./external/rpclib/rpclib-2.2.1" ]; then
+RPC_VERSION_FOLDER="rpclib-2.3.0"
+if [ ! -d "./external/rpclib/$RPC_VERSION_FOLDER" ]; then
     echo "ERROR: new version of AirSim requires newer rpclib."
     echo "please run setup.sh first and then run build.sh again."
     exit 1
@@ -108,7 +109,7 @@ cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
 
 # Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
 rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/$folder_name
-rsync -a --delete external/rpclib/rpclib-2.2.1/include AirLib/deps/rpclib
+rsync -a --delete external/rpclib/$RPC_VERSION_FOLDER/include AirLib/deps/rpclib
 rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 rm -rf Unreal/Plugins/AirSim/Source/AirLib/src

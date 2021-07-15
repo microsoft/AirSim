@@ -2,10 +2,12 @@
 
 #include "interfaces/CommonStructs.hpp"
 
-namespace simple_flight {
+namespace simple_flight
+{
 
-template<typename T>
-class StdPidIntegrator : public IPidIntegrator<T>  {
+template <typename T>
+class StdPidIntegrator : public IPidIntegrator<T>
+{
 public:
     StdPidIntegrator(const PidConfig<T>& config)
         : config_(config)
@@ -49,7 +51,7 @@ private:
     }
 
     //TODO: replace with std::clamp after moving to C++17
-    static T clip(T val, T min_value, T max_value) 
+    static T clip(T val, T min_value, T max_value)
     {
         return std::max(min_value, std::min(val, max_value));
     }

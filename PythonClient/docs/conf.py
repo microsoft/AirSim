@@ -17,6 +17,7 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 import sphinx_rtd_theme
+from airsim import __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -25,9 +26,9 @@ copyright = u'2020, Shital Shah, Ratnesh Madaan, Sai Vemprala, Nicholas Gyde'
 author = u'Shital Shah, Ratnesh Madaan, Sai Vemprala, Nicholas Gyde'
 
 # The short X.Y version
-version = u''
+version = __version__
 # The full version, including alpha/beta/rc tags
-release = u'1.2.8'
+release = version
 
 
 # -- General configuration ---------------------------------------------------

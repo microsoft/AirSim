@@ -15,7 +15,6 @@ using namespace mavlinkcom_impl;
 // {4d36e978-e325-11ce-bfc1-08002be10318}
 const GUID serialDeviceClass = { 0x4d36e978, 0xe325, 0x11ce, 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 };
 
-
 bool parseVidPid(std::wstring deviceId, int* vid, int* pid)
 {
     const wchar_t* ptr = deviceId.c_str();
@@ -29,7 +28,7 @@ bool parseVidPid(std::wstring deviceId, int* vid, int* pid)
     long c = wcstol(pos + 5, &numberEnd, 16);
     *vid = (int)c;
 
-    // now the PID 
+    // now the PID
     pos = wcsstr(numberEnd, L"PID_");
     if (pos == NULL) {
         return false;
@@ -58,7 +57,6 @@ void parseDisplayName(std::wstring displayName, SerialPortInfo* info)
     }
 }
 
-
 std::vector<SerialPortInfo> MavLinkConnection::findSerialPorts(int vid, int pid)
 {
     bool debug = false;
@@ -72,8 +70,7 @@ std::vector<SerialPortInfo> MavLinkConnection::findSerialPorts(int vid, int pid)
 
     SP_DEVINFO_DATA deviceInfo;
     deviceInfo.cbSize = sizeof(SP_DEVINFO_DATA);
-    for (int devIndex = 0; SetupDiEnumDeviceInfo(classInfo, devIndex, &deviceInfo); devIndex++)
-    {
+    for (int devIndex = 0; SetupDiEnumDeviceInfo(classInfo, devIndex, &deviceInfo); devIndex++) {
         ULONG size;
         HRESULT hr = CM_Get_Device_ID_Size(&size, deviceInfo.DevInst, 0);
         if (hr == CR_SUCCESS) {
@@ -87,8 +84,7 @@ std::vector<SerialPortInfo> MavLinkConnection::findSerialPorts(int vid, int pid)
 
             int dvid = 0, dpid = 0;
             if (parseVidPid(buffer, &dvid, &dpid) &&
-                ((dvid == vid && dpid == pid) || (vid == 0 && pid == 0)))
-            {
+                ((dvid == vid && dpid == pid) || (vid == 0 && pid == 0))) {
                 DWORD keyCount = 0;
                 if (!SetupDiGetDevicePropertyKeys(classInfo, &deviceInfo, NULL, 0, &keyCount, 0)) {
                     if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
@@ -104,8 +100,7 @@ std::vector<SerialPortInfo> MavLinkConnection::findSerialPorts(int vid, int pid)
 
                 if (SetupDiGetDevicePropertyKeys(classInfo, &deviceInfo, keyArray, keyCount, &keyCount, 0)) {
 
-                    for (DWORD j = 0; j < keyCount; j++)
-                    {
+                    for (DWORD j = 0; j < keyCount; j++) {
                         DEVPROPKEY* key = &keyArray[j];
                         bool isItemNameProperty = (key->fmtid == PKEY_ItemNameDisplay.fmtid && key->pid == PKEY_ItemNameDisplay.pid);
                         if (isItemNameProperty) {

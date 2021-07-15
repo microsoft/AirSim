@@ -1,19 +1,25 @@
 #include "ManualPoseController.h"
 #include "AirBlueprintLib.h"
 
-
 void UManualPoseController::initializeForPlay()
 {
     actor_ = nullptr;
     clearBindings();
 
-    left_mapping_ = FInputAxisKeyMapping("inputManualArrowLeft", EKeys::Left); right_mapping_ = FInputAxisKeyMapping("inputManualArrowRight", EKeys::Right); 
-    forward_mapping_= FInputAxisKeyMapping("inputManualForward", EKeys::Up); backward_mapping_ = FInputAxisKeyMapping("inputManualBackward", EKeys::Down);
-    up_mapping_ = FInputAxisKeyMapping("inputManualArrowUp", EKeys::PageUp); down_mapping_ = FInputAxisKeyMapping("inputManualArrowDown", EKeys::PageDown); 
-    left_yaw_mapping_ = FInputAxisKeyMapping("inputManualLeftYaw", EKeys::A); right_yaw_mapping_ = FInputAxisKeyMapping("inputManualRightYaw", EKeys::D); 
-    left_roll_mapping_ = FInputAxisKeyMapping("inputManualLefRoll", EKeys::Q); right_roll_mapping_ = FInputAxisKeyMapping("inputManualRightRoll", EKeys::E); 
-    up_pitch_mapping_ = FInputAxisKeyMapping("inputManualUpPitch", EKeys::W); down_pitch_mapping_ = FInputAxisKeyMapping("inputManualDownPitch", EKeys::S);
-
+    left_mapping_ = FInputAxisKeyMapping("inputManualArrowLeft", EKeys::Left);
+    right_mapping_ = FInputAxisKeyMapping("inputManualArrowRight", EKeys::Right);
+    forward_mapping_ = FInputAxisKeyMapping("inputManualForward", EKeys::Up);
+    backward_mapping_ = FInputAxisKeyMapping("inputManualBackward", EKeys::Down);
+    up_mapping_ = FInputAxisKeyMapping("inputManualArrowUp", EKeys::PageUp);
+    down_mapping_ = FInputAxisKeyMapping("inputManualArrowDown", EKeys::PageDown);
+    left_yaw_mapping_ = FInputAxisKeyMapping("inputManualLeftYaw", EKeys::A);
+    right_yaw_mapping_ = FInputAxisKeyMapping("inputManualRightYaw", EKeys::D);
+    left_roll_mapping_ = FInputAxisKeyMapping("inputManualLefRoll", EKeys::Q);
+    right_roll_mapping_ = FInputAxisKeyMapping("inputManualRightRoll", EKeys::E);
+    up_pitch_mapping_ = FInputAxisKeyMapping("inputManualUpPitch", EKeys::W);
+    down_pitch_mapping_ = FInputAxisKeyMapping("inputManualDownPitch", EKeys::S);
+    inc_speed_mapping_ = FInputAxisKeyMapping("inputManualSpeedIncrease", EKeys::LeftShift);
+    dec_speed_mapping_ = FInputAxisKeyMapping("inputManualSpeedDecrease", EKeys::LeftControl);
     input_positive_ = inpute_negative_ = last_velocity_ = FVector::ZeroVector;
 }
 
@@ -22,6 +28,7 @@ void UManualPoseController::clearBindings()
     left_binding_ = right_binding_ = up_binding_ = down_binding_ = nullptr;
     forward_binding_ = backward_binding_ = left_yaw_binding_ = up_pitch_binding_ = nullptr;
     right_yaw_binding_ = down_pitch_binding_ = left_roll_binding_ = right_roll_binding_ = nullptr;
+    inc_speed_binding_ = dec_speed_binding_ = nullptr;
 }
 
 void UManualPoseController::setActor(AActor* actor)
@@ -97,6 +104,10 @@ void UManualPoseController::removeInputBindings()
         UAirBlueprintLib::RemoveAxisBinding(up_pitch_mapping_, up_pitch_binding_, actor_);
     if (down_pitch_binding_)
         UAirBlueprintLib::RemoveAxisBinding(down_pitch_mapping_, down_pitch_binding_, actor_);
+    if (inc_speed_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(inc_speed_mapping_, inc_speed_binding_, actor_);
+    if (dec_speed_binding_)
+        UAirBlueprintLib::RemoveAxisBinding(dec_speed_mapping_, dec_speed_binding_, actor_);
 
     clearBindings();
 }
@@ -105,18 +116,20 @@ void UManualPoseController::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(actor_);
 
-    left_binding_ = & UAirBlueprintLib::BindAxisToKey(left_mapping_, actor_, this, &UManualPoseController::inputManualLeft);
-    right_binding_ = & UAirBlueprintLib::BindAxisToKey(right_mapping_, actor_, this, &UManualPoseController::inputManualRight);
-    forward_binding_ = & UAirBlueprintLib::BindAxisToKey(forward_mapping_, actor_, this, &UManualPoseController::inputManualForward);
-    backward_binding_ = & UAirBlueprintLib::BindAxisToKey(backward_mapping_, actor_, this, &UManualPoseController::inputManualBackward);
-    up_binding_ = & UAirBlueprintLib::BindAxisToKey(up_mapping_, actor_, this, &UManualPoseController::inputManualMoveUp);
-    down_binding_ = & UAirBlueprintLib::BindAxisToKey(down_mapping_, actor_, this, &UManualPoseController::inputManualDown);
-    left_yaw_binding_ = & UAirBlueprintLib::BindAxisToKey(left_yaw_mapping_, actor_, this, &UManualPoseController::inputManualLeftYaw);
-    right_yaw_binding_ = & UAirBlueprintLib::BindAxisToKey(right_yaw_mapping_, actor_, this, &UManualPoseController::inputManualRightYaw);
-    left_roll_binding_ = & UAirBlueprintLib::BindAxisToKey(left_roll_mapping_, actor_, this, &UManualPoseController::inputManualLeftRoll);
-    right_roll_binding_ = & UAirBlueprintLib::BindAxisToKey(right_roll_mapping_, actor_, this, &UManualPoseController::inputManualRightRoll);
-    up_pitch_binding_ = & UAirBlueprintLib::BindAxisToKey(up_pitch_mapping_, actor_, this, &UManualPoseController::inputManualUpPitch);    
-    down_pitch_binding_ = & UAirBlueprintLib::BindAxisToKey(down_pitch_mapping_, actor_, this, &UManualPoseController::inputManualDownPitch);
+    left_binding_ = &UAirBlueprintLib::BindAxisToKey(left_mapping_, actor_, this, &UManualPoseController::inputManualLeft);
+    right_binding_ = &UAirBlueprintLib::BindAxisToKey(right_mapping_, actor_, this, &UManualPoseController::inputManualRight);
+    forward_binding_ = &UAirBlueprintLib::BindAxisToKey(forward_mapping_, actor_, this, &UManualPoseController::inputManualForward);
+    backward_binding_ = &UAirBlueprintLib::BindAxisToKey(backward_mapping_, actor_, this, &UManualPoseController::inputManualBackward);
+    up_binding_ = &UAirBlueprintLib::BindAxisToKey(up_mapping_, actor_, this, &UManualPoseController::inputManualMoveUp);
+    down_binding_ = &UAirBlueprintLib::BindAxisToKey(down_mapping_, actor_, this, &UManualPoseController::inputManualDown);
+    left_yaw_binding_ = &UAirBlueprintLib::BindAxisToKey(left_yaw_mapping_, actor_, this, &UManualPoseController::inputManualLeftYaw);
+    right_yaw_binding_ = &UAirBlueprintLib::BindAxisToKey(right_yaw_mapping_, actor_, this, &UManualPoseController::inputManualRightYaw);
+    left_roll_binding_ = &UAirBlueprintLib::BindAxisToKey(left_roll_mapping_, actor_, this, &UManualPoseController::inputManualLeftRoll);
+    right_roll_binding_ = &UAirBlueprintLib::BindAxisToKey(right_roll_mapping_, actor_, this, &UManualPoseController::inputManualRightRoll);
+    up_pitch_binding_ = &UAirBlueprintLib::BindAxisToKey(up_pitch_mapping_, actor_, this, &UManualPoseController::inputManualUpPitch);
+    down_pitch_binding_ = &UAirBlueprintLib::BindAxisToKey(down_pitch_mapping_, actor_, this, &UManualPoseController::inputManualDownPitch);
+    inc_speed_binding_ = &UAirBlueprintLib::BindAxisToKey(inc_speed_mapping_, actor_, this, &UManualPoseController::inputManualSpeedIncrease);
+    dec_speed_binding_ = &UAirBlueprintLib::BindAxisToKey(dec_speed_mapping_, actor_, this, &UManualPoseController::inputManualSpeedDecrease);
 }
 
 void UManualPoseController::updateDeltaPosition(float dt)
@@ -124,13 +137,28 @@ void UManualPoseController::updateDeltaPosition(float dt)
     FVector input = input_positive_ - inpute_negative_;
     if (!FMath::IsNearlyZero(input.SizeSquared())) {
         if (FMath::IsNearlyZero(acceleration_))
-            last_velocity_ = input * 1000;
+            last_velocity_ = input * speed_scaler_;
         else
             last_velocity_ += input * (acceleration_ * dt);
         delta_position_ += actor_->GetActorRotation().RotateVector(last_velocity_ * dt);
-    } else {
+    }
+    else {
         delta_position_ = last_velocity_ = FVector::ZeroVector;
     }
+}
+
+void UManualPoseController::inputManualSpeedIncrease(float val)
+{
+    if (!FMath::IsNearlyEqual(val, 0.f))
+        speed_scaler_ += val * 20;
+}
+void UManualPoseController::inputManualSpeedDecrease(float val)
+{
+    if (!FMath::IsNearlyEqual(val, 0.f))
+        speed_scaler_ -= val * 20;
+
+    if (speed_scaler_ <= 0.0)
+        speed_scaler_ = 20.0;
 }
 
 void UManualPoseController::inputManualLeft(float val)
