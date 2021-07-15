@@ -53,8 +53,6 @@ namespace airlib
         virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const = 0;
 
         virtual bool testLineOfSightToPoint(const GeoPoint& point) const = 0;
-        virtual bool testLineOfSightBetweenPoints(const GeoPoint& point1, const GeoPoint& point2) const = 0;
-        virtual void getWorldExtents(GeoPoint& min, GeoPoint& max) const = 0;
 
         virtual Pose getPose() const = 0;
         virtual void setPose(const Pose& pose, bool ignore_collision) = 0;

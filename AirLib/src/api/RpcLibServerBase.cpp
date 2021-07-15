@@ -158,18 +158,15 @@ namespace airlib
         });
 
         pimpl_->server.bind("simTestLineOfSightBetweenPoints", [&](const RpcLibAdaptorsBase::GeoPoint& point1, const RpcLibAdaptorsBase::GeoPoint& point2) -> bool {
-            return getVehicleSimApi("")->testLineOfSightBetweenPoints(point1.to(), point2.to());
+            return getWorldSimApi()->testLineOfSightBetweenPoints(point1.to(), point2.to());
         });
 
         pimpl_->server.bind("simGetWorldExtents", [&]() -> vector<RpcLibAdaptorsBase::GeoPoint> {
-            msr::airlib::GeoPoint min;
-            msr::airlib::GeoPoint max;
-            getVehicleSimApi("")->getWorldExtents(min, max);
-            vector<RpcLibAdaptorsBase::GeoPoint> result;
-            result.push_back(RpcLibAdaptorsBase::GeoPoint(min));
-            result.push_back(RpcLibAdaptorsBase::GeoPoint(max));
+            std::vector<msr::airlib::GeoPoint> result = getWorldSimApi()->getWorldExtents(); // Returns vector with min, max
+            std::vector<RpcLibAdaptorsBase::GeoPoint> conv_result;
 
-            return result;
+            RpcLibAdaptorsBase::from(result, conv_result);
+            return conv_result;
         });
 
         pimpl_->server.bind("simGetMeshPositionVertexBuffers", [&]() -> vector<RpcLibAdaptorsBase::MeshPositionVertexBuffersResponse> {

@@ -10,6 +10,7 @@
 #include "common/Common.hpp"
 #include "common/common_utils/Signal.hpp"
 #include "common/CommonStructs.hpp"
+#include "common/GeodeticConverter.hpp"
 #include "PIPCamera.h"
 #include "physics/Kinematics.hpp"
 #include "NedTransform.h"
@@ -123,8 +124,6 @@ public: //Unreal specific methods
     int getCameraCount();
 
     virtual bool testLineOfSightToPoint(const msr::airlib::GeoPoint& point) const;
-    virtual bool testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const;
-    virtual void getWorldExtents(msr::airlib::GeoPoint& min, msr::airlib::GeoPoint& max) const;
 
     //if enabled, this would show some flares
     void displayCollisionEffect(FVector hit_location, const FHitResult& hit);

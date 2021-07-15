@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "common/CommonStructs.hpp"
+#include "common/GeodeticConverter.hpp"
 #include "api/WorldSimApiBase.hpp"
 #include "SimMode/SimModeBase.h"
 #include "Components/StaticMeshComponent.h"
@@ -73,6 +74,9 @@ public:
     virtual std::vector<std::string> listVehicles() const override;
 
     virtual std::string getSettingsString() const override;
+
+    virtual bool testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const override;
+    virtual std::vector<msr::airlib::GeoPoint> getWorldExtents() const override;
 
 private:
     AActor* createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh);
