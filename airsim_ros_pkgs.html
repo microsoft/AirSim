@@ -328,9 +328,16 @@ Verify installation by <code>gcc-8 --version</code></p>
 </ul>
 </li>
 <li>
+<p>Ubuntu 20.04</p>
+<ul>
+<li>Install <a href="https://wiki.ros.org/noetic/Installation/Ubuntu">ROS noetic</a></li>
+<li>Install tf2 sensor and mavros packages: <code>sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-tf2-geometry-msgs ros-melodic-mavros*</code></li>
+</ul>
+</li>
+<li>
 <p>Install <a href="https://catkin-tools.readthedocs.io/en/latest/installing.html">catkin_tools</a>
     <code>sudo apt-get install python-catkin-tools</code> or
-    <code>pip install catkin_tools</code></p>
+    <code>pip install catkin_tools</code>. If using Ubuntu 20.04 use <code>pip install "git+https://github.com/catkin/catkin_tools.git#egg=catkin_tools"</code></p>
 </li>
 </ul>
 <h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">#</a></h2>
