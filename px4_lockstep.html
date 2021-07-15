@@ -334,6 +334,30 @@ it takes AirSim to really process that update loop.</p>
 <p>There will be some side effects to <code>lockstep</code>, namely, slower update loops caused by running AirSim
 on an underpowered machine or from expensive sensors (like Lidar) will create some visible jerkiness
 in the simulated flight if you look at the updates on screen in realtime.</p>
+<h1 id="disabling-lockstep">Disabling LockStep<a class="headerlink" href="#disabling-lockstep" title="Permanent link">#</a></h1>
+<p>If you are running PX4 in cygwin, there is an <a href="https://github.com/microsoft/AirSim/issues/3415">open issue with 
+lockstep</a>. PX4 is configured to use lockstep by 
+default. To disable this feature, first <a href="https://docs.px4.io/master/en/simulation/#disable-lockstep-simulation">disable it in 
+PX4</a>:</p>
+<ol>
+<li>Navigate to <code>boards/px4/sitl/</code> in your local PX4 repository</li>
+<li>Edit <code>default.cmake</code> and find the following line:
+    <pre class="highlight"><code>set(ENABLE_LOCKSTEP_SCHEDULER yes)</code></pre></li>
+<li>Change this line to:
+    <pre class="highlight"><code>set(ENABLE_LOCKSTEP_SCHEDULER no)</code></pre></li>
+<li>Disable it in AirSim by setting <code>LockStep</code> to <code>false</code> and either removing any <code>"ClockType": 
+"SteppableClock"</code> setting or resetting <code>ClockType</code> back to default:
+    <pre class="highlight"><code>    {
+        ...
+        "ClockType": "",
+        "Vehicles": {
+            "PX4": {
+                "VehicleType": "PX4Multirotor",
+                "LockStep": false,
+                ...</code></pre></li>
+<li>Now you can run PX4 SITL as you normally would (<code>make px4_sitl_default none_iris</code>) and it will use 
+the host system time without waiting on AirSim.</li>
+</ol>
               
             </div>
           </div>
