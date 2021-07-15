@@ -155,6 +155,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#pointers">Pointers</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#null-checking">Null Checking</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#indentation">Indentation</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#this-is-too-short-ye">This is Too Short, ye?</a>
@@ -440,6 +442,8 @@ where performance is paramount, raw pointers can be used.  Raw pointers are also
 that only accept pointer types, for example, sockets API.  But we try to wrap those legacy interfaces as
 much as possible and avoid that style of programming from leaking into the larger code base.  </p>
 <p>Religiously check if you can use const everywhere, for example, <code>const float * const xP</code>. Avoid using prefix or suffix to indicate pointer types in variable names, i.e. use <code>my_obj</code> instead of <code>myobj_ptr</code> except in cases where it might make sense to differentiate variables better, for example, <code>int mynum = 5; int* mynum_ptr = mynum;</code></p>
+<h2 id="null-checking">Null Checking<a class="headerlink" href="#null-checking" title="Permanent link">#</a></h2>
+<p>In Unreal C++ code, when checking if a pointer is null, it is preferable to use <code>IsValid(ptr)</code>. In addition to checking for a null pointer, this function will also return whether a UObject is properly initialized. This is useful in situations where a UObject is in the process of being garbage collected but still set to a non-null value.</p>
 <h2 id="indentation">Indentation<a class="headerlink" href="#indentation" title="Permanent link">#</a></h2>
 <p>The C++ code base uses four spaces for indentation (not tabs).</p>
 <h2 id="this-is-too-short-ye">This is Too Short, ye?<a class="headerlink" href="#this-is-too-short-ye" title="Permanent link">#</a></h2>
