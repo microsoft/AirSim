@@ -43,7 +43,7 @@ View our [detailed documentation](https://microsoft.github.io/AirSim/) on all as
 
 If you have remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, you can use arrow keys to drive manually.
 
-[More details](https://microsoft.github.io/AirSim/remote_control/)
+[More details](https://microsoft.github.io/AirSim/remote_control)
 
 ![record screenshot](docs/images/AirSimDroneManual.gif)
 
@@ -58,7 +58,7 @@ These APIs are also available as part of a separate, independent cross-platform 
 
 Note that you can use [SimMode setting](https://microsoft.github.io/AirSim/settings#simmode) to specify the default vehicle or the new [ComputerVision mode](https://microsoft.github.io/AirSim/image_apis#computer-vision-mode-1) so you don't get prompted each time you start AirSim.
 
-[More details](https://microsoft.github.io/AirSim/apis/)
+[More details](https://microsoft.github.io/AirSim/apis)
 
 ### Gathering training data
 
@@ -72,7 +72,7 @@ A better way to generate training data exactly the way you want is by accessing 
 
 Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation.
 
-[More details](https://microsoft.github.io/AirSim/image_apis/)
+[More details](https://microsoft.github.io/AirSim/image_apis)
 
 ### Weather Effects
 
