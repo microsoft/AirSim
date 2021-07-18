@@ -1342,6 +1342,9 @@ sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& c
     cam_info_msg.header.frame_id = camera_name + "_optical";
     cam_info_msg.height = capture_setting.height;
     cam_info_msg.width = capture_setting.width;
+    //Assume Camera is ideal - zero distortion. TODO Add a way to specify non-ideal distortion params? Also, is this the case for all image types, or only scene?
+    cam_info_msg.distortion_model = "plumb_bob";
+    cam_info_msg.D = {0, 0, 0, 0, 0};
     float f_x = (capture_setting.width / 2.0) / tan(math_common::deg2rad(capture_setting.fov_degrees / 2.0));
     // todo focal length in Y direction should be same as X it seems. this can change in future a scene capture component which exactly correponds to a cine camera
     // float f_y = (capture_setting.height / 2.0) / tan(math_common::deg2rad(fov_degrees / 2.0));
