@@ -54,10 +54,10 @@ void PIDPositionController::initialize_ros()
     // ROS params
     double update_control_every_n_sec;
     nh_private_.getParam("update_control_every_n_sec", update_control_every_n_sec);
-    
+
     std::string vehicle_name;
 
-    while(vehicle_name == "") {
+    while (vehicle_name == "") {
         nh_private_.getParam("/vehicle_name", vehicle_name);
         ROS_INFO_STREAM("Waiting vehicle name");
     }
