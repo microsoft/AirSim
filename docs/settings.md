@@ -229,9 +229,9 @@ This setting specifies the latitude, longitude and altitude of the Player Start 
 This setting determines what is shown in each of 3 subwindows which are visible when you press 1,2,3 keys. 
 
 * `WindowID`: Can be 0 to 2
-* `CameraName` is any [available camera](image_apis.md#available_cameras) on the vehicle.
-* `ImageType` integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype).
-* `VehicleName` string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.
+* `CameraName`: is any [available camera](image_apis.md#available-cameras) on the vehicle or external camera
+* `ImageType`: integer value determines what kind of image gets shown according to [ImageType enum](image_apis.md#available-imagetype-values).
+* `VehicleName`: string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.
 * `External`: Set it to `true` if the camera is an external camera. If true, then the `VehicleName` parameter is ignored
 
 For example, for a single car vehicle, below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
@@ -264,6 +264,7 @@ The recording feature allows you to record data such as position, orientation, v
     * When `PixelsAsFloat` is true, image is saved as [pfm](pfm.md) file instead of png file.
     * `VehicleName` option allows you to specify separate cameras for individual vehicles. If the `Cameras` element isn't present, `Scene` image from the default camera of each vehicle will be recorded.
     * If you don't want to record any images and just the vehicle's physics data, then specify the `Cameras` element but leave it empty, like this: `"Cameras": []`
+    * External cameras are currently not supported in recording
 
 For example, the `Cameras` element below records scene & segmentation images for `Car1` & scene for `Car2`-
 
