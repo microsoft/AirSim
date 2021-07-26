@@ -490,6 +490,7 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) </code></pre>
 <p>For a more complete ready to run sample code please see <a href="https://github.com/Microsoft/AirSim/tree/master/HelloDrone//main.cpp">sample code in HelloDrone project</a> for multirotors or <a href="https://github.com/Microsoft/AirSim/tree/master/HelloCar//main.cpp">HelloCar project</a>. </p>
 <p>See also <a href="https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp">other example code</a> that generates specified number of stereo images along with ground truth depth and disparity and saving it to <a href="../pfm/">pfm format</a>.</p>
 <h2 id="available-cameras">Available Cameras<a class="headerlink" href="#available-cameras" title="Permanent link">#</a></h2>
+<p>These are the default cameras already available in each vehicle. Apart from these, you can add more cameras to the vehicles and external cameras which are not attached to any vehicle through the <a href="../settings/">settings</a>.</p>
 <h3 id="car">Car<a class="headerlink" href="#car" title="Permanent link">#</a></h3>
 <p>The cameras on car can be accessed by following names in API calls: <code>front_center</code>, <code>front_right</code>, <code>front_left</code>, <code>fpv</code> and <code>back_center</code>. Here FPV camera is driver's head position in the car.</p>
 <h3 id="multirotor">Multirotor<a class="headerlink" href="#multirotor" title="Permanent link">#</a></h3>
@@ -514,6 +515,11 @@ airsim.write_png(os.path.normpath(filename + '.png'), img_rgb) </code></pre>
 <p>The <code>simSetCameraPose</code> sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy <code>airsim.to_quaternion()</code> function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:
 <pre class="highlight"><code>camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.261799, 0, 0))  #PRY in radians
 client.simSetCameraPose(0, camera_pose);</code></pre></p>
+<ul>
+<li><code>simSetCameraFov</code> allows changing the Field-of-View of the camera at runtime.</li>
+<li><code>simSetDistortionParams</code>, <code>simGetDistortionParams</code> allow setting and fetching the distortion parameters K1, K2, K3, P1, P2</li>
+</ul>
+<p>All Camera APIs take in 3 common parameters apart from the API-specific ones, <code>camera_name</code>(str), <code>vehicle_name</code>(str) and <code>external</code>(bool, to indicate <a href="../settings/#external-cameras">External Camera</a>). Camera and vehicle name is used to get the specific camera, if <code>external</code> is set to <code>true</code>, then the vehicle name is ignored. Also see <a href="https://github.com/microsoft/AirSim/blob/master/PythonClient/computer_vision/external_camera.py">external_camera.py</a> for example usage of these APIs.</p>
 <h3 id="gimbal">Gimbal<a class="headerlink" href="#gimbal" title="Permanent link">#</a></h3>
 <p>You can set stabilization for pitch, roll or yaw for any camera <a href="../settings/#gimbal">using settings</a>.</p>
 <p>Please see <a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision/cv_mode.py">example usage</a>.</p>

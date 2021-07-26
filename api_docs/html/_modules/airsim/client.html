@@ -377,7 +377,7 @@
     <span class="c1"># camera control</span>
     <span class="c1"># simGetImage returns compressed png in array of bytes</span>
     <span class="c1"># image_type uses one of the ImageType members</span>
-<div class="viewcode-block" id="VehicleClient.simGetImage"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetImage">[docs]</a>    <span class="k">def</span> <span class="nf">simGetImage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simGetImage"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetImage">[docs]</a>    <span class="k">def</span> <span class="nf">simGetImage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a single image</span>
 
@@ -389,6 +389,7 @@
 <span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
 <span class="sd">            image_type (ImageType): Type of image required</span>
 <span class="sd">            vehicle_name (str, optional): Name of the vehicle with the camera</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Binary string literal of compressed png image</span>
@@ -397,7 +398,7 @@
         <span class="n">camera_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">)</span>
 
         <span class="c1"># because this method returns std::vector&lt;uint8&gt;, msgpack decides to encode it as a string unfortunately.</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetImage&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetImage&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">result</span></div>
@@ -405,7 +406,7 @@
     <span class="c1"># camera control</span>
     <span class="c1"># simGetImage returns compressed png in array of bytes</span>
     <span class="c1"># image_type uses one of the ImageType members</span>
-<div class="viewcode-block" id="VehicleClient.simGetImages"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetImages">[docs]</a>    <span class="k">def</span> <span class="nf">simGetImages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simGetImages"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetImages">[docs]</a>    <span class="k">def</span> <span class="nf">simGetImages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get multiple images</span>
 
@@ -414,11 +415,12 @@
 <span class="sd">        Args:</span>
 <span class="sd">            requests (list[ImageRequest]): Images required</span>
 <span class="sd">            vehicle_name (str, optional): Name of vehicle associated with the camera</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            list[ImageResponse]:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">responses_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetImages&#39;</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="n">responses_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetImages&#39;</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">ImageResponse</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">response_raw</span><span class="p">)</span> <span class="k">for</span> <span class="n">response_raw</span> <span class="ow">in</span> <span class="n">responses_raw</span><span class="p">]</span></div>
         
 <div class="viewcode-block" id="VehicleClient.simTestLineOfSightToPoint"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simTestLineOfSightToPoint">[docs]</a>    <span class="k">def</span> <span class="nf">simTestLineOfSightToPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
@@ -665,7 +667,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetSegmentationObjectID&#39;</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simAddDetectionFilterMeshName"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simAddDetectionFilterMeshName">[docs]</a>    <span class="k">def</span> <span class="nf">simAddDetectionFilterMeshName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simAddDetectionFilterMeshName"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simAddDetectionFilterMeshName">[docs]</a>    <span class="k">def</span> <span class="nf">simAddDetectionFilterMeshName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add mesh name to detect in wild card format</span>
 
@@ -676,11 +678,12 @@
 <span class="sd">            image_type (ImageType): Type of image required</span>
 <span class="sd">            mesh_name (str): mesh name in wild card format</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simAddDetectionFilterMeshName&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simAddDetectionFilterMeshName&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
     
-<div class="viewcode-block" id="VehicleClient.simSetDetectionFilterRadius"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDetectionFilterRadius">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDetectionFilterRadius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">radius_cm</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simSetDetectionFilterRadius"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDetectionFilterRadius">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDetectionFilterRadius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">radius_cm</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set detection radius for all cameras</span>
 
@@ -689,10 +692,11 @@
 <span class="sd">            image_type (ImageType): Type of image required</span>
 <span class="sd">            radius_cm (int): Radius in [cm]</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetDetectionFilterRadius&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">radius_cm</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetDetectionFilterRadius&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">radius_cm</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
      
-<div class="viewcode-block" id="VehicleClient.simClearDetectionMeshNames"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simClearDetectionMeshNames">[docs]</a>    <span class="k">def</span> <span class="nf">simClearDetectionMeshNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simClearDetectionMeshNames"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simClearDetectionMeshNames">[docs]</a>    <span class="k">def</span> <span class="nf">simClearDetectionMeshNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear all mesh names from detection filter</span>
 
@@ -700,11 +704,12 @@
 <span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
 <span class="sd">            image_type (ImageType): Type of image required</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simClearDetectionMeshNames&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simClearDetectionMeshNames&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simGetDetections"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetDetections">[docs]</a>    <span class="k">def</span> <span class="nf">simGetDetections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simGetDetections"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetDetections">[docs]</a>    <span class="k">def</span> <span class="nf">simGetDetections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get current detections</span>
 
@@ -712,11 +717,12 @@
 <span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
 <span class="sd">            image_type (ImageType): Type of image required</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            DetectionInfo array</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">responses_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetDetections&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span>
+        <span class="n">responses_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetDetections&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">DetectionInfo</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">response_raw</span><span class="p">)</span> <span class="k">for</span> <span class="n">response_raw</span> <span class="ow">in</span> <span class="n">responses_raw</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="VehicleClient.simPrintLogMessage"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simPrintLogMessage">[docs]</a>    <span class="k">def</span> <span class="nf">simPrintLogMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">message_param</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">severity</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
@@ -736,35 +742,37 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simPrintLogMessage&#39;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">message_param</span><span class="p">,</span> <span class="n">severity</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simGetCameraInfo"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetCameraInfo">[docs]</a>    <span class="k">def</span> <span class="nf">simGetCameraInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simGetCameraInfo"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetCameraInfo">[docs]</a>    <span class="k">def</span> <span class="nf">simGetCameraInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get details about the camera</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            CameraInfo:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: below str() conversion is only needed for legacy reason and should be removed in future</span>
-        <span class="k">return</span> <span class="n">CameraInfo</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetCameraInfo&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">vehicle_name</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">CameraInfo</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetCameraInfo&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simGetDistortionParams"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetDistortionParams">[docs]</a>    <span class="k">def</span> <span class="nf">simGetDistortionParams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simGetDistortionParams"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetDistortionParams">[docs]</a>    <span class="k">def</span> <span class="nf">simGetDistortionParams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get camera distortion parameters</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
     
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetDistortionParams&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetDistortionParams&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simSetDistortionParams"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDistortionParams">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDistortionParams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">distortion_params</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simSetDistortionParams"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDistortionParams">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDistortionParams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">distortion_params</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set camera distortion parameters</span>
 
@@ -773,12 +781,13 @@
 <span class="sd">            distortion_params (dict): Dictionary of distortion param names and corresponding values</span>
 <span class="sd">                                        {&quot;K1&quot;: 0.0, &quot;K2&quot;: 0.0, &quot;K3&quot;: 0.0, &quot;P1&quot;: 0.0, &quot;P2&quot;: 0.0}</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">distortion_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetDistortionParam&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simSetDistortionParam</span><span class="p">(</span><span class="n">camera_name</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simSetDistortionParam"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDistortionParam">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDistortionParam</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simSetDistortionParam"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDistortionParam">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDistortionParam</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set single camera distortion parameter</span>
 
@@ -787,10 +796,11 @@
 <span class="sd">            param_name (str): Name of distortion parameter</span>
 <span class="sd">            value (float): Value of distortion parameter</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle which the camera is associated with</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetDistortionParam&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetDistortionParam&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simSetCameraPose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetCameraPose">[docs]</a>    <span class="k">def</span> <span class="nf">simSetCameraPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simSetCameraPose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetCameraPose">[docs]</a>    <span class="k">def</span> <span class="nf">simSetCameraPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        - Control the pose of a selected camera</span>
 
@@ -798,28 +808,12 @@
 <span class="sd">            camera_name (str): Name of the camera to be controlled</span>
 <span class="sd">            pose (Pose): Pose representing the desired position and orientation of the camera</span>
 <span class="sd">            vehicle_name (str, optional): Name of vehicle which the camera corresponds to</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: below str() conversion is only needed for legacy reason and should be removed in future</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetCameraPose&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">pose</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetCameraPose&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">pose</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simSetCameraOrientation"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetCameraOrientation">[docs]</a>    <span class="k">def</span> <span class="nf">simSetCameraOrientation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        .. note::</span>
-
-<span class="sd">            This API has been upgraded to `simSetCameraPose`</span>
-
-<span class="sd">        - Control the Orientation of a selected camera</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            camera_name (str): Name of the camera to be controlled</span>
-<span class="sd">            orientation (Quaternionr): Quaternion representing the desired orientation of the camera</span>
-<span class="sd">            vehicle_name (str, optional): Name of vehicle which the camera corresponds to</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code.&quot;</span><span class="p">)</span>
-        <span class="n">pose</span> <span class="o">=</span> <span class="n">Pose</span><span class="p">(</span><span class="n">orientation_val</span><span class="o">=</span><span class="n">orientation</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">simSetCameraPose</span><span class="p">(</span><span class="n">camera_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="VehicleClient.simSetCameraFov"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetCameraFov">[docs]</a>    <span class="k">def</span> <span class="nf">simSetCameraFov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">fov_degrees</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simSetCameraFov"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetCameraFov">[docs]</a>    <span class="k">def</span> <span class="nf">simSetCameraFov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">fov_degrees</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        - Control the field of view of a selected camera</span>
 
@@ -827,9 +821,10 @@
 <span class="sd">            camera_name (str): Name of the camera to be controlled</span>
 <span class="sd">            fov_degrees (float): Value of field of view in degrees</span>
 <span class="sd">            vehicle_name (str, optional): Name of vehicle which the camera corresponds to</span>
+<span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: below str() conversion is only needed for legacy reason and should be removed in future</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetCameraFov&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">fov_degrees</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetCameraFov&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">fov_degrees</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="VehicleClient.simGetGroundTruthKinematics"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetGroundTruthKinematics">[docs]</a>    <span class="k">def</span> <span class="nf">simGetGroundTruthKinematics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

@@ -138,6 +138,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#external-cameras">External Cameras</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#vehicles-settings">Vehicles Settings</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#common-vehicle-setting">Common Vehicle Setting</a>
@@ -507,9 +509,9 @@ For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-bina
     "UpdateIntervalSecs": 60
   },
   "SubWindows": [
-    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "", "Visible": false},
-    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "", "Visible": false},
-    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "", "Visible": false}
+    {"WindowID": 0, "CameraName": "0", "ImageType": 3, "VehicleName": "", "Visible": false, "External": false},
+    {"WindowID": 1, "CameraName": "0", "ImageType": 5, "VehicleName": "", "Visible": false, "External": false},
+    {"WindowID": 2, "CameraName": "0", "ImageType": 0, "VehicleName": "", "Visible": false, "External": false}
   ],
   "SegmentationSettings": {
     "InitMethod": "",
@@ -563,6 +565,14 @@ For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-bina
       "X": NaN, "Y": NaN, "Z": NaN,
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN
     }
+  },
+  "ExternalCameras": {
+    "FixedCamera1": {
+        // same elements as in CameraDefaults above
+    },
+    "FixedCamera2": {
+        // same elements as in CameraDefaults above
+    }
   }
 }</code></pre>
 <h2 id="simmode">SimMode<a class="headerlink" href="#simmode" title="Permanent link">#</a></h2>
@@ -587,7 +597,14 @@ For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-bina
 <h2 id="origingeopoint">OriginGeopoint<a class="headerlink" href="#origingeopoint" title="Permanent link">#</a></h2>
 <p>This setting specifies the latitude, longitude and altitude of the Player Start component placed in the Unreal environment. The vehicle's home point is computed using this transformation. Note that all coordinates exposed via APIs are using NED system in SI units which means each vehicle starts at (0, 0, 0) in NED system. Time of Day settings are computed for geographical coordinates specified in <code>OriginGeopoint</code>.</p>
 <h2 id="subwindows">SubWindows<a class="headerlink" href="#subwindows" title="Permanent link">#</a></h2>
-<p>This setting determines what is shown in each of 3 subwindows which are visible when you press 0,1,2 keys. The <code>WindowID</code> can be 0 to 2, <code>CameraName</code> is any <a href="../image_apis/#available_cameras">available camera</a> on the vehicle. <code>ImageType</code> integer value determines what kind of image gets shown according to <a href="../image_apis/#available-imagetype">ImageType enum</a>. <code>VehicleName</code> string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.</p>
+<p>This setting determines what is shown in each of 3 subwindows which are visible when you press 1,2,3 keys. </p>
+<ul>
+<li><code>WindowID</code>: Can be 0 to 2</li>
+<li><code>CameraName</code>: is any <a href="../image_apis/#available-cameras">available camera</a> on the vehicle or external camera</li>
+<li><code>ImageType</code>: integer value determines what kind of image gets shown according to <a href="../image_apis/#available-imagetype-values">ImageType enum</a>.</li>
+<li><code>VehicleName</code>: string allows you to specify the vehicle to use the camera from, used when multiple vehicles are specified in the settings. First vehicle's camera will be used if there are any mistakes such as incorrect vehicle name, or only a single vehicle.</li>
+<li><code>External</code>: Set it to <code>true</code> if the camera is an external camera. If true, then the <code>VehicleName</code> parameter is ignored</li>
+</ul>
 <p>For example, for a single car vehicle, below shows driver view, front bumper view and rear view as scene, depth and surface normals respectively.
 <pre class="highlight"><code class="language-json">  "SubWindows": [
     {"WindowID": 0, "ImageType": 0, "CameraName": "3", "Visible": true},
@@ -611,6 +628,7 @@ For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-bina
 <li>When <code>PixelsAsFloat</code> is true, image is saved as <a href="../pfm/">pfm</a> file instead of png file.</li>
 <li><code>VehicleName</code> option allows you to specify separate cameras for individual vehicles. If the <code>Cameras</code> element isn't present, <code>Scene</code> image from the default camera of each vehicle will be recorded.</li>
 <li>If you don't want to record any images and just the vehicle's physics data, then specify the <code>Cameras</code> element but leave it empty, like this: <code>"Cameras": []</code></li>
+<li>External cameras are currently not supported in recording</li>
 </ul>
 </li>
 </ul>
@@ -669,6 +687,8 @@ For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-bina
 * <code>HorzDistortionStrength</code>: This determines how large is the distortion.</p>
 <h3 id="gimbal">Gimbal<a class="headerlink" href="#gimbal" title="Permanent link">#</a></h3>
 <p>The <code>Gimbal</code> element allows to freeze camera orientation for pitch, roll and/or yaw. This setting is ignored unless <code>ImageType</code> is -1. The <code>Stabilization</code> is defaulted to 0 meaning no gimbal i.e. camera orientation changes with body orientation on all axis. The value of 1 means full stabilization. The value between 0 to 1 acts as a weight for fixed angles specified (in degrees, in world-frame) in <code>Pitch</code>, <code>Roll</code> and <code>Yaw</code> elements and orientation of the vehicle body. When any of the angles is omitted from json or set to NaN, that angle is not stabilized (i.e. it moves along with vehicle body).</p>
+<h2 id="external-cameras">External Cameras<a class="headerlink" href="#external-cameras" title="Permanent link">#</a></h2>
+<p>This element allows specifying cameras which are separate from the cameras attached to the vehicle, such as a CCTV camera. These are fixed cameras, and don't move along with the vehicles. The key in the element is the name of the camera, and the value i.e. settings are the same as <code>CameraDefaults</code> described above. All the camera APIs work with external cameras, including capturing images, changing the pose, etc by passing the parameter <code>external=True</code> in the API call.</p>
 <h2 id="vehicles-settings">Vehicles Settings<a class="headerlink" href="#vehicles-settings" title="Permanent link">#</a></h2>
 <p>Each simulation mode will go through the list of vehicles specified in this setting and create the ones that has <code>"AutoCreate": true</code>. Each vehicle specified in this setting has key which becomes the name of the vehicle. If <code>"Vehicles"</code> element is missing then this list is populated with default car named "PhysXCar" and default multirotor named "SimpleFlight".</p>
 <h3 id="common-vehicle-setting">Common Vehicle Setting<a class="headerlink" href="#common-vehicle-setting" title="Permanent link">#</a></h3>

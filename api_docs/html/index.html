@@ -458,7 +458,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simAddDetectionFilterMeshName">
-<span class="sig-name descname"><span class="pre">simAddDetectionFilterMeshName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simAddDetectionFilterMeshName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simAddDetectionFilterMeshName" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simAddDetectionFilterMeshName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simAddDetectionFilterMeshName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simAddDetectionFilterMeshName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add mesh name to detect in wild card format</p>
 <p>For example: simAddDetectionFilterMeshName(“Car_*”) will detect all instance named “Car_*”</p>
 <dl class="field-list simple">
@@ -468,6 +468,7 @@
 <li><p><strong>image_type</strong> (<a class="reference internal" href="#airsim.types.ImageType" title="airsim.types.ImageType"><em>ImageType</em></a>) – Type of image required</p></li>
 <li><p><strong>mesh_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – mesh name in wild card format</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle which the camera is associated with</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 </dl>
@@ -497,7 +498,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simClearDetectionMeshNames">
-<span class="sig-name descname"><span class="pre">simClearDetectionMeshNames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simClearDetectionMeshNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simClearDetectionMeshNames" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simClearDetectionMeshNames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simClearDetectionMeshNames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simClearDetectionMeshNames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear all mesh names from detection filter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -505,6 +506,7 @@
 <li><p><strong>camera_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</p></li>
 <li><p><strong>image_type</strong> (<a class="reference internal" href="#airsim.types.ImageType" title="airsim.types.ImageType"><em>ImageType</em></a>) – Type of image required</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle which the camera is associated with</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 </dl>
@@ -592,13 +594,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simGetCameraInfo">
-<span class="sig-name descname"><span class="pre">simGetCameraInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetCameraInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetCameraInfo" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simGetCameraInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetCameraInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetCameraInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get details about the camera</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>camera_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle which the camera is associated with</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -628,7 +631,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simGetDetections">
-<span class="sig-name descname"><span class="pre">simGetDetections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetDetections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetDetections" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simGetDetections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetDetections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetDetections" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get current detections</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -636,6 +639,7 @@
 <li><p><strong>camera_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</p></li>
 <li><p><strong>image_type</strong> (<a class="reference internal" href="#airsim.types.ImageType" title="airsim.types.ImageType"><em>ImageType</em></a>) – Type of image required</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle which the camera is associated with</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -646,13 +650,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simGetDistortionParams">
-<span class="sig-name descname"><span class="pre">simGetDistortionParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetDistortionParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetDistortionParams" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simGetDistortionParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetDistortionParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetDistortionParams" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get camera distortion parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>camera_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle which the camera is associated with</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -700,7 +705,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simGetImage">
-<span class="sig-name descname"><span class="pre">simGetImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetImage" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simGetImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetImage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a single image</p>
 <p>Returns bytes of png format image which can be dumped into abinary file to create .png image
 <cite>string_to_uint8_array()</cite> can be used to convert into Numpy unit8 array
@@ -711,6 +716,7 @@ See <a class="reference external" href="https://microsoft.github.io/AirSim/image
 <li><p><strong>camera_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used</p></li>
 <li><p><strong>image_type</strong> (<a class="reference internal" href="#airsim.types.ImageType" title="airsim.types.ImageType"><em>ImageType</em></a>) – Type of image required</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of the vehicle with the camera</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -721,7 +727,7 @@ See <a class="reference external" href="https://microsoft.github.io/AirSim/image
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simGetImages">
-<span class="sig-name descname"><span class="pre">simGetImages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetImages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetImages" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simGetImages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simGetImages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simGetImages" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get multiple images</p>
 <p>See <a class="reference external" href="https://microsoft.github.io/AirSim/image_apis/">https://microsoft.github.io/AirSim/image_apis/</a> for details and examples</p>
 <dl class="field-list simple">
@@ -729,6 +735,7 @@ See <a class="reference external" href="https://microsoft.github.io/AirSim/image
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>requests</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="#airsim.types.ImageRequest" title="airsim.types.ImageRequest"><em>ImageRequest</em></a><em>]</em>) – Images required</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of vehicle associated with the camera</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1071,7 +1078,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetCameraFov">
-<span class="sig-name descname"><span class="pre">simSetCameraFov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fov_degrees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetCameraFov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetCameraFov" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simSetCameraFov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fov_degrees</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetCameraFov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetCameraFov" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Control the field of view of a selected camera</p></li>
 </ul>
@@ -1081,27 +1088,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 <li><p><strong>camera_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the camera to be controlled</p></li>
 <li><p><strong>fov_degrees</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Value of field of view in degrees</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of vehicle which the camera corresponds to</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetCameraOrientation">
-<span class="sig-name descname"><span class="pre">simSetCameraOrientation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetCameraOrientation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetCameraOrientation" title="Permalink to this definition">¶</a></dt>
-<dd><div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This API has been upgraded to <cite>simSetCameraPose</cite></p>
-</div>
-<ul class="simple">
-<li><p>Control the Orientation of a selected camera</p></li>
-</ul>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>camera_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the camera to be controlled</p></li>
-<li><p><strong>orientation</strong> (<a class="reference internal" href="#airsim.types.Quaternionr" title="airsim.types.Quaternionr"><em>Quaternionr</em></a>) – Quaternion representing the desired orientation of the camera</p></li>
-<li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of vehicle which the camera corresponds to</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 </dl>
@@ -1109,7 +1096,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetCameraPose">
-<span class="sig-name descname"><span class="pre">simSetCameraPose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetCameraPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetCameraPose" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simSetCameraPose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetCameraPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetCameraPose" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Control the pose of a selected camera</p></li>
 </ul>
@@ -1119,6 +1106,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 <li><p><strong>camera_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the camera to be controlled</p></li>
 <li><p><strong>pose</strong> (<a class="reference internal" href="#airsim.types.Pose" title="airsim.types.Pose"><em>Pose</em></a>) – Pose representing the desired position and orientation of the camera</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of vehicle which the camera corresponds to</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 </dl>
@@ -1126,7 +1114,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetDetectionFilterRadius">
-<span class="sig-name descname"><span class="pre">simSetDetectionFilterRadius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_cm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetDetectionFilterRadius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetDetectionFilterRadius" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simSetDetectionFilterRadius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius_cm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetDetectionFilterRadius"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetDetectionFilterRadius" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set detection radius for all cameras</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1135,6 +1123,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 <li><p><strong>image_type</strong> (<a class="reference internal" href="#airsim.types.ImageType" title="airsim.types.ImageType"><em>ImageType</em></a>) – Type of image required</p></li>
 <li><p><strong>radius_cm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Radius in [cm]</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle which the camera is associated with</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 </dl>
@@ -1142,7 +1131,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetDistortionParam">
-<span class="sig-name descname"><span class="pre">simSetDistortionParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetDistortionParam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetDistortionParam" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simSetDistortionParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetDistortionParam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetDistortionParam" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set single camera distortion parameter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1151,6 +1140,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 <li><p><strong>param_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of distortion parameter</p></li>
 <li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Value of distortion parameter</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle which the camera is associated with</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 </dl>
@@ -1158,7 +1148,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetDistortionParams">
-<span class="sig-name descname"><span class="pre">simSetDistortionParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distortion_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetDistortionParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetDistortionParams" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simSetDistortionParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distortion_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetDistortionParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetDistortionParams" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set camera distortion parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1167,6 +1157,7 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 <li><p><strong>distortion_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary of distortion param names and corresponding values
 {“K1”: 0.0, “K2”: 0.0, “K3”: 0.0, “P1”: 0.0, “P2”: 0.0}</p></li>
 <li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Vehicle which the camera is associated with</p></li>
+<li><p><strong>external</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the camera is an External Camera</p></li>
 </ul>
 </dd>
 </dl>
