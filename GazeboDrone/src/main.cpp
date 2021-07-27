@@ -81,7 +81,7 @@ void cbLocalPose(ConstPosesStampedPtr& msg)
     ++count;
 }
 
-void cbGobalPose(ConstPosesStampedPtr& msg)
+void cbGlobalPose(ConstPosesStampedPtr& msg)
 {
     std::cout << std::fixed;
     std::cout << std::setprecision(4);
@@ -122,7 +122,7 @@ int main(int _argc, char** _argv)
 
     // Listen to Gazebo topics
     gazebo::transport::SubscriberPtr sub_pose1 = node->Subscribe("~/pose/local/info", cbLocalPose);
-    gazebo::transport::SubscriberPtr sub_pose2 = node->Subscribe("~/pose/info", cbGobalPose);
+    gazebo::transport::SubscriberPtr sub_pose2 = node->Subscribe("~/pose/info", cbGlobalPose);
 
     while (true)
         gazebo::common::Time::MSleep(10);
