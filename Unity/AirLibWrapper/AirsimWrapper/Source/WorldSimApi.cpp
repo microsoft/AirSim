@@ -55,7 +55,7 @@ int WorldSimApi::getSegmentationObjectID(const std::string& mesh_name) const
 
 void WorldSimApi::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
 {
-    PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
+    PrintLogMessage(message.c_str(), message_param.c_str(), "", severity);
 }
 
 std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
