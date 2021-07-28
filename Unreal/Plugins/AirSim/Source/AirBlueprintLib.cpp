@@ -26,6 +26,7 @@
 #include "Modules/ModuleManager.h"
 #include "ARFilter.h"
 #include "AssetRegistryModule.h"
+#include "DetectionComponent.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -311,6 +312,7 @@ template USceneCaptureComponent2D* UAirBlueprintLib::GetActorComponent(AActor*, 
 template UStaticMeshComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 template URotatingMovementComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 template UCameraComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
+template UDetectionComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 
 bool UAirBlueprintLib::IsInGameThread()
 {
@@ -352,20 +354,20 @@ std::string UAirBlueprintLib::GetMeshName(ALandscapeProxy* mesh)
     return std::string(TCHAR_TO_UTF8(*(mesh->GetName())));
 }
 
-void UAirBlueprintLib::InitializeMeshStencilIDs(bool ignore_existing)
+void UAirBlueprintLib::InitializeMeshStencilIDs(bool override_existing)
 {
     for (TObjectIterator<UStaticMeshComponent> comp; comp; ++comp) {
-        InitializeObjectStencilID(*comp, ignore_existing);
+        InitializeObjectStencilID(*comp, override_existing);
     }
     for (TObjectIterator<USkinnedMeshComponent> comp; comp; ++comp) {
-        InitializeObjectStencilID(*comp, ignore_existing);
+        InitializeObjectStencilID(*comp, override_existing);
     }
     //for (TObjectIterator<UFoliageType> comp; comp; ++comp)
     //{
     //    InitializeObjectStencilID(*comp);
     //}
     for (TObjectIterator<ALandscapeProxy> comp; comp; ++comp) {
-        InitializeObjectStencilID(*comp, ignore_existing);
+        InitializeObjectStencilID(*comp, override_existing);
     }
 }
 

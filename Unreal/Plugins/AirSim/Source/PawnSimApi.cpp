@@ -3,6 +3,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
+#include "Components/LineBatchComponent.h"
 
 #include "AirBlueprintLib.h"
 #include "common/ClockFactory.hpp"
@@ -129,9 +130,7 @@ void PawnSimApi::createCamerasFromSettings()
         const auto& setting = camera_setting_pair.second;
 
         //get pose
-        FVector position = transform.fromLocalNed(
-                               NedTransform::Vector3r(setting.position.x(), setting.position.y(), setting.position.z())) -
-                           transform.fromLocalNed(NedTransform::Vector3r(0.0, 0.0, 0.0));
+        FVector position = transform.fromLocalNed(setting.position) - transform.fromLocalNed(Vector3r::Zero());
         FTransform camera_transform(FRotator(setting.rotation.pitch, setting.rotation.yaw, setting.rotation.roll),
                                     position,
                                     FVector(1., 1., 1.));
@@ -183,27 +182,6 @@ const NedTransform& PawnSimApi::getNedTransform() const
 APawn* PawnSimApi::getPawn()
 {
     return params_.pawn;
-}
-
-std::vector<PawnSimApi::ImageCaptureBase::ImageResponse> PawnSimApi::getImages(
-    const std::vector<ImageCaptureBase::ImageRequest>& requests) const
-{
-    std::vector<ImageCaptureBase::ImageResponse> responses;
-
-    const ImageCaptureBase* camera = getImageCapture();
-    camera->getImages(requests, responses);
-
-    return responses;
-}
-
-std::vector<uint8_t> PawnSimApi::getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const
-{
-    std::vector<ImageCaptureBase::ImageRequest> request = { ImageCaptureBase::ImageRequest(camera_name, image_type) };
-    const std::vector<ImageCaptureBase::ImageResponse>& response = getImages(request);
-    if (response.size() > 0)
-        return response.at(0).image_data_uint8;
-    else
-        return std::vector<uint8_t>();
 }
 
 void PawnSimApi::setRCForceFeedback(float rumble_strength, float auto_center)
@@ -285,6 +263,49 @@ const UnrealImageCapture* PawnSimApi::getImageCapture() const
 int PawnSimApi::getCameraCount()
 {
     return cameras_.valsSize();
+}
+
+bool PawnSimApi::testLineOfSightToPoint(const msr::airlib::GeoPoint& lla) const
+{
+    bool hit;
+
+    // We need to run this code on the main game thread, since it iterates over actors
+    UAirBlueprintLib::RunCommandOnGameThread([this, lla, &hit]() {
+        // This default NedTransform is part of how we anchor the AirSim primary LLA origin at 0, 0, 0 in Unreal
+        NedTransform zero_based_ned_transform(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(params_.pawn));
+        FCollisionQueryParams collision_params(SCENE_QUERY_STAT(LineOfSight), true, params_.pawn);
+
+        // Transform from LLA to NED
+        const auto& settings = AirSimSettings::singleton();
+        msr::airlib::GeodeticConverter converter(settings.origin_geopoint.home_geo_point.latitude,
+                                                 settings.origin_geopoint.home_geo_point.longitude,
+                                                 settings.origin_geopoint.home_geo_point.altitude);
+        double north, east, down;
+        converter.geodetic2Ned(lla.latitude, lla.longitude, lla.altitude, &north, &east, &down);
+        msr::airlib::Vector3r ned(north, east, down);
+        FVector target_location = zero_based_ned_transform.fromGlobalNed(ned);
+
+        hit = params_.pawn->GetWorld()->LineTraceTestByChannel(params_.pawn->GetActorLocation(), target_location, ECC_Visibility, collision_params);
+
+        // KM911 remove logging
+        //		common_utils::Utils::log("NED from LLA: " + std::to_string(target_location.X) + ", " + std::to_string(target_location.Y) + ", " + std::to_string(target_location.Z), common_utils::Utils::kLogLevelInfo);
+
+        if (AirSimSettings::singleton().show_los_debug_lines_) {
+            if (hit) {
+                // No LOS, so draw red line
+                FLinearColor color{ 1.0f, 0, 0, 0.4f };
+                params_.pawn->GetWorld()->LineBatcher->DrawLine(params_.pawn->GetActorLocation(), target_location, color, SDPG_World, 10, -1);
+            }
+            else {
+                // Yes LOS, so draw green line
+                FLinearColor color{ 0, 1.0f, 0, 0.4f };
+                params_.pawn->GetWorld()->LineBatcher->DrawLine(params_.pawn->GetActorLocation(), target_location, color, SDPG_World, 10, -1);
+            }
+        }
+    },
+                                             true);
+
+    return !hit;
 }
 
 void PawnSimApi::resetImplementation()
@@ -392,62 +413,6 @@ void PawnSimApi::plot(std::istream& s, FColor color, const Vector3r& offset)
         }
         last_point = current_point;
     }
-}
-
-msr::airlib::CameraInfo PawnSimApi::getCameraInfo(const std::string& camera_name) const
-{
-    msr::airlib::CameraInfo camera_info;
-
-    const APIPCamera* camera = getCamera(camera_name);
-    camera_info.pose.position = ned_transform_.toLocalNed(camera->GetActorLocation());
-    camera_info.pose.orientation = ned_transform_.toNed(camera->GetActorRotation().Quaternion());
-    camera_info.fov = camera->GetCameraComponent()->FieldOfView;
-    camera_info.proj_mat = camera->getProjectionMatrix(APIPCamera::ImageType::Scene);
-    return camera_info;
-}
-
-void PawnSimApi::setCameraPose(const std::string& camera_name, const msr::airlib::Pose& pose)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, pose]() {
-        APIPCamera* camera = getCamera(camera_name);
-        FTransform pose_unreal = ned_transform_.fromRelativeNed(pose);
-        camera->setCameraPose(pose_unreal);
-    },
-                                             true);
-}
-
-void PawnSimApi::setCameraFoV(const std::string& camera_name, float fov_degrees)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, fov_degrees]() {
-        APIPCamera* camera = getCamera(camera_name);
-        camera->setCameraFoV(fov_degrees);
-    },
-                                             true);
-}
-
-void PawnSimApi::setDistortionParam(const std::string& camera_name, const std::string& param_name, float value)
-{
-    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, param_name, value]() {
-        APIPCamera* camera = getCamera(camera_name);
-        camera->distortion_param_instance_->SetScalarParameterValue(FName(param_name.c_str()), value);
-    },
-                                             true);
-}
-
-std::vector<float> PawnSimApi::getDistortionParams(const std::string& camera_name)
-{
-    std::vector<float> param_values(5, 0.0);
-    UAirBlueprintLib::RunCommandOnGameThread([this, camera_name, &param_values]() {
-        APIPCamera* camera = getCamera(camera_name);
-        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K1")), param_values[0]);
-        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K2")), param_values[1]);
-        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("K3")), param_values[2]);
-        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("P1")), param_values[3]);
-        camera->distortion_param_instance_->GetScalarParameterValue(FName(TEXT("P2")), param_values[4]);
-    },
-                                             true);
-
-    return param_values;
 }
 
 //parameters in NED frame

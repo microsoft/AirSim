@@ -106,9 +106,29 @@ much as possible and avoid that style of programming from leaking into the large
 
 Religiously check if you can use const everywhere, for example, `const float * const xP`. Avoid using prefix or suffix to indicate pointer types in variable names, i.e. use `my_obj` instead of `myobj_ptr` except in cases where it might make sense to differentiate variables better, for example, `int mynum = 5; int* mynum_ptr = mynum;`
 
+## Null Checking
+
+In Unreal C++ code, when checking if a pointer is null, it is preferable to use `IsValid(ptr)`. In addition to checking for a null pointer, this function will also return whether a UObject is properly initialized. This is useful in situations where a UObject is in the process of being garbage collected but still set to a non-null value.
+
 ## Indentation
 
 The C++ code base uses four spaces for indentation (not tabs).
+
+## Line Breaks
+
+Files should be committed with Unix line breaks. When working on Windows, git can be configured to checkout files with Windows line breaks and automatically convert from Windows to Unix line breaks when committing by running the following command:
+
+```
+git config --global core.autocrlf true
+```
+
+When working on Linux, it is preferable to configure git to checkout files with Unix line breaks by running the following command:
+
+```
+git config --global core.autocrlf input
+```
+
+For more details on this setting, see [this documentation](https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings).
 
 ## This is Too Short, ye?
 

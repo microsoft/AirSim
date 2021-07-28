@@ -78,6 +78,7 @@ nav:
   - "Design":
     - "Architecture": 'design.md'
     - "Code Structure": 'code_structure.md'
+    - "Adding new APIs": 'adding_new_apis.md'
     - "Coding Guidelines": 'coding_guidelines.md'
     - "Flight Controller": 'flight_controller.md'
     - "Simple Flight": 'simple_flight.md'
@@ -117,6 +118,7 @@ nav:
     - "Surveying Using Drone": 'drone_survey.md'
     - "Orbit Trajectory": "orbit.md"
     - "Importing a custom multirotor mesh": 'https://youtu.be/Bp86WiLUC80'
+    - "Object Detection": "object_detection.md"
   - "Misc":
     - "AirSim on Real Drones": 'custom_drone.md'
     - "Installing cmake on Linux": 'cmake_linux.md'

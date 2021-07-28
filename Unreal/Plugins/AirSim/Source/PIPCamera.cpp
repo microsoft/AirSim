@@ -41,6 +41,8 @@ APIPCamera::APIPCamera()
     image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
+
+    object_filter_ = FObjectFilter();
 }
 
 void APIPCamera::PostInitializeComponents()
@@ -50,6 +52,7 @@ void APIPCamera::PostInitializeComponents()
     camera_ = UAirBlueprintLib::GetActorComponent<UCameraComponent>(this, TEXT("CameraComponent"));
     captures_.Init(nullptr, imageTypeCount());
     render_targets_.Init(nullptr, imageTypeCount());
+    detections_.Init(nullptr, imageTypeCount());
 
     captures_[Utils::toNumeric(ImageType::Scene)] =
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("SceneCaptureComponent"));
@@ -67,6 +70,15 @@ void APIPCamera::PostInitializeComponents()
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("InfraredCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::SurfaceNormals)] =
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
+
+    for (unsigned int i = 0; i < imageTypeCount(); ++i) {
+        detections_[i] = NewObject<UDetectionComponent>(this);
+        if (detections_[i]) {
+            detections_[i]->SetupAttachment(captures_[i]);
+            detections_[i]->RegisterComponent();
+            detections_[i]->Deactivate();
+        }
+    }
 }
 
 void APIPCamera::BeginPlay()
@@ -224,6 +236,7 @@ void APIPCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
         //use final color for all calculations
         captures_[image_type] = nullptr;
         render_targets_[image_type] = nullptr;
+        detections_[image_type] = nullptr;
     }
 }
 
@@ -257,8 +270,10 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
-void APIPCamera::setCameraPose(const FTransform& pose)
+void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
 {
+    FTransform pose = ned_transform_->fromRelativeNed(relative_pose);
+
     FVector position = pose.GetLocation();
     this->SetActorRelativeLocation(pose.GetLocation());
 
@@ -279,6 +294,39 @@ void APIPCamera::setCameraFoV(float fov_degrees)
     }
 
     camera_->SetFieldOfView(fov_degrees);
+}
+
+msr::airlib::CameraInfo APIPCamera::getCameraInfo() const
+{
+    msr::airlib::CameraInfo camera_info;
+
+    camera_info.pose.position = ned_transform_->toLocalNed(this->GetActorLocation());
+    camera_info.pose.orientation = ned_transform_->toNed(this->GetActorRotation().Quaternion());
+    camera_info.fov = camera_->FieldOfView;
+    camera_info.proj_mat = getProjectionMatrix(ImageType::Scene);
+    return camera_info;
+}
+
+std::vector<float> APIPCamera::getDistortionParams() const
+{
+    std::vector<float> param_values(5, 0.0);
+
+    auto getParamValue = [this](const auto& name, float& val) {
+        distortion_param_instance_->GetScalarParameterValue(FName(name), val);
+    };
+
+    getParamValue(TEXT("K1"), param_values[0]);
+    getParamValue(TEXT("K2"), param_values[1]);
+    getParamValue(TEXT("K3"), param_values[2]);
+    getParamValue(TEXT("P1"), param_values[3]);
+    getParamValue(TEXT("P2"), param_values[4]);
+
+    return param_values;
+}
+
+void APIPCamera::setDistortionParam(const std::string& param_name, float value)
+{
+    distortion_param_instance_->SetScalarParameterValue(FName(param_name.c_str()), value);
 }
 
 void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera_setting, const NedTransform& ned_transform)
@@ -454,17 +502,26 @@ void APIPCamera::enableCaptureComponent(const APIPCamera::ImageType type, bool i
 {
     USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
     if (capture != nullptr) {
+        UDetectionComponent* detection = getDetectionComponent(type, false);
         if (is_enabled) {
             //do not make unnecessary calls to Activate() which otherwise causes crash in Unreal
             if (!capture->IsActive() || capture->TextureTarget == nullptr) {
                 capture->TextureTarget = getRenderTarget(type, false);
                 capture->Activate();
+                if (detection != nullptr) {
+                    detection->texture_target_ = capture->TextureTarget;
+                    detection->Activate();
+                }
             }
         }
         else {
             if (capture->IsActive() || capture->TextureTarget != nullptr) {
                 capture->Deactivate();
                 capture->TextureTarget = nullptr;
+                if (detection != nullptr) {
+                    detection->Deactivate();
+                    detection->texture_target_ = nullptr;
+                }
             }
         }
         camera_type_enabled_[Utils::toNumeric(type)] = is_enabled;
@@ -478,6 +535,15 @@ UTextureRenderTarget2D* APIPCamera::getRenderTarget(const APIPCamera::ImageType 
 
     if (!if_active || camera_type_enabled_[image_type])
         return render_targets_[image_type];
+    return nullptr;
+}
+
+UDetectionComponent* APIPCamera::getDetectionComponent(const ImageType type, bool if_active) const
+{
+    unsigned int image_type = Utils::toNumeric(type);
+
+    if (!if_active || camera_type_enabled_[image_type])
+        return detections_[image_type];
     return nullptr;
 }
 

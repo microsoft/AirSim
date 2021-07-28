@@ -270,6 +270,54 @@ namespace airlib
         }
     };
 
+    struct Box2D
+    {
+        Vector2r min;
+        Vector2r max;
+
+        Box2D()
+        {
+        }
+
+        Box2D(Vector2r min_val, Vector2r max_val)
+            : min(min_val), max(max_val)
+        {
+        }
+    };
+
+    struct Box3D
+    {
+        Vector3r min;
+        Vector3r max;
+
+        Box3D()
+        {
+        }
+
+        Box3D(Vector3r min_val, Vector3r max_val)
+            : min(min_val), max(max_val)
+        {
+        }
+    };
+
+    struct DetectionInfo
+    {
+        std::string name = "";
+        GeoPoint geo_point = GeoPoint();
+        Box2D box2D = Box2D();
+        Box3D box3D = Box3D();
+        Pose relative_pose = Pose();
+
+        DetectionInfo()
+        {
+        }
+
+        DetectionInfo(const std::string& name_val, const GeoPoint& geo_point_val, const Box2D& box2D_val, const Box3D& box3D_val, const Pose& relative_pose_val)
+            : name(name_val), geo_point(geo_point_val), box2D(box2D_val), box3D(box3D_val), relative_pose(relative_pose_val)
+        {
+        }
+    };
+
     struct CollisionResponse
     {
         unsigned int collision_count_raw = 0;
@@ -372,6 +420,28 @@ namespace airlib
         std::vector<float> vertices;
         std::vector<uint32_t> indices;
         std::string name;
+    };
+
+    // This is a small helper struct to keep camera details together
+    // Not currently exposed to the client, just for cleaner codebase internally
+    struct CameraDetails
+    {
+        std::string camera_name;
+        std::string vehicle_name;
+        bool external;
+
+        CameraDetails(const std::string& camera_name_val, const std::string& vehicle_name_val, bool external_val)
+            : camera_name(camera_name_val), vehicle_name(vehicle_name_val), external(external_val)
+        {
+        }
+
+        std::string to_string() const
+        {
+            return Utils::stringf("CameraDetails: camera_name=%s, vehicle_name=%s, external=%d",
+                                  camera_name.c_str(),
+                                  vehicle_name.c_str(),
+                                  external);
+        }
     };
 }
 } //namespace

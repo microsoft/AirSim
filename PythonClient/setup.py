@@ -1,11 +1,12 @@
 import setuptools
+from airsim import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="airsim",
-    version="1.5.0",
+    version=__version__,
     author="Shital Shah",
     author_email="shitals@microsoft.com",
     description="Open source simulator based on Unreal Engine for autonomous vehicles from Microsoft AI & Research",

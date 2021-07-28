@@ -50,10 +50,16 @@ namespace airlib
             bool visible;
             std::string camera_name;
             std::string vehicle_name;
+            bool external;
 
-            SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene,
-                             bool visible_val = false, const std::string& camera_name_val = "", const std::string& vehicle_name_val = "")
-                : window_index(window_index_val), image_type(image_type_val), visible(visible_val), camera_name(camera_name_val), vehicle_name(vehicle_name_val)
+            SubwindowSetting(int window_index_val = 0, ImageType image_type_val = ImageType::Scene, bool visible_val = false,
+                             const std::string& camera_name_val = "", const std::string& vehicle_name_val = "", bool external_val = false)
+                : window_index(window_index_val)
+                , image_type(image_type_val)
+                , visible(visible_val)
+                , camera_name(camera_name_val)
+                , vehicle_name(vehicle_name_val)
+                , external(external_val)
             {
             }
         };
@@ -383,6 +389,7 @@ namespace airlib
         float clock_speed = 1.0f;
         bool engine_sound = false;
         bool log_messages_visible = true;
+        bool show_los_debug_lines_ = false;
         HomeGeoPoint origin_geopoint{ GeoPoint(47.641468, -122.140165, 122) }; //The geo-coordinate assigned to Unreal coordinate 0,0,0
         std::map<std::string, PawnPath> pawn_paths; //path for pawn blueprint
         std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
@@ -392,6 +399,7 @@ namespace airlib
         std::string speed_unit_label = "m\\s";
         std::map<std::string, std::shared_ptr<SensorSetting>> sensor_defaults;
         Vector3r wind = Vector3r::Zero();
+        std::map<std::string, CameraSetting> external_cameras;
 
         std::string settings_text_ = "";
 
@@ -427,6 +435,7 @@ namespace airlib
             loadOtherSettings(settings_json);
             loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults);
             loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults);
+            loadExternalCameraSettings(settings_json, external_cameras);
 
             //this should be done last because it depends on vehicles (and/or their type) we have
             loadRecordingSetting(settings_json);
@@ -948,7 +957,7 @@ namespace airlib
                     //TODO: below exception doesn't actually get raised right now because of issue in Unreal Engine?
                     throw std::invalid_argument(std::string("SegmentationSetting init_method has invalid value in settings_json ") + init_method);
 
-                segmentation_setting.override_existing = json_parent.getBool("OverrideExisting", false);
+                segmentation_setting.override_existing = json_parent.getBool("OverrideExisting", true);
 
                 std::string mesh_naming_method = Utils::toLower(json_parent.getString("MeshNamingMethod", ""));
                 if (mesh_naming_method == "" || mesh_naming_method == "ownername")
@@ -1090,6 +1099,7 @@ namespace airlib
                         subwindow_setting.visible = json_settings_child.getBool("Visible", false);
                         subwindow_setting.camera_name = getCameraName(json_settings_child);
                         subwindow_setting.vehicle_name = json_settings_child.getString("VehicleName", "");
+                        subwindow_setting.external = json_settings_child.getBool("External", false);
                     }
                 }
             }
@@ -1098,9 +1108,9 @@ namespace airlib
         static void initializeSubwindowSettings(std::vector<SubwindowSetting>& subwindow_settings)
         {
             subwindow_settings.clear();
-            subwindow_settings.push_back(SubwindowSetting(0, ImageType::DepthVis, false, "", "")); //depth
-            subwindow_settings.push_back(SubwindowSetting(1, ImageType::Segmentation, false, "", "")); //seg
-            subwindow_settings.push_back(SubwindowSetting(2, ImageType::Scene, false, "", "")); //vis
+            subwindow_settings.push_back(SubwindowSetting(0, ImageType::DepthVis, false, "", "", false)); //depth
+            subwindow_settings.push_back(SubwindowSetting(1, ImageType::Segmentation, false, "", "", false)); //seg
+            subwindow_settings.push_back(SubwindowSetting(2, ImageType::Scene, false, "", "", false)); //vis
         }
 
         void loadOtherSettings(const Settings& settings_json)
@@ -1116,6 +1126,7 @@ namespace airlib
             speed_unit_factor = settings_json.getFloat("SpeedUnitFactor", 1.0f);
             speed_unit_label = settings_json.getString("SpeedUnitLabel", "m\\s");
             log_messages_visible = settings_json.getBool("LogMessagesVisible", true);
+            show_los_debug_lines_ = settings_json.getBool("ShowLosDebugLines", false);
 
             { //load origin geopoint
                 Settings origin_geopoint_json;
@@ -1328,7 +1339,25 @@ namespace airlib
             else
                 createDefaultSensorSettings(simmode_name, sensors);
         }
+
+        static void loadExternalCameraSettings(const Settings& settings_json, std::map<std::string, CameraSetting>& external_cameras)
+        {
+            external_cameras.clear();
+
+            Settings json_parent;
+            if (settings_json.getChild("ExternalCameras", json_parent)) {
+                std::vector<std::string> keys;
+                json_parent.getChildNames(keys);
+
+                for (const auto& key : keys) {
+                    Settings child;
+                    json_parent.getChild(key, child);
+                    external_cameras[key] = createCameraSetting(child);
+                }
+            }
+        }
     };
 }
 } //namespace
+
 #endif
