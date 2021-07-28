@@ -59,6 +59,7 @@ namespace AirSimUnity {
 
             airsimInterface = VehicleCompanion.GetVehicleCompanion(vehicleName, this);
             isServerStarted = true;
+            AirSimGlobal.Instance.Weather.AttachToVehicle(this);
         }
 
         //Ensure to call this method as the first statement, from derived class `FixedUpdate()` method.
@@ -267,6 +268,18 @@ namespace AirSimUnity {
                     return true;;
                 }
             }
+            return false;
+        }
+
+        public bool SetDistortionParam(string cameraName, string paramName, float value)
+        {
+            // not implemented
+            return false;
+        }
+
+        public bool GetDistortionParams(string cameraName)
+        {
+            // not implemented
             return false;
         }
 

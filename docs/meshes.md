@@ -1,11 +1,11 @@
 # How to Access Meshes in AIRSIM
 
-AirSim supports the ability to access the static meshes that make up the scene
+AirSim supports the ability to access the static meshes that make up the scene.
 
 
 ## Mesh structure
 Each mesh is represented with the below struct.
-```
+```cpp
 struct MeshPositionVertexBuffersResponse {
 
 	Vector3r position;
@@ -16,21 +16,22 @@ struct MeshPositionVertexBuffersResponse {
 	std::string name;
 };
 ```
+
 * The position and orientation are in the Unreal coordinate system.
 * The mesh itself is a triangular mesh represented by the vertices and the indices.
 	* The triangular mesh type is typically called a [Face-Vertex](https://en.wikipedia.org/wiki/Polygon_mesh#Face-vertex_meshes) Mesh. This means every triplet of indices hold the indexes of the vertices that make up the triangle/face.
-	* The x,y,z coordinates of the vertices are all stored in a single vector. This means the vertices vertices is Nx3 where N is number of vertices. 
-    * The position of the vertices are the global positions in the Unreal coordinate system. This means they have already been Transformed by the position and orientation.
-* 
+	* The x,y,z coordinates of the vertices are all stored in a single vector. This means the vertices vector is Nx3 where N is number of vertices. 
+    * The position of the vertices are the global positions in the Unreal coordinate system. This means they have already been transformed by the position and orientation.
+
 ## How to use
 The API to get the meshes in the scene is quite simple. However, one should note that the function call is very expensive and should
  very rarely be called. In general this is ok because this function only accesses the static meshes which for most applications are
  not changing during the duration of your program.
 
-Note that you will have to use a 3rdparty library or your own custom code to actually interact with the recieved meshes. Below I utilize the
-python bindings of [libigl](https://github.com/libigl/libigl) to visualize the recieved meshes.
+Note that you will have to use a 3rdparty library or your own custom code to actually interact with the received meshes. Below I utilize the
+Python bindings of [libigl](https://github.com/libigl/libigl) to visualize the received meshes.
 
-```
+```python
 import airsim
 
 AIRSIM_HOST_IP='127.0.0.1'
@@ -67,7 +68,7 @@ for m in meshes:
         vertices_reshaped=vertices_reshaped.astype(np.float64)
         indices_reshaped=indices_reshaped.astype(np.int64)
 
-        #Libigl function to convert to internal Eigen format
+        # Libigl function to convert to internal Eigen format
         v_eig=p2e(vertices_reshaped)
         i_eig=p2e(indices_reshaped)
 

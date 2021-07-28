@@ -1,0 +1,33 @@
+name: Ubuntu Build
+
+# Controls when the action will run.
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup
+        run: ./setup.sh
+
+      - name: Build AirLib
+        run: ./build.sh
+
+      - name: Unity Build
+        run: |
+          sudo apt-get install libboost-all-dev
+          cd Unity
+          ./build.sh
+
+      - name: Build ROS Wrapper
+        run: |
+          ./tools/install_ros_deps.sh
+          source /opt/ros/*/setup.bash
+          cd ros
+          catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8

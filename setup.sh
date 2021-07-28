@@ -9,6 +9,9 @@ downloadHighPolySuv=true
 MIN_CMAKE_VERSION=3.10.0
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
+# brew gives error if package is already installed
+function brew_install() { brew list $1 &>/dev/null || brew install $1; }
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]
 do
@@ -63,7 +66,8 @@ if [ "$(uname)" == "Darwin" ]; then # osx
         sudo dseditgroup -o edit -a `whoami` -t user dialout
     fi
 
-    brew install wget coreutils
+    brew_install wget
+    brew_install coreutils
 
     if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
         brew install cmake  # should get cmake 3.8
@@ -119,19 +123,19 @@ fi # End USB setup, CMake install
 
 
 # Download rpclib
-if [ ! -d "external/rpclib/rpclib-2.2.1" ]; then
+if [ ! -d "external/rpclib/rpclib-2.3.0" ]; then
     echo "*********************************************************************************************"
     echo "Downloading rpclib..."
     echo "*********************************************************************************************"
 
-    wget https://github.com/madratman/rpclib/archive/v2.2.1.zip
+    wget https://github.com/rpclib/rpclib/archive/v2.3.0.zip
 
     # remove previous versions
     rm -rf "external/rpclib"
 
     mkdir -p "external/rpclib"
-    unzip -q v2.2.1.zip -d external/rpclib
-    rm v2.2.1.zip
+    unzip -q v2.3.0.zip -d external/rpclib
+    rm v2.3.0.zip
 fi
 
 # Download high-polycount SUV model

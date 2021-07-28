@@ -15,14 +15,15 @@ public:
     virtual ~WorldSimApi();
 
     // ------ Level setting apis ----- //
-    virtual bool loadLevel(const std::string& level_name) { return false; };
-    virtual std::string spawnObject(std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled) { return ""; };
-    virtual bool destroyObject(const std::string& object_name) { return false; };
+    virtual bool loadLevel(const std::string& level_name) override { return false; };
+    virtual std::string spawnObject(std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled) override { return ""; };
+    virtual bool destroyObject(const std::string& object_name) override { return false; };
 
     virtual bool isPaused() const override;
     virtual void reset() override;
     virtual void pause(bool is_paused) override;
     virtual void continueForTime(double seconds) override;
+    virtual void continueForFrames(uint32_t frames) override;
     virtual void setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
                               float celestial_clock_speed, float update_interval_secs, bool move_sun) override;
 
@@ -62,6 +63,11 @@ public:
     virtual bool isRecording() const override;
 
     virtual void setWind(const Vector3r& wind) const override;
+    virtual bool createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file) override;
+    virtual bool addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const Pose& pose, const std::string& pawn_path = "") override;
+    virtual std::vector<std::string> listVehicles() const override;
+
+    virtual std::string getSettingsString() const override;
 
 private:
     SimModeBase* simmode_;

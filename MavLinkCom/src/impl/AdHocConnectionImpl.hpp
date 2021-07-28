@@ -25,65 +25,67 @@ STRICT_MODE_ON
 
 using namespace mavlinkcom;
 
-namespace mavlinkcom_impl {
+namespace mavlinkcom_impl
+{
 
-    // See MavLinkConnection.hpp for definitions of these methods.
-    class AdHocConnectionImpl
+// See MavLinkConnection.hpp for definitions of these methods.
+class AdHocConnectionImpl
+{
+public:
+    AdHocConnectionImpl();
+    static std::shared_ptr<AdHocConnection> connectSerial(const std::string& nodeName, std::string portName, int baudrate = 115200, const std::string initString = "");
+    static std::shared_ptr<AdHocConnection> connectLocalUdp(const std::string& nodeName, std::string localAddr, int localPort);
+    static std::shared_ptr<AdHocConnection> connectRemoteUdp(const std::string& nodeName, std::string localAddr, std::string remoteAddr, int remotePort);
+    static std::shared_ptr<AdHocConnection> connectTcp(const std::string& nodeName, std::string localAddr, const std::string& remoteIpAddr, int remotePort);
+
+    std::string getName();
+    int getTargetComponentId();
+    int getTargetSystemId();
+    ~AdHocConnectionImpl();
+    void startListening(std::shared_ptr<AdHocConnection> parent, const std::string& nodeName, std::shared_ptr<Port> connectedPort);
+    void close();
+    bool isOpen();
+    void sendMessage(const std::vector<uint8_t>& msg);
+    int subscribe(AdHocMessageHandler handler);
+    void unsubscribe(int id);
+
+private:
+    static std::shared_ptr<AdHocConnection> createConnection(const std::string& nodeName, std::shared_ptr<Port> port);
+    void publishPackets();
+    void readPackets();
+    void drainQueue();
+    std::string name;
+    std::shared_ptr<Port> port;
+    std::shared_ptr<AdHocConnection> con_;
+    int other_system_id = -1;
+    int other_component_id = 0;
+    std::thread read_thread;
+    std::string accept_node_name_;
+    std::shared_ptr<TcpClientPort> server_;
+
+    struct MessageHandlerEntry
     {
     public:
-        AdHocConnectionImpl();
-        static std::shared_ptr<AdHocConnection>  connectSerial(const std::string& nodeName, std::string portName, int baudrate = 115200, const std::string initString = "");
-        static std::shared_ptr<AdHocConnection>  connectLocalUdp(const std::string& nodeName, std::string localAddr, int localPort);
-        static std::shared_ptr<AdHocConnection>  connectRemoteUdp(const std::string& nodeName, std::string localAddr, std::string remoteAddr, int remotePort);
-        static std::shared_ptr<AdHocConnection>  connectTcp(const std::string& nodeName, std::string localAddr, const std::string& remoteIpAddr, int remotePort);
-
-        std::string getName();
-        int getTargetComponentId();
-        int getTargetSystemId();
-        ~AdHocConnectionImpl();
-        void startListening(std::shared_ptr<AdHocConnection> parent, const std::string& nodeName, std::shared_ptr<Port>  connectedPort);
-        void close();
-        bool isOpen();
-        void sendMessage(const std::vector<uint8_t>& msg);
-        int subscribe(AdHocMessageHandler handler);
-        void unsubscribe(int id);
-        
-    private:
-        static std::shared_ptr<AdHocConnection> createConnection(const std::string& nodeName, std::shared_ptr<Port> port);
-        void publishPackets();
-        void readPackets();
-        void drainQueue();
-        std::string name;
-        std::shared_ptr<Port> port;
-        std::shared_ptr<AdHocConnection> con_;
-        int other_system_id = -1;
-        int other_component_id = 0;
-        std::thread read_thread;
-        std::string accept_node_name_;
-        std::shared_ptr<TcpClientPort> server_;
-
-        struct MessageHandlerEntry {
-        public:
-            int id;
-            AdHocMessageHandler handler;
-        };
-        std::vector<MessageHandlerEntry> listeners;
-        std::vector<MessageHandlerEntry> snapshot;
-        bool snapshot_stale;
-        std::mutex listener_mutex;
-        bool closed;
-        std::thread publish_thread_;
-        std::queue<std::vector<uint8_t>> msg_queue_;
-        std::mutex msg_queue_mutex_;
-        mavlink_utils::Semaphore msg_available_;
-        bool waiting_for_msg_ = false;
-        bool supports_mavlink2_ = false;
-        bool signing_ = false;
-        mavlink_status_t mavlink_intermediate_status_;
-        mavlink_status_t mavlink_status_;
-        std::mutex telemetry_mutex_;
-        std::unordered_set<uint8_t> ignored_messageids;
+        int id;
+        AdHocMessageHandler handler;
     };
+    std::vector<MessageHandlerEntry> listeners;
+    std::vector<MessageHandlerEntry> snapshot;
+    bool snapshot_stale;
+    std::mutex listener_mutex;
+    bool closed;
+    std::thread publish_thread_;
+    std::queue<std::vector<uint8_t>> msg_queue_;
+    std::mutex msg_queue_mutex_;
+    mavlink_utils::Semaphore msg_available_;
+    bool waiting_for_msg_ = false;
+    bool supports_mavlink2_ = false;
+    bool signing_ = false;
+    mavlink_status_t mavlink_intermediate_status_;
+    mavlink_status_t mavlink_status_;
+    std::mutex telemetry_mutex_;
+    std::unordered_set<uint8_t> ignored_messageids;
+};
 }
 
 #endif

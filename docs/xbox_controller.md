@@ -22,9 +22,9 @@ You can also use all the QGroundControl controls for autonomous flying at this p
 
 
 3. Connect to Pixhawk serial port using MavLinkTest.exe like this:
-````
+```
 MavLinkTest.exe -serial:*,115200 -proxy:127.0.0.1:14550 -server:127.0.0.1:14570
-````
+```
 
 4. Run AirSim Unreal simulator with these `~/Documents/AirSim/settings.json` settings:
 ```

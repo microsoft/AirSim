@@ -7,7 +7,7 @@ STRICT_MODE_OFF //todo what does this do?
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
 #include "rpc/rpc_error.h"
-STRICT_MODE_ON
+    STRICT_MODE_ON
 
 #include "common/common_utils/FileSystem.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
@@ -26,8 +26,8 @@ STRICT_MODE_ON
 #include <math_common.h>
 #include <utils.h>
 
-// todo nicer api
-class PIDParams
+    // todo nicer api
+    class PIDParams
 {
 public:
     double kp_x;
@@ -42,18 +42,10 @@ public:
     double reached_thresh_xyz;
     double reached_yaw_degrees;
 
-    PIDParams():
-        kp_x(0.5),
-        kp_y(0.5),
-        kp_z(0.5),
-        kp_yaw(0.5),
-        kd_x(0.1),
-        kd_y(0.1),
-        kd_z(0.1),
-        kd_yaw(0.1),
-        reached_thresh_xyz(0.5),
-        reached_yaw_degrees(5.0)
-        {}
+    PIDParams()
+        : kp_x(0.5), kp_y(0.5), kp_z(0.5), kp_yaw(0.5), kd_x(0.1), kd_y(0.1), kd_z(0.1), kd_yaw(0.1), reached_thresh_xyz(0.5), reached_yaw_degrees(5.0)
+    {
+    }
 
     bool load_from_rosparams(const ros::NodeHandle& nh);
 };
@@ -75,11 +67,10 @@ public:
     double max_vel_vert_abs;
     double max_yaw_rate_degree;
 
-    DynamicConstraints():
-        max_vel_horz_abs(1.0),
-        max_vel_vert_abs(0.5),
-        max_yaw_rate_degree(10.0)
-        {}
+    DynamicConstraints()
+        : max_vel_horz_abs(1.0), max_vel_vert_abs(0.5), max_yaw_rate_degree(10.0)
+    {
+    }
 
     bool load_from_rosparams(const ros::NodeHandle& nh);
 };
@@ -87,11 +78,11 @@ public:
 class PIDPositionController
 {
 public:
-    PIDPositionController(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private);
+    PIDPositionController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
 
     // ROS service callbacks
-    bool local_position_goal_srv_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response); 
-    bool local_position_goal_srv_override_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response); 
+    bool local_position_goal_srv_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response);
+    bool local_position_goal_srv_override_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response);
     bool gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response);
     bool gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response);
 

@@ -32,6 +32,11 @@ void WorldSimApi::continueForTime(double seconds)
     simmode_->continueForTime(seconds);
 }
 
+void WorldSimApi::continueForFrames(uint32_t frames)
+{
+    simmode_->continueForFrames(frames);
+}
+
 void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
                                float celestial_clock_speed, float update_interval_secs, bool move_sun)
 {
@@ -50,7 +55,7 @@ int WorldSimApi::getSegmentationObjectID(const std::string& mesh_name) const
 
 void WorldSimApi::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
 {
-    PrintLogMessage(message.c_str(), message_param.c_str(), "", severity);
+    PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
 }
 
 std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
@@ -114,6 +119,11 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     unused(param);
     unused(val);
     //TODO: implement weather for Unity
+}
+
+bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
+{
+    return false;
 }
 
 //----------------Plotting APIs-----------/
@@ -208,6 +218,29 @@ bool WorldSimApi::isRecording() const
 void WorldSimApi::setWind(const Vector3r& wind) const
 {
     simmode_->setWind(wind);
-};
+}
+
+std::vector<std::string> WorldSimApi::listVehicles() const
+{
+    auto vehicle_names = (simmode_->getApiProvider()->getVehicleSimApis()).keys();
+    // Remove '' from the list, representing default vehicle
+    auto position = std::find(vehicle_names.begin(), vehicle_names.end(), "");
+    if (position != vehicle_names.end())
+        vehicle_names.erase(position);
+    return vehicle_names;
+}
+
+bool WorldSimApi::addVehicle(const std::string& vehicle_name, const std::string& vehicle_type, const WorldSimApi::Pose& pose, const std::string& pawn_path)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "addVehicle is not supported on unity")
+                                    .c_str());
+    return false;
+}
+
+std::string WorldSimApi::getSettingsString() const
+{
+    return msr::airlib::AirSimSettings::singleton().settings_text_;
+}
 
 #pragma endregion

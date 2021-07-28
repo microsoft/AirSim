@@ -6,30 +6,27 @@
 #include "../../UnityUtilities.hpp"
 #include "../../UnitySensors/UnitySensorFactory.h"
 
-CarPawnSimApi::CarPawnSimApi(const Params& params,
-                             const msr::airlib::CarApiBase::CarControls& keyboard_controls, std::string car_name)
-    : PawnSimApi(params), params_(params), keyboard_controls_(keyboard_controls), car_name_(car_name)
+CarPawnSimApi::CarPawnSimApi(const Params& params, std::string car_name)
+    : PawnSimApi(params), params_(params), car_name_(car_name)
 {
-    createVehicleApi(static_cast<CarPawn*>(params.pawn), params.home_geopoint);
-    joystick_controls_ = msr::airlib::CarApiBase::CarControls();
 }
 
 void CarPawnSimApi::initialize()
 {
     PawnSimApi::initialize();
 
-    createVehicleApi(static_cast<CarPawn*>(params_.pawn), params_.home_geopoint);
+    createVehicleApi(params_.home_geopoint);
 
     //TODO: should do reset() here?
     joystick_controls_ = msr::airlib::CarApiBase::CarControls();
 }
 
-void CarPawnSimApi::createVehicleApi(CarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint)
+void CarPawnSimApi::createVehicleApi(const msr::airlib::GeoPoint& home_geopoint)
 {
     std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(car_name_, &getNedTransform());
 
     vehicle_api_ = CarApiFactory::createApi(getVehicleSetting(), sensor_factory, (*getGroundTruthKinematics()), (*getGroundTruthEnvironment()), home_geopoint);
-    pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(pawn, getGroundTruthKinematics(), car_name_, vehicle_api_.get()));
+    pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(getGroundTruthKinematics(), car_name_, vehicle_api_.get()));
 }
 
 std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
@@ -79,8 +76,8 @@ void CarPawnSimApi::updateRendering(float dt)
     PawnSimApi::updateRendering(dt);
     updateCarControls();
 
-    for (auto i = 0; i < vehicle_api_messages_.size(); ++i) {
-        PrintLogMessage(vehicle_api_messages_[i].c_str(), "LogDebugLevel::Success", car_name_.c_str(), ErrorLogSeverity::Information);
+    for (const auto& message : vehicle_api_messages_) {
+        PrintLogMessage(message.c_str(), "LogDebugLevel::Success", car_name_.c_str(), ErrorLogSeverity::Information);
     }
 
     try {
@@ -137,20 +134,24 @@ void CarPawnSimApi::updateCarControls()
     }
     else {
         PrintLogMessage("Control Mode: ", "Keyboard", getVehicleName().c_str(), ErrorLogSeverity::Information);
-        current_controls_ = keyboard_controls_;
     }
 
+    bool api_enabled = vehicle_api_->isApiControlEnabled();
+
     //if API-client control is not active then we route keyboard/joystick control to car
-    if (!vehicle_api_->isApiControlEnabled()) {
-        //all car controls from anywhere must be routed through API component
+    if (!api_enabled) {
+        // This is so that getCarControls API works correctly
         vehicle_api_->setCarControls(current_controls_);
-        pawn_api_->updateMovement(current_controls_);
     }
     else {
         PrintLogMessage("Control Mode: ", "API", getVehicleName().c_str(), ErrorLogSeverity::Information);
+        // API is enabled, so we use the controls set by API
         current_controls_ = vehicle_api_->getCarControls();
-        pawn_api_->updateMovement(current_controls_);
     }
+
+    // Update whether to use API controls or keyboard controls
+    pawn_api_->enableApi(api_enabled);
+    pawn_api_->updateMovement(current_controls_);
 }
 
 //*** Start: UpdatableState implementation ***//
