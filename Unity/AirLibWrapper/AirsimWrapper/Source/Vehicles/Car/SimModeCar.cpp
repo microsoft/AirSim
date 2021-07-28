@@ -88,8 +88,6 @@ UnityPawn* SimModeCar::GetVehiclePawn(const std::string& vehicle_name)
 
 std::unique_ptr<PawnSimApi> SimModeCar::createVehicleSimApi(const PawnSimApi::Params& pawn_sim_api_params) const
 {
-    auto vehicle_pawn = static_cast<TVehiclePawn*>(pawn_sim_api_params.pawn);
-
     auto vehicle_sim_api = std::unique_ptr<PawnSimApi>(new CarPawnSimApi(pawn_sim_api_params,
                                                                          pawn_sim_api_params.vehicle_name));
     vehicle_sim_api->initialize();
