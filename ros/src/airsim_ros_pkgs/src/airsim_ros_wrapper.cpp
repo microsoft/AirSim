@@ -127,9 +127,9 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     for (const auto& curr_vehicle_elem : AirSimSettings::singleton().vehicles) {
         auto& vehicle_setting = curr_vehicle_elem.second;
         auto curr_vehicle_name = curr_vehicle_elem.first;
-
+        
         nh_.setParam("/vehicle_name", curr_vehicle_name);
-
+        
         set_nans_to_zeros_in_pose(*vehicle_setting);
 
         std::unique_ptr<VehicleROS> vehicle_ros = nullptr;
@@ -1368,7 +1368,8 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         // msr::airlib::CameraInfo camera_info = airsim_client_.simGetCameraInfo(curr_img_response.camera_name);
 
         // update timestamp of saved cam info msgs
-        camera_info_msg_vec_[img_response_idx_internal].header.stamp = curr_ros_time;
+
+        camera_info_msg_vec_[img_response_idx_internal].header.stamp = airsim_timestamp_to_ros(curr_img_response.time_stamp);
         cam_info_pub_vec_[img_response_idx_internal].publish(camera_info_msg_vec_[img_response_idx_internal]);
 
         // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
@@ -1393,7 +1394,7 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id)
 {
     geometry_msgs::TransformStamped cam_tf_body_msg;
-    cam_tf_body_msg.header.stamp = ros_time;
+    cam_tf_body_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     cam_tf_body_msg.header.frame_id = frame_id;
     cam_tf_body_msg.child_frame_id = child_frame_id + "_body";
     cam_tf_body_msg.transform.translation.x = img_response.camera_position.x();
@@ -1412,7 +1413,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     }
 
     geometry_msgs::TransformStamped cam_tf_optical_msg;
-    cam_tf_optical_msg.header.stamp = ros_time;
+    cam_tf_optical_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     cam_tf_optical_msg.header.frame_id = frame_id;
     cam_tf_optical_msg.child_frame_id = child_frame_id + "_optical";
     cam_tf_optical_msg.transform.translation.x = cam_tf_body_msg.transform.translation.x;

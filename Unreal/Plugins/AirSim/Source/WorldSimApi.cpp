@@ -5,6 +5,7 @@
 #include "common/common_utils/Utils.hpp"
 #include "Weather/WeatherLib.h"
 #include "DrawDebugHelpers.h"
+#include "Runtime/Engine/Classes/Components/LineBatchComponent.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include <cstdlib>
 #include <ctime>
@@ -377,7 +378,10 @@ bool WorldSimApi::setObjectScale(const std::string& object_name, const Vector3r&
 
 void WorldSimApi::enableWeather(bool enable)
 {
-    UWeatherLib::setWeatherEnabled(simmode_->GetWorld(), enable);
+    UAirBlueprintLib::RunCommandOnGameThread([this, enable]() {
+        UWeatherLib::setWeatherEnabled(simmode_->GetWorld(), enable);
+    },
+                                             true);
 }
 
 void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
@@ -385,7 +389,10 @@ void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
     unsigned char param_n = static_cast<unsigned char>(msr::airlib::Utils::toNumeric<WeatherParameter>(param));
     EWeatherParamScalar param_e = msr::airlib::Utils::toEnum<EWeatherParamScalar>(param_n);
 
-    UWeatherLib::setWeatherParamScalar(simmode_->GetWorld(), param_e, val);
+    UAirBlueprintLib::RunCommandOnGameThread([this, param_e, val]() {
+        UWeatherLib::setWeatherParamScalar(simmode_->GetWorld(), param_e, val);
+    },
+                                             true);
 }
 
 std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
@@ -626,4 +633,242 @@ std::vector<std::string> WorldSimApi::listVehicles() const
 std::string WorldSimApi::getSettingsString() const
 {
     return msr::airlib::AirSimSettings::singleton().settings_text_;
+}
+
+bool WorldSimApi::testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& lla1, const msr::airlib::GeoPoint& lla2) const
+{
+    bool hit;
+
+    // We need to run this code on the main game thread, since it iterates over actors
+    UAirBlueprintLib::RunCommandOnGameThread([this, &lla1, &lla2, &hit]() {
+        // This default NedTransform is part of how we anchor the AirSim primary LLA origin at 0, 0, 0 in Unreal
+        NedTransform zero_based_ned_transform(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(simmode_));
+        FCollisionQueryParams collision_params(SCENE_QUERY_STAT(LineOfSight), true);
+
+        const auto& settings = msr::airlib::AirSimSettings::singleton();
+        msr::airlib::GeodeticConverter converter(settings.origin_geopoint.home_geo_point.latitude,
+                                                 settings.origin_geopoint.home_geo_point.longitude,
+                                                 settings.origin_geopoint.home_geo_point.altitude);
+        double north, east, down;
+        converter.geodetic2Ned(lla1.latitude, lla1.longitude, lla1.altitude, &north, &east, &down);
+        msr::airlib::Vector3r ned(north, east, down);
+        FVector point1 = zero_based_ned_transform.fromGlobalNed(ned);
+        converter.geodetic2Ned(lla2.latitude, lla2.longitude, lla2.altitude, &north, &east, &down);
+        ned = msr::airlib::Vector3r(north, east, down);
+        FVector point2 = zero_based_ned_transform.fromGlobalNed(ned);
+
+        hit = simmode_->GetWorld()->LineTraceTestByChannel(point1, point2, ECC_Visibility, collision_params);
+
+        if (settings.show_los_debug_lines_) {
+            FLinearColor color;
+            if (hit) {
+                // No LOS, so draw red line
+                color = FLinearColor{ 1.0f, 0, 0, 0.4f };
+            }
+            else {
+                // Yes LOS, so draw green line
+                color = FLinearColor{ 0, 1.0f, 0, 0.4f };
+            }
+
+            simmode_->GetWorld()->PersistentLineBatcher->DrawLine(point1, point2, color, SDPG_World, 4, 999999);
+        }
+    },
+                                             true);
+
+    return !hit;
+}
+
+std::vector<msr::airlib::GeoPoint> WorldSimApi::getWorldExtents() const
+{
+    msr::airlib::GeoPoint lla_min_out;
+    msr::airlib::GeoPoint lla_max_out;
+    // We need to run this code on the main game thread, since it iterates over actors
+    UAirBlueprintLib::RunCommandOnGameThread([this, &lla_min_out, &lla_max_out]() {
+        // This default NedTransform is part of how we anchor the AirSim primary LLA origin at 0, 0, 0 in Unreal
+        NedTransform zero_based_ned_transform(FTransform::Identity, UAirBlueprintLib::GetWorldToMetersScale(simmode_));
+
+        // Testing actor enum for world bounds...
+        FVector world_min{ FLT_MAX, FLT_MAX, FLT_MAX };
+        FVector world_max{ FLT_MIN, FLT_MIN, FLT_MIN };
+        for (TActorIterator<AActor> actor_itr(simmode_->GetWorld()); actor_itr; ++actor_itr) {
+            // Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+            AActor* actor = *actor_itr;
+            FVector origin;
+            FVector extent;
+            actor->GetActorBounds(false, origin, extent);
+
+            if (extent[0] > 20000.0f) {
+                FString name = actor->GetFullName();
+                std::string stdName = std::string(TCHAR_TO_UTF8(*name));
+                common_utils::Utils::log("In world bounds calculation, skipping gigantic object: " + stdName, common_utils::Utils::kLogLevelWarn);
+                continue;
+            }
+
+            for (int coord = 0; coord < 3; coord++) {
+                world_min[coord] = std::min(world_min[coord], origin[coord] - extent[coord]);
+                world_max[coord] = std::max(world_max[coord], origin[coord] + extent[coord]);
+            }
+        }
+
+        // TODO think more about how best to determine/indicate ground level, if anyone cares
+
+        // Convert Uvectors to LLAs
+        const auto& settings = msr::airlib::AirSimSettings::singleton();
+        msr::airlib::Vector3r ned = zero_based_ned_transform.toGlobalNed(world_min);
+        lla_min_out = msr::airlib::EarthUtils::nedToGeodetic(ned, settings.origin_geopoint);
+
+        ned = zero_based_ned_transform.toGlobalNed(world_max);
+        lla_max_out = msr::airlib::EarthUtils::nedToGeodetic(ned, settings.origin_geopoint);
+    },
+                                             true);
+
+    common_utils::Utils::log("Extent min: " + lla_min_out.to_string() + ".  Max: " + lla_max_out.to_string(), common_utils::Utils::kLogLevelInfo);
+
+    std::vector<msr::airlib::GeoPoint> result;
+    result.push_back(lla_min_out);
+    result.push_back(lla_max_out);
+
+    return result;
+}
+
+msr::airlib::CameraInfo WorldSimApi::getCameraInfo(const CameraDetails& camera_details) const
+{
+    msr::airlib::CameraInfo info;
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
+    UAirBlueprintLib::RunCommandOnGameThread([camera, &info]() {
+        info = camera->getCameraInfo();
+    },
+                                             true);
+
+    return info;
+}
+
+void WorldSimApi::setCameraPose(const msr::airlib::Pose& pose, const CameraDetails& camera_details)
+{
+    APIPCamera* camera = simmode_->getCamera(camera_details);
+    UAirBlueprintLib::RunCommandOnGameThread([camera, &pose]() {
+        camera->setCameraPose(pose);
+    },
+                                             true);
+}
+
+void WorldSimApi::setCameraFoV(float fov_degrees, const CameraDetails& camera_details)
+{
+    APIPCamera* camera = simmode_->getCamera(camera_details);
+    UAirBlueprintLib::RunCommandOnGameThread([camera, &fov_degrees]() {
+        camera->setCameraFoV(fov_degrees);
+    },
+                                             true);
+}
+
+void WorldSimApi::setDistortionParam(const std::string& param_name, float value, const CameraDetails& camera_details)
+{
+    APIPCamera* camera = simmode_->getCamera(camera_details);
+    UAirBlueprintLib::RunCommandOnGameThread([camera, &param_name, &value]() {
+        camera->setDistortionParam(param_name, value);
+    },
+                                             true);
+}
+
+std::vector<float> WorldSimApi::getDistortionParams(const CameraDetails& camera_details) const
+{
+    std::vector<float> param_values;
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
+    UAirBlueprintLib::RunCommandOnGameThread([camera, &param_values]() {
+        param_values = camera->getDistortionParams();
+    },
+                                             true);
+
+    return param_values;
+}
+
+std::vector<WorldSimApi::ImageCaptureBase::ImageResponse> WorldSimApi::getImages(
+    const std::vector<ImageCaptureBase::ImageRequest>& requests, const std::string& vehicle_name, bool external) const
+{
+    std::vector<ImageCaptureBase::ImageResponse> responses;
+
+    const UnrealImageCapture* camera = simmode_->getImageCapture(vehicle_name, external);
+    camera->getImages(requests, responses);
+
+    return responses;
+}
+
+std::vector<uint8_t> WorldSimApi::getImage(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) const
+{
+    std::vector<ImageCaptureBase::ImageRequest> request{
+        ImageCaptureBase::ImageRequest(camera_details.camera_name, image_type)
+    };
+
+    const auto& response = getImages(request, camera_details.vehicle_name, camera_details.external);
+    if (response.size() > 0)
+        return response.at(0).image_data_uint8;
+    else
+        return std::vector<uint8_t>();
+}
+
+void WorldSimApi::addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details)
+{
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, &mesh_name]() {
+        camera->getDetectionComponent(image_type, false)->addMeshName(mesh_name);
+    },
+                                             true);
+}
+
+void WorldSimApi::setDetectionFilterRadius(ImageCaptureBase::ImageType image_type, float radius_cm, const CameraDetails& camera_details)
+{
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, radius_cm]() {
+        camera->getDetectionComponent(image_type, false)->setFilterRadius(radius_cm);
+    },
+                                             true);
+}
+
+void WorldSimApi::clearDetectionMeshNames(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details)
+{
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, image_type]() {
+        camera->getDetectionComponent(image_type, false)->clearMeshNames();
+    },
+                                             true);
+}
+
+std::vector<msr::airlib::DetectionInfo> WorldSimApi::getDetections(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details)
+{
+    std::vector<msr::airlib::DetectionInfo> result;
+
+    const APIPCamera* camera = simmode_->getCamera(camera_details);
+    const NedTransform& ned_transform = camera_details.external
+                                            ? simmode_->getGlobalNedTransform()
+                                            : simmode_->getVehicleSimApi(camera_details.vehicle_name)->getNedTransform();
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, image_type, &result, &ned_transform]() {
+        const TArray<FDetectionInfo>& detections = camera->getDetectionComponent(image_type, false)->getDetections();
+        result.resize(detections.Num());
+
+        for (int i = 0; i < detections.Num(); i++) {
+            result[i].name = std::string(TCHAR_TO_UTF8(*(detections[i].Actor->GetFName().ToString())));
+
+            Vector3r nedWrtOrigin = ned_transform.toGlobalNed(detections[i].Actor->GetActorLocation());
+            result[i].geo_point = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
+                                                                         AirSimSettings::singleton().origin_geopoint);
+
+            result[i].box2D.min = Vector2r(detections[i].Box2D.Min.X, detections[i].Box2D.Min.Y);
+            result[i].box2D.max = Vector2r(detections[i].Box2D.Max.X, detections[i].Box2D.Max.Y);
+
+            result[i].box3D.min = ned_transform.toLocalNed(detections[i].Box3D.Min);
+            result[i].box3D.max = ned_transform.toLocalNed(detections[i].Box3D.Max);
+
+            const Vector3r& position = ned_transform.toLocalNed(detections[i].RelativeTransform.GetTranslation());
+            const Quaternionr& orientation = ned_transform.toNed(detections[i].RelativeTransform.GetRotation());
+
+            result[i].relative_pose = Pose(position, orientation);
+        }
+    },
+                                             true);
+
+    return result;
 }
