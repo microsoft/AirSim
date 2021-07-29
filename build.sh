@@ -8,18 +8,22 @@ set -e
 set -x
 
 debug=false
-
+gcc=false
 # Parse command line arguments
 while [[ $# -gt 0 ]]
 do
-key="$1"
+    key="$1"
 
-case $key in
---debug)
-    debug=true
-    shift # past argument
-    ;;
-esac
+    case $key in
+    --debug)
+        debug=true
+        shift # past argument
+        ;;
+    --gcc)
+        gcc=true
+        shift # past argument
+        ;;
+    esac
 
 done
 
@@ -54,8 +58,13 @@ if [ "$(uname)" == "Darwin" ]; then
     export CC=/usr/local/opt/llvm@8/bin/clang
     export CXX=/usr/local/opt/llvm@8/bin/clang++
 else
-    export CC="clang-8"
-    export CXX="clang++-8"
+    if $gcc; then
+        export CC="gcc-8"
+        export CXX="g++-8"
+    else
+        export CC="clang-8"
+        export CXX="clang++-8"
+    fi
 fi
 
 #install EIGEN library
@@ -74,24 +83,24 @@ if [[ -d "./cmake/CMakeFiles" ]]; then
     rm -rf "./cmake/CMakeFiles"
 fi
 
-folder_name=""
+
 
 if [[ ! -d $build_dir ]]; then
     mkdir -p $build_dir
-    pushd $build_dir  >/dev/null
-
-    if $debug; then
-        folder_name="Debug"
-        "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug \
-            || (popd && rm -r $build_dir && exit 1)
-        popd >/dev/null
-    else
-        folder_name="Release"
-        "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Release \
-            || (popd && rm -r $build_dir && exit 1)
-        popd >/dev/null
-    fi
 fi
+
+pushd $build_dir  >/dev/null
+if $debug; then
+    folder_name="Debug"
+    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug \
+        || (popd && rm -r $build_dir && exit 1)   
+else
+    folder_name="Release"
+    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Release \
+        || (popd && rm -r $build_dir && exit 1)
+fi
+popd >/dev/null
+
 
 pushd $build_dir  >/dev/null
 # final linking of the binaries can fail due to a missing libc++abi library
