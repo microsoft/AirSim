@@ -1,3 +1,3 @@
-# Welcome to MavLinkCom
+# Welcome to GazeboDrone
 
 This page has moved [here](https://github.com/microsoft/AirSim/blob/master/docs/gazebo_drone.md).
