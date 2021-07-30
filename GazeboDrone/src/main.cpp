@@ -67,7 +67,7 @@ void cbLocalPose(ConstPosesStampedPtr& msg)
             std::cout << " oz: " << std::right << std::setw(NWIDTH) << oz;
             std::cout << std::endl;
         }
-        if (i == msg->pose_size() - 1) {
+        if (i == 0) {
             msr::airlib::Vector3r p(x, -y, -z);
             msr::airlib::Quaternionr o(ow, ox, -oy, -oz);
 
