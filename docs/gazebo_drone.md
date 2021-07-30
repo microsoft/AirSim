@@ -18,6 +18,7 @@ sudo apt-get install libgazebo9-dev
 This project is built with g++, so AirLib needs to be built with g++ too. 
 Run from your AirSim root folder:  
 ```
+./clean.sh
 ./setup.sh
 ./build.sh --gcc
 ```
