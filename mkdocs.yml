@@ -80,6 +80,7 @@ nav:
     - "Architecture": 'design.md'
     - "Code Structure": 'code_structure.md'
     - "Adding new APIs": 'adding_new_apis.md'
+    - "Modifying Recording Data": 'modify_recording_data.md'
     - "Coding Guidelines": 'coding_guidelines.md'
     - "Flight Controller": 'flight_controller.md'
     - "Simple Flight": 'simple_flight.md'
