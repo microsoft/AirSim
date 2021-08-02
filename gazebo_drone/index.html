@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Custom Unity Environment - AirSim</title>
+  <title>Import Gazebo models - AirSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Custom Unity Environment";
-    var mkdocs_page_input_path = "custom_unity_environments.md";
+    var mkdocs_page_name = "Import Gazebo models";
+    var mkdocs_page_input_path = "gazebo_drone.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -56,7 +56,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Get AirSim</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../use_precompiled/">Download Binaries</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../build_windows/">Build on Windows</a>
@@ -71,15 +71,13 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../Unity/">AirSim with Unity</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Custom Unity Environment</a>
-    <ul class="current">
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../custom_unity_environments/">Custom Unity Environment</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unity_api_support/">Unity APIs</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Using AirSim</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../apis/">Core APIs</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../image_apis/">Image APIs</a>
@@ -120,7 +118,27 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../airsim_tutorial_pkgs/">ROS: AirSim Tutorial Packages</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../gazebo_drone/">Import Gazebo models</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Import Gazebo models</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#gazebo">Gazebo</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#airlib">AirLib</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#airsim-simulator">AirSim simulator</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#airsim-settings">AirSim settings</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build">Build</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run">Run</a>
+    </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../retexturing/">Domain Randomization</a>
                     </li>
@@ -282,14 +300,14 @@
     
       
         
-          <li>Get AirSim &raquo;</li>
+          <li>Using AirSim &raquo;</li>
         
       
     
-    <li>Custom Unity Environment</li>
+    <li>Import Gazebo models</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/custom_unity_environments.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/gazebo_drone.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -301,29 +319,34 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="adding-airsim-to-custom-unity-projects">Adding AirSim to Custom Unity Projects<a class="headerlink" href="#adding-airsim-to-custom-unity-projects" title="Permanent link">#</a></h1>
-<p>Before completing these steps, make sure you have properly <a href="../Unity/">set up AirSim for Unity</a>
-1. Open the Containing folder of your custom unity project
-2. Copy and paste the following items from Unity demo into the main project folder of your custom environment:
-<pre class="highlight"><code>Assets
-ProjectSettings</code></pre>
-<a href="https://youtu.be/5iplkEC88qw?start=5&amp;end=12"><img alt="Copy and paste video" src="../images/unity_copy_and_paste.png" /></a></p>
-<ol>
-<li>Open your custom environment in Unity</li>
-<li>Drag your desired scene into the Scene Hierarchy panel</li>
-<li>Drag CarDemo into the Scene Hierarchy panel</li>
-<li>Copy the following items from CarDemo into your custom scene:
-<pre class="highlight"><code>Main Camera
-Directional Light
-AirSimHUD
-AirSimGlobal
-Car</code></pre></li>
-<li>After removing <code>CarDemo</code> from the Hierarchy panel, save your modified scene as <code>CarDemo</code>.
-<a href="https://youtu.be/5iplkEC88qw?start=45&amp;end=78"><img alt="change scene" src="../images/unity_change_scene.png" /></a></li>
-<li>Repeat Steps 5, 6 and 7 with <code>DroneDemo</code>. This time, save your custom scene as <code>DroneDemo</code>.</li>
-</ol>
-<p>To run your project drag <code>SimModeSelector</code> into, and remove everything else from the Scene Hierarchy panel.</p>
-<p>Your custom environment is now ready to interface with AirSim!</p>
+                <h1 id="welcome-to-gazebodrone">Welcome to GazeboDrone<a class="headerlink" href="#welcome-to-gazebodrone" title="Permanent link">#</a></h1>
+<p>GazeboDrone allows connecting a gazebo drone to the AirSim drone, using the gazebo drone as a flight dynamic model (FDM) and AirSim to generate environmental sensor data. It can be used for <strong>Multicopters</strong>, <strong>Fixed-wings</strong> or any other vehicle.</p>
+<h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">#</a></h2>
+<h3 id="gazebo">Gazebo<a class="headerlink" href="#gazebo" title="Permanent link">#</a></h3>
+<p>Make sure you have installed gazebo dependencies:</p>
+<pre class="highlight"><code>sudo apt-get install libgazebo9-dev</code></pre>
+<h3 id="airlib">AirLib<a class="headerlink" href="#airlib" title="Permanent link">#</a></h3>
+<p>This project is built with GCC 8, so AirLib needs to be built with GCC 8 too. 
+Run from your AirSim root folder:<br />
+<pre class="highlight"><code>./clean.sh
+./setup.sh
+./build.sh --gcc</code></pre></p>
+<h2 id="airsim-simulator">AirSim simulator<a class="headerlink" href="#airsim-simulator" title="Permanent link">#</a></h2>
+<p>The AirSim UE plugin needs to be built with clang, so you can't use the one compiled in the previous step. You can use <a href="https://github.com/microsoft/AirSim/releases">our binaries</a> or you can clone AirSim again in another folder and buid it without the above option, then you can <a href="../build_linux/#how-to-use-airsim">run Blocks</a> or your own environment.</p>
+<h3 id="airsim-settings">AirSim settings<a class="headerlink" href="#airsim-settings" title="Permanent link">#</a></h3>
+<p>Inside your <code>settings.json</code> file you need to add this line:<br />
+<code>"PhysicsEngineName":"ExternalPhysicsEngine"</code>.<br />
+You may want to change the visual model of the AirSim drone, for that you can follow <a href="https://youtu.be/Bp86WiLUC80">this tutorial.</a></p>
+<h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">#</a></h2>
+<p>Execute this from your AirSim root folder:<br />
+<pre class="highlight"><code>cd GazeboDrone
+mkdir build &amp;&amp; cd build
+cmake ..
+make</code></pre></p>
+<h2 id="run">Run<a class="headerlink" href="#run" title="Permanent link">#</a></h2>
+<p>First run the AirSim simulator and your Gazebo model and then execute this from your AirSim root folder:</p>
+<pre class="highlight"><code>cd GazeboDrone/build
+./GazeboDrone</code></pre>
               
             </div>
           </div>
@@ -331,10 +354,10 @@ Car</code></pre></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../unity_api_support/" class="btn btn-neutral float-right" title="Unity APIs">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../retexturing/" class="btn btn-neutral float-right" title="Domain Randomization">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../Unity/" class="btn btn-neutral" title="AirSim with Unity"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../airsim_tutorial_pkgs/" class="btn btn-neutral" title="ROS: AirSim Tutorial Packages"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -366,10 +389,10 @@ Car</code></pre></li>
         </span>
     
     
-      <span><a href="../Unity/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../airsim_tutorial_pkgs/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../unity_api_support/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../retexturing/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
