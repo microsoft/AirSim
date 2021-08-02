@@ -16,12 +16,11 @@ include_directories(
     ${AIRSIM_ROOT}/AirLib/deps/eigen3
     ${AIRSIM_ROOT}/AirLib/deps/rpclib/include
     ${AIRSIM_ROOT}/AirLib/include
-    ${AIRSIM_ROOT}/AirLib/deps/MavLinkCom/include
 )
 
 link_directories(
     ${GAZEBO_LIBRARY_DIRS}
-    ../../AirLib/lib/x64
+    ../../build_release/output/lib
 )
 
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
@@ -34,6 +33,5 @@ target_link_libraries(
     pthread
     AirLib
     rpc
-    MavLinkCom
 )
 
