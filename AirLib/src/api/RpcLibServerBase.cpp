@@ -302,7 +302,7 @@ namespace airlib
             return getWorldSimApi()->loadLevel(level_name);
         });
 
-        pimpl_->server.bind("simSpawnObject", [&](string& object_name, const string& load_component, const RpcLibAdaptorsBase::Pose& pose, const RpcLibAdaptorsBase::Vector3r& scale, bool physics_enabled) -> string {
+        pimpl_->server.bind("simSpawnObject", [&](const string& object_name, const string& load_component, const RpcLibAdaptorsBase::Pose& pose, const RpcLibAdaptorsBase::Vector3r& scale, bool physics_enabled) -> string {
             return getWorldSimApi()->spawnObject(object_name, load_component, pose.to(), scale.to(), physics_enabled);
         });
 
