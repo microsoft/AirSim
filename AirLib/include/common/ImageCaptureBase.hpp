@@ -26,6 +26,8 @@ namespace airlib
             Segmentation,
             SurfaceNormals,
             Infrared,
+            OpticalFlow,
+            OpticalFlowVis,
             Count //must be last
         };
 
