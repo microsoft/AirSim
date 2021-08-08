@@ -34,6 +34,7 @@ namespace airlib
         virtual bool loadLevel(const std::string& level_name) = 0;
         virtual string spawnObject(const std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled, bool is_blueprint) = 0;
         virtual bool destroyObject(const std::string& object_name) = 0;
+        virtual std::vector<std::string> listAssets() const = 0;
 
         virtual bool isPaused() const = 0;
         virtual void reset() = 0;

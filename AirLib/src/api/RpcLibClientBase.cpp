@@ -543,6 +543,11 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("getSettingsString").as<std::string>();
         }
 
+        std::vector<std::string> RpcLibClientBase::simListAssets() const
+        {
+            return pimpl_->client.call("simListAssets").as<std::vector<std::string>>();
+        }
+
         void* RpcLibClientBase::getClient()
         {
             return &pimpl_->client;

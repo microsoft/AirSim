@@ -144,6 +144,8 @@ namespace airlib
 
         std::string getSettingsString() const;
 
+        std::vector<std::string> simListAssets() const;
+
     protected:
         void* getClient();
         const void* getClient() const;
