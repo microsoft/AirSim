@@ -82,65 +82,74 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
     return result;
 }
 
-std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled)
+std::vector<std::string> WorldSimApi::listAssets() const
 {
+    std::vector<std::string> all_assets;
+
+    for (const TPair<FString, FAssetData>& pair : simmode_->asset_map) {
+        all_assets.push_back(std::string(TCHAR_TO_UTF8(*pair.Key)));
+    }
+
+    return all_assets;
+}
+
+std::string WorldSimApi::spawnObject(const std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled)
+{
+    FString asset_name(load_object.c_str());
+    FAssetData* LoadAsset = simmode_->asset_map.Find(asset_name);
+
+    if (!LoadAsset->IsValid()) {
+        throw std::invalid_argument("There were no objects with name " + load_object + " found in the Registry");
+    }
+
     // Create struct for Location and Rotation of actor in Unreal
-    FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
+    const FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
 
-    bool found_object = false, spawned_object = false;
-    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &spawned_object, &scale, &physics_enabled]() {
-        FString asset_name = FString(load_object.c_str());
-        FAssetData* LoadAsset = simmode_->asset_map.Find(asset_name);
+    bool spawned_object = false;
+    std::string final_object_name = object_name;
 
-        if (LoadAsset) {
-            found_object = true;
-            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(LoadAsset->GetAsset());
-            std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_->GetWorld(), ".*" + object_name + ".*");
-            if (matching_names.size() > 0) {
-                size_t greatest_num{ 0 }, result{ 0 };
-                for (auto match : matching_names) {
-                    std::string number_extension = match.substr(match.find_last_not_of("0123456789") + 1);
-                    if (number_extension != "") {
-                        result = std::stoi(number_extension);
-                        greatest_num = greatest_num > result ? greatest_num : result;
-                    }
+    UAirBlueprintLib::RunCommandOnGameThread([this, LoadAsset, &final_object_name, &spawned_object, &actor_transform, &scale, &physics_enabled]() {
+        UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(LoadAsset->GetAsset());
+
+        // Ensure new non-matching name for the object
+        const std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_, ".*" + final_object_name + ".*");
+        if (matching_names.size() > 0) {
+            size_t greatest_num{ 0 };
+            for (const auto& match : matching_names) {
+                const std::string number_extension = match.substr(match.find_last_not_of("0123456789") + 1);
+                if (!number_extension.empty()) {
+                    greatest_num = std::max(greatest_num, std::stoul(number_extension));
                 }
-                object_name += std::to_string(greatest_num + 1);
             }
-            FActorSpawnParameters new_actor_spawn_params;
-            new_actor_spawn_params.Name = FName(object_name.c_str());
-            //new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
-            AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
-
-            if (NewActor) {
-                spawned_object = true;
-                simmode_->scene_object_map.Add(FString(object_name.c_str()), NewActor);
-            }
-
-            UAirBlueprintLib::setSimulatePhysics(NewActor, physics_enabled);
+            final_object_name += std::to_string(greatest_num + 1);
         }
-        else {
-            found_object = false;
+
+        FActorSpawnParameters new_actor_spawn_params;
+        new_actor_spawn_params.Name = FName(final_object_name.c_str());
+        //new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
+        AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
+
+        if (IsValid(NewActor)) {
+            spawned_object = true;
+            simmode_->scene_object_map.Add(FString(final_object_name.c_str()), NewActor);
         }
+
+        UAirBlueprintLib::setSimulatePhysics(NewActor, physics_enabled);
     },
                                              true);
 
-    if (!found_object) {
-        throw std::invalid_argument(
-            "There were no objects with name " + load_object + " found in the Registry");
-    }
     if (!spawned_object) {
         throw std::invalid_argument(
             "Engine could not spawn " + load_object + " because of a stale reference of same name");
     }
-    return object_name;
+    return final_object_name;
 }
 
 AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
 {
     AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params);
 
-    if (NewActor) {
+    if (IsValid(NewActor)) {
         UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
         ObjectComponent->SetStaticMesh(static_mesh);
         ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));

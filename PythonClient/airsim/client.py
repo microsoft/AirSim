@@ -456,6 +456,15 @@ class VehicleClient:
         """
         return self.client.call('simLoadLevel', level_name)
 
+    def simListAssets(self):
+        """
+        Lists all the assets present in the Asset Registry
+
+        Returns:
+            list[str]: Names of all the assets
+        """
+        return self.client.call('simListAssets')
+
     def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
         """Spawned selected object in the world
         
