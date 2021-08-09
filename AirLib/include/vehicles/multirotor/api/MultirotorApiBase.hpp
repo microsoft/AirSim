@@ -126,7 +126,7 @@ namespace airlib
                                float obs_avoidance_vel, const Vector3r& origin, float xy_length, float max_z, float min_z);
 
         /************************* high level status APIs *********************************/
-        RotorStates getRotorStates() const
+        const RotorStates& getRotorStates() const
         {
             return rotor_states_;
         }
