@@ -128,15 +128,15 @@ namespace airlib
             getWorldSimApi()->setWeatherParameter(param, val);
         });
 
-        pimpl_->server.bind("enableApiControl", [&](bool is_enabled, const std::string& vehicle_name) -> void {
+        pimpl_->server.bind("enableApiControl", [&](bool is_enabled, const std::string& vehicle_name, bool external) -> void {
             getVehicleApi(vehicle_name)->enableApiControl(is_enabled);
         });
 
-        pimpl_->server.bind("isApiControlEnabled", [&](const std::string& vehicle_name) -> bool {
+        pimpl_->server.bind("isApiControlEnabled", [&](const std::string& vehicle_name, bool external) -> bool {
             return getVehicleApi(vehicle_name)->isApiControlEnabled();
         });
 
-        pimpl_->server.bind("armDisarm", [&](bool arm, const std::string& vehicle_name) -> bool {
+        pimpl_->server.bind("armDisarm", [&](bool arm, const std::string& vehicle_name, bool external) -> bool {
             return getVehicleApi(vehicle_name)->armDisarm(arm);
         });
 
@@ -153,7 +153,87 @@ namespace airlib
             return getWorldSimApi()->getImage(type, CameraDetails(camera_name, vehicle_name, external));
         });
 
-        pimpl_->server.bind("simTestLineOfSightToPoint", [&](const RpcLibAdaptorsBase::GeoPoint& point, const std::string& vehicle_name) -> bool {
+        //CinemAirSim
+        pimpl_->server.bind("simGetPresetLensSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> vector<string> {
+            auto result = getWorldSimApi()->getPresetLensSettings(CameraDetails(camera_name, vehicle_name, external));
+            if (result.size() == 0) {
+                // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
+                result.push_back("");
+            }
+            return result;
+        });
+
+        pimpl_->server.bind("simGetLensSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
+            auto result = getWorldSimApi()->getLensSettings(CameraDetails(camera_name, vehicle_name, external));
+            return result;
+        });
+
+        pimpl_->server.bind("simSetPresetLensSettings", [&](const std::string preset_lens_settings, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setPresetLensSettings(preset_lens_settings, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetPresetFilmbackSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> vector<string> {
+            auto result = getWorldSimApi()->getPresetFilmbackSettings(CameraDetails(camera_name, vehicle_name, external));
+            if (result.size() == 0) {
+                // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
+                result.push_back("");
+            }
+            return result;
+        });
+
+        pimpl_->server.bind("simSetPresetFilmbackSettings", [&](const std::string preset_filmback_settings, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setPresetFilmbackSettings(preset_filmback_settings, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetFilmbackSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
+            auto result = getWorldSimApi()->getFilmbackSettings(CameraDetails(camera_name, vehicle_name, external));
+            return result;
+        });
+
+        pimpl_->server.bind("simSetFilmbackSettings", [&](const float width, const float heigth, const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
+            auto result = getWorldSimApi()->setFilmbackSettings(width, heigth, CameraDetails(camera_name, vehicle_name, external));
+            return result;
+        });
+
+        pimpl_->server.bind("simGetFocalLength", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
+            return getWorldSimApi()->getFocalLength(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetFocalLength", [&](const float focal_lenght, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setFocalLength(focal_lenght, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simEnableManualFocus", [&](const bool enable, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->enableManualFocus(enable, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetFocusDistance", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
+            return getWorldSimApi()->getFocusDistance(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetFocusDistance", [&](const float focus_distance, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setFocusDistance(focus_distance, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetFocusAperture", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
+            return getWorldSimApi()->getFocusAperture(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetFocusAperture", [&](const float focus_aperture, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setFocusAperture(focus_aperture, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simEnableFocusPlane", [&](const bool enable, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->enableFocusPlane(enable, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetCurrentFieldOfView", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
+            auto result = getWorldSimApi()->getCurrentFieldOfView(CameraDetails(camera_name, vehicle_name, external));
+            return result;
+        });
+        //end CinemAirSim
+
+        pimpl_->server.bind("simTestLineOfSightToPoint", [&](const RpcLibAdaptorsBase::GeoPoint& point, const std::string& vehicle_name, bool external) -> bool {
             return getVehicleSimApi(vehicle_name)->testLineOfSightToPoint(point.to());
         });
 
@@ -178,16 +258,16 @@ namespace airlib
             return getWorldSimApi()->addVehicle(vehicle_name, vehicle_type, pose.to(), pawn_path);
         });
 
-        pimpl_->server.bind("simSetVehiclePose", [&](const RpcLibAdaptorsBase::Pose& pose, bool ignore_collision, const std::string& vehicle_name) -> void {
+        pimpl_->server.bind("simSetVehiclePose", [&](const RpcLibAdaptorsBase::Pose& pose, bool ignore_collision, const std::string& vehicle_name, bool external) -> void {
             getVehicleSimApi(vehicle_name)->setPose(pose.to(), ignore_collision);
         });
 
-        pimpl_->server.bind("simGetVehiclePose", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::Pose {
+        pimpl_->server.bind("simGetVehiclePose", [&](const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::Pose {
             const auto& pose = getVehicleSimApi(vehicle_name)->getPose();
             return RpcLibAdaptorsBase::Pose(pose);
         });
 
-        pimpl_->server.bind("simSetTraceLine", [&](const std::vector<float>& color_rgba, float thickness, const std::string& vehicle_name) -> void {
+        pimpl_->server.bind("simSetTraceLine", [&](const std::vector<float>& color_rgba, float thickness, const std::string& vehicle_name, bool external) -> void {
             getVehicleSimApi(vehicle_name)->setTraceLine(color_rgba, thickness);
         });
 
@@ -233,37 +313,37 @@ namespace airlib
             getWorldSimApi()->printLogMessage(message, message_param, severity);
         });
 
-        pimpl_->server.bind("getHomeGeoPoint", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::GeoPoint {
+        pimpl_->server.bind("getHomeGeoPoint", [&](const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::GeoPoint {
             const auto& geo_point = getVehicleApi(vehicle_name)->getHomeGeoPoint();
             return RpcLibAdaptorsBase::GeoPoint(geo_point);
         });
 
-        pimpl_->server.bind("getLidarData", [&](const std::string& lidar_name, const std::string& vehicle_name) -> RpcLibAdaptorsBase::LidarData {
+        pimpl_->server.bind("getLidarData", [&](const std::string& lidar_name, const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::LidarData {
             const auto& lidar_data = getVehicleApi(vehicle_name)->getLidarData(lidar_name);
             return RpcLibAdaptorsBase::LidarData(lidar_data);
         });
 
-        pimpl_->server.bind("getImuData", [&](const std::string& imu_name, const std::string& vehicle_name) -> RpcLibAdaptorsBase::ImuData {
+        pimpl_->server.bind("getImuData", [&](const std::string& imu_name, const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::ImuData {
             const auto& imu_data = getVehicleApi(vehicle_name)->getImuData(imu_name);
             return RpcLibAdaptorsBase::ImuData(imu_data);
         });
 
-        pimpl_->server.bind("getBarometerData", [&](const std::string& barometer_name, const std::string& vehicle_name) -> RpcLibAdaptorsBase::BarometerData {
+        pimpl_->server.bind("getBarometerData", [&](const std::string& barometer_name, const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::BarometerData {
             const auto& barometer_data = getVehicleApi(vehicle_name)->getBarometerData(barometer_name);
             return RpcLibAdaptorsBase::BarometerData(barometer_data);
         });
 
-        pimpl_->server.bind("getMagnetometerData", [&](const std::string& magnetometer_name, const std::string& vehicle_name) -> RpcLibAdaptorsBase::MagnetometerData {
+        pimpl_->server.bind("getMagnetometerData", [&](const std::string& magnetometer_name, const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::MagnetometerData {
             const auto& magnetometer_data = getVehicleApi(vehicle_name)->getMagnetometerData(magnetometer_name);
             return RpcLibAdaptorsBase::MagnetometerData(magnetometer_data);
         });
 
-        pimpl_->server.bind("getGpsData", [&](const std::string& gps_name, const std::string& vehicle_name) -> RpcLibAdaptorsBase::GpsData {
+        pimpl_->server.bind("getGpsData", [&](const std::string& gps_name, const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::GpsData {
             const auto& gps_data = getVehicleApi(vehicle_name)->getGpsData(gps_name);
             return RpcLibAdaptorsBase::GpsData(gps_data);
         });
 
-        pimpl_->server.bind("getDistanceSensorData", [&](const std::string& distance_sensor_name, const std::string& vehicle_name) -> RpcLibAdaptorsBase::DistanceSensorData {
+        pimpl_->server.bind("getDistanceSensorData", [&](const std::string& distance_sensor_name, const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::DistanceSensorData {
             const auto& distance_sensor_data = getVehicleApi(vehicle_name)->getDistanceSensorData(distance_sensor_name);
             return RpcLibAdaptorsBase::DistanceSensorData(distance_sensor_data);
         });
@@ -289,7 +369,7 @@ namespace airlib
             getWorldSimApi()->setCameraFoV(fov_degrees, CameraDetails(camera_name, vehicle_name, external));
         });
 
-        pimpl_->server.bind("simGetCollisionInfo", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::CollisionInfo {
+        pimpl_->server.bind("simGetCollisionInfo", [&](const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::CollisionInfo {
             const auto& collision_info = getVehicleSimApi(vehicle_name)->getCollisionInfo();
             return RpcLibAdaptorsBase::CollisionInfo(collision_info);
         });
@@ -376,12 +456,12 @@ namespace airlib
             getWorldSimApi()->simPlotTransformsWithNames(conv_poses, names, tf_scale, tf_thickness, text_scale, text_color_rgba, duration);
         });
 
-        pimpl_->server.bind("simGetGroundTruthKinematics", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::KinematicsState {
+        pimpl_->server.bind("simGetGroundTruthKinematics", [&](const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::KinematicsState {
             const Kinematics::State& result = *getVehicleSimApi(vehicle_name)->getGroundTruthKinematics();
             return RpcLibAdaptorsBase::KinematicsState(result);
         });
 
-        pimpl_->server.bind("simGetGroundTruthEnvironment", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::EnvironmentState {
+        pimpl_->server.bind("simGetGroundTruthEnvironment", [&](const std::string& vehicle_name, bool external) -> RpcLibAdaptorsBase::EnvironmentState {
             const Environment::State& result = (*getVehicleSimApi(vehicle_name)->getGroundTruthEnvironment()).getState();
             return RpcLibAdaptorsBase::EnvironmentState(result);
         });
@@ -389,7 +469,7 @@ namespace airlib
             return getWorldSimApi()->createVoxelGrid(position.to(), x, y, z, res, output_file);
         });
 
-        pimpl_->server.bind("cancelLastTask", [&](const std::string& vehicle_name) -> void {
+        pimpl_->server.bind("cancelLastTask", [&](const std::string& vehicle_name, bool external) -> void {
             getVehicleApi(vehicle_name)->cancelLastTask();
         });
 
