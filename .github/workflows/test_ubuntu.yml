@@ -31,3 +31,12 @@ jobs:
           source /opt/ros/*/setup.bash
           cd ros
           catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
+
+      - name: Build GazeboDrone
+        run: |
+          sudo apt-get install -qq libgazebo9-dev gcc-8 g++-8
+          ./clean.sh && ./build.sh --gcc
+          cd GazeboDrone
+          mkdir build && cd build
+          cmake -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 ..
+          make
