@@ -381,6 +381,13 @@ ros/logs/
 ros/.catkin_workspace
 ros/src/CMakeLists.txt
 
+# ROS2
+ros2/.catkin_tools/
+ros/devel/
+ros/logs/
+ros/.catkin_workspace
+ros/src/CMakeLists.txt
+
 # docs
 docs/README.md
 build_docs/
