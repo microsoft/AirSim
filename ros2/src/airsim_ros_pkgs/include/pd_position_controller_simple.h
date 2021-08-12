@@ -126,8 +126,8 @@ private:
     // todo check for odom msg being older than n sec
 
     rclcpp::Publisher airsim_vel_cmd_world_frame_pub_;
-    ros::Subscriber airsim_odom_sub_;
-    ros::Subscriber home_geopoint_sub_;
+    rclcpp::Subscription airsim_odom_sub_;
+    rclcpp::Subscription home_geopoint_sub_;
     ros::ServiceServer local_position_goal_srvr_;
     ros::ServiceServer local_position_goal_override_srvr_;
     ros::ServiceServer gps_goal_srvr_;

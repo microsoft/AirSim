@@ -187,7 +187,7 @@ private:
     public:
         msr::airlib::CarApiBase::CarState curr_car_state;
 
-        ros::Subscriber car_cmd_sub;
+        rclcpp::Subscription car_cmd_sub;
         rclcpp::Publisher car_state_pub;
         airsim_interfaces::CarState car_state_msg;
 
@@ -202,8 +202,8 @@ private:
         msr::airlib::MultirotorState curr_drone_state;
         // bool in_air_; // todo change to "status" and keep track of this
 
-        ros::Subscriber vel_cmd_body_frame_sub;
-        ros::Subscriber vel_cmd_world_frame_sub;
+        rclcpp::Subscription vel_cmd_body_frame_sub;
+        rclcpp::Subscription vel_cmd_world_frame_sub;
 
         ros::ServiceServer takeoff_srvr;
         ros::ServiceServer land_srvr;
@@ -302,14 +302,14 @@ private:
 
 private:
     // subscriber / services for ALL robots
-    ros::Subscriber vel_cmd_all_body_frame_sub_;
-    ros::Subscriber vel_cmd_all_world_frame_sub_;
+    rclcpp::Subscription vel_cmd_all_body_frame_sub_;
+    rclcpp::Subscription vel_cmd_all_world_frame_sub_;
     ros::ServiceServer takeoff_all_srvr_;
     ros::ServiceServer land_all_srvr_;
 
     // todo - subscriber / services for a GROUP of robots, which is defined by a list of `vehicle_name`s passed in the ros msg / srv request
-    ros::Subscriber vel_cmd_group_body_frame_sub_;
-    ros::Subscriber vel_cmd_group_world_frame_sub_;
+    rclcpp::Subscription vel_cmd_group_body_frame_sub_;
+    rclcpp::Subscription vel_cmd_group_world_frame_sub_;
     ros::ServiceServer takeoff_group_srvr_;
     ros::ServiceServer land_group_srvr_;
 
@@ -379,8 +379,8 @@ private:
     rosgraph_msgs::Clock ros_clock_;
     bool publish_clock_ = false;
 
-    ros::Subscriber gimbal_angle_quat_cmd_sub_;
-    ros::Subscriber gimbal_angle_euler_cmd_sub_;
+    rclcpp::Subscription gimbal_angle_quat_cmd_sub_;
+    rclcpp::Subscription gimbal_angle_euler_cmd_sub_;
 
     static constexpr char CAM_YML_NAME[] = "camera_name";
     static constexpr char WIDTH_YML_NAME[] = "image_width";
