@@ -1,37 +1,37 @@
 #include "pd_position_controller_simple.h"
 
-bool PIDParams::load_from_rosparams(const ros::NodeHandle& nh)
+bool PIDParams::load_from_rosparams(const rclcpp::Node& nh)
 {
     bool found = true;
 
-    found = found && nh.getParam("kp_x", kp_x);
-    found = found && nh.getParam("kp_y", kp_y);
-    found = found && nh.getParam("kp_z", kp_z);
-    found = found && nh.getParam("kp_yaw", kp_yaw);
+    found = found && nh.get_parameter("kp_x", kp_x);
+    found = found && nh.get_parameter("kp_y", kp_y);
+    found = found && nh.get_parameter("kp_z", kp_z);
+    found = found && nh.get_parameter("kp_yaw", kp_yaw);
 
-    found = found && nh.getParam("kd_x", kd_x);
-    found = found && nh.getParam("kd_y", kd_y);
-    found = found && nh.getParam("kd_z", kd_z);
-    found = found && nh.getParam("kd_yaw", kd_yaw);
+    found = found && nh.get_parameter("kd_x", kd_x);
+    found = found && nh.get_parameter("kd_y", kd_y);
+    found = found && nh.get_parameter("kd_z", kd_z);
+    found = found && nh.get_parameter("kd_yaw", kd_yaw);
 
-    found = found && nh.getParam("reached_thresh_xyz", reached_thresh_xyz);
-    found = found && nh.getParam("reached_yaw_degrees", reached_yaw_degrees);
+    found = found && nh.get_parameter("reached_thresh_xyz", reached_thresh_xyz);
+    found = found && nh.get_parameter("reached_yaw_degrees", reached_yaw_degrees);
 
     return found;
 }
 
-bool DynamicConstraints::load_from_rosparams(const ros::NodeHandle& nh)
+bool DynamicConstraints::load_from_rosparams(const rclcpp::Node& nh)
 {
     bool found = true;
 
-    found = found && nh.getParam("max_vel_horz_abs", max_vel_horz_abs);
-    found = found && nh.getParam("max_vel_vert_abs", max_vel_vert_abs);
-    found = found && nh.getParam("max_yaw_rate_degree", max_yaw_rate_degree);
+    found = found && nh.get_parameter("max_vel_horz_abs", max_vel_horz_abs);
+    found = found && nh.get_parameter("max_vel_vert_abs", max_vel_vert_abs);
+    found = found && nh.get_parameter("max_yaw_rate_degree", max_yaw_rate_degree);
 
     return found;
 }
 
-PIDPositionController::PIDPositionController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private)
+PIDPositionController::PIDPositionController(const rclcpp::Node& nh, const ros::NodeHandle& nh_private)
     : nh_(nh), nh_private_(nh_private), has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
 {
     params_.load_from_rosparams(nh_private_);
@@ -78,7 +78,7 @@ void PIDPositionController::initialize_ros()
     update_control_cmd_timer_ = nh_private_.createTimer(ros::Duration(update_control_every_n_sec), &PIDPositionController::update_control_cmd_timer_cb, this);
 }
 
-void PIDPositionController::airsim_odom_cb(const nav_msgs::Odometry& odom_msg)
+void PIDPositionController::airsim_odom_cb(const nav_msgs::msg::Odometry& odom_msg)
 {
     has_odom_ = true;
     curr_odom_ = odom_msg;
@@ -110,7 +110,7 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_interfaces::srv::S
 
     if (has_goal_ && !reached_goal_) {
         // todo maintain array of position goals
-        RCLCPP_ERROR_STREAM("[PIDPositionController] denying position goal request. I am still following the previous goal");
+        RCLCPP_ERROR_STREAM(nh_.get_logger(), "[PIDPositionController] denying position goal request. I am still following the previous goal");
         return false;
     }
 
@@ -265,7 +265,7 @@ void PIDPositionController::update_control_cmd_timer_cb(const ros::TimerEvent& e
     // todo check if odometry is too old!!
     // if no odom, don't do anything.
     if (!has_odom_) {
-        RCLCPP_ERROR_STREAM("[PIDPositionController] Waiting for odometry!");
+        RCLCPP_ERROR_STREAM(nh_.get_logger(), "[PIDPositionController] Waiting for odometry!");
         return;
     }
 

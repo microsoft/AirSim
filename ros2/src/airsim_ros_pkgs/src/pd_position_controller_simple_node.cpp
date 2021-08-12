@@ -3,8 +3,10 @@
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "pid_position_controller_simple_node");
-    ros::NodeHandle nh;
+    // ros::init(argc, argv, "pid_position_controller_simple_node");
+    // ros::NodeHandle nh;
+    rclcpp::init(argc, argv);
+    rclcpp::Node nh = rclcpp::Node("pid_position_controller_simple_node");
     ros::NodeHandle nh_private("~");
 
     PIDPositionController controller(nh, nh_private);

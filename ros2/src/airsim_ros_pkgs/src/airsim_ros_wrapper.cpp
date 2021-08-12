@@ -25,7 +25,7 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
     { 7, "Infrared" }
 };
 
-AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string& host_ip)
+AirsimROSWrapper::AirsimROSWrapper(const rclcpp::Node& nh, const ros::NodeHandle& nh_private, const std::string& host_ip)
     : nh_(nh), nh_private_(nh_private), img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_
     lidar_async_spinner_(1, &lidar_timer_cb_queue_)
     , // same as above, but for lidar
@@ -146,7 +146,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         append_static_vehicle_tf(vehicle_ros.get(), *vehicle_setting);
 
-        vehicle_ros->odom_local_pub = nh_private_.advertise<nav_msgs::Odometry>(curr_vehicle_name + "/" + odom_frame_id_, 10);
+        vehicle_ros->odom_local_pub = nh_private_.advertise<nav_msgs::msg::Odometry>(curr_vehicle_name + "/" + odom_frame_id_, 10);
 
         vehicle_ros->env_pub = nh_private_.advertise<airsim_interfaces::Environment>(curr_vehicle_name + "/environment", 10);
 
@@ -627,9 +627,9 @@ airsim_interfaces::CarState AirsimROSWrapper::get_roscarstate_msg_from_car_state
     return state_msg;
 }
 
-nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const
+nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const
 {
-    nav_msgs::Odometry odom_msg;
+    nav_msgs::msg::Odometry odom_msg;
 
     odom_msg.pose.pose.position.x = car_state.getPosition().x();
     odom_msg.pose.pose.position.y = car_state.getPosition().y();
@@ -660,9 +660,9 @@ nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_car_state(const msr::airl
     return odom_msg;
 }
 
-nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const
+nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const
 {
-    nav_msgs::Odometry odom_msg;
+    nav_msgs::msg::Odometry odom_msg;
 
     odom_msg.pose.pose.position.x = drone_state.getPosition().x();
     odom_msg.pose.pose.position.y = drone_state.getPosition().y();
@@ -853,7 +853,7 @@ sensor_msgs::Imu AirsimROSWrapper::get_imu_msg_from_airsim(const msr::airlib::Im
     return imu_msg;
 }
 
-void AirsimROSWrapper::publish_odom_tf(const nav_msgs::Odometry& odom_msg)
+void AirsimROSWrapper::publish_odom_tf(const nav_msgs::msg::Odometry& odom_msg)
 {
     geometry_msgs::TransformStamped odom_tf;
     odom_tf.header = odom_msg.header;

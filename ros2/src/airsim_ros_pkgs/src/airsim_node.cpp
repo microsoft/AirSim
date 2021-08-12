@@ -4,8 +4,10 @@
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "airsim_node");
-    ros::NodeHandle nh;
+    // ros::init(argc, argv, "airsim_node");
+    // ros::NodeHandle nh;
+    rclcpp::init(argc, argv);
+    rclcpp::Node nh = rclcpp::Node("airsim_node");
     ros::NodeHandle nh_private("~");
 
     std::string host_ip = "localhost";

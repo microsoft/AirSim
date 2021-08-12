@@ -47,7 +47,7 @@ public:
     {
     }
 
-    bool load_from_rosparams(const ros::NodeHandle& nh);
+    bool load_from_rosparams(const rclcpp::Node& nh);
 };
 
 // todo should be a common representation
@@ -72,13 +72,13 @@ public:
     {
     }
 
-    bool load_from_rosparams(const ros::NodeHandle& nh);
+    bool load_from_rosparams(const rclcpp::Node& nh);
 };
 
 class PIDPositionController
 {
 public:
-    PIDPositionController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
+    PIDPositionController(const rclcpp::Node& nh, const ros::NodeHandle& nh_private);
 
     // ROS service callbacks
     bool local_position_goal_srv_cb(airsim_interfaces::srv::SetLocalPosition::Request& request, airsim_interfaces::srv::SetLocalPosition::Response& response);
@@ -104,7 +104,7 @@ private:
     geodetic_converter::GeodeticConverter geodetic_converter_;
     bool use_eth_lib_for_geodetic_conv_;
 
-    ros::NodeHandle nh_;
+    rclcpp::Node nh_;
     ros::NodeHandle nh_private_;
 
     DynamicConstraints constraints_;
@@ -117,7 +117,7 @@ private:
     bool has_home_geo_;
     airsim_interfaces::msg::GPSYaw gps_home_msg_;
 
-    nav_msgs::Odometry curr_odom_;
+    nav_msgs::msg::Odometry curr_odom_;
     airsim_interfaces::msg::VelCmd vel_cmd_;
     bool reached_goal_;
     bool has_goal_;
@@ -125,7 +125,7 @@ private:
     bool got_goal_once_;
     // todo check for odom msg being older than n sec
 
-    ros::Publisher airsim_vel_cmd_world_frame_pub_;
+    rclcpp::Publisher airsim_vel_cmd_world_frame_pub_;
     ros::Subscriber airsim_odom_sub_;
     ros::Subscriber home_geopoint_sub_;
     ros::ServiceServer local_position_goal_srvr_;

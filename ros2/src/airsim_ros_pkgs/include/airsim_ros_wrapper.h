@@ -133,7 +133,7 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string& host_ip);
+    AirsimROSWrapper(const rclcpp::Node& nh, const ros::NodeHandle& nh_private, const std::string& host_ip);
     ~AirsimROSWrapper(){};
 
     void initialize_airsim();
@@ -150,7 +150,7 @@ private:
     {
         SensorBase::SensorType sensor_type;
         std::string sensor_name;
-        ros::Publisher publisher;
+        rclcpp::Publisher publisher;
     };
 
     // utility struct for a SINGLE robot
@@ -161,15 +161,15 @@ private:
         std::string vehicle_name;
 
         /// All things ROS
-        ros::Publisher odom_local_pub;
-        ros::Publisher global_gps_pub;
-        ros::Publisher env_pub;
+        rclcpp::Publisher odom_local_pub;
+        rclcpp::Publisher global_gps_pub;
+        rclcpp::Publisher env_pub;
         airsim_interfaces::Environment env_msg;
         std::vector<SensorPublisher> sensor_pubs;
         // handle lidar seperately for max performance as data is collected on its own thread/callback
         std::vector<SensorPublisher> lidar_pubs;
 
-        nav_msgs::Odometry curr_odom;
+        nav_msgs::msg::Odometry curr_odom;
         sensor_msgs::NavSatFix gps_sensor_msg;
 
         std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec;
@@ -188,7 +188,7 @@ private:
         msr::airlib::CarApiBase::CarState curr_car_state;
 
         ros::Subscriber car_cmd_sub;
-        ros::Publisher car_state_pub;
+        rclcpp::Publisher car_state_pub;
         airsim_interfaces::CarState car_state_msg;
 
         bool has_car_cmd;
@@ -254,7 +254,7 @@ private:
 
     /// ROS tf broadcasters
     void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
-    void publish_odom_tf(const nav_msgs::Odometry& odom_msg);
+    void publish_odom_tf(const nav_msgs::msg::Odometry& odom_msg);
 
     /// camera helper methods
     sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
@@ -278,8 +278,8 @@ private:
     tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat) const;
     msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::Quaternion& geometry_msgs_quat) const;
     msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
-    nav_msgs::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
-    nav_msgs::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
+    nav_msgs::msg::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
+    nav_msgs::msg::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
     airsim_interfaces::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
     msr::airlib::Pose get_airlib_pose(const float& x, const float& y, const float& z, const msr::airlib::Quaternionr& airlib_quat) const;
     airsim_interfaces::msg::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
@@ -316,7 +316,7 @@ private:
     AIRSIM_MODE airsim_mode_ = AIRSIM_MODE::DRONE;
 
     ros::ServiceServer reset_srvr_;
-    ros::Publisher origin_geo_point_pub_; // home geo coord of drones
+    rclcpp::Publisher origin_geo_point_pub_; // home geo coord of drones
     msr::airlib::GeoPoint origin_geo_point_; // gps coord of unreal origin
     airsim_interfaces::msg::GPSYaw origin_geo_point_msg_; // todo duplicate
 
@@ -370,12 +370,12 @@ private:
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
     std::vector<image_transport::Publisher> image_pub_vec_;
-    std::vector<ros::Publisher> cam_info_pub_vec_;
+    std::vector<rclcpp::Publisher> cam_info_pub_vec_;
 
     std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
 
     /// ROS other publishers
-    ros::Publisher clock_pub_;
+    rclcpp::Publisher clock_pub_;
     rosgraph_msgs::Clock ros_clock_;
     bool publish_clock_ = false;
 
