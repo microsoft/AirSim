@@ -586,7 +586,7 @@ void AirsimROSWrapper::gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAng
         has_gimbal_cmd_ = true;
     }
     catch (tf2::TransformException& ex) {
-        ROS_WARN("%s", ex.what());
+        RCLCPP_WARN("%s", ex.what());
     }
 }
 
@@ -606,7 +606,7 @@ void AirsimROSWrapper::gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAn
         has_gimbal_cmd_ = true;
     }
     catch (tf2::TransformException& ex) {
-        ROS_WARN("%s", ex.what());
+        RCLCPP_WARN("%s", ex.what());
     }
 }
 
@@ -746,7 +746,7 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
             lidar_msg = std::move(lidar_msg_enu);
         }
         catch (tf2::TransformException& ex) {
-            ROS_WARN("%s", ex.what());
+            RCLCPP_WARN("%s", ex.what());
             ros::Duration(1.0).sleep();
         }
     }
