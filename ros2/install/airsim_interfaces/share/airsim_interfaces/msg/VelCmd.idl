@@ -1,0 +1,13 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from airsim_interfaces/msg/VelCmd.msg
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Twist.idl"
+
+module airsim_interfaces {
+  module msg {
+    struct VelCmd {
+      geometry_msgs::msg::Twist twist;
+    };
+  };
+};

@@ -1,0 +1,14 @@
+source;share/airsim_interfaces/hook/cmake_prefix_path.ps1
+source;share/airsim_interfaces/hook/cmake_prefix_path.dsv
+source;share/airsim_interfaces/hook/cmake_prefix_path.sh
+source;share/airsim_interfaces/hook/ld_library_path_lib.ps1
+source;share/airsim_interfaces/hook/ld_library_path_lib.dsv
+source;share/airsim_interfaces/hook/ld_library_path_lib.sh
+source;share/airsim_interfaces/hook/pythonpath.ps1
+source;share/airsim_interfaces/hook/pythonpath.dsv
+source;share/airsim_interfaces/hook/pythonpath.sh
+source;share/airsim_interfaces/local_setup.bash
+source;share/airsim_interfaces/local_setup.dsv
+source;share/airsim_interfaces/local_setup.ps1
+source;share/airsim_interfaces/local_setup.sh
+source;share/airsim_interfaces/local_setup.zsh

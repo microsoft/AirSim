@@ -1,0 +1,27 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from airsim_interfaces/msg/CarControls.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module airsim_interfaces {
+  module msg {
+    struct CarControls {
+      std_msgs::msg::Header header;
+
+      float throttle;
+
+      float brake;
+
+      float steering;
+
+      boolean handbrake;
+
+      boolean manual;
+
+      int8 manual_gear;
+
+      boolean gear_immediate;
+    };
+  };
+};

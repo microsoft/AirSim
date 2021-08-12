@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from airsim_interfaces/srv/Takeoff.srv
+// generated code does not contain a copyright notice
+
+
+module airsim_interfaces {
+  module srv {
+    struct Takeoff_Request {
+      boolean wait_on_last_task;
+    };
+    struct Takeoff_Response {
+      boolean success;
+    };
+  };
+};

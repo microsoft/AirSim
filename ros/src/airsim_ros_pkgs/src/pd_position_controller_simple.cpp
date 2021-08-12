@@ -59,7 +59,7 @@ void PIDPositionController::initialize_ros()
 
     while (vehicle_name == "") {
         nh_private_.getParam("/vehicle_name", vehicle_name);
-        ROS_INFO_STREAM("Waiting vehicle name");
+        RCLCPP_INFO_STREAM("Waiting vehicle name");
     }
 
     // ROS publishers
@@ -119,7 +119,7 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
         target_position_.y = request.y;
         target_position_.z = request.z;
         target_position_.yaw = request.yaw;
-        ROS_INFO_STREAM("[PIDPositionController] got goal: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
+        RCLCPP_INFO_STREAM("[PIDPositionController] got goal: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
         // todo error checks
         // todo fill response
@@ -130,7 +130,7 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
     }
 
     // Already have goal, and have reached it
-    ROS_INFO_STREAM("[PIDPositionController] Already have goal and have reached it");
+    RCLCPP_INFO_STREAM("[PIDPositionController] Already have goal and have reached it");
     return false;
 }
 
@@ -144,7 +144,7 @@ bool PIDPositionController::local_position_goal_srv_override_cb(airsim_ros_pkgs:
     target_position_.y = request.y;
     target_position_.z = request.z;
     target_position_.yaw = request.yaw;
-    ROS_INFO_STREAM("[PIDPositionController] got goal: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
+    RCLCPP_INFO_STREAM("[PIDPositionController] got goal: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
     // todo error checks
     // todo fill response
@@ -160,7 +160,7 @@ void PIDPositionController::home_geopoint_cb(const airsim_ros_pkgs::GPSYaw& gps_
         return;
     gps_home_msg_ = gps_msg;
     has_home_geo_ = true;
-    ROS_INFO_STREAM("[PIDPositionController] GPS reference initializing " << gps_msg.latitude << ", " << gps_msg.longitude << ", " << gps_msg.altitude);
+    RCLCPP_INFO_STREAM("[PIDPositionController] GPS reference initializing " << gps_msg.latitude << ", " << gps_msg.longitude << ", " << gps_msg.altitude);
     geodetic_converter_.initialiseReference(gps_msg.latitude, gps_msg.longitude, gps_msg.altitude);
 }
 
@@ -183,14 +183,14 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
             geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
             double n, e, d;
             geodetic_converter_.geodetic2Ned(request.latitude, request.longitude, request.altitude, &n, &e, &d);
-            // ROS_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
+            // RCLCPP_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
             target_position_.x = n;
             target_position_.y = e;
             target_position_.z = d;
         }
         else // use airlib::GeodeticToNedFast
         {
-            ROS_INFO_STREAM("[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
+            RCLCPP_INFO_STREAM("[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
                                                                           << "todo");
             msr::airlib::Vector3r ned_goal = msr::airlib::EarthUtils::GeodeticToNedFast(goal_gps_point, gps_home);
             target_position_.x = ned_goal[0];
@@ -199,8 +199,8 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
         }
 
         target_position_.yaw = request.yaw; // todo
-        ROS_INFO_STREAM("[PIDPositionController] got GPS goal: lat=" << goal_gps_point.latitude << " long=" << goal_gps_point.longitude << " alt=" << goal_gps_point.altitude << " yaw=" << target_position_.yaw);
-        ROS_INFO_STREAM("[PIDPositionController] converted NED goal is: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
+        RCLCPP_INFO_STREAM("[PIDPositionController] got GPS goal: lat=" << goal_gps_point.latitude << " long=" << goal_gps_point.longitude << " alt=" << goal_gps_point.altitude << " yaw=" << target_position_.yaw);
+        RCLCPP_INFO_STREAM("[PIDPositionController] converted NED goal is: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
         // todo error checks
         // todo fill response
@@ -211,7 +211,7 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
     }
 
     // Already have goal, this shouldn't happen
-    ROS_INFO_STREAM("[PIDPositionController] Goal already received, ignoring!");
+    RCLCPP_INFO_STREAM("[PIDPositionController] Goal already received, ignoring!");
     return false;
 }
 
@@ -233,14 +233,14 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosi
         geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
         double n, e, d;
         geodetic_converter_.geodetic2Ned(request.latitude, request.longitude, request.altitude, &n, &e, &d);
-        // ROS_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
+        // RCLCPP_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
         target_position_.x = n;
         target_position_.y = e;
         target_position_.z = d;
     }
     else // use airlib::GeodeticToNedFast
     {
-        ROS_INFO_STREAM("[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
+        RCLCPP_INFO_STREAM("[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
                                                                       << "todo");
         msr::airlib::Vector3r ned_goal = msr::airlib::EarthUtils::GeodeticToNedFast(goal_gps_point, gps_home);
         target_position_.x = ned_goal[0];
@@ -249,8 +249,8 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosi
     }
 
     target_position_.yaw = request.yaw; // todo
-    ROS_INFO_STREAM("[PIDPositionController] got GPS goal: lat=" << goal_gps_point.latitude << " long=" << goal_gps_point.longitude << " alt=" << goal_gps_point.altitude << " yaw=" << target_position_.yaw);
-    ROS_INFO_STREAM("[PIDPositionController] converted NED goal is: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
+    RCLCPP_INFO_STREAM("[PIDPositionController] got GPS goal: lat=" << goal_gps_point.latitude << " long=" << goal_gps_point.longitude << " alt=" << goal_gps_point.altitude << " yaw=" << target_position_.yaw);
+    RCLCPP_INFO_STREAM("[PIDPositionController] converted NED goal is: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
     // todo error checks
     // todo fill response
@@ -272,12 +272,12 @@ void PIDPositionController::update_control_cmd_timer_cb(const ros::TimerEvent& e
     if (has_goal_) {
         check_reached_goal();
         if (reached_goal_) {
-            ROS_INFO_STREAM("[PIDPositionController] Reached goal! Hovering at position.");
+            RCLCPP_INFO_STREAM("[PIDPositionController] Reached goal! Hovering at position.");
             has_goal_ = false;
             // dear future self, this function doesn't return coz we need to keep on actively hovering at last goal pose. don't act smart
         }
         else {
-            ROS_INFO_STREAM("[PIDPositionController] Moving to goal.");
+            RCLCPP_INFO_STREAM("[PIDPositionController] Moving to goal.");
         }
     }
 

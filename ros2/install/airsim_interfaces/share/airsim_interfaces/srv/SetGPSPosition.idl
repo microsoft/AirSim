@@ -1,0 +1,25 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from airsim_interfaces/srv/SetGPSPosition.srv
+// generated code does not contain a copyright notice
+
+
+module airsim_interfaces {
+  module srv {
+    struct SetGPSPosition_Request {
+      double latitude;
+
+      double longitude;
+
+      double altitude;
+
+      double yaw;
+
+      string vehicle_name;
+    };
+    @verbatim (language="comment", text=
+      "Response : return success=true, (if async=false && if setpoint reached before timeout = 30sec) || (if async=true && command sent to autopilot)")
+    struct SetGPSPosition_Response {
+      boolean success;
+    };
+  };
+};

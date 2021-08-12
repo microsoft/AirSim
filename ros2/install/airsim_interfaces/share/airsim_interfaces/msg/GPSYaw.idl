@@ -1,0 +1,18 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from airsim_interfaces/msg/GPSYaw.msg
+// generated code does not contain a copyright notice
+
+
+module airsim_interfaces {
+  module msg {
+    struct GPSYaw {
+      double latitude;
+
+      double longitude;
+
+      double altitude;
+
+      double yaw;
+    };
+  };
+};

@@ -1,0 +1,100 @@
+{
+  "ClockSpeed": 1,
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "Vehicles": {
+    "Drone_1": {
+      "VehicleType": "SimpleFlight",
+      "Sensors": {
+        "imu_1": {
+          "SensorType": 2,
+          "Enabled": true
+        },
+        "lidar_1": {
+          "SensorType": 6,
+          "Range": 100,
+          "Enabled": true,
+          "NumberOfChannels": 64,
+          "PointsPerSecond": 100000,
+          "VerticalFOVUpper": 90,
+          "VerticalFOVLower": 0,
+          "HorizontalFOVStart": -90,
+          "HorizontalFOVEnd": 90,
+          "X": 0, "Y": 0, "Z": -0.1,
+          "DrawDebugPoints": true
+        }
+      },
+      "Cameras": {
+        "camera_1": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 1.5
+            }, 
+            {
+              "ImageType": 1,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 1.5
+            }
+          ],
+          "X": 0.5, "Y": -0.06, "Z": 0.10,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
+        }
+      },
+      "X": 2.0, "Y": 0.0, "Z": 0,
+      "Pitch": 0, "Roll": 0, "Yaw": 0
+    },
+    "Drone_2": {
+      "VehicleType": "SimpleFlight",
+      "Sensors": {
+        "imu_2": {
+          "SensorType": 2,
+          "Enabled": true
+        },
+        "lidar_2": {
+          "SensorType": 6,
+          "Range": 100,
+          "Enabled": true,
+          "NumberOfChannels": 64,
+          "PointsPerSecond": 100000,
+          "VerticalFOVUpper": 90,
+          "VerticalFOVLower": 0,
+          "HorizontalFOVStart": -90,
+          "HorizontalFOVEnd": 90,
+          "X": 0, "Y": 0, "Z": -0.1,
+          "DrawDebugPoints": true
+        }
+      },
+      "Cameras": {
+        "camera_2": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 1.5
+            }, 
+            {
+              "ImageType": 1,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90,
+              "TargetGamma": 1.5
+            }
+          ],
+          "X": 0.1, "Y": -0.06, "Z": 0.10,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
+        }
+      },
+      "X": 4.0, "Y": 0.0, "Z": 0,
+      "Pitch": 0, "Roll": 0, "Yaw": 0
+    }
+  }
+}

@@ -1,0 +1,18 @@
+<launch>
+	<!-- docs: https://wiki.ros.org/nodelet/Tutorials/Running%20a%20nodelet -->
+	<!-- docs: http://wiki.ros.org/depth_image_proc -->
+	<!-- docs: https://wiki.ros.org/openni_launch -->
+	<!-- docs: https://gist.github.com/bhaskara/2400165 -->
+	
+	<!-- Nodelet manager -->
+	<node pkg="nodelet" type="nodelet" args="manager" name="depth_to_pointcloud_manager" output="screen"/>
+
+	<!-- Nodelets! -->
+	<!-- Convert it into a point cloud -->
+	<node pkg="nodelet" type="nodelet" name="airsim_depth2cloud" args="load depth_image_proc/point_cloud_xyzrgb depth_to_pointcloud_manager" output="screen">
+		<remap from="depth_registered/image_rect" to="/airsim_node/drone_1/front_left_custom/DepthPlanar"/>
+		<remap from="depth_registered/points" to="/airsim_node/drone_1/front_left_custom/DepthPlanar/registered/points"/>
+		<remap from="rgb/image_rect_color" to="/airsim_node/drone_1/front_left_custom/Scene"/>
+		<remap from="rgb/camera_info" to="/airsim_node/drone_1/front_left_custom/Scene/camera_info"/>
+	</node>
+</launch>

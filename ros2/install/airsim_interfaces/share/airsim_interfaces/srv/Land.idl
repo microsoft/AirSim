@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from airsim_interfaces/srv/Land.srv
+// generated code does not contain a copyright notice
+
+
+module airsim_interfaces {
+  module srv {
+    struct Land_Request {
+      boolean wait_on_last_task;
+    };
+    struct Land_Response {
+      boolean success;
+    };
+  };
+};

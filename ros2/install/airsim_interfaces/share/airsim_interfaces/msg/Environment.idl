@@ -1,0 +1,27 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from airsim_interfaces/msg/Environment.msg
+// generated code does not contain a copyright notice
+
+#include "geographic_msgs/msg/GeoPoint.idl"
+#include "geometry_msgs/msg/Vector3.idl"
+#include "std_msgs/msg/Header.idl"
+
+module airsim_interfaces {
+  module msg {
+    struct Environment {
+      std_msgs::msg::Header header;
+
+      geometry_msgs::msg::Vector3 position;
+
+      geographic_msgs::msg::GeoPoint geo_point;
+
+      geometry_msgs::msg::Vector3 gravity;
+
+      float air_pressure;
+
+      float temperature;
+
+      float air_density;
+    };
+  };
+};

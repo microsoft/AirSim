@@ -1,0 +1,23 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from airsim_interfaces/msg/GimbalAngleEulerCmd.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module airsim_interfaces {
+  module msg {
+    struct GimbalAngleEulerCmd {
+      std_msgs::msg::Header header;
+
+      string camera_name;
+
+      string vehicle_name;
+
+      double roll;
+
+      double pitch;
+
+      double yaw;
+    };
+  };
+};

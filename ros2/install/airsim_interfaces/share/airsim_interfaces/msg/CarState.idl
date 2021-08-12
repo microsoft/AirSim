@@ -1,0 +1,29 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from airsim_interfaces/msg/CarState.msg
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/PoseWithCovariance.idl"
+#include "geometry_msgs/msg/TwistWithCovariance.idl"
+#include "std_msgs/msg/Header.idl"
+
+module airsim_interfaces {
+  module msg {
+    struct CarState {
+      std_msgs::msg::Header header;
+
+      geometry_msgs::msg::PoseWithCovariance pose;
+
+      geometry_msgs::msg::TwistWithCovariance twist;
+
+      float speed;
+
+      int8 gear;
+
+      float rpm;
+
+      float maxrpm;
+
+      boolean handbrake;
+    };
+  };
+};

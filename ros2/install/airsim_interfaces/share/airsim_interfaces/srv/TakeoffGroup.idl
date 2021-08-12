@@ -1,0 +1,17 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from airsim_interfaces/srv/TakeoffGroup.srv
+// generated code does not contain a copyright notice
+
+
+module airsim_interfaces {
+  module srv {
+    struct TakeoffGroup_Request {
+      sequence<string> vehicle_names;
+
+      boolean wait_on_last_task;
+    };
+    struct TakeoffGroup_Response {
+      boolean success;
+    };
+  };
+};

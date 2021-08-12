@@ -41,11 +41,11 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHan
 
     if (AirSimSettings::singleton().simmode_name != AirSimSettings::kSimModeTypeCar) {
         airsim_mode_ = AIRSIM_MODE::DRONE;
-        ROS_INFO("Setting ROS wrapper to DRONE mode");
+        RCLCPP_INFO("Setting ROS wrapper to DRONE mode");
     }
     else {
         airsim_mode_ = AIRSIM_MODE::CAR;
-        ROS_INFO("Setting ROS wrapper to CAR mode");
+        RCLCPP_INFO("Setting ROS wrapper to CAR mode");
     }
 
     initialize_ros();
