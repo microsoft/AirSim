@@ -61,8 +61,8 @@ public:
     void enableFocusPlane(bool enable);
     std::string getCurrentFieldOfView();
 
-    void CopyCameraSettingsToAllSceneCapture(UCameraComponent* camera_);
-    void CopyCameraSettingsToSceneCapture(UCameraComponent* Src, USceneCaptureComponent2D* Dst);
+    void CopyCameraSettingsToAllSceneCapture(UCameraComponent* camera);
+    void CopyCameraSettingsToSceneCapture(UCameraComponent* src, USceneCaptureComponent2D* dst);
     //end CinemAirSim methods
 
     void setCameraTypeEnabled(ImageType type, bool enabled);

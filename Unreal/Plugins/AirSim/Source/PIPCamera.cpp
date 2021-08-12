@@ -747,7 +747,7 @@ std::string APIPCamera::getCurrentFieldOfView()
     return ss.str();
 }
 
-void APIPCamera::CopyCameraSettingsToAllSceneCapture(UCameraComponent* camera_)
+void APIPCamera::CopyCameraSettingsToAllSceneCapture(UCameraComponent* camera)
 {
     int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
     for (int image_type = image_count - 1; image_type >= 0; image_type--) {
@@ -757,17 +757,17 @@ void APIPCamera::CopyCameraSettingsToAllSceneCapture(UCameraComponent* camera_)
     }
 }
 
-void APIPCamera::CopyCameraSettingsToSceneCapture(UCameraComponent* Src, USceneCaptureComponent2D* Dst)
+void APIPCamera::CopyCameraSettingsToSceneCapture(UCameraComponent* src, USceneCaptureComponent2D* dst)
 {
-    if (Src && Dst) {
-        Dst->SetWorldLocationAndRotation(Src->GetComponentLocation(), Src->GetComponentRotation());
-        Dst->FOVAngle = Src->FieldOfView;
+    if (src && dst) {
+        dst->SetWorldLocationAndRotation(src->GetComponentLocation(), src->GetComponentRotation());
+        dst->FOVAngle = src->FieldOfView;
 
         FMinimalViewInfo CameraViewInfo;
-        Src->GetCameraView(/*DeltaTime =*/0.0f, CameraViewInfo);
+        src->GetCameraView(/*DeltaTime =*/0.0f, CameraViewInfo);
 
         const FPostProcessSettings& SrcPPSettings = CameraViewInfo.PostProcessSettings;
-        FPostProcessSettings& DstPPSettings = Dst->PostProcessSettings;
+        FPostProcessSettings& DstPPSettings = dst->PostProcessSettings;
 
         FWeightedBlendables DstWeightedBlendables = DstPPSettings.WeightedBlendables;
 
