@@ -762,9 +762,8 @@ class VehicleClient:
         """
         env_state = self.client.call('simGetGroundTruthEnvironment', vehicle_name)
         return EnvironmentState.from_msgpack(env_state)
-    simGetGroundTruthEnvironment.__annotations__ =
-{
-    'return' : EnvironmentState}
+    simGetGroundTruthEnvironment.__annotations__ = {'return': EnvironmentState}
+
 
 #sensor APIs
     def getImuData(self, imu_name = '', vehicle_name = ''):
