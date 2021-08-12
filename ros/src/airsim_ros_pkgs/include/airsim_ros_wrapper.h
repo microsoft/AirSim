@@ -300,6 +300,10 @@ private:
     ros::Time airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const;
     ros::Time chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const;
 
+    // Utility methods to convert airsim_client_
+    msr::airlib::MultirotorRpcLibClient* get_multirotor_client();
+    msr::airlib::CarRpcLibClient* get_car_client();
+
 private:
     // subscriber / services for ALL robots
     ros::Subscriber vel_cmd_all_body_frame_sub_;
