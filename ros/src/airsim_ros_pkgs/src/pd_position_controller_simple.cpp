@@ -110,7 +110,7 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
 
     if (has_goal_ && !reached_goal_) {
         // todo maintain array of position goals
-        ROS_ERROR_STREAM("[PIDPositionController] denying position goal request. I am still following the previous goal");
+        RCLCPP_ERROR_STREAM("[PIDPositionController] denying position goal request. I am still following the previous goal");
         return false;
     }
 
@@ -168,7 +168,7 @@ void PIDPositionController::home_geopoint_cb(const airsim_ros_pkgs::GPSYaw& gps_
 bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response)
 {
     if (!has_home_geo_) {
-        ROS_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
+        RCLCPP_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
         response.success = false;
     }
 
@@ -219,7 +219,7 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
 bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response)
 {
     if (!has_home_geo_) {
-        ROS_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
+        RCLCPP_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
         response.success = false;
     }
 
@@ -265,7 +265,7 @@ void PIDPositionController::update_control_cmd_timer_cb(const ros::TimerEvent& e
     // todo check if odometry is too old!!
     // if no odom, don't do anything.
     if (!has_odom_) {
-        ROS_ERROR_STREAM("[PIDPositionController] Waiting for odometry!");
+        RCLCPP_ERROR_STREAM("[PIDPositionController] Waiting for odometry!");
         return;
     }
 
