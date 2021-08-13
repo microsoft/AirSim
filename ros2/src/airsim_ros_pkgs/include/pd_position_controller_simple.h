@@ -47,7 +47,7 @@ public:
     {
     }
 
-    bool load_from_rosparams(const rclcpp::Node& nh);
+    bool load_from_rosparams(const std::shared_ptr<rclcpp::Node> nh);
 };
 
 // todo should be a common representation
@@ -72,13 +72,13 @@ public:
     {
     }
 
-    bool load_from_rosparams(const rclcpp::Node& nh);
+    bool load_from_rosparams(const std::shared_ptr<rclcpp::Node> nh);
 };
 
 class PIDPositionController
 {
 public:
-    PIDPositionController(const std::shared_ptr<rclcpp::Node> nh, const rclcpp::Node& nh_private);
+    PIDPositionController(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private);
 
     // ROS service callbacks
     bool local_position_goal_srv_cb(const std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Response> response);
@@ -105,7 +105,8 @@ private:
     bool use_eth_lib_for_geodetic_conv_;
 
     const std::shared_ptr<rclcpp::Node> nh_;
-    rclcpp::Node nh_private_;
+    const std::shared_ptr<rclcpp::Node> nh_private_;
+//    rclcpp::Node ;
     // ros::NodeHandle nh_private_;
 
     DynamicConstraints constraints_;

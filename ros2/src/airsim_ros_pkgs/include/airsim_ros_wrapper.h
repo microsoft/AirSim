@@ -40,20 +40,20 @@ STRICT_MODE_OFF //todo what does this do?
 #include <mavros_msgs/msg/state.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <opencv2/opencv.hpp>
-#include <ros/callback_queue.h>
-#include <ros/console.h>
+//#include <ros/callback_queue.h>
+//#include <ros/console.h>
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/distortion_models.hpp>
 #include <sensor_msgs/msg/image.hpp>
-#include <sensor_msgs/msg/image_encodings.hpp>
+#include <sensor_msgs/image_encodings.hpp>
 #include <sensor_msgs/msg/imu.hpp>
-#include <sensor_msgs/msg/nav_at_fix.hpp>
+#include <sensor_msgs/msg/nav_sat_fix.hpp>
 #include <airsim_interfaces/msg/altimeter.hpp> //hector_uav_msgs defunct?
 #include <sensor_msgs/msg/magnetic_field.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <sensor_msgs/msg/range.hpp>
-#include <rosgraph_msgs/Clock.h>
-#include <std_srvs/Empty.h>
+#include <rosgraph_msgs/msg/clock.hpp>
+#include <std_srvs/srv/empty.hpp>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
