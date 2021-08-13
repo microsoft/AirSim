@@ -126,7 +126,7 @@ private:
     bool got_goal_once_;
     // todo check for odom msg being older than n sec
 
-    rclcpp::Publisher<airsim_interfaces::msg::VelCmd> airsim_vel_cmd_world_frame_pub_;
+    rclcpp::Publisher<airsim_interfaces::msg::VelCmd>::SharedPtr airsim_vel_cmd_world_frame_pub_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr airsim_odom_sub_;
     rclcpp::Subscription<airsim_interfaces::msg::GPSYaw>::SharedPtr home_geopoint_sub_;
     ros::ServiceServer local_position_goal_srvr_;
