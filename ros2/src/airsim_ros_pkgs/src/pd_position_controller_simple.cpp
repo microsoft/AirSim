@@ -1,4 +1,5 @@
 #include "pd_position_controller_simple.h"
+using std::placeholders::_1;
 
 bool PIDParams::load_from_rosparams(const rclcpp::Node& nh)
 {
@@ -66,8 +67,8 @@ void PIDPositionController::initialize_ros()
     airsim_vel_cmd_world_frame_pub_ = nh_private_.advertise<airsim_interfaces::msg::VelCmd>("/airsim_node/" + vehicle_name + "/vel_cmd_world_frame", 1);
 
     // ROS subscribers
-    airsim_odom_sub_ = nh_.subscribe("/airsim_node/" + vehicle_name + "/odom_local_ned", 50, &PIDPositionController::airsim_odom_cb, this);
-    home_geopoint_sub_ = nh_.subscribe("/airsim_node/home_geo_point", 50, &PIDPositionController::home_geopoint_cb, this);
+    airsim_odom_sub_ = nh_.create_subscription<nav_msgs::msg::Odometry>("/airsim_node/" + vehicle_name + "/odom_local_ned", 50, std::bind(&PIDPositionController::airsim_odom_cb, this, _1));
+    home_geopoint_sub_ = nh_.create_subscription<airsim_interfaces::msg::GPSYaw>("/airsim_node/home_geo_point", 50, std::bind(&PIDPositionController::home_geopoint_cb, this, _1));
     // todo publish this under global nodehandle / "airsim node" and hide it from user
     local_position_goal_srvr_ = nh_.advertiseService("/airsim_node/local_position_goal", &PIDPositionController::local_position_goal_srv_cb, this);
     local_position_goal_override_srvr_ = nh_.advertiseService("/airsim_node/local_position_goal/override", &PIDPositionController::local_position_goal_srv_override_cb, this);
@@ -78,14 +79,14 @@ void PIDPositionController::initialize_ros()
     update_control_cmd_timer_ = nh_private_.createTimer(ros::Duration(update_control_every_n_sec), &PIDPositionController::update_control_cmd_timer_cb, this);
 }
 
-void PIDPositionController::airsim_odom_cb(const nav_msgs::msg::Odometry& odom_msg)
+void PIDPositionController::airsim_odom_cb(const nav_msgs::msg::Odometry::SharedPtr odom_msg)
 {
     has_odom_ = true;
-    curr_odom_ = odom_msg;
-    curr_position_.x = odom_msg.pose.pose.position.x;
-    curr_position_.y = odom_msg.pose.pose.position.y;
-    curr_position_.z = odom_msg.pose.pose.position.z;
-    curr_position_.yaw = utils::get_yaw_from_quat_msg(odom_msg.pose.pose.orientation);
+    curr_odom_ = *odom_msg;
+    curr_position_.x = odom_msg->pose.pose.position.x;
+    curr_position_.y = odom_msg->pose.pose.position.y;
+    curr_position_.z = odom_msg->pose.pose.position.z;
+    curr_position_.yaw = utils::get_yaw_from_quat_msg(odom_msg->pose.pose.orientation);
 }
 
 // todo maintain internal representation as eigen vec?
@@ -154,14 +155,14 @@ bool PIDPositionController::local_position_goal_srv_override_cb(airsim_interface
     return true;
 }
 
-void PIDPositionController::home_geopoint_cb(const airsim_interfaces::msg::GPSYaw& gps_msg)
+void PIDPositionController::home_geopoint_cb(const airsim_interfaces::msg::GPSYaw::SharedPtr gps_msg)
 {
     if (has_home_geo_)
         return;
-    gps_home_msg_ = gps_msg;
+    gps_home_msg_ = *gps_msg;
     has_home_geo_ = true;
-    RCLCPP_INFO_STREAM(nh_.get_logger(), "[PIDPositionController] GPS reference initializing " << gps_msg.latitude << ", " << gps_msg.longitude << ", " << gps_msg.altitude);
-    geodetic_converter_.initialiseReference(gps_msg.latitude, gps_msg.longitude, gps_msg.altitude);
+    RCLCPP_INFO_STREAM(nh_.get_logger(), "[PIDPositionController] GPS reference initializing " << gps_msg->latitude << ", " << gps_msg->longitude << ", " << gps_msg->altitude);
+    geodetic_converter_.initialiseReference(gps_msg->latitude, gps_msg->longitude, gps_msg->altitude);
 }
 
 // todo do relative altitude, or add an option for the same?

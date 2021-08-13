@@ -87,8 +87,8 @@ public:
     bool gps_goal_srv_override_cb(airsim_interfaces::srv::SetGPSPosition::Request& request, airsim_interfaces::srv::SetGPSPosition::Response& response);
 
     // ROS subscriber callbacks
-    void airsim_odom_cb(const nav_msgs::msg::Odometry& odom_msg);
-    void home_geopoint_cb(const airsim_interfaces::msg::GPSYaw& gps_msg);
+    void airsim_odom_cb(const nav_msgs::msg::Odometry::SharedPtr odom_msg);
+    void home_geopoint_cb(const airsim_interfaces::msg::GPSYaw::SharedPtr gps_msg);
 
     void update_control_cmd_timer_cb(const ros::TimerEvent& event);
 
@@ -125,9 +125,9 @@ private:
     bool got_goal_once_;
     // todo check for odom msg being older than n sec
 
-    rclcpp::Publisher airsim_vel_cmd_world_frame_pub_;
-    rclcpp::Subscription airsim_odom_sub_;
-    rclcpp::Subscription home_geopoint_sub_;
+    rclcpp::Publisher<airsim_interfaces::msg::VelCmd> airsim_vel_cmd_world_frame_pub_;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr airsim_odom_sub_;
+    rclcpp::Subscription<airsim_interfaces::msg::GPSYaw>::SharedPtr home_geopoint_sub_;
     ros::ServiceServer local_position_goal_srvr_;
     ros::ServiceServer local_position_goal_override_srvr_;
     ros::ServiceServer gps_goal_srvr_;
