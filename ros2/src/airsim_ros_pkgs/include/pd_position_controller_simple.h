@@ -78,13 +78,13 @@ public:
 class PIDPositionController
 {
 public:
-    PIDPositionController(const rclcpp::Node& nh, const rclcpp::Node& nh_private);
+    PIDPositionController(const std::shared_ptr<rclcpp::Node> nh, const rclcpp::Node& nh_private);
 
     // ROS service callbacks
-    bool local_position_goal_srv_cb(airsim_interfaces::srv::SetLocalPosition::Request& request, airsim_interfaces::srv::SetLocalPosition::Response& response);
-    bool local_position_goal_srv_override_cb(airsim_interfaces::srv::SetLocalPosition::Request& request, airsim_interfaces::srv::SetLocalPosition::Response& response);
-    bool gps_goal_srv_cb(airsim_interfaces::srv::SetGPSPosition::Request& request, airsim_interfaces::srv::SetGPSPosition::Response& response);
-    bool gps_goal_srv_override_cb(airsim_interfaces::srv::SetGPSPosition::Request& request, airsim_interfaces::srv::SetGPSPosition::Response& response);
+    bool local_position_goal_srv_cb(const std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Response> response);
+    bool local_position_goal_srv_override_cb(const std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Response> response);
+    bool gps_goal_srv_cb(const std::shared_ptr<airsim_interfaces::srv::SetGPSPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetGPSPosition::Response> response);
+    bool gps_goal_srv_override_cb(const std::shared_ptr<airsim_interfaces::srv::SetGPSPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetGPSPosition::Response> response);
 
     // ROS subscriber callbacks
     void airsim_odom_cb(const nav_msgs::msg::Odometry::SharedPtr odom_msg);
@@ -104,7 +104,7 @@ private:
     geodetic_converter::GeodeticConverter geodetic_converter_;
     bool use_eth_lib_for_geodetic_conv_;
 
-    rclcpp::Node nh_;
+    const std::shared_ptr<rclcpp::Node> nh_;
     rclcpp::Node nh_private_;
     // ros::NodeHandle nh_private_;
 
@@ -129,10 +129,17 @@ private:
     rclcpp::Publisher<airsim_interfaces::msg::VelCmd>::SharedPtr airsim_vel_cmd_world_frame_pub_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr airsim_odom_sub_;
     rclcpp::Subscription<airsim_interfaces::msg::GPSYaw>::SharedPtr home_geopoint_sub_;
-    ros::ServiceServer local_position_goal_srvr_;
-    ros::ServiceServer local_position_goal_override_srvr_;
-    ros::ServiceServer gps_goal_srvr_;
-    ros::ServiceServer gps_goal_override_srvr_;
+  
+    rclcpp::Service<airsim_interfaces::srv::SetLocalPosition>::SharedPtr local_position_goal_srvr_;
+    rclcpp::Service<airsim_interfaces::srv::SetLocalPosition>::SharedPtr local_position_goal_override_srvr_;
+    rclcpp::Service<airsim_interfaces::srv::SetGPSPosition>::SharedPtr gps_goal_srvr_;
+    rclcpp::Service<airsim_interfaces::srv::SetGPSPosition>::SharedPtr gps_goal_override_srvr_;
+
+  
+    // ros::ServiceServer local_position_goal_srvr_;
+    // ros::ServiceServer local_position_goal_override_srvr_;
+    // ros::ServiceServer gps_goal_srvr_;
+    // ros::ServiceServer gps_goal_override_srvr_;
 
     rclcpp::TimerBase::SharedPtr update_control_cmd_timer_;
     //ros::Timer update_control_cmd_timer_;

@@ -1,5 +1,5 @@
 #include "pd_position_controller_simple.h"
-using std::placeholders::_1;
+using namespace std::placeholders;
 
 bool PIDParams::load_from_rosparams(const rclcpp::Node& nh)
 {
@@ -32,7 +32,7 @@ bool DynamicConstraints::load_from_rosparams(const rclcpp::Node& nh)
     return found;
 }
 
-PIDPositionController::PIDPositionController(const rclcpp::Node& nh, const rclcpp::Node& nh_private)
+PIDPositionController::PIDPositionController(const std::shared_ptr<rclcpp::Node> nh, const rclcpp::Node& nh_private)
     : nh_(nh), nh_private_(nh_private), has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
 {
     params_.load_from_rosparams(nh_private_);
@@ -70,10 +70,10 @@ void PIDPositionController::initialize_ros()
     airsim_odom_sub_ = nh_.create_subscription<nav_msgs::msg::Odometry>("/airsim_node/" + vehicle_name + "/odom_local_ned", 50, std::bind(&PIDPositionController::airsim_odom_cb, this, _1));
     home_geopoint_sub_ = nh_.create_subscription<airsim_interfaces::msg::GPSYaw>("/airsim_node/home_geo_point", 50, std::bind(&PIDPositionController::home_geopoint_cb, this, _1));
     // todo publish this under global nodehandle / "airsim node" and hide it from user
-    local_position_goal_srvr_ = nh_.create_service("/airsim_node/local_position_goal", &PIDPositionController::local_position_goal_srv_cb, this);
-    local_position_goal_override_srvr_ = nh_.create_service("/airsim_node/local_position_goal/override", &PIDPositionController::local_position_goal_srv_override_cb, this);
-    gps_goal_srvr_ = nh_.create_service("/airsim_node/gps_goal", &PIDPositionController::gps_goal_srv_cb, this);
-    gps_goal_override_srvr_ = nh_.create_service("/airsim_node/gps_goal/override", &PIDPositionController::gps_goal_srv_override_cb, this);
+    local_position_goal_srvr_ = nh_.create_service<airsim_interfaces::srv::SetLocalPosition>("/airsim_node/local_position_goal", std::bind(&PIDPositionController::local_position_goal_srv_cb, this, _1, _2));
+    local_position_goal_override_srvr_ = nh_.create_service<airsim_interfaces::srv::SetLocalPosition>("/airsim_node/local_position_goal/override", std::bind(&PIDPositionController::local_position_goal_srv_override_cb, this, _1, _2));
+    gps_goal_srvr_ = nh_.create_service<airsim_interfaces::srv::SetGPSPosition>("/airsim_node/gps_goal", std::bind(&PIDPositionController::gps_goal_srv_cb, this, _1, _2));
+    gps_goal_override_srvr_ = nh_.create_service<airsim_interfaces::srv::SetGPSPosition>("/airsim_node/gps_goal/override", std::bind(&PIDPositionController::gps_goal_srv_override_cb, this, _1, _2));
 
     // ROS timers
     //update_control_cmd_timer_ = nh_private_.createTimer(ros::Duration(update_control_every_n_sec), &PIDPositionController::update_control_cmd_timer_cb, this);
@@ -104,7 +104,7 @@ void PIDPositionController::check_reached_goal()
         reached_goal_ = true;
 }
 
-bool PIDPositionController::local_position_goal_srv_cb(airsim_interfaces::srv::SetLocalPosition::Request& request, airsim_interfaces::srv::SetLocalPosition::Response& response)
+bool PIDPositionController::local_position_goal_srv_cb(const std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Response> response)
 {
     // this tells the update timer callback to not do active hovering
     if (!got_goal_once_)
@@ -112,15 +112,15 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_interfaces::srv::S
 
     if (has_goal_ && !reached_goal_) {
         // todo maintain array of position goals
-        RCLCPP_ERROR_STREAM(nh_.get_logger(), "[PIDPositionController] denying position goal request. I am still following the previous goal");
+        RCLCPP_ERROR_STREAM(nh_.get_logger(), "[PIDPositionController] denying position goal request-> I am still following the previous goal");
         return false;
     }
 
     if (!has_goal_) {
-        target_position_.x = request.x;
-        target_position_.y = request.y;
-        target_position_.z = request.z;
-        target_position_.yaw = request.yaw;
+        target_position_.x = request->x;
+        target_position_.y = request->y;
+        target_position_.z = request->z;
+        target_position_.yaw = request->yaw;
         RCLCPP_INFO_STREAM(nh_.get_logger(), "[PIDPositionController] got goal: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
         // todo error checks
@@ -136,16 +136,16 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_interfaces::srv::S
     return false;
 }
 
-bool PIDPositionController::local_position_goal_srv_override_cb(airsim_interfaces::srv::SetLocalPosition::Request& request, airsim_interfaces::srv::SetLocalPosition::Response& response)
+bool PIDPositionController::local_position_goal_srv_override_cb(const std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Response> response)
 {
     // this tells the update timer callback to not do active hovering
     if (!got_goal_once_)
         got_goal_once_ = true;
 
-    target_position_.x = request.x;
-    target_position_.y = request.y;
-    target_position_.z = request.z;
-    target_position_.yaw = request.yaw;
+    target_position_.x = request->x;
+    target_position_.y = request->y;
+    target_position_.z = request->z;
+    target_position_.yaw = request->yaw;
     RCLCPP_INFO_STREAM(nh_.get_logger(), "[PIDPositionController] got goal: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
     // todo error checks
@@ -167,24 +167,24 @@ void PIDPositionController::home_geopoint_cb(const airsim_interfaces::msg::GPSYa
 }
 
 // todo do relative altitude, or add an option for the same?
-bool PIDPositionController::gps_goal_srv_cb(airsim_interfaces::srv::SetGPSPosition::Request& request, airsim_interfaces::srv::SetGPSPosition::Response& response)
+bool PIDPositionController::gps_goal_srv_cb(const std::shared_ptr<airsim_interfaces::srv::SetGPSPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetGPSPosition::Response> response)
 {
     if (!has_home_geo_) {
         RCLCPP_ERROR_STREAM(nh_.get_logger(), "[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
-        response.success = false;
+        response->success = false;
     }
 
     // convert GPS goal to NED goal
 
     if (!has_goal_) {
-        msr::airlib::GeoPoint goal_gps_point(request.latitude, request.longitude, request.altitude);
+        msr::airlib::GeoPoint goal_gps_point(request->latitude, request->longitude, request->altitude);
         msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
         bool use_eth_lib = true;
         if (use_eth_lib_for_geodetic_conv_) {
             double initial_latitude, initial_longitude, initial_altitude;
             geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
             double n, e, d;
-            geodetic_converter_.geodetic2Ned(request.latitude, request.longitude, request.altitude, &n, &e, &d);
+            geodetic_converter_.geodetic2Ned(request->latitude, request->longitude, request->altitude, &n, &e, &d);
             // RCLCPP_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
             target_position_.x = n;
             target_position_.y = e;
@@ -200,7 +200,7 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_interfaces::srv::SetGPSPositi
             target_position_.z = ned_goal[2];
         }
 
-        target_position_.yaw = request.yaw; // todo
+        target_position_.yaw = request->yaw; // todo
         RCLCPP_INFO_STREAM(nh_.get_logger(), "[PIDPositionController] got GPS goal: lat=" << goal_gps_point.latitude << " long=" << goal_gps_point.longitude << " alt=" << goal_gps_point.altitude << " yaw=" << target_position_.yaw);
         RCLCPP_INFO_STREAM(nh_.get_logger(), "[PIDPositionController] converted NED goal is: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
@@ -218,23 +218,23 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_interfaces::srv::SetGPSPositi
 }
 
 // todo do relative altitude, or add an option for the same?
-bool PIDPositionController::gps_goal_srv_override_cb(airsim_interfaces::srv::SetGPSPosition::Request& request, airsim_interfaces::srv::SetGPSPosition::Response& response)
+bool PIDPositionController::gps_goal_srv_override_cb(const std::shared_ptr<airsim_interfaces::srv::SetGPSPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetGPSPosition::Response> response)
 {
     if (!has_home_geo_) {
         RCLCPP_ERROR_STREAM(nh_.get_logger(), "[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
-        response.success = false;
+        response->success = false;
     }
 
     // convert GPS goal to NED goal
 
-    msr::airlib::GeoPoint goal_gps_point(request.latitude, request.longitude, request.altitude);
+    msr::airlib::GeoPoint goal_gps_point(request->latitude, request->longitude, request->altitude);
     msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
     bool use_eth_lib = true;
     if (use_eth_lib_for_geodetic_conv_) {
         double initial_latitude, initial_longitude, initial_altitude;
         geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
         double n, e, d;
-        geodetic_converter_.geodetic2Ned(request.latitude, request.longitude, request.altitude, &n, &e, &d);
+        geodetic_converter_.geodetic2Ned(request->latitude, request->longitude, request->altitude, &n, &e, &d);
         // RCLCPP_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
         target_position_.x = n;
         target_position_.y = e;
@@ -250,7 +250,7 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_interfaces::srv::Set
         target_position_.z = ned_goal[2];
     }
 
-    target_position_.yaw = request.yaw; // todo
+    target_position_.yaw = request->yaw; // todo
     RCLCPP_INFO_STREAM(nh_.get_logger(), "[PIDPositionController] got GPS goal: lat=" << goal_gps_point.latitude << " long=" << goal_gps_point.longitude << " alt=" << goal_gps_point.altitude << " yaw=" << target_position_.yaw);
     RCLCPP_INFO_STREAM(nh_.get_logger(), "[PIDPositionController] converted NED goal is: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
@@ -340,5 +340,5 @@ void PIDPositionController::enforce_dynamic_constraints()
 
 void PIDPositionController::publish_control_cmd()
 {
-    airsim_vel_cmd_world_frame_pub_.publish(vel_cmd_);
+    airsim_vel_cmd_world_frame_pub_->publish(vel_cmd_);
 }
