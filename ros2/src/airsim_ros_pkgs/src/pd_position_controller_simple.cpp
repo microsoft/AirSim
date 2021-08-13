@@ -32,7 +32,7 @@ bool DynamicConstraints::load_from_rosparams(const rclcpp::Node& nh)
     return found;
 }
 
-PIDPositionController::PIDPositionController(const rclcpp::Node& nh, const ros::NodeHandle& nh_private)
+PIDPositionController::PIDPositionController(const rclcpp::Node& nh, const rclcpp::Node& nh_private)
     : nh_(nh), nh_private_(nh_private), has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
 {
     params_.load_from_rosparams(nh_private_);
@@ -54,29 +54,30 @@ void PIDPositionController::initialize_ros()
     vel_cmd_ = airsim_interfaces::msg::VelCmd();
     // ROS params
     double update_control_every_n_sec;
-    nh_private_.getParam("update_control_every_n_sec", update_control_every_n_sec);
+    nh_private_.get_parameter("update_control_every_n_sec", update_control_every_n_sec);
 
     std::string vehicle_name;
 
     while (vehicle_name == "") {
-        nh_private_.getParam("/vehicle_name", vehicle_name);
+        nh_private_.get_parameter("/vehicle_name", vehicle_name);
         RCLCPP_INFO_STREAM(nh_.get_logger() ,"Waiting vehicle name");
     }
 
     // ROS publishers
-    airsim_vel_cmd_world_frame_pub_ = nh_private_.advertise<airsim_interfaces::msg::VelCmd>("/airsim_node/" + vehicle_name + "/vel_cmd_world_frame", 1);
+    airsim_vel_cmd_world_frame_pub_ = nh_private_.create_publisher<airsim_interfaces::msg::VelCmd>("/airsim_node/" + vehicle_name + "/vel_cmd_world_frame", 1);
 
     // ROS subscribers
     airsim_odom_sub_ = nh_.create_subscription<nav_msgs::msg::Odometry>("/airsim_node/" + vehicle_name + "/odom_local_ned", 50, std::bind(&PIDPositionController::airsim_odom_cb, this, _1));
     home_geopoint_sub_ = nh_.create_subscription<airsim_interfaces::msg::GPSYaw>("/airsim_node/home_geo_point", 50, std::bind(&PIDPositionController::home_geopoint_cb, this, _1));
     // todo publish this under global nodehandle / "airsim node" and hide it from user
-    local_position_goal_srvr_ = nh_.advertiseService("/airsim_node/local_position_goal", &PIDPositionController::local_position_goal_srv_cb, this);
-    local_position_goal_override_srvr_ = nh_.advertiseService("/airsim_node/local_position_goal/override", &PIDPositionController::local_position_goal_srv_override_cb, this);
-    gps_goal_srvr_ = nh_.advertiseService("/airsim_node/gps_goal", &PIDPositionController::gps_goal_srv_cb, this);
-    gps_goal_override_srvr_ = nh_.advertiseService("/airsim_node/gps_goal/override", &PIDPositionController::gps_goal_srv_override_cb, this);
+    local_position_goal_srvr_ = nh_.create_service("/airsim_node/local_position_goal", &PIDPositionController::local_position_goal_srv_cb, this);
+    local_position_goal_override_srvr_ = nh_.create_service("/airsim_node/local_position_goal/override", &PIDPositionController::local_position_goal_srv_override_cb, this);
+    gps_goal_srvr_ = nh_.create_service("/airsim_node/gps_goal", &PIDPositionController::gps_goal_srv_cb, this);
+    gps_goal_override_srvr_ = nh_.create_service("/airsim_node/gps_goal/override", &PIDPositionController::gps_goal_srv_override_cb, this);
 
     // ROS timers
-    update_control_cmd_timer_ = nh_private_.createTimer(ros::Duration(update_control_every_n_sec), &PIDPositionController::update_control_cmd_timer_cb, this);
+    //update_control_cmd_timer_ = nh_private_.createTimer(ros::Duration(update_control_every_n_sec), &PIDPositionController::update_control_cmd_timer_cb, this);
+    update_control_cmd_timer_ = nh_private_.create_wall_timer(std::chrono::duration<double>(update_control_every_n_sec), std::bind(&PIDPositionController::update_control_cmd_timer_cb, this));
 }
 
 void PIDPositionController::airsim_odom_cb(const nav_msgs::msg::Odometry::SharedPtr odom_msg)
@@ -261,7 +262,7 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_interfaces::srv::Set
     return true;
 }
 
-void PIDPositionController::update_control_cmd_timer_cb(const ros::TimerEvent& event)
+void PIDPositionController::update_control_cmd_timer_cb(/* const ros::TimerEvent& event */)
 {
     // todo check if odometry is too old!!
     // if no odom, don't do anything.

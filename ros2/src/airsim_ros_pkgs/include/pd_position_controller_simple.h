@@ -78,7 +78,7 @@ public:
 class PIDPositionController
 {
 public:
-    PIDPositionController(const rclcpp::Node& nh, const ros::NodeHandle& nh_private);
+    PIDPositionController(const rclcpp::Node& nh, const rclcpp::Node& nh_private);
 
     // ROS service callbacks
     bool local_position_goal_srv_cb(airsim_interfaces::srv::SetLocalPosition::Request& request, airsim_interfaces::srv::SetLocalPosition::Response& response);
@@ -90,7 +90,7 @@ public:
     void airsim_odom_cb(const nav_msgs::msg::Odometry::SharedPtr odom_msg);
     void home_geopoint_cb(const airsim_interfaces::msg::GPSYaw::SharedPtr gps_msg);
 
-    void update_control_cmd_timer_cb(const ros::TimerEvent& event);
+    void update_control_cmd_timer_cb(/* const ros::TimerEvent& event */);
 
     void reset_errors();
 
@@ -105,7 +105,8 @@ private:
     bool use_eth_lib_for_geodetic_conv_;
 
     rclcpp::Node nh_;
-    ros::NodeHandle nh_private_;
+    rclcpp::Node nh_private_;
+    // ros::NodeHandle nh_private_;
 
     DynamicConstraints constraints_;
     PIDParams params_;
@@ -133,7 +134,8 @@ private:
     ros::ServiceServer gps_goal_srvr_;
     ros::ServiceServer gps_goal_override_srvr_;
 
-    ros::Timer update_control_cmd_timer_;
+    rclcpp::TimerBase::SharedPtr update_control_cmd_timer_;
+    //ros::Timer update_control_cmd_timer_;
 };
 
 #endif /* _PID_POSITION_CONTROLLER_SIMPLE_ */

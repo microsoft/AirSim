@@ -8,10 +8,12 @@ int main(int argc, char** argv)
     // ros::NodeHandle nh;
     rclcpp::init(argc, argv);
     rclcpp::Node nh = rclcpp::Node("airsim_node");
-    ros::NodeHandle nh_private("~");
+    rclcpp::Node nh_private = nh.create_sub_node("~");
+    
+   // ros::NodeHandle nh_private("~");
 
     std::string host_ip = "localhost";
-    nh_private.getParam("host_ip", host_ip);
+    nh_private.get_parameter("host_ip", host_ip);
     AirsimROSWrapper airsim_ros_wrapper(nh, nh_private, host_ip);
 
     if (airsim_ros_wrapper.is_used_img_timer_cb_queue_) {

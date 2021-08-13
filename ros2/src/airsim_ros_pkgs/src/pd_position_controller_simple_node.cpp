@@ -7,7 +7,8 @@ int main(int argc, char** argv)
     // ros::NodeHandle nh;
     rclcpp::init(argc, argv);
     rclcpp::Node nh = rclcpp::Node("pid_position_controller_simple_node");
-    ros::NodeHandle nh_private("~");
+    rclcpp::Node nh_private = nh.create_sub_node("~");
+    // ros::NodeHandle nh_private("~");
 
     PIDPositionController controller(nh, nh_private);
 
