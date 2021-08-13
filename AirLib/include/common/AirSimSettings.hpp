@@ -118,7 +118,7 @@ namespace airlib
             {
             }
 
-            static Rotation nanRotation()
+            static Rotation nanRotation() noexcept
             {
                 static const Rotation val(Utils::nan<float>(), Utils::nan<float>(), Utils::nan<float>());
                 return val;
