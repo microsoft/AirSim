@@ -133,7 +133,7 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const rclcpp::Node& nh, const rclcpp::Node& nh_private, const std::string& host_ip);
+    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private, const std::string& host_ip);
     ~AirsimROSWrapper(){};
 
     void initialize_airsim();
@@ -161,20 +161,20 @@ private:
         std::string vehicle_name;
 
         /// All things ROS
-        rclcpp::Publisher odom_local_pub;
-        rclcpp::Publisher global_gps_pub;
-        rclcpp::Publisher env_pub;
-        airsim_interfaces::Environment env_msg;
+        rclcpp::Publisher<nav_msgs::msg::Odometry>>::SharedPtr odom_local_pub;
+        rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr global_gps_pub;
+        rclcpp::Publisher<airsim_interfaces::msg::Environment>::SharedPtr env_pub;
+        airsim_interfaces::msg::Environment env_msg;
         std::vector<SensorPublisher> sensor_pubs;
         // handle lidar seperately for max performance as data is collected on its own thread/callback
         std::vector<SensorPublisher> lidar_pubs;
 
         nav_msgs::msg::Odometry curr_odom;
-        sensor_msgs::NavSatFix gps_sensor_msg;
+        sensor_msgs::msg::NavSatFix gps_sensor_msg;
 
-        std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec;
+        std::vector<geometry_msgs::msg::TransformStamped> static_tf_msg_vec;
 
-        ros::Time stamp;
+        rclcpp::TimerBase::SharedPtrstamp;
 
         std::string odom_frame_id;
         /// Status
@@ -189,7 +189,7 @@ private:
 
         rclcpp::Subscription car_cmd_sub;
         rclcpp::Publisher car_state_pub;
-        airsim_interfaces::CarState car_state_msg;
+        airsim_interfaces::msg::CarState car_state_msg;
 
         bool has_car_cmd;
         msr::airlib::CarApiBase::CarControls car_cmd;
@@ -205,8 +205,8 @@ private:
         rclcpp::Subscription vel_cmd_body_frame_sub;
         rclcpp::Subscription vel_cmd_world_frame_sub;
 
-        ros::ServiceServer takeoff_srvr;
-        ros::ServiceServer land_srvr;
+        rclcpp::Service<>::SharedPtr takeoff_srvr;
+        rclcpp::Service<>::SharedPtr land_srvr;
 
         bool has_vel_cmd;
         VelCmd vel_cmd;
@@ -231,33 +231,33 @@ private:
     void vel_cmd_all_body_frame_cb(const airsim_interfaces::msg::VelCmd& msg);
 
     // void vel_cmd_body_frame_cb(const airsim_interfaces::msg::VelCmd& msg, const std::string& vehicle_name);
-    void gimbal_angle_quat_cmd_cb(const airsim_interfaces::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg);
-    void gimbal_angle_euler_cmd_cb(const airsim_interfaces::GimbalAngleEulerCmd& gimbal_angle_euler_cmd_msg);
+    void gimbal_angle_quat_cmd_cb(const airsim_interfaces::msg::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg);
+    void gimbal_angle_euler_cmd_cb(const airsim_interfaces::msg::GimbalAngleEulerCmd& gimbal_angle_euler_cmd_msg);
 
     // commands
-    void car_cmd_cb(const airsim_interfaces::CarControls::ConstPtr& msg, const std::string& vehicle_name);
+    void car_cmd_cb(const airsim_interfaces::msg::CarControls::ConstPtr& msg, const std::string& vehicle_name);
     void update_commands();
 
     // state, returns the simulation timestamp best guess based on drone state timestamp, airsim needs to return timestap for environment
-    ros::Time update_state();
+    rclcpp::TimerBase::SharedPtr update_state();
     void update_and_publish_static_transforms(VehicleROS* vehicle_ros);
     void publish_vehicle_state();
 
     /// ROS service callbacks
-    bool takeoff_srv_cb(airsim_interfaces::Takeoff::Request& request, airsim_interfaces::Takeoff::Response& response, const std::string& vehicle_name);
-    bool takeoff_group_srv_cb(airsim_interfaces::TakeoffGroup::Request& request, airsim_interfaces::TakeoffGroup::Response& response);
-    bool takeoff_all_srv_cb(airsim_interfaces::Takeoff::Request& request, airsim_interfaces::Takeoff::Response& response);
-    bool land_srv_cb(airsim_interfaces::Land::Request& request, airsim_interfaces::Land::Response& response, const std::string& vehicle_name);
-    bool land_group_srv_cb(airsim_interfaces::LandGroup::Request& request, airsim_interfaces::LandGroup::Response& response);
-    bool land_all_srv_cb(airsim_interfaces::Land::Request& request, airsim_interfaces::Land::Response& response);
-    bool reset_srv_cb(airsim_interfaces::Reset::Request& request, airsim_interfaces::Reset::Response& response);
+    bool takeoff_srv_cb(airsim_interfaces::srv::Takeoff::Request& request, airsim_interfaces::srv::Takeoff::Response& response, const std::string& vehicle_name);
+    bool takeoff_group_srv_cb(airsim_interfaces::srv::TakeoffGroup::Request& request, airsim_interfaces::srv::TakeoffGroup::Response& response);
+    bool takeoff_all_srv_cb(airsim_interfaces::srv::Takeoff::Request& request, airsim_interfaces::srv::Takeoff::Response& response);
+    bool land_srv_cb(airsim_interfaces::srv::Land::Request& request, airsim_interfaces::srv::Land::Response& response, const std::string& vehicle_name);
+    bool land_group_srv_cb(airsim_interfaces::srv::LandGroup::Request& request, airsim_interfaces::srv::LandGroup::Response& response);
+    bool land_all_srv_cb(airsim_interfaces::srv::Land::Request& request, airsim_interfaces::srv::Land::Response& response);
+    bool reset_srv_cb(airsim_interfaces::srv::Reset::Request& request, airsim_interfaces::srv::Reset::Response& response);
 
     /// ROS tf broadcasters
     void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
     void publish_odom_tf(const nav_msgs::msg::Odometry& odom_msg);
 
     /// camera helper methods
-    sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
+    sensor_msgs::msg::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
     cv::Mat manual_decode_depth(const ImageResponse& img_response) const;
 
     sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
@@ -280,20 +280,20 @@ private:
     msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
     nav_msgs::msg::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
     nav_msgs::msg::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
-    airsim_interfaces::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
+    airsim_interfaces::msg::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
     msr::airlib::Pose get_airlib_pose(const float& x, const float& y, const float& z, const msr::airlib::Quaternionr& airlib_quat) const;
     airsim_interfaces::msg::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
-    sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
-    sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const;
-    airsim_interfaces::Altimeter get_altimeter_msg_from_airsim(const msr::airlib::BarometerBase::Output& alt_data) const;
-    sensor_msgs::Range get_range_from_airsim(const msr::airlib::DistanceSensorData& dist_data) const;
-    sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const;
-    sensor_msgs::NavSatFix get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const;
-    sensor_msgs::MagneticField get_mag_msg_from_airsim(const msr::airlib::MagnetometerBase::Output& mag_data) const;
+    sensor_msgs::msg::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
+    sensor_msgs::msg::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const;
+    airsim_interfaces::msg::Altimeter get_altimeter_msg_from_airsim(const msr::airlib::BarometerBase::Output& alt_data) const;
+    sensor_msgs::msg::Range get_range_from_airsim(const msr::airlib::DistanceSensorData& dist_data) const;
+    sensor_msgs::msg::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const;
+    sensor_msgs::msg::NavSatFix get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const;
+    sensor_msgs::msg::MagneticField get_mag_msg_from_airsim(const msr::airlib::MagnetometerBase::Output& mag_data) const;
     airsim_interfaces::Environment get_environment_msg_from_airsim(const msr::airlib::Environment::State& env_data) const;
 
     // not used anymore, but can be useful in future with an unreal camera calibration environment
-    void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info) const;
+    void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::msg::CameraInfo& cam_info) const;
     void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m) const; // todo ugly
 
     // simulation time utility
@@ -302,21 +302,21 @@ private:
 
 private:
     // subscriber / services for ALL robots
-    rclcpp::Subscription vel_cmd_all_body_frame_sub_;
-    rclcpp::Subscription vel_cmd_all_world_frame_sub_;
-    ros::ServiceServer takeoff_all_srvr_;
-    ros::ServiceServer land_all_srvr_;
+    rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_all_body_frame_sub_;
+    rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_all_world_frame_sub_;
+    rclcpp::Service<airsim_interfaces::srv::Takeoff>::SharedPtr takeoff_all_srvr_;
+    rclcpp::Service<airsim_interfaces::srv::Land>::SharedPtr land_all_srvr_;
 
     // todo - subscriber / services for a GROUP of robots, which is defined by a list of `vehicle_name`s passed in the ros msg / srv request
-    rclcpp::Subscription vel_cmd_group_body_frame_sub_;
-    rclcpp::Subscription vel_cmd_group_world_frame_sub_;
-    ros::ServiceServer takeoff_group_srvr_;
-    ros::ServiceServer land_group_srvr_;
+    rclcpp::Subscription<airsim_interfaces::msg::VelCmdGroup>::SharedPtr vel_cmd_group_body_frame_sub_;
+    rclcpp::Subscription<airsim_interfaces::msg::VelCmdGroup>::SharedPtr vel_cmd_group_world_frame_sub_;
+    rclcpp::Service<airsim_interfaces::srv::TakeoffGroup>::SharedPtr takeoff_group_srvr_;
+    rclcpp::Service<airsim_interfaces::srv::LandGroup>::SharedPtr land_group_srvr_;
 
     AIRSIM_MODE airsim_mode_ = AIRSIM_MODE::DRONE;
 
-    ros::ServiceServer reset_srvr_;
-    rclcpp::Publisher origin_geo_point_pub_; // home geo coord of drones
+    rclcpp::Service<airsim_interfaces::srv::Reset>::SharedPtr reset_srvr_;
+    rclcpp::Publisher<airsim_interfaces::msg::GPSYaw>::SharedPtr origin_geo_point_pub_; // home geo coord of drones
     msr::airlib::GeoPoint origin_geo_point_; // gps coord of unreal origin
     airsim_interfaces::msg::GPSYaw origin_geo_point_msg_; // todo duplicate
 
@@ -332,8 +332,9 @@ private:
     msr::airlib::RpcLibClientBase airsim_client_images_;
     msr::airlib::RpcLibClientBase airsim_client_lidar_;
 
-    rclcpp::Node nh_;
-    rclcpp::Node nh_private_;
+    std::shared_ptr<rclcpp::Node> nh;
+    std::shared_ptr<rclcpp::Node> nh_private_;
+
 
     // ros::NodeHandle nh_;
     // ros::NodeHandle nh_private_;
@@ -375,7 +376,7 @@ private:
     std::vector<image_transport::Publisher> image_pub_vec_;
     std::vector<rclcpp::Publisher> cam_info_pub_vec_;
 
-    std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
+    std::vector<sensor_msgs::msg::CameraInfo> camera_info_msg_vec_;
 
     /// ROS other publishers
     rclcpp::Publisher clock_pub_;

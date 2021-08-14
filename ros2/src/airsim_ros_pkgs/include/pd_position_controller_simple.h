@@ -137,10 +137,10 @@ private:
     rclcpp::Service<airsim_interfaces::srv::SetGPSPosition>::SharedPtr gps_goal_override_srvr_;
 
   
-    // ros::ServiceServer local_position_goal_srvr_;
-    // ros::ServiceServer local_position_goal_override_srvr_;
-    // ros::ServiceServer gps_goal_srvr_;
-    // ros::ServiceServer gps_goal_override_srvr_;
+    // rclcpp::Service<>::SharedPtr local_position_goal_srvr_;
+    // rclcpp::Service<>::SharedPtr local_position_goal_override_srvr_;
+    // rclcpp::Service<>::SharedPtr gps_goal_srvr_;
+    // rclcpp::Service<>::SharedPtr gps_goal_override_srvr_;
 
     rclcpp::TimerBase::SharedPtr update_control_cmd_timer_;
     //ros::Timer update_control_cmd_timer_;
