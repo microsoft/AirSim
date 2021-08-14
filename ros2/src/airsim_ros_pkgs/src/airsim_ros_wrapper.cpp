@@ -1457,11 +1457,11 @@ void AirsimROSWrapper::read_params_from_yaml_and_fill_cam_info_msg(const std::st
     cam_info.width = doc[WIDTH_YML_NAME].as<int>();
     cam_info.height = doc[HEIGHT_YML_NAME].as<int>();
 
-    SimpleMatrix K_(3, 3, &cam_info.K[0]);
+    SimpleMatrix K_(3, 3, &cam_info.k[0]);
     convert_yaml_to_simple_mat(doc[K_YML_NAME], K_);
-    SimpleMatrix R_(3, 3, &cam_info.R[0]);
+    SimpleMatrix R_(3, 3, &cam_info.r[0]);
     convert_yaml_to_simple_mat(doc[R_YML_NAME], R_);
-    SimpleMatrix P_(3, 4, &cam_info.P[0]);
+    SimpleMatrix P_(3, 4, &cam_info.p[0]);
     convert_yaml_to_simple_mat(doc[P_YML_NAME], P_);
 
     cam_info.distortion_model = doc[DMODEL_YML_NAME].as<std::string>();
@@ -1471,8 +1471,8 @@ void AirsimROSWrapper::read_params_from_yaml_and_fill_cam_info_msg(const std::st
     D_rows = D_node["rows"].as<int>();
     D_cols = D_node["cols"].as<int>();
     const YAML::Node& D_data = D_node["data"];
-    cam_info.D.resize(D_rows * D_cols);
+    cam_info.d.resize(D_rows * D_cols);
     for (int i = 0; i < D_rows * D_cols; ++i) {
-        cam_info.D[i] = D_data[i].as<float>();
+        cam_info.d[i] = D_data[i].as<float>();
     }
 }
