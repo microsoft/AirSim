@@ -33,7 +33,7 @@ STRICT_MODE_OFF //todo what does this do?
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
-#include <image_transport/image_transport.h>
+#include <image_transport/image_transport.hpp>
 #include <iostream>
 #include <math.h>
 #include <math_common.h>

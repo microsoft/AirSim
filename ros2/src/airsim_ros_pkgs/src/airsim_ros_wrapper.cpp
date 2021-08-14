@@ -105,7 +105,8 @@ void AirsimROSWrapper::initialize_ros()
     // nh_->get_parameter("max_horz_vel", max_horz_vel_)
 
     create_ros_pubs_from_settings_json();
-    airsim_control_update_timer_ = nh_private_->createTimer(ros::Duration(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
+    airsim_control_update_timer_ = nh_private_->create_wall_timer(std::chrono::duration<double>(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
+    // airsim_control_update_timer_ = nh_private_->createTimer(ros::Duration(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
 }
 
 // XmlRpc::XmlRpcValue can't be const in this case
@@ -905,7 +906,7 @@ ros::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoin
     return cur_time;
 }
 
-void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
+void AirsimROSWrapper::drone_state_timer_cb(/* const ros::TimerEvent& event */)
 {
     try {
         // todo this is global origin
