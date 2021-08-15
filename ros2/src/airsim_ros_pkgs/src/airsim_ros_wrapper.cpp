@@ -308,7 +308,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_airsim_img_response_every_n_sec;
         nh_private_->get_parameter("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
 
-        ros::TimerOptions timer_options(rclcpp::Duration (update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
+        ros::TimerOptions timer_options(rclcpp::Duration(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
         airsim_img_response_timer_ = nh_private_->createTimer(timer_options);
         is_used_img_timer_cb_queue_ = true;
     }
@@ -318,7 +318,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_lidar_every_n_sec;
         nh_private_->get_parameter("update_lidar_every_n_sec", update_lidar_every_n_sec);
         // nh_private_->setCallbackQueue(&lidar_timer_cb_queue_);
-        ros::TimerOptions timer_options(rclcpp::Duration (update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
+        ros::TimerOptions timer_options(rclcpp::Duration(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
         airsim_lidar_update_timer_ = nh_private_->createTimer(timer_options);
         is_used_lidar_timer_cb_queue_ = true;
     }
@@ -741,7 +741,7 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
     if (isENU_) {
         try {
             sensor_msgs::msg::PointCloud2 lidar_msg_enu;
-            auto transformStampedENU = tf_buffer_.lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration (1));
+            auto transformStampedENU = tf_buffer_.lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration(1));
             tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
 
             lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
@@ -751,7 +751,7 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
         }
         catch (tf2::TransformException& ex) {
             RCLCPP_WARN(nh_->get_logger(), "%s", ex.what());
-            rclcpp::Duration (1.0).sleep();
+            rclcpp::Duration(1.0).sleep();
         }
     }
 
