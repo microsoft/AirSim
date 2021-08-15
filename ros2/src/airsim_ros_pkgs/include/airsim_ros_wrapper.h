@@ -216,9 +216,9 @@ private:
     };
 
     /// ROS timer callbacks
-    void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
-    void drone_state_timer_cb(const ros::TimerEvent& event); // update drone state from airsim_client_ every nth sec
-    void lidar_timer_cb(const ros::TimerEvent& event);
+    void img_response_timer_cb(/* const ros::TimerEvent& event */); // update images from airsim_client_ every nth sec
+    void drone_state_timer_cb(/* const ros::TimerEvent& event */); // update drone state from airsim_client_ every nth sec
+    void lidar_timer_cb(/* const ros::TimerEvent& event */);
 
     /// ROS subscriber callbacks
     void vel_cmd_world_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg, const std::string& vehicle_name);
@@ -360,15 +360,15 @@ private:
     tf2_ros::StaticTransformBroadcaster static_tf_pub_;
 
     bool isENU_ = false;
-    tf2_ros::Buffer tf_buffer_;
-    tf2_ros::TransformListener tf_listener_;
+    std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
     /// ROS params
     double vel_cmd_duration_;
 
     /// ROS Timers.
     ros::Timer airsim_img_response_timer_;
-    ros::Timer airsim_control_update_timer_;
+    rclcpp::TimerBase::SharedPtr airsim_control_update_timer_;
     ros::Timer airsim_lidar_update_timer_;
 
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;

@@ -35,7 +35,6 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
     , airsim_settings_parser_(host_ip)
-    , tf_listener_(tf_buffer_)
 {
     ros_clock_.clock.fromSec(0);
     is_used_lidar_timer_cb_queue_ = false;
@@ -49,6 +48,8 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
         airsim_mode_ = AIRSIM_MODE::CAR;
         RCLCPP_INFO(nh_->get_logger(), "Setting ROS wrapper to CAR mode");
     }
+    tf_buffer_ = std::shared_ptr<tf2_ros::Buffer>(nh_->get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(tf_buffer_);
 
     initialize_ros();
 
@@ -307,7 +308,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_airsim_img_response_every_n_sec;
         nh_private_->get_parameter("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
 
-        ros::TimerOptions timer_options(ros::Duration(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this, _1), &img_timer_cb_queue_);
+        ros::TimerOptions timer_options(ros::Duration(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
         airsim_img_response_timer_ = nh_private_->createTimer(timer_options);
         is_used_img_timer_cb_queue_ = true;
     }
@@ -317,7 +318,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_lidar_every_n_sec;
         nh_private_->get_parameter("update_lidar_every_n_sec", update_lidar_every_n_sec);
         // nh_private_->setCallbackQueue(&lidar_timer_cb_queue_);
-        ros::TimerOptions timer_options(ros::Duration(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this, _1), &lidar_timer_cb_queue_);
+        ros::TimerOptions timer_options(ros::Duration(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
         airsim_lidar_update_timer_ = nh_private_->createTimer(timer_options);
         is_used_lidar_timer_cb_queue_ = true;
     }
@@ -906,7 +907,7 @@ ros::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoin
     return cur_time;
 }
 
-void AirsimROSWrapper::drone_state_timer_cb(/* const ros::TimerEvent& event */)
+void AirsimROSWrapper::drone_state_timer_cb()
 {
     try {
         // todo this is global origin
@@ -1256,7 +1257,7 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     vehicle_ros->static_tf_msg_vec.emplace_back(static_cam_tf_optical_msg);
 }
 
-void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
+void AirsimROSWrapper::img_response_timer_cb()
 {
     try {
         int image_response_idx = 0;
@@ -1277,7 +1278,7 @@ void AirsimROSWrapper::img_response_timer_cb(const ros::TimerEvent& event)
     }
 }
 
-void AirsimROSWrapper::lidar_timer_cb(const ros::TimerEvent& event)
+void AirsimROSWrapper::lidar_timer_cb()
 {
     try {
         for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
