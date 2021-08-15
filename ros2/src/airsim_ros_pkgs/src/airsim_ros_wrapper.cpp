@@ -106,7 +106,7 @@ void AirsimROSWrapper::initialize_ros()
     // nh_->get_parameter("max_horz_vel", max_horz_vel_)
 
     create_ros_pubs_from_settings_json();
-    airsim_control_update_timer_ = nh_private_->create_wall_timer(std::chrono::duration<double>(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
+    airsim_control_update_timer_ = nh_private_->create_wall_timer(std::chrono::milliseconds(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
     // airsim_control_update_timer_ = nh_private_->createTimer(rclcpp::Duration (update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
 }
 
@@ -756,7 +756,7 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
         }
         catch (tf2::TransformException& ex) {
             RCLCPP_WARN(nh_->get_logger(), "%s", ex.what());
-            rclcpp::Duration(1.0).sleep();
+            rclcpp::Rate(1.0).sleep();
         }
     }
 
