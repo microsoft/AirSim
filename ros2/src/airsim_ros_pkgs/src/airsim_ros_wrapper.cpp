@@ -1314,11 +1314,11 @@ cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse& img_response)
     return mat;
 }
 
-sensor_msgs::msg::Image::SharedPtr AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
+std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
                                                                   const rclcpp::Time curr_ros_time,
                                                                   const std::string frame_id)
 {
-    sensor_msgs::msg::Image::SharedPtr img_msg_ptr = boost::make_shared<sensor_msgs::msg::Image>();
+    std::shared_ptr<sensor_msgs::msg::Image> img_msg_ptr = std::make_shared<sensor_msgs::msg::Image>();//boost::make_shared<sensor_msgs::msg::Image>();
     img_msg_ptr->data = img_response.image_data_uint8;
     img_msg_ptr->step = img_response.width * 3; // todo un-hardcode. image_width*num_bytes
     img_msg_ptr->header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
@@ -1332,14 +1332,14 @@ sensor_msgs::msg::Image::SharedPtr AirsimROSWrapper::get_img_msg_from_response(c
     return img_msg_ptr;
 }
 
-sensor_msgs::msg::Image::SharedPtr AirsimROSWrapper::get_depth_img_msg_from_response(const ImageResponse& img_response,
+std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_from_response(const ImageResponse& img_response,
                                                                         const rclcpp::Time curr_ros_time,
                                                                         const std::string frame_id)
 {
     // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error,
     // hence the dependency on opencv and cv_bridge. however, this is an extremely fast op, so no big deal.
     cv::Mat depth_img = manual_decode_depth(img_response);
-    sensor_msgs::msg::Image::SharedPtr depth_img_msg = cv_bridge::CvImage(std_msgs::msg::Header(), "32FC1", depth_img).toImageMsg();
+    std::shared_ptr<sensor_msgs::msg::Image> depth_img_msg = cv_bridge::CvImage(std_msgs::msg::Header(), "32FC1", depth_img).toImageMsg();
     depth_img_msg->header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     depth_img_msg->header.frame_id = frame_id;
     return depth_img_msg;
