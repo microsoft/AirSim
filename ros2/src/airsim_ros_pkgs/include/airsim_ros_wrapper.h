@@ -174,7 +174,7 @@ private:
 
         std::vector<geometry_msgs::msg::TransformStamped> static_tf_msg_vec;
 
-        rclcpp::TimerBase::SharedPtr stamp;
+        rclcpp::Time stamp;
 
         std::string odom_frame_id;
         /// Status
@@ -239,7 +239,7 @@ private:
     void update_commands();
 
     // state, returns the simulation timestamp best guess based on drone state timestamp, airsim needs to return timestap for environment
-    rclcpp::TimerBase::SharedPtr update_state();
+    rclcpp::Time AirsimROSWrapper::update_state();
     void update_and_publish_static_transforms(VehicleROS* vehicle_ros);
     void publish_vehicle_state();
 
@@ -253,7 +253,7 @@ private:
     bool reset_srv_cb(const std::shared_ptr<airsim_interfaces::srv::Reset::Request> request, const std::shared_ptr<airsim_interfaces::srv::Reset::Response> response);
 
     /// ROS tf broadcasters
-    void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
+    void publish_camera_tf(const ImageResponse& img_response, const rclcpp::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
     void publish_odom_tf(const nav_msgs::msg::Odometry& odom_msg);
 
     /// camera helper methods

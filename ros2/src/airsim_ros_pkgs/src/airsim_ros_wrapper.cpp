@@ -106,7 +106,7 @@ void AirsimROSWrapper::initialize_ros()
     // nh_->get_parameter("max_horz_vel", max_horz_vel_)
 
     create_ros_pubs_from_settings_json();
-    airsim_control_update_timer_ = nh_private_->create_wall_timer(std::chrono::milliseconds(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
+    airsim_control_update_timer_ = nh_private_->create_wall_timer(std::chrono::duration<double>(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
     // airsim_control_update_timer_ = nh_private_->createTimer(rclcpp::Duration (update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
 }
 
@@ -132,7 +132,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         auto& vehicle_setting = curr_vehicle_elem.second;
         auto curr_vehicle_name = curr_vehicle_elem.first;
 
-        nh_->set_parameter(rclcpp::Parameter("/vehicle_name"), curr_vehicle_name);
+        nh_->set_parameter(rclcpp::Parameter("/vehicle_name", curr_vehicle_name));
 
         set_nans_to_zeros_in_pose(*vehicle_setting);
 
@@ -1269,7 +1269,7 @@ void AirsimROSWrapper::img_response_timer_cb()
         for (const auto& airsim_img_request_vehicle_name_pair : airsim_img_request_vehicle_name_pair_vec_) {
             const std::vector<ImageResponse>& img_response = airsim_client_images_.simGetImages(airsim_img_request_vehicle_name_pair.first, airsim_img_request_vehicle_name_pair.second);
 
-            if (img_response->size() == airsim_img_request_vehicle_name_pair.first.size()) {
+            if (img_response.size() == airsim_img_request_vehicle_name_pair.first.size()) {
                 process_and_publish_img_response(img_response, image_response_idx, airsim_img_request_vehicle_name_pair.second);
                 image_response_idx += img_response.size();
             }
