@@ -703,7 +703,7 @@ nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(con
 sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const
 {
     sensor_msgs::msg::PointCloud2 lidar_msg;
-    lidar_msg.header.stamp = nh_->get_clock()->now().toMsg();
+    lidar_msg.header.stamp = nh_->get_clock()->now();
     lidar_msg.header.frame_id = vehicle_name;
 
     if (lidar_data.point_cloud.size() > 3) {
@@ -1173,7 +1173,7 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
 {
     geometry_msgs::msg::TransformStamped vehicle_tf_msg;
     vehicle_tf_msg.header.frame_id = world_frame_id_;
-    vehicle_tf_msg.header.stamp = nh_->get_clock()->now().toMsg();
+    vehicle_tf_msg.header.stamp = nh_->get_clock()->now();
     vehicle_tf_msg.child_frame_id = vehicle_ros->vehicle_name;
     vehicle_tf_msg.transform.translation.x = vehicle_setting.position.x();
     vehicle_tf_msg.transform.translation.y = vehicle_setting.position.y();
@@ -1309,11 +1309,11 @@ cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse& img_response)
     return mat;
 }
 
-sensor_msgs::msg::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
+sensor_msgs::msg::Image::SharedPtr AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
                                                                   const rclcpp::Time curr_ros_time,
                                                                   const std::string frame_id)
 {
-    sensor_msgs::msg::ImagePtr img_msg_ptr = boost::make_shared<sensor_msgs::msg::Image>();
+    sensor_msgs::msg::Image::SharedPtr img_msg_ptr = boost::make_shared<sensor_msgs::msg::Image>();
     img_msg_ptr->data = img_response.image_data_uint8;
     img_msg_ptr->step = img_response.width * 3; // todo un-hardcode. image_width*num_bytes
     img_msg_ptr->header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
@@ -1327,14 +1327,14 @@ sensor_msgs::msg::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const Ima
     return img_msg_ptr;
 }
 
-sensor_msgs::msg::ImagePtr AirsimROSWrapper::get_depth_img_msg_from_response(const ImageResponse& img_response,
+sensor_msgs::msg::Image::SharedPtr AirsimROSWrapper::get_depth_img_msg_from_response(const ImageResponse& img_response,
                                                                         const rclcpp::Time curr_ros_time,
                                                                         const std::string frame_id)
 {
     // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error,
     // hence the dependency on opencv and cv_bridge. however, this is an extremely fast op, so no big deal.
     cv::Mat depth_img = manual_decode_depth(img_response);
-    sensor_msgs::msg::ImagePtr depth_img_msg = cv_bridge::CvImage(std_msgs::Header(), "32FC1", depth_img).toImageMsg();
+    sensor_msgs::msg::Image::SharedPtr depth_img_msg = cv_bridge::CvImage(std_msgs::Header(), "32FC1", depth_img).toImageMsg();
     depth_img_msg->header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     depth_img_msg->header.frame_id = frame_id;
     return depth_img_msg;
