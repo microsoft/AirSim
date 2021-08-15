@@ -1,18 +1,15 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(MavLinkCom)
 
-add_subdirectory("MavLinkTest")
+include(GNUInstallDirs)
+
+if(BUILD_TESTS)
+  add_subdirectory("MavLinkTest")
+endif()
 
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake-modules") 
 INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../cmake-modules/CommonSetup.cmake")
 CommonSetup()
-
-include_directories(
-  ${AIRSIM_ROOT}/MavLinkCom
-  ${AIRSIM_ROOT}/MavLinkCom/common_utils
-  ${AIRSIM_ROOT}/MavLinkCom/include
-)
-
 
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/common_utils/FileSystem.cpp")
 LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/common_utils/ThreadUtils.cpp")
@@ -48,9 +45,26 @@ ELSE()
     LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/windows/WindowsFindSerialPorts.cpp")
 ENDIF()
 
-
-
 add_library(MavLinkCom STATIC ${MAVLINK_SOURCES})
+add_library(${SOLUTION_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-CommonTargetLink()
 
+target_include_directories(${PROJECT_NAME} 
+  PUBLIC
+    $<BUILD_INTERFACE:${AIRSIM_ROOT}/MavLinkCom/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${SOLUTION_NAME}/${PROJECT_NAME}>
+  PRIVATE
+    $<BUILD_INTERFACE:
+      ${AIRSIM_ROOT}/MavLinkCom
+      ${AIRSIM_ROOT}/MavLinkCom/common_utils  
+    >
+)
+
+install(DIRECTORY "${AIRSIM_ROOT}/${PROJECT_NAME}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${SOLUTION_NAME}/${PROJECT_NAME}")
+install(TARGETS ${PROJECT_NAME}
+	EXPORT ${SOLUTION_NAME}-export
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

@@ -1,18 +1,11 @@
 ﻿cmake_minimum_required(VERSION 3.5.0)
 project(AirLib)
 
+include(GNUInstallDirs)
+
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake-modules") 
 INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../cmake-modules/CommonSetup.cmake")
 CommonSetup()
-
-IncludeEigen()
-
-include_directories(
-  ${AIRSIM_ROOT}/AirLib/
-  ${AIRSIM_ROOT}/AirLib/include
-  ${AIRSIM_ROOT}/MavLinkCom/include
-  ${RPC_LIB_INCLUDES}
-)
 
 file(GLOB_RECURSE ${PROJECT_NAME}_sources 
   ${AIRSIM_ROOT}/${PROJECT_NAME}/src/api/*.cpp
@@ -24,10 +17,37 @@ file(GLOB_RECURSE ${PROJECT_NAME}_sources
 )
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_sources})
+add_library(${SOLUTION_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-CommonTargetLink()
-target_link_libraries(${PROJECT_NAME} ${RPC_LIB})
-target_link_libraries(${PROJECT_NAME} MavLinkCom)
+target_include_directories(${PROJECT_NAME} 
+  PUBLIC
+    $<BUILD_INTERFACE:${AIRSIM_ROOT}/AirLib/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${SOLUTION_NAME}/${PROJECT_NAME}>
+  PRIVATE
+    $<BUILD_INTERFACE:${AIRSIM_ROOT}/AirLib>
+)
+
+set_target_properties(${PROJECT_NAME} 
+  PROPERTIES
+    CXX_EXTENSIONS OFF
+)
+
+find_package(rpclib CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC rpclib::rpc)
+
+find_package(Eigen3 CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC MavLinkCom)
+
+install(DIRECTORY "${AIRSIM_ROOT}/${PROJECT_NAME}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${SOLUTION_NAME}/${PROJECT_NAME}")
+install(TARGETS ${PROJECT_NAME}
+	EXPORT ${SOLUTION_NAME}-export
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
 #string(SUBSTRING ${CMAKE_STATIC_LINKER_FLAGS} 9 -1 "BUILD_PLATFORM")
 #find_package(Threads REQUIRED)

@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.5.0)
+project(3rdparty_@3RD_PARTY@)
+include(ExternalProject)
+
+ExternalProject_Add(@3RD_PARTY@
+    GIT_REPOSITORY  @GIT_REPOSITORY@
+    GIT_TAG         @GIT_TAG@
+    SOURCE_DIR      @SOURCE_DIR@
+    BINARY_DIR      @BINARY_DIR@
+    INSTALL_DIR     @INSTALL_DIR@
+    CMAKE_ARGS      @3RDPARTY_OPTIONS@
+    CMAKE_COMMAND  "@CMAKE_COMMAND@"
+)
