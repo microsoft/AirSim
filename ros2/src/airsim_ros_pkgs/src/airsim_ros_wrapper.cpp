@@ -107,7 +107,7 @@ void AirsimROSWrapper::initialize_ros()
 
     create_ros_pubs_from_settings_json();
     airsim_control_update_timer_ = nh_private_->create_wall_timer(std::chrono::duration<double>(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
-    // airsim_control_update_timer_ = nh_private_->createTimer(ros::Duration(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
+    // airsim_control_update_timer_ = nh_private_->createTimer(rclcpp::Duration (update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
 }
 
 // XmlRpc::XmlRpcValue can't be const in this case
@@ -132,7 +132,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         auto& vehicle_setting = curr_vehicle_elem.second;
         auto curr_vehicle_name = curr_vehicle_elem.first;
 
-        nh_->setParam("/vehicle_name", curr_vehicle_name);
+        nh_->set_parameter("/vehicle_name", curr_vehicle_name);
 
         set_nans_to_zeros_in_pose(*vehicle_setting);
 
@@ -308,7 +308,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_airsim_img_response_every_n_sec;
         nh_private_->get_parameter("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
 
-        ros::TimerOptions timer_options(ros::Duration(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
+        ros::TimerOptions timer_options(rclcpp::Duration (update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
         airsim_img_response_timer_ = nh_private_->createTimer(timer_options);
         is_used_img_timer_cb_queue_ = true;
     }
@@ -318,7 +318,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_lidar_every_n_sec;
         nh_private_->get_parameter("update_lidar_every_n_sec", update_lidar_every_n_sec);
         // nh_private_->setCallbackQueue(&lidar_timer_cb_queue_);
-        ros::TimerOptions timer_options(ros::Duration(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
+        ros::TimerOptions timer_options(rclcpp::Duration (update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
         airsim_lidar_update_timer_ = nh_private_->createTimer(timer_options);
         is_used_lidar_timer_cb_queue_ = true;
     }
@@ -703,7 +703,7 @@ nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(con
 sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const
 {
     sensor_msgs::msg::PointCloud2 lidar_msg;
-    lidar_msg.header.stamp = ros::Time::now();
+    lidar_msg.header.stamp = nh_->get_clock()->now().toMsg();
     lidar_msg.header.frame_id = vehicle_name;
 
     if (lidar_data.point_cloud.size() > 3) {
@@ -741,7 +741,7 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
     if (isENU_) {
         try {
             sensor_msgs::msg::PointCloud2 lidar_msg_enu;
-            auto transformStampedENU = tf_buffer_.lookupTransform(AIRSIM_FRAME_ID, vehicle_name, ros::Time(0), ros::Duration(1));
+            auto transformStampedENU = tf_buffer_.lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration (1));
             tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
 
             lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
@@ -751,7 +751,7 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
         }
         catch (tf2::TransformException& ex) {
             RCLCPP_WARN(nh_->get_logger(), "%s", ex.what());
-            ros::Duration(1.0).sleep();
+            rclcpp::Duration (1.0).sleep();
         }
     }
 
@@ -890,20 +890,20 @@ sensor_msgs::msg::NavSatFix AirsimROSWrapper::get_gps_sensor_msg_from_airsim_geo
     return gps_msg;
 }
 
-ros::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const
+rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const
 {
     auto dur = std::chrono::duration<double>(stamp.time_since_epoch());
-    ros::Time cur_time;
+    rclcpp::Time cur_time;
     cur_time.fromSec(dur.count());
     return cur_time;
 }
 
-ros::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const
+rclcpp::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const
 {
     // airsim appears to use chrono::system_clock with nanosecond precision
     std::chrono::nanoseconds dur(stamp);
     std::chrono::time_point<std::chrono::system_clock> tp(dur);
-    ros::Time cur_time = chrono_timestamp_to_ros(tp);
+    rclcpp::Time cur_time = chrono_timestamp_to_ros(tp);
     return cur_time;
 }
 
@@ -950,10 +950,10 @@ void AirsimROSWrapper::update_and_publish_static_transforms(VehicleROS* vehicle_
     }
 }
 
-ros::Time AirsimROSWrapper::update_state()
+rclcpp::Time AirsimROSWrapper::update_state()
 {
     bool got_sim_time = false;
-    ros::Time curr_ros_time = ros::Time::now();
+    rclcpp::Time curr_ros_time = nh_->get_clock()->now();
 
     //should be easier way to get the sim time through API, something like:
     //msr::airlib::Environment::State env = airsim_client_->simGetGroundTruthEnvironment("");
@@ -961,7 +961,7 @@ ros::Time AirsimROSWrapper::update_state()
 
     // iterate over drones
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
-        ros::Time vehicle_time;
+        rclcpp::Time vehicle_time;
         // get drone state from airsim
         auto& vehicle_ros = vehicle_name_ptr_pair.second;
 
@@ -1173,7 +1173,7 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
 {
     geometry_msgs::msg::TransformStamped vehicle_tf_msg;
     vehicle_tf_msg.header.frame_id = world_frame_id_;
-    vehicle_tf_msg.header.stamp = ros::Time::now();
+    vehicle_tf_msg.header.stamp = nh_->get_clock()->now().toMsg();
     vehicle_tf_msg.child_frame_id = vehicle_ros->vehicle_name;
     vehicle_tf_msg.transform.translation.x = vehicle_setting.position.x();
     vehicle_tf_msg.transform.translation.y = vehicle_setting.position.y();
@@ -1310,7 +1310,7 @@ cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse& img_response)
 }
 
 sensor_msgs::msg::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
-                                                                  const ros::Time curr_ros_time,
+                                                                  const rclcpp::Time curr_ros_time,
                                                                   const std::string frame_id)
 {
     sensor_msgs::msg::ImagePtr img_msg_ptr = boost::make_shared<sensor_msgs::msg::Image>();
@@ -1328,7 +1328,7 @@ sensor_msgs::msg::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const Ima
 }
 
 sensor_msgs::msg::ImagePtr AirsimROSWrapper::get_depth_img_msg_from_response(const ImageResponse& img_response,
-                                                                        const ros::Time curr_ros_time,
+                                                                        const rclcpp::Time curr_ros_time,
                                                                         const std::string frame_id)
 {
     // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error,
@@ -1360,7 +1360,7 @@ sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::stri
 void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name)
 {
     // todo add option to use airsim time (image_response.TTimePoint) like Gazebo /use_sim_time param
-    ros::Time curr_ros_time = ros::Time::now();
+    rclcpp::Time curr_ros_time = nh_->get_clock()->now();
     int img_response_idx_internal = img_response_idx;
 
     for (const auto& curr_img_response : img_response_vec) {
@@ -1395,7 +1395,7 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 // publish camera transforms
 // camera poses are obtained from airsim's client API which are in (local) NED frame.
 // We first do a change of basis to camera optical frame (Z forward, X right, Y down)
-void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id)
+void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, const rclcpp::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id)
 {
     geometry_msgs::msg::TransformStamped cam_tf_body_msg;
     cam_tf_body_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
