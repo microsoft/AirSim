@@ -20,13 +20,13 @@ if(WIN32) # need to find vcvarsall.bat due to shell environment doesn't pass to 
         endif()
         
         # x64 supposed
-        # We need batch file to fix error "The input line is too long." when building with Visual Studio MSBuild tools
+        # We need batch file to fix error "The input line is too long."
         file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/cmake.bat "
             setlocal
-            \"${VSDEVCMD}\" -no_logo -arch=amd64 && \"${CMAKE_COMMAND}\" %*
+            start cmd /c \"${VSDEVCMD}\" -no_logo -arch=amd64 && \"${CMAKE_COMMAND}\" %*
             endlocal
         ")
-        set(CMAKE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/cmake.bat)
+        set(CMAKE_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/cmake.bat")
     endif()
 else()
     set(CMAKE_COMMAND_EXTERNAL ${CMAKE_COMMAND})
