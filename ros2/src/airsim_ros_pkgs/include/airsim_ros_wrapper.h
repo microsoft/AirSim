@@ -124,6 +124,14 @@ struct GimbalCmd
     //         vehicle_name(vehicle_name), camera_name(camera_name), target_quat(target_quat) {};
 };
 
+template <typename T>
+struct SensorPublisher
+{
+    SensorBase::SensorType sensor_type;
+    std::string sensor_name;
+    typename rclcpp::Publisher<T>::SharedPtr publisher;
+};
+
 class AirsimROSWrapper
 {
 public:
@@ -146,13 +154,6 @@ public:
     bool is_used_img_timer_cb_queue_;
 
 private:
-    struct SensorPublisher
-    {
-        SensorBase::SensorType sensor_type;
-        std::string sensor_name;
-        rclcpp::Publisher<sensor_msgs>::SharedPtr publisher;
-    };
-
     // utility struct for a SINGLE robot
     class VehicleROS
     {
@@ -165,9 +166,17 @@ private:
         rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr global_gps_pub;
         rclcpp::Publisher<airsim_interfaces::msg::Environment>::SharedPtr env_pub;
         airsim_interfaces::msg::Environment env_msg;
-        std::vector<SensorPublisher> sensor_pubs;
+
+        std::vector<SensorPublisher<airsim_interfaces::msg::Altimeter>> barometer_pubs;
+        std::vector<SensorPublisher<sensor_msgs::msg::Imu>> imu_pubs;
+        std::vector<SensorPublisher<sensor_msgs::msg::NavSatFix>> gps_pubs;
+        std::vector<SensorPublisher<sensor_msgs::msg::MagneticField>> magnetometer_pubs;
+        std::vector<SensorPublisher<sensor_msgs::msg::Range>> distance_pubs;
+        std::vector<SensorPublisher<sensor_msgs::msg::PointCloud2>> lidar_pubs;
+        
+        //std::vector<SensorPublisher> sensor_pubs;
         // handle lidar seperately for max performance as data is collected on its own thread/callback
-        std::vector<SensorPublisher> lidar_pubs;
+        //std::vector<SensorPublisher> lidar_pubs;
 
         nav_msgs::msg::Odometry curr_odom;
         sensor_msgs::msg::NavSatFix gps_sensor_msg;
@@ -239,7 +248,7 @@ private:
     void update_commands();
 
     // state, returns the simulation timestamp best guess based on drone state timestamp, airsim needs to return timestap for environment
-    rclcpp::Time AirsimROSWrapper::update_state();
+    rclcpp::Time update_state();
     void update_and_publish_static_transforms(VehicleROS* vehicle_ros);
     void publish_vehicle_state();
 
@@ -300,6 +309,9 @@ private:
     rclcpp::Time airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const;
     rclcpp::Time chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const;
 
+    template<typename T>
+    const SensorPublisher<T> create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS);
+
 private:
     // subscriber / services for ALL robots
     rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_all_body_frame_sub_;
@@ -356,8 +368,8 @@ private:
     const std::string AIRSIM_ODOM_FRAME_ID = "odom_local_ned";
     const std::string ENU_ODOM_FRAME_ID = "odom_local_enu";
     std::string odom_frame_id_ = AIRSIM_ODOM_FRAME_ID;
-    tf2_ros::TransformBroadcaster tf_broadcaster_;
-    tf2_ros::StaticTransformBroadcaster static_tf_pub_;
+    std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+    std::shared_ptr<tf2_ros::StaticTransformBroadcaster> static_tf_pub_;
 
     bool isENU_ = false;
     std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
