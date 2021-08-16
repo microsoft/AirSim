@@ -48,7 +48,11 @@ ENDIF()
 add_library(MavLinkCom STATIC ${MAVLINK_SOURCES})
 add_library(${SOLUTION_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-
+if (WIN32)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE
+		-D_UNICODE -DUNICODE
+	)
+endif()
 target_include_directories(${PROJECT_NAME} 
   PUBLIC
     $<BUILD_INTERFACE:${AIRSIM_ROOT}/MavLinkCom/include>

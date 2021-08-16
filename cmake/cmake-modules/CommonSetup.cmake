@@ -53,10 +53,6 @@ macro(CommonSetup)
         if (CMAKE_BUILD_TYPE MATCHES Release)
             set(CMAKE_CXX_FLAGS "-O3 ${CMAKE_CXX_FLAGS}")
         endif ()
-
-    ELSEIF(MSVC)
-        #windows cmake build is experimental
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_UNICODE /DUNICODE")
     ENDIF()
 
     ## TODO: we are not using Boost any more so below shouldn't be needed
