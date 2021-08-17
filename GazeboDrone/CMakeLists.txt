@@ -11,6 +11,7 @@ endif()
 find_package(gazebo REQUIRED)
 
 include_directories(
+    include
     ${GAZEBO_INCLUDE_DIRS}
     ${AIRSIM_ROOT}/AirLib/deps/eigen3
     ${AIRSIM_ROOT}/AirLib/deps/rpclib/include
@@ -34,3 +35,5 @@ target_link_libraries(
     rpc
 )
 
+add_library(gazebo_airsim_plugin SHARED src/gazebo_airsim_plugin.cpp)
+target_link_libraries(gazebo_airsim_plugin ${GAZEBO_LIBRARIES} AirLib rpc MavLinkCom)
