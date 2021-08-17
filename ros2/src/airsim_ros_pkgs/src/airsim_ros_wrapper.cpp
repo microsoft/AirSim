@@ -27,9 +27,11 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
     { 7, "Infrared" }
 };
 
-AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private, const std::string& host_ip)
-    : nh_(nh), nh_private_(nh_private), img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_
-    lidar_async_spinner_(1, &lidar_timer_cb_queue_)
+AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip)
+    : nh_(nh), nh_private_(nh_private)
+    , nh_img_(nh_img), nh_lidar_(nh_lidar)
+   // , img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_
+   // lidar_async_spinner_(1, &lidar_timer_cb_queue_)
     , // same as above, but for lidar
     host_ip_(host_ip)
     , airsim_client_images_(host_ip)
@@ -325,8 +327,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_airsim_img_response_every_n_sec;
         nh_private_->get_parameter("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
 
-        ros::TimerOptions timer_options(rclcpp::Duration(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
-        airsim_img_response_timer_ = nh_private_->createTimer(timer_options);
+        // ros::TimerOptions timer_options(rclcpp::Duration(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
+        // airsim_img_response_timer_ = nh_private_->createTimer(timer_options);
+
+        airsim_img_response_timer_ = nh_img_->create_wall_timer(std::chrono::duration<double>(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this));
         is_used_img_timer_cb_queue_ = true;
     }
 
@@ -335,8 +339,9 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_lidar_every_n_sec;
         nh_private_->get_parameter("update_lidar_every_n_sec", update_lidar_every_n_sec);
         // nh_private_->setCallbackQueue(&lidar_timer_cb_queue_);
-        ros::TimerOptions timer_options(rclcpp::Duration(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
-        airsim_lidar_update_timer_ = nh_private_->createTimer(timer_options);
+        //ros::TimerOptions timer_options(rclcpp::Duration(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
+        //airsim_lidar_update_timer_ = nh_private_->createTimer(timer_options);
+        airsim_lidar_update_timer_ = nh_lidar_->create_wall_timer(std::chrono::duration<double>(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this));
         is_used_lidar_timer_cb_queue_ = true;
     }
 

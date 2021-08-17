@@ -141,15 +141,15 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private, const std::string& host_ip);
+    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip);
     ~AirsimROSWrapper(){};
 
     void initialize_airsim();
     void initialize_ros();
 
     // std::vector<ros::CallbackQueue> callback_queues_;
-    ros::AsyncSpinner img_async_spinner_;
-    ros::AsyncSpinner lidar_async_spinner_;
+    //ros::AsyncSpinner img_async_spinner_;
+    //ros::AsyncSpinner lidar_async_spinner_;
     bool is_used_lidar_timer_cb_queue_;
     bool is_used_img_timer_cb_queue_;
 
@@ -225,9 +225,9 @@ private:
     };
 
     /// ROS timer callbacks
-    void img_response_timer_cb(/* const ros::TimerEvent& event */); // update images from airsim_client_ every nth sec
-    void drone_state_timer_cb(/* const ros::TimerEvent& event */); // update drone state from airsim_client_ every nth sec
-    void lidar_timer_cb(/* const ros::TimerEvent& event */);
+    void img_response_timer_cb(); // update images from airsim_client_ every nth sec
+    void drone_state_timer_cb(); // update drone state from airsim_client_ every nth sec
+    void lidar_timer_cb();
 
     /// ROS subscriber callbacks
     void vel_cmd_world_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg, const std::string& vehicle_name);
@@ -346,6 +346,8 @@ private:
 
     std::shared_ptr<rclcpp::Node> nh_;
     std::shared_ptr<rclcpp::Node> nh_private_;
+    std::shared_ptr<rclcpp::Node> nh_img_;
+    std::shared_ptr<rclcpp::Node> nh_lidar_;
 
 
     // ros::NodeHandle nh_;
@@ -353,8 +355,8 @@ private:
 
     // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
     // todo for multiple drones with multiple sensors, this won't scale. make it a part of VehicleROS?
-    ros::CallbackQueue img_timer_cb_queue_;
-    ros::CallbackQueue lidar_timer_cb_queue_;
+    //ros::CallbackQueue img_timer_cb_queue_;
+    //ros::CallbackQueue lidar_timer_cb_queue_;
 
     std::mutex drone_control_mutex_;
 
@@ -379,9 +381,9 @@ private:
     double vel_cmd_duration_;
 
     /// ROS Timers.
-    ros::Timer airsim_img_response_timer_;
+    rclcpp::TimerBase::SharedPtr airsim_img_response_timer_;
     rclcpp::TimerBase::SharedPtr airsim_control_update_timer_;
-    ros::Timer airsim_lidar_update_timer_;
+    rclcpp::TimerBase::SharedPtr airsim_lidar_update_timer_;
 
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
