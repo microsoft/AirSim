@@ -927,7 +927,7 @@ sensor_msgs::msg::NavSatFix AirsimROSWrapper::get_gps_sensor_msg_from_airsim_geo
 rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const
 {
     auto dur = std::chrono::duration<double>(stamp.time_since_epoch());
-    rclcpp::Time cur_time(dur.count(), 0);
+    rclcpp::Time cur_time(dur.count(), 0); //ToDo - is the right conversion?
 //    cur_time.fromSec(dur.count());
     return cur_time;
 }

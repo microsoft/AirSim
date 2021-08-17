@@ -7,8 +7,8 @@ int main(int argc, char** argv)
     // ros::NodeHandle nh;
     rclcpp::init(argc, argv);
    // std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("add_two_ints_server");
-     std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared("pid_position_controller_simple_node");
-     std::shared_ptr<rclcpp::Node> nh_private = nh.create_sub_node("~");
+    std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared("pid_position_controller_simple_node");
+    std::shared_ptr<rclcpp::Node> nh_private = nh->create_sub_node("~");
     // ros::NodeHandle nh_private("~");
 
     PIDPositionController controller(nh, nh_private);
@@ -21,6 +21,6 @@ int main(int argc, char** argv)
     // async_spinner.start();
 
     // single threaded spinner
-    ros::spin();
+    rclcpp::spin(nh);
     return 0;
 }
