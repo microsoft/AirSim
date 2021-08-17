@@ -72,16 +72,18 @@ To install without this assets, re-run install.ps1 with the argument -NoFullPoly
 
 # install libraries
 if ($isWindowsOS) {
-  $compiler = "clang-cl"
+  $c_compiler = "clang-cl"
+  $cxx_compiler = "clang-cl"
 }
 else {
-  $compiler = "clang"
+  $c_compiler = "clang"
+  $cxx_compiler = "clang++"
 }
 $buildDir = "./build/build/$BuildMode"
 cmake -S./cmake -B"$buildDir" -DCMAKE_INSTALL_PREFIX="$InstallPrefix" `
   -GNinja `
-  -DCMAKE_C_COMPILER="$compiler" `
-  -DCMAKE_CXX_COMPILER="$compiler" `
+  -DCMAKE_C_COMPILER="$c_compiler" `
+  -DCMAKE_CXX_COMPILER="$cxx_compiler" `
   -DBUILD_TESTS=ON `
   -DBUILD_EXAMPLES=ON `
   -DCMAKE_BUILD_TYPE="$BuildMode"
