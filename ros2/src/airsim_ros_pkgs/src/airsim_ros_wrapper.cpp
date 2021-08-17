@@ -38,7 +38,8 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     , airsim_client_lidar_(host_ip)
     , airsim_settings_parser_(host_ip)
 {
-    ros_clock_.clock.fromSec(0);
+    // ros_clock_.clock.fromSec(0);
+    ros_clock_.clock = rclcpp::Time(0); //ToDo - is it the right conversion?
     is_used_lidar_timer_cb_queue_ = false;
     is_used_img_timer_cb_queue_ = false;
 
@@ -926,8 +927,8 @@ sensor_msgs::msg::NavSatFix AirsimROSWrapper::get_gps_sensor_msg_from_airsim_geo
 rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const
 {
     auto dur = std::chrono::duration<double>(stamp.time_since_epoch());
-    rclcpp::Time cur_time;
-    cur_time.fromSec(dur.count());
+    rclcpp::Time cur_time(dur.count(), 0);
+//    cur_time.fromSec(dur.count());
     return cur_time;
 }
 
