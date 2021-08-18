@@ -12,6 +12,9 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(geographic_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/GimbalAngleEulerCmd.msg"
@@ -29,7 +32,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/Land.srv"
   "srv/LandGroup.srv"
   "srv/Reset.srv"
-  "srv/SetLocalPosition.srv"
+  "srv/SetLocalPosition.srv" DEPENDENCIES std_msgs geometry_msgs geographic_msgs
 )
 
 #install(FILES mapping_rules.yaml DESTINATION share/${PROJECT_NAME})
