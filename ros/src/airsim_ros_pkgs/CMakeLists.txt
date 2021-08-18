@@ -4,9 +4,7 @@ project(airsim_ros_pkgs)
 # set this to path to AirSim root folder if you want your catkin workspace in a custom directory
 set(AIRSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
-add_subdirectory("${AIRSIM_ROOT}/cmake/rpclib_wrapper" rpclib_wrapper)
-add_subdirectory("${AIRSIM_ROOT}/cmake/AirLib" AirLib)
-add_subdirectory("${AIRSIM_ROOT}/cmake/MavLinkCom" MavLinkCom)
+add_subdirectory("${AIRSIM_ROOT}/cmake" AirSim)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CXX_EXP_LIB "-nostdinc++ -I/usr/include/c++/8 -I/usr/include/x86_64-linux-gnu/c++/8 -nodefaultlibs 
@@ -14,12 +12,9 @@ set(CXX_EXP_LIB "-nostdinc++ -I/usr/include/c++/8 -I/usr/include/x86_64-linux-gn
 -lm -lc -lgcc_s -lgcc  
 -lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel") 
 
-set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/rpclib-2.3.0/include")
-set(RPC_LIB rpc) # name of .a file with lib prefix
-message(STATUS "found RPC_LIB_INCLUDES=${RPC_LIB_INCLUDES}")
-
-# todo eigen3 in AirLib already
-# find_package(Eigen3 REQUIRED) 
+find_package(yaml-cpp CONFIG REQUIRED)
+find_package(rpclib CONFIG REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED) 
 find_package(Boost REQUIRED)
 find_package(OpenCV REQUIRED)
 
@@ -83,31 +78,27 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${AIRSIM_ROOT}/AirLib/deps/eigen3
-  ${AIRSIM_ROOT}/AirLib/include
-  ${RPC_LIB_INCLUDES}
-  ${AIRSIM_ROOT}/MavLinkCom/include
-  ${AIRSIM_ROOT}/MavLinkCom/common_utils
   ${OpenCV_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
 
 add_library(airsim_settings_parser src/airsim_settings_parser.cpp)
-target_link_libraries(airsim_settings_parser ${catkin_LIBRARIES} AirLib)
+target_link_libraries(airsim_settings_parser ${catkin_LIBRARIES} AirSim::AirLib)
 
 add_library(pd_position_controller_simple src/pd_position_controller_simple.cpp)
 add_dependencies(pd_position_controller_simple ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(pd_position_controller_simple ${catkin_EXPORTED_TARGETS})
+target_link_libraries(pd_position_controller_simple AirSim::AirLib)
 
 add_library(airsim_ros src/airsim_ros_wrapper.cpp)
 add_dependencies(airsim_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(airsim_ros ${catkin_LIBRARIES} ${OpenCV_LIBS} yaml-cpp AirLib airsim_settings_parser)
 
 add_executable(airsim_node src/airsim_node.cpp)
-target_link_libraries(airsim_node airsim_ros ${catkin_LIBRARIES} AirLib)
+target_link_libraries(airsim_node airsim_ros ${catkin_LIBRARIES} AirSim::AirLib)
 
 add_executable(pd_position_controller_simple_node src/pd_position_controller_simple_node.cpp)
-target_link_libraries(pd_position_controller_simple_node pd_position_controller_simple airsim_ros ${catkin_LIBRARIES} AirLib)
+target_link_libraries(pd_position_controller_simple_node pd_position_controller_simple airsim_ros ${catkin_LIBRARIES} AirSim::AirLib)
 
 install(TARGETS
     #list of nodes
