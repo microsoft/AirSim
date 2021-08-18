@@ -48,7 +48,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CXX_EXP_LIB
   "-nostdinc++ -I/usr/include/c++/8 -I/usr/include/x86_64-linux-gnu/c++/8 -nodefaultlibs 
 -l/usr/lib/x86_64-linux-gnu/libc++.so -l/usr/lib/x86_64-linux-gnu/libc++abi.so
--lm -lc -lgcc_s -lgcc  
+-lm -lc -lgcc_s -lgcc -g    
 -lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel")
 set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/rpclib-2.3.0/include")
 set(RPC_LIB rpc)
