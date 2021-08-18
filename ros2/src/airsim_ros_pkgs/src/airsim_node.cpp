@@ -4,19 +4,17 @@
 
 int main(int argc, char** argv)
 {
-    // ros::init(argc, argv, "airsim_node");
-    // ros::NodeHandle nh;
     rclcpp::init(argc, argv);
-    std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared("airsim_node");
-    std::shared_ptr<rclcpp::Node> nh_private = nh->create_sub_node("~");
+    rclcpp::NodeOptions node_options;
+    node_options.allow_undeclared_parameters(true);
+    std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared("airsim_node", "airsim_node", node_options);
+ //   std::shared_ptr<rclcpp::Node> nh_private = nh->create_sub_node("~/");
     std::shared_ptr<rclcpp::Node> nh_img = nh->create_sub_node("img");
     std::shared_ptr<rclcpp::Node> nh_lidar = nh->create_sub_node("lidar");
     
-   // ros::NodeHandle nh_private("~");
-
-    std::string host_ip = "localhost";
-    nh_private->get_parameter("host_ip", host_ip);
-    AirsimROSWrapper airsim_ros_wrapper(nh, nh_private, nh_img, nh_lidar, host_ip);
+    std::string host_ip = "192.168.211.1"; //ToDo - change
+    /* nh_private */nh->get_parameter("host_ip", host_ip);
+    AirsimROSWrapper airsim_ros_wrapper(nh, nh /* nh_private */, nh_img, nh_lidar, host_ip);//ToDo - do we really need nh_private?
 
     if (airsim_ros_wrapper.is_used_img_timer_cb_queue_) {
         rclcpp::executors::SingleThreadedExecutor executor;

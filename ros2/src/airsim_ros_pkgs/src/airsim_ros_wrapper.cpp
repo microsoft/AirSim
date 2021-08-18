@@ -276,6 +276,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         create_sensor_publisher<sensor_msgs::msg::PointCloud2>("Lidar",sensor_setting->sensor_name, sensor_setting->sensor_type,
                                                                                     curr_vehicle_name + "/lidar/" + sensor_name, 10);
                     vehicle_ros->lidar_pubs.emplace_back(sensor_publisher);
+                    lidar_cnt += 1;
                     break;
                 }
                 default: {
@@ -926,8 +927,10 @@ sensor_msgs::msg::NavSatFix AirsimROSWrapper::get_gps_sensor_msg_from_airsim_geo
 
 rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const
 {
-    auto dur = std::chrono::duration<double>(stamp.time_since_epoch());
-    rclcpp::Time cur_time(dur.count(), 0); //ToDo - is the right conversion?
+    
+    auto dur = std::chrono::duration_cast<std::chrono::nanoseconds>(stamp.time_since_epoch());
+ //   auto dur = std::chrono::duration<double>(stamp.time_since_epoch());
+    rclcpp::Time cur_time(dur.count()); //ToDo - is the right conversion?
 //    cur_time.fromSec(dur.count());
     return cur_time;
 }

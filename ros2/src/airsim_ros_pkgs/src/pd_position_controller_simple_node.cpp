@@ -3,15 +3,11 @@
 
 int main(int argc, char** argv)
 {
-    // ros::init(argc, argv, "pid_position_controller_simple_node");
-    // ros::NodeHandle nh;
     rclcpp::init(argc, argv);
-   // std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("add_two_ints_server");
-    std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared("pid_position_controller_simple_node");
-    std::shared_ptr<rclcpp::Node> nh_private = nh->create_sub_node("~");
-    // ros::NodeHandle nh_private("~");
+    std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared("pid_position_controller_simple_node","pid_position_controller_simple_node");
+    std::shared_ptr<rclcpp::Node> nh_private = nh->create_sub_node("private");
 
-    PIDPositionController controller(nh, nh_private);
+    PIDPositionController controller(nh, nh /* nh_private */); //ToDo - do we really need nh_private?
 
     // int num_threads = 1;
     // ros::MultiThreadedSpinner multi_thread(num_threads);
