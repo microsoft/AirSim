@@ -1,7 +1,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 namespace utils
 {
-double get_yaw_from_quat_msg(const geometry_msgs::msg::Quaternion& quat_msg)
+inline double get_yaw_from_quat_msg(const geometry_msgs::msg::Quaternion& quat_msg)
 {
     tf2::Quaternion quat_tf;
     double roll, pitch, yaw;
