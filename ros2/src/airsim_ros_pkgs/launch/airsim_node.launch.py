@@ -1,10 +1,10 @@
 import os
-import sys
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -41,6 +41,11 @@ def generate_launch_description():
                 'host_ip': LaunchConfiguration('host')
             }])
 
+    static_transforms = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('airsim_ros_pkgs'), 'launch/static_transforms.launch.py')
+        )
+    )
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -51,47 +56,7 @@ def generate_launch_description():
     ld.add_action(is_vulkan)
     ld.add_action(host)
   
+    ld.add_action(static_transforms)
     ld.add_action(airsim_node)
-
-
-
-
-
-        # launch.actions.DeclareLaunchArgument(
-
-        # launch_ros.actions.Node(
-        #     package='airsim_ros_pkgs',
-        #     executable='airsim_node',
-        #     name='airsim_node',
-        #     output='screen', #ToDo-change to var
-        #     parameters=[
-        #         {
-        #             'is_vulkan': 'false'
-        #         },
-        #         {
-        #             'update_airsim_img_response_every_n_sec': '0.05'
-        #         },
-        #         {
-        #             'update_airsim_control_every_n_sec': '0.01'
-        #         },
-        #         {
-        #             'update_lidar_every_n_sec': '0.01'
-        #         },
-        #         {
-        #             'publish_clock': 'false' #launch.substitutions.LaunchConfiguration('publish_clock') #ToDo-change to var
-        #         },
-        #         {
-        #             'host_ip': launch.substitutions.LaunchConfiguration('host') #ToDo-change to var
-        #         }
-        #     ],
-        #     arguments=['--ros-args', '--log-level', 'INFO']
-        # )#,
-        # launch.actions.IncludeLaunchDescription(
-        #     launch.launch_description_sources.PythonLaunchDescriptionSource(
-        #         os.path.join(get_package_share_directory(
-        #             'airsim_ros_pkgs'), 'launch/static_transforms.launch.py')
-        #     )
-        # )
- #   ])
 
     return ld
