@@ -7,9 +7,7 @@ if "%VisualStudioVersion%" == "" (
 )
 if "%VisualStudioVersion%" lss "16.0" (
     echo(
-    echo Hello there! We just upgraded AirSim to Unreal Engine 4.24 and Visual Studio 2019.
-    echo Here are few easy steps for upgrade so everything is new and shiny:
-    echo https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md
+    echo Visual Studio 2019 build tools are required.
     goto :buildfailed
 )
 
