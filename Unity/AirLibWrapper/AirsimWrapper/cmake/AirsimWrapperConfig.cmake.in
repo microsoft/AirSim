@@ -1,0 +1,11 @@
+set(AIRSIM_WRAPPER_VERSION @AIRSIM_WRAPPER_VERSION@)
+
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(AirSim CONFIG REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/@SOLUTION_NAME@Targets.cmake")
+
+check_required_components("@SOLUTION_NAME@")

@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION 3.5.0)
+set(SOLUTION_NAME AirsimWrapper)
+
+set(AIRSIM_WRAPPER_VERSION_MAJOR 1)
+set(AIRSIM_WRAPPER_VERSION_MIDDLE 5)
+set(AIRSIM_WRAPPER_VERSION_MINOR 0)
+set(AIRSIM_WRAPPER_VERSION ${AIRSIM_VERSION_MAJOR}.${AIRSIM_VERSION_MIDDLE}.${AIRSIM_VERSION_MINOR})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
@@ -7,68 +13,72 @@ endif()
 find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
 message(AirSim Root directory: ${AIRSIM_ROOT})
 
-LIST(APPEND CMAKE_MODULE_PATH "${AIRSIM_ROOT}/cmake/cmake-modules")
-LIST(APPEND CMAKE_MODULE_PATH "${RPC_SOURCE_DIR}/cmake")
+add_subdirectory(${AIRSIM_ROOT}/cmake Airsim)
+
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-
-INCLUDE("${AIRSIM_ROOT}/cmake/cmake-modules/CommonSetup.cmake")
-INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/rpc-setup.cmake")
-INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/mav-setup.cmake")
-INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/airlib-setup.cmake")
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/airsimwrapper-setup.cmake")
-
-IncludeEigen()
 
 project(AirsimWrapper VERSION 0)
 
-find_package(Boost REQUIRED COMPONENTS filesystem)
-if(Boost_FOUND)
-    MESSAGE("Boost information:") 
-    MESSAGE("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}") 
-    MESSAGE("  Boost_LIBRARIES: ${Boost_LIBRARIES}") 
-    MESSAGE("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}") 
-endif()
-
-include_directories(${Boost_INCLUDE_DIRS})
-
-# RPC includes & source files
-BuildRpc()
-# MavLink source files
-BuildMavLink()
-#AirLib source files
-BuildAirLib()
-#AirsimWrapper source files
 BuildAirsimWrapper()
-
 
 ###################### Link source files to library ######################################
 if (${APPLE})
-	add_library(
-	    ${PROJECT_NAME} MODULE
-	    ${RPC_LIBRARY_SOURCE_FILES}
-	    ${MAVLINK_LIBRARY_SOURCE_FILES}
-	    ${AIRLIB_LIBRARY_SOURCE_FILES}
-	    ${AIRSIMWRAPPER_LIBRARY_SOURCE_FILES}
-	)
-
+	add_library(${PROJECT_NAME} MODULE ${AIRSIMWRAPPER_LIBRARY_SOURCE_FILES})
 	set_target_properties(${PROJECT_NAME} PROPERTIES BUNDLE TRUE)
-else ()
-	add_library(
-	    ${PROJECT_NAME} SHARED
-	    ${RPC_LIBRARY_SOURCE_FILES}
-	    ${MAVLINK_LIBRARY_SOURCE_FILES}
-	    ${AIRLIB_LIBRARY_SOURCE_FILES}
-	    ${AIRSIMWRAPPER_LIBRARY_SOURCE_FILES}
-    )
-endif ()
+else()
+	add_library(${PROJECT_NAME} SHARED ${AIRSIMWRAPPER_LIBRARY_SOURCE_FILES})
+endif()
 
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}  -lstdc++ -lpthread ${Boost_LIBRARIES})
+if (WIN32)
+	set_target_properties(${PROJECT_NAME} PROPERTIES 
+		WINDOWS_EXPORT_ALL_SYMBOLS ON
+	)
+endif()
 
+target_link_libraries(${PROJECT_NAME} PRIVATE AirSim::AirLib)
 
+find_package(Boost REQUIRED COMPONENTS filesystem)
+target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES})
 
-##################### Build Options #############################3
-# Rpc
-RpcCheckMSVN()
-RpcCmakePkg()
-RpcMSVNConfig()
+find_package(Threads REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+
+if (UNIX)
+	target_link_libraries(${PROJECT_NAME} PRIVATE -lstdc++)
+endif()
+
+include(GNUInstallDirs)
+install(EXPORT ${SOLUTION_NAME}-export
+  FILE
+    ${SOLUTION_NAME}Targets.cmake
+  NAMESPACE
+    ${SOLUTION_NAME}::
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/${SOLUTION_NAME}
+)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    "${PROJECT_SOURCE_DIR}/cmake/${SOLUTION_NAME}Config.cmake.in"
+    "${PROJECT_BINARY_DIR}/${SOLUTION_NAME}Config.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/${SOLUTION_NAME}
+)
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/${SOLUTION_NAME}ConfigVersion.cmake
+  VERSION ${AIRSIM_WRAPPER_VERSION}
+  COMPATIBILITY SameMajorVersion)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${SOLUTION_NAME}ConfigVersion.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/${SOLUTION_NAME}Config.cmake"
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/${SOLUTION_NAME})
+
+install(TARGETS ${PROJECT_NAME}
+	EXPORT ${SOLUTION_NAME}-export
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
