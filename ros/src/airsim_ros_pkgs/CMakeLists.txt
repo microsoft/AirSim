@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(airsim_ros_pkgs)
 
-# set this to path to AirSim root folder if you want your catkin workspace in a custom directory
-set(AIRSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
-
-add_subdirectory("${AIRSIM_ROOT}/cmake" AirSim)
-
 set(CMAKE_CXX_STANDARD 11)
 set(CXX_EXP_LIB "-nostdinc++ -I/usr/include/c++/8 -I/usr/include/x86_64-linux-gnu/c++/8 -nodefaultlibs 
 -l/usr/lib/x86_64-linux-gnu/libc++.so -l/usr/lib/x86_64-linux-gnu/libc++abi.so
@@ -83,22 +78,37 @@ include_directories(
 )
 
 add_library(airsim_settings_parser src/airsim_settings_parser.cpp)
-target_link_libraries(airsim_settings_parser ${catkin_LIBRARIES} AirSim::AirLib)
+target_link_libraries(airsim_settings_parser ${catkin_LIBRARIES})
 
 add_library(pd_position_controller_simple src/pd_position_controller_simple.cpp)
 add_dependencies(pd_position_controller_simple ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(pd_position_controller_simple ${catkin_EXPORTED_TARGETS})
-target_link_libraries(pd_position_controller_simple AirSim::AirLib)
+
 
 add_library(airsim_ros src/airsim_ros_wrapper.cpp)
 add_dependencies(airsim_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(airsim_ros ${catkin_LIBRARIES} ${OpenCV_LIBS} yaml-cpp AirLib airsim_settings_parser)
+target_link_libraries(airsim_ros ${catkin_LIBRARIES} ${OpenCV_LIBS} yaml-cpp airsim_settings_parser)
 
 add_executable(airsim_node src/airsim_node.cpp)
-target_link_libraries(airsim_node airsim_ros ${catkin_LIBRARIES} AirSim::AirLib)
+target_link_libraries(airsim_node airsim_ros ${catkin_LIBRARIES})
 
 add_executable(pd_position_controller_simple_node src/pd_position_controller_simple_node.cpp)
-target_link_libraries(pd_position_controller_simple_node pd_position_controller_simple airsim_ros ${catkin_LIBRARIES} AirSim::AirLib)
+target_link_libraries(pd_position_controller_simple_node pd_position_controller_simple airsim_ros ${catkin_LIBRARIES})
+
+# set this to path to AirSim root folder if you want your catkin workspace in a custom directory
+# do not replace this before add_library and add_executable it will break vcpkg integration
+set(AIRSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
+add_subdirectory("${AIRSIM_ROOT}/cmake" AirSim)
+foreach(AIRSIM_TARGET IN 
+  pd_position_controller_simple 
+  pd_position_controller_simple_node 
+  airsim_settings_parser
+  airsim_ros
+  airsim_node
+  pd_position_controller_simple_node
+)
+  target_link_libraries(${AIRSIM_TARGET} AirSim::AirLib)
+endforeach()
 
 install(TARGETS
     #list of nodes

@@ -10,11 +10,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
 endif()
 
-find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
-message(AirSim Root directory: ${AIRSIM_ROOT})
-
-add_subdirectory(${AIRSIM_ROOT}/cmake Airsim)
-
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/cmake/airsimwrapper-setup.cmake")
@@ -32,11 +27,17 @@ else()
 endif()
 
 if (WIN32)
+  # TODO: it is better to use GenerateExportHeader instead of this
+  # WINDOWS_EXPORT_ALL_SYMBOLS may lead to fail if count of symbols will exceed 65536
 	set_target_properties(${PROJECT_NAME} PROPERTIES 
 		WINDOWS_EXPORT_ALL_SYMBOLS ON
 	)
 endif()
 
+# do not replace this before add_library and add_executable it will break vcpkg integration
+find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
+message(AirSim Root directory: ${AIRSIM_ROOT})
+add_subdirectory(${AIRSIM_ROOT}/cmake Airsim)
 target_link_libraries(${PROJECT_NAME} PRIVATE AirSim::AirLib)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
