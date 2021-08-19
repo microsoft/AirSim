@@ -40,10 +40,6 @@ message(AirSim Root directory: ${AIRSIM_ROOT})
 add_subdirectory(${AIRSIM_ROOT}/cmake Airsim)
 target_link_libraries(${PROJECT_NAME} PRIVATE AirSim::AirLib)
 
-find_package(Boost REQUIRED COMPONENTS filesystem)
-target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES})
-
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
