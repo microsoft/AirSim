@@ -33,9 +33,6 @@ public:
     void inputEventToggleSubwindow1();
     void inputEventToggleSubwindow2();
     void inputEventToggleAll();
-	void inputEventToggleSubwindow0Fullscreen();
-	void inputEventToggleSubwindow1Fullscreen();
-	void inputEventToggleSubwindow2Fullscreen();
 
     ImageType getSubwindowCameraType(int window_index);
     void setSubwindowCameraType(int window_index, ImageType type);

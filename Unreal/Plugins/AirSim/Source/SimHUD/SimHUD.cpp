@@ -172,24 +172,6 @@ void ASimHUD::inputEventToggleAll()
     updateWidgetSubwindowVisibility();
 }
 
-void ASimHUD::inputEventToggleSubwindow0Fullscreen()
-{
-    inputEventToggleSubwindow0();
-    widget_->maximizeSubWindow(0);
-}
-
-void ASimHUD::inputEventToggleSubwindow1Fullscreen()
-{
-    inputEventToggleSubwindow1();
-    widget_->maximizeSubWindow(1);
-}
-
-void ASimHUD::inputEventToggleSubwindow2Fullscreen()
-{
-    inputEventToggleSubwindow2();
-    widget_->maximizeSubWindow(2);
-}
-
 void ASimHUD::createMainWidget()
 {
     //create main widget
@@ -257,10 +239,6 @@ void ASimHUD::setupInputBindings()
     UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow1", EKeys::Two, this, &ASimHUD::inputEventToggleSubwindow1);
     UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow2", EKeys::Three, this, &ASimHUD::inputEventToggleSubwindow2);
     UAirBlueprintLib::BindActionToKey("InputEventToggleAll", EKeys::Zero, this, &ASimHUD::inputEventToggleAll);
-
-	UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow0Fullscreen", EKeys::One, this, &ASimHUD::inputEventToggleSubwindow0Fullscreen, false, true);
-	UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow1Fullscreen", EKeys::Two, this, &ASimHUD::inputEventToggleSubwindow1Fullscreen, false, true);
-	UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow2Fullscreen", EKeys::Three, this, &ASimHUD::inputEventToggleSubwindow2Fullscreen, false, true);
 }
 
 void ASimHUD::initializeSettings()
