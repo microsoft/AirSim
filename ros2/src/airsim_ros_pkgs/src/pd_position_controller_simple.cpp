@@ -56,10 +56,22 @@ void PIDPositionController::initialize_ros()
     double update_control_every_n_sec;
     nh_private_->get_parameter("update_control_every_n_sec", update_control_every_n_sec);
 
+    auto parameters_client = std::make_shared<rclcpp::SyncParametersClient>(nh_private_, "/airsim_node");
+    while (!parameters_client->wait_for_service(std::chrono::seconds(1))) 
+    {
+        if (!rclcpp::ok()) 
+        {
+            RCLCPP_ERROR(nh_->get_logger(), "Interrupted while waiting for the service. Exiting.");
+            rclcpp::shutdown();
+        }
+        RCLCPP_INFO(nh_->get_logger(), "service not available, waiting again...");
+    }
+
     std::string vehicle_name;
 
     while (vehicle_name == "") {
-        nh_private_->get_parameter("/vehicle_name", vehicle_name);
+        vehicle_name = parameters_client->get_parameter("vehicle_name", vehicle_name);
+        //nh_private_->get_parameter("vehicle_name", vehicle_name);
         RCLCPP_INFO_STREAM(nh_->get_logger() ,"Waiting vehicle name");
     }
 

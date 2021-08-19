@@ -7,8 +7,7 @@ int main(int argc, char** argv)
     rclcpp::init(argc, argv);
     rclcpp::NodeOptions node_options;
     node_options.automatically_declare_parameters_from_overrides(true);
-    const string node_name = "airsim_node";
-    std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared(node_name, node_name, node_options);
+    std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared("airsim_node", node_options);
  //   std::shared_ptr<rclcpp::Node> nh_private = nh->create_sub_node("~/");
     std::shared_ptr<rclcpp::Node> nh_img = nh->create_sub_node("img");
     std::shared_ptr<rclcpp::Node> nh_lidar = nh->create_sub_node("lidar");
@@ -22,7 +21,6 @@ int main(int argc, char** argv)
         while (rclcpp::ok()) {
             executor.spin();
         }        
-    //    airsim_ros_wrapper.img_async_spinner_.start();
     }
 
     if (airsim_ros_wrapper.is_used_lidar_timer_cb_queue_) {
@@ -31,7 +29,6 @@ int main(int argc, char** argv)
         while (rclcpp::ok()) {
             executor.spin();
         }     
-     //   airsim_ros_wrapper.lidar_async_spinner_.start();
     }
 
     rclcpp::spin(nh);
