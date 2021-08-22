@@ -27,8 +27,8 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
     { 7, "Infrared" }
 };
 
-AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip)
-    : nh_(nh), nh_private_(nh_private)
+AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip)
+    : nh_(nh)
     , nh_img_(nh_img), nh_lidar_(nh_lidar)
    // , img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_
    // lidar_async_spinner_(1, &lidar_timer_cb_queue_)
@@ -96,32 +96,32 @@ void AirsimROSWrapper::initialize_ros()
 
     // ros params
     double update_airsim_control_every_n_sec;
-    nh_private_->get_parameter("is_vulkan", is_vulkan_);
-    nh_private_->get_parameter("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
-    nh_private_->get_parameter("publish_clock", publish_clock_);
-    nh_private_->get_parameter_or("world_frame_id", world_frame_id_, world_frame_id_);
+    nh_->get_parameter("is_vulkan", is_vulkan_);
+    nh_->get_parameter("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
+    nh_->get_parameter("publish_clock", publish_clock_);
+    nh_->get_parameter_or("world_frame_id", world_frame_id_, world_frame_id_);
     odom_frame_id_ = world_frame_id_ == AIRSIM_FRAME_ID ? AIRSIM_ODOM_FRAME_ID : ENU_ODOM_FRAME_ID;
-    nh_private_->get_parameter_or("odom_frame_id", odom_frame_id_, odom_frame_id_);
+    nh_->get_parameter_or("odom_frame_id", odom_frame_id_, odom_frame_id_);
     isENU_ = !(odom_frame_id_ == AIRSIM_ODOM_FRAME_ID);
-    nh_private_->get_parameter_or("coordinate_system_enu", isENU_, isENU_);
+    nh_->get_parameter_or("coordinate_system_enu", isENU_, isENU_);
     vel_cmd_duration_ = 0.05; // todo rosparam
     // todo enforce dynamics constraints in this node as well?
     // nh_->get_parameter("max_vert_vel_", max_vert_vel_);
     // nh_->get_parameter("max_horz_vel", max_horz_vel_)
     
-    nh_private_->declare_parameter("vehicle_name",rclcpp::ParameterValue(""));
+    nh_->declare_parameter("vehicle_name",rclcpp::ParameterValue(""));
     create_ros_pubs_from_settings_json();
-    airsim_control_update_timer_ = nh_private_->create_wall_timer(std::chrono::duration<double>(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
-    // airsim_control_update_timer_ = nh_private_->createTimer(rclcpp::Duration (update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
+    airsim_control_update_timer_ = nh_->create_wall_timer(std::chrono::duration<double>(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
+    // airsim_control_update_timer_ = nh_->createTimer(rclcpp::Duration (update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
 }
 
 // XmlRpc::XmlRpcValue can't be const in this case
 void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 {
     // subscribe to control commands on global nodehandle
-    gimbal_angle_quat_cmd_sub_ = nh_private_->create_subscription<airsim_interfaces::msg::GimbalAngleQuatCmd>("~/gimbal_angle_quat_cmd", 50, std::bind(&AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this, _1));
-    gimbal_angle_euler_cmd_sub_ = nh_private_->create_subscription<airsim_interfaces::msg::GimbalAngleEulerCmd>("~/gimbal_angle_euler_cmd", 50, std::bind(&AirsimROSWrapper::gimbal_angle_euler_cmd_cb, this, _1));
-    origin_geo_point_pub_ = nh_private_->create_publisher<airsim_interfaces::msg::GPSYaw>("~/origin_geo_point", 10);
+    gimbal_angle_quat_cmd_sub_ = nh_->create_subscription<airsim_interfaces::msg::GimbalAngleQuatCmd>("~/gimbal_angle_quat_cmd", 50, std::bind(&AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this, _1));
+    gimbal_angle_euler_cmd_sub_ = nh_->create_subscription<airsim_interfaces::msg::GimbalAngleEulerCmd>("~/gimbal_angle_euler_cmd", 50, std::bind(&AirsimROSWrapper::gimbal_angle_euler_cmd_cb, this, _1));
+    origin_geo_point_pub_ = nh_->create_publisher<airsim_interfaces::msg::GPSYaw>("~/origin_geo_point", 10);
 
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
@@ -130,7 +130,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     vehicle_name_ptr_map_.clear();
     size_t lidar_cnt = 0;
 
-    image_transport::ImageTransport image_transporter(nh_private_);
+    image_transport::ImageTransport image_transporter(nh_);
 
     // iterate over std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
     for (const auto& curr_vehicle_elem : AirSimSettings::singleton().vehicles) {
@@ -155,11 +155,11 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         append_static_vehicle_tf(vehicle_ros.get(), *vehicle_setting);
 
-        vehicle_ros->odom_local_pub = nh_private_->create_publisher<nav_msgs::msg::Odometry>("~/" + curr_vehicle_name + "/" + odom_frame_id_, 10);
+        vehicle_ros->odom_local_pub = nh_->create_publisher<nav_msgs::msg::Odometry>("~/" + curr_vehicle_name + "/" + odom_frame_id_, 10);
 
-        vehicle_ros->env_pub = nh_private_->create_publisher<airsim_interfaces::msg::Environment>("~/" + curr_vehicle_name + "/environment", 10);
+        vehicle_ros->env_pub = nh_->create_publisher<airsim_interfaces::msg::Environment>("~/" + curr_vehicle_name + "/environment", 10);
 
-        vehicle_ros->global_gps_pub = nh_private_->create_publisher<sensor_msgs::msg::NavSatFix>("~/" + curr_vehicle_name + "/global_gps", 10);
+        vehicle_ros->global_gps_pub = nh_->create_publisher<sensor_msgs::msg::NavSatFix>("~/" + curr_vehicle_name + "/global_gps", 10);
 
         if (airsim_mode_ == AIRSIM_MODE::DRONE) {
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
@@ -167,23 +167,23 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
             // bind to a single callback. todo optimal subs queue length
             // bind multiple topics to a single callback, but keep track of which vehicle name it was by passing curr_vehicle_name as the 2nd argument
             std::function<void(const airsim_interfaces::msg::VelCmd::SharedPtr)> fcn_vel_cmd_body_frame_sub = std::bind(&AirsimROSWrapper::vel_cmd_body_frame_cb, this, _1, vehicle_ros->vehicle_name);
-            drone->vel_cmd_body_frame_sub = nh_private_->create_subscription<airsim_interfaces::msg::VelCmd>("~/" + curr_vehicle_name + "/vel_cmd_body_frame", 1, fcn_vel_cmd_body_frame_sub); // todo ros::TransportHints().tcpNoDelay();
+            drone->vel_cmd_body_frame_sub = nh_->create_subscription<airsim_interfaces::msg::VelCmd>("~/" + curr_vehicle_name + "/vel_cmd_body_frame", 1, fcn_vel_cmd_body_frame_sub); // todo ros::TransportHints().tcpNoDelay();
 
             std::function<void(const airsim_interfaces::msg::VelCmd::SharedPtr)> fcn_vel_cmd_world_frame_sub = std::bind(&AirsimROSWrapper::vel_cmd_world_frame_cb, this, _1, vehicle_ros->vehicle_name);
-            drone->vel_cmd_world_frame_sub = nh_private_->create_subscription<airsim_interfaces::msg::VelCmd>("~/" + curr_vehicle_name + "/vel_cmd_world_frame", 1, fcn_vel_cmd_world_frame_sub);
+            drone->vel_cmd_world_frame_sub = nh_->create_subscription<airsim_interfaces::msg::VelCmd>("~/" + curr_vehicle_name + "/vel_cmd_world_frame", 1, fcn_vel_cmd_world_frame_sub);
 
             std::function<bool(std::shared_ptr<airsim_interfaces::srv::Takeoff::Request>, std::shared_ptr<airsim_interfaces::srv::Takeoff::Response>)> fcn_takeoff_srvr = std::bind(&AirsimROSWrapper::takeoff_srv_cb, this, _1, _2, vehicle_ros->vehicle_name);
-            drone->takeoff_srvr = nh_private_->create_service<airsim_interfaces::srv::Takeoff>("~/" + curr_vehicle_name + "/takeoff",fcn_takeoff_srvr);
+            drone->takeoff_srvr = nh_->create_service<airsim_interfaces::srv::Takeoff>("~/" + curr_vehicle_name + "/takeoff",fcn_takeoff_srvr);
             
             std::function<bool(std::shared_ptr<airsim_interfaces::srv::Land::Request>, std::shared_ptr<airsim_interfaces::srv::Land::Response>)> fcn_land_srvr = std::bind(&AirsimROSWrapper::land_srv_cb, this, _1, _2, vehicle_ros->vehicle_name);
-            drone->land_srvr = nh_private_->create_service<airsim_interfaces::srv::Land>("~/" + curr_vehicle_name + "/land", fcn_land_srvr);
-            // vehicle_ros.reset_srvr = nh_private_->create_service(curr_vehicle_name + "/reset",&AirsimROSWrapper::reset_srv_cb, this);
+            drone->land_srvr = nh_->create_service<airsim_interfaces::srv::Land>("~/" + curr_vehicle_name + "/land", fcn_land_srvr);
+            // vehicle_ros.reset_srvr = nh_->create_service(curr_vehicle_name + "/reset",&AirsimROSWrapper::reset_srv_cb, this);
         }
         else {
             auto car = static_cast<CarROS*>(vehicle_ros.get());
             std::function<void(const airsim_interfaces::msg::CarControls::SharedPtr)> fcn_car_cmd_sub = std::bind(&AirsimROSWrapper::car_cmd_cb, this, _1, vehicle_ros->vehicle_name);
-            car->car_cmd_sub = nh_private_->create_subscription<airsim_interfaces::msg::CarControls>("~/" + curr_vehicle_name + "/car_cmd", 1, fcn_car_cmd_sub);
-            car->car_state_pub = nh_private_->create_publisher<airsim_interfaces::msg::CarState>("~/" + curr_vehicle_name + "/car_state", 10);
+            car->car_cmd_sub = nh_->create_subscription<airsim_interfaces::msg::CarControls>("~/" + curr_vehicle_name + "/car_cmd", 1, fcn_car_cmd_sub);
+            car->car_state_pub = nh_->create_publisher<airsim_interfaces::msg::CarState>("~/" + curr_vehicle_name + "/car_state", 10);
         }
 
         // iterate over camera map std::map<std::string, CameraSetting> .cameras;
@@ -215,7 +215,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     }
 
                     image_pub_vec_.push_back(image_transporter.advertise("~/" + curr_vehicle_name + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type), 1));
-                    cam_info_pub_vec_.push_back(nh_private_->create_publisher<sensor_msgs::msg::CameraInfo>("~/" + curr_vehicle_name + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type) + "/camera_info", 10));
+                    cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>("~/" + curr_vehicle_name + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type) + "/camera_info", 10));
                     camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
                 }
             }
@@ -303,35 +303,35 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
     // add takeoff and land all services if more than 2 drones
     if (vehicle_name_ptr_map_.size() > 1 && airsim_mode_ == AIRSIM_MODE::DRONE) {
-        takeoff_all_srvr_ = nh_private_->create_service<airsim_interfaces::srv::Takeoff>("~/all_robots/takeoff", std::bind(&AirsimROSWrapper::takeoff_all_srv_cb, this, _1, _2));
-        land_all_srvr_ = nh_private_->create_service<airsim_interfaces::srv::Land>("~/all_robots/land", std::bind(&AirsimROSWrapper::land_all_srv_cb, this, _1, _2));
+        takeoff_all_srvr_ = nh_->create_service<airsim_interfaces::srv::Takeoff>("~/all_robots/takeoff", std::bind(&AirsimROSWrapper::takeoff_all_srv_cb, this, _1, _2));
+        land_all_srvr_ = nh_->create_service<airsim_interfaces::srv::Land>("~/all_robots/land", std::bind(&AirsimROSWrapper::land_all_srv_cb, this, _1, _2));
 
         // gimbal_angle_quat_cmd_sub_ = nh_->create_subscription<>("gimbal_angle_quat_cmd", 50, &AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this);
 
-        vel_cmd_all_body_frame_sub_ = nh_private_->create_subscription<airsim_interfaces::msg::VelCmd>("~/all_robots/vel_cmd_body_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_all_body_frame_cb, this, _1));
-        vel_cmd_all_world_frame_sub_ = nh_private_->create_subscription<airsim_interfaces::msg::VelCmd>("~/all_robots/vel_cmd_world_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_all_world_frame_cb, this, _1));
+        vel_cmd_all_body_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmd>("~/all_robots/vel_cmd_body_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_all_body_frame_cb, this, _1));
+        vel_cmd_all_world_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmd>("~/all_robots/vel_cmd_world_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_all_world_frame_cb, this, _1));
 
-        vel_cmd_group_body_frame_sub_ = nh_private_->create_subscription<airsim_interfaces::msg::VelCmdGroup>("~/group_of_robots/vel_cmd_body_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_group_body_frame_cb, this, _1));
-        vel_cmd_group_world_frame_sub_ = nh_private_->create_subscription<airsim_interfaces::msg::VelCmdGroup>("~/group_of_robots/vel_cmd_world_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_group_world_frame_cb, this, _1));
+        vel_cmd_group_body_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmdGroup>("~/group_of_robots/vel_cmd_body_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_group_body_frame_cb, this, _1));
+        vel_cmd_group_world_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmdGroup>("~/group_of_robots/vel_cmd_world_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_group_world_frame_cb, this, _1));
 
-        takeoff_group_srvr_ = nh_private_->create_service<airsim_interfaces::srv::TakeoffGroup>("~/group_of_robots/takeoff", std::bind(&AirsimROSWrapper::takeoff_group_srv_cb, this, _1, _2));
-        land_group_srvr_ = nh_private_->create_service<airsim_interfaces::srv::LandGroup>("~/group_of_robots/land", std::bind(&AirsimROSWrapper::land_group_srv_cb, this, _1, _2));
+        takeoff_group_srvr_ = nh_->create_service<airsim_interfaces::srv::TakeoffGroup>("~/group_of_robots/takeoff", std::bind(&AirsimROSWrapper::takeoff_group_srv_cb, this, _1, _2));
+        land_group_srvr_ = nh_->create_service<airsim_interfaces::srv::LandGroup>("~/group_of_robots/land", std::bind(&AirsimROSWrapper::land_group_srv_cb, this, _1, _2));
     }
 
     // todo add per vehicle reset in AirLib API
-    reset_srvr_ = nh_private_->create_service<airsim_interfaces::srv::Reset>("~/reset", std::bind(&AirsimROSWrapper::reset_srv_cb, this, _1, _2));
+    reset_srvr_ = nh_->create_service<airsim_interfaces::srv::Reset>("~/reset", std::bind(&AirsimROSWrapper::reset_srv_cb, this, _1, _2));
 
     if (publish_clock_) {
-        clock_pub_ = nh_private_->create_publisher<rosgraph_msgs::msg::Clock>("~/clock", 1);
+        clock_pub_ = nh_->create_publisher<rosgraph_msgs::msg::Clock>("~/clock", 1);
     }
 
     // if >0 cameras, add one more thread for img_request_timer_cb
     if (!airsim_img_request_vehicle_name_pair_vec_.empty()) {
         double update_airsim_img_response_every_n_sec;
-        nh_private_->get_parameter("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
+        nh_->get_parameter("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
 
         // ros::TimerOptions timer_options(rclcpp::Duration(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
-        // airsim_img_response_timer_ = nh_private_->createTimer(timer_options);
+        // airsim_img_response_timer_ = nh_->createTimer(timer_options);
 
         airsim_img_response_timer_ = nh_img_->create_wall_timer(std::chrono::duration<double>(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this));
         is_used_img_timer_cb_queue_ = true;
@@ -340,10 +340,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     // lidars update on their own callback/thread at a given rate
     if (lidar_cnt > 0) {
         double update_lidar_every_n_sec;
-        nh_private_->get_parameter("update_lidar_every_n_sec", update_lidar_every_n_sec);
-        // nh_private_->setCallbackQueue(&lidar_timer_cb_queue_);
+        nh_->get_parameter("update_lidar_every_n_sec", update_lidar_every_n_sec);
+        // nh_->setCallbackQueue(&lidar_timer_cb_queue_);
         //ros::TimerOptions timer_options(rclcpp::Duration(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
-        //airsim_lidar_update_timer_ = nh_private_->createTimer(timer_options);
+        //airsim_lidar_update_timer_ = nh_->createTimer(timer_options);
         airsim_lidar_update_timer_ = nh_lidar_->create_wall_timer(std::chrono::duration<double>(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this));
         is_used_lidar_timer_cb_queue_ = true;
     }
@@ -358,7 +358,7 @@ const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const string&
     SensorPublisher<T> sensor_publisher;
     sensor_publisher.sensor_name = sensor_name;
     sensor_publisher.sensor_type = sensor_type;
-    sensor_publisher.publisher = nh_private_->create_publisher<T>("~/" + topic_name, QoS);
+    sensor_publisher.publisher = nh_->create_publisher<T>("~/" + topic_name, QoS);
     return sensor_publisher;
 }
 

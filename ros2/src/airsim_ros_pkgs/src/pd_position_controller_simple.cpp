@@ -32,10 +32,10 @@ bool DynamicConstraints::load_from_rosparams(const std::shared_ptr<rclcpp::Node>
     return found;
 }
 
-PIDPositionController::PIDPositionController(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private)
-    : nh_(nh), nh_private_(nh_private), has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
+PIDPositionController::PIDPositionController(const std::shared_ptr<rclcpp::Node> nh)
+    : nh_(nh), has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
 {
-    params_.load_from_rosparams(nh_private_);
+    params_.load_from_rosparams(nh_);
     constraints_.load_from_rosparams(nh_);
     initialize_ros();
     reset_errors();
@@ -54,9 +54,9 @@ void PIDPositionController::initialize_ros()
     vel_cmd_ = airsim_interfaces::msg::VelCmd();
     // ROS params
     double update_control_every_n_sec;
-    nh_private_->get_parameter("update_control_every_n_sec", update_control_every_n_sec);
+    nh_->get_parameter("update_control_every_n_sec", update_control_every_n_sec);
 
-    auto parameters_client = std::make_shared<rclcpp::SyncParametersClient>(nh_private_, "/airsim_node");
+    auto parameters_client = std::make_shared<rclcpp::SyncParametersClient>(nh_, "/airsim_node");
     while (!parameters_client->wait_for_service(std::chrono::seconds(1))) 
     {
         if (!rclcpp::ok()) 
@@ -71,12 +71,11 @@ void PIDPositionController::initialize_ros()
 
     while (vehicle_name == "") {
         vehicle_name = parameters_client->get_parameter("vehicle_name", vehicle_name);
-        //nh_private_->get_parameter("vehicle_name", vehicle_name);
         RCLCPP_INFO_STREAM(nh_->get_logger() ,"Waiting vehicle name");
     }
 
     // ROS publishers
-    airsim_vel_cmd_world_frame_pub_ = nh_private_->create_publisher<airsim_interfaces::msg::VelCmd>("/airsim_node/" + vehicle_name + "/vel_cmd_world_frame", 1);
+    airsim_vel_cmd_world_frame_pub_ = nh_->create_publisher<airsim_interfaces::msg::VelCmd>("/airsim_node/" + vehicle_name + "/vel_cmd_world_frame", 1);
 
     // ROS subscribers
     airsim_odom_sub_ = nh_->create_subscription<nav_msgs::msg::Odometry>("/airsim_node/" + vehicle_name + "/odom_local_ned", 50, std::bind(&PIDPositionController::airsim_odom_cb, this, _1));
@@ -88,8 +87,7 @@ void PIDPositionController::initialize_ros()
     gps_goal_override_srvr_ = nh_->create_service<airsim_interfaces::srv::SetGPSPosition>("/airsim_node/gps_goal/override", std::bind(&PIDPositionController::gps_goal_srv_override_cb, this, _1, _2));
 
     // ROS timers
-    //update_control_cmd_timer_ = nh_private_->createTimer(ros::Duration(update_control_every_n_sec), &PIDPositionController::update_control_cmd_timer_cb, this);
-    update_control_cmd_timer_ = nh_private_->create_wall_timer(std::chrono::duration<double>(update_control_every_n_sec), std::bind(&PIDPositionController::update_control_cmd_timer_cb, this));
+    update_control_cmd_timer_ = nh_->create_wall_timer(std::chrono::duration<double>(update_control_every_n_sec), std::bind(&PIDPositionController::update_control_cmd_timer_cb, this));
 }
 
 void PIDPositionController::airsim_odom_cb(const nav_msgs::msg::Odometry::SharedPtr odom_msg)

@@ -7,9 +7,8 @@ int main(int argc, char** argv)
     rclcpp::NodeOptions node_options;
     node_options.automatically_declare_parameters_from_overrides(true);
     std::shared_ptr<rclcpp::Node> nh = rclcpp::Node::make_shared("pid_position_controller_simple_node", node_options);
-    std::shared_ptr<rclcpp::Node> nh_private = nh->create_sub_node("private");
 
-    PIDPositionController controller(nh, nh /* nh_private */); //ToDo - do we really need nh_private?
+    PIDPositionController controller(nh);
 
     // int num_threads = 1;
     // ros::MultiThreadedSpinner multi_thread(num_threads);

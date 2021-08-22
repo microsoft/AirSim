@@ -141,15 +141,12 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_private, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip);
+    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip);
     ~AirsimROSWrapper(){};
 
     void initialize_airsim();
     void initialize_ros();
 
-    // std::vector<ros::CallbackQueue> callback_queues_;
-    //ros::AsyncSpinner img_async_spinner_;
-    //ros::AsyncSpinner lidar_async_spinner_;
     bool is_used_lidar_timer_cb_queue_;
     bool is_used_img_timer_cb_queue_;
 
@@ -174,9 +171,7 @@ private:
         std::vector<SensorPublisher<sensor_msgs::msg::Range>> distance_pubs;
         std::vector<SensorPublisher<sensor_msgs::msg::PointCloud2>> lidar_pubs;
         
-        //std::vector<SensorPublisher> sensor_pubs;
         // handle lidar seperately for max performance as data is collected on its own thread/callback
-        //std::vector<SensorPublisher> lidar_pubs;
 
         nav_msgs::msg::Odometry curr_odom;
         sensor_msgs::msg::NavSatFix gps_sensor_msg;
@@ -345,18 +340,13 @@ private:
     msr::airlib::RpcLibClientBase airsim_client_lidar_;
 
     std::shared_ptr<rclcpp::Node> nh_;
-    std::shared_ptr<rclcpp::Node> nh_private_;
     std::shared_ptr<rclcpp::Node> nh_img_;
     std::shared_ptr<rclcpp::Node> nh_lidar_;
 
 
-    // ros::NodeHandle nh_;
-    // ros::NodeHandle nh_private_;
 
     // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
     // todo for multiple drones with multiple sensors, this won't scale. make it a part of VehicleROS?
-    //ros::CallbackQueue img_timer_cb_queue_;
-    //ros::CallbackQueue lidar_timer_cb_queue_;
 
     std::mutex drone_control_mutex_;
 
