@@ -384,6 +384,7 @@ ros/src/CMakeLists.txt
 # ROS2
 ros2/install/
 ros2/log/
+ros2/src/log
 
 # docs
 docs/README.md
