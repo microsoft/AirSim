@@ -170,7 +170,7 @@ private:
         std::vector<SensorPublisher<sensor_msgs::msg::MagneticField>> magnetometer_pubs;
         std::vector<SensorPublisher<sensor_msgs::msg::Range>> distance_pubs;
         std::vector<SensorPublisher<sensor_msgs::msg::PointCloud2>> lidar_pubs;
-        
+
         // handle lidar seperately for max performance as data is collected on its own thread/callback
 
         nav_msgs::msg::Odometry curr_odom;
@@ -304,7 +304,7 @@ private:
     rclcpp::Time airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const;
     rclcpp::Time chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const;
 
-    template<typename T>
+    template <typename T>
     const SensorPublisher<T> create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS);
 
 private:
@@ -342,8 +342,6 @@ private:
     std::shared_ptr<rclcpp::Node> nh_;
     std::shared_ptr<rclcpp::Node> nh_img_;
     std::shared_ptr<rclcpp::Node> nh_lidar_;
-
-
 
     // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
     // todo for multiple drones with multiple sensors, this won't scale. make it a part of VehicleROS?

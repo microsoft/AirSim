@@ -19,7 +19,7 @@ int main(int argc, char** argv)
         executor.add_node(nh_img);
         while (rclcpp::ok()) {
             executor.spin();
-        }        
+        }
     }
 
     if (airsim_ros_wrapper.is_used_lidar_timer_cb_queue_) {
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
         executor.add_node(nh_lidar);
         while (rclcpp::ok()) {
             executor.spin();
-        }     
+        }
     }
 
     rclcpp::spin(nh);

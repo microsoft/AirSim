@@ -57,10 +57,8 @@ void PIDPositionController::initialize_ros()
     nh_->get_parameter("update_control_every_n_sec", update_control_every_n_sec);
 
     auto parameters_client = std::make_shared<rclcpp::SyncParametersClient>(nh_, "/airsim_node");
-    while (!parameters_client->wait_for_service(std::chrono::seconds(1))) 
-    {
-        if (!rclcpp::ok()) 
-        {
+    while (!parameters_client->wait_for_service(std::chrono::seconds(1))) {
+        if (!rclcpp::ok()) {
             RCLCPP_ERROR(nh_->get_logger(), "Interrupted while waiting for the service. Exiting.");
             rclcpp::shutdown();
         }
@@ -71,7 +69,7 @@ void PIDPositionController::initialize_ros()
 
     while (vehicle_name == "") {
         vehicle_name = parameters_client->get_parameter("vehicle_name", vehicle_name);
-        RCLCPP_INFO_STREAM(nh_->get_logger() ,"Waiting vehicle name");
+        RCLCPP_INFO_STREAM(nh_->get_logger(), "Waiting vehicle name");
     }
 
     // ROS publishers
@@ -203,7 +201,7 @@ bool PIDPositionController::gps_goal_srv_cb(const std::shared_ptr<airsim_interfa
         else // use airlib::GeodeticToNedFast
         {
             RCLCPP_INFO_STREAM(nh_->get_logger(), "[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
-                                                                          << "todo");
+                                                                                                << "todo");
             msr::airlib::Vector3r ned_goal = msr::airlib::EarthUtils::GeodeticToNedFast(goal_gps_point, gps_home);
             target_position_.x = ned_goal[0];
             target_position_.y = ned_goal[1];
@@ -253,7 +251,7 @@ bool PIDPositionController::gps_goal_srv_override_cb(const std::shared_ptr<airsi
     else // use airlib::GeodeticToNedFast
     {
         RCLCPP_INFO_STREAM(nh_->get_logger(), "[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
-                                                                      << "todo");
+                                                                                            << "todo");
         msr::airlib::Vector3r ned_goal = msr::airlib::EarthUtils::GeodeticToNedFast(goal_gps_point, gps_home);
         target_position_.x = ned_goal[0];
         target_position_.y = ned_goal[1];

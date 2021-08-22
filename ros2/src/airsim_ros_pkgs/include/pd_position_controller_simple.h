@@ -127,13 +127,12 @@ private:
     rclcpp::Publisher<airsim_interfaces::msg::VelCmd>::SharedPtr airsim_vel_cmd_world_frame_pub_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr airsim_odom_sub_;
     rclcpp::Subscription<airsim_interfaces::msg::GPSYaw>::SharedPtr home_geopoint_sub_;
-  
+
     rclcpp::Service<airsim_interfaces::srv::SetLocalPosition>::SharedPtr local_position_goal_srvr_;
     rclcpp::Service<airsim_interfaces::srv::SetLocalPosition>::SharedPtr local_position_goal_override_srvr_;
     rclcpp::Service<airsim_interfaces::srv::SetGPSPosition>::SharedPtr gps_goal_srvr_;
     rclcpp::Service<airsim_interfaces::srv::SetGPSPosition>::SharedPtr gps_goal_override_srvr_;
 
-  
     // rclcpp::Service<>::SharedPtr local_position_goal_srvr_;
     // rclcpp::Service<>::SharedPtr local_position_goal_override_srvr_;
     // rclcpp::Service<>::SharedPtr gps_goal_srvr_;
