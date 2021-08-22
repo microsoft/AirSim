@@ -1,2 +1,0 @@
-# string vehicle_name
-bool wait_on_last_task
