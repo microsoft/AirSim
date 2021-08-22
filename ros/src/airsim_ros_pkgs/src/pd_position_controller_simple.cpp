@@ -191,7 +191,7 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
         else // use airlib::GeodeticToNedFast
         {
             RCLCPP_INFO_STREAM("[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
-                                                                          << "todo");
+                                                                             << "todo");
             msr::airlib::Vector3r ned_goal = msr::airlib::EarthUtils::GeodeticToNedFast(goal_gps_point, gps_home);
             target_position_.x = ned_goal[0];
             target_position_.y = ned_goal[1];
@@ -241,7 +241,7 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosi
     else // use airlib::GeodeticToNedFast
     {
         RCLCPP_INFO_STREAM("[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
-                                                                      << "todo");
+                                                                         << "todo");
         msr::airlib::Vector3r ned_goal = msr::airlib::EarthUtils::GeodeticToNedFast(goal_gps_point, gps_home);
         target_position_.x = ned_goal[0];
         target_position_.y = ned_goal[1];
