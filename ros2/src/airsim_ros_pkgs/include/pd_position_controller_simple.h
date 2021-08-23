@@ -90,7 +90,7 @@ public:
     void airsim_odom_cb(const nav_msgs::msg::Odometry::SharedPtr odom_msg);
     void home_geopoint_cb(const airsim_interfaces::msg::GPSYaw::SharedPtr gps_msg);
 
-    void update_control_cmd_timer_cb(/* const ros::TimerEvent& event */);
+    void update_control_cmd_timer_cb();
 
     void reset_errors();
 
@@ -133,13 +133,7 @@ private:
     rclcpp::Service<airsim_interfaces::srv::SetGPSPosition>::SharedPtr gps_goal_srvr_;
     rclcpp::Service<airsim_interfaces::srv::SetGPSPosition>::SharedPtr gps_goal_override_srvr_;
 
-    // rclcpp::Service<>::SharedPtr local_position_goal_srvr_;
-    // rclcpp::Service<>::SharedPtr local_position_goal_override_srvr_;
-    // rclcpp::Service<>::SharedPtr gps_goal_srvr_;
-    // rclcpp::Service<>::SharedPtr gps_goal_override_srvr_;
-
     rclcpp::TimerBase::SharedPtr update_control_cmd_timer_;
-    //ros::Timer update_control_cmd_timer_;
 };
 
 #endif /* _PID_POSITION_CONTROLLER_SIMPLE_ */

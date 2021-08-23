@@ -31,16 +31,12 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     : nh_(nh)
     , nh_img_(nh_img)
     , nh_lidar_(nh_lidar)
-    // , img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_
-    // lidar_async_spinner_(1, &lidar_timer_cb_queue_)
-    , // same as above, but for lidar
-    host_ip_(host_ip)
+    , host_ip_(host_ip)
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
     , airsim_settings_parser_(host_ip)
 {
-    // ros_clock_.clock.fromSec(0);
-    ros_clock_.clock = rclcpp::Time(0); //ToDo - is it the right conversion?
+    ros_clock_.clock = rclcpp::Time(0);
     is_used_lidar_timer_cb_queue_ = false;
     is_used_img_timer_cb_queue_ = false;
 
@@ -227,7 +223,6 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
 
         // iterate over sensors
-        //      std::vector<SensorPublisher> sensors;
         for (auto& curr_sensor_map : vehicle_setting->sensors) {
             auto& sensor_name = curr_sensor_map.first;
             auto& sensor_setting = curr_sensor_map.second;
@@ -281,19 +276,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     throw std::invalid_argument("Unexpected sensor type");
                 }
                 }
-                //  sensors.emplace_back(sensor_publisher);
             }
         }
-
-        // // we want fast access to the lidar sensors for callback handling, sort them out now
-        // auto isLidar = std::function<bool(const SensorPublisher& pub)>([](const SensorPublisher& pub) {
-        //     return pub.sensor_type == SensorBase::SensorType::Lidar;
-        // });
-        // size_t cnt = std::count_if(sensors.begin(), sensors.end(), isLidar);
-        // lidar_cnt += cnt;
-        // vehicle_ros->lidar_pubs.resize(cnt);
-        // vehicle_ros->sensor_pubs.resize(sensors.size() - cnt);
-        // std::partition_copy(sensors.begin(), sensors.end(), vehicle_ros->lidar_pubs.begin(), vehicle_ros->sensor_pubs.begin(), isLidar);
 
         vehicle_name_ptr_map_.emplace(curr_vehicle_name, std::move(vehicle_ros)); // allows fast lookup in command callbacks in case of a lot of drones
     }
@@ -302,8 +286,6 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     if (vehicle_name_ptr_map_.size() > 1 && airsim_mode_ == AIRSIM_MODE::DRONE) {
         takeoff_all_srvr_ = nh_->create_service<airsim_interfaces::srv::Takeoff>("~/all_robots/takeoff", std::bind(&AirsimROSWrapper::takeoff_all_srv_cb, this, _1, _2));
         land_all_srvr_ = nh_->create_service<airsim_interfaces::srv::Land>("~/all_robots/land", std::bind(&AirsimROSWrapper::land_all_srv_cb, this, _1, _2));
-
-        // gimbal_angle_quat_cmd_sub_ = nh_->create_subscription<>("gimbal_angle_quat_cmd", 50, &AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this);
 
         vel_cmd_all_body_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmd>("~/all_robots/vel_cmd_body_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_all_body_frame_cb, this, _1));
         vel_cmd_all_world_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmd>("~/all_robots/vel_cmd_world_frame", 1, std::bind(&AirsimROSWrapper::vel_cmd_all_world_frame_cb, this, _1));
@@ -327,9 +309,6 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_airsim_img_response_every_n_sec;
         nh_->get_parameter("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
 
-        // ros::TimerOptions timer_options(rclcpp::Duration(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this), &img_timer_cb_queue_);
-        // airsim_img_response_timer_ = nh_->createTimer(timer_options);
-
         airsim_img_response_timer_ = nh_img_->create_wall_timer(std::chrono::duration<double>(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this));
         is_used_img_timer_cb_queue_ = true;
     }
@@ -338,9 +317,6 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     if (lidar_cnt > 0) {
         double update_lidar_every_n_sec;
         nh_->get_parameter("update_lidar_every_n_sec", update_lidar_every_n_sec);
-        // nh_->setCallbackQueue(&lidar_timer_cb_queue_);
-        //ros::TimerOptions timer_options(rclcpp::Duration(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this), &lidar_timer_cb_queue_);
-        //airsim_lidar_update_timer_ = nh_->createTimer(timer_options);
         airsim_lidar_update_timer_ = nh_lidar_->create_wall_timer(std::chrono::duration<double>(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this));
         is_used_lidar_timer_cb_queue_ = true;
     }
@@ -492,7 +468,6 @@ msr::airlib::Pose AirsimROSWrapper::get_airlib_pose(const float& x, const float&
     return msr::airlib::Pose(msr::airlib::Vector3r(x, y, z), airlib_quat);
 }
 
-// void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_interfaces::msg::VelCmd& msg, const std::string& vehicle_name)
 void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg, const std::string& vehicle_name)
 {
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
@@ -535,7 +510,6 @@ void AirsimROSWrapper::vel_cmd_group_body_frame_cb(const airsim_interfaces::msg:
     }
 }
 
-// void AirsimROSWrapper::vel_cmd_all_body_frame_cb(const airsim_interfaces::msg::VelCmd::ConstPtr& msg)
 void AirsimROSWrapper::vel_cmd_all_body_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg)
 {
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
@@ -927,9 +901,7 @@ rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system
 {
 
     auto dur = std::chrono::duration_cast<std::chrono::nanoseconds>(stamp.time_since_epoch());
-    //   auto dur = std::chrono::duration<double>(stamp.time_since_epoch());
-    rclcpp::Time cur_time(dur.count()); //ToDo - is the right conversion?
-    //    cur_time.fromSec(dur.count());
+    rclcpp::Time cur_time(dur.count());
     return cur_time;
 }
 
@@ -1102,10 +1074,6 @@ void AirsimROSWrapper::publish_vehicle_state()
             gps_msg.header.frame_id = vehicle_ros->vehicle_name;
             sensor_publisher.publisher->publish(gps_msg);
         }
-        // case SensorBase::SensorType::Lidar: {
-        //     // handled via callback
-        //     break;
-        // }
         for (auto& sensor_publisher : vehicle_ros->magnetometer_pubs) {
             auto mag_data = airsim_client_->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
             sensor_msgs::msg::MagneticField mag_msg = get_mag_msg_from_airsim(mag_data);
