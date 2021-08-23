@@ -311,6 +311,8 @@ cmake_build/
 /[Ee]igen
 /build_debug
 /build_release
+/install_debug
+/install_release
 /cmake/CPackSourceConfig.cmake
 /cmake/CPackConfig.cmake
 /cmake/arch.c
