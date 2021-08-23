@@ -62,28 +62,30 @@ STRICT_MODE_ON
 #include "common/common_utils/FileSystem.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 
-namespace gazebo {
+namespace gazebo
+{
 
-class GAZEBO_VISIBLE AirsimPlugin : public ModelPlugin {
+class GAZEBO_VISIBLE AirsimPlugin : public ModelPlugin
+{
 public:
-  AirsimPlugin();
-  virtual ~AirsimPlugin();
+    AirsimPlugin();
+    virtual ~AirsimPlugin();
 
 protected:
-  virtual void Load(physics::ModelPtr model, sdf::ElementPtr sdf);
-  virtual void OnUpdate(const common::UpdateInfo &);
+    virtual void Load(physics::ModelPtr model, sdf::ElementPtr sdf);
+    virtual void OnUpdate(const common::UpdateInfo&);
 
 private:
-  std::string namespace_;
-  physics::ModelPtr model_;
-  physics::WorldPtr world_;
-  physics::LinkPtr link_;
+    std::string namespace_;
+    physics::ModelPtr model_;
+    physics::WorldPtr world_;
+    physics::LinkPtr link_;
 
-  event::ConnectionPtr _updateConnection;
+    event::ConnectionPtr _updateConnection;
 
-  transport::NodePtr node_handle_;
+    transport::NodePtr node_handle_;
 
-  std::shared_ptr<msr::airlib::RpcLibClientBase> client_;
+    std::shared_ptr<msr::airlib::RpcLibClientBase> client_;
 
 }; // class GAZEBO_VISIBLE AirsimPlugin
 } // namespace gazebo
