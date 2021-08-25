@@ -27,17 +27,6 @@ find_package(rosidl_typesupport_cpp REQUIRED)
 find_package(rosidl_default_runtime REQUIRED)
 find_package(airsim_interfaces REQUIRED)
 
-# rosidl_generate_interfaces(${PROJECT_NAME} "msg/GimbalAngleEulerCmd.msg"
-#   "msg/GimbalAngleQuatCmd.msg" "msg/GPSYaw.msg" "msg/VelCmd.msg"
-#   "msg/VelCmdGroup.msg" "msg/CarControls.msg" "msg/CarState.msg"
-#   "msg/Altimeter.msg" "msg/Environment.msg" "srv/SetGPSPosition.srv"
-#   "srv/Takeoff.srv" "srv/TakeoffGroup.srv" "srv/Land.srv" "srv/LandGroup.srv"
-#   "srv/Reset.srv" "srv/SetLocalPosition.srv"
-#   DEPENDENCIES builtin_interfaces nav_msgs geographic_msgs std_srvs
-#   tf2_sensor_msgs geometry_msgs tf2_geometry_msgs sensor_msgs mavros_msgs std_msgs)
-
-
-
 set(AIRSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
 add_subdirectory("${AIRSIM_ROOT}/cmake/rpclib_wrapper" rpclib_wrapper)
