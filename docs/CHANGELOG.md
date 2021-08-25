@@ -9,8 +9,9 @@ Below is summarized list of important changes. This does not include minor/less 
 * [Fix: compression bug in segmentation palette](https://github.com/microsoft/AirSim/pull/3937)
 
 ### Jul 2021
-* [Fixed external cameras](https://github.com/microsoft/AirSim/pull/3009)
+* [Fixed external cameras](https://github.com/microsoft/AirSim/pull/3320)
 * [Fix: ROS topic names](https://github.com/microsoft/AirSim/pull/3880)
+* [Fix: Weather API crash](https://github.com/microsoft/AirSim/pull/3009)
 
 ### Jun 2021
 * [Object detection API](https://github.com/microsoft/AirSim/pull/3472)
