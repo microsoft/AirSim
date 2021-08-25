@@ -35,7 +35,5 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/SetLocalPosition.srv" DEPENDENCIES std_msgs geometry_msgs geographic_msgs
 )
 
-#install(FILES mapping_rules.yaml DESTINATION share/${PROJECT_NAME})
-
 ament_export_dependencies(rosidl_default_runtime)
 ament_package()
