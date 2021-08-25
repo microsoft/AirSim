@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(airsim_ros_pkgs)
 
-# Add support for C++11
-#if(NOT CMAKE_CXX_STANDARD)
-#set(CMAKE_CXX_STANDARD 11)
-#endif()
-
 find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
@@ -43,22 +38,14 @@ set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/rpclib-2.3.0/include")
 set(RPC_LIB rpc)
 message(STATUS "found RPC_LIB_INCLUDES=${RPC_LIB_INCLUDES}")
 
-set(INCLUDE_DIRS include ${rclcpp_INCLUDE_DIRS} ${nav_msgs_INCLUDE_DIRS}
-  ${geographic_msgs_INCLUDE_DIRS} ${std_srvs_INCLUDE_DIRS} ${tf2_ros_INCLUDE_DIRS}
-  ${tf2_sensor_msgs_INCLUDE_DIRS} ${rclpy_INCLUDE_DIRS} ${tf2_INCLUDE_DIRS}
-  ${image_transport_INCLUDE_DIRS} ${geometry_msgs_INCLUDE_DIRS}
-  ${cv_bridge_INCLUDE_DIRS} ${tf2_geometry_msgs_INCLUDE_DIRS}
-  ${sensor_msgs_INCLUDE_DIRS} ${mavros_msgs_INCLUDE_DIRS}
-  ${rosidl_default_generators_INCLUDE_DIRS} ${ament_cmake_INCLUDE_DIRS}
-  ${std_msgs_INCLUDE_DIRS}
+set(INCLUDE_DIRS include 
   ${AIRSIM_ROOT}/AirLib/deps/eigen3
   ${AIRSIM_ROOT}/AirLib/include
   ${RPC_LIB_INCLUDES}
   ${AIRSIM_ROOT}/MavLinkCom/include
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
   ${OpenCV_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
-  ${airsim_interfaces_INCLUDE_DIRS})
+  ${Boost_INCLUDE_DIRS})
 include_directories(${INCLUDE_DIRS})
 
 set(LIBRARY_DIRS ${rclcpp_LIBRARY_DIRS} ${nav_msgs_LIBRARY_DIRS}
@@ -86,23 +73,43 @@ find_package(Boost REQUIRED)
 find_package(OpenCV REQUIRED)
 
 add_library(airsim_settings_parser src/airsim_settings_parser.cpp)
-target_link_libraries(airsim_settings_parser ${LIBS} AirLib)
+target_link_libraries(airsim_settings_parser AirLib)
 
 add_library(pd_position_controller_simple src/pd_position_controller_simple.cpp)
-target_link_libraries(pd_position_controller_simple ${LIBS} AirLib)
-
+target_link_libraries(pd_position_controller_simple AirLib)
+ament_target_dependencies(pd_position_controller_simple 
+  rclcpp
+  nav_msgs
+  geometry_msgs
+  airsim_interfaces
+)
 
 add_library(airsim_ros src/airsim_ros_wrapper.cpp)
-target_link_libraries(airsim_ros ${LIBS} ${OpenCV_LIBS} yaml-cpp AirLib
-  airsim_settings_parser)
+target_link_libraries(airsim_ros ${OpenCV_LIBS} yaml-cpp AirLib airsim_settings_parser)
+ament_target_dependencies(airsim_ros 
+  rclcpp
+  sensor_msgs
+  geometry_msgs
+  nav_msgs
+  image_transport
+  tf2_ros
+  cv_bridge
+  airsim_interfaces
+)
 
 add_executable(airsim_node src/airsim_node.cpp)
-target_link_libraries(airsim_node airsim_ros ${LIBS} AirLib)
+target_link_libraries(airsim_node airsim_ros AirLib)
+ament_target_dependencies(airsim_node 
+  rclcpp
+)
 
 add_executable(pd_position_controller_simple_node
   src/pd_position_controller_simple_node.cpp)
 target_link_libraries(pd_position_controller_simple_node
-  pd_position_controller_simple airsim_ros ${LIBS} AirLib)
+  pd_position_controller_simple airsim_ros AirLib)
+ament_target_dependencies(pd_position_controller_simple_node 
+  rclcpp
+)
 
 # rosidl_target_interfaces(airsim_node
 # ${PROJECT_NAME} "rosidl_typesupport_cpp")
@@ -147,6 +154,6 @@ ament_export_dependencies(airsim_interfaces)
 
 ament_export_include_directories(${INCLUDE_DIRS})
 ament_export_libraries(airsim_settings_parser pd_position_controller_simple
-  airsim_ros)# ${LIBS})
+  airsim_ros)
 
 ament_package()
