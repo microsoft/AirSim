@@ -1,4 +1,4 @@
-#include "rclcpp/rclcpp.hpp"
+#include <rclcpp/rclcpp.hpp>
 #include "pd_position_controller_simple.h"
 
 int main(int argc, char** argv)
@@ -10,14 +10,6 @@ int main(int argc, char** argv)
 
     PIDPositionController controller(nh);
 
-    // int num_threads = 1;
-    // ros::MultiThreadedSpinner multi_thread(num_threads);
-    // multi_thread.spin();
-
-    // ros::AsyncSpinner async_spinner(num_threads);
-    // async_spinner.start();
-
-    // single threaded spinner
     rclcpp::spin(nh);
     return 0;
 }

@@ -1,6 +1,5 @@
-#include "rclcpp/rclcpp.hpp"
+#include <rclcpp/rclcpp.hpp>
 #include "airsim_ros_wrapper.h"
-//#include <ros/spinner.h>
 
 int main(int argc, char** argv)
 {

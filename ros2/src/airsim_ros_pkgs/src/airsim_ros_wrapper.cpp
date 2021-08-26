@@ -28,13 +28,13 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
 };
 
 AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip)
-    : nh_(nh)
-    , nh_img_(nh_img)
-    , nh_lidar_(nh_lidar)
+    : airsim_settings_parser_(host_ip)
     , host_ip_(host_ip)
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
-    , airsim_settings_parser_(host_ip)
+    , nh_(nh)
+    , nh_img_(nh_img)
+    , nh_lidar_(nh_lidar)
 {
     ros_clock_.clock = rclcpp::Time(0);
     is_used_lidar_timer_cb_queue_ = false;
@@ -338,6 +338,7 @@ const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const string&
 // todo: error check. if state is not landed, return error.
 bool AirsimROSWrapper::takeoff_srv_cb(std::shared_ptr<airsim_interfaces::srv::Takeoff::Request> request, std::shared_ptr<airsim_interfaces::srv::Takeoff::Response> response, const std::string& vehicle_name)
 {
+    unused(response);
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request->wait_on_last_task)
@@ -352,6 +353,7 @@ bool AirsimROSWrapper::takeoff_srv_cb(std::shared_ptr<airsim_interfaces::srv::Ta
 
 bool AirsimROSWrapper::takeoff_group_srv_cb(std::shared_ptr<airsim_interfaces::srv::TakeoffGroup::Request> request, std::shared_ptr<airsim_interfaces::srv::TakeoffGroup::Response> response)
 {
+    unused(response);
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request->wait_on_last_task)
@@ -368,6 +370,7 @@ bool AirsimROSWrapper::takeoff_group_srv_cb(std::shared_ptr<airsim_interfaces::s
 
 bool AirsimROSWrapper::takeoff_all_srv_cb(std::shared_ptr<airsim_interfaces::srv::Takeoff::Request> request, std::shared_ptr<airsim_interfaces::srv::Takeoff::Response> response)
 {
+    unused(response);
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request->wait_on_last_task)
@@ -384,6 +387,7 @@ bool AirsimROSWrapper::takeoff_all_srv_cb(std::shared_ptr<airsim_interfaces::srv
 
 bool AirsimROSWrapper::land_srv_cb(std::shared_ptr<airsim_interfaces::srv::Land::Request> request, std::shared_ptr<airsim_interfaces::srv::Land::Response> response, const std::string& vehicle_name)
 {
+    unused(response);
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request->wait_on_last_task)
@@ -396,6 +400,7 @@ bool AirsimROSWrapper::land_srv_cb(std::shared_ptr<airsim_interfaces::srv::Land:
 
 bool AirsimROSWrapper::land_group_srv_cb(std::shared_ptr<airsim_interfaces::srv::LandGroup::Request> request, std::shared_ptr<airsim_interfaces::srv::LandGroup::Response> response)
 {
+    unused(response);
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request->wait_on_last_task)
@@ -410,6 +415,7 @@ bool AirsimROSWrapper::land_group_srv_cb(std::shared_ptr<airsim_interfaces::srv:
 
 bool AirsimROSWrapper::land_all_srv_cb(std::shared_ptr<airsim_interfaces::srv::Land::Request> request, std::shared_ptr<airsim_interfaces::srv::Land::Response> response)
 {
+    unused(response);
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request->wait_on_last_task)
@@ -426,6 +432,8 @@ bool AirsimROSWrapper::land_all_srv_cb(std::shared_ptr<airsim_interfaces::srv::L
 // todo not async remove wait_on_last_task
 bool AirsimROSWrapper::reset_srv_cb(std::shared_ptr<airsim_interfaces::srv::Reset::Request> request, std::shared_ptr<airsim_interfaces::srv::Reset::Response> response)
 {
+    unused(request);
+    unused(response);
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     airsim_client_.reset();
@@ -1308,6 +1316,7 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_resp
                                                                                      const rclcpp::Time curr_ros_time,
                                                                                      const std::string frame_id)
 {
+    unused(curr_ros_time);
     std::shared_ptr<sensor_msgs::msg::Image> img_msg_ptr = std::make_shared<sensor_msgs::msg::Image>(); //boost::make_shared<sensor_msgs::msg::Image>();
     img_msg_ptr->data = img_response.image_data_uint8;
     img_msg_ptr->step = img_response.width * 3; // todo un-hardcode. image_width*num_bytes
@@ -1326,6 +1335,7 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
                                                                                            const rclcpp::Time curr_ros_time,
                                                                                            const std::string frame_id)
 {
+    unused(curr_ros_time);
     // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error,
     // hence the dependency on opencv and cv_bridge. however, this is an extremely fast op, so no big deal.
     cv::Mat depth_img = manual_decode_depth(img_response);
@@ -1340,6 +1350,7 @@ sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::stri
                                                                  const CameraSetting& camera_setting,
                                                                  const CaptureSetting& capture_setting) const
 {
+    unused(camera_setting);
     sensor_msgs::msg::CameraInfo cam_info_msg;
     cam_info_msg.header.frame_id = camera_name + "_optical";
     cam_info_msg.height = capture_setting.height;
@@ -1392,6 +1403,7 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 // We first do a change of basis to camera optical frame (Z forward, X right, Y down)
 void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, const rclcpp::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id)
 {
+    unused(ros_time);
     geometry_msgs::msg::TransformStamped cam_tf_body_msg;
     cam_tf_body_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     cam_tf_body_msg.header.frame_id = frame_id;

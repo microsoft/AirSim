@@ -33,7 +33,7 @@ bool DynamicConstraints::load_from_rosparams(const std::shared_ptr<rclcpp::Node>
 }
 
 PIDPositionController::PIDPositionController(const std::shared_ptr<rclcpp::Node> nh)
-    : nh_(nh), has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
+    : use_eth_lib_for_geodetic_conv_(true), nh_(nh), has_home_geo_(false), reached_goal_(false), has_goal_(false), has_odom_(false), got_goal_once_(false)
 {
     params_.load_from_rosparams(nh_);
     constraints_.load_from_rosparams(nh_);
@@ -114,6 +114,7 @@ void PIDPositionController::check_reached_goal()
 
 bool PIDPositionController::local_position_goal_srv_cb(const std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Response> response)
 {
+    unused(response);
     // this tells the update timer callback to not do active hovering
     if (!got_goal_once_)
         got_goal_once_ = true;
@@ -146,6 +147,7 @@ bool PIDPositionController::local_position_goal_srv_cb(const std::shared_ptr<air
 
 bool PIDPositionController::local_position_goal_srv_override_cb(const std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Request> request, std::shared_ptr<airsim_interfaces::srv::SetLocalPosition::Response> response)
 {
+    unused(response);
     // this tells the update timer callback to not do active hovering
     if (!got_goal_once_)
         got_goal_once_ = true;
@@ -187,7 +189,6 @@ bool PIDPositionController::gps_goal_srv_cb(const std::shared_ptr<airsim_interfa
     if (!has_goal_) {
         msr::airlib::GeoPoint goal_gps_point(request->latitude, request->longitude, request->altitude);
         msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
-        bool use_eth_lib = true;
         if (use_eth_lib_for_geodetic_conv_) {
             double initial_latitude, initial_longitude, initial_altitude;
             geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
@@ -237,7 +238,6 @@ bool PIDPositionController::gps_goal_srv_override_cb(const std::shared_ptr<airsi
 
     msr::airlib::GeoPoint goal_gps_point(request->latitude, request->longitude, request->altitude);
     msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
-    bool use_eth_lib = true;
     if (use_eth_lib_for_geodetic_conv_) {
         double initial_latitude, initial_longitude, initial_altitude;
         geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
@@ -270,7 +270,7 @@ bool PIDPositionController::gps_goal_srv_override_cb(const std::shared_ptr<airsi
     return true;
 }
 
-void PIDPositionController::update_control_cmd_timer_cb(/* const ros::TimerEvent& event */)
+void PIDPositionController::update_control_cmd_timer_cb()
 {
     // todo check if odometry is too old!!
     // if no odom, don't do anything.
