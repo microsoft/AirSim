@@ -40,8 +40,6 @@ STRICT_MODE_OFF //todo what does this do?
 #include <mavros_msgs/msg/state.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <opencv2/opencv.hpp>
-//#include <ros/callback_queue.h>
-//#include <ros/console.h>
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/distortion_models.hpp>
 #include <sensor_msgs/msg/image.hpp>
@@ -63,7 +61,6 @@ STRICT_MODE_OFF //todo what does this do?
 #include <tf2/convert.h>
 #include <unordered_map>
 #include <memory>
-    // #include "nodelet/nodelet.h"
 
     // todo move airlib typedefs to separate header file?
     typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
