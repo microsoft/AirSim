@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>MavLink MoCap - AirSim</title>
+  <title>Modifying Recording Data - AirSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "MavLink MoCap";
-    var mkdocs_page_input_path = "mavlinkcom_mocap.md";
+    var mkdocs_page_name = "Modifying Recording Data";
+    var mkdocs_page_input_path = "modify_recording_data.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -132,14 +132,18 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Design</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../design/">Architecture</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../code_structure/">Code Structure</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../adding_new_apis/">Adding new APIs</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../modify_recording_data/">Modifying Recording Data</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Modifying Recording Data</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#code-changes">Code Changes</a>
+    </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../coding_guidelines/">Coding Guidelines</a>
                     </li>
@@ -151,9 +155,9 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="#">MavLink and PX4</a>
-    <ul class="current">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
@@ -182,17 +186,7 @@
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" href="./">MavLink MoCap</a>
-    <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies:</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#setup-rigidbody">Setup RigidBody</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#mavlinktest">MavLinkTest</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
                 </li>
     </ul>
                     </li>
@@ -292,18 +286,14 @@
     
       
         
-          <li>External Flight Controllers &raquo;</li>
-        
-      
-        
-          <li>MavLink and PX4 &raquo;</li>
+          <li>Design &raquo;</li>
         
       
     
-    <li>MavLink MoCap</li>
+    <li>Modifying Recording Data</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/mavlinkcom_mocap.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/modify_recording_data.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -315,28 +305,46 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="welcome-to-mavlinkmocap">Welcome to MavLinkMoCap<a class="headerlink" href="#welcome-to-mavlinkmocap" title="Permanent link">#</a></h1>
-<p>This folder contains the MavLinkMoCap library which connects to a OptiTrack camera system
-for accurate indoor location.</p>
-<h2 id="dependencies">Dependencies:<a class="headerlink" href="#dependencies" title="Permanent link">#</a></h2>
-<ul>
-<li><a href="http://www.optitrack.com/products/motive/">OptiTrack Motive</a>.</li>
-<li><a href="../mavlinkcom/">MavLinkCom</a>.</li>
-</ul>
-<h3 id="setup-rigidbody">Setup RigidBody<a class="headerlink" href="#setup-rigidbody" title="Permanent link">#</a></h3>
-<p>First you need to define a RigidBody named 'Quadrocopter' using Motive.
-See <a href="http://wiki.optitrack.com/index.php?title=Rigid_Body_Tracking">Rigid_Body_Tracking</a>.</p>
-<h3 id="mavlinktest">MavLinkTest<a class="headerlink" href="#mavlinktest" title="Permanent link">#</a></h3>
-<p>Use MavLinkTest to talk to your PX4 drone, with "-server:addr:port", for example, when connected
-to drone wifi use: </p>
-<pre><code>MavLinkMoCap -server:10.42.0.228:14590 "-project:D:\OptiTrack\Motive Project 2016-12-19 04.09.42 PM.ttp"
-</code></pre>
-<p>This publishes the ATT_POS_MOCAP messages and you can proxy those through to the PX4 by running 
-MavLinkTest on the dronebrain using:</p>
-<pre><code>MavLinkTest -serial:/dev/ttyACM0,115200 -proxy:10.42.0.228:14590
-</code></pre>
-<p>Now the drone will get the ATT_POS_MOCAP and you should see the light turn green meaning it is
-now has a home position and is ready to fly.</p>
+                <h1 id="modifying-recording-data">Modifying Recording Data<a class="headerlink" href="#modifying-recording-data" title="Permanent link">#</a></h1>
+<p>AirSim has a <a href="../settings/#recording">Recording feature</a> to easily collect data and images. The <a href="../apis/#recording-apis">Recording APIs</a> also allows starting and stopping the recording using API.</p>
+<p>However, the data recorded by default might not be sufficient for your use cases, and it might be preferable to record additional data such as IMU, GPS sensors, Rotor speed for copters, etc. You can use the existing Python and C++ APIs to get the information and store it as required, especially for Lidar. Another option for adding small fields such as GPS or internal data such as Unreal position or something else is possible through modifying the recording methods inside AirSim. This page describes the specific methods which you might need to change.</p>
+<p>The recorded data is written in a <code>airsim_rec.txt</code> file in a tab-separated format, with images in an <code>images/</code> folder. The entire folder is by default present in the <code>Documents</code> folder (or specified in settings) with the timestamp of when the recording started in <code>%Y-%M-%D-%H-%M-%S</code> format.</p>
+<p>Car vehicle records the following fields -</p>
+<pre class="highlight"><code class="language-text">VehicleName TimeStamp   POS_X   POS_Y   POS_Z   Q_W Q_X Q_Y Q_Z Throttle    Steering    Brake   Gear    Handbrake   RPM Speed   ImageFile</code></pre>
+<p>For Multirotor -</p>
+<pre class="highlight"><code class="language-text">VehicleName TimeStamp   POS_X   POS_Y   POS_Z   Q_W Q_X Q_Y Q_Z ImageFile</code></pre>
+<h2 id="code-changes">Code Changes<a class="headerlink" href="#code-changes" title="Permanent link">#</a></h2>
+<p>Note that this requires building and using AirSim from source. You can compile a binary yourself after modifying if needed.</p>
+<p>The primary method which fills the data to be stored is <a href="https://github.com/microsoft/AirSim/blob/880c5541fd4824ee2cd9bb82ca5f611eb1ab236a/Unreal/Plugins/AirSim/Source/PawnSimApi.cpp#L544"><code>PawnSimApi::getRecordFileLine</code></a>, it's the base method for all the vehicles, and Car overrides it to log additional data, as can be seen in <a href="https://github.com/microsoft/AirSim/blob/880c5541fd4824ee2cd9bb82ca5f611eb1ab236a/Unreal/Plugins/AirSim/Source/Vehicles/Car/CarPawnSimApi.cpp#L34"><code>CarPawnSimApi::getRecordFileLine</code></a>.</p>
+<p>To record additional data for multirotor, you can add a similar method in <a href="https://github.com/microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Source/Vehicles/Multirotor">MultirotorPawnSimApi.cpp/h</a> files which overrides the base class implementation and append other data. The currently logged data can also be modified and removed as needed.</p>
+<p>E.g. recording GPS, IMU and Barometer data also for multirotor -</p>
+<pre class="highlight"><code class="language-cpp">// MultirotorPawnSimApi.cpp
+std::string MultirotorPawnSimApi::getRecordFileLine(bool is_header_line) const
+{
+    std::string common_line = PawnSimApi::getRecordFileLine(is_header_line);
+    if (is_header_line) {
+        return common_line +
+               "Latitude\tLongitude\tAltitude\tPressure\tAccX\tAccY\tAccZ\t";
+    }
+
+    const auto&amp; state = vehicle_api_-&gt;getMultirotorState();
+    const auto&amp; bar_data = vehicle_api_-&gt;getBarometerData("");
+    const auto&amp; imu_data = vehicle_api_-&gt;getImuData("");
+
+    std::ostringstream ss;
+    ss &lt;&lt; common_line;
+    ss &lt;&lt; state.gps_location.latitude &lt;&lt; "\t" &lt;&lt; state.gps_location.longitude &lt;&lt; "\t"
+       &lt;&lt; state.gps_location.altitude &lt;&lt; "\t";
+
+    ss &lt;&lt; bar_data.pressure &lt;&lt; "\t";
+
+    ss &lt;&lt; imu_data.linear_acceleration.x() &lt;&lt; "\t" &lt;&lt; imu_data.linear_acceleration.y() &lt;&lt; "\t"
+       &lt;&lt; imu_data.linear_acceleration.z() &lt;&lt; "\t";
+
+    return ss.str();
+}</code></pre>
+<pre class="highlight"><code class="language-cpp">// MultirotorPawnSimApi.h
+virtual std::string getRecordFileLine(bool is_header_line) const override;</code></pre>
               
             </div>
           </div>
@@ -344,10 +352,10 @@ now has a home position and is ready to fly.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../unreal_upgrade/" class="btn btn-neutral float-right" title="Upgrading Unreal">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../coding_guidelines/" class="btn btn-neutral float-right" title="Coding Guidelines">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../mavlinkcom/" class="btn btn-neutral" title="MavLinkCom"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../adding_new_apis/" class="btn btn-neutral" title="Adding new APIs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -379,10 +387,10 @@ now has a home position and is ready to fly.</p>
         </span>
     
     
-      <span><a href="../mavlinkcom/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../adding_new_apis/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../unreal_upgrade/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../coding_guidelines/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -221,6 +221,8 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../adding_new_apis/">Adding new APIs</a>
                     </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../modify_recording_data/">Modifying Recording Data</a>
+                    </li>
                     <li class="toctree-l1"><a class="reference internal" href="../coding_guidelines/">Coding Guidelines</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../flight_controller/">Flight Controller</a>
@@ -519,7 +521,7 @@ The second parameter value is from 0 to 1. The first parameter provides followin
 <pre class="highlight"><code>client.startRecording()</code></pre>
 <p>Similarly, to stop recording, use <code>client.stopRecording()</code>. To check whether Recording is running, call <code>client.isRecording()</code>, returns a <code>bool</code>.</p>
 <p>This API works alongwith toggling Recording using R button, therefore if it's enabled using R key, <code>isRecording()</code> will return <code>True</code>, and recording can be stopped via API using <code>stopRecording()</code>. Similarly, recording started using API will be stopped if R key is pressed in Viewport. LogMessage will also appear in the top-left of the viewport if recording is started or stopped using API.</p>
-<p>Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired.</p>
+<p>Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired. Check out <a href="../modify_recording_data/">Modifying Recording Data</a> for details on how to modify the kinematics data being recorded.</p>
 <h3 id="wind-api">Wind API<a class="headerlink" href="#wind-api" title="Permanent link">#</a></h3>
 <p>Wind can be changed during simulation using <code>simSetWind()</code>. Wind is specified in World frame, NED direction and m/s values</p>
 <p>E.g. To set 20m/s wind in North (forward) direction -</p>
