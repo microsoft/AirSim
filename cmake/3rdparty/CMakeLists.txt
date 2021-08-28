@@ -48,7 +48,9 @@ include(GNUInstallDirs)
 set(3RD_PARTIES rpclib Eigen3)
 foreach(3RD_PARTY IN LISTS 3RD_PARTIES)
     find_package(${3RD_PARTY} QUIET)
-    #unset(${3RD_PARTY}_FOUND) # uncomment this to debug third parties
+    if(FORCE_INSTALL_3RDPARTY)
+        unset(${3RD_PARTY}_FOUND)
+    endif()
     if (NOT ${3RD_PARTY}_FOUND) # suppose we have already installed dependency and we don't need to install it
         message(STATUS "${3RD_PARTY} was not found, it will be installed by cmake")
         set(SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/.download/${3RD_PARTY})

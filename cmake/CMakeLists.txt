@@ -12,6 +12,7 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}")
 
 option(BUILD_EXAMPLES "build examples" OFF)
 option(BUILD_TESTS "build tests" OFF)
+option(FORCE_INSTALL_3RDPARTY "forced installation of 3rd party libraries" OFF)
 
 include(CommonSetup)
 CommonSetup()
