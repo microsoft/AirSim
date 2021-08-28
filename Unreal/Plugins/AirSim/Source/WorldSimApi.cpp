@@ -436,37 +436,34 @@ bool WorldSimApi::setObjectMaterialFromTexture(const std::string& object_name, c
 {
     bool success = false;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &texture_path, &success]() {
-        UTexture2D* texture_desired = FImageUtils::ImportFileAsTexture2D(FString(texture_path.c_str()));
-        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
-        
-        if (simmode_->domain_rand_material_ != nullptr && actor != nullptr) {
-            TArray<UStaticMeshComponent*> c;
-            actor->GetComponents<UStaticMeshComponent>(c);
-            if (simmode_->domain_rand_material_ == nullptr) {
-                UAirBlueprintLib::LogMessageString("Cannot find material for domain randomization",
-                                                   "",
-                                                   LogDebugLevel::Failure);
-            }
-            for (UStaticMeshComponent* staticMeshComponent : c) {
-                UMaterialInstanceDynamic* dynamic_material = UMaterialInstanceDynamic::Create(simmode_->domain_rand_material_, staticMeshComponent);
-                dynamic_material->SetTextureParameterValue("TextureParameter", texture_desired);
-                staticMeshComponent->SetMaterial(0, dynamic_material);
-            }
+        if (!IsValid(simmode_->domain_rand_material_)) {
+            UAirBlueprintLib::LogMessageString("Cannot find material for domain randomization",
+                                               "",
+                                               LogDebugLevel::Failure);
         }
-        else {        
-            if (actor == nullptr) {
-                    UAirBlueprintLib::LogMessageString("Cannot find specified actor for domain randomization",
-                                                       "",
-                                                       LogDebugLevel::Failure);
+        else {
+            UTexture2D* texture_desired = FImageUtils::ImportFileAsTexture2D(FString(texture_path.c_str()));
+            AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+
+            if (IsValid(actor)) {
+                TArray<UStaticMeshComponent*> components;
+                actor->GetComponents<UStaticMeshComponent>(components);
+                for (UStaticMeshComponent* staticMeshComponent : components) {
+                    UMaterialInstanceDynamic* dynamic_material = UMaterialInstanceDynamic::Create(simmode_->domain_rand_material_, staticMeshComponent);
+                    dynamic_material->SetTextureParameterValue("TextureParameter", texture_desired);
+                    staticMeshComponent->SetMaterial(0, dynamic_material);
+                }
+                success = true;
             }
-            if (simmode_->domain_rand_material_ == nullptr) {
-                UAirBlueprintLib::LogMessageString("Cannot find material for domain randomization",
+            else {
+                UAirBlueprintLib::LogMessageString("Cannot find specified actor for domain randomization",
                                                    "",
                                                    LogDebugLevel::Failure);
             }
         }
-    },true);
-    success = true;
+    },
+                                             true);
+    
     return success;
 }
 
@@ -475,29 +472,31 @@ bool WorldSimApi::setObjectMaterial(const std::string& object_name, const std::s
     bool success = false;
     UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &material_name, &success]() {
         AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
-        UMaterial* material = (UMaterial*)StaticLoadObject(UMaterial::StaticClass(), nullptr, *FString(material_name.c_str()));
-        
-        if (material != nullptr && actor != nullptr) {
-            TArray<UStaticMeshComponent*> c;
-            actor->GetComponents<UStaticMeshComponent>(c);
-            for (UStaticMeshComponent* staticMeshComponent : c) {
-                staticMeshComponent->SetMaterial(0, material);
-            }
-        }
-        else {
-            if (material == nullptr) {
-                UAirBlueprintLib::LogMessageString("Cannot find material for domain randomization",
+        UMaterial* material = static_cast<UMaterial*>(StaticLoadObject(UMaterial::StaticClass(), nullptr, *FString(material_name.c_str())));
+
+        if (!IsValid(material)) {
+            UAirBlueprintLib::LogMessageString("Cannot find specified material for domain randomization",
                                                    "",
                                                    LogDebugLevel::Failure);
+        }
+        else {
+            if (IsValid(actor)) {
+                TArray<UStaticMeshComponent*> components;
+                actor->GetComponents<UStaticMeshComponent>(components);
+                for (UStaticMeshComponent* staticMeshComponent : components) {
+                    staticMeshComponent->SetMaterial(0, material);
+                }
+                success = true;
             }
-            if (actor == nullptr) {
+            else {
                 UAirBlueprintLib::LogMessageString("Cannot find specified actor for domain randomization",
                                                    "",
                                                    LogDebugLevel::Failure);
             }
         }
-    }, true);
-    success = true;
+    },
+                                             true);
+
     return success;
 }
 
