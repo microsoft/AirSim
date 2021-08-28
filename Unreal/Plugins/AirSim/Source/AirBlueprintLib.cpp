@@ -237,6 +237,7 @@ void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FSt
     UAirBlueprintLib::RunCommandOnGameThread([context, &asset_map]() {
         FARFilter Filter;
         Filter.ClassNames.Add(UStaticMesh::StaticClass()->GetFName());
+        Filter.ClassNames.Add(UBlueprint::StaticClass()->GetFName());
         Filter.bRecursivePaths = true;
 
         auto world = context->GetWorld();

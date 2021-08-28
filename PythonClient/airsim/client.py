@@ -158,6 +158,19 @@ class VehicleClient:
             print(ver_info)
         print('')
 
+    def simSetLightIntensity(self, light_name, intensity):
+        """
+        Change intensity of named light
+
+        Args:
+            light_name (str): Name of light to change
+            intensity (float): New intensity value
+
+        Returns:
+            bool: True if successful, otherwise False
+        """
+        return self.client.call("simSetLightIntensity", light_name, intensity)
+
     def simSwapTextures(self, tags, tex_id = 0, component_id = 0, material_id = 0):
         """
         Runtime Swap Texture API
@@ -456,7 +469,7 @@ class VehicleClient:
         """
         return self.client.call('simLoadLevel', level_name)
 
-    def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
+    def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False, is_blueprint=False):
         """Spawned selected object in the world
         
         Args:
@@ -468,7 +481,7 @@ class VehicleClient:
         Returns:
             str: Name of spawned object, in case it had to be modified
         """
-        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale, physics_enabled)
+        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale, physics_enabled, is_blueprint)
 
     def simDestroyObject(self, object_name):
         """Removes selected object from the world
