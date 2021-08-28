@@ -11,15 +11,18 @@ if "%VisualStudioVersion%" lss "16.0" (
     goto :buildfailed
 )
 
-cmake -S./AirLibWrapper/AirsimWrapper^
- -B./build/build^
- -GNinja^
+REM Visual Studio Generator doesn't work for some unknown reason, Ninja and clang are preferred
+cmake ^
+ -G "Ninja"^
  -DCMAKE_C_COMPILER=clang-cl^
  -DCMAKE_CXX_COMPILER=clang-cl^
+ -S./AirLibWrapper/AirsimWrapper^
+ -B./build/build^
  -DCMAKE_INSTALL_BINDIR=.^
- -DCMAKE_INSTALL_PREFIX=./build/install
+ -DCMAKE_INSTALL_PREFIX=./UnityDemo/Assets/Plugins^
+ -DCMAKE_BUILD_TYPE=Release
 cmake --build  ./build/build --config Release --target AirsimWrapper
-cmake --install ./build/build --config Release --prefix ./UnityDemo/Assets/Plugins
+cmake --install ./build/build --config Release
 
 if ERRORLEVEL 1 goto :buildfailed
 

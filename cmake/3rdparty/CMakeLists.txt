@@ -36,13 +36,15 @@ endif()
 set(INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
 set(CMAKE_ARGS 
     "-DCMAKE_GENERATOR=${CMAKE_GENERATOR}"
-    "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
-    "-DCMAKE_GENERATOR=${CMAKE_GENERATOR}"
+    "-DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}"
     "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
     "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
     "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
     "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+    "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
 )
+
+include(GNUInstallDirs)
 set(3RD_PARTIES rpclib Eigen3)
 foreach(3RD_PARTY IN LISTS 3RD_PARTIES)
     find_package(${3RD_PARTY} QUIET)
@@ -57,8 +59,9 @@ foreach(3RD_PARTY IN LISTS 3RD_PARTIES)
             COMMAND ${CMAKE_COMMAND} 
                 -S${CMAKE_CURRENT_BINARY_DIR}/.external/${3RD_PARTY}
                 -B${CMAKE_CURRENT_BINARY_DIR}/.external/${3RD_PARTY}/.build
+                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                 ${CMAKE_ARGS})
-        execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/.external/${3RD_PARTY}/.build)
-        execute_process(COMMAND ${CMAKE_COMMAND} --install ${CMAKE_CURRENT_BINARY_DIR}/.external/${3RD_PARTY}/.build)
+        execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/.external/${3RD_PARTY}/.build --config ${CMAKE_BUILD_TYPE})
+        execute_process(COMMAND ${CMAKE_COMMAND} --install ${CMAKE_CURRENT_BINARY_DIR}/.external/${3RD_PARTY}/.build --config ${CMAKE_BUILD_TYPE})
     endif()
 endforeach()
