@@ -23,13 +23,13 @@ if "%VisualStudioVersion%" lss "16.0" (
 
 if "%1"=="" goto noargs
 if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
-if "%1"=="--Debug" set "buildMode=Debug"
-if "%1"=="--Release" set "buildMode=Release"
+if "%1"=="--Debug" set "buildMode=debug"
+if "%1"=="--Release" set "buildMode=release"
 if "%1"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
 
 if "%2"=="" goto noargs
-if "%2"=="--Debug" set "buildMode=Debug"
-if "%2"=="--Release" set "buildMode=Release"
+if "%2"=="--Debug" set "buildMode=debug"
+if "%2"=="--Release" set "buildMode=release"
 if "%2"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
 
 :noargs
@@ -100,7 +100,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.2.0 (
 )
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
-if "%buildMode%" == "" set "buildMode=Debug"
+if "%buildMode%" == "" set "buildMode=debug"
 
 IF EXIST "%buildDir%" (
     rmdir "%buildDir%" /Q /S
@@ -110,8 +110,9 @@ IF EXIST "Unreal/Plugins/AirSim/Source/AirLib" (
 )
 
 set "buildDir=./build/build/%BuildMode%"
-cmake -S./cmake -B"%buildDir%" -DCMAKE_INSTALL_PREFIX="./install%BuildMode%" ^
+cmake -S./cmake -B"%buildDir%" -DCMAKE_INSTALL_PREFIX="./install_%BuildMode%" ^
   -GNinja ^
+  -DFORCE_INSTALL_3RDPARTY=ON ^
   -DCMAKE_C_COMPILER=clang-cl ^
   -DCMAKE_CXX_COMPILER=clang-cl ^
   -DBUILD_TESTS=ON ^
@@ -123,7 +124,23 @@ if ERRORLEVEL 1 goto :buildfailed
 
 cmake --install %buildDir% --config %BuildMode%
 
+set "UnrealInstallDir=.\Unreal\Plugins\AirSim\Source\AirLib"
+mkdir %UnrealInstallDir%\deps\
+mklink /j %UnrealInstallDir%\deps\eigen3 %~dp0\install_%BuildMode%\include\eigen3
 
+mkdir %UnrealInstallDir%\deps\MavLinkCom
+mkdir %UnrealInstallDir%\deps\MavLinkCom\lib\x64\
+mklink /j %UnrealInstallDir%\deps\MavLinkCom\include %~dp0\install_%BuildMode%\include\AirSim\MavLinkCom
+mklink /j %UnrealInstallDir%\deps\MavLinkCom\lib\x64\%BuildMode% %~dp0\install_%BuildMode%\lib
+
+mkdir %UnrealInstallDir%\deps\rpclib\
+mkdir %UnrealInstallDir%\deps\rpclib\lib\x64\
+mklink /j %UnrealInstallDir%\deps\rpclib\include %~dp0\install_%BuildMode%\include\rpclib
+mklink /j %UnrealInstallDir%\deps\rpclib\lib\x64\%BuildMode% %~dp0\install_%BuildMode%\lib
+
+mkdir %UnrealInstallDir%\lib\x64
+mklink /j %UnrealInstallDir%\include %~dp0\install_%BuildMode%\include\AirSim\AirLib
+mklink /j %UnrealInstallDir%\lib\x64\%BuildMode% %~dp0\install_%BuildMode%\lib
 
 REM //---------- done building ----------
 exit /b 0
