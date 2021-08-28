@@ -10,6 +10,7 @@
 #include "Misc/OutputDeviceNull.h"
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
     : simmode_(simmode) {}
@@ -102,12 +103,11 @@ std::string WorldSimApi::spawnObject(const std::string& object_name, const std::
         // Ensure new non-matching name for the object
         std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_, ".*" + final_object_name + ".*");
         if (matching_names.size() > 0) {
-            size_t greatest_num{ 0 }, result{ 0 };
-            for (auto match : matching_names) {
+            int greatest_num{ 0 };
+            for (const auto& match : matching_names) {
                 std::string number_extension = match.substr(match.find_last_not_of("0123456789") + 1);
                 if (number_extension != "") {
-                    result = std::stoi(number_extension);
-                    greatest_num = greatest_num > result ? greatest_num : result;
+                    greatest_num = std::max(greatest_num, std::stoi(number_extension));
                 }
             }
             final_object_name += std::to_string(greatest_num + 1);
@@ -147,7 +147,7 @@ AActor* WorldSimApi::createNewStaticMeshActor(const FActorSpawnParameters& spawn
 {
     AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params);
 
-    if (NewActor) {
+    if (IsValid(NewActor)) {
         UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
         ObjectComponent->SetStaticMesh(static_mesh);
         ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
@@ -162,7 +162,7 @@ AActor* WorldSimApi::createNewStaticMeshActor(const FActorSpawnParameters& spawn
 
 AActor* WorldSimApi::createNewBPActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UBlueprint* blueprint)
 {
-    UClass* NewBP = (UClass*)blueprint->GeneratedClass;
+    UClass* NewBP = static_cast<UClass*>(blueprint->GeneratedClass);
     AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(NewBP, FVector::ZeroVector, FRotator::ZeroRotator, spawn_params);
 
     if (NewActor) {
@@ -175,15 +175,16 @@ bool WorldSimApi::setLightIntensity(const std::string& light_name, float intensi
 {
     bool result;
     UAirBlueprintLib::RunCommandOnGameThread([this, &light_name, &intensity, &result]() {
-        AActor* actor = simmode_->scene_object_map.FindRef(FString(object_name.c_str()));
+        AActor* light_actor = simmode_->scene_object_map.FindRef(FString(light_name.c_str()));
 
-        const FString command = FString::Printf(TEXT("SetIntensity %f"), intensity);
-        FOutputDeviceNull ar;
-        actor->CallFunctionByNameWithArguments(*command, ar, NULL, true);
-        result = actor ? simmode_->getGlobalNedTransform().toGlobalNed(FTransform(actor->GetActorRotation(), actor->GetActorLocation()))
-                       : Pose::nanPose();
+        if (light_actor) {
+            const FString command = FString::Printf(TEXT("SetIntensity %f"), intensity);
+            FOutputDeviceNull ar;
+            result = light_actor->CallFunctionByNameWithArguments(*command, ar, NULL, true);
+        }
     },
                                              true);
+    return result;
 }
 
 
