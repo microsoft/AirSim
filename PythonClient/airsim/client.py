@@ -477,6 +477,8 @@ class VehicleClient:
             asset_name (str): Name of asset(mesh) in the project database
             pose (airsim.Pose): Desired pose of object
             scale (airsim.Vector3r): Desired scale of object
+            physics_enabled (bool, optional): Whether to enable physics for the object
+            is_blueprint (bool, optional): Whether to spawn a blueprint or an actor
         
         Returns:
             str: Name of spawned object, in case it had to be modified
