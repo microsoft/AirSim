@@ -11,9 +11,14 @@ public class AirSim : ModuleRules
         get { return ModuleDirectory; }
     }
 
+    private string Configuration
+    {
+        get { return (Target.Configuration == UnrealTargetConfiguration.Debug) ? "debug" : "release"; }
+    }
+
     private string AirLibPath
     {
-        get { return Path.Combine(ModulePath, "AirLib"); }
+        get { return Path.Combine(ModulePath, "AirLib", Configuration); }
     }
     private string AirSimPluginPath
     {
@@ -40,29 +45,30 @@ public class AirSim : ModuleRules
 
     private void SetupCompileMode(CompileMode mode, ReadOnlyTargetRules Target)
     {
-        LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
+        PublicIncludePaths.Add(Path.Combine(AirLibPath, "include", "AirSim/AirLib"));
+        PublicIncludePaths.Add(Path.Combine(AirLibPath, "include", "eigen3"));
+        AddLibDependency(Target, "MavLinkCom", "MavLinkCom", true, "AirSim/MavLinkCom");
 
         switch (mode)
         {
             case CompileMode.HeaderOnlyNoRpc:
                 PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
                 PublicDefinitions.Add("AIRLIB_NO_RPC=1");
-                AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
+                AddLibDependency(Target, "AirLib", "AirLib", false);
                 break;
 
             case CompileMode.HeaderOnlyWithRpc:
                 PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
-                AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
-                LoadAirSimDependency(Target, "rpclib", "rpc");
+                AddLibDependency(Target, "AirLib", "AirLib", false);
+                AddLibDependency(Target, "rpclib", "rpc");
                 break;
 
             case CompileMode.CppCompileNoRpc:
-                LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
                 PublicDefinitions.Add("AIRLIB_NO_RPC=1");
                 break;
 
             case CompileMode.CppCompileWithRpc:
-                LoadAirSimDependency(Target, "rpclib", "rpc");
+                AddLibDependency(Target, "rpclib", "rpc");
                 break;
 
             default:
@@ -86,10 +92,7 @@ public class AirSim : ModuleRules
         PublicDefinitions.Add("_CRT_SECURE_NO_WARNINGS=1");
         PublicDefinitions.Add("HMD_MODULE_INCLUDED=0");
 
-        PublicIncludePaths.Add(Path.Combine(AirLibPath, "include"));
-        PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
         AddOSLibDependencies(Target);
-
         SetupCompileMode(CompileMode.HeaderOnlyWithRpc, Target);
     }
 
@@ -124,33 +127,24 @@ public class AirSim : ModuleRules
         //else skip
     }
 
-    private bool LoadAirSimDependency(ReadOnlyTargetRules Target, string LibName, string LibFileName)
+    private bool AddLibDependency(ReadOnlyTargetRules Target, string LibName, string LibFileName, bool IsAddLibInclude = true, string IncludeSuffix = "")
     {
-        string LibrariesPath = Path.Combine(AirLibPath, "deps", LibName, "lib");
-        return AddLibDependency(LibName, LibrariesPath, LibFileName, Target, true);
-    }
-
-    private bool AddLibDependency(string LibName, string LibPath, string LibFileName, ReadOnlyTargetRules Target, bool IsAddLibInclude)
-    {
-        string PlatformString = (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Mac) ? "x64" : "x86";
-        string ConfigurationString = (Target.Configuration == UnrealTargetConfiguration.Debug) ? "Debug" : "Release";
         bool isLibrarySupported = false;
-
 
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
             isLibrarySupported = true;
 
-            PublicAdditionalLibraries.Add(Path.Combine(LibPath, PlatformString, ConfigurationString, LibFileName + ".lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(AirLibPath, "lib", LibFileName + ".lib"));
         } else if (Target.Platform == UnrealTargetPlatform.Linux || Target.Platform == UnrealTargetPlatform.Mac) {
             isLibrarySupported = true;
-            PublicAdditionalLibraries.Add(Path.Combine(LibPath, "lib" + LibFileName + ".a"));
+            PublicAdditionalLibraries.Add(Path.Combine(AirLibPath, "lib", "lib" + LibFileName + ".a"));
         }
 
         if (isLibrarySupported && IsAddLibInclude)
         {
             // Include path
-            PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", LibName, "include"));
+            PublicIncludePaths.Add(Path.Combine(AirLibPath, "include", IncludeSuffix));
         }
         PublicDefinitions.Add(string.Format("WITH_" + LibName.ToUpper() + "_BINDING={0}", isLibrarySupported ? 1 : 0));
 

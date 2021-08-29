@@ -72,9 +72,9 @@ if [[ -d "./cmake/CMakeFiles" ]]; then
 fi
 
 if $debug; then
-    buildType="Debug"
+    buildType="debug"
 else
-    buildType="Release"
+    buildType="release"
 fi
 "$CMAKE" -S./cmake -B$build_dir -DCMAKE_BUILD_TYPE=$buildType -DCMAKE_INSTALL_PREFIX=$install_dir -DFORCE_INSTALL_3RDPARTY=ON \
         || (rm -r $build_dir && exit 1) 
@@ -82,33 +82,13 @@ fi
 # final linking of the binaries can fail due to a missing libc++abi library
 # (happens on Fedora, see https://bugzilla.redhat.com/show_bug.cgi?id=1332306).
 # So we only build the libraries here for now
-"$CMAKE" --build $build_dir -j`nproc`
+"$CMAKE" --build $build_dir -j`nproc` --config $buildType
 
-"$CMAKE" --install $build_dir
+"$CMAKE" --install $build_dir  --config $buildType
 
 # Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
 # TODO: update Unreal deps managment to work with cmake dirs structure
-mkdir -p Unreal/Plugins/AirSim/Source/AirLib/deps
-rsync -a --delete $install_dir/include/eigen3 Unreal/Plugins/AirSim/Source/AirLib/deps
-
-mkdir -p Unreal/Plugins/AirSim/Source/AirLib/deps/MavLinkCom
-rsync -a --delete $install_dir/include/AirSim/MavLinkCom/ Unreal/Plugins/AirSim/Source/AirLib/deps/MavLinkCom/include/
-rsync -a --delete $install_dir/lib/libMavLinkCom.a Unreal/Plugins/AirSim/Source/AirLib/deps/MavLinkCom/lib/
-
-mkdir -p Unreal/Plugins/AirSim/Source/AirLib/deps/rpclib
-rsync -a --delete $install_dir/include/rpc Unreal/Plugins/AirSim/Source/AirLib/deps/rpclib/include
-rsync -a --delete $install_dir/lib/librpc.a Unreal/Plugins/AirSim/Source/AirLib/deps/rpclib/lib/
-
-rsync -a --delete $install_dir/include/AirSim/AirLib/ Unreal/Plugins/AirSim/Source/AirLib/include
-rsync -a --delete $install_dir/lib/libAirLib.a Unreal/Plugins/AirSim/Source/AirLib/lib/
-
-mkdir -p Unreal/Plugins/AirSim/Source/AirLib/lib/x64/$buildType
-rsync -a --delete $install_dir/lib/ Unreal/Plugins/AirSim/Source/AirLib/lib/x64/$buildType
-
-# Update Blocks project
-Unreal/Environments/Blocks/clean.sh
-mkdir -p Unreal/Environments/Blocks/Plugins
-rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/Blocks/Plugins
+rsync -a --delete $install_dir ./Unreal/Plugins/AirSim/Source/AirLib/$buildMode --exclude=bin --exclude=share --exclude=cmake
 
 set +x
 
