@@ -86,9 +86,9 @@ fi
 
 "$CMAKE" --install $build_dir  --config $buildType
 
-# Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
-# TODO: update Unreal deps managment to work with cmake dirs structure
-rsync -a --delete $install_dir ./Unreal/Plugins/AirSim/Source/AirLib/$buildMode --exclude=bin --exclude=share --exclude=cmake
+# Update AirLib with new binaries
+mkdir -p ./Unreal/Plugins/AirSim/Source/AirLib/$buildType
+rsync -a --delete $install_dir/ ./Unreal/Plugins/AirSim/Source/AirLib/$buildType/ --exclude=bin --exclude=share --exclude=cmake
 
 set +x
 
