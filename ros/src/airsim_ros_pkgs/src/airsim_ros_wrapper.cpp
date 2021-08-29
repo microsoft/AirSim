@@ -26,19 +26,20 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
 };
 
 AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string& host_ip)
-    : nh_(nh), nh_private_(nh_private), img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_
-    lidar_async_spinner_(1, &lidar_timer_cb_queue_)
-    , has_gimbal_cmd_(false)
-    , // same as above, but for lidar
-    host_ip_(host_ip)
+    : img_async_spinner_(1, &img_timer_cb_queue_) // a thread for image callbacks to be 'spun' by img_async_spinner_
+    , lidar_async_spinner_(1, &lidar_timer_cb_queue_) // same as above, but for lidar
+    , is_used_lidar_timer_cb_queue_(false)
+    , is_used_img_timer_cb_queue_(false)
+    , nh_(nh)
+    , nh_private_(nh_private)
+    , host_ip_(host_ip)
+    , airsim_settings_parser_(host_ip)
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
-    , airsim_settings_parser_(host_ip)
+    , has_gimbal_cmd_(false)
     , tf_listener_(tf_buffer_)
 {
     ros_clock_.clock.fromSec(0);
-    is_used_lidar_timer_cb_queue_ = false;
-    is_used_img_timer_cb_queue_ = false;
 
     if (AirSimSettings::singleton().simmode_name != AirSimSettings::kSimModeTypeCar) {
         airsim_mode_ = AIRSIM_MODE::DRONE;

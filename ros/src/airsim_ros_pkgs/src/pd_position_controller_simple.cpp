@@ -32,7 +32,7 @@ bool DynamicConstraints::load_from_rosparams(const ros::NodeHandle& nh)
 }
 
 PIDPositionController::PIDPositionController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private)
-    : nh_(nh), nh_private_(nh_private), has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
+    : use_eth_lib_for_geodetic_conv_(true), nh_(nh), nh_private_(nh_private), has_home_geo_(false), reached_goal_(false), has_goal_(false), has_odom_(false), got_goal_once_(false)
 {
     params_.load_from_rosparams(nh_private_);
     constraints_.load_from_rosparams(nh_);
@@ -177,7 +177,6 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
     if (!has_goal_) {
         msr::airlib::GeoPoint goal_gps_point(request.latitude, request.longitude, request.altitude);
         msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
-        bool use_eth_lib = true;
         if (use_eth_lib_for_geodetic_conv_) {
             double initial_latitude, initial_longitude, initial_altitude;
             geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
@@ -227,7 +226,6 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosi
 
     msr::airlib::GeoPoint goal_gps_point(request.latitude, request.longitude, request.altitude);
     msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
-    bool use_eth_lib = true;
     if (use_eth_lib_for_geodetic_conv_) {
         double initial_latitude, initial_longitude, initial_altitude;
         geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
