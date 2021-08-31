@@ -49,27 +49,6 @@ set(INCLUDE_DIRS include
   )
 include_directories(${INCLUDE_DIRS})
 
-set(LIBRARY_DIRS ${rclcpp_LIBRARY_DIRS} ${nav_msgs_LIBRARY_DIRS}
-  ${geographic_msgs_LIBRARY_DIRS} ${std_srvs_LIBRARY_DIRS} ${tf2_ros_LIBRARY_DIRS}
-  ${tf2_sensor_msgs_LIBRARY_DIRS} ${rclpy_LIBRARY_DIRS} ${tf2_LIBRARY_DIRS}
-  ${image_transport_LIBRARY_DIRS} ${geometry_msgs_LIBRARY_DIRS}
-  ${cv_bridge_LIBRARY_DIRS} ${tf2_geometry_msgs_LIBRARY_DIRS}
-  ${sensor_msgs_LIBRARY_DIRS} ${mavros_msgs_LIBRARY_DIRS}
-  ${rosidl_default_generators_LIBRARY_DIRS} ${ament_cmake_LIBRARY_DIRS}
-  ${std_msgs_LIBRARY_DIRS}
-  ${airsim_interfaces_LIBRARY_DIRS})
-
-link_directories(${LIBRARY_DIRS})
-
-set(LIBS ${rclcpp_LIBRARIES} ${nav_msgs_LIBRARIES} ${geographic_msgs_LIBRARIES}
-  ${std_srvs_LIBRARIES} ${tf2_ros_LIBRARIES} ${tf2_sensor_msgs_LIBRARIES}
-  ${rclpy_LIBRARIES} ${tf2_LIBRARIES} ${image_transport_LIBRARIES}
-  ${geometry_msgs_LIBRARIES} ${cv_bridge_LIBRARIES} ${tf2_geometry_msgs_LIBRARIES}
-  ${sensor_msgs_LIBRARIES} ${mavros_msgs_LIBRARIES}
-  ${rosidl_default_generators_LIBRARIES} ${ament_cmake_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-  ${airsim_interfaces_LIBRARIES})
-
 add_library(airsim_settings_parser src/airsim_settings_parser.cpp)
 target_link_libraries(airsim_settings_parser AirLib)
 
