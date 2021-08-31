@@ -21,6 +21,7 @@ find_package(std_msgs REQUIRED)
 find_package(rosidl_typesupport_cpp REQUIRED)
 find_package(rosidl_default_runtime REQUIRED)
 find_package(airsim_interfaces REQUIRED)
+find_package(OpenCV REQUIRED)
 
 set(AIRSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
@@ -68,8 +69,6 @@ set(LIBS ${rclcpp_LIBRARIES} ${nav_msgs_LIBRARIES} ${geographic_msgs_LIBRARIES}
   ${rosidl_default_generators_LIBRARIES} ${ament_cmake_LIBRARIES}
   ${std_msgs_LIBRARIES}
   ${airsim_interfaces_LIBRARIES})
-
-find_package(OpenCV REQUIRED)
 
 add_library(airsim_settings_parser src/airsim_settings_parser.cpp)
 target_link_libraries(airsim_settings_parser AirLib)
