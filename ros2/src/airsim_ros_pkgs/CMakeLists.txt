@@ -45,7 +45,7 @@ set(INCLUDE_DIRS include
   ${AIRSIM_ROOT}/MavLinkCom/include
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
   ${OpenCV_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS})
+  )
 include_directories(${INCLUDE_DIRS})
 
 set(LIBRARY_DIRS ${rclcpp_LIBRARY_DIRS} ${nav_msgs_LIBRARY_DIRS}
@@ -69,7 +69,6 @@ set(LIBS ${rclcpp_LIBRARIES} ${nav_msgs_LIBRARIES} ${geographic_msgs_LIBRARIES}
   ${std_msgs_LIBRARIES}
   ${airsim_interfaces_LIBRARIES})
 
-find_package(Boost REQUIRED)
 find_package(OpenCV REQUIRED)
 
 add_library(airsim_settings_parser src/airsim_settings_parser.cpp)
