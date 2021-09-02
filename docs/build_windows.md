@@ -14,7 +14,7 @@ Click on the `Install` button on the top right, which should show the option to 
 
 ## Build AirSim
 * Install Visual Studio 2019.
-**Make sure** to select **Desktop Development with C++** and **Windows 10 SDK 10.0.18362** (should be selected by default) while installing VS 2019.
+**Make sure** to select **Desktop Development with C++** and **Windows 10 SDK 10.0.18362** (should be selected by default) and select the latest .NET Framework SDK under the 'Individual Components' tab while installing VS 2019.
 * Start `Developer Command Prompt for VS 2019`.
 * Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`.
 
