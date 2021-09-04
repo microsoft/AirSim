@@ -2,8 +2,29 @@
 
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
-### May 2021
 
+### Aug 2021
+* Latest release `v1.6.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.6.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.6.0-linux)
+* [Fix: DepthPlanar capture](https://github.com/microsoft/AirSim/pull/3907)
+* [Fix: compression bug in segmentation palette](https://github.com/microsoft/AirSim/pull/3937)
+
+### Jul 2021
+* [Fixed external cameras](https://github.com/microsoft/AirSim/pull/3320)
+* [Fix: ROS topic names](https://github.com/microsoft/AirSim/pull/3880)
+* [Fix: Weather API crash](https://github.com/microsoft/AirSim/pull/3009)
+
+### Jun 2021
+* [Object detection API](https://github.com/microsoft/AirSim/pull/3472)
+* [GazeboDrone project added to connect a gazebo drone to the AirSim drone](https://github.com/microsoft/AirSim/pull/3754)
+* [Control manual camera speed through the keyboard](https://github.com/microsoft/AirSim/pull/3221)
+* [Octo X config](https://github.com/microsoft/AirSim/pull/3653)
+* [API for list of vehicle names](https://github.com/microsoft/AirSim/pull/2936)
+* [Fix: issue where no new scene is rendered after simContinueForTime](https://github.com/microsoft/AirSim/pull/3305)
+* [Fix:Check for settings.json in current directory as well](https://github.com/microsoft/AirSim/pull/3436)
+
+### May 2021
+* [Make falling leaves visible in depth and segmentation](https://github.com/microsoft/AirSim/pull/3699)
+* [Fix: Unity Car API](https://github.com/microsoft/AirSim/pull/2937)
 * Latest release `v1.5.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.5.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.5.0-linux)
 * [fix px4 connection for wsl 2.](https://github.com/microsoft/AirSim/pull/3603)
 
