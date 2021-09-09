@@ -217,9 +217,9 @@ void SimModeBase::setupVehiclesAndCamera()
         PawnSimApi::Params pawn_sim_api_params(vehicle_pawn, &getGlobalNedTransform(), home_geopoint, vehicle_name);
         auto vehicle_sim_api = createVehicleSimApi(pawn_sim_api_params);
         auto vehicle_sim_api_p = vehicle_sim_api.get();
-        auto vehicle_Api = getVehicleApi(pawn_sim_api_params, vehicle_sim_api_p);
+        auto vehicle_api = getVehicleApi(pawn_sim_api_params, vehicle_sim_api_p);
 
-        getApiProvider()->insert_or_assign(vehicle_name, vehicle_Api, vehicle_sim_api_p);
+        getApiProvider()->insert_or_assign(vehicle_name, vehicle_api, vehicle_sim_api_p);
 
         if ((!getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
             getApiProvider()->makeDefaultVehicle(vehicle_name);
