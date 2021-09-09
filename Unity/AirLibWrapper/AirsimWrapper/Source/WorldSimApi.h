@@ -13,7 +13,7 @@ public:
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
     typedef msr::airlib::CameraDetails CameraDetails;
 
-    WorldSimApi(SimModeBase* simmode, std::string vehicle_name);
+    WorldSimApi(SimModeBase* simmode);
     virtual ~WorldSimApi();
 
     // ------ Level setting apis ----- //
@@ -92,5 +92,4 @@ public:
 
 private:
     SimModeBase* simmode_;
-    std::string vehicle_name_;
 };
