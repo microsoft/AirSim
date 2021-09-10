@@ -2,7 +2,7 @@
 
 The current recommended and tested environment is **Ubuntu 18.04 LTS**. Theoretically, you can build on other distros as well, but we haven't tested it.
 
-Only macOS **Catalina (10.15)** is supported.
+macOS **Catalina (10.15)** is supported with Unreal 4.25. MacOS Big Sur (11.5) runs with Unreal 4.27
 
 We've two options - you can either build inside docker containers or your host machine.
 
@@ -33,9 +33,10 @@ make
 
 1. [Download](https://www.unrealengine.com/download) the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.
 2. Run the Epic Games Launcher, open the `Library` tab on the left pane.
-Click on the `Add Versions` which should show the option to download **Unreal 4.25** as shown below. If you have multiple versions of Unreal installed then **make sure 4.25 is set to `current`** by clicking down arrow next to the Launch button for the version.
+Click on the `Add Versions` which should show the option to download **Unreal 4.27 for MacOS Big Sur** or **Unreal 4.25 for MacOS Cataline** as shown below. If you have multiple versions of Unreal installed then **make sure or 4.27 or 4.25 ar set to `current`** by clicking down arrow next to the Launch button for the version.
 
-   **Note**: AirSim also works with UE >= 4.24, however, we recommend 4.25.
+   **Note**: AirSim on MacOS Catalina also works with UE >= 4.24, however, we recommend 4.25.
+   **Note**: Airsim on MacOS Big Sur works with UE >= 4.26, but the current version is 4.27 and seems to run without issue.
    **Note**: If you have UE 4.16 or older projects, please see the [upgrade guide](unreal_upgrade.md) to upgrade your projects.
 
 ### Build AirSim
@@ -48,7 +49,11 @@ git clone https://github.com/Microsoft/AirSim.git
 cd AirSim
 ```
 
-  By default AirSim uses clang 8 to build for compatibility with UE 4.25. The setup script will install the right version of cmake, llvm, and eigen.
+On MacOS Catalina, AirSim should use llvm@8 or  clang 8 to build for compatibility with UE 4.25. On MacOS Big Sur, Airsim 
+needs the llvm@12 for Unreal Engine 2.26 and higher.
+
+The setup script will attempt to install the right version of cmake, llvm, and eigen. The variables to inspect
+in the script are `CC` and `CXX` variables that set by build.sh and make sure they match your version of macOS.
 
 ```bash
 ./setup.sh
@@ -70,14 +75,16 @@ Once AirSim is setup:
 - When Unreal Engine prompts for opening or creating project, select Browse and choose `AirSim/Unreal/Environments/Blocks` (or your [custom](unreal_custenv.md) Unreal project).
 - Alternatively, the project file can be passed as a commandline argument. For Blocks: `./Engine/Binaries/Linux/UE4Editor <AirSim_path>/Unreal/Environments/Blocks/Blocks.uproject`
 - If you get prompts to convert project, look for More Options or Convert-In-Place option. If you get prompted to build, choose Yes. If you get prompted to disable AirSim plugin, choose No.
-- After Unreal Editor loads, press Play button.
+- After Unreal Editor loads, press Play button which is that teop of the window.
 
 ### Mac
 
 - Browse to `AirSim/Unreal/Environments/Blocks`.
 - Run `./GenerateProjectFiles.sh <UE_PATH>` from the terminal, where `UE_PATH` is the path to the Unreal installation folder. (By default, this is `/Users/Shared/Epic\ Games/UE_4.25/`) The script creates an XCode workspace by the name Blocks.xcworkspace.
-- Open the XCode workspace, and press the Build and run button in the top left.
-- After Unreal Editor loads, press Play button.
+- Start Xcode and choose File Open and navigate to `Airsim/Unreal/Environments/Blocks`, 
+- Look for the Play button at the upper left of Xcode and press the Build and run button in the top left.
+- Xcode will take some time to build and then automatically launch the Unreal Editor
+- In the Unreal Editor, press Play button and it will start the simulation.
 
 See [Using APIs](apis.md) and [settings.json](settings.md) for various options available for AirSim usage.
 
