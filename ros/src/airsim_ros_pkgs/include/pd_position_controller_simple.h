@@ -102,7 +102,7 @@ public:
 
 private:
     GeodeticConverter geodetic_converter_;
-    const bool use_eth_lib_for_geodetic_conv_;
+    static constexpr bool use_eth_lib_for_geodetic_conv_ = true;
 
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
