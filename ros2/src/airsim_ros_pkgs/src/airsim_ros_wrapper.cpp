@@ -54,7 +54,7 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
 
     initialize_ros();
 
-    std::cout << "AirsimROSWrapper Initialized!\n";
+    RCLCPP_INFO(nh_->get_logger(), "AirsimROSWrapper Initialized!");
 }
 
 void AirsimROSWrapper::initialize_airsim()
@@ -83,8 +83,7 @@ void AirsimROSWrapper::initialize_airsim()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        std::cout << "Exception raised by the API, something went wrong." << std::endl
-                  << msg << std::endl;
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, something went wrong.\n%s", msg);
     }
 }
 
@@ -325,7 +324,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 template <typename T>
 const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS)
 {
-    std::cout << sensor_type_name << std::endl;
+    RCLCPP_INFO_STREAM(nh_->get_logger() ,sensor_type_name);
     SensorPublisher<T> sensor_publisher;
     sensor_publisher.sensor_name = sensor_name;
     sensor_publisher.sensor_type = sensor_type;
@@ -946,10 +945,8 @@ void AirsimROSWrapper::drone_state_timer_cb()
         update_commands();
     }
     catch (rpc::rpc_error& e) {
-        std::cout << "error" << std::endl;
         std::string msg = e.get_error().as<std::string>();
-        std::cout << "Exception raised by the API:" << std::endl
-                  << msg << std::endl;
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API:\n%s", msg);
     }
 }
 
@@ -1274,8 +1271,7 @@ void AirsimROSWrapper::img_response_timer_cb()
 
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        std::cout << "Exception raised by the API, didn't get image response." << std::endl
-                  << msg << std::endl;
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg);
     }
 }
 
@@ -1294,8 +1290,7 @@ void AirsimROSWrapper::lidar_timer_cb()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        std::cout << "Exception raised by the API, didn't get image response." << std::endl
-                  << msg << std::endl;
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg);
     }
 }
 
@@ -1315,7 +1310,7 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_resp
                                                                                      const std::string frame_id)
 {
     unused(curr_ros_time);
-    std::shared_ptr<sensor_msgs::msg::Image> img_msg_ptr = std::make_shared<sensor_msgs::msg::Image>(); //boost::make_shared<sensor_msgs::msg::Image>();
+    std::shared_ptr<sensor_msgs::msg::Image> img_msg_ptr = std::make_shared<sensor_msgs::msg::Image>();
     img_msg_ptr->data = img_response.image_data_uint8;
     img_msg_ptr->step = img_response.width * 3; // todo un-hardcode. image_width*num_bytes
     img_msg_ptr->header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
