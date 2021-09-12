@@ -31,6 +31,7 @@ llvm-source*/
 CMakeFiles/
 cmake_install.cmake
 CMakeCache.txt
+compile_commands.json
 
 #Unreal Engine
 /UnrealEngine
@@ -279,6 +280,7 @@ ModelManifest.xml
 /MavLinkCom/lib/libMavLinkCom.a
 /Unreal/Plugins/AirSim/Source/AirLib/
 /Unreal/Environments/Blocks/Plugins/AirSim/
+/Unreal/Environments/Blocks/Packaged/
 /enc_temp_folder
 /cmake/MavLinkCom/MavLinkTest/MavLinkTest
 /cmake/MavLinkCom/lib/libMavLinkCom.a
@@ -309,10 +311,7 @@ cmake_build/
 
 /boost
 /[Ee]igen
-/build_debug
-/build_release
-/install_debug
-/install_release
+./build
 /cmake/CPackSourceConfig.cmake
 /cmake/CPackConfig.cmake
 /cmake/arch.c

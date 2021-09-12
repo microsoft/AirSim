@@ -40,14 +40,16 @@ else
     CMAKE=$(which cmake)
 fi
 
-# variable for build output
 if $debug; then
-    build_dir=build_debug
-    install_dir=install_debug
+    buildType="Debug"
 else
-    build_dir=build_release
-    install_dir=install_release
-fi 
+    buildType="Release"
+fi
+
+# variable for build output
+build_dir=./build/build/$buildType
+install_dir=./build/install/$buildType
+
 if [ "$(uname)" == "Darwin" ]; then
     export CC=/usr/local/opt/llvm@8/bin/clang
     export CXX=/usr/local/opt/llvm@8/bin/clang++
@@ -71,11 +73,6 @@ if [[ -d "./cmake/CMakeFiles" ]]; then
     rm -rf "./cmake/CMakeFiles"
 fi
 
-if $debug; then
-    buildType="debug"
-else
-    buildType="release"
-fi
 "$CMAKE" -S./cmake -B$build_dir -DCMAKE_BUILD_TYPE=$buildType -DCMAKE_INSTALL_PREFIX=$install_dir -DFORCE_INSTALL_3RDPARTY=ON \
         || (rm -r $build_dir && exit 1) 
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.11)
 set(SOLUTION_NAME AirsimWrapper)
 
 set(AIRSIM_WRAPPER_VERSION_MAJOR 1)

@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.5.0)
+﻿cmake_minimum_required(VERSION 3.11)
 project(AirLib)
 
 include(GNUInstallDirs)
@@ -16,7 +16,7 @@ file(GLOB_RECURSE ${PROJECT_NAME}_sources
   ${AIRSIM_ROOT}/${PROJECT_NAME}/src/vehicles/multirotor/api/*.cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_sources})
+add_library(${PROJECT_NAME} ${${PROJECT_NAME}_sources})
 add_library(${SOLUTION_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 if (WIN32)
@@ -37,6 +37,7 @@ target_include_directories(${PROJECT_NAME}
 set_target_properties(${PROJECT_NAME} 
   PROPERTIES
     CXX_EXTENSIONS OFF
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
 find_package(rpclib CONFIG REQUIRED)

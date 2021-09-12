@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.11)
 project(MavLinkCom)
 
 include(GNUInstallDirs)
@@ -45,7 +45,7 @@ ELSE()
     LIST(APPEND MAVLINK_SOURCES "${AIRSIM_ROOT}/MavLinkCom/src/impl/windows/WindowsFindSerialPorts.cpp")
 ENDIF()
 
-add_library(MavLinkCom STATIC ${MAVLINK_SOURCES})
+add_library(${PROJECT_NAME} ${MAVLINK_SOURCES})
 add_library(${SOLUTION_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 if (WIN32)
@@ -64,6 +64,14 @@ target_include_directories(${PROJECT_NAME}
       ${AIRSIM_ROOT}/MavLinkCom/common_utils  
     >
 )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
+
+if(BUILD_TESTS)
+  add_subdirectory("MavLinkTest")
+endif()
 
 install(DIRECTORY "${AIRSIM_ROOT}/${PROJECT_NAME}/include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${SOLUTION_NAME}/${PROJECT_NAME}")
 install(TARGETS ${PROJECT_NAME}

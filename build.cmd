@@ -23,13 +23,13 @@ if "%VisualStudioVersion%" lss "16.0" (
 
 if "%1"=="" goto noargs
 if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
-if "%1"=="--Debug" set "buildMode=debug"
-if "%1"=="--Release" set "buildMode=release"
+if "%1"=="--Debug" set "buildMode=Debug"
+if "%1"=="--Release" set "buildMode=Release"
 if "%1"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
 
 if "%2"=="" goto noargs
-if "%2"=="--Debug" set "buildMode=debug"
-if "%2"=="--Release" set "buildMode=release"
+if "%2"=="--Debug" set "buildMode=Debug"
+if "%2"=="--Release" set "buildMode=Release"
 if "%2"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
 
 :noargs
@@ -49,7 +49,6 @@ echo Powershell or pwsh not found, please install it.
 goto :eof
 
 :start
-%powershell% ./install.ps1 -NoFullPolyCar %noFullPolyCar% -BuildMode %buildMode%
 chdir /d %ROOT_DIR% 
 
 REM //---------- Check cmake version ----------
@@ -100,24 +99,22 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.2.0 (
 )
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
-if "%buildMode%" == "" set "buildMode=debug"
+if "%buildMode%" == "" set "buildMode=Debug"
 
 set "buildDir=./build/build/%BuildMode%"
-cmake -S./cmake -B"%buildDir%" -DCMAKE_INSTALL_PREFIX="./install_%BuildMode%" ^
-  -GNinja ^
+set "installDir=./build/install/%BuildMode%"
+cmake -S./cmake -B"%buildDir%" -DCMAKE_INSTALL_PREFIX="%installDir%" ^
+  -DCMAKE_BUILD_TYPE=%BuildMode% ^
   -DFORCE_INSTALL_3RDPARTY=ON ^
-  -DCMAKE_C_COMPILER=clang-cl ^
-  -DCMAKE_CXX_COMPILER=clang-cl ^
   -DBUILD_TESTS=ON ^
-  -DBUILD_EXAMPLES=ON ^
-  -DCMAKE_BUILD_TYPE="%BuildMode%"
+  -DBUILD_EXAMPLES=ON
 
 cmake --build %buildDir% --config %BuildMode%
 if ERRORLEVEL 1 goto :buildfailed
 
 cmake --install %buildDir% --config %BuildMode%
 
-robocopy ".\install_%BuildMode%" ".\Unreal\Plugins\AirSim\Source\AirLib\%BuildMode%" /MIR /xd bin share cmake
+robocopy "%installDir%" ".\Unreal\Plugins\AirSim\Source\AirLib\%BuildMode%" /MIR /xd bin share cmake
 
 REM //---------- done building ----------
 exit /b 0

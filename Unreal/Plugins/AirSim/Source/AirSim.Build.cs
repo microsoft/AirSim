@@ -13,7 +13,7 @@ public class AirSim : ModuleRules
 
     private string Configuration
     {
-        get { return (Target.Configuration == UnrealTargetConfiguration.Debug) ? "debug" : "release"; }
+        get { return (Target.Configuration == UnrealTargetConfiguration.Debug) ? "Debug" : "Release"; }
     }
 
     private string AirLibPath

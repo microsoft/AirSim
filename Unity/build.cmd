@@ -13,9 +13,6 @@ if "%VisualStudioVersion%" lss "16.0" (
 
 REM Visual Studio Generator doesn't work for some unknown reason, Ninja and clang are preferred
 cmake ^
- -G "Ninja"^
- -DCMAKE_C_COMPILER=clang-cl^
- -DCMAKE_CXX_COMPILER=clang-cl^
  -S./AirLibWrapper/AirsimWrapper^
  -B./build/build^
  -DCMAKE_INSTALL_BINDIR=.^
