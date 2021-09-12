@@ -51,7 +51,7 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
     tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(nh_);
     static_tf_pub_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(nh_);
-    
+
     initialize_ros();
 
     std::cout << "AirsimROSWrapper Initialized!\n";
