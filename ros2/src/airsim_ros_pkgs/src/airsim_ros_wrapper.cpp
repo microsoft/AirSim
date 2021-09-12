@@ -324,7 +324,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 template <typename T>
 const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS)
 {
-    RCLCPP_INFO_STREAM(nh_->get_logger() ,sensor_type_name);
+    RCLCPP_INFO_STREAM(nh_->get_logger(), sensor_type_name);
     SensorPublisher<T> sensor_publisher;
     sensor_publisher.sensor_name = sensor_name;
     sensor_publisher.sensor_type = sensor_type;
