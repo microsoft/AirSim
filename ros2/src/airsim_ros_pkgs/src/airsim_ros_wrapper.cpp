@@ -27,7 +27,9 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
 };
 
 AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip)
-    : airsim_settings_parser_(host_ip)
+    : is_used_lidar_timer_cb_queue_(false)
+    , is_used_img_timer_cb_queue_(false)
+    , airsim_settings_parser_(host_ip)
     , host_ip_(host_ip)
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
@@ -36,8 +38,6 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     , nh_lidar_(nh_lidar)
 {
     ros_clock_.clock = rclcpp::Time(0);
-    is_used_lidar_timer_cb_queue_ = false;
-    is_used_img_timer_cb_queue_ = false;
 
     if (AirSimSettings::singleton().simmode_name != AirSimSettings::kSimModeTypeCar) {
         airsim_mode_ = AIRSIM_MODE::DRONE;
