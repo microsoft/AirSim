@@ -101,15 +101,13 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.2.0 (
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
 if "%buildMode%" == "" set "buildMode=Debug"
 
-FOR /F "tokens=* USEBACKQ" %%g IN (`where VsDevCmd.bat`) do (SET "vsdevcmdPath=%%g")
 set "buildDir=./build/build/%BuildMode%"
 set "installDir=./build/install/%BuildMode%"
 cmake -S./cmake -B"%buildDir%" -DCMAKE_INSTALL_PREFIX="%installDir%" ^
   -DCMAKE_BUILD_TYPE=%BuildMode% ^
   -DFORCE_INSTALL_3RDPARTY=ON ^
   -DBUILD_TESTS=ON ^
-  -DBUILD_EXAMPLES=ON ^
-  -DVSDEVCMD="%vsdevcmdPath%"
+  -DBUILD_EXAMPLES=ON
 
 cmake --build %buildDir% --config %BuildMode%
 if ERRORLEVEL 1 goto :buildfailed

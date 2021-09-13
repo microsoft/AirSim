@@ -1,6 +1,6 @@
 macro(init_env)
     if(WIN32) # need to find vsdevcmd.bat
-        set(VSDEVCMD "" CACHE PATH "vsdevcmd.bat path")
+        find_file(VSDEVCMD VsDevCmd.bat)
         if(NOT VSDEVCMD AND NOT VSWHERE_PATH)
             set(DEFAULT_VSWHERE_PATH "$ENV{ProgramFiles\(x86\)}/Microsoft Visual Studio/Installer/vswhere.exe")
             if (EXISTS ${DEFAULT_VSWHERE_PATH})
