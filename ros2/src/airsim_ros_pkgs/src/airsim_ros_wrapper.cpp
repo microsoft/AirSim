@@ -98,7 +98,7 @@ void AirsimROSWrapper::initialize_ros()
     nh_->get_parameter_or("world_frame_id", world_frame_id_, world_frame_id_);
     odom_frame_id_ = world_frame_id_ == AIRSIM_FRAME_ID ? AIRSIM_ODOM_FRAME_ID : ENU_ODOM_FRAME_ID;
     nh_->get_parameter_or("odom_frame_id", odom_frame_id_, odom_frame_id_);
-    isENU_ = !(odom_frame_id_ == AIRSIM_ODOM_FRAME_ID);
+    isENU_ = (odom_frame_id_ == ENU_ODOM_FRAME_ID);
     nh_->get_parameter_or("coordinate_system_enu", isENU_, isENU_);
     vel_cmd_duration_ = 0.05; // todo rosparam
     // todo enforce dynamics constraints in this node as well?
