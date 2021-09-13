@@ -1145,6 +1145,14 @@ void AirsimROSWrapper::set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_s
         camera_setting.rotation.roll = vehicle_setting.rotation.roll;
 }
 
+void AirsimROSWrapper::convert_tf_msg_to_enu(geometry_msgs::msg::TransformStamped& tf_msg)
+{
+    std::swap(tf_msg.transform.translation.x, tf_msg.transform.translation.y);
+    std::swap(tf_msg.transform.rotation.x, tf_msg.transform.rotation.y);
+    tf_msg.transform.translation.z = -tf_msg.transform.translation.z;
+    tf_msg.transform.rotation.z = -tf_msg.transform.rotation.z;
+}
+
 void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting)
 {
     geometry_msgs::msg::TransformStamped vehicle_tf_msg;
@@ -1162,10 +1170,7 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
     vehicle_tf_msg.transform.rotation.w = quat.w();
 
     if (isENU_) {
-        std::swap(vehicle_tf_msg.transform.translation.x, vehicle_tf_msg.transform.translation.y);
-        std::swap(vehicle_tf_msg.transform.rotation.x, vehicle_tf_msg.transform.rotation.y);
-        vehicle_tf_msg.transform.translation.z = -vehicle_tf_msg.transform.translation.z;
-        vehicle_tf_msg.transform.rotation.z = -vehicle_tf_msg.transform.rotation.z;
+        convert_tf_msg_to_enu(vehicle_tf_msg);
     }
 
     vehicle_ros->static_tf_msg_vec.emplace_back(vehicle_tf_msg);
@@ -1185,10 +1190,7 @@ void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std
     lidar_tf_msg.transform.rotation.w = lidar_setting.relative_pose.orientation.w();
 
     if (isENU_) {
-        std::swap(lidar_tf_msg.transform.translation.x, lidar_tf_msg.transform.translation.y);
-        std::swap(lidar_tf_msg.transform.rotation.x, lidar_tf_msg.transform.rotation.y);
-        lidar_tf_msg.transform.translation.z = -lidar_tf_msg.transform.translation.z;
-        lidar_tf_msg.transform.rotation.z = -lidar_tf_msg.transform.rotation.z;
+        convert_tf_msg_to_enu(lidar_tf_msg);
     }
 
     vehicle_ros->static_tf_msg_vec.emplace_back(lidar_tf_msg);
@@ -1210,10 +1212,7 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     static_cam_tf_body_msg.transform.rotation.w = quat.w();
 
     if (isENU_) {
-        std::swap(static_cam_tf_body_msg.transform.translation.x, static_cam_tf_body_msg.transform.translation.y);
-        std::swap(static_cam_tf_body_msg.transform.rotation.x, static_cam_tf_body_msg.transform.rotation.y);
-        static_cam_tf_body_msg.transform.translation.z = -static_cam_tf_body_msg.transform.translation.z;
-        static_cam_tf_body_msg.transform.rotation.z = -static_cam_tf_body_msg.transform.rotation.z;
+        convert_tf_msg_to_enu(static_cam_tf_body_msg);
     }
 
     geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
@@ -1388,10 +1387,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     cam_tf_body_msg.transform.rotation.w = img_response.camera_orientation.w();
 
     if (isENU_) {
-        std::swap(cam_tf_body_msg.transform.translation.x, cam_tf_body_msg.transform.translation.y);
-        std::swap(cam_tf_body_msg.transform.rotation.x, cam_tf_body_msg.transform.rotation.y);
-        cam_tf_body_msg.transform.translation.z = -cam_tf_body_msg.transform.translation.z;
-        cam_tf_body_msg.transform.rotation.z = -cam_tf_body_msg.transform.rotation.z;
+        convert_tf_msg_to_enu(cam_tf_body_msg);
     }
 
     geometry_msgs::msg::TransformStamped cam_tf_optical_msg;
