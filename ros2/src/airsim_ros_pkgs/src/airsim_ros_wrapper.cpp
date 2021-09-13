@@ -36,6 +36,7 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     , nh_(nh)
     , nh_img_(nh_img)
     , nh_lidar_(nh_lidar)
+    , isENU_(false)
 {
     ros_clock_.clock = rclcpp::Time(0);
 
@@ -643,24 +644,24 @@ airsim_interfaces::msg::CarState AirsimROSWrapper::get_roscarstate_msg_from_car_
     return state_msg;
 }
 
-nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const
+nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_kinematic_state(const msr::airlib::Kinematics::State& kinematics_estimated) const
 {
     nav_msgs::msg::Odometry odom_msg;
 
-    odom_msg.pose.pose.position.x = car_state.getPosition().x();
-    odom_msg.pose.pose.position.y = car_state.getPosition().y();
-    odom_msg.pose.pose.position.z = car_state.getPosition().z();
-    odom_msg.pose.pose.orientation.x = car_state.getOrientation().x();
-    odom_msg.pose.pose.orientation.y = car_state.getOrientation().y();
-    odom_msg.pose.pose.orientation.z = car_state.getOrientation().z();
-    odom_msg.pose.pose.orientation.w = car_state.getOrientation().w();
+    odom_msg.pose.pose.position.x = kinematics_estimated.pose.position.x();
+    odom_msg.pose.pose.position.y = kinematics_estimated.pose.position.y();
+    odom_msg.pose.pose.position.z = kinematics_estimated.pose.position.z();
+    odom_msg.pose.pose.orientation.x = kinematics_estimated.pose.orientation.x();
+    odom_msg.pose.pose.orientation.y = kinematics_estimated.pose.orientation.y();
+    odom_msg.pose.pose.orientation.z = kinematics_estimated.pose.orientation.z();
+    odom_msg.pose.pose.orientation.w = kinematics_estimated.pose.orientation.w();
 
-    odom_msg.twist.twist.linear.x = car_state.kinematics_estimated.twist.linear.x();
-    odom_msg.twist.twist.linear.y = car_state.kinematics_estimated.twist.linear.y();
-    odom_msg.twist.twist.linear.z = car_state.kinematics_estimated.twist.linear.z();
-    odom_msg.twist.twist.angular.x = car_state.kinematics_estimated.twist.angular.x();
-    odom_msg.twist.twist.angular.y = car_state.kinematics_estimated.twist.angular.y();
-    odom_msg.twist.twist.angular.z = car_state.kinematics_estimated.twist.angular.z();
+    odom_msg.twist.twist.linear.x = kinematics_estimated.twist.linear.x();
+    odom_msg.twist.twist.linear.y = kinematics_estimated.twist.linear.y();
+    odom_msg.twist.twist.linear.z = kinematics_estimated.twist.linear.z();
+    odom_msg.twist.twist.angular.x = kinematics_estimated.twist.angular.x();
+    odom_msg.twist.twist.angular.y = kinematics_estimated.twist.angular.y();
+    odom_msg.twist.twist.angular.z = kinematics_estimated.twist.angular.z();
 
     if (isENU_) {
         std::swap(odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y);
@@ -676,37 +677,14 @@ nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_car_state(const msr:
     return odom_msg;
 }
 
+nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const
+{
+    return get_odom_msg_from_kinematic_state(car_state.kinematics_estimated);
+}
+
 nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const
 {
-    nav_msgs::msg::Odometry odom_msg;
-
-    odom_msg.pose.pose.position.x = drone_state.getPosition().x();
-    odom_msg.pose.pose.position.y = drone_state.getPosition().y();
-    odom_msg.pose.pose.position.z = drone_state.getPosition().z();
-    odom_msg.pose.pose.orientation.x = drone_state.getOrientation().x();
-    odom_msg.pose.pose.orientation.y = drone_state.getOrientation().y();
-    odom_msg.pose.pose.orientation.z = drone_state.getOrientation().z();
-    odom_msg.pose.pose.orientation.w = drone_state.getOrientation().w();
-
-    odom_msg.twist.twist.linear.x = drone_state.kinematics_estimated.twist.linear.x();
-    odom_msg.twist.twist.linear.y = drone_state.kinematics_estimated.twist.linear.y();
-    odom_msg.twist.twist.linear.z = drone_state.kinematics_estimated.twist.linear.z();
-    odom_msg.twist.twist.angular.x = drone_state.kinematics_estimated.twist.angular.x();
-    odom_msg.twist.twist.angular.y = drone_state.kinematics_estimated.twist.angular.y();
-    odom_msg.twist.twist.angular.z = drone_state.kinematics_estimated.twist.angular.z();
-
-    if (isENU_) {
-        std::swap(odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y);
-        odom_msg.pose.pose.position.z = -odom_msg.pose.pose.position.z;
-        std::swap(odom_msg.pose.pose.orientation.x, odom_msg.pose.pose.orientation.y);
-        odom_msg.pose.pose.orientation.z = -odom_msg.pose.pose.orientation.z;
-        std::swap(odom_msg.twist.twist.linear.x, odom_msg.twist.twist.linear.y);
-        odom_msg.twist.twist.linear.z = -odom_msg.twist.twist.linear.z;
-        std::swap(odom_msg.twist.twist.angular.x, odom_msg.twist.twist.angular.y);
-        odom_msg.twist.twist.angular.z = -odom_msg.twist.twist.angular.z;
-    }
-
-    return odom_msg;
+    return get_odom_msg_from_kinematic_state(drone_state.kinematics_estimated);
 }
 
 // https://docs.ros.org/jade/api/sensor_msgs/html/point__cloud__conversion_8h_source.html#l00066
