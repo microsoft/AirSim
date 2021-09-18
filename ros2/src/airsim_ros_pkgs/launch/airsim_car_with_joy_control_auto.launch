@@ -1,0 +1,27 @@
+<launch>
+	<arg name="host" default="localhost" />
+	
+	<node name="airsim_node" pkg="airsim_ros_pkgs" type="airsim_node" output="screen">
+	<!-- <node pkg="nodelet" type="nodelet" name="airsim_nodelet_manager" args="manager" output="screen" /> -->
+	<!-- <node pkg="nodelet" type="nodelet" name="airsim_nodelet" args="standalone airsim_ros_pkgs/airsim_ros_nodelet airsim_nodelet_manager" output="screen"> -->
+
+		<param name="is_vulkan" type="bool" value="true" /> 
+		<!-- ROS timer rates -->
+		<param name="update_airsim_img_response_every_n_sec" type="double" value="0.05" /> 
+		<param name="update_airsim_control_every_n_sec" type="double" value="0.01" />
+		<param name="update_lidar_every_n_sec" type="double" value="0.01" />
+
+		<param name="world_frame_id" type="string" value="world_enu"/>
+		<param name="coordinate_system_enu" type="boolean" value="1"/>
+		<param name="host_ip" type="string" value="$(arg host)" />
+	</node>
+
+	<!-- Joystick control -->
+	<node name="joy_node" pkg="joy" type="joy_node"/>
+	<node name="car_joy" pkg="airsim_ros_pkgs" type="car_joy">
+		<param name="manual_transmission" type="bool" value="false"/>
+	</node>
+
+	<!-- Static transforms -->
+	<include file="$(find airsim_ros_pkgs)/launch/static_transforms.launch"/>
+</launch>
