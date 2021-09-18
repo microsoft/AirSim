@@ -153,7 +153,7 @@ void AdHocConnectionImpl::sendMessage(const std::vector<uint8_t>& msg)
 
 int AdHocConnectionImpl::subscribe(AdHocMessageHandler handler)
 {
-    MessageHandlerEntry entry = { static_cast<int>(listeners.size() + 1), handler = handler };
+    MessageHandlerEntry entry{ static_cast<int>(listeners.size() + 1), handler };
     std::lock_guard<std::mutex> guard(listener_mutex);
     listeners.push_back(entry);
     snapshot_stale = true;

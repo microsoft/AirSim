@@ -355,7 +355,7 @@ void MavLinkConnectionImpl::sendMessage(const MavLinkMessageBase& msg)
 
 int MavLinkConnectionImpl::subscribe(MessageHandler handler)
 {
-    MessageHandlerEntry entry = { static_cast<int>(listeners.size() + 1), handler = handler };
+    MessageHandlerEntry entry{ static_cast<int>(listeners.size() + 1), handler };
     std::lock_guard<std::mutex> guard(listener_mutex);
     listeners.push_back(entry);
     snapshot_stale = true;

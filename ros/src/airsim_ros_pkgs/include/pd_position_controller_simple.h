@@ -11,6 +11,7 @@ STRICT_MODE_OFF //todo what does this do?
 
 #include "common/common_utils/FileSystem.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
+#include "common/GeodeticConverter.hpp"
 
 #include <ros/ros.h>
 #include <tf2/LinearMath/Matrix3x3.h>
@@ -22,7 +23,6 @@ STRICT_MODE_OFF //todo what does this do?
 #include <airsim_ros_pkgs/SetLocalPosition.h>
 #include <airsim_ros_pkgs/SetGPSPosition.h>
 #include <airsim_ros_pkgs/GPSYaw.h>
-#include <geodetic_conv.hpp>
 #include <math_common.h>
 #include <utils.h>
 
@@ -101,8 +101,8 @@ public:
     void check_reached_goal();
 
 private:
-    geodetic_converter::GeodeticConverter geodetic_converter_;
-    bool use_eth_lib_for_geodetic_conv_;
+    GeodeticConverter geodetic_converter_;
+    static constexpr bool use_eth_lib_for_geodetic_conv_ = true;
 
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
