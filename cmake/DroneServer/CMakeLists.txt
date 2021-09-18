@@ -5,20 +5,18 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake-modules")
 INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../cmake-modules/CommonSetup.cmake")
 CommonSetup()
 
-IncludeEigen()
-
 SetupConsoleBuild()
-
-include_directories(
-  ${AIRSIM_ROOT}/DroneServer
-  ${AIRSIM_ROOT}/MavLinkCom/include
-  ${RPC_LIB_INCLUDES}
-  ${AIRSIM_ROOT}/AirLib/include
-)
 
 AddExecutableSource()
 			
-CommonTargetLink()
-target_link_libraries(${PROJECT_NAME} AirLib)
-target_link_libraries(${PROJECT_NAME} MavLinkCom)
-target_link_libraries(${PROJECT_NAME} ${RPC_LIB})
+target_include_directories(${PROJECT_NAME} PRIVATE
+  $<BUILD_INTERFACE:${AIRSIM_ROOT}/DroneServer>
+)
+target_link_libraries(${PROJECT_NAME} PRIVATE AirLib)
+
+install(TARGETS ${PROJECT_NAME}
+	EXPORT ${SOLUTION_NAME}-export
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)

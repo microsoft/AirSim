@@ -29,14 +29,6 @@ done
 
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
-# check for rpclib
-RPC_VERSION_FOLDER="rpclib-2.3.0"
-if [ ! -d "./external/rpclib/$RPC_VERSION_FOLDER" ]; then
-    echo "ERROR: new version of AirSim requires newer rpclib."
-    echo "please run setup.sh first and then run build.sh again."
-    exit 1
-fi
-
 # check for local cmake build created by setup.sh
 if [ -d "./cmake_build" ]; then
     if [ "$(uname)" == "Darwin" ]; then
@@ -48,12 +40,16 @@ else
     CMAKE=$(which cmake)
 fi
 
-# variable for build output
 if $debug; then
-    build_dir=build_debug
+    buildType="Debug"
 else
-    build_dir=build_release
-fi 
+    buildType="Release"
+fi
+
+# variable for build output
+build_dir=./build/build/$buildType
+install_dir=./build/install/$buildType
+
 if [ "$(uname)" == "Darwin" ]; then
     export CC=/usr/local/opt/llvm@8/bin/clang
     export CXX=/usr/local/opt/llvm@8/bin/clang++
@@ -67,12 +63,6 @@ else
     fi
 fi
 
-#install EIGEN library
-if [[ !(-d "./AirLib/deps/eigen3/Eigen") ]]; then
-    echo "### Eigen is not installed. Please run setup.sh first."
-    exit 1
-fi
-
 echo "putting build in $build_dir folder, to clean, just delete the directory..."
 
 # this ensures the cmake files will be built in our $build_dir instead.
@@ -83,50 +73,19 @@ if [[ -d "./cmake/CMakeFiles" ]]; then
     rm -rf "./cmake/CMakeFiles"
 fi
 
+"$CMAKE" -S./cmake -B$build_dir -DCMAKE_BUILD_TYPE=$buildType -DCMAKE_INSTALL_PREFIX=$install_dir -DFORCE_INSTALL_3RDPARTY=ON \
+        || (rm -r $build_dir && exit 1) 
 
-
-if [[ ! -d $build_dir ]]; then
-    mkdir -p $build_dir
-fi
-
-pushd $build_dir  >/dev/null
-if $debug; then
-    folder_name="Debug"
-    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug \
-        || (popd && rm -r $build_dir && exit 1)   
-else
-    folder_name="Release"
-    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Release \
-        || (popd && rm -r $build_dir && exit 1)
-fi
-popd >/dev/null
-
-
-pushd $build_dir  >/dev/null
 # final linking of the binaries can fail due to a missing libc++abi library
 # (happens on Fedora, see https://bugzilla.redhat.com/show_bug.cgi?id=1332306).
 # So we only build the libraries here for now
-make -j`nproc`
-popd >/dev/null
+"$CMAKE" --build $build_dir -j`nproc` --config $buildType
 
-mkdir -p AirLib/lib/x64/$folder_name
-mkdir -p AirLib/deps/rpclib/lib
-mkdir -p AirLib/deps/MavLinkCom/lib
-cp $build_dir/output/lib/libAirLib.a AirLib/lib
-cp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
-cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
+"$CMAKE" --install $build_dir  --config $buildType
 
-# Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
-rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/$folder_name
-rsync -a --delete external/rpclib/$RPC_VERSION_FOLDER/include AirLib/deps/rpclib
-rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
-rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
-rm -rf Unreal/Plugins/AirSim/Source/AirLib/src
-
-# Update Blocks project
-Unreal/Environments/Blocks/clean.sh
-mkdir -p Unreal/Environments/Blocks/Plugins
-rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/Blocks/Plugins
+# Update AirLib with new binaries
+mkdir -p ./Unreal/Plugins/AirSim/Source/AirLib/$buildType
+rsync -a --delete $install_dir/ ./Unreal/Plugins/AirSim/Source/AirLib/$buildType/ --exclude=bin --exclude=share --exclude=cmake
 
 set +x
 
