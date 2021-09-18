@@ -16,3 +16,6 @@ Plugins/
 
 # avoid checking uproject because this is usually just version change
 *.uproject
+
+# avoid checking in MacOS XCode assets
+*.xcworkspace
