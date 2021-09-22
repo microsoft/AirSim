@@ -264,10 +264,6 @@ __pragma(warning(disable : 4239))
         vector<uint8_t> RpcLibClientBase::simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name, bool external)
         {
             vector<uint8_t> result = pimpl_->client.call("simGetImage", camera_name, type, vehicle_name, external).as<vector<uint8_t>>();
-            if (result.size() == 1) {
-                // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-                result.clear();
-            }
             return result;
         }
 
@@ -275,11 +271,6 @@ __pragma(warning(disable : 4239))
         std::vector<std::string> RpcLibClientBase::simGetPresetLensSettings(const std::string& camera_name, const std::string& vehicle_name, bool external)
         {
             vector<std::string> result = pimpl_->client.call("simGetPresetLensSettings", camera_name, vehicle_name, external).as<vector<std::string>>();
-
-            if (result.size() == 1) {
-                // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-                result.clear();
-            }
             return result;
         }
 
@@ -297,11 +288,6 @@ __pragma(warning(disable : 4239))
         std::vector<std::string> RpcLibClientBase::simGetPresetFilmbackSettings(const std::string& camera_name, const std::string& vehicle_name, bool external)
         {
             vector<std::string> result = pimpl_->client.call("simGetPresetFilmbackSettings", camera_name, vehicle_name, external).as<vector<std::string>>();
-
-            if (result.size() == 1) {
-                // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-                result.clear();
-            }
             return result;
         }
 

@@ -155,17 +155,11 @@ namespace airlib
 
         //CinemAirSim
         pimpl_->server.bind("simGetPresetLensSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> vector<string> {
-            auto result = getWorldSimApi()->getPresetLensSettings(CameraDetails(camera_name, vehicle_name, external));
-            if (result.size() == 0) {
-                // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-                result.push_back("");
-            }
-            return result;
+            return getWorldSimApi()->getPresetLensSettings(CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simGetLensSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
-            auto result = getWorldSimApi()->getLensSettings(CameraDetails(camera_name, vehicle_name, external));
-            return result;
+            return getWorldSimApi()->getLensSettings(CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simSetPresetLensSettings", [&](const std::string preset_lens_settings, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
@@ -173,12 +167,7 @@ namespace airlib
         });
 
         pimpl_->server.bind("simGetPresetFilmbackSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> vector<string> {
-            auto result = getWorldSimApi()->getPresetFilmbackSettings(CameraDetails(camera_name, vehicle_name, external));
-            if (result.size() == 0) {
-                // rpclib has a bug with serializing empty vectors, so we return a 1 byte vector instead.
-                result.push_back("");
-            }
-            return result;
+            return getWorldSimApi()->getPresetFilmbackSettings(CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simSetPresetFilmbackSettings", [&](const std::string preset_filmback_settings, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
@@ -186,13 +175,12 @@ namespace airlib
         });
 
         pimpl_->server.bind("simGetFilmbackSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
-            auto result = getWorldSimApi()->getFilmbackSettings(CameraDetails(camera_name, vehicle_name, external));
-            return result;
+            return getWorldSimApi()->getFilmbackSettings(CameraDetails(camera_name, vehicle_name, external));
         });
 
         pimpl_->server.bind("simSetFilmbackSettings", [&](const float width, const float heigth, const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
-            auto result = getWorldSimApi()->setFilmbackSettings(width, heigth, CameraDetails(camera_name, vehicle_name, external));
-            return result;
+            return getWorldSimApi()->setFilmbackSettings(width, heigth, CameraDetails(camera_name, vehicle_name, external));
+            ;
         });
 
         pimpl_->server.bind("simGetFocalLength", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
@@ -228,8 +216,7 @@ namespace airlib
         });
 
         pimpl_->server.bind("simGetCurrentFieldOfView", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
-            auto result = getWorldSimApi()->getCurrentFieldOfView(CameraDetails(camera_name, vehicle_name, external));
-            return result;
+            return getWorldSimApi()->getCurrentFieldOfView(CameraDetails(camera_name, vehicle_name, external));
         });
         //end CinemAirSim
 

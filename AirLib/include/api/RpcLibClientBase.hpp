@@ -114,18 +114,18 @@ namespace airlib
         //CinemAirSim
         std::vector<std::string> simGetPresetLensSettings(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         std::string simGetLensSettings(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
-        void simSetPresetLensSettings(const std::string& preset_lens_settings = "", const std::string& camera_name = "", const std::string& vehicle_name = "", bool external = false);
+        void simSetPresetLensSettings(const std::string& preset_lens_settings, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         std::vector<std::string> simGetPresetFilmbackSettings(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
-        void simSetPresetFilmbackSettings(const std::string& preset_filmback_settings = "", const std::string& camera_name = "", const std::string& vehicle_name = "", bool external = false);
+        void simSetPresetFilmbackSettings(const std::string& preset_filmback_settings, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         std::string simGetFilmbackSettings(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         float simSetFilmbackSettings(const float sensor_width, const float sensor_heigth, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         float simGetFocalLength(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
-        void simSetFocalLength(float focal_length, const std::string& camera_name = "", const std::string& vehicle_name = "", bool external = false);
+        void simSetFocalLength(float focal_length, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         void simEnableManualFocus(const bool enable, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         float simGetFocusDistance(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
-        void simSetFocusDistance(float focus_distance, const std::string& camera_name = "", const std::string& vehicle_name = "", bool external = false);
+        void simSetFocusDistance(float focus_distance, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         float simGetFocusAperture(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
-        void simSetFocusAperture(const float focus_aperture, const std::string& camera_name = "", const std::string& vehicle_name = "", bool external = false);
+        void simSetFocusAperture(const float focus_aperture, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         void simEnableFocusPlane(const bool enable, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         std::string simGetCurrentFieldOfView(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         //end CinemAirSim

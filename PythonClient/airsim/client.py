@@ -16,7 +16,7 @@ class VehicleClient:
             ip = "127.0.0.1"
         self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = timeout_value, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
 
-#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - Common vehicle APIs -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+#----------------------------------- Common vehicle APIs ---------------------------------------------
     def reset(self):
         """
         Reset the vehicle to its original starting state
@@ -1041,7 +1041,7 @@ class VehicleClient:
         """
         return self.client.call('getSettingsString')
 
-#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - Multirotor APIs -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+#----------------------------------- Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):
         super(MultirotorClient, self).__init__(ip, port, timeout_value)
@@ -1501,7 +1501,7 @@ class MultirotorClient(VehicleClient, object):
         return RotorStates.from_msgpack(self.client.call('getRotorStates', vehicle_name))
     getRotorStates.__annotations__ = {'return': RotorStates}
 
-#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - Car APIs -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+#----------------------------------- Car APIs ---------------------------------------------
 class CarClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):
         super(CarClient, self).__init__(ip, port, timeout_value)

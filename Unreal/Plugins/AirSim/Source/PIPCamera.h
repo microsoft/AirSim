@@ -50,7 +50,7 @@ public:
     void setPresetFilmbackSettings(std::string preset_string);
     std::string getLensSettings();
     std::string getFilmbackSettings();
-    float setFilmbackSettings(float sensor_width, float sensot_height);
+    float setFilmbackSettings(float sensor_width, float sensor_height);
     float getFocalLength();
     void setFocalLength(float focal_length);
     void enableManualFocus(bool enable);
@@ -61,8 +61,8 @@ public:
     void enableFocusPlane(bool enable);
     std::string getCurrentFieldOfView();
 
-    void CopyCameraSettingsToAllSceneCapture(UCameraComponent* camera);
-    void CopyCameraSettingsToSceneCapture(UCameraComponent* src, USceneCaptureComponent2D* dst);
+    void copyCameraSettingsToAllSceneCapture(UCameraComponent* camera);
+    void copyCameraSettingsToSceneCapture(UCameraComponent* src, USceneCaptureComponent2D* dst);
     //end CinemAirSim methods
 
     void setCameraTypeEnabled(ImageType type, bool enabled);
