@@ -13,7 +13,7 @@ public:
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
     typedef msr::airlib::CameraDetails CameraDetails;
 
-    WorldSimApi(SimModeBase* simmode, std::string vehicle_name);
+    WorldSimApi(SimModeBase* simmode);
     virtual ~WorldSimApi();
 
     // ------ Level setting apis ----- //
@@ -85,25 +85,6 @@ public:
                                                                    const std::string& vehicle_name, bool external) const override;
     virtual std::vector<uint8_t> getImage(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) const override;
 
-    //CinemAirSim
-    virtual std::vector<std::string> getPresetLensSettings(const CameraDetails& camera_details) override;
-    virtual std::string getLensSettings(const CameraDetails& camera_details) override;
-    virtual void setPresetLensSettings(std::string preset, const CameraDetails& camera_details) override;
-    virtual std::vector<std::string> getPresetFilmbackSettings(const CameraDetails& camera_details) override;
-    virtual void setPresetFilmbackSettings(std::string preset, const CameraDetails& camera_details) override;
-    virtual std::string getFilmbackSettings(const CameraDetails& camera_details) override;
-    virtual float setFilmbackSettings(float width, float height, const CameraDetails& camera_details) override;
-    virtual float getFocalLength(const CameraDetails& camera_details) override;
-    virtual void setFocalLength(float focal_length, const CameraDetails& camera_details) override;
-    virtual void enableManualFocus(bool enable, const CameraDetails& camera_details) override;
-    virtual float getFocusDistance(const CameraDetails& camera_details) override;
-    virtual void setFocusDistance(float focus_distance, const CameraDetails& camera_details) override;
-    virtual float getFocusAperture(const CameraDetails& camera_details) override;
-    virtual void setFocusAperture(float focus_aperture, const CameraDetails& camera_details) override;
-    virtual void enableFocusPlane(bool enable, const CameraDetails& camera_details) override;
-    virtual std::string getCurrentFieldOfView(const CameraDetails& camera_details) override;
-    //end CinemAirSim
-
     virtual void addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details) override;
     virtual void setDetectionFilterRadius(ImageCaptureBase::ImageType image_type, float radius_cm, const CameraDetails& camera_details) override;
     virtual void clearDetectionMeshNames(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) override;
@@ -111,5 +92,4 @@ public:
 
 private:
     SimModeBase* simmode_;
-    std::string vehicle_name_;
 };

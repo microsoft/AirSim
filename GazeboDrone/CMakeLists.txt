@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(GazeboDrone)
 
 set(AIRSIM_ROOT ..)
-set(CMAKE_CXX_COMPILER /usr/bin/g++)
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 11)

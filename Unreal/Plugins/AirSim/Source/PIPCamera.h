@@ -11,17 +11,13 @@
 #include "NedTransform.h"
 #include "DetectionComponent.h"
 
-//CinemAirSim
-#include <CineCameraActor.h>
-#include <CineCameraComponent.h>
-
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "PIPCamera.generated.h"
 
 UCLASS()
-class AIRSIM_API APIPCamera : public ACineCameraActor //CinemAirSim
+class AIRSIM_API APIPCamera : public ACameraActor
 {
     GENERATED_BODY()
 
@@ -30,7 +26,7 @@ public:
     typedef msr::airlib::AirSimSettings AirSimSettings;
     typedef AirSimSettings::CameraSetting CameraSetting;
 
-    APIPCamera(const FObjectInitializer& ObjectInitializer); //CinemAirSim
+    APIPCamera();
 
     virtual void PostInitializeComponents() override;
     virtual void BeginPlay() override;
@@ -42,28 +38,6 @@ public:
     void disableAllPIP();
     void disableMain();
     void onViewModeChanged(bool nodisplay);
-
-    //CinemAirSim methods
-    std::vector<std::string> getPresetLensSettings();
-    void setPresetLensSettings(std::string preset_string);
-    std::vector<std::string> getPresetFilmbackSettings();
-    void setPresetFilmbackSettings(std::string preset_string);
-    std::string getLensSettings();
-    std::string getFilmbackSettings();
-    float setFilmbackSettings(float sensor_width, float sensor_height);
-    float getFocalLength();
-    void setFocalLength(float focal_length);
-    void enableManualFocus(bool enable);
-    float getFocusDistance();
-    void setFocusDistance(float focus_distance);
-    float getFocusAperture();
-    void setFocusAperture(float focus_aperture);
-    void enableFocusPlane(bool enable);
-    std::string getCurrentFieldOfView();
-
-    void copyCameraSettingsToAllSceneCapture(UCameraComponent* camera);
-    void copyCameraSettingsToSceneCapture(UCameraComponent* src, USceneCaptureComponent2D* dst);
-    //end CinemAirSim methods
 
     void setCameraTypeEnabled(ImageType type, bool enabled);
     bool getCameraTypeEnabled(ImageType type) const;
@@ -95,9 +69,8 @@ private: //members
     UPROPERTY()
     TArray<UDetectionComponent*> detections_;
 
-    //CinemAirSim
     UPROPERTY()
-    UCineCameraComponent* camera_;
+    UCameraComponent* camera_;
     //TMap<int, UMaterialInstanceDynamic*> noise_materials_;
     //below is needed because TMap doesn't work with UPROPERTY, but we do have -ve index
     UPROPERTY()
@@ -130,6 +103,5 @@ private: //methods
     void setNoiseMaterial(int image_type, UObject* outer, FPostProcessSettings& obj, const NoiseSetting& settings);
     void setDistortionMaterial(int image_type, UObject* outer, FPostProcessSettings& obj);
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
-    //CinemAirSim
-    static void updateCameraSetting(UCineCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
+    static void updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
 };

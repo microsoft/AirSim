@@ -274,7 +274,9 @@ For example, the `Cameras` element below records scene & segmentation images for
     { "CameraName": "0", "ImageType": 5, "PixelsAsFloat": false, "VehicleName": "Car1", "Compress": true },
     { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "VehicleName": "Car2", "Compress": true }
 ]
-``` 
+```
+
+Check out [Modifying Recording Data](modify_recording_data.md) for details on how to modify the kinematics data being recorded.
 
 ## ClockSpeed
 This setting allows you to set the speed of simulation clock with respect to wall clock. For example, value of 5.0 would mean simulation clock has 5 seconds elapsed when wall clock has 1 second elapsed (i.e. simulation is running faster). The value of 0.1 means that simulation clock is 10X slower than wall clock. The value of 1 means simulation is running in real time. It is important to realize that quality of simulation may decrease as the simulation clock runs faster. You might see artifacts like object moving past obstacles because collision is not detected. However slowing down simulation clock (i.e. values < 1.0) generally improves the quality of simulation.

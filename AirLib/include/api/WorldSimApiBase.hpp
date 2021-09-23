@@ -100,25 +100,6 @@ namespace airlib
                                                                        const std::string& vehicle_name, bool external) const = 0;
         virtual std::vector<uint8_t> getImage(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) const = 0;
 
-        //CinemAirSim
-        virtual std::vector<std::string> getPresetLensSettings(const CameraDetails& camera_details) = 0;
-        virtual std::string getLensSettings(const CameraDetails& camera_details) = 0;
-        virtual void setPresetLensSettings(std::string, const CameraDetails& camera_details) = 0;
-        virtual std::vector<std::string> getPresetFilmbackSettings(const CameraDetails& camera_details) = 0;
-        virtual void setPresetFilmbackSettings(std::string, const CameraDetails& camera_details) = 0;
-        virtual std::string getFilmbackSettings(const CameraDetails& camera_details) = 0;
-        virtual float setFilmbackSettings(float width, float height, const CameraDetails& camera_details) = 0;
-        virtual float getFocalLength(const CameraDetails& camera_details) = 0;
-        virtual void setFocalLength(float focal_length, const CameraDetails& camera_details) = 0;
-        virtual void enableManualFocus(bool enable, const CameraDetails& camera_details) = 0;
-        virtual float getFocusDistance(const CameraDetails& camera_details) = 0;
-        virtual void setFocusDistance(float focus_distance, const CameraDetails& camera_details) = 0;
-        virtual float getFocusAperture(const CameraDetails& camera_details) = 0;
-        virtual void setFocusAperture(float focus_aperture, const CameraDetails& camera_details) = 0;
-        virtual void enableFocusPlane(bool enable, const CameraDetails& camera_details) = 0;
-        virtual std::string getCurrentFieldOfView(const CameraDetails& camera_details) = 0;
-        //end CinemAirSim
-
         virtual void addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details) = 0;
         virtual void setDetectionFilterRadius(ImageCaptureBase::ImageType image_type, float radius_cm, const CameraDetails& camera_details) = 0;
         virtual void clearDetectionMeshNames(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) = 0;

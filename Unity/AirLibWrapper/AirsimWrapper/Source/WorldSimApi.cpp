@@ -3,8 +3,8 @@
 #include "PInvokeWrapper.h"
 #include "UnityUtilities.hpp"
 
-WorldSimApi::WorldSimApi(SimModeBase* simmode, std::string vehicle_name)
-    : simmode_(simmode), vehicle_name_(vehicle_name)
+WorldSimApi::WorldSimApi(SimModeBase* simmode)
+    : simmode_(simmode)
 {
 }
 
@@ -55,7 +55,7 @@ int WorldSimApi::getSegmentationObjectID(const std::string& mesh_name) const
 
 void WorldSimApi::printLogMessage(const std::string& message, const std::string& message_param, unsigned char severity)
 {
-    PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
+    PrintLogMessage(message.c_str(), message_param.c_str(), "", severity);
 }
 
 std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
@@ -328,138 +328,6 @@ std::vector<uint8_t> WorldSimApi::getImage(ImageCaptureBase::ImageType image_typ
     else
         return std::vector<uint8_t>();
 }
-
-//CinemAirSim
-std::vector<std::string> WorldSimApi::getPresetLensSettings(const CameraDetails& camera_details)
-{
-    std::vector<std::string> result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "getPresetLensSettings is not supported on unity")
-                                    .c_str());
-    return result;
-}
-
-std::string WorldSimApi::getLensSettings(const CameraDetails& camera_details)
-{
-    std::string result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "getLensSettings is not supported on unity")
-                                    .c_str());
-    return result;
-}
-
-void WorldSimApi::setPresetLensSettings(std::string preset, const CameraDetails& camera_details)
-{
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "setPresetLensSettings is not supported on unity")
-                                    .c_str());
-}
-
-std::vector<std::string> WorldSimApi::getPresetFilmbackSettings(const CameraDetails& camera_details)
-{
-    std::vector<std::string> result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "getPresetFilmbackSettings is not supported on unity")
-                                    .c_str());
-    return result;
-}
-
-void WorldSimApi::setPresetFilmbackSettings(std::string preset, const CameraDetails& camera_details)
-{
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "setPresetFilmbackSettings is not supported on unity")
-                                    .c_str());
-}
-
-std::string WorldSimApi::getFilmbackSettings(const CameraDetails& camera_details)
-{
-    std::string result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "getFilmbackSettings is not supported on unity")
-                                    .c_str());
-    return result;
-}
-
-float WorldSimApi::setFilmbackSettings(float width, float height, const CameraDetails& camera_details)
-{
-    float result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "setFilmbackSettings is not supported on unity")
-                                    .c_str());
-    return result;
-}
-
-float WorldSimApi::getFocalLength(const CameraDetails& camera_details)
-{
-    float result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "getFocalLength is not supported on unity")
-                                    .c_str());
-    return result;
-}
-
-void WorldSimApi::setFocalLength(float focal_length, const CameraDetails& camera_details)
-{
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "setFocalLength is not supported on unity")
-                                    .c_str());
-}
-
-void WorldSimApi::enableManualFocus(bool enable, const CameraDetails& camera_details)
-{
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "enableManualFocus is not supported on unity")
-                                    .c_str());
-}
-
-float WorldSimApi::getFocusDistance(const CameraDetails& camera_details)
-{
-    float result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "getFocusDistance is not supported on unity")
-                                    .c_str());
-    return result;
-}
-
-void WorldSimApi::setFocusDistance(float focus_distance, const CameraDetails& camera_details)
-{
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "setFocusDistance is not supported on unity")
-                                    .c_str());
-}
-
-float WorldSimApi::getFocusAperture(const CameraDetails& camera_details)
-{
-    float result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "getFocusAperture is not supported on unity")
-                                    .c_str());
-    return result;
-}
-
-void WorldSimApi::setFocusAperture(float focus_aperture, const CameraDetails& camera_details)
-{
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "setFocusAperture is not supported on unity")
-                                    .c_str());
-}
-
-void WorldSimApi::enableFocusPlane(bool enable, const CameraDetails& camera_details)
-{
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "enableFocusPlane is not supported on unity")
-                                    .c_str());
-}
-
-std::string WorldSimApi::getCurrentFieldOfView(const CameraDetails& camera_details)
-{
-    std::string result;
-    throw std::invalid_argument(common_utils::Utils::stringf(
-                                    "getCurrentFieldOfView is not supported on unity")
-                                    .c_str());
-    return result;
-}
-//End CinemAirSim
 
 void WorldSimApi::addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details)
 {
