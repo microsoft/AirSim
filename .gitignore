@@ -361,6 +361,10 @@ xcuserdata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
 # Unity
 /Unity/UnityDemo/Assembly-CSharp.csproj
 /Unity/UnityDemo/UnityDemo.sln
@@ -392,3 +396,6 @@ build_docs/
 
 # api docs
 PythonClient/docs/_build
+
+# Docker
+/docker/Blocks/
