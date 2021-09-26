@@ -25,7 +25,7 @@ endmacro(SetupConsoleBuild)
 
 macro(CommonSetup)
     find_package(Threads REQUIRED)
-    find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../.." REQUIRED)    
+    find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../.." REQUIRED)
 
     #setup output paths
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
@@ -50,7 +50,8 @@ macro(CommonSetup)
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wstrict-aliasing -D__CLANG__")
         else ()
             set(CMAKE_CXX_FLAGS "\
-                -ggdb -Wall -Wextra \
+                -Wall -Wextra \
+                -Wnon-virtual-dtor -Woverloaded-virtual \
                 -Wno-variadic-macros -Wno-unused-function -Wno-unused \
                 -pthread \
                 ${RPC_LIB_DEFINES} ${CMAKE_CXX_FLAGS}")
@@ -97,4 +98,3 @@ macro(CommonSetup)
     endif()
 
 endmacro(CommonSetup)
-
