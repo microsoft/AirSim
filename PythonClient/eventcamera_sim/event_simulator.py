@@ -67,8 +67,8 @@ def esim(
 
         current_time = last_time
         for i in range(spike_nums):
-            output_events[count].x = x // n_pix_row
-            output_events[count].y = x % n_pix_row
+            output_events[count].x = x % n_pix_row
+            output_events[count].y = x // n_pix_row
             output_events[count].timestamp = np.round(current_time * 1e-6, 6)
             output_events[count].polarity = 1 if pol > 0 else -1
 
@@ -82,7 +82,7 @@ def esim(
 
 
 class EventSimulator:
-    def __init__(self, H, W, first_image=None, first_time=None, config=CONFIG):
+    def __init__(self, W, H, first_image=None, first_time=None, config=CONFIG):
         self.H = H
         self.W = W
         self.config = config
