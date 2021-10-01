@@ -82,7 +82,7 @@ def esim(
 
 
 class EventSimulator:
-    def __init__(self, H, W, first_image=None, first_time=None, config=CONFIG):
+    def __init__(self, W, H, first_image=None, first_time=None, config=CONFIG):
         self.H = H
         self.W = W
         self.config = config

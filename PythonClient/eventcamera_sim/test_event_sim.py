@@ -17,8 +17,8 @@ parser.add_argument("--width", type=int, default=256)
 
 
 class AirSimEventGen:
-    def __init__(self, H, W, save=False, debug=False):
-        self.ev_sim = EventSimulator(H, W)
+    def __init__(self, W, H, save=False, debug=False):
+        self.ev_sim = EventSimulator(W, H)
         self.H = H
         self.W = W
 
@@ -65,7 +65,7 @@ class AirSimEventGen:
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    event_generator = AirSimEventGen(args.height, args.width, save=args.save, debug=args.debug)
+    event_generator = AirSimEventGen(args.width, args.height, save=args.save, debug=args.debug)
     i = 0
     start_time = 0
     t_start = time.time()
