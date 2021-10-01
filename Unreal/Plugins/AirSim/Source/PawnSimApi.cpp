@@ -528,6 +528,11 @@ const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() con
 {
     return &kinematics_->getState();
 }
+
+void PawnSimApi::setKinematics(msr::airlib::Kinematics::State& state ) const
+{
+    return kinematics_->setState(state);
+}
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
 {
     return environment_.get();
