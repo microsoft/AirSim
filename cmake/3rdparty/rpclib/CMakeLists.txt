@@ -6,7 +6,7 @@ include(../cmake/3rdparty_utils.cmake)
 download_3rdparty(
     NAME rpclib
     GIT_REPOSITORY https://github.com/rpclib/rpclib
-    GIT_TAGv2.3.0
+    GIT_TAG v2.3.0
     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/download
 )
 
