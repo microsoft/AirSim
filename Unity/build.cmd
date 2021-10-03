@@ -11,7 +11,6 @@ if "%VisualStudioVersion%" lss "16.0" (
     goto :buildfailed
 )
 
-REM Visual Studio Generator doesn't work for some unknown reason, Ninja and clang are preferred
 cmake ^
  -S./AirLibWrapper/AirsimWrapper^
  -B./build/build^
