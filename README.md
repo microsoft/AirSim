@@ -16,7 +16,7 @@ Cars in AirSim
 
 [![AirSim Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
 
-## What's New
+## What's New:
 
 * Latest release `v1.3.1` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.3.1-linux)
 * Upgraded to Unreal Engine 4.24, Visual Studio 2019, Clang 8, C++ 17 standard
@@ -35,26 +35,26 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
 ## How to Get It
 
-### Windows
+### Windows:
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
 
-### Linux
+### Linux:
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
-### macOS
+### macOS:
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 [![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
 
 ## How to Use It
 
-### Documentation
+### Documentation:
 
 View our [detailed documentation](https://microsoft.github.io/AirSim/) on all aspects of AirSim.
 
-### Manual drive
+### Manual drive:
 
 If you have remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, you can use arrow keys to drive manually.
 
@@ -65,7 +65,7 @@ If you have remote control (RC) as shown below, you can manually control the dro
 ![record screenshot](docs/images/AirSimCarManual.gif)
 
 
-### Programmatic control
+### Programmatic control:
 
 AirSim exposes APIs so you can interact with the vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through the RPC, and are accessible via a variety of languages, including C++, Python, C# and Java.
 
@@ -75,7 +75,7 @@ Note that you can use [SimMode setting](https://microsoft.github.io/AirSim/setti
 
 [More details](https://microsoft.github.io/AirSim/apis/)
 
-### Gathering training data
+### Gathering training data:
 
 There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button in the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's content.
 
@@ -83,13 +83,13 @@ There are two ways you can generate training data from AirSim for deep learning.
 
 A better way to generate training data exactly the way you want is by accessing the APIs. This allows you to be in full control of how, what, where and when you want to log data.
 
-### Computer Vision mode
+### Computer Vision mode:
 
 Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation.
 
 [More details](https://microsoft.github.io/AirSim/image_apis/)
 
-### Weather Effects
+### Weather Effects:
 
 Press F10 to see various options available for weather effects. You can also control the weather using [APIs](https://microsoft.github.io/AirSim/apis#weather-apis). Press F1 to see other options available.
 
@@ -104,7 +104,7 @@ Press F10 to see various options available for weather effects. You can also con
 - [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
 - [Using TensorFlow for simple collision avoidance](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
 
-## Participate
+## Participate:
 
 ### Paper
 
@@ -120,7 +120,7 @@ More technical details are available in [AirSim paper (FSR 2017 Conference)](htt
 }
 ```
 
-### Contribute
+### Contribute:
 
 Please take a look at [open issues](https://github.com/microsoft/airsim/issues) if you are looking for areas to contribute to.
 
@@ -129,7 +129,7 @@ Please take a look at [open issues](https://github.com/microsoft/airsim/issues) 
 * [Contribution Guidelines](CONTRIBUTING.md)
 * [Trello Board](https://trello.com/b/1t2qCeaA/wishlist-by-community-for-community)
 
-### Who is Using AirSim?
+### Who is Using AirSim? 
 
 We are maintaining a [list](https://microsoft.github.io/AirSim/who_is_using) of a few projects, people and groups that we are aware of. If you would like to be featured in this list please [make a request here](https://github.com/microsoft/airsim/issues).
 
