@@ -170,13 +170,10 @@ echo "Installing Eigen library..."
 
 if [ ! -d "AirLib/deps/eigen3" ]; then
     echo "Downloading Eigen..."
-    #wget -O eigen3.zip https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip
     git clone --depth 1 --branch "3.3.7" https://gitlab.com/libeigen/eigen-backup.git temp_eigen
-    #unzip -q eigen3.zip -d temp_eigen
     mkdir -p AirLib/deps/eigen3
     mv temp_eigen/Eigen AirLib/deps/eigen3
     rm -rf temp_eigen
-    #rm eigen3.zip
 else
     echo "Eigen is already installed."
 fi
