@@ -165,17 +165,13 @@ REM //---------- get Eigen library ----------
 IF NOT EXIST AirLib\deps mkdir AirLib\deps
 IF NOT EXIST AirLib\deps\eigen3 (
     if "%PWSHV7%" == "" (
-        %powershell% -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iwr https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip -OutFile eigen3.zip }"
+        %powershell% -command "& { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; git clone --depth 1 --branch 3.3.7 https://gitlab.com/libeigen/eigen-backup.git AirLib\deps\del_eigen }"
     ) else (
-        %powershell% -command "iwr https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip -OutFile eigen3.zip"
+        %powershell% -command "git clone --depth 1 --branch 3.3.7 https://gitlab.com/libeigen/eigen-backup.git AirLib\deps\del_eigen"
     )
-    %powershell% -command "Expand-Archive -Path eigen3.zip -DestinationPath AirLib\deps"
-    %powershell% -command "Move-Item -Path AirLib\deps\eigen* -Destination AirLib\deps\del_eigen"
-    REM move AirLib\deps\eigen* AirLib\deps\del_eigen
     mkdir AirLib\deps\eigen3
     move AirLib\deps\del_eigen\Eigen AirLib\deps\eigen3\Eigen
     rmdir /S /Q AirLib\deps\del_eigen
-    del eigen3.zip
 )
 IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
