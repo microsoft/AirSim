@@ -376,13 +376,13 @@ namespace airlib
             getWorldSimApi()->simPlotTransformsWithNames(conv_poses, names, tf_scale, tf_thickness, text_scale, text_color_rgba, duration);
         });
 
-        pimpl_->server.bind("simGetGroundTruthKinematics1", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::KinematicsState {
+        pimpl_->server.bind("simGetGroundTruthKinematics", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::KinematicsState {
             const Kinematics::State& result = *getVehicleSimApi(vehicle_name)->getGroundTruthKinematics();
             return RpcLibAdaptorsBase::KinematicsState(result);
         });
 
         pimpl_->server.bind("simSetKinematics", [&](const RpcLibAdaptorsBase::KinematicsState& state, bool ignore_collision, const std::string& vehicle_name) {
-            getVehicleSimApi(vehicle_name)->setKinematics(state.to(),ignore_collision);
+            getVehicleSimApi(vehicle_name)->setKinematics(state.to(), ignore_collision);
         });
 
         pimpl_->server.bind("simGetGroundTruthEnvironment", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::EnvironmentState {
