@@ -125,7 +125,7 @@ void MultirotorPawnSimApi::setPose(const Pose& pose, bool ignore_collision)
     pending_pose_status_ = PendingPoseStatus::RenderStatePending;
 }
 
-void MultirotorPawnSimApi::setKinematics(const Kinematics::State& state, bool ignore_collision)
+void MultirotorPawnSimApi::setKinematics(const msr::airlib::Kinematics::State& state, bool ignore_collision)
 {
     PawnSimApi::setKinematics(state, ignore_collision);
     
