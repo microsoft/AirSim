@@ -37,6 +37,7 @@ public: //types
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
     typedef msr::airlib::DetectionInfo DetectionInfo;
+    typedef msr::airlib::Kinematics Kinematics;
 
     struct Params
     {
@@ -150,7 +151,6 @@ private: //methods
 
 private: //vars
     typedef msr::airlib::AirSimSettings AirSimSettings;
-    typedef msr::airlib::Kinematics Kinematics;
     typedef msr::airlib::Environment Environment;
 
     Params params_;
