@@ -529,10 +529,11 @@ const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() con
     return &kinematics_->getState();
 }
 
-void PawnSimApi::setKinematics(const Kinematics::State& state, bool ignore_collision) const
+void PawnSimApi::setKinematics(const Kinematics::State& state, bool ignore_collision)
 {
+    unused(ignore_collision);
+
     return kinematics_->setState(state);
-    (void)ignore_collision;
 }
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
 {
