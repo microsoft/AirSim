@@ -128,7 +128,7 @@ void MultirotorPawnSimApi::setPose(const Pose& pose, bool ignore_collision)
 void MultirotorPawnSimApi::setKinematics(const msr::airlib::Kinematics::State& state, bool ignore_collision)
 {
     PawnSimApi::setKinematics(state, ignore_collision);
-    
+
     msr::airlib::Pose pose(state.pose.position, state.pose.orientation);
     setPose(pose, ignore_collision);
 }
