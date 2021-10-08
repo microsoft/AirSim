@@ -40,7 +40,7 @@ nav:
   - "Home":
     - "Home": 'README.md'
   - "Changelog": 'CHANGELOG.md'
-  - "Get AirSim":
+  - "Building AirSim":
     - "Download Binaries": 'use_precompiled.md'
     - "Build on Windows": 'build_windows.md'
     - "Build on Linux": 'build_linux.md'
@@ -50,6 +50,8 @@ nav:
     - "AirSim with Unity": "Unity.md"
     - "Custom Unity Environment": "custom_unity_environments.md"
     - "Unity APIs": "unity_api_support.md"
+    - "Packaging AirSim": "package_binaries.md"
+    - "FAQ": 'build_faq.md'
   - "Using AirSim":
     - "Core APIs": 'apis.md'
     - "Image APIs": 'image_apis.md'
