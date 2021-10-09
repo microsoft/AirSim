@@ -86,7 +86,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.2.0 (
             %powershell% -command "iwr https://github.com/Microsoft/AirSim/releases/download/v1.2.0/car_assets.zip -OutFile suv_download_tmp\car_assets.zip"
         )
         @echo off
-        rmdir /S /Q Unreal\Plugins\AirSim\Content\VehicleAdv\SUV
+        IF EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV rmdir Unreal\Plugins\AirSim\Content\VehicleAdv\SUV /S /Q 
         %powershell% -command "Expand-Archive -Path suv_download_tmp\car_assets.zip -DestinationPath Unreal\Plugins\AirSim\Content\VehicleAdv"
         rmdir suv_download_tmp /q /s
         
@@ -99,7 +99,7 @@ IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv\SUV\v1.2.0 (
 )
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
-if "%buildMode%" == "" set "buildMode=Debug"
+if "%buildMode%" == "" set "buildMode=Release"
 
 set "buildDir=./build/build/%BuildMode%"
 set "installDir=./build/install/%BuildMode%"
