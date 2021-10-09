@@ -15,7 +15,7 @@ download_3rdparty(
 
 if(UNIX)
     set(RPC_LIB_DEFINES " -D MSGPACK_PP_VARIADICS_MSVC=0")
-    set(CMAKE_CXX_FLAGS "${RPC_LIB_DEFINES} ${CMAKE_CXX_FLAGS}")    
+    set(CMAKE_CXX_FLAGS "${RPC_LIB_DEFINES} -fPIC ${CMAKE_CXX_FLAGS}")    
 endif()
 
 configure_3rdparty(

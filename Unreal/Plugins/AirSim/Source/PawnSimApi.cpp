@@ -108,7 +108,6 @@ void PawnSimApi::setupCamerasFromSettings(const common_utils::UniqueValueMap<std
     createCamerasFromSettings();
 
     //setup individual cameras
-    typedef msr::airlib::AirSimSettings AirSimSettings;
     const auto& camera_defaults = AirSimSettings::singleton().camera_defaults;
     for (auto& pair : cameras_.getMap()) {
         const auto& camera_setting = Utils::findOrDefault(getVehicleSetting()->cameras, pair.first, camera_defaults);
