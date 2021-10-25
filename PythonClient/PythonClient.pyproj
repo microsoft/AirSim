@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e2049e20-b6dd-474e-8bca-1c8dc54725aa</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>computer_vision\character_control.py</StartupFile>
+    <StartupFile>computer_vision\cv_capture.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -35,16 +35,10 @@
     <Compile Include="airsim\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="car\legacy_hello_car.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="car\multi_agent_car.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="car\setup_path.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="computer_vision\character_control.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="computer_vision\cv_capture.py">
@@ -83,7 +77,6 @@
     <Compile Include="car\car_collision.py" />
     <Compile Include="car\car_monitor.py" />
     <Compile Include="car\car_stress_test.py" />
-    <Compile Include="car\DQNcar.py" />
     <Compile Include="car\drive_straight.py" />
     <Compile Include="car\hello_car.py" />
     <Compile Include="car\reset_test_car.py" />
@@ -91,10 +84,8 @@
     <Compile Include="computer_vision\cv_mode.py" />
     <Compile Include="multirotor\point_cloud.py" />
     <Compile Include="computer_vision\segmentation.py" />
-    <Compile Include="computer_vision\seg_pallete.py" />
     <Compile Include="multirotor\box.py" />
     <Compile Include="multirotor\disarm.py" />
-    <Compile Include="multirotor\DQNdrone.py" />
     <Compile Include="multirotor\drone_stress_test.py" />
     <Compile Include="multirotor\hello_drone.py" />
     <Compile Include="multirotor\orbit.py" />
@@ -120,9 +111,6 @@
     <Folder Include="ros\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="install_packages.bat">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="LICENSE" />
     <Content Include="README.md">
       <SubType>Code</SubType>
