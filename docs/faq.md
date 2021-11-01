@@ -141,10 +141,10 @@
 ## Others
 <!-- ======================================================================= -->
 
-[Linux Build FAQ](build_linux.md#faq)
-[Windows Build FAQ](build_windows.md#faq)
-[PX4 Setup FAQ](px4_setup.md#faq)
-[Remote Control FAQ](remote_control.md#faq)
-[Unreal Blocks Environment FAQ](unreal_blocks.md#faq)
-[Unreal Custom Environment FAQ](unreal_custenv.md#faq)
-[Packaging AirSim](package_binaries.md)
+* [Linux Build FAQ](build_linux.md#faq)
+* [Windows Build FAQ](build_windows.md#faq)
+* [PX4 Setup FAQ](px4_setup.md#faq)
+* [Remote Control FAQ](remote_control.md#faq)
+* [Unreal Blocks Environment FAQ](unreal_blocks.md#faq)
+* [Unreal Custom Environment FAQ](unreal_custenv.md#faq)
+* [Packaging AirSim](package_binaries.md)
