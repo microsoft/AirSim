@@ -699,7 +699,20 @@ For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-bina
 <h3 id="common-vehicle-setting">Common Vehicle Setting<a class="headerlink" href="#common-vehicle-setting" title="Permanent link">#</a></h3>
 <ul>
 <li><code>VehicleType</code>: This could be any one of the following - <code>PhysXCar</code>, <code>SimpleFlight</code>, <code>PX4Multirotor</code>, <code>ComputerVision</code>, <code>ArduCopter</code> &amp; <code>ArduRover</code>. There is no default value therefore this element must be specified.</li>
-<li><code>PawnPath</code>: This allows to override the pawn blueprint to use for the vehicle. For example, you may create new pawn blueprint derived from ACarPawn for a warehouse robot in your own project outside the AirSim code and then specify its path here. See also <a href="#PawnPaths">PawnPaths</a>.</li>
+<li><code>PawnPath</code>: This allows to override the pawn blueprint to use for the vehicle. For example, you may create new pawn blueprint derived from ACarPawn for a warehouse robot in your own project outside the AirSim code and then specify its path here. See also <a href="./#PawnPaths">PawnPaths</a>. Note that you have to specify your custom pawn blueprint class path inside the global <code>PawnPaths</code> object using your proprietarily defined object name, and quote that name inside the <code>Vehicles</code> setting. For example,
+<pre class="highlight"><code class="language-json">    {
+      ...
+      "PawnPaths": {
+        "CustomPawn": {"PawnBP": "Class'/Game/Assets/Blueprints/MyPawn.MyPawn_C'"}
+      },
+      "Vehicles": {
+        "MyVehicle": {
+          "VehicleType": ...,
+          "PawnPath": "CustomPawn",
+          ...
+        }
+      }
+    }</code></pre></li>
 <li><code>DefaultVehicleState</code>: Possible value for multirotors is <code>Armed</code> or <code>Disarmed</code>.</li>
 <li><code>AutoCreate</code>: If true then this vehicle would be spawned (if supported by selected sim mode).</li>
 <li><code>RC</code>: This sub-element allows to specify which remote controller to use for vehicle using <code>RemoteControlID</code>. The value of -1 means use keyboard (not supported yet for multirotors). The value &gt;= 0 specifies one of many remote controllers connected to the system. The list of available RCs can be seen in Game Controllers panel in Windows, for example.</li>
