@@ -28,6 +28,12 @@
 
 ---
 
+## Other
+
+* [Packaging AirSim](#packaging-a-binary-including-the-airsim-plugin)
+
+---
+
 <!-- ======================================================================= -->
 ## Windows build
 <!-- ======================================================================= -->
@@ -182,3 +188,15 @@
 >[Building Unreal on Linux](https://wiki.unrealengine.com/Building_On_Linux#Clang)
 >[Unreal Linux Support](https://wiki.unrealengine.com/Linux_Support)
 >[Unreal Cross Compilation](https://wiki.unrealengine.com/Compiling_For_Linux)
+
+---
+
+## Other
+<!-- ======================================================================= -->
+
+###### Packaging a binary including the AirSim plugin
+
+>In order to package a custom environment with the AirSim plugin, there are a few project settings that are necessary for ensuring all required assets needed for AirSim are included inside the package. Under `Edit -> Project Settings... -> Project -> Packaging`, please ensure the following settings are configured properly:
+>
+>- `List of maps to include in a packaged build`: ensure one entry exists for `/AirSim/AirSimAssets` 
+>- `Additional Asset Directories to Cook`: ensure one entry exists for `/AirSim/HUDAssets`
