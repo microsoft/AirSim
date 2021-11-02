@@ -50,7 +50,6 @@ nav:
     - "AirSim with Unity": "Unity.md"
     - "Custom Unity Environment": "custom_unity_environments.md"
     - "Unity APIs": "unity_api_support.md"
-    - "Packaging AirSim": "package_binaries.md"
     - "FAQ": 'build_faq.md'
   - "Using AirSim":
     - "Core APIs": 'apis.md'
