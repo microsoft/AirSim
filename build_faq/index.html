@@ -19,7 +19,7 @@
   <script>
     // Current page data
     var mkdocs_page_name = "FAQ";
-    var mkdocs_page_input_path = "faq.md";
+    var mkdocs_page_input_path = "build_faq.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -56,7 +56,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Building AirSim</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../use_precompiled/">Download Binaries</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../build_windows/">Build on Windows</a>
@@ -75,7 +75,61 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unity_api_support/">Unity APIs</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../build_faq/">FAQ</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">FAQ</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#windows-build">Windows build</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#linux-build">Linux build</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#other">Other</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#windows-build_1">Windows build</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#how-to-force-unreal-to-use-visual-studio-2019">How to force Unreal to use Visual Studio 2019?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#i-get-error-where-is-not-recognized-as-an-internal-or-external-command">I get error: 'where' is not recognized as an internal or external command</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually">I'm getting error &lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#i-get-error-c100-an-internal-error-has-occurred-in-the-compiler-when-running-buildcmd">I get error C100 : An internal error has occurred in the compiler when running build.cmd</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#i-get-error-corecrth-no-such-file-or-directory-or-windows-sdk-version-81-not-found">I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-use-px4-firmware-with-airsim">How do I use PX4 firmware with AirSim?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#i-made-changes-in-visual-studio-but-there-is-no-effect">I made changes in Visual Studio but there is no effect</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#unreal-still-uses-vs2015-or-im-getting-some-link-error">Unreal still uses VS2015 or I'm getting some link error</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#linux-build_1">Linux build</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually_1">I'm getting error &lt;MyProject&gt; could not be compiled. Try rebuilding from source manually.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#unreal-crashed-how-do-i-know-what-went-wrong">Unreal crashed! How do I know what went wrong?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-use-an-ide-on-linux">How do I use an IDE on Linux?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-cross-compile-for-linux-from-a-windows-machine">Can I cross compile for Linux from a Windows machine?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#what-compiler-and-stdlib-does-airsim-use">What compiler and stdlib does AirSim use?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#what-version-of-cmake-does-the-airsim-build-use">What version of CMake does the AirSim build use?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-compile-airsim-in-bashonwindows">Can I compile AirSim in BashOnWindows?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#where-can-i-find-more-info-on-running-unreal-on-linux">Where can I find more info on running Unreal on Linux?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#other_1">Other</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#packaging-a-binary-including-the-airsim-plugin">Packaging a binary including the AirSim plugin</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Using AirSim</span></p>
@@ -253,46 +307,8 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Support</span></p>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">FAQ</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#general">General</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#general_1">General</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#unreal-editor-is-slow-when-it-is-not-the-active-window">Unreal editor is slow when it is not the active window</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#my-mouse-disappears-in-unreal">My mouse disappears in Unreal</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#where-is-the-setting-file-and-how-do-i-modify-it">Where is the setting file and how do I modify it?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-arm-my-drone">How do I arm my drone?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#when-making-api-call-i-get-error">When making API call I get error</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#im-getting-eigen-not-found-error-when-compiling-unreal-project">I'm getting Eigen not found error when compiling Unreal project.</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#something-went-wrong-how-do-i-debug">Something went wrong. How do I debug?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#what-do-the-colors-mean-in-the-segmentation-view">What do the colors mean in the Segmentation View?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#unreal-4xx-doesnt-look-as-good-as-4yy">Unreal 4.xx doesn't look as good as 4.yy</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#can-i-use-an-xbox-controller-to-fly">Can I use an XBox controller to fly?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#can-i-build-a-hexacopter-with-airsim">Can I build a hexacopter with AirSim?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-use-airsim-with-multiple-vehicles">How do I use AirSim with multiple vehicles?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#what-computer-do-you-need">What computer do you need?</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-report-issues">How do I report issues?</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#others">Others</a>
-    </li>
-    </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../SUPPORT/">Support</a>
                     </li>
@@ -322,14 +338,14 @@
     
       
         
-          <li>Support &raquo;</li>
+          <li>Building AirSim &raquo;</li>
         
       
     
     <li>FAQ</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/faq.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/build_faq.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -343,143 +359,185 @@
               
                 <h1 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h1>
 <hr />
-<h2 id="general">General<a class="headerlink" href="#general" title="Permanent link">#</a></h2>
+<h2 id="windows-build">Windows build<a class="headerlink" href="#windows-build" title="Permanent link">#</a></h2>
 <ul>
-<li><a href="#unreal-editor-is-slow-when-it-is-not-the-active-window">Unreal editor is slow when it is not the active window</a></li>
-<li><a href="#my-mouse-disappears-in-unreal">My mouse disappears in Unreal</a></li>
-<li><a href="#where-is-the-setting-file-and-how-do-i-modify-it">Where is the setting file and how do I modify it?</a></li>
-<li><a href="#how-do-i-arm-my-drone">How do I arm my drone?</a></li>
-<li><a href="#when-making-api-call-i-get-error">When making API call I get error</a></li>
-<li><a href="#im-getting-eigen-not-found-error-when-compiling-unreal-project">I'm getting Eigen not found error when compiling Unreal project.</a></li>
-<li><a href="#something-went-wrong-how-do-i-debug">Something went wrong. How do I debug?</a></li>
-<li><a href="#what-do-the-colors-mean-in-the-segmentation-view">What do the colors mean in the Segmentation View?</a></li>
-<li><a href="#unreal-4xx-doesnt-look-as-good-as-4yy">Unreal 4.xx doesn't look as good as 4.yy</a></li>
-<li><a href="#can-i-use-an-xbox-controller-to-fly">Can I use an XBox controller to fly?</a></li>
-<li><a href="#can-i-build-a-hexacopter-with-airsim">Can I build a hexacopter with AirSim?</a></li>
-<li><a href="#how-do-i-use-airsim-with-multiple-vehicles">How do I use AirSim with multiple vehicles?</a></li>
-<li><a href="#what-computer-do-you-need">What computer do you need?</a></li>
-<li><a href="#how-do-i-report-issues">How do I report issues?</a></li>
+<li><a href="#how-to-force-unreal-to-use-visual-studio-2019">How to force Unreal to use Visual Studio 2019?</a></li>
+<li><a href="#i-get-error-where-is-not-recognized-as-an-internal-or-external-command">I get error: 'where' is not recognized as an internal or external command</a></li>
+<li><a href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually">I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code></a></li>
+<li><a href="#i-get-error-c100--an-internal-error-has-occurred-in-the-compiler-when-running-buildcmd">I get <code>error C100 : An internal error has occurred in the compiler</code> when running build.cmd</a></li>
+<li><a href="#i-get-error-corecrth-no-such-file-or-directory-or-windows-sdk-version-81-not-found">I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"</a></li>
+<li><a href="#how-do-i-use-px4-firmware-with-airsim">How do I use PX4 firmware with AirSim?</a></li>
+<li><a href="#i-made-changes-in-visual-studio-but-there-is-no-effect">I made changes in Visual Studio but there is no effect</a></li>
+<li><a href="#unreal-still-uses-vs2015-or-im-getting-some-link-error">Unreal still uses VS2015 or I'm getting some link error</a></li>
+</ul>
+<hr />
+<h2 id="linux-build">Linux build<a class="headerlink" href="#linux-build" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually">I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code>.</a></li>
+<li><a href="#unreal-crashed-how-do-i-know-what-went-wrong">Unreal crashed! How do I know what went wrong?</a></li>
+<li><a href="#how-do-i-use-an-ide-on-linux">How do I use an IDE on Linux?</a></li>
+<li><a href="#can-i-cross-compile-for-linux-from-a-windows-machine">Can I cross compile for Linux from a Windows machine?</a></li>
+<li><a href="#what-compiler-and-stdlib-does-airsim-use">What compiler and stdlib does AirSim use?</a></li>
+<li><a href="#what-version-of-cmake-does-the-airsim-build-use">What version of CMake does the AirSim build use?</a></li>
+<li><a href="#can-i-compile-airsim-in-bashonwindows">Can I compile AirSim in BashOnWindows?</a></li>
+<li><a href="#where-can-i-find-more-info-on-running-unreal-on-linux">Where can I find more info on running Unreal on Linux?</a></li>
+</ul>
+<hr />
+<h2 id="other">Other<a class="headerlink" href="#other" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="#packaging-a-binary-including-the-airsim-plugin">Packaging AirSim</a></li>
 </ul>
 <hr />
 <!-- ======================================================================= -->
-<h2 id="general_1">General<a class="headerlink" href="#general_1" title="Permanent link">#</a></h2>
+<h2 id="windows-build_1">Windows build<a class="headerlink" href="#windows-build_1" title="Permanent link">#</a></h2>
 <!-- ======================================================================= -->
 
-<h6 id="unreal-editor-is-slow-when-it-is-not-the-active-window">Unreal editor is slow when it is not the active window<a class="headerlink" href="#unreal-editor-is-slow-when-it-is-not-the-active-window" title="Permanent link">#</a></h6>
+<h6 id="how-to-force-unreal-to-use-visual-studio-2019">How to force Unreal to use Visual Studio 2019?<a class="headerlink" href="#how-to-force-unreal-to-use-visual-studio-2019" title="Permanent link">#</a></h6>
 <blockquote>
-<p>Go to Edit/Editor Preferences, select "All Settings" and type "CPU" in the search box. 
-It should find the setting titled "Use Less CPU when in Background", and you want to uncheck this checkbox.</p>
+<p>If the default <code>update_from_git.bat</code> file results in VS 2017 project, then you may need to run the <code>C:\Program Files\Epic Games\UE_4.25\Engine\Binaries\DotNET\UnrealBuildTool.exe</code> tool manually, with the command line options <code>-projectfiles -project=&lt;your.uproject&gt;  -game -rocket -progress -2019</code>.</p>
+<p>If you are upgrading from 4.18 to 4.25 you may also need to add <code>BuildSettingsVersion.V2</code> to your <code>*.Target.cs</code> and <code>*Editor.Target.cs</code> build files, like this:</p>
+<pre class="highlight"><code class="language-c#">   public AirSimNHTestTarget(TargetInfo Target) : base(Target)
+   {
+       Type = TargetType.Game;
+       DefaultBuildSettings = BuildSettingsVersion.V2;
+       ExtraModuleNames.AddRange(new string[] { "AirSimNHTest" });
+   }</code></pre>
+<p>You may also need to edit this file:</p>
+<pre class="highlight"><code>"%APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml</code></pre>
+<p>And add this Compiler version setting:</p>
+<pre class="highlight"><code class="language-xml">&lt;Configuration xmlns="https://www.unrealengine.com/BuildConfiguration"&gt;
+  &lt;WindowsPlatform&gt;
+    &lt;Compiler&gt;VisualStudio2019&lt;/Compiler&gt;
+  &lt;/WindowsPlatform&gt;
+&lt;/Configuration&gt;</code></pre>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="my-mouse-disappears-in-unreal">My mouse disappears in Unreal<a class="headerlink" href="#my-mouse-disappears-in-unreal" title="Permanent link">#</a></h6>
+<h6 id="i-get-error-where-is-not-recognized-as-an-internal-or-external-command">I get error: 'where' is not recognized as an internal or external command<a class="headerlink" href="#i-get-error-where-is-not-recognized-as-an-internal-or-external-command" title="Permanent link">#</a></h6>
 <blockquote>
-<p>Yes, Unreal steals the mouse, and we don't draw one.  So to get your mouse back just use Alt+TAB to switch to a different window. To avoid this entirely, go to Project settings &gt;in Unreal Editor, go to Input tab and disable all settings for mouse capture.</p>
+<p>You have to add <code>C:\WINDOWS\SYSTEM32</code> to your PATH enviroment variable.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="where-is-the-setting-file-and-how-do-i-modify-it">Where is the setting file and how do I modify it?<a class="headerlink" href="#where-is-the-setting-file-and-how-do-i-modify-it" title="Permanent link">#</a></h6>
+<h6 id="im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually">I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code><a class="headerlink" href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually" title="Permanent link">#</a></h6>
 <blockquote>
-<p>AirSim will create empty settings file at <code>~/Documents/AirSim/settings.json</code>. You can view the available <a href="../settings/">settings options</a>. </p>
+<p>This will occur when there are compilation errors. Logs are stored in <code>&lt;My-Project&gt;\Saved\Logs</code> which can be used to figure out the problem.</p>
+<p>A common problem could be Visual Studio version conflict, AirSim uses VS 2019 while UE is using VS 2017, this can be found by searching for <code>2017</code> in the Log file. In that case, see the answer above.</p>
+<p>If you have modified the AirSim plugin files, then you can right-click the <code>.uproject</code> file, select <code>Generate Visual Studio solution file</code> and then open the <code>.sln</code> file in VS to fix the errors and build again.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="how-do-i-arm-my-drone">How do I arm my drone?<a class="headerlink" href="#how-do-i-arm-my-drone" title="Permanent link">#</a></h6>
+<h6 id="i-get-error-c100-an-internal-error-has-occurred-in-the-compiler-when-running-buildcmd">I get <code>error C100 : An internal error has occurred in the compiler</code> when running build.cmd<a class="headerlink" href="#i-get-error-c100-an-internal-error-has-occurred-in-the-compiler-when-running-buildcmd" title="Permanent link">#</a></h6>
 <blockquote>
-<p>If you're using simple_flight, your vehicle is already armed and ready to fly. For PX4 you can arm by holding both sticks on remote control down and to the center.</p>
+<p>We have noticed this happening with VS version <code>15.9.0</code> and have checked-in a workaround in AirSim code. If you have this VS version, please make sure to pull the latest AirSim code.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="when-making-api-call-i-get-error">When making API call I get error<a class="headerlink" href="#when-making-api-call-i-get-error" title="Permanent link">#</a></h6>
+<h6 id="i-get-error-corecrth-no-such-file-or-directory-or-windows-sdk-version-81-not-found">I get error "'corecrt.h': No such file or directory" or "Windows SDK version 8.1 not found"<a class="headerlink" href="#i-get-error-corecrth-no-such-file-or-directory-or-windows-sdk-version-81-not-found" title="Permanent link">#</a></h6>
 <blockquote>
-<p>If you are getting this error,
-<pre class="highlight"><code>TypeError: unsupported operand type(s) for *: 'AsyncIOLoop' and 'float'</code></pre>
-its probably due to upgraded version of tornado package with version &gt; 5.0 in Python that conflicts with <code>msgpack-rpc-python</code> which requires tornado package &lt; 5.0. To fix this &gt;you can update the package like this:
-<pre class="highlight"><code>pip install --upgrade msgpack-rpc-python</code></pre>
-But this might break something (for example, PyTorch 0.4+) because it will uninstall newer tornado and re-install older one. To avoid this you should create new <a href="https://conda.io/docs/user-guide/tasks/manage-environments.html">conda &gt;environment</a>.</p>
+<p>Very likely you don't have <a href="https://developercommunity.visualstudio.com/content/problem/3754/cant-compile-c-program-because-of-sdk-81cant-add-a.html">Windows SDK</a> installed with Visual Studio.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="im-getting-eigen-not-found-error-when-compiling-unreal-project">I'm getting Eigen not found error when compiling Unreal project.<a class="headerlink" href="#im-getting-eigen-not-found-error-when-compiling-unreal-project" title="Permanent link">#</a></h6>
+<h6 id="how-do-i-use-px4-firmware-with-airsim">How do I use PX4 firmware with AirSim?<a class="headerlink" href="#how-do-i-use-px4-firmware-with-airsim" title="Permanent link">#</a></h6>
 <blockquote>
-<p>This is most likely because AirSim wasn't built and Plugin folder was copied in Unreal project folder. To fix this make sure you <a href="../build_windows/">build AirSim</a> first (run &gt;<code>build.cmd</code> in Windows).</p>
+<p>By default, AirSim uses its own built-in firmware called <a href="../simple_flight/">simple_flight</a>. There is no additional setup if you just want to go with it. If you want to switch to using PX4 instead then please see <a href="../px4_setup/">this guide</a>.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="something-went-wrong-how-do-i-debug">Something went wrong. How do I debug?<a class="headerlink" href="#something-went-wrong-how-do-i-debug" title="Permanent link">#</a></h6>
+<h6 id="i-made-changes-in-visual-studio-but-there-is-no-effect">I made changes in Visual Studio but there is no effect<a class="headerlink" href="#i-made-changes-in-visual-studio-but-there-is-no-effect" title="Permanent link">#</a></h6>
 <blockquote>
-<p>First turn on C++ exceptions from the Exceptions window:</p>
-<p><img alt="exceptions" src="../images/exceptions.png" /></p>
-<p>and copy the stack trace of all exceptions you see there during execution that look relevant (for example, there might be an initial exception from VSPerf140 that you can &gt;ignore) then paste these call stacks into a new AirSim GitHub issue, thanks.</p>
+<p>Sometimes the Unreal + VS build system doesn't recompile if you make changes to only header files. To ensure a recompile, make some Unreal based cpp file "dirty" like AirSimGameMode.cpp.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="what-do-the-colors-mean-in-the-segmentation-view">What do the colors mean in the Segmentation View?<a class="headerlink" href="#what-do-the-colors-mean-in-the-segmentation-view" title="Permanent link">#</a></h6>
+<h6 id="unreal-still-uses-vs2015-or-im-getting-some-link-error">Unreal still uses VS2015 or I'm getting some link error<a class="headerlink" href="#unreal-still-uses-vs2015-or-im-getting-some-link-error" title="Permanent link">#</a></h6>
 <blockquote>
-<p>See <a href="../camera_views/">Camera Views</a> for information on the camera views and how to change them.</p>
+<p>Running several versions of VS can lead to issues when compiling UE projects. One problem that may arise is that UE will try to compile with an older version of VS which may or may not work. There are two settings in Unreal, one for for the engine and one for the project, to adjust the version of VS to be used.</p>
+<ol>
+<li>Edit -&gt; Editor preferences -&gt; General -&gt; Source code -&gt; Source Code Editor</li>
+<li>Edit -&gt; Project Settings -&gt; Platforms -&gt; Windows -&gt; Toolchain -&gt;CompilerVersion</li>
+</ol>
+<p>In some cases, these settings will still not lead to the desired result and errors such as the following might be produced: LINK : fatal error LNK1181: cannot open input file 'ws2_32.lib'</p>
+<p>To resolve such issues the following procedure can be applied:</p>
+<ol>
+<li>Uninstall all old versions of VS using the <a href="https://github.com/Microsoft/VisualStudioUninstaller/releases">VisualStudioUninstaller</a></li>
+<li>Repair/Install VS 2019</li>
+<li>Restart machine and install Epic launcher and desired version of the engine</li>
+</ol>
+</blockquote>
+<hr />
+<h2 id="linux-build_1">Linux build<a class="headerlink" href="#linux-build_1" title="Permanent link">#</a></h2>
+<!-- ======================================================================= -->
+
+<h6 id="im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually_1">I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code>.<a class="headerlink" href="#im-getting-error-myproject-could-not-be-compiled-try-rebuilding-from-source-manually_1" title="Permanent link">#</a></h6>
+<blockquote>
+<p>This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?</p>
+<p><code>fatal error: file '/usr/include/linux/version.h''/usr/include/linux/version.h' has been modified since the precompiled header</code></p>
+<p>If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's <a href="https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html">relevant thread</a> on Unreal Engine forums.</p>
+<p>If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="unreal-4xx-doesnt-look-as-good-as-4yy">Unreal 4.xx doesn't look as good as 4.yy<a class="headerlink" href="#unreal-4xx-doesnt-look-as-good-as-4yy" title="Permanent link">#</a></h6>
+<h6 id="unreal-crashed-how-do-i-know-what-went-wrong">Unreal crashed! How do I know what went wrong?<a class="headerlink" href="#unreal-crashed-how-do-i-know-what-went-wrong" title="Permanent link">#</a></h6>
 <blockquote>
-<p>Unreal 4.15 added the ability for Foliage LOD dithering to be disabled on a case-by-case basis by unchecking the <code>Dithered LOD Transition</code> checkbox in the foliage materials. &gt;Note that all materials used on all LODs need to have the checkbox checked in order for dithered LOD transitions to work.  When checked the transition of generated foliage will &gt;be a lot smoother and will look better than 4.14.</p>
+<p>Go to the <code>MyUnrealProject/Saved/Crashes</code> folder and search for the file <code>MyProject.log</code> within its subdirectories. At the end of this file you will see the stack trace and messages.
+You can also take a look at the <code>Diagnostics.txt</code> file.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="can-i-use-an-xbox-controller-to-fly">Can I use an XBox controller to fly?<a class="headerlink" href="#can-i-use-an-xbox-controller-to-fly" title="Permanent link">#</a></h6>
+<h6 id="how-do-i-use-an-ide-on-linux">How do I use an IDE on Linux?<a class="headerlink" href="#how-do-i-use-an-ide-on-linux" title="Permanent link">#</a></h6>
 <blockquote>
-<p>See <a href="../xbox_controller/">XBox controller</a> for details.</p>
+<p>You can use Qt Creator or CodeLite. Instructions for Qt Creator are available <a href="https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpQtCreator/index.html">here</a>.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="can-i-build-a-hexacopter-with-airsim">Can I build a hexacopter with AirSim?<a class="headerlink" href="#can-i-build-a-hexacopter-with-airsim" title="Permanent link">#</a></h6>
+<h6 id="can-i-cross-compile-for-linux-from-a-windows-machine">Can I cross compile for Linux from a Windows machine?<a class="headerlink" href="#can-i-cross-compile-for-linux-from-a-windows-machine" title="Permanent link">#</a></h6>
 <blockquote>
-<p>See <a href="https://github.com/microsoft/airsim/wiki/hexacopter">how to build a hexacopter</a>.</p>
+<p>Yes, you can, but we haven't tested it. You can find the instructions <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html">here</a>.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="how-do-i-use-airsim-with-multiple-vehicles">How do I use AirSim with multiple vehicles?<a class="headerlink" href="#how-do-i-use-airsim-with-multiple-vehicles" title="Permanent link">#</a></h6>
+<h6 id="what-compiler-and-stdlib-does-airsim-use">What compiler and stdlib does AirSim use?<a class="headerlink" href="#what-compiler-and-stdlib-does-airsim-use" title="Permanent link">#</a></h6>
 <blockquote>
-<p>Here is <a href="../multi_vehicle/">multi-vehicle setup guide</a>.</p>
+<p>We use the same compiler that Unreal Engine uses, <strong>Clang 8</strong>, and stdlib, <strong>libc++</strong>. AirSim's <code>setup.sh</code> will automatically download them.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="what-computer-do-you-need">What computer do you need?<a class="headerlink" href="#what-computer-do-you-need" title="Permanent link">#</a></h6>
+<h6 id="what-version-of-cmake-does-the-airsim-build-use">What version of CMake does the AirSim build use?<a class="headerlink" href="#what-version-of-cmake-does-the-airsim-build-use" title="Permanent link">#</a></h6>
 <blockquote>
-<p>It depends on how big your Unreal Environment is. The Blocks environment that comes with AirSim is very basic and works on typical laptops. The 
-<a href="https://www.unrealengine.com/marketplace/modular-neighborhood-pack">Modular Neighborhood Pack</a> that we use ourselves for research requires GPUs with at least 4GB of RAM. The 
-<a href="https://www.unrealengine.com/marketplace/open-world-demo-collection">Open World environment</a> needs GPU with 8GB RAM. Our typical development machines have 32GB of RAM and
-NVIDIA TitanX and a <a href="../hard_drive/">fast hard drive</a>.</p>
+<p>3.10.0 or higher. This is <em>not</em> the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using <code>cmake --version</code>. If you have an older version, follow <a href="../cmake_linux/">these instructions</a> or see the <a href="https://cmake.org/install/">CMake website</a>.</p>
 </blockquote>
 <!-- ======================================================================= -->
 
-<h6 id="how-do-i-report-issues">How do I report issues?<a class="headerlink" href="#how-do-i-report-issues" title="Permanent link">#</a></h6>
+<h6 id="can-i-compile-airsim-in-bashonwindows">Can I compile AirSim in BashOnWindows?<a class="headerlink" href="#can-i-compile-airsim-in-bashonwindows" title="Permanent link">#</a></h6>
 <blockquote>
-<p>It's a good idea to include your configuration like below. If you can also include logs, that could also expedite the investigation.</p>
-<pre class="highlight"><code>Operating System: Windows 10 64bit
-CPU: Intel Core i7
-GPU: Nvidia GTX 1080
-RAM: 32 GB
-Flight Controller: Pixhawk v2
-Remote Control: Futaba</code></pre>
-<p>If you have modified the default <code>~/Document/AirSim/settings.json</code>, please include your
-settings also.</p>
-<p>If you are using PX4 then try to <a href="../px4_logging/">capture log from MavLink or PX4</a>.</p>
-<p>File an issue through <a href="https://github.com/microsoft/airsim/issues">GitHub Issues</a>.</p>
+<p>Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.
+See the <a href="https://msdn.microsoft.com/en-us/commandline/wsl/install_guide">BashOnWindows install guide</a>.
+Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.
+Also, don't invoke <code>bash</code> from <code>Visual Studio Command Prompt</code>, otherwise CMake might find VC++ and try and use that!</p>
 </blockquote>
 <!-- ======================================================================= -->
-<h2 id="others">Others<a class="headerlink" href="#others" title="Permanent link">#</a></h2>
+
+<h6 id="where-can-i-find-more-info-on-running-unreal-on-linux">Where can I find more info on running Unreal on Linux?<a class="headerlink" href="#where-can-i-find-more-info-on-running-unreal-on-linux" title="Permanent link">#</a></h6>
+<blockquote>
+<p>Start here: <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/index.html">Unreal on Linux</a>
+<a href="https://wiki.unrealengine.com/Building_On_Linux#Clang">Building Unreal on Linux</a>
+<a href="https://wiki.unrealengine.com/Linux_Support">Unreal Linux Support</a>
+<a href="https://wiki.unrealengine.com/Compiling_For_Linux">Unreal Cross Compilation</a></p>
+</blockquote>
+<hr />
+<h2 id="other_1">Other<a class="headerlink" href="#other_1" title="Permanent link">#</a></h2>
 <!-- ======================================================================= -->
 
+<h6 id="packaging-a-binary-including-the-airsim-plugin">Packaging a binary including the AirSim plugin<a class="headerlink" href="#packaging-a-binary-including-the-airsim-plugin" title="Permanent link">#</a></h6>
+<blockquote>
+<p>In order to package a custom environment with the AirSim plugin, there are a few project settings that are necessary for ensuring all required assets needed for AirSim are included inside the package. Under <code>Edit -&gt; Project Settings... -&gt; Project -&gt; Packaging</code>, please ensure the following settings are configured properly:</p>
 <ul>
-<li><a href="../build_linux/#faq">Linux Build FAQ</a></li>
-<li><a href="../build_windows/#faq">Windows Build FAQ</a></li>
-<li><a href="../px4_setup/#faq">PX4 Setup FAQ</a></li>
-<li><a href="../remote_control/#faq">Remote Control FAQ</a></li>
-<li><a href="../unreal_blocks/#faq">Unreal Blocks Environment FAQ</a></li>
-<li><a href="../unreal_custenv/#faq">Unreal Custom Environment FAQ</a></li>
-<li><a href="package_binaries.md">Packaging AirSim</a></li>
+<li><code>List of maps to include in a packaged build</code>: ensure one entry exists for <code>/AirSim/AirSimAssets</code> </li>
+<li><code>Additional Asset Directories to Cook</code>: ensure one entry exists for <code>/AirSim/HUDAssets</code></li>
 </ul>
+</blockquote>
               
             </div>
           </div>
@@ -487,10 +545,10 @@ settings also.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SUPPORT/" class="btn btn-neutral float-right" title="Support">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../apis/" class="btn btn-neutral float-right" title="Core APIs">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../working_with_plugin_contents/" class="btn btn-neutral" title="Working with UE Plugin Contents"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../unity_api_support/" class="btn btn-neutral" title="Unity APIs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -522,10 +580,10 @@ settings also.</p>
         </span>
     
     
-      <span><a href="../working_with_plugin_contents/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../unity_api_support/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../SUPPORT/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../apis/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -55,7 +55,7 @@
                     <li class="toctree-l1"><a class="reference internal" href="../CHANGELOG/">Changelog</a>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">Get AirSim</span></p>
+                <p class="caption"><span class="caption-text">Building AirSim</span></p>
                 <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../use_precompiled/">Download Binaries</a>
                     </li>
@@ -91,8 +91,6 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#faqs">FAQs</a>
-    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
@@ -106,6 +104,8 @@
                     <li class="toctree-l1"><a class="reference internal" href="../custom_unity_environments/">Custom Unity Environment</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../unity_api_support/">Unity APIs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../build_faq/">FAQ</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Using AirSim</span></p>
@@ -314,7 +314,7 @@
     
       
         
-          <li>Get AirSim &raquo;</li>
+          <li>Building AirSim &raquo;</li>
         
       
     
@@ -402,71 +402,6 @@ cd AirSim</code></pre>
 <h3 id="optional-setup-remote-control-multirotor-only">[Optional] Setup Remote Control (Multirotor Only)<a class="headerlink" href="#optional-setup-remote-control-multirotor-only" title="Permanent link">#</a></h3>
 <p>A remote control is required if you want to fly manually. See the <a href="../remote_control/">remote control setup</a> for more details.</p>
 <p>Alternatively, you can use <a href="../apis/">APIs</a> for programmatic control or use the so-called <a href="../image_apis/">Computer Vision mode</a> to move around using the keyboard.</p>
-<h2 id="faqs">FAQs<a class="headerlink" href="#faqs" title="Permanent link">#</a></h2>
-<ul>
-<li>I'm getting error <code>&lt;MyProject&gt; could not be compiled. Try rebuilding from source manually</code>.<ul>
-<li>This could either happen because of compile error or the fact that your gch files are outdated. Look in to your console window. Do you see something like below?</li>
-</ul>
-</li>
-</ul>
-<p><code>fatal error: file '/usr/include/linux/version.h''/usr/include/linux/version.h' has been modified since the precompiled header</code></p>
-<ul>
-<li>
-<p>If this is the case then look for *.gch file(s) that follows after that message, delete them and try again. Here's <a href="https://answers.unrealengine.com/questions/412349/linux-ue4-build-precompiled-header-fatal-error.html">relevant thread</a> on Unreal Engine forums.</p>
-</li>
-<li>
-<p>If you see other compile errors in console then open up those source files and see if it is due to changes you made. If not, then report it as issue on GitHub.</p>
-</li>
-<li>
-<p>Unreal crashed! How do I know what went wrong?</p>
-<ul>
-<li>Go to the <code>MyUnrealProject/Saved/Crashes</code> folder and search for the file <code>MyProject.log</code> within its subdirectories. At the end of this file you will see the stack trace and messages.
-You can also take a look at the <code>Diagnostics.txt</code> file.</li>
-</ul>
-</li>
-<li>
-<p>How do I use an IDE on Linux?</p>
-<ul>
-<li>You can use Qt Creator or CodeLite. Instructions for Qt Creator are available <a href="https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpQtCreator/index.html">here</a>.</li>
-</ul>
-</li>
-<li>
-<p>Can I cross compile for Linux from a Windows machine?</p>
-<ul>
-<li>Yes, you can, but we haven't tested it. You can find the instructions <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/GettingStarted/index.html">here</a>.</li>
-</ul>
-</li>
-<li>
-<p>What compiler and stdlib does AirSim use?</p>
-<ul>
-<li>We use the same compiler that Unreal Engine uses, <strong>Clang 8</strong>, and stdlib, <strong>libc++</strong>. AirSim's <code>setup.sh</code> will automatically download them.</li>
-</ul>
-</li>
-<li>
-<p>What version of CMake does the AirSim build use?</p>
-<ul>
-<li>3.10.0 or higher. This is <em>not</em> the default in Ubuntu 16.04 so setup.sh installs it for you. You can check your CMake version using <code>cmake --version</code>. If you have an older version, follow <a href="../cmake_linux/">these instructions</a> or see the <a href="https://cmake.org/install/">CMake website</a>.</li>
-</ul>
-</li>
-<li>
-<p>Can I compile AirSim in BashOnWindows?</p>
-<ul>
-<li>Yes, however, you can't run Unreal from BashOnWindows. So this is kind of useful to check a Linux compile, but not for an end-to-end run.
-See the <a href="https://msdn.microsoft.com/en-us/commandline/wsl/install_guide">BashOnWindows install guide</a>.
-Make sure to have the latest version (Windows 10 Creators Edition) as previous versions had various issues.
-Also, don't invoke <code>bash</code> from <code>Visual Studio Command Prompt</code>, otherwise CMake might find VC++ and try and use that!</li>
-</ul>
-</li>
-<li>
-<p>Where can I find more info on running Unreal on Linux?</p>
-<ul>
-<li>Start here: <a href="https://docs.unrealengine.com/latest/INT/Platforms/Linux/index.html">Unreal on Linux</a></li>
-<li><a href="https://wiki.unrealengine.com/Building_On_Linux#Clang">Building Unreal on Linux</a></li>
-<li><a href="https://wiki.unrealengine.com/Linux_Support">Unreal Linux Support</a></li>
-<li><a href="https://wiki.unrealengine.com/Compiling_For_Linux">Unreal Cross Compilation</a></li>
-</ul>
-</li>
-</ul>
               
             </div>
           </div>
