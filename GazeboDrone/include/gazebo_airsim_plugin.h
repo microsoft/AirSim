@@ -81,7 +81,7 @@ private:
     physics::WorldPtr world_;
     physics::LinkPtr link_;
 
-    event::ConnectionPtr _updateConnection;
+    event::ConnectionPtr updateConnection_;
 
     transport::NodePtr node_handle_;
 

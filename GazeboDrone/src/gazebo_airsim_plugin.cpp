@@ -52,24 +52,24 @@ AirsimPlugin::AirsimPlugin()
 
 AirsimPlugin::~AirsimPlugin()
 {
-    _updateConnection->~Connection();
+    updateConnection_->~Connection();
 }
 
-void AirsimPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
+void AirsimPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf)
 {
-    model_ = _model;
+    model_ = model;
     world_ = model_->GetWorld();
 
     namespace_.clear();
-    if (_sdf->HasElement("robotNamespace")) {
-        namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
+    if (sdf->HasElement("robotNamespace")) {
+        namespace_ = sdf->GetElement("robotNamespace")->Get<std::string>();
     }
     else {
         gzerr << "[gazebo_catapult_plugin] Please specify a robotNamespace.\n";
     }
 
-    if (_sdf->HasElement("link_name")) {
-        sdf::ElementPtr elem = _sdf->GetElement("link_name");
+    if (sdf->HasElement("link_name")) {
+        sdf::ElementPtr elem = sdf->GetElement("link_name");
         std::string linkName = elem->Get<std::string>();
         this->link_ = this->model_->GetLink(linkName);
 
@@ -82,7 +82,7 @@ void AirsimPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
         gzerr << "[gazebo_airsim_plugin] linkName needs to be defined in the model SDF";
     }
 
-    _updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&AirsimPlugin::OnUpdate, this, _1));
+    updateConnection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&AirsimPlugin::OnUpdate, this, _1));
 
     node_handle_ = transport::NodePtr(new transport::Node());
     node_handle_->Init(namespace_);
@@ -92,12 +92,9 @@ void AirsimPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
 void AirsimPlugin::OnUpdate(const common::UpdateInfo&)
 {
-    if (link_ == NULL)
+    if (link_ == nullptr)
         gzthrow("[gazebo_airsim_plugin] Couldn't find specified link \n");
 
-    /// TODO: Get Camera pose from gazebo
-    Eigen::Vector3d pos_ned;
-    Eigen::Vector4d att_ned;
 #if GAZEBO_MAJOR_VERSION >= 9
     ignition::math::Pose3d T_W_I = link_->WorldPose();
 #else
