@@ -1197,7 +1197,7 @@ class MultirotorClient(VehicleClient, object):
         Args:
             roll (float): Desired roll angle, in degrees.
             pitch (float): Desired pitch angle, in degrees.
-            yaw (float): Desired yaw angle, in .
+            yaw (float): Desired yaw angle, in degrees.
             throttle (float): Desired throttle (between 0.0 to 1.0)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
