@@ -133,8 +133,10 @@ void ASimHUD::updateWidgetSubwindowVisibility()
 
         bool is_visible = getSubWindowSettings().at(window_index).visible && camera != nullptr;
 
-        if (camera != nullptr)
+        if (camera != nullptr) {
             camera->setCameraTypeEnabled(camera_type, is_visible);
+            camera->setCameraTypeUpdate(camera_type, false);
+        }
 
         widget_->setSubwindowVisibility(window_index,
                                         is_visible,
