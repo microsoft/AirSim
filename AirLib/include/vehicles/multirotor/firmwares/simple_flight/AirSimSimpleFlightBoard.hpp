@@ -20,9 +20,17 @@ namespace airlib
     class AirSimSimpleFlightBoard : public simple_flight::IBoard
     {
     public:
-        AirSimSimpleFlightBoard(const simple_flight::Params* params)
-            : params_(params)
+        AirSimSimpleFlightBoard(const simple_flight::Params* params, const MultiRotorParams* vehicle_params)
+            : params_(params), vehicle_params_(vehicle_params)
         {
+            const std::string& imu_name = "";
+            const std::string& barometer_name = "";
+            const std::string& magnetometer_name = "";
+            const std::string& gps_name = "";
+            setSensors(imu_name,
+                       barometer_name,
+                       magnetometer_name,
+                       gps_name);
         }
 
         //interface for simulator --------------------------------------------------------------------------------
@@ -122,7 +130,117 @@ namespace airlib
             //no op for now
         }
 
+        bool checkImuIfNew() const
+        {
+            return imu_->checkIfNew();
+        }
+
+        bool checkBarometerIfNew() const
+        {
+            return barometer_->checkIfNew();
+        }
+
+        bool checkMagnetometerIfNew() const
+        {
+            return magnetometer_->checkIfNew();
+        }
+
+        bool checkGpsIfNew() const
+        {
+            return gps_->checkIfNew();
+        }
+
+        // added by Suman
+        void readImuData(real_T accel[3], real_T gyro[3]) const
+        {
+            accel[0] = imu_->getOutput().linear_acceleration.x();
+            accel[1] = imu_->getOutput().linear_acceleration.y();
+            accel[3] = imu_->getOutput().linear_acceleration.z();
+
+            gyro[0] = imu_->getOutput().angular_velocity.x();
+            gyro[1] = imu_->getOutput().angular_velocity.y();
+            gyro[2] = imu_->getOutput().angular_velocity.z();
+        }
+
+        // added by Suman
+        void readBarometerData(real_T* altitude) const
+        {
+            *altitude = barometer_->getOutput().altitude;
+        }
+
+        // added by Suman
+        void readMagnetometerData(real_T mag[3]) const
+        {
+            mag[0] = magnetometer_->getOutput().magnetic_field_body.x();
+            mag[1] = magnetometer_->getOutput().magnetic_field_body.y();
+            mag[2] = magnetometer_->getOutput().magnetic_field_body.z();;
+        }
+
+        // added by Suman
+        void readGpsData(real_T geo[3], real_T vel[3]) const
+        {
+            geo[0] = gps_->getOutput().gnss.geo_point.longitude;
+            geo[1] = gps_->getOutput().gnss.geo_point.latitude;
+            geo[2] = gps_->getOutput().gnss.geo_point.altitude;
+
+            vel[0] = gps_->getOutput().gnss.velocity.x();
+            vel[1] = gps_->getOutput().gnss.velocity.y();
+            vel[2] = gps_->getOutput().gnss.velocity.z();;
+        }
+
     private:
+        // added by Suman
+        const SensorCollection& getSensors()
+        {
+            return vehicle_params_->getSensors();
+        }
+
+        void setSensors(const std::string& imu_name, 
+                        const std::string& barometer_name,
+                        const std::string& magnetometer_name,
+                        const std::string& gps_name)
+        {
+            auto* imu_ = static_cast<const ImuBase*>(findSensorByName(imu_name, SensorBase::SensorType::Imu));
+            if (imu_ == nullptr)
+            {
+                //throw VehicleControllerException(Utils::stringf("No IMU with name %s exist on vehicle", imu_name.c_str()));
+            }
+            auto* barometer_ = static_cast<const BarometerBase*>(findSensorByName(barometer_name, SensorBase::SensorType::Barometer));
+            if (barometer_ == nullptr)
+            {
+                //throw VehicleControllerException(Utils::stringf("No barometer with name %s exist on vehicle", barometer_name.c_str()));
+            }
+            auto* magnetometer_ = static_cast<const MagnetometerBase*>(findSensorByName(magnetometer_name, SensorBase::SensorType::Magnetometer));
+            if (magnetometer_ == nullptr)
+            {
+                //throw VehicleControllerException(Utils::stringf("No magnetometer with name %s exist on vehicle", magnetometer_name.c_str()));
+            }
+            auto* gps_ = static_cast<const GpsBase*>(findSensorByName(gps_name, SensorBase::SensorType::Gps));
+            if (gps_ == nullptr)
+            {
+                //throw VehicleControllerException(Utils::stringf("No gps with name %s exist on vehicle", gps_name.c_str()));
+            }
+        }
+
+        // added by Suman
+        const SensorBase* findSensorByName(const std::string& sensor_name, const SensorBase::SensorType type)
+        {
+            const SensorBase* sensor = nullptr;
+
+            // Find sensor with the given name (for empty input name, return the first one found)
+            // Not efficient but should suffice given small number of sensors
+            uint count_sensors = getSensors().size(type);
+            for (uint i = 0; i < count_sensors; i++) {
+                const SensorBase* current_sensor = getSensors().getByType(type, i);
+                if (current_sensor != nullptr && (current_sensor->getName() == sensor_name || sensor_name == "")) {
+                    sensor = current_sensor;
+                    break;
+                }
+            }
+
+            return sensor;
+        }
+
         void sleep(double msec)
         {
             clock()->sleep_for(msec * 1000.0);
@@ -146,6 +264,14 @@ namespace airlib
 
         const simple_flight::Params* params_;
         const Kinematics::State* kinematics_;
+
+        // added by Suman
+        const MultiRotorParams* vehicle_params_;
+        const ImuBase* imu_ = nullptr;
+        const BarometerBase* barometer_ = nullptr;
+        const MagnetometerBase* magnetometer_ = nullptr;
+        const GpsBase* gps_ = nullptr;
+
     };
 }
 } //namespace
