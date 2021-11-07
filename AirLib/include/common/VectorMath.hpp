@@ -37,6 +37,11 @@ namespace airlib
         typedef Eigen::Quaternion<double, Eigen::DontAlign> Quaterniond;
         typedef Eigen::Matrix<double, 3, 3> Matrix3x3d;
         typedef Eigen::Matrix<float, 3, 3> Matrix3x3f;
+        
+        // added by Suman
+        typedef Eigen::Matrix<float, 17, 1> EkfStates;
+        typedef Eigen::Matrix<float, 17, 17> EkfCovariance;
+
         typedef Eigen::AngleAxisd AngleAxisd;
         typedef Eigen::AngleAxisf AngleAxisf;
 
