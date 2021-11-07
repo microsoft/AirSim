@@ -61,8 +61,12 @@ namespace airlib
 
             delay_line_.update();
 
-            if (freq_limiter_.isWaitComplete())
+            if (freq_limiter_.isWaitComplete()){
                 setOutput(delay_line_.getOutput());
+
+                // added by Suman, isNew flag is set to true if the sensor signal updates
+                is_new_ = true;
+            }
         }
 
         //*** End: UpdatableState implementation ***//
