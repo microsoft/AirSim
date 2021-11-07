@@ -12,6 +12,7 @@
 #include "Mixer.hpp"
 #include "CascadeController.hpp"
 #include "AdaptiveController.hpp"
+#include "IEkf.hpp"
 
 namespace simple_flight
 {
@@ -19,8 +20,8 @@ namespace simple_flight
 class Firmware : public IFirmware
 {
 public:
-    Firmware(Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator)
-        : params_(params), board_(board), comm_link_(comm_link), state_estimator_(state_estimator), offboard_api_(params, board, board, state_estimator, comm_link), mixer_(params)
+    Firmware(Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator, IEkf* ekf)
+        : params_(params), board_(board), comm_link_(comm_link), state_estimator_(state_estimator), offboard_api_(params, board, board, state_estimator, comm_link), mixer_(params), ekf_(ekf)
     {
         switch (params->controller_type) {
         case Params::ControllerType::Cascade:
@@ -53,6 +54,7 @@ public:
         IFirmware::update();
 
         board_->update();
+        ekf_->update();
         offboard_api_.update();
         controller_->update();
 
@@ -88,6 +90,7 @@ private:
     IBoard* board_;
     ICommLink* comm_link_;
     IStateEstimator* state_estimator_;
+    IEkf* ekf_;
 
     OffboardApi offboard_api_;
     Mixer mixer_;
