@@ -1071,6 +1071,22 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetKinematics">
+<span class="sig-name descname"><span class="pre">simSetKinematics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_collision</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetKinematics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetKinematics" title="Permalink to this definition"></a></dt>
+<dd><p>Set the kinematics state of the vehicle</p>
+<p>If you don’t want to change position (or orientation) then just set components of position (or orientation) to floating point nan values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<a class="reference internal" href="#airsim.types.KinematicsState" title="airsim.types.KinematicsState"><em>KinematicsState</em></a>) – Desired Pose pf the vehicle</p></li>
+<li><p><strong>ignore_collision</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – Whether to ignore any collision or not</p></li>
+<li><p><strong>vehicle_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Name of the vehicle to move</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetObjectPose">
 <span class="sig-name descname"><span class="pre">simSetObjectPose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teleport</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetObjectPose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetObjectPose" title="Permalink to this definition"></a></dt>
 <dd><p>Set the pose of the object(actor) in the environment</p>

@@ -749,6 +749,19 @@
         <span class="k">return</span> <span class="n">KinematicsState</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">kinematics_state</span><span class="p">)</span></div>
     <span class="n">simGetGroundTruthKinematics</span><span class="o">.</span><span class="vm">__annotations__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;return&#39;</span><span class="p">:</span> <span class="n">KinematicsState</span><span class="p">}</span>
 
+<div class="viewcode-block" id="VehicleClient.simSetKinematics"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetKinematics">[docs]</a>    <span class="k">def</span> <span class="nf">simSetKinematics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">ignore_collision</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the kinematics state of the vehicle</span>
+
+<span class="sd">        If you don&#39;t want to change position (or orientation) then just set components of position (or orientation) to floating point nan values</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (KinematicsState): Desired Pose pf the vehicle</span>
+<span class="sd">            ignore_collision (bool): Whether to ignore any collision or not</span>
+<span class="sd">            vehicle_name (str, optional): Name of the vehicle to move</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetKinematics&#39;</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">ignore_collision</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="VehicleClient.simGetGroundTruthEnvironment"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetGroundTruthEnvironment">[docs]</a>    <span class="k">def</span> <span class="nf">simGetGroundTruthEnvironment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get ground truth environment state</span>
