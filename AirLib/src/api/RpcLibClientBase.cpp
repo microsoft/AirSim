@@ -246,6 +246,11 @@ __pragma(warning(disable : 4239))
             pimpl_->client.call("simSetVehiclePose", RpcLibAdaptorsBase::Pose(pose), ignore_collision, vehicle_name);
         }
 
+        void RpcLibClientBase::simSetKinematics(const Kinematics::State& state, bool ignore_collision, const std::string& vehicle_name)
+        {
+            pimpl_->client.call("simSetKinematics", RpcLibAdaptorsBase::KinematicsState(state), ignore_collision, vehicle_name);
+        }
+
         void RpcLibClientBase::simSetTraceLine(const std::vector<float>& color_rgba, float thickness, const std::string& vehicle_name)
         {
             pimpl_->client.call("simSetTraceLine", color_rgba, thickness, vehicle_name);

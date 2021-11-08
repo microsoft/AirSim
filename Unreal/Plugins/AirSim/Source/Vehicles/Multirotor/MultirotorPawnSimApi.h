@@ -43,6 +43,7 @@ public:
     virtual UpdatableObject* getPhysicsBody() override;
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
+    virtual void setKinematics(const Kinematics::State& state, bool ignore_collision) override;
     virtual void pawnTick(float dt) override;
 
     msr::airlib::MultirotorApiBase* getVehicleApi() const
