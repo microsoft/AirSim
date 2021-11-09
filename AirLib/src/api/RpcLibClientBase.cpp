@@ -421,7 +421,6 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simSetObjectMaterialFromTexture", object_name, texture_path).as<bool>();
         }
 
-
         bool RpcLibClientBase::simLoadLevel(const string& level_name)
         {
             return pimpl_->client.call("simLoadLevel", level_name).as<bool>();

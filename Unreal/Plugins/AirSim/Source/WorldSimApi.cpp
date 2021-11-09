@@ -463,7 +463,7 @@ bool WorldSimApi::setObjectMaterialFromTexture(const std::string& object_name, c
         }
     },
                                              true);
-    
+
     return success;
 }
 
@@ -476,8 +476,8 @@ bool WorldSimApi::setObjectMaterial(const std::string& object_name, const std::s
 
         if (!IsValid(material)) {
             UAirBlueprintLib::LogMessageString("Cannot find specified material for domain randomization",
-                                                   "",
-                                                   LogDebugLevel::Failure);
+                                               "",
+                                               LogDebugLevel::Failure);
         }
         else {
             if (IsValid(actor)) {
@@ -499,7 +499,6 @@ bool WorldSimApi::setObjectMaterial(const std::string& object_name, const std::s
 
     return success;
 }
-
 
 //----------- Plotting APIs ----------/
 void WorldSimApi::simFlushPersistentMarkers()
