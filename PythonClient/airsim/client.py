@@ -177,6 +177,33 @@ class VehicleClient:
         """
         return self.client.call("simSwapTextures", tags, tex_id, component_id, material_id)
 
+    def simSetObjectMaterial(self, object_name, material_name):
+        """
+        Runtime Swap Texture API
+        See https://microsoft.github.io/AirSim/retexturing/ for details
+        Args:
+            object_name (str): name of object to set material for
+            material_name (str): name of material to set for object
+
+        Returns:
+            bool: True if material was set
+        """
+        return self.client.call("simSetObjectMaterial", object_name, material_name)
+
+    def simSetObjectMaterialFromTexture(self, object_name, texture_path):
+        """
+        Runtime Swap Texture API
+        See https://microsoft.github.io/AirSim/retexturing/ for details
+        Args:
+            object_name (str): name of object to set material for
+            texture_path (str): path to texture to set for object
+
+        Returns:
+            bool: True if material was set
+        """
+        return self.client.call("simSetObjectMaterialFromTexture", object_name, texture_path)
+
+
     # time-of-day control
     def simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True):
         """

@@ -401,6 +401,14 @@ namespace airlib
             return *getWorldSimApi()->swapTextures(tag, tex_id, component_id, material_id);
         });
 
+        pimpl_->server.bind("simSetObjectMaterial", [&](const std::string& object_name, const std::string& material_name) -> bool {
+            return getWorldSimApi()->setObjectMaterial(object_name, material_name);
+        });
+
+        pimpl_->server.bind("simSetObjectMaterialFromTexture", [&](const std::string& object_name, const std::string& texture_path) -> bool {
+            return getWorldSimApi()->setObjectMaterialFromTexture(object_name, texture_path);
+        });
+
         pimpl_->server.bind("startRecording", [&]() -> void {
             getWorldSimApi()->startRecording();
         });
