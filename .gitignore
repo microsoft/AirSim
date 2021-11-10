@@ -387,3 +387,6 @@ build_docs/
 
 # api docs
 PythonClient/docs/_build
+
+# custom
+log.txt
