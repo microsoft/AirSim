@@ -12,7 +12,7 @@
 #include "Mixer.hpp"
 #include "CascadeController.hpp"
 #include "AdaptiveController.hpp"
-#include "IEkf.hpp"
+#include "interfaces/IEkf.hpp"
 
 namespace simple_flight
 {

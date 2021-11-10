@@ -5,9 +5,10 @@
 
 #include <exception>
 #include <vector>
-#include "interfaces/IBoard.hpp"
+#include "firmware/interfaces/IBoard.hpp"
 #include "common/FrequencyLimiter.hpp"
 #include "AirSimSimpleEkfBase.hpp"
+#include "AirSimSimpleEkfModel.hpp"
 
 // #include "firmware/Params.hpp"
 // #include "common/Common.hpp"
@@ -20,7 +21,7 @@ namespace airlib
 {
 
     class AirSimSimpleEkf : public AirSimSimpleEkfBase
-        , private AirSimSimpleEkfModel
+        //, private AirSimSimpleEkfModel
     {
     public:
         // Constructor
@@ -135,7 +136,7 @@ namespace airlib
 
             // the updates at the frequency of barometer signal update
 
-            real_T* altitude;
+            real_T* altitude = nullptr;
 
             // check if the barometer gives new measurement and it is valid
             bool is_valid = getBarometerData(altitude);
@@ -154,7 +155,7 @@ namespace airlib
 
             // the updates at the frequency of GPS signal update
 
-            real_T geo[3];
+            double geo[3];
             real_T vel[3];
 
             // check if the GPS gives new measurement and it is valid
@@ -218,7 +219,7 @@ namespace airlib
         }
 
         // reads GPS data
-        bool getGpsData(real_T geo[3],
+        bool getGpsData(double geo[3],
                         real_T vel[3])
         {
             board_->readGpsData(geo, vel);

@@ -4,9 +4,9 @@
 #define msr_airlib_AirSimSimpleEkfBase_hpp
 
 #include <cmath>
-#include "CommonStructs.hpp"
+#include "common/CommonStructs.hpp"
 #include "common/Common.hpp"
-#include "IEkf.hpp"
+#include "firmware/interfaces/IEkf.hpp"
 
 namespace msr
 {

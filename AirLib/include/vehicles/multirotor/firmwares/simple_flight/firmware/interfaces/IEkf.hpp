@@ -10,7 +10,11 @@ namespace simple_flight
 
 class IEkf : public IUpdatable
 {    
-
+public:
+    virtual void update() override
+    {
+        IUpdatable::update();
+    }
 };
 
 } //namespace
