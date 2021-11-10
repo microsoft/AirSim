@@ -75,6 +75,19 @@ public:
             board_->writeOutput(motor_index, motor_outputs_.at(motor_index));
 
         comm_link_->update();
+
+        // added by Suman, better to move this to OffboardApi.hpp
+        auto pos = state_estimator_->getPosition().z();
+
+        std::ostringstream ss;
+        ss << pos;
+        std::string s(ss.str());
+        std::ostringstream tt;
+        tt << board_->millis();
+        std::string t(tt.str());
+
+        std::string messgae = "Time: " + t + "  Altitude: " + s;
+        comm_link_->log(messgae);
     }
 
     virtual IOffboardApi& offboardApi() override
