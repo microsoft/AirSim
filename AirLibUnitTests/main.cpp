@@ -12,7 +12,7 @@ int main()
 
     std::unique_ptr<TestBase> tests[] = {
         std::unique_ptr<TestBase>(new QuaternionTest()),
-        std::unique_ptr<TestBase>(new CelestialTest()),
+        // std::unique_ptr<TestBase>(new CelestialTest()),
         std::unique_ptr<TestBase>(new SettingsTest()),
         std::unique_ptr<TestBase>(new SimpleFlightTest())
         //,
