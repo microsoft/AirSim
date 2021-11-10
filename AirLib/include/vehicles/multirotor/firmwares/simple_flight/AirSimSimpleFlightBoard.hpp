@@ -130,28 +130,28 @@ namespace airlib
             //no op for now
         }
 
-        bool checkImuIfNew() const
+        virtual bool checkImuIfNew() const override
         {
             return imu_->checkIfNew();
         }
 
-        bool checkBarometerIfNew() const
+        virtual bool checkBarometerIfNew() const override
         {
             return barometer_->checkIfNew();
         }
 
-        bool checkMagnetometerIfNew() const
+        virtual bool checkMagnetometerIfNew() const override
         {
             return magnetometer_->checkIfNew();
         }
 
-        bool checkGpsIfNew() const
+        virtual bool checkGpsIfNew() const override
         {
             return gps_->checkIfNew();
         }
 
         // added by Suman
-        void readImuData(real_T accel[3], real_T gyro[3]) const
+        virtual void readImuData(real_T accel[3], real_T gyro[3]) const override
         {
             accel[0] = imu_->getOutput().linear_acceleration.x();
             accel[1] = imu_->getOutput().linear_acceleration.y();
@@ -163,13 +163,13 @@ namespace airlib
         }
 
         // added by Suman
-        void readBarometerData(real_T* altitude) const
+        virtual void readBarometerData(real_T* altitude) const override
         {
             *altitude = barometer_->getOutput().altitude;
         }
 
         // added by Suman
-        void readMagnetometerData(real_T mag[3]) const
+        virtual void readMagnetometerData(real_T mag[3]) const override
         {
             mag[0] = magnetometer_->getOutput().magnetic_field_body.x();
             mag[1] = magnetometer_->getOutput().magnetic_field_body.y();
@@ -177,7 +177,7 @@ namespace airlib
         }
 
         // added by Suman
-        void readGpsData(real_T geo[3], real_T vel[3]) const
+        virtual void readGpsData(double geo[3], real_T vel[3]) const override
         {
             geo[0] = gps_->getOutput().gnss.geo_point.longitude;
             geo[1] = gps_->getOutput().gnss.geo_point.latitude;
@@ -185,7 +185,7 @@ namespace airlib
 
             vel[0] = gps_->getOutput().gnss.velocity.x();
             vel[1] = gps_->getOutput().gnss.velocity.y();
-            vel[2] = gps_->getOutput().gnss.velocity.z();;
+            vel[2] = gps_->getOutput().gnss.velocity.z();
         }
 
     private:
@@ -200,22 +200,22 @@ namespace airlib
                         const std::string& magnetometer_name,
                         const std::string& gps_name)
         {
-            auto* imu_ = static_cast<const ImuBase*>(findSensorByName(imu_name, SensorBase::SensorType::Imu));
+            imu_ = static_cast<const ImuBase*>(findSensorByName(imu_name, SensorBase::SensorType::Imu));
             if (imu_ == nullptr)
             {
                 //throw VehicleControllerException(Utils::stringf("No IMU with name %s exist on vehicle", imu_name.c_str()));
             }
-            auto* barometer_ = static_cast<const BarometerBase*>(findSensorByName(barometer_name, SensorBase::SensorType::Barometer));
+            barometer_ = static_cast<const BarometerBase*>(findSensorByName(barometer_name, SensorBase::SensorType::Barometer));
             if (barometer_ == nullptr)
             {
                 //throw VehicleControllerException(Utils::stringf("No barometer with name %s exist on vehicle", barometer_name.c_str()));
             }
-            auto* magnetometer_ = static_cast<const MagnetometerBase*>(findSensorByName(magnetometer_name, SensorBase::SensorType::Magnetometer));
+            magnetometer_ = static_cast<const MagnetometerBase*>(findSensorByName(magnetometer_name, SensorBase::SensorType::Magnetometer));
             if (magnetometer_ == nullptr)
             {
                 //throw VehicleControllerException(Utils::stringf("No magnetometer with name %s exist on vehicle", magnetometer_name.c_str()));
             }
-            auto* gps_ = static_cast<const GpsBase*>(findSensorByName(gps_name, SensorBase::SensorType::Gps));
+            gps_ = static_cast<const GpsBase*>(findSensorByName(gps_name, SensorBase::SensorType::Gps));
             if (gps_ == nullptr)
             {
                 //throw VehicleControllerException(Utils::stringf("No gps with name %s exist on vehicle", gps_name.c_str()));
