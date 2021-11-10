@@ -27,7 +27,6 @@ namespace airlib
             *myfile << status_message << std::endl;
             // std::cout << status_message << std::endl;
         }
-        messages_.clear();
     }
 
     class SimpleFlightTest : public TestBase
@@ -146,7 +145,7 @@ namespace airlib
         }
 
     private:
-        std::vector<std::string> messages_;
+        //std::vector<std::string> messages_;
     };
 }
 }
