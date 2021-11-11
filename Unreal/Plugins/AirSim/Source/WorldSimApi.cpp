@@ -173,14 +173,14 @@ AActor* WorldSimApi::createNewBPActor(const FActorSpawnParameters& spawn_params,
 
 bool WorldSimApi::setLightIntensity(const std::string& light_name, float intensity)
 {
-    bool result;
+    bool result = false;
     UAirBlueprintLib::RunCommandOnGameThread([this, &light_name, &intensity, &result]() {
         AActor* light_actor = simmode_->scene_object_map.FindRef(FString(light_name.c_str()));
 
         if (light_actor) {
             const FString command = FString::Printf(TEXT("SetIntensity %f"), intensity);
             FOutputDeviceNull ar;
-            result = light_actor->CallFunctionByNameWithArguments(*command, ar, NULL, true);
+            result = light_actor->CallFunctionByNameWithArguments(*command, ar, nullptr, true);
         }
     },
                                              true);
