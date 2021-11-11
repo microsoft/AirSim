@@ -321,6 +321,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     initialize_airsim();
 }
 
+// QoS - The depth of the publisher message queue.
+// more details here - https://docs.ros.org/en/foxy/Concepts/About-Quality-of-Service-Settings.html
 template <typename T>
 const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS)
 {
