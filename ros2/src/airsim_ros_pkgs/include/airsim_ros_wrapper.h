@@ -355,7 +355,7 @@ private:
     /// ROS other publishers
     rclcpp::Publisher<rosgraph_msgs::msg::Clock>::SharedPtr clock_pub_;
     rosgraph_msgs::msg::Clock ros_clock_;
-    bool publish_clock_ = false;
+    bool publish_clock_;
 
     rclcpp::Subscription<airsim_interfaces::msg::GimbalAngleQuatCmd>::SharedPtr gimbal_angle_quat_cmd_sub_;
     rclcpp::Subscription<airsim_interfaces::msg::GimbalAngleEulerCmd>::SharedPtr gimbal_angle_euler_cmd_sub_;

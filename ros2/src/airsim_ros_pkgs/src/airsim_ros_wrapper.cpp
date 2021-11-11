@@ -37,6 +37,7 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     , nh_img_(nh_img)
     , nh_lidar_(nh_lidar)
     , isENU_(false)
+    , publish_clock_(false)
 {
     ros_clock_.clock = rclcpp::Time(0);
 
