@@ -133,44 +133,44 @@ private:
     {
     public:
         virtual ~VehicleROS() {}
-        std::string vehicle_name;
+        std::string vehicle_name_;
 
         /// All things ROS
-        rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_local_pub;
-        rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr global_gps_pub;
-        rclcpp::Publisher<airsim_interfaces::msg::Environment>::SharedPtr env_pub;
-        airsim_interfaces::msg::Environment env_msg;
+        rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_local_pub_;
+        rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr global_gps_pub_;
+        rclcpp::Publisher<airsim_interfaces::msg::Environment>::SharedPtr env_pub_;
+        airsim_interfaces::msg::Environment env_msg_;
 
-        std::vector<SensorPublisher<airsim_interfaces::msg::Altimeter>> barometer_pubs;
-        std::vector<SensorPublisher<sensor_msgs::msg::Imu>> imu_pubs;
-        std::vector<SensorPublisher<sensor_msgs::msg::NavSatFix>> gps_pubs;
-        std::vector<SensorPublisher<sensor_msgs::msg::MagneticField>> magnetometer_pubs;
-        std::vector<SensorPublisher<sensor_msgs::msg::Range>> distance_pubs;
-        std::vector<SensorPublisher<sensor_msgs::msg::PointCloud2>> lidar_pubs;
+        std::vector<SensorPublisher<airsim_interfaces::msg::Altimeter>> barometer_pubs_;
+        std::vector<SensorPublisher<sensor_msgs::msg::Imu>> imu_pubs_;
+        std::vector<SensorPublisher<sensor_msgs::msg::NavSatFix>> gps_pubs_;
+        std::vector<SensorPublisher<sensor_msgs::msg::MagneticField>> magnetometer_pubs_;
+        std::vector<SensorPublisher<sensor_msgs::msg::Range>> distance_pubs_;
+        std::vector<SensorPublisher<sensor_msgs::msg::PointCloud2>> lidar_pubs_;
 
         // handle lidar seperately for max performance as data is collected on its own thread/callback
 
-        nav_msgs::msg::Odometry curr_odom;
-        sensor_msgs::msg::NavSatFix gps_sensor_msg;
+        nav_msgs::msg::Odometry curr_odom_;
+        sensor_msgs::msg::NavSatFix gps_sensor_msg_;
 
-        std::vector<geometry_msgs::msg::TransformStamped> static_tf_msg_vec;
+        std::vector<geometry_msgs::msg::TransformStamped> static_tf_msg_vec_;
 
-        rclcpp::Time stamp;
+        rclcpp::Time stamp_;
 
-        std::string odom_frame_id;
+        std::string odom_frame_id_;
     };
 
     class CarROS : public VehicleROS
     {
     public:
-        msr::airlib::CarApiBase::CarState curr_car_state;
+        msr::airlib::CarApiBase::CarState curr_car_state_;
 
-        rclcpp::Subscription<airsim_interfaces::msg::CarControls>::SharedPtr car_cmd_sub;
-        rclcpp::Publisher<airsim_interfaces::msg::CarState>::SharedPtr car_state_pub;
-        airsim_interfaces::msg::CarState car_state_msg;
+        rclcpp::Subscription<airsim_interfaces::msg::CarControls>::SharedPtr car_cmd_sub_;
+        rclcpp::Publisher<airsim_interfaces::msg::CarState>::SharedPtr car_state_pub_;
+        airsim_interfaces::msg::CarState car_state_msg_;
 
-        bool has_car_cmd;
-        msr::airlib::CarApiBase::CarControls car_cmd;
+        bool has_car_cmd_;
+        msr::airlib::CarApiBase::CarControls car_cmd_;
     };
 
     class MultiRotorROS : public VehicleROS
