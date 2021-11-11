@@ -319,7 +319,7 @@ private:
     // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
     // todo for multiple drones with multiple sensors, this won't scale. make it a part of VehicleROS?
 
-    std::mutex drone_control_mutex_;
+    std::mutex control_mutex_ ;
 
     // gimbal control
     bool has_gimbal_cmd_;

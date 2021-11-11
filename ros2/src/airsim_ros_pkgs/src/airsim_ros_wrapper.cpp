@@ -338,7 +338,7 @@ const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const string&
 bool AirsimROSWrapper::takeoff_srv_cb(std::shared_ptr<airsim_interfaces::srv::Takeoff::Request> request, std::shared_ptr<airsim_interfaces::srv::Takeoff::Response> response, const std::string& vehicle_name)
 {
     unused(response);
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     if (request->wait_on_last_task)
         static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->takeoffAsync(20, vehicle_name)->waitOnLastTask(); // todo value for timeout_sec?
@@ -353,7 +353,7 @@ bool AirsimROSWrapper::takeoff_srv_cb(std::shared_ptr<airsim_interfaces::srv::Ta
 bool AirsimROSWrapper::takeoff_group_srv_cb(std::shared_ptr<airsim_interfaces::srv::TakeoffGroup::Request> request, std::shared_ptr<airsim_interfaces::srv::TakeoffGroup::Response> response)
 {
     unused(response);
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     if (request->wait_on_last_task)
         for (const auto& vehicle_name : request->vehicle_names)
@@ -370,7 +370,7 @@ bool AirsimROSWrapper::takeoff_group_srv_cb(std::shared_ptr<airsim_interfaces::s
 bool AirsimROSWrapper::takeoff_all_srv_cb(std::shared_ptr<airsim_interfaces::srv::Takeoff::Request> request, std::shared_ptr<airsim_interfaces::srv::Takeoff::Response> response)
 {
     unused(response);
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     if (request->wait_on_last_task)
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
@@ -387,7 +387,7 @@ bool AirsimROSWrapper::takeoff_all_srv_cb(std::shared_ptr<airsim_interfaces::srv
 bool AirsimROSWrapper::land_srv_cb(std::shared_ptr<airsim_interfaces::srv::Land::Request> request, std::shared_ptr<airsim_interfaces::srv::Land::Response> response, const std::string& vehicle_name)
 {
     unused(response);
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     if (request->wait_on_last_task)
         static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->landAsync(60, vehicle_name)->waitOnLastTask();
@@ -400,7 +400,7 @@ bool AirsimROSWrapper::land_srv_cb(std::shared_ptr<airsim_interfaces::srv::Land:
 bool AirsimROSWrapper::land_group_srv_cb(std::shared_ptr<airsim_interfaces::srv::LandGroup::Request> request, std::shared_ptr<airsim_interfaces::srv::LandGroup::Response> response)
 {
     unused(response);
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     if (request->wait_on_last_task)
         for (const auto& vehicle_name : request->vehicle_names)
@@ -415,7 +415,7 @@ bool AirsimROSWrapper::land_group_srv_cb(std::shared_ptr<airsim_interfaces::srv:
 bool AirsimROSWrapper::land_all_srv_cb(std::shared_ptr<airsim_interfaces::srv::Land::Request> request, std::shared_ptr<airsim_interfaces::srv::Land::Response> response)
 {
     unused(response);
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     if (request->wait_on_last_task)
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
@@ -433,7 +433,7 @@ bool AirsimROSWrapper::reset_srv_cb(std::shared_ptr<airsim_interfaces::srv::Rese
 {
     unused(request);
     unused(response);
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     airsim_client_.reset();
     return true; //todo
@@ -456,7 +456,7 @@ msr::airlib::Quaternionr AirsimROSWrapper::get_airlib_quat(const tf2::Quaternion
 
 void AirsimROSWrapper::car_cmd_cb(const airsim_interfaces::msg::CarControls::SharedPtr msg, const std::string& vehicle_name)
 {
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     auto car = static_cast<CarROS*>(vehicle_name_ptr_map_[vehicle_name].get());
     car->car_cmd_.throttle = msg->throttle;
@@ -477,7 +477,7 @@ msr::airlib::Pose AirsimROSWrapper::get_airlib_pose(const float& x, const float&
 
 void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg, const std::string& vehicle_name)
 {
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
 
@@ -497,7 +497,7 @@ void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_interfaces::msg::VelCm
 
 void AirsimROSWrapper::vel_cmd_group_body_frame_cb(const airsim_interfaces::msg::VelCmdGroup::SharedPtr msg)
 {
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     for (const auto& vehicle_name : msg->vehicle_names) {
         auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
@@ -519,7 +519,7 @@ void AirsimROSWrapper::vel_cmd_group_body_frame_cb(const airsim_interfaces::msg:
 
 void AirsimROSWrapper::vel_cmd_all_body_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg)
 {
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     // todo expose wait_on_last_task or nah?
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
@@ -542,7 +542,7 @@ void AirsimROSWrapper::vel_cmd_all_body_frame_cb(const airsim_interfaces::msg::V
 
 void AirsimROSWrapper::vel_cmd_world_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg, const std::string& vehicle_name)
 {
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
 
@@ -558,7 +558,7 @@ void AirsimROSWrapper::vel_cmd_world_frame_cb(const airsim_interfaces::msg::VelC
 // this is kinda unnecessary but maybe it makes life easier for the end user.
 void AirsimROSWrapper::vel_cmd_group_world_frame_cb(const airsim_interfaces::msg::VelCmdGroup::SharedPtr msg)
 {
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     for (const auto& vehicle_name : msg->vehicle_names) {
         auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
@@ -575,7 +575,7 @@ void AirsimROSWrapper::vel_cmd_group_world_frame_cb(const airsim_interfaces::msg
 
 void AirsimROSWrapper::vel_cmd_all_world_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg)
 {
-    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+    std::lock_guard<std::mutex> guard(control_mutex_ );
 
     // todo expose wait_on_last_task or nah?
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
@@ -1083,7 +1083,7 @@ void AirsimROSWrapper::update_commands()
 
             // send control commands from the last callback to airsim
             if (drone->has_vel_cmd_) {
-                std::lock_guard<std::mutex> guard(drone_control_mutex_);
+                std::lock_guard<std::mutex> guard(control_mutex_ );
                 static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->moveByVelocityAsync(drone->vel_cmd_.x, drone->vel_cmd_.y, drone->vel_cmd_.z, vel_cmd_duration_, msr::airlib::DrivetrainType::MaxDegreeOfFreedom, drone->vel_cmd_.yaw_mode, drone->vehicle_name_);
             }
             drone->has_vel_cmd_ = false;
@@ -1092,7 +1092,7 @@ void AirsimROSWrapper::update_commands()
             // send control commands from the last callback to airsim
             auto car = static_cast<CarROS*>(vehicle_ros.get());
             if (car->has_car_cmd_) {
-                std::lock_guard<std::mutex> guard(drone_control_mutex_);
+                std::lock_guard<std::mutex> guard(control_mutex_ );
                 static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get())->setCarControls(car->car_cmd_, vehicle_ros->vehicle_name_);
             }
             car->has_car_cmd_ = false;
@@ -1101,7 +1101,7 @@ void AirsimROSWrapper::update_commands()
 
     // Only camera rotation, no translation movement of camera
     if (has_gimbal_cmd_) {
-        std::lock_guard<std::mutex> guard(drone_control_mutex_);
+        std::lock_guard<std::mutex> guard(control_mutex_ );
         airsim_client_->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(0, 0, 0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
     }
 
