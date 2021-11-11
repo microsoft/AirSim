@@ -1293,7 +1293,7 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_resp
     unused(curr_ros_time);
     std::shared_ptr<sensor_msgs::msg::Image> img_msg_ptr = std::make_shared<sensor_msgs::msg::Image>();
     img_msg_ptr->data = img_response.image_data_uint8;
-    img_msg_ptr->step = img_response.width * 3; // todo un-hardcode. image_width*num_bytes
+    img_msg_ptr->step = img_response.image_data_uint8.size() / img_response.height;
     img_msg_ptr->header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     img_msg_ptr->header.frame_id = frame_id;
     img_msg_ptr->height = img_response.height;
