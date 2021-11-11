@@ -187,7 +187,6 @@ bool WorldSimApi::setLightIntensity(const std::string& light_name, float intensi
     return result;
 }
 
-
 bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
 {
     bool success = false;

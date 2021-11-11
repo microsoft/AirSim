@@ -389,7 +389,7 @@ namespace airlib
             const Environment::State& result = (*getVehicleSimApi(vehicle_name)->getGroundTruthEnvironment()).getState();
             return RpcLibAdaptorsBase::EnvironmentState(result);
         });
-        
+
         pimpl_->server.bind("simCreateVoxelGrid", [&](const RpcLibAdaptorsBase::Vector3r& position, const int& x, const int& y, const int& z, const float& res, const std::string& output_file) -> bool {
             return getWorldSimApi()->createVoxelGrid(position.to(), x, y, z, res, output_file);
         });
