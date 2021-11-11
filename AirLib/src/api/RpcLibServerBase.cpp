@@ -381,6 +381,10 @@ namespace airlib
             return RpcLibAdaptorsBase::KinematicsState(result);
         });
 
+        pimpl_->server.bind("simSetKinematics", [&](const RpcLibAdaptorsBase::KinematicsState& state, bool ignore_collision, const std::string& vehicle_name) {
+            getVehicleSimApi(vehicle_name)->setKinematics(state.to(), ignore_collision);
+        });
+
         pimpl_->server.bind("simGetGroundTruthEnvironment", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::EnvironmentState {
             const Environment::State& result = (*getVehicleSimApi(vehicle_name)->getGroundTruthEnvironment()).getState();
             return RpcLibAdaptorsBase::EnvironmentState(result);
@@ -400,6 +404,14 @@ namespace airlib
 
         pimpl_->server.bind("simSwapTextures", [&](const std::string tag, int tex_id, int component_id, int material_id) -> std::vector<string> {
             return *getWorldSimApi()->swapTextures(tag, tex_id, component_id, material_id);
+        });
+
+        pimpl_->server.bind("simSetObjectMaterial", [&](const std::string& object_name, const std::string& material_name) -> bool {
+            return getWorldSimApi()->setObjectMaterial(object_name, material_name);
+        });
+
+        pimpl_->server.bind("simSetObjectMaterialFromTexture", [&](const std::string& object_name, const std::string& texture_path) -> bool {
+            return getWorldSimApi()->setObjectMaterialFromTexture(object_name, texture_path);
         });
 
         pimpl_->server.bind("startRecording", [&]() -> void {

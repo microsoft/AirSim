@@ -73,6 +73,8 @@ namespace airlib
         virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) = 0;
         virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) = 0;
         virtual bool setLightIntensity(const std::string& light_name, float intensity) = 0;
+        virtual bool setObjectMaterial(const std::string& object_name, const std::string& material_name) = 0;
+        virtual bool setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path) = 0;
         virtual vector<MeshPositionVertexBuffersResponse> getMeshPositionVertexBuffers() const = 0;
 
         virtual bool createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file) = 0;

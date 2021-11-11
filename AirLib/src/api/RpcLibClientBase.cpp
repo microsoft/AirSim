@@ -246,6 +246,11 @@ __pragma(warning(disable : 4239))
             pimpl_->client.call("simSetVehiclePose", RpcLibAdaptorsBase::Pose(pose), ignore_collision, vehicle_name);
         }
 
+        void RpcLibClientBase::simSetKinematics(const Kinematics::State& state, bool ignore_collision, const std::string& vehicle_name)
+        {
+            pimpl_->client.call("simSetKinematics", RpcLibAdaptorsBase::KinematicsState(state), ignore_collision, vehicle_name);
+        }
+
         void RpcLibClientBase::simSetTraceLine(const std::vector<float>& color_rgba, float thickness, const std::string& vehicle_name)
         {
             pimpl_->client.call("simSetTraceLine", color_rgba, thickness, vehicle_name);
@@ -409,6 +414,16 @@ __pragma(warning(disable : 4239))
         std::vector<std::string> RpcLibClientBase::simSwapTextures(const std::string& tags, int tex_id, int component_id, int material_id)
         {
             return pimpl_->client.call("simSwapTextures", tags, tex_id, component_id, material_id).as<vector<string>>();
+        }
+
+        bool RpcLibClientBase::simSetObjectMaterial(const std::string& object_name, const std::string& material_name)
+        {
+            return pimpl_->client.call("simSetObjectMaterial", object_name, material_name).as<bool>();
+        }
+
+        bool RpcLibClientBase::simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path)
+        {
+            return pimpl_->client.call("simSetObjectMaterialFromTexture", object_name, texture_path).as<bool>();
         }
 
         bool RpcLibClientBase::simLoadLevel(const string& level_name)

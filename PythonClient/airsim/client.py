@@ -190,6 +190,33 @@ class VehicleClient:
         """
         return self.client.call("simSwapTextures", tags, tex_id, component_id, material_id)
 
+    def simSetObjectMaterial(self, object_name, material_name):
+        """
+        Runtime Swap Texture API
+        See https://microsoft.github.io/AirSim/retexturing/ for details
+        Args:
+            object_name (str): name of object to set material for
+            material_name (str): name of material to set for object
+
+        Returns:
+            bool: True if material was set
+        """
+        return self.client.call("simSetObjectMaterial", object_name, material_name)
+
+    def simSetObjectMaterialFromTexture(self, object_name, texture_path):
+        """
+        Runtime Swap Texture API
+        See https://microsoft.github.io/AirSim/retexturing/ for details
+        Args:
+            object_name (str): name of object to set material for
+            texture_path (str): path to texture to set for object
+
+        Returns:
+            bool: True if material was set
+        """
+        return self.client.call("simSetObjectMaterialFromTexture", object_name, texture_path)
+
+
     # time-of-day control
     def simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True):
         """
@@ -697,6 +724,19 @@ class VehicleClient:
         kinematics_state = self.client.call('simGetGroundTruthKinematics', vehicle_name)
         return KinematicsState.from_msgpack(kinematics_state)
     simGetGroundTruthKinematics.__annotations__ = {'return': KinematicsState}
+
+    def simSetKinematics(self, state, ignore_collision, vehicle_name = ''):
+        """
+        Set the kinematics state of the vehicle
+
+        If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values
+
+        Args:
+            state (KinematicsState): Desired Pose pf the vehicle
+            ignore_collision (bool): Whether to ignore any collision or not
+            vehicle_name (str, optional): Name of the vehicle to move
+        """
+        self.client.call('simSetKinematics', state, ignore_collision, vehicle_name)
 
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
         """

@@ -13,7 +13,7 @@ public:
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
     typedef msr::airlib::CameraDetails CameraDetails;
 
-    WorldSimApi(SimModeBase* simmode, std::string vehicle_name);
+    WorldSimApi(SimModeBase* simmode);
     virtual ~WorldSimApi();
 
     // ------ Level setting apis ----- //
@@ -38,6 +38,8 @@ public:
                                  const std::string& message_param = "", unsigned char severity = 0) override;
 
     virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) override;
+    virtual bool setObjectMaterial(const std::string& object_name, const std::string& material_name) override;
+    virtual bool setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path) override;
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;
     virtual Pose getObjectPose(const std::string& object_name) const override;
 
@@ -92,5 +94,4 @@ public:
 
 private:
     SimModeBase* simmode_;
-    std::string vehicle_name_;
 };

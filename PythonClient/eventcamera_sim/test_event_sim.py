@@ -19,8 +19,8 @@ parser.add_argument("--width", type=int, default=256)
 class AirSimEventGen:
     def __init__(self, W, H, save=False, debug=False):
         self.ev_sim = EventSimulator(W, H)
-        self.W = W
         self.H = H
+        self.W = W
 
         self.image_request = airsim.ImageRequest(
             "0", airsim.ImageType.Scene, False, False
