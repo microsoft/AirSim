@@ -1,6 +1,4 @@
 #include <airsim_ros_wrapper.h>
-// #include <pluginlib/class_list_macros.h>
-// PLUGINLIB_EXPORT_CLASS(AirsimROSWrapper, nodelet::Nodelet)
 #include "common/AirSimSettings.hpp"
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
 
