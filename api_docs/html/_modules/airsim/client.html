@@ -224,6 +224,19 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">ver_info</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="VehicleClient.simSetLightIntensity"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetLightIntensity">[docs]</a>    <span class="k">def</span> <span class="nf">simSetLightIntensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">light_name</span><span class="p">,</span> <span class="n">intensity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change intensity of named light</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            light_name (str): Name of light to change</span>
+<span class="sd">            intensity (float): New intensity value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if successful, otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;simSetLightIntensity&quot;</span><span class="p">,</span> <span class="n">light_name</span><span class="p">,</span> <span class="n">intensity</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="VehicleClient.simSwapTextures"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSwapTextures">[docs]</a>    <span class="k">def</span> <span class="nf">simSwapTextures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">tex_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">component_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">material_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runtime Swap Texture API</span>
@@ -549,7 +562,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simLoadLevel&#39;</span><span class="p">,</span> <span class="n">level_name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="VehicleClient.simSpawnObject"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSpawnObject">[docs]</a>    <span class="k">def</span> <span class="nf">simSpawnObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">physics_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="VehicleClient.simSpawnObject"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSpawnObject">[docs]</a>    <span class="k">def</span> <span class="nf">simSpawnObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">physics_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_blueprint</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Spawned selected object in the world</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -557,11 +570,13 @@
 <span class="sd">            asset_name (str): Name of asset(mesh) in the project database</span>
 <span class="sd">            pose (airsim.Pose): Desired pose of object</span>
 <span class="sd">            scale (airsim.Vector3r): Desired scale of object</span>
+<span class="sd">            physics_enabled (bool, optional): Whether to enable physics for the object</span>
+<span class="sd">            is_blueprint (bool, optional): Whether to spawn a blueprint or an actor</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Name of spawned object, in case it had to be modified</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSpawnObject&#39;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">physics_enabled</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSpawnObject&#39;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">physics_enabled</span><span class="p">,</span> <span class="n">is_blueprint</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="VehicleClient.simDestroyObject"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simDestroyObject">[docs]</a>    <span class="k">def</span> <span class="nf">simDestroyObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes selected object from the world</span>
