@@ -14,10 +14,10 @@ client.simDestroyObject(lights[0])
 time.sleep(1)
 
 # Create a new light at the same pose
-client.simSpawnObject("PointLight", "PointLightBP", pose, scale, False, True)
+new_light_name = client.simSpawnObject("PointLight", "PointLightBP", pose, scale, False, True)
 time.sleep(1)
 
 # Change the light's intensity
 for i in range(20):
-    client.simSetLightIntensity("PointLight", i * 100)
+    client.simSetLightIntensity(new_light_name, i * 100)
     time.sleep(0.5)
