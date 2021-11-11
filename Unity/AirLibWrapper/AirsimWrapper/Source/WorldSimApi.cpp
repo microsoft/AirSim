@@ -58,6 +58,14 @@ void WorldSimApi::printLogMessage(const std::string& message, const std::string&
     PrintLogMessage(message.c_str(), message_param.c_str(), "", severity);
 }
 
+bool WorldSimApi::setLightIntensity(const std::string& light_name, float intensity)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "setLightIntensity is not supported on unity")
+                                    .c_str());
+    return false;
+}
+
 std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
 {
     std::unique_ptr<std::vector<std::string>> result;
