@@ -1,2 +1,2 @@
-geometry_msgs/Twist twist
+airsim_interfaces/VelCmd vel_cmd
 string[] vehicle_names
