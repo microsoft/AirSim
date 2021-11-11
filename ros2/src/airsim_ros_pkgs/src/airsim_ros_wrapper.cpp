@@ -548,13 +548,6 @@ void AirsimROSWrapper::vel_cmd_world_frame_cb(const airsim_interfaces::msg::VelC
 
     auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
     drone->vel_cmd_ = get_airlib_vel_cmd(*msg);
-    // drone->vel_cmd_ = get_airlib_vel_cmd(msg);
-    // drone->vel_cmd_.x = msg->twist.linear.x;
-    // drone->vel_cmd_.y = msg->twist.linear.y;
-    // drone->vel_cmd_.z = msg->twist.linear.z;
-    // drone->vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-    // drone->vel_cmd_.yaw_mode.is_rate = true;
-    // drone->vel_cmd_.yaw_mode.yaw_or_rate = math_common::rad2deg(msg->twist.angular.z);
     drone->has_vel_cmd_ = true;
 }
 
@@ -566,13 +559,6 @@ void AirsimROSWrapper::vel_cmd_group_world_frame_cb(const airsim_interfaces::msg
     for (const auto& vehicle_name : msg->vehicle_names) {
         auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
         drone->vel_cmd_ = get_airlib_vel_cmd(msg->vel_cmd);
-
-        // drone->vel_cmd_.x = msg->twist.linear.x;
-        // drone->vel_cmd_.y = msg->twist.linear.y;
-        // drone->vel_cmd_.z = msg->twist.linear.z;
-        // drone->vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-        // drone->vel_cmd_.yaw_mode.is_rate = true;
-        // drone->vel_cmd_.yaw_mode.yaw_or_rate = math_common::rad2deg(msg->twist.angular.z);
         drone->has_vel_cmd_ = true;
     }
 }
@@ -585,13 +571,6 @@ void AirsimROSWrapper::vel_cmd_all_world_frame_cb(const airsim_interfaces::msg::
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
         auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_pair.second.get());
         drone->vel_cmd_ = get_airlib_vel_cmd(*msg);
-
-        // drone->vel_cmd_.x = msg->twist.linear.x;
-        // drone->vel_cmd_.y = msg->twist.linear.y;
-        // drone->vel_cmd_.z = msg->twist.linear.z;
-        // drone->vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-        // drone->vel_cmd_.yaw_mode.is_rate = true;
-        // drone->vel_cmd_.yaw_mode.yaw_or_rate = math_common::rad2deg(msg->twist.angular.z);
         drone->has_vel_cmd_ = true;
     }
 }
