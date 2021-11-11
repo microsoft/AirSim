@@ -88,9 +88,9 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
 std::string WorldSimApi::spawnObject(const std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled, bool is_blueprint)
 {
     FString asset_name(load_object.c_str());
-    FAssetData* LoadAsset = simmode_->asset_map.Find(asset_name);
+    FAssetData* load_asset = simmode_->asset_map.Find(asset_name);
 
-    if (!LoadAsset->IsValid()) {
+    if (!load_asset->IsValid()) {
         throw std::invalid_argument("There were no objects with name " + load_object + " found in the Registry");
     }
 
@@ -100,7 +100,7 @@ std::string WorldSimApi::spawnObject(const std::string& object_name, const std::
     bool spawned_object = false;
     std::string final_object_name = object_name;
 
-    UAirBlueprintLib::RunCommandOnGameThread([this, LoadAsset, &final_object_name, &spawned_object, &actor_transform, &scale, &physics_enabled, &is_blueprint]() {
+    UAirBlueprintLib::RunCommandOnGameThread([this, load_asset, &final_object_name, &spawned_object, &actor_transform, &scale, &physics_enabled, &is_blueprint]() {
         // Ensure new non-matching name for the object
         std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_, ".*" + final_object_name + ".*");
         if (matching_names.size() > 0) {
@@ -116,15 +116,14 @@ std::string WorldSimApi::spawnObject(const std::string& object_name, const std::
 
         FActorSpawnParameters new_actor_spawn_params;
         new_actor_spawn_params.Name = FName(final_object_name.c_str());
-        //new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
 
         AActor* NewActor;
         if (is_blueprint) {
-            UBlueprint* LoadObject = Cast<UBlueprint>(LoadAsset->GetAsset());
+            UBlueprint* LoadObject = Cast<UBlueprint>(load_asset->GetAsset());
             NewActor = this->createNewBPActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
         }
         else {
-            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(LoadAsset->GetAsset());
+            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(load_asset->GetAsset());
             NewActor = this->createNewStaticMeshActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
         }
 
@@ -163,13 +162,13 @@ AActor* WorldSimApi::createNewStaticMeshActor(const FActorSpawnParameters& spawn
 
 AActor* WorldSimApi::createNewBPActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UBlueprint* blueprint)
 {
-    UClass* NewBP = static_cast<UClass*>(blueprint->GeneratedClass);
-    AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(NewBP, FVector::ZeroVector, FRotator::ZeroRotator, spawn_params);
+    UClass* new_bp = static_cast<UClass*>(blueprint->GeneratedClass);
+    AActor* new_actor = simmode_->GetWorld()->SpawnActor<AActor>(new_bp, FVector::ZeroVector, FRotator::ZeroRotator, spawn_params);
 
-    if (NewActor) {
-        NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+    if (new_actor) {
+        new_actor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
     }
-    return NewActor;
+    return new_actor;
 }
 
 bool WorldSimApi::setLightIntensity(const std::string& light_name, float intensity)
