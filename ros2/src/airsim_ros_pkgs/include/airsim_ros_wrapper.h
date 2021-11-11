@@ -4,7 +4,7 @@ STRICT_MODE_OFF //todo what does this do?
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
 #include "rpc/rpc_error.h"
-    STRICT_MODE_ON
+STRICT_MODE_ON
 
 #include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
@@ -63,8 +63,8 @@ STRICT_MODE_OFF //todo what does this do?
 #include <unordered_map>
 #include <memory>
 
-    // todo move airlib typedefs to separate header file?
-    typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
+// todo move airlib typedefs to separate header file?
+typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
 typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
 typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
@@ -92,20 +92,6 @@ struct VelCmd
     msr::airlib::DrivetrainType drivetrain;
     msr::airlib::YawMode yaw_mode;
     std::string vehicle_name;
-
-    // VelCmd() :
-    //     x(0), y(0), z(0),
-    //     vehicle_name("") {drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-    //             yaw_mode = msr::airlib::YawMode();};
-
-    // VelCmd(const double& x, const double& y, const double& z,
-    //         msr::airlib::DrivetrainType drivetrain,
-    //         const msr::airlib::YawMode& yaw_mode,
-    //         const std::string& vehicle_name) :
-    //     x(x), y(y), z(z),
-    //     drivetrain(drivetrain),
-    //     yaw_mode(yaw_mode),
-    //     vehicle_name(vehicle_name) {};
 };
 
 struct GimbalCmd
@@ -113,13 +99,6 @@ struct GimbalCmd
     std::string vehicle_name;
     std::string camera_name;
     msr::airlib::Quaternionr target_quat;
-
-    // GimbalCmd() : vehicle_name(vehicle_name), camera_name(camera_name), target_quat(msr::airlib::Quaternionr(1,0,0,0)) {}
-
-    // GimbalCmd(const std::string& vehicle_name,
-    //         const std::string& camera_name,
-    //         const msr::airlib::Quaternionr& target_quat) :
-    //         vehicle_name(vehicle_name), camera_name(camera_name), target_quat(target_quat) {};
 };
 
 template <typename T>
@@ -179,9 +158,6 @@ private:
         rclcpp::Time stamp;
 
         std::string odom_frame_id;
-        /// Status
-        // bool is_armed_;
-        // std::string mode_;
     };
 
     class CarROS : public VehicleROS
@@ -202,7 +178,6 @@ private:
     public:
         /// State
         msr::airlib::MultirotorState curr_drone_state;
-        // bool in_air_; // todo change to "status" and keep track of this
 
         rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_body_frame_sub;
         rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_world_frame_sub;
@@ -212,9 +187,6 @@ private:
 
         bool has_vel_cmd;
         VelCmd vel_cmd;
-
-        /// Status
-        // bool in_air_; // todo change to "status" and keep track of this
     };
 
     /// ROS timer callbacks
