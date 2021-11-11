@@ -4,7 +4,7 @@ STRICT_MODE_OFF //todo what does this do?
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
 #include "rpc/rpc_error.h"
-STRICT_MODE_ON
+    STRICT_MODE_ON
 
 #include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
@@ -63,8 +63,8 @@ STRICT_MODE_ON
 #include <unordered_map>
 #include <memory>
 
-// todo move airlib typedefs to separate header file?
-typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
+    // todo move airlib typedefs to separate header file?
+    typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
 typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
 typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
 typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
