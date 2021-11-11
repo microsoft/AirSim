@@ -177,16 +177,16 @@ private:
     {
     public:
         /// State
-        msr::airlib::MultirotorState curr_drone_state;
+        msr::airlib::MultirotorState curr_drone_state_;
 
-        rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_body_frame_sub;
-        rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_world_frame_sub;
+        rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_body_frame_sub_;
+        rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_world_frame_sub_;
 
-        rclcpp::Service<airsim_interfaces::srv::Takeoff>::SharedPtr takeoff_srvr;
-        rclcpp::Service<airsim_interfaces::srv::Land>::SharedPtr land_srvr;
+        rclcpp::Service<airsim_interfaces::srv::Takeoff>::SharedPtr takeoff_srvr_;
+        rclcpp::Service<airsim_interfaces::srv::Land>::SharedPtr land_srvr_;
 
-        bool has_vel_cmd;
-        VelCmd vel_cmd;
+        bool has_vel_cmd_;
+        VelCmd vel_cmd_;
     };
 
     /// ROS timer callbacks
