@@ -44,7 +44,7 @@ namespace airlib
             estimator_.reset(new AirSimSimpleFlightEstimator());
 
             // added by Suman
-            ekf_.reset(new AirSimSimpleEkf(board_.get()));
+            ekf_.reset(new AirSimSimpleEkf(board_.get(), comm_link_.get()));
 
             //create firmware
             firmware_.reset(new simple_flight::Firmware(&params_, board_.get(), comm_link_.get(), estimator_.get(), ekf_.get()));

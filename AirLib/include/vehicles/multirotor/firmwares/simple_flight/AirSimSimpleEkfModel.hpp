@@ -20,7 +20,7 @@ namespace msr
 namespace airlib
 {
 
-    class AirSimSimpleEkfModel : public simple_flight::IEkf
+    class AirSimSimpleEkfModel
     {
     protected:
         // ---------------------------------------------------------------------

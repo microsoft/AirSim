@@ -6,14 +6,10 @@
 #include <exception>
 #include <vector>
 #include "firmware/interfaces/IBoard.hpp"
+#include "firmware/interfaces/ICommLink.hpp"
 #include "common/FrequencyLimiter.hpp"
 #include "AirSimSimpleEkfBase.hpp"
-#include "AirSimSimpleEkfModel.hpp"
-
-// #include "firmware/Params.hpp"
-// #include "common/Common.hpp"
-// #include "common/ClockFactory.hpp"
-// #include "physics/Kinematics.hpp"                                                                   
+#include "AirSimSimpleEkfModel.hpp"                                                         
 
 namespace msr
 {
@@ -21,20 +17,28 @@ namespace airlib
 {
 
     class AirSimSimpleEkf : public AirSimSimpleEkfBase
-        //, private AirSimSimpleEkfModel
+        , private AirSimSimpleEkfModel
     {
     public:
         // Constructor
-        AirSimSimpleEkf(const simple_flight::IBoard* board)//, const AirSimSettings::EKFSetting& setting = AirSimSettings::EKFSetting())
-            : board_(board)
+        AirSimSimpleEkf(const simple_flight::IBoard* board, simple_flight::ICommLink* comm_link) //, const AirSimSettings::EKFSetting& setting = AirSimSettings::EKFSetting())
+            : board_(board), comm_link_(comm_link) // commlink is only temporary here
         {
             // params_ = // get the EKF params from airsim settings. Implement this as a struct for now with constant members ! inspired by sensor model
-            freq_limiter_.initialize(100); // physics engine and the imu refresh at period 3m ~ 333.33Hz. EKF tops at frequency 100Hz
+            freq_limiter_.initialize(334); // physics engine and the imu refresh at period 3ms ~ 333.33Hz
+        }
+
+        virtual void reset() override
+        {
+            IEkf::reset();
+
+            freq_limiter_.reset();
+
         }
 
         virtual void update() override
         {
-            IUpdatable::update();
+            IEkf::update();
 
             // update the frequency limiter
             freq_limiter_.update();
@@ -82,6 +86,11 @@ namespace airlib
 
             statePropagation();
             covariancePropagation();
+
+            std::ostringstream imu_str;
+            imu_str << accel[2];
+            std::string messgae = "   prediction step / imu step called (z-accelerometer) " + imu_str.str();
+            comm_link_->log(messgae);
         }
 
         // measurement update step
@@ -126,6 +135,11 @@ namespace airlib
             // auto C = dh_mag_dx();
 
             // auto K = ...
+
+            std::ostringstream mag_str;
+            mag_str << mag[0];
+            std::string messgae = "        magnetometer step called (x-magnetic flux) " + mag_str.str();
+            comm_link_->log(messgae);
         }
 
         // barometer update
@@ -136,7 +150,7 @@ namespace airlib
 
             // the updates at the frequency of barometer signal update
 
-            real_T* altitude = nullptr;
+            real_T altitude[1];
 
             // check if the barometer gives new measurement and it is valid
             bool is_valid = getBarometerData(altitude);
@@ -145,6 +159,11 @@ namespace airlib
             {
                 return;
             }
+
+            std::ostringstream alt_str;
+            alt_str << altitude[0];
+            std::string messgae = "        barometer step called (baro altitude) " + alt_str.str();
+            comm_link_->log(messgae);
         }
 
         // GPS update
@@ -165,6 +184,11 @@ namespace airlib
             {
                 return;
             }
+
+            std::ostringstream gps_str;
+            gps_str << geo[2];
+            std::string messgae = "        gps step called (gps altitude) " + gps_str.str();
+            comm_link_->log(messgae);
         }
 
         void calculatePhi()
@@ -241,6 +265,7 @@ namespace airlib
         FrequencyLimiter freq_limiter_;
         // the flight board instance
         const simple_flight::IBoard* board_;
+        simple_flight::ICommLink* comm_link_; // commlink is only temporary here, later transfer logging to OffBoardApi via StateEstimator 
 
     };
 
