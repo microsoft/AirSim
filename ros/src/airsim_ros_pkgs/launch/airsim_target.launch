@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<launch>
+
+	<arg name="airsim_world_frame" default="world_ned"/>
+	<arg name="drone_name" default="Drone1"/>
+
+
+	<node name="airsim_node" pkg="airsim_ros_pkgs" type="airsim_node" output="screen">
+		<param name="is_vulkan" type="bool" value="true"/>
+		<param name="update_airsim_img_response_every_n_sec" type="double" value="0.05" />
+		<param name="update_airsim_control_every_n_sec" type="double" value="0.01"/>
+		<param name="update_lidar_every_n_sec" type="double" value="0.01"/>
+		<rosparam param="object_name_set">[Target1]</rosparam>
+		<param name="publish_clock" type="bool" value="false"/>
+		<param name="host_ip" type="string" value="localhost"/>
+		
+		<param name="drone_name" value="$(arg drone_name)"/>
+		<param name="world_frame_id" type="string" value="$(arg airsim_world_frame)"/>
+	</node>
+	
+	<include file="$(find airsim_ros_pkgs)/launch/static_transforms.launch"/>
+
+        <node name="pid_position_node_Drone1" pkg="airsim_ros_pkgs" type="pd_position_controller_simple_topic_node" output="screen">
+	        <param name="vehicle_name" value="$(arg drone_name)"/>
+        	<param name="kp_x" type="double" value="1.0" />
+        	<param name="kp_y" type="double" value="1.0" />
+	        <param name="kp_z" type="double" value="1.0" />
+	        <param name="kp_yaw" type="double" value="1.0" />
+		<param name="cmd_smoothing_weight" type="double" value="0.3" />
+	        <param name="kd_x" type="double" value="0.3" />
+        	<param name="kd_y" type="double" value="0.3" />
+	        <param name="kd_z" type="double" value="0.3" />
+	        <param name="kd_yaw" type="double" value="0.3" />
+	        <param name="max_vel_horz_abs" type="double" value="5.0" />
+	        <param name="max_vel_vert_abs" type="double" value="2.0" />
+	        <param name="max_yaw_rate_degree" type="double" value="10.0" />
+	        <param name="control_update_rate" type="double" value="100" />
+		<param name="odom_frame_id" type="string" value="$(arg airsim_world_frame)"/>
+		<param name="goal_frame_id" type="string" value="world_enu"/>
+    </node>
+    <!--node pkg="rviz" type="rviz" name="rviz" args="-d $(find airsim_ros_pkgs)/rviz/target.rviz" output="log" /-->
+
+
+</launch>
