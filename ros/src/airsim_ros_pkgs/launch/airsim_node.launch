@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
 	<arg name="output" default="log"/>
 	<arg name="publish_clock" default="false"/>

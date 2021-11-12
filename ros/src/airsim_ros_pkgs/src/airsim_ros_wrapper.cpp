@@ -28,7 +28,6 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
 AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string& host_ip)
     : nh_(nh), nh_private_(nh_private), img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_
     lidar_async_spinner_(1, &lidar_timer_cb_queue_)
-    , has_gimbal_cmd_(false)
     , // same as above, but for lidar
     host_ip_(host_ip)
     , airsim_client_images_(host_ip)
@@ -91,6 +90,7 @@ void AirsimROSWrapper::initialize_ros()
     // ros params
     double update_airsim_control_every_n_sec;
     nh_private_.getParam("is_vulkan", is_vulkan_);
+    nh_private_.getParam("do_pcl",onXYZRGB);
     nh_private_.getParam("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
     nh_private_.getParam("publish_clock", publish_clock_);
     nh_private_.param("world_frame_id", world_frame_id_, world_frame_id_);
@@ -103,6 +103,16 @@ void AirsimROSWrapper::initialize_ros()
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
     // nh_.getParam("max_horz_vel", max_horz_vel_)
 
+    vector<string> object_name_set_temp;
+    nh_private_.getParam("object_name_set",object_name_set_temp);
+
+    std::cout << object_name_set_temp.size() << " objects of interest: " << std::endl ;
+    for (auto str : object_name_set_temp)
+        std::cout << str << ", ";
+    std::cout << std::endl;
+
+    object_name_set = object_name_set_temp;
+
     create_ros_pubs_from_settings_json();
     airsim_control_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_control_every_n_sec), &AirsimROSWrapper::drone_state_timer_cb, this);
 }
@@ -114,6 +124,13 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     gimbal_angle_quat_cmd_sub_ = nh_private_.subscribe("gimbal_angle_quat_cmd", 50, &AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this);
     gimbal_angle_euler_cmd_sub_ = nh_private_.subscribe("gimbal_angle_euler_cmd", 50, &AirsimROSWrapper::gimbal_angle_euler_cmd_cb, this);
     origin_geo_point_pub_ = nh_private_.advertise<airsim_ros_pkgs::GPSYaw>("origin_geo_point", 10);
+    // ADDed by Yunwoo
+    pubXYZRGB = nh_private_.advertise<sensor_msgs::PointCloud2>("pointcloud",10);
+
+    for (auto str: object_name_set){
+        string topic = str + "_pose";
+        pose_object_enu_pub_set.push_back(nh_private_.advertise<geometry_msgs::PoseStamped>(topic,10));
+    }
 
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
@@ -148,7 +165,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         append_static_vehicle_tf(vehicle_ros.get(), *vehicle_setting);
 
         vehicle_ros->odom_local_pub = nh_private_.advertise<nav_msgs::Odometry>(curr_vehicle_name + "/" + odom_frame_id_, 10);
-
+	//odom_local_sub_ = nh_private_.subscribe(curr_vehicle_name + "/" + odom_frame_id_, 10);
+	
         vehicle_ros->env_pub = nh_private_.advertise<airsim_ros_pkgs::Environment>(curr_vehicle_name + "/environment", 10);
 
         vehicle_ros->global_gps_pub = nh_private_.advertise<sensor_msgs::NavSatFix>(curr_vehicle_name + "/global_gps", 10);
@@ -694,6 +712,25 @@ nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(const ms
     return odom_msg;
 }
 
+
+geometry_msgs::PoseStamped AirsimROSWrapper::get_pose_msg_from_airsim_state(const msr::airlib::MultirotorState& drone_state) const
+{
+    geometry_msgs::PoseStamped pose_stamped;
+    pose_stamped.header.frame_id = "world_enu";
+    // odom_ned_msg.header.frame_id = world_frame_id_;
+    // odom_ned_msg.child_frame_id = "/airsim/odom_local_ned"; // todo make param
+
+    pose_stamped.pose.position.x = drone_state.getPosition().x();
+    pose_stamped.pose.position.y = drone_state.getPosition().y();
+    pose_stamped.pose.position.z = drone_state.getPosition().z();
+    pose_stamped.pose.orientation.x = drone_state.getOrientation().x();
+    pose_stamped.pose.orientation.y = drone_state.getOrientation().y();
+    pose_stamped.pose.orientation.z = drone_state.getOrientation().z();
+    pose_stamped.pose.orientation.w = drone_state.getOrientation().w();
+
+    return ned_pose_to_enu_pose(pose_stamped);
+}
+
 // https://docs.ros.org/jade/api/sensor_msgs/html/point__cloud__conversion_8h_source.html#l00066
 // look at UnrealLidarSensor.cpp UnrealLidarSensor::getPointCloud() for math
 // read this carefully https://docs.ros.org/kinetic/api/sensor_msgs/html/msg/PointCloud2.html
@@ -802,6 +839,58 @@ sensor_msgs::NavSatFix AirsimROSWrapper::get_gps_msg_from_airsim(const msr::airl
     // gps_msg.position_covariance =
 
     return gps_msg;
+}
+
+geometry_msgs::PoseStamped AirsimROSWrapper::ned_pose_to_enu_pose(const geometry_msgs::PoseStamped & pose_ned) const{
+
+    geometry_msgs::PoseStamped pose_stamped;
+    pose_stamped.header.frame_id = "world_enu";
+    pose_stamped.header.stamp = ros::Time::now();
+    // odom_ned_msg.header.frame_id = world_frame_id_;
+    // odom_ned_msg.child_frame_id = "/airsim/odom_local_ned"; // todo make param
+    Eigen::Quaternionf quat;
+    Eigen::Vector3f transl;
+    transl(0) = pose_ned.pose.position.x;
+    transl(1) = pose_ned.pose.position.y;
+    transl(2) = pose_ned.pose.position.z;
+    quat.x() =  pose_ned.pose.orientation.x;
+    quat.y() =  pose_ned.pose.orientation.y;
+    quat.z() =  pose_ned.pose.orientation.z;
+    quat.w() =  pose_ned.pose.orientation.w;
+
+    //Eigen::Matrix3f rotm_ne1,rotm_ne2;
+    //Eigen::Affine3f transform;
+    //rotm_ne2 << 1,0,0,
+    //        0,-1,0,
+    //        0,0,-1;
+
+    //rotm_ne1 << 0,1,0,
+    //        1,0,0,
+    //        0,0,-1;
+    //quat.normalize();
+    //transform.setIdentity();
+    //transform.translate(transl);
+    //transform.rotate(quat);
+
+    //transform.prerotate(rotm_ne1.transpose());
+    //transform.rotate(rotm_ne2); // to enu
+//    transform.rotate(Eigen::AngleAxisf(M_PI/2,Eigen::Vector3f::UnitZ()));
+
+    // std::cout << transform.matrix() << std::endl;
+
+    //quat = Eigen::Quaternionf(transform.rotation());
+    
+    quat.normalize();
+    pose_stamped.pose.position.x = transl(1);
+    pose_stamped.pose.position.y = transl(0);
+    pose_stamped.pose.position.z = -transl(2);
+
+    pose_stamped.pose.orientation.w = quat.w();
+    pose_stamped.pose.orientation.x = quat.y();
+    pose_stamped.pose.orientation.y = quat.x();
+    pose_stamped.pose.orientation.z = -quat.z();
+
+    return pose_stamped;
 }
 
 sensor_msgs::Range AirsimROSWrapper::get_range_from_airsim(const msr::airlib::DistanceSensorData& dist_data) const
@@ -980,6 +1069,8 @@ ros::Time AirsimROSWrapper::update_state()
             vehicle_ros->gps_sensor_msg.header.stamp = vehicle_time;
 
             vehicle_ros->curr_odom = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
+            //vehicle_ros->curr_pose_enu = get_pose_msg_from_airsim_state(drone->curr_drone_state);
+            //vehicle_ros->curr_pose_enu.header.stamp = vehicle_time;
         }
         else {
             auto car = static_cast<CarROS*>(vehicle_ros.get());
@@ -996,6 +1087,7 @@ ros::Time AirsimROSWrapper::update_state()
             vehicle_ros->gps_sensor_msg.header.stamp = vehicle_time;
 
             vehicle_ros->curr_odom = get_odom_msg_from_car_state(car->curr_car_state);
+
 
             airsim_ros_pkgs::CarState state_msg = get_roscarstate_msg_from_car_state(car->curr_car_state);
             state_msg.header.frame_id = vehicle_ros->vehicle_name;
@@ -1035,6 +1127,53 @@ void AirsimROSWrapper::publish_vehicle_state()
         // odom and transforms
         vehicle_ros->odom_local_pub.publish(vehicle_ros->curr_odom);
         publish_odom_tf(vehicle_ros->curr_odom);
+
+        // target pose publish
+
+        ros::Time curr_ros_time = ros::Time::now();
+        int objectCount = 0;
+        for (auto object_name : object_name_set ) {
+            // Extracting object pose
+            auto pose_true = airsim_client_->simGetObjectPose(object_name); // ned
+
+//            ROS_INFO_STREAM(
+//                    "Object " << object_name << " : " << pose_true.position.x() << " , " << pose_true.position.y()
+//                              << " , " << pose_true.position.z());
+
+
+            geometry_msgs::PoseStamped object_pose_ned,object_pose_enu;
+            object_pose_ned.header.frame_id = "world_enu"; // ?
+            object_pose_ned.pose.position.x = pose_true.position.x();
+            object_pose_ned.pose.position.y = pose_true.position.y();
+            object_pose_ned.pose.position.z = pose_true.position.z();
+            object_pose_ned.pose.orientation.x = pose_true.orientation.x();
+            object_pose_ned.pose.orientation.y = pose_true.orientation.y();
+            object_pose_ned.pose.orientation.z = pose_true.orientation.z();
+            object_pose_ned.pose.orientation.w = pose_true.orientation.w();
+
+            if (not std::isnan(pose_true.position.x())) {
+                auto pose = ned_pose_to_enu_pose(object_pose_ned);
+                pose.header.stamp = ros::Time::now();
+                pose_object_enu_pub_set[objectCount].publish(pose);
+                geometry_msgs::TransformStamped object_tf;
+                object_tf.header.stamp = ros::Time::now();
+                object_tf.child_frame_id = object_name;
+                object_tf.header.frame_id = AIRSIM_FRAME_ID_ENU;
+                object_tf.transform.translation.x = pose.pose.position.x;
+                object_tf.transform.translation.y = pose.pose.position.y;
+                object_tf.transform.translation.z = pose.pose.position.z;
+
+                object_tf.transform.rotation.x = pose.pose.orientation.x;
+                object_tf.transform.rotation.y = pose.pose.orientation.y;
+                object_tf.transform.rotation.z = pose.pose.orientation.z;
+                object_tf.transform.rotation.w = pose.pose.orientation.w;
+                tf_broadcaster_.sendTransform(object_tf);
+            }
+            objectCount += 1 ;
+        }
+
+
+
 
         // ground truth GPS position from sim/HITL
         vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
@@ -1318,8 +1457,8 @@ sensor_msgs::ImagePtr AirsimROSWrapper::get_img_msg_from_response(const ImageRes
     img_msg_ptr->height = img_response.height;
     img_msg_ptr->width = img_response.width;
     img_msg_ptr->encoding = "bgr8";
-    if (is_vulkan_)
-        img_msg_ptr->encoding = "rgb8";
+    //if (is_vulkan_)
+    //    img_msg_ptr->encoding = "rgb8";
     img_msg_ptr->is_bigendian = 0;
     return img_msg_ptr;
 }
@@ -1354,16 +1493,100 @@ sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& c
     return cam_info_msg;
 }
 
+namespace enc = sensor_msgs::image_encodings;
+
+void AirsimROSWrapper::compileXYZRGB(const sensor_msgs::ImageConstPtr & rgb_msg,const sensor_msgs::ImageConstPtr& depth_msg,
+                                     const sensor_msgs::CameraInfo &camInfo,
+                                     sensor_msgs::PointCloud2::Ptr& cloud_msg) {
+
+    image_geometry::PinholeCameraModel model_;
+    sensor_msgs::CameraInfoPtr cameraInfoConstPtr(new sensor_msgs::CameraInfo);
+    *cameraInfoConstPtr = camInfo;
+    model_.fromCameraInfo(cameraInfoConstPtr);
+
+    // Supported color encodings: RGB8, BGR8, MONO8
+    int red_offset, green_offset, blue_offset, color_step;
+    if (rgb_msg->encoding == enc::RGB8)
+    {
+        red_offset   = 0;
+        green_offset = 1;
+        blue_offset  = 2;
+        color_step   = 3;
+    }
+    else if (rgb_msg->encoding == enc::BGR8)
+    {
+        red_offset   = 2;
+        green_offset = 1;
+        blue_offset  = 0;
+        color_step   = 3;
+    }
+    else if (rgb_msg->encoding == enc::MONO8)
+    {
+        red_offset   = 0;
+        green_offset = 0;
+        blue_offset  = 0;
+        color_step   = 1;
+    }
+    else
+    {
+        red_offset   = 0;
+        green_offset = 1;
+        blue_offset  = 2;
+        color_step   = 3;
+    }
+
+    cloud_msg->header = depth_msg->header; // Use depth image time stamp
+    cloud_msg->height = depth_msg->height;
+    cloud_msg->width  = depth_msg->width;
+    cloud_msg->is_dense = false;
+    cloud_msg->is_bigendian = false;
+
+
+    sensor_msgs::PointCloud2Modifier pcd_modifier(*cloud_msg);
+    pcd_modifier.setPointCloud2FieldsByString(2, "xyz", "rgb");
+
+    if (depth_msg->encoding == enc::TYPE_16UC1)
+    {
+        depth_image_proc::convert<uint16_t>(depth_msg, rgb_msg, cloud_msg,
+                                            red_offset, green_offset, blue_offset, color_step,model_);
+    }
+    else if (depth_msg->encoding == enc::TYPE_32FC1)
+    {
+        depth_image_proc::convert<float>(depth_msg, rgb_msg, cloud_msg,
+                                         red_offset, green_offset, blue_offset, color_step,model_);
+    }
+    else
+    {
+        ROS_ERROR_THROTTLE(5, "Depth image has unsupported encoding [%s]", depth_msg->encoding.c_str());
+        return;
+    }
+
+}
+
+
+
 void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name)
 {
     // todo add option to use airsim time (image_response.TTimePoint) like Gazebo /use_sim_time param
     ros::Time curr_ros_time = ros::Time::now();
     int img_response_idx_internal = img_response_idx;
 
+    bool isTfPub = false;
+
+    bool depthReceived = false; sensor_msgs::Image::Ptr depthImg;
+    bool rgbReceived = false; sensor_msgs::Image::Ptr rgbImg;
+
+    sensor_msgs::CameraInfo rgbCameraInfo;
+
     for (const auto& curr_img_response : img_response_vec) {
         // todo publishing a tf for each capture type seems stupid. but it foolproofs us against render thread's async stuff, I hope.
         // Ideally, we should loop over cameras and then captures, and publish only one tf.
-        publish_camera_tf(curr_img_response, curr_ros_time, vehicle_name, curr_img_response.camera_name);
+	if(not isTfPub)
+	{
+            publish_camera_tf(curr_img_response, curr_ros_time, vehicle_name, curr_img_response.camera_name);
+	    isTfPub = true;
+	}
+        //publish_camera_tf(curr_img_response, curr_ros_time, vehicle_name, curr_img_response.camera_name);
 
         // todo simGetCameraInfo is wrong + also it's only for image type -1.
         // msr::airlib::CameraInfo camera_info = airsim_client_.simGetCameraInfo(curr_img_response.camera_name);
@@ -1375,18 +1598,37 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 
         // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
         if (curr_img_response.pixels_as_float) {
-            image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response,
-                                                                                              curr_ros_time,
-                                                                                              curr_img_response.camera_name + "_optical"));
+            depthImg = get_depth_img_msg_from_response(curr_img_response,
+                                                        curr_ros_time,
+                                                        curr_img_response.camera_name + "_optical");
+            depthReceived = true;
+            image_pub_vec_[img_response_idx_internal].publish(depthImg);
         }
         // Scene / Segmentation / SurfaceNormals / Infrared
         else {
-            image_pub_vec_[img_response_idx_internal].publish(get_img_msg_from_response(curr_img_response,
-                                                                                        curr_ros_time,
-                                                                                        curr_img_response.camera_name + "_optical"));
+            rgbImg =  get_img_msg_from_response(curr_img_response,
+                                                curr_ros_time,
+                                                curr_img_response.camera_name + "_optical");
+            rgbReceived = true;
+            rgbCameraInfo = camera_info_msg_vec_[img_response_idx_internal];
+            image_pub_vec_[img_response_idx_internal].publish(rgbImg);
         }
         img_response_idx_internal++;
     }
+    if(onXYZRGB)
+    {
+	if(rgbReceived and depthReceived)
+	{
+	    sensor_msgs::PointCloud2::Ptr cloud_msg (new sensor_msgs::PointCloud2);
+            compileXYZRGB(rgbImg,depthImg,rgbCameraInfo,cloud_msg);
+	    pubXYZRGB.publish(cloud_msg); 
+	}
+	else
+	{
+	    ROS_WARN_THROTTLE(2,"user requested XYZ RGB pointcloud. But either RGB or DepthPlanner has not been received.");
+	}	
+    }
+
 }
 
 // publish camera transforms

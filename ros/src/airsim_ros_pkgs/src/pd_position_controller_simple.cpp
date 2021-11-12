@@ -3,7 +3,7 @@
 bool PIDParams::load_from_rosparams(const ros::NodeHandle& nh)
 {
     bool found = true;
-
+    
     found = found && nh.getParam("kp_x", kp_x);
     found = found && nh.getParam("kp_y", kp_y);
     found = found && nh.getParam("kp_z", kp_z);
@@ -13,7 +13,7 @@ bool PIDParams::load_from_rosparams(const ros::NodeHandle& nh)
     found = found && nh.getParam("kd_y", kd_y);
     found = found && nh.getParam("kd_z", kd_z);
     found = found && nh.getParam("kd_yaw", kd_yaw);
-
+    found = found && nh.getParam("vehicle_name",vehicle_name_ctrl);
     found = found && nh.getParam("reached_thresh_xyz", reached_thresh_xyz);
     found = found && nh.getParam("reached_yaw_degrees", reached_yaw_degrees);
 
@@ -55,21 +55,13 @@ void PIDPositionController::initialize_ros()
     double update_control_every_n_sec;
     nh_private_.getParam("update_control_every_n_sec", update_control_every_n_sec);
 
-    std::string vehicle_name;
-
-    while (vehicle_name == "") {
-        nh_private_.getParam("/vehicle_name", vehicle_name);
-        ROS_INFO_STREAM("Waiting vehicle name");
-    }
-
-    // ROS publishers
-    airsim_vel_cmd_world_frame_pub_ = nh_private_.advertise<airsim_ros_pkgs::VelCmd>("/airsim_node/" + vehicle_name + "/vel_cmd_world_frame", 1);
+    airsim_vel_cmd_world_frame_pub_ = nh_private_.advertise<airsim_ros_pkgs::VelCmd>("/airsim_node/" + params_.vehicle_name_ctrl + "/vel_cmd_world_frame", 1);
 
     // ROS subscribers
-    airsim_odom_sub_ = nh_.subscribe("/airsim_node/" + vehicle_name + "/odom_local_ned", 50, &PIDPositionController::airsim_odom_cb, this);
+    airsim_odom_sub_ = nh_.subscribe("/airsim_node/" + params_.vehicle_name_ctrl + "/odom_local_ned", 50, &PIDPositionController::airsim_odom_cb, this);
     home_geopoint_sub_ = nh_.subscribe("/airsim_node/home_geo_point", 50, &PIDPositionController::home_geopoint_cb, this);
     // todo publish this under global nodehandle / "airsim node" and hide it from user
-    local_position_goal_srvr_ = nh_.advertiseService("/airsim_node/local_position_goal", &PIDPositionController::local_position_goal_srv_cb, this);
+    local_position_goal_srvr_ = nh_.advertiseService("/airsim_node/"+params_.vehicle_name_ctrl+"/local_position_goal", &PIDPositionController::local_position_goal_srv_cb, this);
     local_position_goal_override_srvr_ = nh_.advertiseService("/airsim_node/local_position_goal/override", &PIDPositionController::local_position_goal_srv_override_cb, this);
     gps_goal_srvr_ = nh_.advertiseService("/airsim_node/gps_goal", &PIDPositionController::gps_goal_srv_cb, this);
     gps_goal_override_srvr_ = nh_.advertiseService("/airsim_node/gps_goal/override", &PIDPositionController::gps_goal_srv_override_cb, this);
@@ -119,6 +111,7 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
         target_position_.y = request.y;
         target_position_.z = request.z;
         target_position_.yaw = request.yaw;
+	params_.vehicle_name_ctrl = request.vehicle_name;
         ROS_INFO_STREAM("[PIDPositionController] got goal: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
         // todo error checks
@@ -144,6 +137,7 @@ bool PIDPositionController::local_position_goal_srv_override_cb(airsim_ros_pkgs:
     target_position_.y = request.y;
     target_position_.z = request.z;
     target_position_.yaw = request.yaw;
+    params_.vehicle_name_ctrl = request.vehicle_name;
     ROS_INFO_STREAM("[PIDPositionController] got goal: x=" << target_position_.x << " y=" << target_position_.y << " z=" << target_position_.z << " yaw=" << target_position_.yaw);
 
     // todo error checks
@@ -312,6 +306,9 @@ void PIDPositionController::compute_control_cmd()
     vel_cmd_.twist.linear.y = p_term_y + d_term_y;
     vel_cmd_.twist.linear.z = p_term_z + d_term_z;
     vel_cmd_.twist.angular.z = p_term_yaw + d_term_yaw; // todo
+    
+    
+
 }
 
 void PIDPositionController::enforce_dynamic_constraints()
@@ -329,10 +326,10 @@ void PIDPositionController::enforce_dynamic_constraints()
         vel_cmd_.twist.linear.z = (vel_cmd_.twist.linear.z / std::fabs(vel_cmd_.twist.linear.z)) * constraints_.max_vel_vert_abs;
     }
     // todo yaw limits
-    if (std::fabs(vel_cmd_.twist.linear.z) > constraints_.max_yaw_rate_degree) {
+    if (std::fabs(vel_cmd_.twist.angular.z) > constraints_.max_yaw_rate_degree) {
         // todo just add a sgn funciton in common utils? return double to be safe.
         // template <typename T> double sgn(T val) { return (T(0) < val) - (val < T(0)); }
-        vel_cmd_.twist.linear.z = (vel_cmd_.twist.linear.z / std::fabs(vel_cmd_.twist.linear.z)) * constraints_.max_yaw_rate_degree;
+        vel_cmd_.twist.angular.z = (vel_cmd_.twist.linear.z / std::fabs(vel_cmd_.twist.angular.z)) * constraints_.max_yaw_rate_degree;
     }
 }
 
