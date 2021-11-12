@@ -110,8 +110,9 @@ namespace airlib
 
             //TODO: this is now being done in PawnSimApi::update. We need to re-think this sequence
             //with below commented out - Arducopter GPS may not work.
-            //body.getEnvironment().setPosition(next.pose.position);
-            //body.getEnvironment().update();
+            //IMPORTANT! The following two lines should be commented out while using PawnSimApi!. It syncs environment from kinematics. 
+            body.getEnvironment().setPosition(next.pose.position);
+            body.getEnvironment().update();
         }
 
         static void updateCollisionResponseInfo(const CollisionInfo& collision_info, const Kinematics::State& next,
