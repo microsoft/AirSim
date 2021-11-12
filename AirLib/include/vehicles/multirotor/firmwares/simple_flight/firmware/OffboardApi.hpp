@@ -59,6 +59,14 @@ public:
 
         detectLanding();
         detectTakingOff();
+
+        // additional logging of vehicle states, TODO implement a separate log!
+        std::ostringstream alt_str;
+        alt_str << state_estimator_->getPosition().z()*-1.0;
+        std::ostringstream time_str;
+        time_str << clock_->millis();
+        std::string messgae = "\nPhysics update: time (ms): " + time_str.str() + "  altitude (m): " + alt_str.str();
+        comm_link_->log(messgae);
     }
 
     /**************** IOffboardApi ********************/
