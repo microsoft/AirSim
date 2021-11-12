@@ -18,10 +18,12 @@ STRICT_MODE_OFF //todo what does this do?
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nav_msgs/Odometry.h>
 #include <math.h>
+
 #include <airsim_ros_pkgs/VelCmd.h>
 #include <airsim_ros_pkgs/SetLocalPosition.h>
 #include <airsim_ros_pkgs/SetGPSPosition.h>
 #include <airsim_ros_pkgs/GPSYaw.h>
+
 #include <geodetic_conv.hpp>
 #include <math_common.h>
 #include <utils.h>
@@ -38,12 +40,12 @@ public:
     double kd_y;
     double kd_z;
     double kd_yaw;
-
+    std::string vehicle_name_ctrl;
     double reached_thresh_xyz;
     double reached_yaw_degrees;
 
     PIDParams()
-        : kp_x(0.5), kp_y(0.5), kp_z(0.5), kp_yaw(0.5), kd_x(0.1), kd_y(0.1), kd_z(0.1), kd_yaw(0.1), reached_thresh_xyz(0.5), reached_yaw_degrees(5.0)
+        : kp_x(0.5), kp_y(0.5), kp_z(0.5), kp_yaw(0.5), kd_x(0.1), kd_y(0.1), kd_z(0.1), kd_yaw(0.1), reached_thresh_xyz(0.1), reached_yaw_degrees(5.0)
     {
     }
 
