@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- AirSim ROS Wrapper -->
+	<include file="$(find airsim_ros_pkgs)/launch/airsim_node.launch"/>
+
+<!-- Simple PID Position Controller by Topic-->
+    <node name="pid_position_node_Drone1" pkg="airsim_ros_pkgs" type="pd_position_controller_simple_topic_node" output="screen">
+	    <param name="vehicle_name" value="Drone1"/>
+        <param name="kp_x" type="double" value="1.0" />
+        <param name="kp_y" type="double" value="1.0" />
+        <param name="kp_z" type="double" value="1.0" />
+        <param name="kp_yaw" type="double" value="1.0" />
+
+        <param name="kd_x" type="double" value="0.05" />
+        <param name="kd_y" type="double" value="0.05" />
+        <param name="kd_z" type="double" value="0.05" />
+        <param name="kd_yaw" type="double" value="0.05" />
+        <param name="max_vel_horz_abs" type="double" value="5.0" />
+        <param name="max_vel_vert_abs" type="double" value="2.0" />
+        <param name="max_yaw_rate_degree" type="double" value="10.0" />
+        <param name="control_update_rate" type="double" value="100" />
+    </node>
+
+    <node name="pid_position_node_Drone2" pkg="airsim_ros_pkgs" type="pd_position_controller_simple_topic_node" output="screen">
+	    <param name="vehicle_name" value="Drone2"/>
+        <param name="kp_x" type="double" value="1.0" />
+        <param name="kp_y" type="double" value="1.0" />
+        <param name="kp_z" type="double" value="1.0" />
+        <param name="kp_yaw" type="double" value="1.0" />
+
+        <param name="kd_x" type="double" value="0.05" />
+        <param name="kd_y" type="double" value="0.05" />
+        <param name="kd_z" type="double" value="0.05" />
+        <param name="kd_yaw" type="double" value="0.05" />
+
+        <param name="max_vel_horz_abs" type="double" value="5.0" />
+        <param name="max_vel_vert_abs" type="double" value="2.0" />
+        <param name="max_yaw_rate_degree" type="double" value="10.0" />
+        <param name="control_update_rate" type="double" value="100" />
+    </node>
+
+</launch>
