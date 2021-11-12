@@ -155,7 +155,7 @@ namespace airlib
         {
             accel[0] = imu_->getOutput().linear_acceleration.x();
             accel[1] = imu_->getOutput().linear_acceleration.y();
-            accel[3] = imu_->getOutput().linear_acceleration.z();
+            accel[2] = imu_->getOutput().linear_acceleration.z();
 
             gyro[0] = imu_->getOutput().angular_velocity.x();
             gyro[1] = imu_->getOutput().angular_velocity.y();
@@ -173,7 +173,7 @@ namespace airlib
         {
             mag[0] = magnetometer_->getOutput().magnetic_field_body.x();
             mag[1] = magnetometer_->getOutput().magnetic_field_body.y();
-            mag[2] = magnetometer_->getOutput().magnetic_field_body.z();;
+            mag[2] = magnetometer_->getOutput().magnetic_field_body.z();
         }
 
         // added by Suman
