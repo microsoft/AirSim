@@ -63,6 +63,9 @@ STRICT_MODE_OFF //todo what does this do?
 #include <tf2/convert.h>
 #include <unordered_map>
 #include <memory>
+#include <depth_conversions.h>
+#include <depth_traits.h>
+
     // #include "nodelet/nodelet.h"
 
     // todo move airlib typedefs to separate header file?
@@ -170,6 +173,7 @@ private:
         std::vector<SensorPublisher> lidar_pubs;
 
         nav_msgs::Odometry curr_odom;
+	geometry_msgs::PoseStamped curr_pose_enu;
         sensor_msgs::NavSatFix gps_sensor_msg;
 
         std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec;
@@ -214,6 +218,9 @@ private:
         /// Status
         // bool in_air_; // todo change to "status" and keep track of this
     };
+    geometry_msgs::PoseStamped ned_pose_to_enu_pose(const geometry_msgs::PoseStamped & pose_ned) const;
+
+    void compileXYZRGB(const sensor_msgs::ImageConstPtr &rgb_msg, const sensor_msgs::ImageConstPtr& depth_msg, const sensor_msgs::CameraInfo &camInfo, sensor_msgs::PointCloud2::Ptr &pclPtr);
 
     /// ROS timer callbacks
     void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
@@ -279,6 +286,7 @@ private:
     msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::Quaternion& geometry_msgs_quat) const;
     msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
     nav_msgs::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
+    geometry_msgs::PoseStamped get_pose_msg_from_airsim_state(const msr::airlib::MultirotorState& drone_state) const;
     nav_msgs::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
     airsim_ros_pkgs::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
     msr::airlib::Pose get_airlib_pose(const float& x, const float& y, const float& z, const msr::airlib::Quaternionr& airlib_quat) const;
@@ -306,7 +314,8 @@ private:
     ros::Subscriber vel_cmd_all_world_frame_sub_;
     ros::ServiceServer takeoff_all_srvr_;
     ros::ServiceServer land_all_srvr_;
-
+    // LYW
+    ros::Subscriber odom_local_sub_;
     // todo - subscriber / services for a GROUP of robots, which is defined by a list of `vehicle_name`s passed in the ros msg / srv request
     ros::Subscriber vel_cmd_group_body_frame_sub_;
     ros::Subscriber vel_cmd_group_world_frame_sub_;
@@ -319,6 +328,8 @@ private:
     ros::Publisher origin_geo_point_pub_; // home geo coord of drones
     msr::airlib::GeoPoint origin_geo_point_; // gps coord of unreal origin
     airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
+
+    vector<ros::Publisher> pose_object_enu_pub_set;
 
     AirSimSettingsParser airsim_settings_parser_;
     std::unordered_map<std::string, std::unique_ptr<VehicleROS>> vehicle_name_ptr_map_;
@@ -341,6 +352,10 @@ private:
     ros::CallbackQueue lidar_timer_cb_queue_;
 
     std::mutex drone_control_mutex_;
+    vector<string> object_name_set;
+
+    bool onXYZRGB = true;
+    ros::Publisher pubXYZRGB;
 
     // gimbal control
     bool has_gimbal_cmd_;
@@ -348,6 +363,7 @@ private:
 
     /// ROS tf
     const std::string AIRSIM_FRAME_ID = "world_ned";
+    const std::string AIRSIM_FRAME_ID_ENU = "world_enu";
     std::string world_frame_id_ = AIRSIM_FRAME_ID;
     const std::string AIRSIM_ODOM_FRAME_ID = "odom_local_ned";
     const std::string ENU_ODOM_FRAME_ID = "odom_local_enu";
