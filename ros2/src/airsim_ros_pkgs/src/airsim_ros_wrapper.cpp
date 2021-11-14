@@ -884,6 +884,22 @@ VelCmd AirsimROSWrapper::get_airlib_vel_cmd(const airsim_interfaces::msg::VelCmd
     return vel_cmd;
 }
 
+geometry_msgs::msg::Transform AirsimROSWrapper::get_transform_msg_from_airsim(const msr::airlib::Vector3r& position, const msr::airlib::AirSimSettings::Rotation& rotation)
+{
+    geometry_msgs::msg::Transform transform;
+    transform.translation.x = position.x();
+    transform.translation.y = position.y();
+    transform.translation.z = position.z();
+    tf2::Quaternion quat;
+    quat.setRPY(rotation.roll, rotation.pitch, rotation.yaw);
+    transform.rotation.x = quat.x();
+    transform.rotation.y = quat.y();
+    transform.rotation.z = quat.z();
+    transform.rotation.w = quat.w();
+
+    return transform;
+}
+
 rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const
 {
 
@@ -1163,15 +1179,7 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
     vehicle_tf_msg.header.frame_id = world_frame_id_;
     vehicle_tf_msg.header.stamp = nh_->now();
     vehicle_tf_msg.child_frame_id = vehicle_ros->vehicle_name_;
-    vehicle_tf_msg.transform.translation.x = vehicle_setting.position.x();
-    vehicle_tf_msg.transform.translation.y = vehicle_setting.position.y();
-    vehicle_tf_msg.transform.translation.z = vehicle_setting.position.z();
-    tf2::Quaternion quat;
-    quat.setRPY(vehicle_setting.rotation.roll, vehicle_setting.rotation.pitch, vehicle_setting.rotation.yaw);
-    vehicle_tf_msg.transform.rotation.x = quat.x();
-    vehicle_tf_msg.transform.rotation.y = quat.y();
-    vehicle_tf_msg.transform.rotation.z = quat.z();
-    vehicle_tf_msg.transform.rotation.w = quat.w();
+    vehicle_tf_msg.transform = get_transform_msg_from_airsim(vehicle_setting.position, vehicle_setting.rotation);
 
     if (isENU_) {
         convert_tf_msg_to_enu(vehicle_tf_msg);
@@ -1205,15 +1213,7 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     geometry_msgs::msg::TransformStamped static_cam_tf_body_msg;
     static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
     static_cam_tf_body_msg.child_frame_id = camera_name + "_body/static";
-    static_cam_tf_body_msg.transform.translation.x = camera_setting.position.x();
-    static_cam_tf_body_msg.transform.translation.y = camera_setting.position.y();
-    static_cam_tf_body_msg.transform.translation.z = camera_setting.position.z();
-    tf2::Quaternion quat;
-    quat.setRPY(camera_setting.rotation.roll, camera_setting.rotation.pitch, camera_setting.rotation.yaw);
-    static_cam_tf_body_msg.transform.rotation.x = quat.x();
-    static_cam_tf_body_msg.transform.rotation.y = quat.y();
-    static_cam_tf_body_msg.transform.rotation.z = quat.z();
-    static_cam_tf_body_msg.transform.rotation.w = quat.w();
+    static_cam_tf_body_msg.transform = get_transform_msg_from_airsim(camera_setting.position, camera_setting.rotation);
 
     if (isENU_) {
         convert_tf_msg_to_enu(static_cam_tf_body_msg);
