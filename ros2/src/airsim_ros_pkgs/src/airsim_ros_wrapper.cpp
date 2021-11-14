@@ -29,6 +29,7 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     , is_used_img_timer_cb_queue_(false)
     , airsim_settings_parser_(host_ip)
     , host_ip_(host_ip)
+    , airsim_client_(nullptr)
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
     , nh_(nh)
