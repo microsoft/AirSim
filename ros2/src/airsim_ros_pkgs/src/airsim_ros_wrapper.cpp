@@ -900,6 +900,20 @@ geometry_msgs::msg::Transform AirsimROSWrapper::get_transform_msg_from_airsim(co
     return transform;
 }
 
+geometry_msgs::msg::Transform AirsimROSWrapper::get_transform_msg_from_airsim(const msr::airlib::Vector3r& position, const msr::airlib::Quaternionr& quaternion)
+{
+    geometry_msgs::msg::Transform transform;
+    transform.translation.x = position.x();
+    transform.translation.y = position.y();
+    transform.translation.z = position.z();
+    transform.rotation.x = quaternion.x();
+    transform.rotation.y = quaternion.y();
+    transform.rotation.z = quaternion.z();
+    transform.rotation.w = quaternion.w();
+
+    return transform;
+}
+
 rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const
 {
 
@@ -1193,13 +1207,7 @@ void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std
     geometry_msgs::msg::TransformStamped lidar_tf_msg;
     lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
     lidar_tf_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + lidar_name;
-    lidar_tf_msg.transform.translation.x = lidar_setting.relative_pose.position.x();
-    lidar_tf_msg.transform.translation.y = lidar_setting.relative_pose.position.y();
-    lidar_tf_msg.transform.translation.z = lidar_setting.relative_pose.position.z();
-    lidar_tf_msg.transform.rotation.x = lidar_setting.relative_pose.orientation.x();
-    lidar_tf_msg.transform.rotation.y = lidar_setting.relative_pose.orientation.y();
-    lidar_tf_msg.transform.rotation.z = lidar_setting.relative_pose.orientation.z();
-    lidar_tf_msg.transform.rotation.w = lidar_setting.relative_pose.orientation.w();
+    lidar_tf_msg.transform = get_transform_msg_from_airsim(lidar_setting.relative_pose.position, lidar_setting.relative_pose.orientation);
 
     if (isENU_) {
         convert_tf_msg_to_enu(lidar_tf_msg);
@@ -1382,13 +1390,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     cam_tf_body_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     cam_tf_body_msg.header.frame_id = frame_id;
     cam_tf_body_msg.child_frame_id = child_frame_id + "_body";
-    cam_tf_body_msg.transform.translation.x = img_response.camera_position.x();
-    cam_tf_body_msg.transform.translation.y = img_response.camera_position.y();
-    cam_tf_body_msg.transform.translation.z = img_response.camera_position.z();
-    cam_tf_body_msg.transform.rotation.x = img_response.camera_orientation.x();
-    cam_tf_body_msg.transform.rotation.y = img_response.camera_orientation.y();
-    cam_tf_body_msg.transform.rotation.z = img_response.camera_orientation.z();
-    cam_tf_body_msg.transform.rotation.w = img_response.camera_orientation.w();
+    cam_tf_body_msg.transform = get_transform_msg_from_airsim(img_response.camera_position, img_response.camera_orientation);
 
     if (isENU_) {
         convert_tf_msg_to_enu(cam_tf_body_msg);
