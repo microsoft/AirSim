@@ -8,9 +8,9 @@
 
    **참고**: 만약 UE 4.16 버전 이전의 프로젝트가 있을 경우, [upgrade guide](https://microsoft.github.io/AirSim/unreal_upgrade/)를 참고하여 프로젝트를 업그레이드 하기 바랍니다.
 
-![Unreal Engine Tab UI Screenshot](D:\강의자료\21년~ 자료\3-2\인공지능\팀플\ue_install.png)
+![Unreal Engine Tab UI Screenshot](images/ue_install.png)
 
-![Unreal Engine Install Location UI Screenshot](D:\강의자료\21년~ 자료\3-2\인공지능\팀플\ue_install_location.png)
+![Unreal Engine Install Location UI Screenshot](images/ue_install_location.png)
 
 ## AirSim 빌드
 * Visual Studio 2019 설치합니다.
