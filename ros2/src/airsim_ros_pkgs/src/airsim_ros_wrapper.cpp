@@ -809,10 +809,7 @@ void AirsimROSWrapper::publish_odom_tf(const nav_msgs::msg::Odometry& odom_msg)
     odom_tf.transform.translation.x = odom_msg.pose.pose.position.x;
     odom_tf.transform.translation.y = odom_msg.pose.pose.position.y;
     odom_tf.transform.translation.z = odom_msg.pose.pose.position.z;
-    odom_tf.transform.rotation.x = odom_msg.pose.pose.orientation.x;
-    odom_tf.transform.rotation.y = odom_msg.pose.pose.orientation.y;
-    odom_tf.transform.rotation.z = odom_msg.pose.pose.orientation.z;
-    odom_tf.transform.rotation.w = odom_msg.pose.pose.orientation.w;
+    odom_tf.transform.rotation = odom_msg.pose.pose.orientation;
     tf_broadcaster_->sendTransform(odom_tf);
 }
 
@@ -1386,9 +1383,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     cam_tf_optical_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     cam_tf_optical_msg.header.frame_id = frame_id;
     cam_tf_optical_msg.child_frame_id = child_frame_id + "_optical";
-    cam_tf_optical_msg.transform.translation.x = cam_tf_body_msg.transform.translation.x;
-    cam_tf_optical_msg.transform.translation.y = cam_tf_body_msg.transform.translation.y;
-    cam_tf_optical_msg.transform.translation.z = cam_tf_body_msg.transform.translation.z;
+    cam_tf_optical_msg.transform.translation = cam_tf_body_msg.transform.translation;
 
     tf2::Quaternion quat_cam_body;
     tf2::Quaternion quat_cam_optical;
