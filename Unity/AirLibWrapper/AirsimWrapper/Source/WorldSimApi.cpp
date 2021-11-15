@@ -58,6 +58,14 @@ void WorldSimApi::printLogMessage(const std::string& message, const std::string&
     PrintLogMessage(message.c_str(), message_param.c_str(), "", severity);
 }
 
+bool WorldSimApi::setLightIntensity(const std::string& light_name, float intensity)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "setLightIntensity is not supported on unity")
+                                    .c_str());
+    return false;
+}
+
 std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::string& tag, int tex_id, int component_id, int material_id)
 {
     std::unique_ptr<std::vector<std::string>> result;
@@ -65,6 +73,22 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
                                     "swapTextures is not supported on unity")
                                     .c_str());
     return result;
+}
+
+bool WorldSimApi::setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "setObjectMaterialFromTexture is not supported on unity")
+                                    .c_str());
+    return false;
+}
+
+bool WorldSimApi::setObjectMaterial(const std::string& object_name, const std::string& material_name)
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "setObjectMaterial is not supported on unity")
+                                    .c_str());
+    return false;
 }
 
 std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_regex) const
