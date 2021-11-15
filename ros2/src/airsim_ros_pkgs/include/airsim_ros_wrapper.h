@@ -268,7 +268,8 @@ private:
     sensor_msgs::msg::MagneticField get_mag_msg_from_airsim(const msr::airlib::MagnetometerBase::Output& mag_data) const;
     airsim_interfaces::msg::Environment get_environment_msg_from_airsim(const msr::airlib::Environment::State& env_data) const;
     msr::airlib::GeoPoint get_origin_geo_point() const;
-    VelCmd get_airlib_vel_cmd(const airsim_interfaces::msg::VelCmd& msg) const;
+    VelCmd get_airlib_world_vel_cmd(const airsim_interfaces::msg::VelCmd& msg) const;
+    VelCmd get_airlib_body_vel_cmd(const airsim_interfaces::msg::VelCmd& msg, const msr::airlib::Quaternionr& airlib_quat) const;
     geometry_msgs::msg::Transform get_transform_msg_from_airsim(const msr::airlib::Vector3r& position, const msr::airlib::AirSimSettings::Rotation& rotation);
     geometry_msgs::msg::Transform get_transform_msg_from_airsim(const msr::airlib::Vector3r& position, const msr::airlib::Quaternionr& quaternion);
 

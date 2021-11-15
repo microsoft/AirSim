@@ -484,18 +484,7 @@ void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_interfaces::msg::VelCm
     std::lock_guard<std::mutex> guard(control_mutex_);
 
     auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
-
-    double roll, pitch, yaw;
-    tf2::Matrix3x3(get_tf2_quat(drone->curr_drone_state_.kinematics_estimated.pose.orientation)).getRPY(roll, pitch, yaw); // ros uses xyzw
-
-    // todo do actual body frame?
-    drone->vel_cmd_.x = (msg->twist.linear.x * cos(yaw)) - (msg->twist.linear.y * sin(yaw)); //body frame assuming zero pitch roll
-    drone->vel_cmd_.y = (msg->twist.linear.x * sin(yaw)) + (msg->twist.linear.y * cos(yaw)); //body frame
-    drone->vel_cmd_.z = msg->twist.linear.z;
-    drone->vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-    drone->vel_cmd_.yaw_mode.is_rate = true;
-    // airsim uses degrees
-    drone->vel_cmd_.yaw_mode.yaw_or_rate = math_common::rad2deg(msg->twist.angular.z);
+    drone->vel_cmd_ = get_airlib_body_vel_cmd(*msg, drone->curr_drone_state_.kinematics_estimated.pose.orientation);
     drone->has_vel_cmd_ = true;
 }
 
@@ -505,18 +494,7 @@ void AirsimROSWrapper::vel_cmd_group_body_frame_cb(const airsim_interfaces::msg:
 
     for (const auto& vehicle_name : msg->vehicle_names) {
         auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
-
-        double roll, pitch, yaw;
-        tf2::Matrix3x3(get_tf2_quat(drone->curr_drone_state_.kinematics_estimated.pose.orientation)).getRPY(roll, pitch, yaw); // ros uses xyzw
-
-        // todo do actual body frame?
-        drone->vel_cmd_.x = (msg->vel_cmd.twist.linear.x * cos(yaw)) - (msg->vel_cmd.twist.linear.y * sin(yaw)); //body frame assuming zero pitch roll
-        drone->vel_cmd_.y = (msg->vel_cmd.twist.linear.x * sin(yaw)) + (msg->vel_cmd.twist.linear.y * cos(yaw)); //body frame
-        drone->vel_cmd_.z = msg->vel_cmd.twist.linear.z;
-        drone->vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-        drone->vel_cmd_.yaw_mode.is_rate = true;
-        // airsim uses degrees
-        drone->vel_cmd_.yaw_mode.yaw_or_rate = math_common::rad2deg(msg->vel_cmd.twist.angular.z);
+        drone->vel_cmd_ = get_airlib_body_vel_cmd(msg->vel_cmd, drone->curr_drone_state_.kinematics_estimated.pose.orientation);
         drone->has_vel_cmd_ = true;
     }
 }
@@ -528,18 +506,7 @@ void AirsimROSWrapper::vel_cmd_all_body_frame_cb(const airsim_interfaces::msg::V
     // todo expose wait_on_last_task or nah?
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
         auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_pair.second.get());
-
-        double roll, pitch, yaw;
-        tf2::Matrix3x3(get_tf2_quat(drone->curr_drone_state_.kinematics_estimated.pose.orientation)).getRPY(roll, pitch, yaw); // ros uses xyzw
-
-        // todo do actual body frame?
-        drone->vel_cmd_.x = (msg->twist.linear.x * cos(yaw)) - (msg->twist.linear.y * sin(yaw)); //body frame assuming zero pitch roll
-        drone->vel_cmd_.y = (msg->twist.linear.x * sin(yaw)) + (msg->twist.linear.y * cos(yaw)); //body frame
-        drone->vel_cmd_.z = msg->twist.linear.z;
-        drone->vel_cmd_.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
-        drone->vel_cmd_.yaw_mode.is_rate = true;
-        // airsim uses degrees
-        drone->vel_cmd_.yaw_mode.yaw_or_rate = math_common::rad2deg(msg->twist.angular.z);
+        drone->vel_cmd_ = get_airlib_body_vel_cmd(*msg, drone->curr_drone_state_.kinematics_estimated.pose.orientation);
         drone->has_vel_cmd_ = true;
     }
 }
@@ -549,7 +516,7 @@ void AirsimROSWrapper::vel_cmd_world_frame_cb(const airsim_interfaces::msg::VelC
     std::lock_guard<std::mutex> guard(control_mutex_);
 
     auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
-    drone->vel_cmd_ = get_airlib_vel_cmd(*msg);
+    drone->vel_cmd_ = get_airlib_world_vel_cmd(*msg);
     drone->has_vel_cmd_ = true;
 }
 
@@ -560,7 +527,7 @@ void AirsimROSWrapper::vel_cmd_group_world_frame_cb(const airsim_interfaces::msg
 
     for (const auto& vehicle_name : msg->vehicle_names) {
         auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[vehicle_name].get());
-        drone->vel_cmd_ = get_airlib_vel_cmd(msg->vel_cmd);
+        drone->vel_cmd_ = get_airlib_world_vel_cmd(msg->vel_cmd);
         drone->has_vel_cmd_ = true;
     }
 }
@@ -572,7 +539,7 @@ void AirsimROSWrapper::vel_cmd_all_world_frame_cb(const airsim_interfaces::msg::
     // todo expose wait_on_last_task or nah?
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
         auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_pair.second.get());
-        drone->vel_cmd_ = get_airlib_vel_cmd(*msg);
+        drone->vel_cmd_ = get_airlib_world_vel_cmd(*msg);
         drone->has_vel_cmd_ = true;
     }
 }
@@ -873,7 +840,7 @@ msr::airlib::GeoPoint AirsimROSWrapper::get_origin_geo_point() const
     return geo_point.home_geo_point;
 }
 
-VelCmd AirsimROSWrapper::get_airlib_vel_cmd(const airsim_interfaces::msg::VelCmd& msg) const
+VelCmd AirsimROSWrapper::get_airlib_world_vel_cmd(const airsim_interfaces::msg::VelCmd& msg) const
 {
     VelCmd vel_cmd;
     vel_cmd.x = msg.twist.linear.x;
@@ -882,6 +849,24 @@ VelCmd AirsimROSWrapper::get_airlib_vel_cmd(const airsim_interfaces::msg::VelCmd
     vel_cmd.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
     vel_cmd.yaw_mode.is_rate = true;
     vel_cmd.yaw_mode.yaw_or_rate = math_common::rad2deg(msg.twist.angular.z);
+    return vel_cmd;
+}
+
+VelCmd AirsimROSWrapper::get_airlib_body_vel_cmd(const airsim_interfaces::msg::VelCmd& msg, const msr::airlib::Quaternionr& airlib_quat) const
+{
+    VelCmd vel_cmd;
+    double roll, pitch, yaw;
+    tf2::Matrix3x3(get_tf2_quat(airlib_quat)).getRPY(roll, pitch, yaw); // ros uses xyzw
+
+    // todo do actual body frame?
+    vel_cmd.x = (msg.twist.linear.x * cos(yaw)) - (msg.twist.linear.y * sin(yaw)); //body frame assuming zero pitch roll
+    vel_cmd.y = (msg.twist.linear.x * sin(yaw)) + (msg.twist.linear.y * cos(yaw)); //body frame
+    vel_cmd.z = msg.twist.linear.z;
+    vel_cmd.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
+    vel_cmd.yaw_mode.is_rate = true;
+    // airsim uses degrees
+    vel_cmd.yaw_mode.yaw_or_rate = math_common::rad2deg(msg.twist.angular.z);
+
     return vel_cmd;
 }
 
