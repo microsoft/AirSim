@@ -96,11 +96,11 @@ namespace airlib
 
             std::ofstream myfile;
             myfile.open("log.txt");
-            myfile << ">> Physics update frequency: 333.33 Hz.\n";
+            /*myfile << ">> Physics update frequency: 333.33 Hz.\n";
             myfile << ">> Barometer and magnetometer update frequency: 50 Hz.\n";
-            myfile << ">> GPS update frequency: 50 Hz with startup delay.\n\n";
+            myfile << ">> GPS update frequency: 50 Hz with startup delay.\n\n";*/
+            myfile << ">> timestamp (ms) \t GroundTruth altitude \t Estimated postiion (x,y,z) \n\n";
             
-
             // enable api control
             api->enableApiControl(true);
             //checkStatusMsg(api.get(), &myfile);
@@ -115,7 +115,7 @@ namespace airlib
             std::cout << "took-off position: " << pos << std::endl;
             //checkStatusMsg(api.get(), &myfile);
 
-            clock->sleep_for(10.0f);
+            clock->sleep_for(20.0f);
 
             // fly towards a waypoint
             //api->moveToPosition(-50, -50, -50, 50, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
@@ -126,9 +126,9 @@ namespace airlib
             // clock->sleep_for(2.0f);
 
             // land
-            /*api->land(10);
+            //api->land(10);
             pos = api->getMultirotorState().getPosition();
-            std::cout << "landed   position: " << pos << std::endl;*/
+            std::cout << "final     position: " << pos << std::endl;
             checkStatusMsg(api.get(), &myfile);
 
             // TODO print some values OR log
