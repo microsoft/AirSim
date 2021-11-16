@@ -18,7 +18,13 @@ namespace airlib
     class AirSimSimpleFlightEstimator : public simple_flight::IStateEstimator
     {
     public:
-        virtual ~AirSimSimpleFlightEstimator() {}
+        AirSimSimpleFlightEstimator(simple_flight::IEkf* ekf)
+        : ekf_(ekf)
+        {
+
+        }
+
+        virtual ~AirSimSimpleFlightEstimator(){}
 
         //for now we don't do any state estimation and use ground truth (i.e. assume perfect sensors)
         void setGroundTruthKinematics(const Kinematics::State* kinematics, const Environment* environment)
@@ -97,9 +103,21 @@ namespace airlib
             return state;
         }
 
+        virtual simple_flight::Axis3r getEkfPostion() const override
+        {
+            simple_flight::Axis3r position;
+            auto ekf_states = ekf_->getEkfStates();
+            position[0] = ekf_states[0];
+            position[1] = ekf_states[1];
+            position[2] = ekf_states[2];
+
+            return position;
+        }
+
     private:
         const Kinematics::State* kinematics_;
         const Environment* environment_;
+        const simple_flight::IEkf* ekf_;
     };
 }
 } //namespace
