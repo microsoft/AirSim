@@ -33,6 +33,7 @@ namespace airlib
             IEkf::reset();
 
             freq_limiter_.reset();
+            initialize();
 
         }
 
@@ -54,7 +55,15 @@ namespace airlib
         // ---------------------------------------------------------------------
         // Internal functions
         // ---------------------------------------------------------------------
-        
+            // initialize filter
+        void initialize()
+        {
+            // intiaalize with zero position and unity quaternion ! temporary
+            states_ = VectorMath::EkfStates::Zero();
+            states_[6] = 1.0f;
+            last_statePropagation_time_ = board_->micros();
+        }
+
         // this function updates at the frequency of EKF update
         void updateEKFInternal()
         {
@@ -84,13 +93,28 @@ namespace airlib
                 return;
             }
 
-            statePropagation();
+            statePropagation(accel, gyro);
             covariancePropagation();
 
-            std::ostringstream imu_str;
+            /*std::ostringstream imu_str;
             imu_str << accel[2];
             std::string messgae = "   prediction step / imu step called (z-accelerometer) " + imu_str.str();
-            comm_link_->log(messgae);
+            comm_link_->log(messgae);*/
+
+            // std::ostringstream prediction_str;
+            // prediction_str << "Prediction: "   << states_[0] 
+            //                             << '\t' << states_[1] 
+            //                             << '\t' << states_[2]
+            //                             << '\t' << states_[3] 
+            //                             << '\t' << states_[4]
+            //                             << '\t' << states_[5]
+            //                             << '\t' << states_[6]
+            //                             << '\t' << states_[7]
+            //                             << '\t' << states_[8]
+            //                             << '\t' << states_[9]
+            //                             << '\t' ;
+            // std::string messgae = prediction_str.str();
+            // comm_link_->log(messgae);
         }
 
         // measurement update step
@@ -102,10 +126,41 @@ namespace airlib
         }
 
         // state propagtion
-        void statePropagation()
+        void statePropagation(real_T* accel, real_T* gyro)
         {
-            // auto Phi = calculatePhi();
-            // auto Gamma_w = calculateGamma_w();
+            float x[17];
+            float x_dot[10];
+            float u[6];
+
+            // extract the states
+            for (int i=0; i<17; i++){
+                x[i] = states_[i];
+            }
+
+            // extract the controls
+            for (int i=0; i<3; i++){
+                u[i] = accel[i];
+                u[i+3] = gyro[i];
+            }
+
+            evaluateStateDot(x_dot,x,u);
+
+            TTimeDelta dt = (board_->micros() - last_statePropagation_time_) / 1.0E6; // in seconds
+            last_statePropagation_time_ = board_->micros();
+
+            // euler forward integration
+            float x_predicted[17];
+            for (int i=0; i<10; i++){
+                x_predicted[i] = x[i] + static_cast<float>(dt*x_dot[i]);
+            }
+            for (int i=10; i<17; i++){
+                x_predicted[i] = x[i];
+            }
+
+            // set the predicted states TODO: via an interface or after some checks
+            for (int i=0; i<17; i++){
+                states_[i] = x_predicted[i];
+            }
         }
 
         // co-variance propagtion
@@ -136,10 +191,10 @@ namespace airlib
 
             // auto K = ...
 
-            std::ostringstream mag_str;
-            mag_str << mag[0];
-            std::string messgae = "        magnetometer step called (x-magnetic flux) " + mag_str.str();
-            comm_link_->log(messgae);
+            // std::ostringstream mag_str;
+            // mag_str << mag[0];
+            // std::string messgae = "        magnetometer step called (x-magnetic flux) " + mag_str.str();
+            // comm_link_->log(messgae);
         }
 
         // barometer update
@@ -160,10 +215,10 @@ namespace airlib
                 return;
             }
 
-            std::ostringstream alt_str;
-            alt_str << altitude[0];
-            std::string messgae = "        barometer step called (baro altitude) " + alt_str.str();
-            comm_link_->log(messgae);
+            // std::ostringstream alt_str;
+            // alt_str << altitude[0];
+            // std::string messgae = "        barometer step called (baro altitude) " + alt_str.str();
+            // comm_link_->log(messgae);
         }
 
         // GPS update
@@ -185,10 +240,10 @@ namespace airlib
                 return;
             }
 
-            std::ostringstream gps_str;
-            gps_str << geo[2];
-            std::string messgae = "        gps step called (gps altitude) " + gps_str.str();
-            comm_link_->log(messgae);
+            // std::ostringstream gps_str;
+            // gps_str << geo[2];
+            // std::string messgae = "        gps step called (gps altitude) " + gps_str.str();
+            // comm_link_->log(messgae);
         }
 
         void calculatePhi()
