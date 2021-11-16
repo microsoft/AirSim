@@ -15,6 +15,21 @@ public:
     {
         IUpdatable::update();
     }
+
+    // setters
+    void setEkfStates(VectorMath::EkfStates states)
+    {
+        states_ = states;
+    }
+    
+    // getters
+    const VectorMath::EkfStates& getEkfStates() const
+    {
+        return states_;
+    }
+
+protected:
+    VectorMath::EkfStates states_;
 };
 
 } //namespace

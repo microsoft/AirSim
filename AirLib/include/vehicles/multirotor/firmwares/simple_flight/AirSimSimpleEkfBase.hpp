@@ -15,25 +15,15 @@ namespace airlib
 
 class AirSimSimpleEkfBase : public simple_flight::IEkf
 {    
-public:
-    // setters
-    void setEkfStates()
-    {
-
-    }
-    
-    // getters
-    const VectorMath::EkfStates& getEkfStates() const
-    {
-
-    }
 
 
-private:
+protected:
     // EKF states
-    VectorMath::EkfStates states_;
+    // VectorMath::EkfStates states_;
     // EKF covariances
     VectorMath::EkfCovariance covariance_;
+    // timestamps
+    TTimePoint last_statePropagation_time_;
 };
 
 }
