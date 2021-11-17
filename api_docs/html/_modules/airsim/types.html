@@ -103,6 +103,10 @@
         <span class="k">return</span> <span class="mi">6</span>
     <span class="k">def</span> <span class="nf">Infrared</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">7</span>
+    <span class="k">def</span> <span class="nf">OpticalFlow</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">8</span>
+    <span class="k">def</span> <span class="nf">OpticalFlowVis</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">9</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;DepthPlanner&#39;</span><span class="p">:</span>
@@ -117,7 +121,9 @@
     <span class="n">DisparityNormalized</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">Segmentation</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">SurfaceNormals</span> <span class="o">=</span> <span class="mi">6</span>
-    <span class="n">Infrared</span> <span class="o">=</span> <span class="mi">7</span></div>
+    <span class="n">Infrared</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">OpticalFlow</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">OpticalFlowVis</span> <span class="o">=</span> <span class="mi">9</span></div>
 
 <div class="viewcode-block" id="DrivetrainType"><a class="viewcode-back" href="../../index.html#airsim.types.DrivetrainType">[docs]</a><span class="k">class</span> <span class="nc">DrivetrainType</span><span class="p">:</span>
     <span class="n">MaxDegreeOfFreedom</span> <span class="o">=</span> <span class="mi">0</span>
