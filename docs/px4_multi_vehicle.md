@@ -42,8 +42,8 @@ However, the provided script does not let us view the PX4 console. If you want t
                 "UseSerial": false,
                 "UseTcp": true,
                 "TcpPort": 4561,
-                "ControlPortLocal": 14540,
-                "ControlPortRemote": 14580,       
+                "ControlPortLocal": 14541,
+                "ControlPortRemote": 14581,       
                 "X": 0, "Y": -1, "Z": 0
             }
         }

@@ -108,7 +108,7 @@ print('Retrieved images: %d', len(responses))
 for response in responses:
     if response.pixels_as_float:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-        airsim.write_pfm(os.path.normpath('/temp/py1.pfm'), airsim.getPfmArray(response))
+        airsim.write_pfm(os.path.normpath('/temp/py1.pfm'), airsim.get_pfm_array(response))
     else:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
         airsim.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)
@@ -196,7 +196,7 @@ Similarly, to stop recording, use `client.stopRecording()`. To check whether Rec
 
 This API works alongwith toggling Recording using R button, therefore if it's enabled using R key, `isRecording()` will return `True`, and recording can be stopped via API using `stopRecording()`. Similarly, recording started using API will be stopped if R key is pressed in Viewport. LogMessage will also appear in the top-left of the viewport if recording is started or stopped using API.
 
-Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired.
+Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired. Check out [Modifying Recording Data](modify_recording_data.md) for details on how to modify the kinematics data being recorded.
 
 ### Wind API
 

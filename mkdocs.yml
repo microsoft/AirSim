@@ -40,7 +40,7 @@ nav:
   - "Home":
     - "Home": 'README.md'
   - "Changelog": 'CHANGELOG.md'
-  - "Get AirSim":
+  - "Building AirSim":
     - "Download Binaries": 'use_precompiled.md'
     - "Build on Windows": 'build_windows.md'
     - "Build on Linux": 'build_linux.md'
@@ -50,6 +50,7 @@ nav:
     - "AirSim with Unity": "Unity.md"
     - "Custom Unity Environment": "custom_unity_environments.md"
     - "Unity APIs": "unity_api_support.md"
+    - "FAQ": 'build_faq.md'
   - "Using AirSim":
     - "Core APIs": 'apis.md'
     - "Image APIs": 'image_apis.md'
@@ -80,6 +81,7 @@ nav:
     - "Architecture": 'design.md'
     - "Code Structure": 'code_structure.md'
     - "Adding new APIs": 'adding_new_apis.md'
+    - "Modifying Recording Data": 'modify_recording_data.md'
     - "Coding Guidelines": 'coding_guidelines.md'
     - "Flight Controller": 'flight_controller.md'
     - "Simple Flight": 'simple_flight.md'

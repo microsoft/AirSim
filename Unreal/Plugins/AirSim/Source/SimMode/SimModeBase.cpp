@@ -64,6 +64,10 @@ ASimModeBase::ASimModeBase()
     }
     else
         loading_screen_widget_ = nullptr;
+    static ConstructorHelpers::FObjectFinder<UMaterial> domain_rand_mat_finder(TEXT("Material'/AirSim/HUDAssets/DomainRandomizationMaterial.DomainRandomizationMaterial'"));
+    if (domain_rand_mat_finder.Succeeded()) {
+        domain_rand_material_ = domain_rand_mat_finder.Object;
+    }
 }
 
 void ASimModeBase::toggleLoadingScreen(bool is_visible)
@@ -570,14 +574,7 @@ void ASimModeBase::updateDebugReport(msr::airlib::StateReporterWrapper& debug_re
 
             reporter.writeHeading(std::string("Vehicle: ").append(vehicle_name == "" ? "(default)" : vehicle_name));
 
-            const msr::airlib::Kinematics::State* kinematics = vehicle_sim_api->getGroundTruthKinematics();
-
-            reporter.writeValue("Position", kinematics->pose.position);
-            reporter.writeValue("Orientation", kinematics->pose.orientation);
-            reporter.writeValue("Lin-Vel", kinematics->twist.linear);
-            reporter.writeValue("Lin-Accl", kinematics->accelerations.linear);
-            reporter.writeValue("Ang-Vel", kinematics->twist.angular);
-            reporter.writeValue("Ang-Accl", kinematics->accelerations.angular);
+            vehicle_sim_api->reportState(reporter);
         }
     }
 }

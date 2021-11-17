@@ -289,7 +289,9 @@ void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
         gimbald_rotator_.Roll = rotator.Roll;
         gimbald_rotator_.Yaw = rotator.Yaw;
     }
-    this->SetActorRelativeRotation(rotator);
+    else {
+        this->SetActorRelativeRotation(rotator);
+    }
 }
 
 void APIPCamera::setCameraFoV(float fov_degrees)
