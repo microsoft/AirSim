@@ -210,9 +210,16 @@ private:
     {
         // additional logging of vehicle states, TODO implement a separate log!
         std::ostringstream log_msg;
-        log_msg << clock_->millis() << '\t' 
+        log_msg << clock_->millis() << '\t'
+                << state_estimator_->getPosition().x() << '\t'
+                << state_estimator_->getPosition().y() << '\t'
                 << state_estimator_->getPosition().z() << '\t'
-                << state_estimator_->getEkfPostion().z() << '\t';
+                << state_estimator_->getEkfPostion().x() << '\t'
+                << state_estimator_->getEkfPostion().y() << '\t'
+                << state_estimator_->getEkfPostion().z() << '\t'
+                << state_estimator_->getEkfPositionCovariance().x() << '\t'
+                << state_estimator_->getEkfPositionCovariance().y() << '\t'
+                << state_estimator_->getEkfPositionCovariance().z() << '\t';
         std::string message = log_msg.str();
         comm_link_->log(message);
     }
