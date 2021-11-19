@@ -22,5 +22,8 @@ public:
     virtual Axis3r transformToBodyFrame(const Axis3r& world_frame_val) const = 0;
 
     virtual simple_flight::Axis3r getEkfPostion() const = 0;
+    virtual simple_flight::Axis3r getEkfAngles() const = 0;
+    virtual simple_flight::Axis3r getEkfPositionCovariance() const = 0;
+    virtual simple_flight::Axis3r getEkfAngleCovariance() const = 0;
 };
 }

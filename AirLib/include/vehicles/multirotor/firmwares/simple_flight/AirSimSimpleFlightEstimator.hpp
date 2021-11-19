@@ -107,11 +107,53 @@ namespace airlib
         {
             simple_flight::Axis3r position;
             auto ekf_states = ekf_->getEkfStates();
-            position[0] = ekf_states[0];
-            position[1] = ekf_states[1];
-            position[2] = ekf_states[2];
+            position.x() = ekf_states[0];
+            position.y() = ekf_states[1];
+            position.z() = ekf_states[2];
 
             return position;
+        }
+
+        virtual simple_flight::Axis3r getEkfAngles() const override
+        {
+            simple_flight::Axis3r angles;
+            Quaternionr orientation;
+
+            auto ekf_states = ekf_->getEkfStates();
+            orientation.x() = ekf_states[6];
+            orientation.y() = ekf_states[7];
+            orientation.z() = ekf_states[8];
+            orientation.w() = ekf_states[9];
+
+            VectorMath::toEulerianAngle(orientation,
+                                        angles.pitch(),
+                                        angles.roll(),
+                                        angles.yaw());
+
+            return angles;
+        }
+
+        virtual simple_flight::Axis3r getEkfPositionCovariance() const override
+        {
+            simple_flight::Axis3r position_cov;
+            auto ekf_covariance = ekf_->getEkfCovariance();
+            position_cov.x() = ekf_covariance(0, 0);
+            position_cov.y() = ekf_covariance(1, 1);
+            position_cov.z() = ekf_covariance(2, 2);
+
+            return position_cov;
+        }
+
+        virtual simple_flight::Axis3r getEkfAngleCovariance() const override
+        {
+            simple_flight::Axis4r angle_cov;
+            auto ekf_covariance = ekf_->getEkfCovariance();
+            angle_cov.x()   = ekf_covariance(6, 6);
+            angle_cov.y()   = ekf_covariance(7, 7);
+            angle_cov.z()   = ekf_covariance(8, 8);
+            angle_cov.val4()= ekf_covariance(9, 9);
+
+            return angle_cov;
         }
 
     private:
