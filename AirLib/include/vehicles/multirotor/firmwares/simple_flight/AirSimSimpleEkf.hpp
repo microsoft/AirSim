@@ -58,10 +58,21 @@ namespace airlib
             // initialize filter
         void initialize()
         {
-            // intiaalize with zero position and unity quaternion ! temporary
-            states_ = VectorMath::EkfStates::Zero();
+            // intiaalize with zero position and unity quaternion ! temporary | TODO do using setters 
+            states_ = VectorMath::Vector17f::Zero();
             states_[6] = 1.0f;
-            last_statePropagation_time_ = board_->micros();
+            covariance_ = VectorMath::Matrix17x17f::Identity()*0.01f;
+            //covariance_(2,2) = 1.0f;
+            Q_ = VectorMath::Matrix13x13f::Identity()*0.01f;
+            Q_(0, 0) = 0.25f;
+            Q_(1, 1) = 0.25f;
+            Q_(2, 2) = 0.25f;
+            Q_(3, 3) = 0.25f;
+            Q_(4, 4) = 0.25f;
+            Q_(5, 5) = 0.25f;
+
+            last_times_.state_propagation = board_->micros();
+            last_times_.cov_propagation = board_->micros();
         }
 
         // this function updates at the frequency of EKF update
@@ -94,7 +105,7 @@ namespace airlib
             }
 
             statePropagation(accel, gyro);
-            covariancePropagation();
+            covariancePropagation(accel, gyro);
 
             /*std::ostringstream imu_str;
             imu_str << accel[2];
@@ -128,8 +139,8 @@ namespace airlib
         // state propagtion
         void statePropagation(real_T* accel, real_T* gyro)
         {
-            float x[17];
             float x_dot[10];
+            float x[17];
             float u[6];
 
             // extract the states
@@ -145,13 +156,13 @@ namespace airlib
 
             evaluateStateDot(x_dot,x,u);
 
-            TTimeDelta dt = (board_->micros() - last_statePropagation_time_) / 1.0E6; // in seconds
-            last_statePropagation_time_ = board_->micros();
+            TTimeDelta delta_T = (board_->micros() - last_times_.state_propagation) / 1.0E6; // in seconds
+            last_times_.state_propagation = board_->micros();
 
             // euler forward integration
             float x_predicted[17];
             for (int i=0; i<10; i++){
-                x_predicted[i] = x[i] + static_cast<float>(dt*x_dot[i]);
+                x_predicted[i] = x[i] + static_cast<float>(delta_T*x_dot[i]);
             }
             for (int i=10; i<17; i++){
                 x_predicted[i] = x[i];
@@ -164,10 +175,40 @@ namespace airlib
         }
 
         // co-variance propagtion
-        void covariancePropagation()
+        void covariancePropagation(real_T* accel, real_T* gyro)
         {
-            // auto Phi = calculatePhi();
-            // auto Gamma_w = calculateGamma_w();
+            VectorMath::Matrix17x17f A;
+            VectorMath::Matrix17x13f B_w;
+            float x[17];
+            float u[6];
+
+            // extract the states
+            for (int i=0; i<17; i++){
+                x[i] = states_[i];
+            }
+
+            // extract the controls
+            for (int i=0; i<3; i++){
+                u[i] = accel[i];
+                u[i+3] = gyro[i];
+            }
+
+            evaluateA(&A, x, u);
+            evaluateB_w(&B_w, x, u);
+
+            TTimeDelta delta_T = (board_->micros() - last_times_.cov_propagation) / 1.0E6; // in seconds
+            last_times_.cov_propagation = board_->micros();
+
+            VectorMath::Matrix17x17f Phi;
+            VectorMath::Matrix17x13f GammaB_w;
+            evaluatePhiAndGamma_w(&Phi, &GammaB_w, &B_w, &A,  delta_T);
+
+            VectorMath::Matrix17x17f next_covariance;
+            next_covariance = Phi*covariance_*Phi.transpose() + GammaB_w*Q_*GammaB_w.transpose();
+
+            // set the new predicted covariance
+            covariance_ = next_covariance;
+
         }
 
         // magnetometer update
@@ -246,14 +287,23 @@ namespace airlib
             // comm_link_->log(messgae);
         }
 
-        void calculatePhi()
+        void evaluatePhiAndGamma_w( VectorMath::Matrix17x17f* Phi, 
+                                    VectorMath::Matrix17x13f* GammaB_w, 
+                                    VectorMath::Matrix17x13f* B_w, 
+                                    VectorMath::Matrix17x17f* A, 
+                                    TTimeDelta delta_T)
         {
             // calculate Phi based on the jacobian for some iteration
-        }
+            VectorMath::Matrix17x17f identity = VectorMath::Matrix17x17f::Identity();
+            VectorMath::Matrix17x17f A_square = *A*(*A);
 
-        void calculateGamma_w()
-        {
-            // calculate Gamma_w based on the jacobian for some iteration
+            *Phi = identity
+                   + *A * delta_T
+                   + A_square * delta_T*delta_T/2;
+
+            *GammaB_w = (identity
+                         + identity * delta_T
+                         + *A * delta_T*delta_T/2)*(*B_w);
         }
 
         // ---------------------------------------------------------------------

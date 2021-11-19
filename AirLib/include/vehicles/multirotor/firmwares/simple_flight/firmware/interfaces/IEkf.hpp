@@ -17,19 +17,33 @@ public:
     }
 
     // setters
-    void setEkfStates(VectorMath::EkfStates states)
+    void setEkfStates(VectorMath::Vector17f states)
     {
         states_ = states;
     }
     
     // getters
-    const VectorMath::EkfStates& getEkfStates() const
+    const VectorMath::Vector17f& getEkfStates() const
     {
         return states_;
     }
 
+    // setters
+    void setEkfCovariance(VectorMath::Matrix17x17f covariance)
+    {
+        covariance_ = covariance;
+    }
+    
+    // getters
+    const VectorMath::Matrix17x17f& getEkfCovariance() const
+    {
+        return covariance_;
+    }
+
 protected:
-    VectorMath::EkfStates states_;
+    VectorMath::Vector17f states_;
+    VectorMath::Matrix17x17f covariance_;
+    VectorMath::Matrix13x13f Q_;
 };
 
 } //namespace

@@ -15,15 +15,19 @@ namespace airlib
 
 class AirSimSimpleEkfBase : public simple_flight::IEkf
 {    
-
+protected:
+    struct LastTimes
+    {
+        TTimePoint state_propagation;
+        TTimePoint cov_propagation;
+    };
 
 protected:
     // EKF states
     // VectorMath::EkfStates states_;
     // EKF covariances
-    VectorMath::EkfCovariance covariance_;
     // timestamps
-    TTimePoint last_statePropagation_time_;
+    LastTimes last_times_;
 };
 
 }
