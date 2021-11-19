@@ -39,8 +39,10 @@ namespace airlib
         typedef Eigen::Matrix<float, 3, 3> Matrix3x3f;
         
         // added by Suman
-        typedef Eigen::Matrix<float, 17, 1> EkfStates;
-        typedef Eigen::Matrix<float, 17, 17> EkfCovariance;
+        typedef Eigen::Matrix<float, 17, 1> Vector17f;
+        typedef Eigen::Matrix<float, 17, 17> Matrix17x17f;
+        typedef Eigen::Matrix<float, 17, 13> Matrix17x13f;
+        typedef Eigen::Matrix<float, 13, 13> Matrix13x13f;
 
         typedef Eigen::AngleAxisd AngleAxisd;
         typedef Eigen::AngleAxisf AngleAxisf;
