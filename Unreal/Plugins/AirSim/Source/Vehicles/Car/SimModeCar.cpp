@@ -25,21 +25,6 @@ void ASimModeCar::initializePauseState()
     pause(false);
 }
 
-bool ASimModeCar::isPaused() const
-{
-    return current_clockspeed_ == 0;
-}
-
-void ASimModeCar::pause(bool is_paused)
-{
-    if (is_paused)
-        current_clockspeed_ = 0;
-    else
-        current_clockspeed_ = getSettings().clock_speed;
-
-    UAirBlueprintLib::setUnrealClockSpeed(this, current_clockspeed_);
-}
-
 void ASimModeCar::continueForTime(double seconds)
 {
     pause_period_start_ = ClockFactory::get()->nowNanos();
