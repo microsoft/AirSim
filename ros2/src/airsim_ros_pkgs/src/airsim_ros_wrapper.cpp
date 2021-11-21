@@ -151,27 +151,28 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         append_static_vehicle_tf(vehicle_ros.get(), *vehicle_setting);
 
-        vehicle_ros->odom_local_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>("~/" + curr_vehicle_name + "/" + odom_frame_id_, 10);
+        const std::string topic_prefix = "~/" + curr_vehicle_name;
+        vehicle_ros->odom_local_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>(topic_prefix + "/" + odom_frame_id_, 10);
 
-        vehicle_ros->env_pub_ = nh_->create_publisher<airsim_interfaces::msg::Environment>("~/" + curr_vehicle_name + "/environment", 10);
+        vehicle_ros->env_pub_ = nh_->create_publisher<airsim_interfaces::msg::Environment>(topic_prefix + "/environment", 10);
 
-        vehicle_ros->global_gps_pub_ = nh_->create_publisher<sensor_msgs::msg::NavSatFix>("~/" + curr_vehicle_name + "/global_gps", 10);
+        vehicle_ros->global_gps_pub_ = nh_->create_publisher<sensor_msgs::msg::NavSatFix>(topic_prefix + "/global_gps", 10);
 
         if (airsim_mode_ == AIRSIM_MODE::DRONE) {
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
 
             // bind to a single callback. todo optimal subs queue length
             // bind multiple topics to a single callback, but keep track of which vehicle name it was by passing curr_vehicle_name as the 2nd argument
-            drone->vel_cmd_body_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmd>("~/" + curr_vehicle_name + "/vel_cmd_body_frame", 1, [&](const airsim_interfaces::msg::VelCmd::SharedPtr msg) { this->vel_cmd_body_frame_cb(msg, vehicle_ros->vehicle_name_); }); // todo ros::TransportHints().tcpNoDelay();
+            drone->vel_cmd_body_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmd>(topic_prefix + "/vel_cmd_body_frame", 1, [&](const airsim_interfaces::msg::VelCmd::SharedPtr msg) { this->vel_cmd_body_frame_cb(msg, vehicle_ros->vehicle_name_); }); // todo ros::TransportHints().tcpNoDelay();
 
-            drone->vel_cmd_world_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmd>("~/" + curr_vehicle_name + "/vel_cmd_world_frame", 1, [&](const airsim_interfaces::msg::VelCmd::SharedPtr msg) { this->vel_cmd_world_frame_cb(msg, vehicle_ros->vehicle_name_); });
+            drone->vel_cmd_world_frame_sub_ = nh_->create_subscription<airsim_interfaces::msg::VelCmd>(topic_prefix + "/vel_cmd_world_frame", 1, [&](const airsim_interfaces::msg::VelCmd::SharedPtr msg) { this->vel_cmd_world_frame_cb(msg, vehicle_ros->vehicle_name_); });
 
-            drone->takeoff_srvr_ = nh_->create_service<airsim_interfaces::srv::Takeoff>("~/" + curr_vehicle_name + "/takeoff",
+            drone->takeoff_srvr_ = nh_->create_service<airsim_interfaces::srv::Takeoff>(topic_prefix + "/takeoff",
                                                                                         [&](std::shared_ptr<airsim_interfaces::srv::Takeoff::Request> request,
                                                                                             std::shared_ptr<airsim_interfaces::srv::Takeoff::Response>
                                                                                                 response) { this->takeoff_srv_cb(request, response, vehicle_ros->vehicle_name_); });
 
-            drone->land_srvr_ = nh_->create_service<airsim_interfaces::srv::Land>("~/" + curr_vehicle_name + "/land",
+            drone->land_srvr_ = nh_->create_service<airsim_interfaces::srv::Land>(topic_prefix + "/land",
                                                                                   [&](std::shared_ptr<airsim_interfaces::srv::Land::Request> request,
                                                                                       std::shared_ptr<airsim_interfaces::srv::Land::Response>
                                                                                           response) { this->land_srv_cb(request, response, vehicle_ros->vehicle_name_); });
@@ -180,8 +181,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
         else {
             auto car = static_cast<CarROS*>(vehicle_ros.get());
-            car->car_cmd_sub_ = nh_->create_subscription<airsim_interfaces::msg::CarControls>("~/" + curr_vehicle_name + "/car_cmd", 1, [&](const airsim_interfaces::msg::CarControls::SharedPtr msg) { this->car_cmd_cb(msg, vehicle_ros->vehicle_name_); });
-            car->car_state_pub_ = nh_->create_publisher<airsim_interfaces::msg::CarState>("~/" + curr_vehicle_name + "/car_state", 10);
+            car->car_cmd_sub_ = nh_->create_subscription<airsim_interfaces::msg::CarControls>(topic_prefix + "/car_cmd", 1, [&](const airsim_interfaces::msg::CarControls::SharedPtr msg) { this->car_cmd_cb(msg, vehicle_ros->vehicle_name_); });
+            car->car_state_pub_ = nh_->create_publisher<airsim_interfaces::msg::CarState>(topic_prefix + "/car_state", 10);
         }
 
         // iterate over camera map std::map<std::string, CameraSetting> .cameras;
@@ -212,7 +213,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
                     }
 
-                    const std::string camera_topic = "~/" + curr_vehicle_name + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
+                    const std::string camera_topic = topic_prefix + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
                     image_pub_vec_.push_back(image_transporter.advertise(camera_topic, 1));
                     cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", 10));
                     camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
