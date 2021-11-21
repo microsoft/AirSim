@@ -1,6 +1,6 @@
 FROM ros:foxy-ros-base
 
-RUN     DEBIAN_FRONTEND=noninteractive apt-get update &&\
+RUN     apt-get update &&\
         apt-get install -y\
         apt-utils \
         gcc-8 g++-8 \
