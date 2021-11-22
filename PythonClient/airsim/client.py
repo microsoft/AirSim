@@ -1230,7 +1230,7 @@ class MultirotorClient(VehicleClient, object):
     def moveByRollPitchYawThrottleAsync(self, roll, pitch, yaw, throttle, duration, vehicle_name = ''):
         """
         - Desired throttle is between 0.0 to 1.0
-        - Roll angle, pitch angle, and yaw angle are given in **radians**, in the body frame.
+        - Roll angle, pitch angle, and yaw angle are given in **degrees** when using PX4 and in **radians** when using SimpleFlight, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
 
         - Frame Convention:
@@ -1250,9 +1250,9 @@ class MultirotorClient(VehicleClient, object):
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
 
         Args:
-            roll (float): Desired roll angle, in radians.
-            pitch (float): Desired pitch angle, in radians.
-            yaw (float): Desired yaw angle, in radians.
+            roll (float): Desired roll angle.
+            pitch (float): Desired pitch angle.
+            yaw (float): Desired yaw angle.
             throttle (float): Desired throttle (between 0.0 to 1.0)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
