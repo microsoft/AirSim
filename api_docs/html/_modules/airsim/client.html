@@ -1296,7 +1296,7 @@
 <div class="viewcode-block" id="MultirotorClient.moveByRollPitchYawThrottleAsync"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.moveByRollPitchYawThrottleAsync">[docs]</a>    <span class="k">def</span> <span class="nf">moveByRollPitchYawThrottleAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        - Desired throttle is between 0.0 to 1.0</span>
-<span class="sd">        - Roll angle, pitch angle, and yaw angle are given in **radians**, in the body frame.</span>
+<span class="sd">        - Roll angle, pitch angle, and yaw angle are given in **degrees** when using PX4 and in **radians** when using SimpleFlight, in the body frame.</span>
 <span class="sd">        - The body frame follows the Front Left Up (FLU) convention, and right-handedness.</span>
 
 <span class="sd">        - Frame Convention:</span>
@@ -1316,9 +1316,9 @@
 <span class="sd">            | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            roll (float): Desired roll angle, in radians.</span>
-<span class="sd">            pitch (float): Desired pitch angle, in radians.</span>
-<span class="sd">            yaw (float): Desired yaw angle, in radians.</span>
+<span class="sd">            roll (float): Desired roll angle.</span>
+<span class="sd">            pitch (float): Desired pitch angle.</span>
+<span class="sd">            yaw (float): Desired yaw angle.</span>
 <span class="sd">            throttle (float): Desired throttle (between 0.0 to 1.0)</span>
 <span class="sd">            duration (float): Desired amount of time (seconds), to send this command for</span>
 <span class="sd">            vehicle_name (str, optional): Name of the multirotor to send this command to</span>
