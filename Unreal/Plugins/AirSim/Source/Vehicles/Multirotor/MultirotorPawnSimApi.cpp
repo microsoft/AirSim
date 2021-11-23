@@ -139,6 +139,16 @@ void MultirotorPawnSimApi::setPose(const Pose& pose, bool ignore_collision)
     pending_pose_status_ = PendingPoseStatus::RenderPending;
 }
 
+void MultirotorPawnSimApi::setKinematics(const Kinematics::State& state, bool ignore_collision)
+{
+    multirotor_physics_body_->lock();
+    multirotor_physics_body_->updateKinematics(state);
+    multirotor_physics_body_->setGrounded(false);
+    multirotor_physics_body_->unlock();
+    pending_pose_collisions_ = ignore_collision;
+    pending_pose_status_ = PendingPoseStatus::RenderPending;
+}
+
 //*** Start: UpdatableState implementation ***//
 void MultirotorPawnSimApi::resetImplementation()
 {

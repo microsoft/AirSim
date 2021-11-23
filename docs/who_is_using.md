@@ -26,4 +26,5 @@ Just add a [GitHub issue](https://github.com/microsoft/airsim/issues) with quick
 * [BladeStack Systems](https://www.bladestack.nl)
 * [Unizar (Universidad de Zaragoza)](https://sites.google.com/unizar.es/poc-team/home)
 * [ClearSky LLC](https://deltacnc.ru/)
+* [Myned AI](https://www.myned.ai/)
 

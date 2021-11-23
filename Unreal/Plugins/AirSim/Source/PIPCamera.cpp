@@ -41,6 +41,8 @@ APIPCamera::APIPCamera()
     image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(8, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(9, EPixelFormat::PF_B8G8R8A8);
 
     object_filter_ = FObjectFilter();
 }
@@ -70,6 +72,10 @@ void APIPCamera::PostInitializeComponents()
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("InfraredCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::SurfaceNormals)] =
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::OpticalFlow)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("OpticalFlowCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::OpticalFlowVis)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("OpticalFlowVisCaptureComponent"));
 
     for (unsigned int i = 0; i < imageTypeCount(); ++i) {
         detections_[i] = NewObject<UDetectionComponent>(this);
@@ -283,7 +289,9 @@ void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
         gimbald_rotator_.Roll = rotator.Roll;
         gimbald_rotator_.Yaw = rotator.Yaw;
     }
-    this->SetActorRelativeRotation(rotator);
+    else {
+        this->SetActorRelativeRotation(rotator);
+    }
 }
 
 void APIPCamera::setCameraFoV(float fov_degrees)
