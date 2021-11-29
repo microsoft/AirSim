@@ -116,6 +116,10 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#lidar-apis">Lidar APIs</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#light-control-apis">Light Control APIs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#texture-apis">Texture APIs</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#multiple-vehicles">Multiple Vehicles</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#coordinate-system">Coordinate System</a>
@@ -534,6 +538,17 @@ client.simSetWind(wind)</code></pre>
 <h3 id="lidar-apis">Lidar APIs<a class="headerlink" href="#lidar-apis" title="Permanent link">#</a></h3>
 <p>AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in <a href="../settings/">settings.json</a>.</p>
 <p>More on <a href="../lidar/">lidar APIs and settings</a> and <a href="../sensors/">sensor settings</a></p>
+<h3 id="light-control-apis">Light Control APIs<a class="headerlink" href="#light-control-apis" title="Permanent link">#</a></h3>
+<p>Lights that can be manipulated inside AirSim can be created via the <code>simSpawnObject()</code> API by passing either <code>PointLightBP</code> or <code>SpotLightBP</code> as the <code>asset_name</code> parameter and <code>True</code> as the <code>is_blueprint</code> parameter. Once a light has been spawned, it can be manipulated using the following API:</p>
+<ul>
+<li><code>simSetLightIntensity</code>: This allows you to edit a light's intensity or brightness. It takes two parameters, <code>light_name</code>, the name of the light object returned by a previous call to <code>simSpawnObject()</code>, and <code>intensity</code>, a float value.</li>
+</ul>
+<h3 id="texture-apis">Texture APIs<a class="headerlink" href="#texture-apis" title="Permanent link">#</a></h3>
+<p>Textures can be dynamically set on objects via these APIs:</p>
+<ul>
+<li><code>simSetObjectMaterial</code>: This sets an object's material using an existing Unreal material asset. It takes two string parameters, <code>object_name</code> and <code>material_name</code>.</li>
+<li><code>simSetObjectMaterialFromTexture</code>: This sets an object's material using a path to a texture. It takes two string parameters, <code>object_name</code> and <code>texture_path</code>.</li>
+</ul>
 <h3 id="multiple-vehicles">Multiple Vehicles<a class="headerlink" href="#multiple-vehicles" title="Permanent link">#</a></h3>
 <p>AirSim supports multiple vehicles and control them through APIs. Please <a href="../multi_vehicle/">Multiple Vehicles</a> doc.</p>
 <h3 id="coordinate-system">Coordinate System<a class="headerlink" href="#coordinate-system" title="Permanent link">#</a></h3>
