@@ -135,6 +135,7 @@ void ASimHUD::updateWidgetSubwindowVisibility()
 
         if (camera != nullptr) {
             camera->setCameraTypeEnabled(camera_type, is_visible);
+            //sub-window captures don’t count as a request, set bCaptureEveryFrame and bCaptureOnMovement to display so we can show correctly the subwindow
             camera->setCameraTypeUpdate(camera_type, false);
         }
 

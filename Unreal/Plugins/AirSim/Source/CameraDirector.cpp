@@ -344,16 +344,8 @@ void ACameraDirector::notifyViewModeChanged()
 {
     bool nodisplay = ECameraDirectorMode::CAMERA_DIRECTOR_MODE_NODISPLAY == mode_;
 
-    //if (fpv_camera_)
-    //    fpv_camera_->onViewModeChanged(nodisplay);
-    //if (backup_camera_)
-    //    backup_camera_->onViewModeChanged(nodisplay);
-    //if (ExternalCamera)
-    //    ExternalCamera->onViewModeChanged(nodisplay);
-    //if (front_camera_)
-    //    front_camera_->onViewModeChanged(nodisplay);
-
     UWorld* world = GetWorld();
     UGameViewportClient* gameViewport = world->GetGameViewport();
-    gameViewport->bDisableWorldRendering = (uint32)mode_;
+    gameViewport->bDisableWorldRendering = nodisplay;
+
 }

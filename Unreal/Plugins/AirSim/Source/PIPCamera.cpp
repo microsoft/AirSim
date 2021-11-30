@@ -98,6 +98,8 @@ void APIPCamera::BeginPlay()
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
     }
 
+    //We set all cameras to start as nodisplay
+    //This improves performance because the capture components are no longer updating every frame and only update while requesting an image
     onViewModeChanged(true);
 
     gimbal_stabilization_ = 0;
