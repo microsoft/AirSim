@@ -347,5 +347,4 @@ void ACameraDirector::notifyViewModeChanged()
     UWorld* world = GetWorld();
     UGameViewportClient* gameViewport = world->GetGameViewport();
     gameViewport->bDisableWorldRendering = nodisplay;
-
 }
