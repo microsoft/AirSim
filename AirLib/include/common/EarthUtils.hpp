@@ -391,7 +391,6 @@ namespace airlib
             return static_cast<float>(DECLINATION_TABLE[lat_index][lon_index]);
         }
     };
-
 }
 } //namespace
 #endif
