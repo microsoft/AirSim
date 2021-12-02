@@ -33,6 +33,7 @@ cmake_install.cmake
 CMakeCache.txt
 
 #Unreal Engine
+/UnrealEngine
 StarterContent/
 Saved/
 !DefaultEditorPerProjectUserSettings.ini #contains use less CPU setting
@@ -286,12 +287,14 @@ ModelManifest.xml
 /cmake/MavLinkCom/Makefile
 /cmake/Makefile
 /cmake/HelloDrone/Makefile
+/cmake/HelloSpawnedDrones/Makefile
 /cmake/DroneShell/Makefile
 /cmake/DroneServer/Makefile
 /cmake/AirLib/Makefile
 /cmake/AirLibUnity/Makefile
 /cmake/AirLibUnity/AirLibUnity
 /cmake/HelloDrone/HelloDrone
+/cmake/HelloSpawnedDrones/HelloSpawnedDrones
 /cmake/DroneShell/DroneShell
 /cmake/DroneServer/DroneServer
 cmake/AirLibUnitTests/Makefile

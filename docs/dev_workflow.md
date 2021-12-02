@@ -66,7 +66,7 @@ First make sure your project's .uproject file is referencing the plugin. Then ma
 You are in luck! We have `build_all_ue_projects.bat` which exactly does that. Don't treat it as black box (at least not yet), open it up and see what it does.  It has 4 variables that are being set from command line args. If these args is not supplied they are set to default values in next set of statements. You might want to change default values for the paths. This batch file builds AirSim plugin, deploys it to all listed projects (see CALL statements later in the batch file), runs packaging for those projects and puts final binaries in specified folder - all in one step! This is what we use to create our own binary releases.
 
 #### How do I contribute back to AirSim?
-Before making any changes make sure you have created your feature branch. After you test your code changes in Blocks environment, follow the [usual steps](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) to make contributions just like any other GitHub projects. If you are not familiar with Git Branch-Rebase-Merge workflow, please [read this first](http://shitalshah.com/p/git-workflow-branch-rebase-squash-merge/).
+Before making any changes make sure you have created your feature branch. After you test your code changes in Blocks environment, follow the [usual steps](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) to make contributions just like any other GitHub projects. Please use rebase and squash merge, for more information see [An introduction to Git merge and rebase: what they are, and how to use them](https://www.freecodecamp.org/news/an-introduction-to-git-merge-and-rebase-what-they-are-and-how-to-use-them-131b863785f/).
 
 
 

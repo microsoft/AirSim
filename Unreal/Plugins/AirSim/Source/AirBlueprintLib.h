@@ -29,11 +29,12 @@
 class ULevelStreamingDynamic;
 
 UENUM(BlueprintType)
-enum class LogDebugLevel : uint8 {
+enum class LogDebugLevel : uint8
+{
     Informational UMETA(DisplayName = "Informational"),
     Success UMETA(DisplayName = "Success"),
     Failure UMETA(DisplayName = "Failure"),
-    Unimportant  UMETA(DisplayName = "Unimportant")
+    Unimportant UMETA(DisplayName = "Unimportant")
 };
 
 /**
@@ -47,38 +48,35 @@ class UAirBlueprintLib : public UBlueprintFunctionLibrary
 public:
     static void OnBeginPlay();
     static void OnEndPlay();
-    static void LogMessageString(const std::string &prefix, const std::string &suffix, LogDebugLevel level, float persist_sec = 60);
+    static void LogMessageString(const std::string& prefix, const std::string& suffix, LogDebugLevel level, float persist_sec = 60);
     UFUNCTION(BlueprintCallable, Category = "Utils")
-        static void LogMessage(const FString &prefix, const FString &suffix, LogDebugLevel level, float persist_sec = 60);
+    static void LogMessage(const FString& prefix, const FString& suffix, LogDebugLevel level, float persist_sec = 60);
     static float GetWorldToMetersScale(const AActor* context);
-    template<typename T>
+    template <typename T>
     static T* GetActorComponent(AActor* actor, FString name);
 
-    template<typename T>
+    template <typename T>
     static T* FindActor(const UObject* context, FString name)
     {
         FName name_n = FName(*name);
-        for (TActorIterator<AActor> It(context->GetWorld(), T::StaticClass()); It; ++It)
-        {
+        for (TActorIterator<AActor> It(context->GetWorld(), T::StaticClass()); It; ++It) {
             AActor* Actor = *It;
-            if (!Actor->IsPendingKill() && (Actor->ActorHasTag(name_n) || Actor->GetName().Compare(name) == 0))
-            {
+            if (!Actor->IsPendingKill() && (Actor->ActorHasTag(name_n) || Actor->GetName().Compare(name) == 0)) {
                 return static_cast<T*>(Actor);
             }
         }
         return nullptr;
     }
 
-
-    template<typename T>
+    template <typename T>
     static void FindAllActor(const UObject* context, TArray<AActor*>& foundActors)
     {
         UGameplayStatics::GetAllActorsOfClass(context, T::StaticClass(), foundActors);
     }
-    
-    static ULevelStreamingDynamic *CURRENT_LEVEL;
 
-    static std::vector<std::string> ListMatchingActors(const UObject *context, const std::string& name_regex);
+    static ULevelStreamingDynamic* CURRENT_LEVEL;
+
+    static std::vector<std::string> ListMatchingActors(const UObject* context, const std::string& name_regex);
     UFUNCTION(BlueprintCallable, Category = "AirSim|LevelAPI")
     static ULevelStreamingDynamic* loadLevel(UObject* context, const FString& level_name);
     UFUNCTION(BlueprintCallable, Category = "AirSim|LevelAPI")
@@ -93,25 +91,24 @@ public:
     static bool RunConsoleCommand(const AActor* context, const FString& command);
 
     static bool HasObstacle(const AActor* actor, const FVector& start, const FVector& end,
-        const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
+                            const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
     static bool GetObstacle(const AActor* actor, const FVector& start, const FVector& end,
-        FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
+                            FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
     static bool GetLastObstaclePosition(const AActor* actor, const FVector& start, const FVector& end,
-        FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
+                                        FHitResult& hit, const AActor* ignore_actor = nullptr, ECollisionChannel collision_channel = ECC_Visibility);
     static void FollowActor(AActor* follower, const AActor* followee, const FVector& offset, bool fixed_z = false, float fixed_z_val = 2.0f);
 
     static bool SetMeshStencilID(const std::string& mesh_name, int object_id,
-        bool is_name_regex = false);
+                                 bool is_name_regex = false);
     static int GetMeshStencilID(const std::string& mesh_name);
-    static void InitializeMeshStencilIDs(bool ignore_existing);
+    static void InitializeMeshStencilIDs(bool override_existing);
 
     static bool IsInGameThread();
 
-    template<class T>
+    template <class T>
     static std::string GetMeshName(T* mesh)
     {
-        switch (mesh_naming_method_)
-        {
+        switch (mesh_naming_method_) {
         case msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName:
             if (mesh->GetOwner())
                 return std::string(TCHAR_TO_UTF8(*(mesh->GetOwner()->GetName())));
@@ -129,38 +126,36 @@ public:
 
     static std::string GetMeshName(ALandscapeProxy* mesh);
 
-    template<class UserClass>
+    template <class UserClass>
     static FInputActionBinding& BindActionToKey(const FName action_name, const FKey in_key, UserClass* actor,
-        typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr func, bool on_press_or_release = false,
-        bool shift_key = false, bool control_key = false, bool alt_key = false, bool command_key = false)
+                                                typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func, bool on_press_or_release = false,
+                                                bool shift_key = false, bool control_key = false, bool alt_key = false, bool command_key = false)
     {
         FInputActionKeyMapping action(action_name, in_key, shift_key, control_key, alt_key, command_key);
 
         APlayerController* controller = actor->GetWorld()->GetFirstPlayerController();
 
         controller->PlayerInput->AddActionMapping(action);
-        return controller->InputComponent->
-            BindAction(action_name, on_press_or_release ? IE_Pressed : IE_Released, actor, func);
+        return controller->InputComponent->BindAction(action_name, on_press_or_release ? IE_Pressed : IE_Released, actor, func);
     }
 
-    template<class UserClass>
+    template <class UserClass>
     static FInputAxisBinding& BindAxisToKey(const FName axis_name, const FKey in_key, AActor* actor, UserClass* obj,
-        typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
+                                            typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
     {
         FInputAxisKeyMapping axis(axis_name, in_key);
 
         return UAirBlueprintLib::BindAxisToKey(axis, actor, obj, func);
     }
 
-    template<class UserClass>
+    template <class UserClass>
     static FInputAxisBinding& BindAxisToKey(const FInputAxisKeyMapping& axis, AActor* actor, UserClass* obj,
-        typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
+                                            typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
     {
         APlayerController* controller = actor->GetWorld()->GetFirstPlayerController();
 
         controller->PlayerInput->AddAxisMapping(axis);
-        return controller->InputComponent->
-            BindAxis(axis.AxisName, obj, func);
+        return controller->InputComponent->BindAxis(axis.AxisName, obj, func);
     }
 
     static int RemoveAxisBinding(const FInputAxisKeyMapping& axis, FInputAxisBinding* axis_binding, AActor* actor);
@@ -195,12 +190,20 @@ public:
 
     static void setUnrealClockSpeed(const AActor* context, float clock_speed);
     static IImageWrapperModule* getImageWrapperModule();
-    static void CompressImageArray(int32 width, int32 height, const TArray<FColor> &src, TArray<uint8> &dest);
+    static void CompressImageArray(int32 width, int32 height, const TArray<FColor>& src, TArray<uint8>& dest);
     static std::vector<msr::airlib::MeshPositionVertexBuffersResponse> GetStaticMeshComponents();
+
 private:
-    template<typename T>
-    static void InitializeObjectStencilID(T* mesh, bool ignore_existing = true)
+    template <typename T>
+    static void InitializeObjectStencilID(T* mesh, bool override_existing = true)
     {
+        SetRenderCustomDepth(mesh, true);
+
+        if (!override_existing && mesh->CustomDepthStencilValue != 0) {
+            // If value is non-zero and don't want to override
+            return;
+        }
+
         std::string mesh_name = common_utils::Utils::toLower(GetMeshName(mesh));
         if (mesh_name == "" || common_utils::Utils::startsWith(mesh_name, "default_")) {
             //common_utils::Utils::DebugBreak();
@@ -214,37 +217,31 @@ private:
                 continue; //numerics and other punctuations
             hash += char_num;
         }
-        if (ignore_existing || mesh->CustomDepthStencilValue == 0) { //if value is already set then don't bother
-            SetObjectStencilID(mesh, hash % 256);
-        }
+
+        SetObjectStencilID(mesh, hash % 256);
     }
 
-
-    template<typename T>
+    template <typename T>
     static void SetObjectStencilIDIfMatch(T* mesh, int object_id,
-        const std::string& mesh_name, bool is_name_regex, const std::regex& name_regex, int& changes)
+                                          const std::string& mesh_name, bool is_name_regex, const std::regex& name_regex, int& changes)
     {
         std::string comp_mesh_name = GetMeshName(mesh);
         if (comp_mesh_name == "")
             return;
-        bool is_match = (!is_name_regex && (comp_mesh_name == mesh_name))
-            || (is_name_regex && std::regex_match(comp_mesh_name, name_regex));
+        bool is_match = (!is_name_regex && (comp_mesh_name == mesh_name)) || (is_name_regex && std::regex_match(comp_mesh_name, name_regex));
         if (is_match) {
             ++changes;
             SetObjectStencilID(mesh, object_id);
         }
     }
 
-
-    template<typename T>
+    template <typename T>
     static void SetObjectStencilID(T* mesh, int object_id)
     {
-        if (object_id < 0)
-        {
+        if (object_id < 0) {
             mesh->SetRenderCustomDepth(false);
         }
-        else
-        {
+        else {
             mesh->SetCustomDepthStencilValue(object_id);
             mesh->SetRenderCustomDepth(true);
         }
@@ -254,12 +251,10 @@ private:
 
     static void SetObjectStencilID(ALandscapeProxy* mesh, int object_id)
     {
-        if (object_id < 0)
-        {
+        if (object_id < 0) {
             mesh->bRenderCustomDepth = false;
         }
-        else
-        {
+        else {
             mesh->CustomDepthStencilValue = object_id;
             mesh->bRenderCustomDepth = true;
         }
@@ -267,17 +262,29 @@ private:
         // Explicitly set the custom depth state on the components so the
         // render state is marked dirty and the update actually takes effect
         // immediately.
-        for (ULandscapeComponent* comp : mesh->LandscapeComponents)
-        {
-            if (object_id < 0)
-            {
+        for (ULandscapeComponent* comp : mesh->LandscapeComponents) {
+            if (object_id < 0) {
                 comp->SetRenderCustomDepth(false);
             }
-            else
-            {
+            else {
                 comp->SetCustomDepthStencilValue(object_id);
                 comp->SetRenderCustomDepth(true);
             }
+        }
+    }
+
+    template <typename T>
+    static void SetRenderCustomDepth(T* mesh, bool enable)
+    {
+        mesh->SetRenderCustomDepth(enable);
+    }
+
+    static void SetRenderCustomDepth(ALandscapeProxy* mesh, bool enable)
+    {
+        mesh->bRenderCustomDepth = enable;
+
+        for (ULandscapeComponent* comp : mesh->LandscapeComponents) {
+            comp->SetRenderCustomDepth(enable);
         }
     }
 
@@ -291,4 +298,3 @@ private:
 
     static IImageWrapperModule* image_wrapper_module_;
 };
-

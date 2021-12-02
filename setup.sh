@@ -28,7 +28,7 @@ done
 # llvm tools
 if [ "$(uname)" == "Darwin" ]; then # osx
     brew update
-    brew tap llvm-hs/homebrew-llvm
+    # Update below line for newer versions
     brew install llvm@8
 else #linux
     sudo apt-get update
@@ -123,19 +123,19 @@ fi # End USB setup, CMake install
 
 
 # Download rpclib
-if [ ! -d "external/rpclib/rpclib-2.2.1" ]; then
+if [ ! -d "external/rpclib/rpclib-2.3.0" ]; then
     echo "*********************************************************************************************"
     echo "Downloading rpclib..."
     echo "*********************************************************************************************"
 
-    wget https://github.com/madratman/rpclib/archive/v2.2.1.zip
+    wget https://github.com/rpclib/rpclib/archive/v2.3.0.zip
 
     # remove previous versions
     rm -rf "external/rpclib"
 
     mkdir -p "external/rpclib"
-    unzip -q v2.2.1.zip -d external/rpclib
-    rm v2.2.1.zip
+    unzip -q v2.3.0.zip -d external/rpclib
+    rm v2.3.0.zip
 fi
 
 # Download high-polycount SUV model

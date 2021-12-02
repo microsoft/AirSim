@@ -16,10 +16,13 @@ ProjectSettings
 Main Camera
 Directional Light
 AirSimHUD
+AirSimGlobal
 Car
 ```
 7. After removing `CarDemo` from the Hierarchy panel, save your modified scene as `CarDemo`.
 [![change scene](images/unity_change_scene.png)](https://youtu.be/5iplkEC88qw?start=45&end=78)
-8. Repeat Steps 6 and 7 with `DroneDemo`. This time, save your custom scene as `DroneDemo`.
+8. Repeat Steps 5, 6 and 7 with `DroneDemo`. This time, save your custom scene as `DroneDemo`.
+
+To run your project drag `SimModeSelector` into, and remove everything else from the Scene Hierarchy panel.
 
 Your custom environment is now ready to interface with AirSim!

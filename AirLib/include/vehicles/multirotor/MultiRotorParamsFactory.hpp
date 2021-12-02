@@ -10,40 +10,43 @@
 #include "vehicles/multirotor/firmwares/mavlink/ArduCopterSoloParams.hpp"
 #include "vehicles/multirotor/firmwares/arducopter/ArduCopterParams.hpp"
 
+namespace msr
+{
+namespace airlib
+{
 
-namespace msr { namespace airlib {
-
-class MultiRotorParamsFactory {
-public:
-    static std::unique_ptr<MultiRotorParams> createConfig(const AirSimSettings::VehicleSetting* vehicle_setting, 
-        std::shared_ptr<const SensorFactory> sensor_factory)
+    class MultiRotorParamsFactory
     {
-        std::unique_ptr<MultiRotorParams> config;
+    public:
+        static std::unique_ptr<MultiRotorParams> createConfig(const AirSimSettings::VehicleSetting* vehicle_setting,
+                                                              std::shared_ptr<const SensorFactory> sensor_factory)
+        {
+            std::unique_ptr<MultiRotorParams> config;
 
-        if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypePX4) {
-            config.reset(new Px4MultiRotorParams(*static_cast<const AirSimSettings::MavLinkVehicleSetting*>(vehicle_setting),
-                sensor_factory));
-        }
-        else if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeArduCopterSolo) {
-            config.reset(new ArduCopterSoloParams(*static_cast<const AirSimSettings::MavLinkVehicleSetting*>(vehicle_setting), sensor_factory));
-        }
-        else if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeArduCopter) {
-            config.reset(new ArduCopterParams(*static_cast<const AirSimSettings::MavLinkVehicleSetting*>(vehicle_setting), sensor_factory));
-        }
-        else if (vehicle_setting->vehicle_type == "" || //default config
-            vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) {
-            config.reset(new SimpleFlightQuadXParams(vehicle_setting, sensor_factory));
-        }
-        else
-            throw std::runtime_error(Utils::stringf(
-                "Cannot create vehicle config because vehicle name '%s' is not recognized",
-                vehicle_setting->vehicle_name.c_str()));
+            if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypePX4) {
+                config.reset(new Px4MultiRotorParams(*static_cast<const AirSimSettings::MavLinkVehicleSetting*>(vehicle_setting),
+                                                     sensor_factory));
+            }
+            else if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeArduCopterSolo) {
+                config.reset(new ArduCopterSoloParams(*static_cast<const AirSimSettings::MavLinkVehicleSetting*>(vehicle_setting), sensor_factory));
+            }
+            else if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeArduCopter) {
+                config.reset(new ArduCopterParams(*static_cast<const AirSimSettings::MavLinkVehicleSetting*>(vehicle_setting), sensor_factory));
+            }
+            else if (vehicle_setting->vehicle_type == "" || //default config
+                     vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) {
+                config.reset(new SimpleFlightQuadXParams(vehicle_setting, sensor_factory));
+            }
+            else
+                throw std::runtime_error(Utils::stringf(
+                    "Cannot create vehicle config because vehicle name '%s' is not recognized",
+                    vehicle_setting->vehicle_name.c_str()));
 
-        config->initialize(vehicle_setting);
+            config->initialize(vehicle_setting);
 
-        return config;
-    }
-};
-
-}} //namespace
+            return config;
+        }
+    };
+}
+} //namespace
 #endif

@@ -17,17 +17,18 @@ Cars in AirSim
 
 ## How to Get It
 
-[![Build Status](https://travis-ci.org/Microsoft/AirSim.svg?branch=master)](https://travis-ci.org/Microsoft/AirSim)
-
 ### Windows
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml)
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
 
 ### Linux
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml)
 * [Download binaries](https://github.com/Microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 ### macOS
+[![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 
@@ -42,7 +43,7 @@ View our [detailed documentation](https://microsoft.github.io/AirSim/) on all as
 
 If you have remote control (RC) as shown below, you can manually control the drone in the simulator. For cars, you can use arrow keys to drive manually.
 
-[More details](https://microsoft.github.io/AirSim/remote_control/)
+[More details](https://microsoft.github.io/AirSim/remote_control)
 
 ![record screenshot](docs/images/AirSimDroneManual.gif)
 
@@ -57,7 +58,7 @@ These APIs are also available as part of a separate, independent cross-platform 
 
 Note that you can use [SimMode setting](https://microsoft.github.io/AirSim/settings#simmode) to specify the default vehicle or the new [ComputerVision mode](https://microsoft.github.io/AirSim/image_apis#computer-vision-mode-1) so you don't get prompted each time you start AirSim.
 
-[More details](https://microsoft.github.io/AirSim/apis/)
+[More details](https://microsoft.github.io/AirSim/apis)
 
 ### Gathering training data
 
@@ -71,7 +72,7 @@ A better way to generate training data exactly the way you want is by accessing 
 
 Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation.
 
-[More details](https://microsoft.github.io/AirSim/image_apis/)
+[More details](https://microsoft.github.io/AirSim/image_apis)
 
 ### Weather Effects
 
@@ -84,6 +85,7 @@ Press F10 to see various options available for weather effects. You can also con
 - [Video - Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) by Chris Lovett
 - [Video - Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0) by Chris Lovett
 - [Video - Using off-the-self environments with AirSim](https://www.youtube.com/watch?v=y09VbdQWvQY) by Jim Piavis
+- [Webinar - Harnessing high-fidelity simulation for autonomous systems](https://note.microsoft.com/MSR-Webinar-AirSim-Registration-On-Demand.html) by Sai Vemprala
 - [Reinforcement Learning with AirSim](https://microsoft.github.io/AirSim/reinforcement_learning) by Ashish Kapoor
 - [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
 - [Using TensorFlow for simple collision avoidance](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
@@ -118,7 +120,9 @@ We are maintaining a [list](https://microsoft.github.io/AirSim/who_is_using) of 
 
 ## Contact
 
-Join the AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/) to stay up to date or ask any questions.
+Join our [GitHub Discussions group](https://github.com/microsoft/AirSim/discussions) to stay up to date or ask any questions.
+
+We also have an AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/). 
 
 
 ## What's New

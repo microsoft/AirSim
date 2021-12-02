@@ -68,3 +68,5 @@ Results:
 ![Demo](images/tex_swap_demo.gif)
 
 Note that in this example, different textures were chosen on each actor for the same index value.
+
+You can also use the `simSetObjectMaterial` and `simSetObjectMaterialFromTexture` APIs to set an object's material to any material asset or filepath of a texture. For more information on using these APIs, see [Texture APIs](apis.md#texture-apis).

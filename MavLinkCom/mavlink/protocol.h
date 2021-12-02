@@ -1,5 +1,5 @@
 #pragma once
-
+// clang-format off
 #include "string.h"
 #include "mavlink_types.h"
 
@@ -331,4 +331,4 @@ _MAV_RETURN_ARRAY(int64_t,  i64)
 _MAV_RETURN_ARRAY(float,    f)
 _MAV_RETURN_ARRAY(double,   d)
 
-
+// clang-format on

@@ -9,21 +9,23 @@
 #include "api/RpcLibServerBase.hpp"
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
 
+namespace msr
+{
+namespace airlib
+{
 
-namespace msr { namespace airlib {
-
-class MultirotorRpcLibServer : public RpcLibServerBase {
-public:
-    MultirotorRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port = RpcLibPort);
-    virtual ~MultirotorRpcLibServer();
-
-protected:
-    virtual MultirotorApiBase* getVehicleApi(const std::string& vehicle_name) override
+    class MultirotorRpcLibServer : public RpcLibServerBase
     {
-        return static_cast<MultirotorApiBase*>(RpcLibServerBase::getVehicleApi(vehicle_name));
-    }
+    public:
+        MultirotorRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port = RpcLibPort);
+        virtual ~MultirotorRpcLibServer();
 
-};
-
-}} //namespace
+    protected:
+        virtual MultirotorApiBase* getVehicleApi(const std::string& vehicle_name) override
+        {
+            return static_cast<MultirotorApiBase*>(RpcLibServerBase::getVehicleApi(vehicle_name));
+        }
+    };
+}
+} //namespace
 #endif

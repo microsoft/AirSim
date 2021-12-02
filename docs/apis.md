@@ -66,7 +66,7 @@ while True:
     # get camera images from the car
     responses = client.simGetImages([
         airsim.ImageRequest(0, airsim.ImageType.DepthVis),
-        airsim.ImageRequest(1, airsim.ImageType.DepthPlanner, True)])
+        airsim.ImageRequest(1, airsim.ImageType.DepthPlanar, True)])
     print('Retrieved images: %d', len(responses))
 
     # do something with images
@@ -86,6 +86,7 @@ Here's how to use AirSim APIs using Python to control simulated quadrotor (see a
 ```python
 # ready to run example: PythonClient/multirotor/hello_drone.py
 import airsim
+import os
 
 # connect to the AirSim simulator
 client = airsim.MultirotorClient()
@@ -100,14 +101,14 @@ client.moveToPositionAsync(-10, 10, -10, 5).join()
 # take images
 responses = client.simGetImages([
     airsim.ImageRequest("0", airsim.ImageType.DepthVis),
-    airsim.ImageRequest("1", airsim.ImageType.DepthPlanner, True)])
+    airsim.ImageRequest("1", airsim.ImageType.DepthPlanar, True)])
 print('Retrieved images: %d', len(responses))
 
 # do something with the images
 for response in responses:
     if response.pixels_as_float:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-        airsim.write_pfm(os.path.normpath('/temp/py1.pfm'), airsim.getPfmArray(response))
+        airsim.write_pfm(os.path.normpath('/temp/py1.pfm'), airsim.get_pfm_array(response))
     else:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
         airsim.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)
@@ -124,7 +125,7 @@ for response in responses:
 * `simGetObjectPose`, `simSetObjectPose`: Gets and sets the pose of specified object in Unreal environment. Here the object means "actor" in Unreal terminology. They are searched by tag as well as name. Please note that the names shown in UE Editor are *auto-generated* in each run and are not permanent. So if you want to refer to actor by name, you must change its auto-generated name in UE Editor. Alternatively you can add a tag to actor which can be done by clicking on that actor in Unreal Editor and then going to [Tags property](https://answers.unrealengine.com/questions/543807/whats-the-difference-between-tag-and-tag.html), click "+" sign and add some string value. If multiple actors have same tag then the first match is returned. If no matches are found then NaN pose is returned. The returned pose is in NED coordinates in SI units with its origin at Player Start. For `simSetObjectPose`, the specified actor must have [Mobility](https://docs.unrealengine.com/en-us/Engine/Actors/Mobility) set to Movable or otherwise you will get undefined behavior. The `simSetObjectPose` has parameter `teleport` which means object is [moved through other objects](https://www.unrealengine.com/en-US/blog/moving-physical-objects) in its way and it returns true if move was successful
 
 ### Image / Computer Vision APIs
-AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plan, computation of disparity image and saving it to [pfm format](pfm.md).
+AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plane, computation of disparity image and saving it to [pfm format](pfm.md).
 
 More on [image APIs and Computer Vision mode](image_apis.md).
 For vision problems that can benefit from domain randomization, there is also an [object retexturing API](retexturing.md), which can be used in supported scenes.
@@ -137,7 +138,7 @@ AirSim allows to pause and continue the simulation through `pause(is_paused)` AP
 The collision information can be obtained using `simGetCollisionInfo` API. This call returns a struct that has information not only whether collision occurred but also collision position, surface normal, penetration depth and so on.
 
 ### Time of Day API
-AirSim assumes there exist sky sphere of class `EngineSky/BP_Sky_Sphere` in your environment with [ADirectionalLight actor](https://github.com/Microsoft/AirSim/blob/master/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L156). By default, the position of the sun in the scene doesn't move with time. You can use [settings](settings.md#timeofday) to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene.
+AirSim assumes there exist sky sphere of class `EngineSky/BP_Sky_Sphere` in your environment with [ADirectionalLight actor](https://github.com/microsoft/AirSim/blob/v1.4.0-linux/Unreal/Plugins/AirSim/Source/SimMode/SimModeBase.cpp#L224). By default, the position of the sun in the scene doesn't move with time. You can use [settings](settings.md#timeofday) to set up latitude, longitude, date and time which AirSim uses to compute the position of sun in the scene.
 
 You can also use following API call to set the sun position according to given date time:
 
@@ -148,6 +149,10 @@ simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = F
 The `is_enabled` parameter must be `True` to enable time of day effect. If it is `False` then sun position is reset to its original in the environment.
 
 Other parameters are same as in [settings](settings.md#timeofday).
+
+### Line-of-sight and world extent APIs
+To test line-of-sight in the sim from a vehicle to a point or between two points, see simTestLineOfSightToPoint(point, vehicle_name) and simTestLineOfSightBetweenPoints(point1, point2), respectively.
+Sim world extent, in the form of a vector of two GeoPoints, can be retrieved using simGetWorldExtents().
 
 ### Weather APIs
 By default all weather effects are disabled. To enable weather effect, first call:
@@ -177,7 +182,7 @@ class WeatherParameter:
 
 Please note that `Roadwetness`, `RoadSnow` and `RoadLeaf` effects requires adding [materials](https://github.com/Microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Content/Weather/WeatherFX) to your scene.
 
-Please see [example code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/computer_vision/weather.py) for more details.
+Please see [example code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/environment/weather.py) for more details.
 
 ### Recording APIs
 
@@ -191,7 +196,7 @@ Similarly, to stop recording, use `client.stopRecording()`. To check whether Rec
 
 This API works alongwith toggling Recording using R button, therefore if it's enabled using R key, `isRecording()` will return `True`, and recording can be stopped via API using `stopRecording()`. Similarly, recording started using API will be stopped if R key is pressed in Viewport. LogMessage will also appear in the top-left of the viewport if recording is started or stopped using API.
 
-Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired.
+Note that this will only save the data as specfied in the settings. For full freedom in storing data such as certain sensor information, or in a different format or layout, use the other APIs to fetch the data and save as desired. Check out [Modifying Recording Data](modify_recording_data.md) for details on how to modify the kinematics data being recorded.
 
 ### Wind API
 
@@ -211,6 +216,19 @@ Also see example script in [set_wind.py](https://github.com/Microsoft/AirSim/blo
 AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in [settings.json](settings.md).
 
 More on [lidar APIs and settings](lidar.md) and [sensor settings](sensors.md)
+
+### Light Control APIs
+
+Lights that can be manipulated inside AirSim can be created via the `simSpawnObject()` API by passing either `PointLightBP` or `SpotLightBP` as the `asset_name` parameter and `True` as the `is_blueprint` parameter. Once a light has been spawned, it can be manipulated using the following API:
+
+* `simSetLightIntensity`: This allows you to edit a light's intensity or brightness. It takes two parameters, `light_name`, the name of the light object returned by a previous call to `simSpawnObject()`, and `intensity`, a float value.
+
+### Texture APIs
+
+Textures can be dynamically set on objects via these APIs:
+
+* `simSetObjectMaterial`: This sets an object's material using an existing Unreal material asset. It takes two string parameters, `object_name` and `material_name`.
+* `simSetObjectMaterialFromTexture`: This sets an object's material using a path to a texture. It takes two string parameters, `object_name` and `texture_path`.
 
 ### Multiple Vehicles
 AirSim supports multiple vehicles and control them through APIs. Please [Multiple Vehicles](multi_vehicle.md) doc.
@@ -270,10 +288,8 @@ Generally speaking, APIs therefore shouldn't allow you to do something that cann
 The AirLib is self-contained library that you can put on an offboard computing module such as the Gigabyte barebone Mini PC. This module then can talk to the flight controllers such as PX4 using exact same code and flight controller protocol. The code you write for testing in the simulator remains unchanged. See [AirLib on custom drones](custom_drone.md).
 
 ## Adding New APIs to AirSim
-Adding new APIs requires modifying the source code. Much of the changes are mechanical and required for various levels of abstractions that AirSim supports. [This commit](https://github.com/Microsoft/AirSim/commit/f0e83c29e7685e1021185e3c95bfdaffb6cb85dc) demonstrates how to add a simple API `simPrintLogMessage` that prints message in simulator window.
 
-## Some Internals
-The APIs use [msgpack-rpc protocol](https://github.com/msgpack-rpc/msgpack-rpc) over TCP/IP through [rpclib](http://rpclib.net/) developed by [TamÃ¡s Szelei](https://github.com/sztomi) which allows you to use variety of programming languages including C++, C#, Python, Java etc. When AirSim starts, it opens port 41451 (this can be changed via [settings](settings.md)) and listens for incoming request. The Python or C++ client code connects to this port and sends RPC calls using [msgpack serialization format](https://msgpack.org).
+See the [Adding New APIs](adding_new_apis.md) page
 
 ## References and Examples
 

@@ -7,15 +7,19 @@
 #include <functional>
 #include "common/Common.hpp"
 
-namespace msr { namespace airlib {
+namespace msr
+{
+namespace airlib
+{
 
-class ApiServerBase {
-public:
-    virtual void start(bool block, std::size_t thread_count) = 0;
-    virtual void stop() = 0;
+    class ApiServerBase
+    {
+    public:
+        virtual void start(bool block, std::size_t thread_count) = 0;
+        virtual void stop() = 0;
 
-    virtual ~ApiServerBase() = default;
-};
-
-}} //namespace
+        virtual ~ApiServerBase() = default;
+    };
+}
+} //namespace
 #endif

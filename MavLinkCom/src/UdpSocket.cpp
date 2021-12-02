@@ -24,17 +24,17 @@ void UdpSocket::close()
     pImpl->close();
 }
 
-int UdpSocket::send(const void *pkt, size_t size)
+int UdpSocket::send(const void* pkt, size_t size)
 {
     return pImpl->send(pkt, size);
 }
 
-int UdpSocket::sendto(const void *buf, size_t size, const std::string& address, uint16_t port)
+int UdpSocket::sendto(const void* buf, size_t size, const std::string& address, uint16_t port)
 {
     return pImpl->sendto(buf, size, address, port);
 }
 
-int UdpSocket::recv(void *pkt, size_t size, uint32_t timeout_ms)
+int UdpSocket::recv(void* pkt, size_t size, uint32_t timeout_ms)
 {
     return pImpl->recv(pkt, size, timeout_ms);
 }
@@ -54,7 +54,8 @@ void UdpSocket::set_broadcast(void)
     pImpl->set_broadcast();
 }
 
-UdpSocket::~UdpSocket() {
+UdpSocket::~UdpSocket()
+{
     pImpl->close();
     pImpl = nullptr;
 }

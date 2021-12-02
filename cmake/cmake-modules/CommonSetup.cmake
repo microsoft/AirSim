@@ -24,12 +24,8 @@ macro(SetupConsoleBuild)
 endmacro(SetupConsoleBuild)
 
 macro(CommonSetup)
-    message(STATUS "Running CommonSetup...")
-
     find_package(Threads REQUIRED)
-
-    find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../..")
-    message(STATUS "found AIRSIM_ROOT=${AIRSIM_ROOT}")
+    find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../.." REQUIRED)    
 
     #setup output paths
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
@@ -37,7 +33,7 @@ macro(CommonSetup)
     SET(LIBRARY_OUTPUT_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
     #setup include and lib for rpclib which will be referenced by other projects
-    set(RPCLIB_VERSION_FOLDER rpclib-2.2.1)
+    set(RPCLIB_VERSION_FOLDER rpclib-2.3.0)
     set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/${RPCLIB_VERSION_FOLDER}/include")
     #name of .a file with lib prefix
     set(RPC_LIB rpc)
@@ -60,7 +56,8 @@ macro(CommonSetup)
 
             if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
                 set(CMAKE_CXX_FLAGS "-stdlib=libc++ -Wno-documentation -Wno-unknown-warning-option ${CMAKE_CXX_FLAGS}")
-                set(CXX_EXP_LIB "-lc++fs -ferror-limit=10")
+                find_package(LLVM REQUIRED CONFIG)
+                set(CXX_EXP_LIB "-L${LLVM_LIBRARY_DIRS} -lc++fs -ferror-limit=10")
             else()
                 set(CXX_EXP_LIB "-lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel")
             endif ()

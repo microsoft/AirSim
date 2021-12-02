@@ -158,6 +158,19 @@ class VehicleClient:
             print(ver_info)
         print('')
 
+    def simSetLightIntensity(self, light_name, intensity):
+        """
+        Change intensity of named light
+
+        Args:
+            light_name (str): Name of light to change
+            intensity (float): New intensity value
+
+        Returns:
+            bool: True if successful, otherwise False
+        """
+        return self.client.call("simSetLightIntensity", light_name, intensity)
+
     def simSwapTextures(self, tags, tex_id = 0, component_id = 0, material_id = 0):
         """
         Runtime Swap Texture API
@@ -176,6 +189,33 @@ class VehicleClient:
             list[str]: List of objects which matched the provided tags and had the texture swap perfomed
         """
         return self.client.call("simSwapTextures", tags, tex_id, component_id, material_id)
+
+    def simSetObjectMaterial(self, object_name, material_name):
+        """
+        Runtime Swap Texture API
+        See https://microsoft.github.io/AirSim/retexturing/ for details
+        Args:
+            object_name (str): name of object to set material for
+            material_name (str): name of material to set for object
+
+        Returns:
+            bool: True if material was set
+        """
+        return self.client.call("simSetObjectMaterial", object_name, material_name)
+
+    def simSetObjectMaterialFromTexture(self, object_name, texture_path):
+        """
+        Runtime Swap Texture API
+        See https://microsoft.github.io/AirSim/retexturing/ for details
+        Args:
+            object_name (str): name of object to set material for
+            texture_path (str): path to texture to set for object
+
+        Returns:
+            bool: True if material was set
+        """
+        return self.client.call("simSetObjectMaterialFromTexture", object_name, texture_path)
+
 
     # time-of-day control
     def simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True):
@@ -220,7 +260,7 @@ class VehicleClient:
     # camera control
     # simGetImage returns compressed png in array of bytes
     # image_type uses one of the ImageType members
-    def simGetImage(self, camera_name, image_type, vehicle_name = ''):
+    def simGetImage(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Get a single image
 
@@ -232,6 +272,7 @@ class VehicleClient:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
             vehicle_name (str, optional): Name of the vehicle with the camera
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             Binary string literal of compressed png image
@@ -240,7 +281,7 @@ class VehicleClient:
         camera_name = str(camera_name)
 
         # because this method returns std::vector<uint8>, msgpack decides to encode it as a string unfortunately.
-        result = self.client.call('simGetImage', camera_name, image_type, vehicle_name)
+        result = self.client.call('simGetImage', camera_name, image_type, vehicle_name, external)
         if (result == "" or result == "\0"):
             return None
         return result
@@ -248,7 +289,7 @@ class VehicleClient:
     # camera control
     # simGetImage returns compressed png in array of bytes
     # image_type uses one of the ImageType members
-    def simGetImages(self, requests, vehicle_name = ''):
+    def simGetImages(self, requests, vehicle_name = '', external = False):
         """
         Get multiple images
 
@@ -257,12 +298,49 @@ class VehicleClient:
         Args:
             requests (list[ImageRequest]): Images required
             vehicle_name (str, optional): Name of vehicle associated with the camera
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             list[ImageResponse]:
         """
-        responses_raw = self.client.call('simGetImages', requests, vehicle_name)
+        responses_raw = self.client.call('simGetImages', requests, vehicle_name, external)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
+        
+    def simTestLineOfSightToPoint(self, point, vehicle_name = ''):
+        """
+        Returns whether the target point is visible from the perspective of the inputted vehicle
+
+        Args:
+            point (GeoPoint): target point
+            vehicle_name (str, optional): Name of vehicle
+
+        Returns:
+            [bool]: Success
+        """
+        return self.client.call('simTestLineOfSightToPoint', point, vehicle_name)
+        
+    def simTestLineOfSightBetweenPoints(self, point1, point2):
+        """
+        Returns whether the target point is visible from the perspective of the source point
+
+        Args:
+            point1 (GeoPoint): source point
+            point2 (GeoPoint): target point
+
+        Returns:
+            [bool]: Success
+        """
+        return self.client.call('simTestLineOfSightBetweenPoints', point1, point2)
+        
+    def simGetWorldExtents(self):
+        """
+        Returns a list of GeoPoints representing the minimum and maximum extents of the world
+
+        Returns:
+            list[GeoPoint]
+        """
+        responses_raw = self.client.call('simGetWorldExtents')
+        return [GeoPoint.from_msgpack(response_raw) for response_raw in responses_raw]
 
     def simRunConsoleCommand(self, command):
         """
@@ -301,7 +379,7 @@ class VehicleClient:
         """
         return CollisionInfo.from_msgpack(self.client.call('simGetCollisionInfo', vehicle_name))
 
-    def simSetVehiclePose(self, pose, ignore_collison, vehicle_name = ''):
+    def simSetVehiclePose(self, pose, ignore_collision, vehicle_name = ''):
         """
         Set the pose of the vehicle
 
@@ -312,7 +390,7 @@ class VehicleClient:
             ignore_collision (bool): Whether to ignore any collision or not
             vehicle_name (str, optional): Name of the vehicle to move
         """
-        self.client.call('simSetVehiclePose', pose, ignore_collison, vehicle_name)
+        self.client.call('simSetVehiclePose', pose, ignore_collision, vehicle_name)
 
     def simGetVehiclePose(self, vehicle_name = ''):
         """
@@ -405,8 +483,20 @@ class VehicleClient:
             list[str]: List containing all the names
         """
         return self.client.call('simListSceneObjects', name_regex)
+        
+    def simLoadLevel(self, level_name):
+        """
+        Loads a level specified by its name
 
-    def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
+        Args:
+            level_name (str): Name of the level to load
+
+        Returns:
+            bool: True if the level was successfully loaded
+        """
+        return self.client.call('simLoadLevel', level_name)
+
+    def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False, is_blueprint=False):
         """Spawned selected object in the world
         
         Args:
@@ -414,11 +504,13 @@ class VehicleClient:
             asset_name (str): Name of asset(mesh) in the project database
             pose (airsim.Pose): Desired pose of object
             scale (airsim.Vector3r): Desired scale of object
+            physics_enabled (bool, optional): Whether to enable physics for the object
+            is_blueprint (bool, optional): Whether to spawn a blueprint or an actor
         
         Returns:
             str: Name of spawned object, in case it had to be modified
         """
-        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale, physics_enabled)
+        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale, physics_enabled, is_blueprint)
 
     def simDestroyObject(self, object_name):
         """Removes selected object from the world
@@ -460,6 +552,64 @@ class VehicleClient:
         """
         return self.client.call('simGetSegmentationObjectID', mesh_name)
 
+    def simAddDetectionFilterMeshName(self, camera_name, image_type, mesh_name, vehicle_name = '', external = False):
+        """
+        Add mesh name to detect in wild card format
+
+        For example: simAddDetectionFilterMeshName("Car_*") will detect all instance named "Car_*"
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            image_type (ImageType): Type of image required
+            mesh_name (str): mesh name in wild card format
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
+
+        """
+        self.client.call('simAddDetectionFilterMeshName', camera_name, image_type, mesh_name, vehicle_name, external)
+    
+    def simSetDetectionFilterRadius(self, camera_name, image_type, radius_cm, vehicle_name = '', external = False):
+        """
+        Set detection radius for all cameras
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            image_type (ImageType): Type of image required
+            radius_cm (int): Radius in [cm]
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
+        """
+        self.client.call('simSetDetectionFilterRadius', camera_name, image_type, radius_cm, vehicle_name, external)
+     
+    def simClearDetectionMeshNames(self, camera_name, image_type, vehicle_name = '', external = False):
+        """
+        Clear all mesh names from detection filter
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            image_type (ImageType): Type of image required
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
+
+        """
+        self.client.call('simClearDetectionMeshNames', camera_name, image_type, vehicle_name, external)
+
+    def simGetDetections(self, camera_name, image_type, vehicle_name = '', external = False):
+        """
+        Get current detections
+
+        Args:
+            camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
+            image_type (ImageType): Type of image required
+            vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
+
+        Returns:
+            DetectionInfo array
+        """
+        responses_raw = self.client.call('simGetDetections', camera_name, image_type, vehicle_name, external)
+        return [DetectionInfo.from_msgpack(response_raw) for response_raw in responses_raw]
+
     def simPrintLogMessage(self, message, message_param = "", severity = 0):
         """
         Prints the specified message in the simulator's window.
@@ -477,35 +627,37 @@ class VehicleClient:
         """
         self.client.call('simPrintLogMessage', message, message_param, severity)
 
-    def simGetCameraInfo(self, camera_name, vehicle_name = ''):
+    def simGetCameraInfo(self, camera_name, vehicle_name = '', external=False):
         """
         Get details about the camera
 
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             CameraInfo:
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
-        return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name))
+        return CameraInfo.from_msgpack(self.client.call('simGetCameraInfo', str(camera_name), vehicle_name, external))
 
-    def simGetDistortionParams(self, camera_name, vehicle_name = ''):
+    def simGetDistortionParams(self, camera_name, vehicle_name = '', external = False):
         """
         Get camera distortion parameters
 
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
 
         Returns:
             List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.
         """
     
-        return self.client.call('simGetDistortionParams', str(camera_name), vehicle_name)
+        return self.client.call('simGetDistortionParams', str(camera_name), vehicle_name, external)
 
-    def simSetDistortionParams(self, camera_name, distortion_params, vehicle_name = ''):
+    def simSetDistortionParams(self, camera_name, distortion_params, vehicle_name = '', external = False):
         """
         Set camera distortion parameters
 
@@ -514,12 +666,13 @@ class VehicleClient:
             distortion_params (dict): Dictionary of distortion param names and corresponding values
                                         {"K1": 0.0, "K2": 0.0, "K3": 0.0, "P1": 0.0, "P2": 0.0}
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
         """
 
         for param_name, value in distortion_params.items():
-            self.client.call('simSetDistortionParam', str(camera_name), param_name, value, vehicle_name)
+            self.simSetDistortionParam(camera_name, param_name, value, vehicle_name, external)
 
-    def simSetDistortionParam(self, camera_name, param_name, value, vehicle_name = ''):
+    def simSetDistortionParam(self, camera_name, param_name, value, vehicle_name = '', external = False):
         """
         Set single camera distortion parameter
 
@@ -528,10 +681,11 @@ class VehicleClient:
             param_name (str): Name of distortion parameter
             value (float): Value of distortion parameter
             vehicle_name (str, optional): Vehicle which the camera is associated with
+            external (bool, optional): Whether the camera is an External Camera
         """
-        self.client.call('simSetDistortionParam', str(camera_name), param_name, value, vehicle_name)
+        self.client.call('simSetDistortionParam', str(camera_name), param_name, value, vehicle_name, external)
 
-    def simSetCameraPose(self, camera_name, pose, vehicle_name = ''):
+    def simSetCameraPose(self, camera_name, pose, vehicle_name = '', external = False):
         """
         - Control the pose of a selected camera
 
@@ -539,28 +693,12 @@ class VehicleClient:
             camera_name (str): Name of the camera to be controlled
             pose (Pose): Pose representing the desired position and orientation of the camera
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+            external (bool, optional): Whether the camera is an External Camera
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
-        self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name)
+        self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name, external)
 
-    def simSetCameraOrientation(self, camera_name, orientation, vehicle_name = ''):
-        """
-        .. note::
-
-            This API has been upgraded to `simSetCameraPose`
-
-        - Control the Orientation of a selected camera
-
-        Args:
-            camera_name (str): Name of the camera to be controlled
-            orientation (Quaternionr): Quaternion representing the desired orientation of the camera
-            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
-        """
-        logging.warning("`simSetCameraOrientation` API has been upgraded to `simSetCameraPose`. Please update your code.")
-        pose = Pose(orientation_val=orientation)
-        self.simSetCameraPose(camera_name, pose, vehicle_name)
-
-    def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = ''):
+    def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = '', external = False):
         """
         - Control the field of view of a selected camera
 
@@ -568,9 +706,10 @@ class VehicleClient:
             camera_name (str): Name of the camera to be controlled
             fov_degrees (float): Value of field of view in degrees
             vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+            external (bool, optional): Whether the camera is an External Camera
         """
         # TODO: below str() conversion is only needed for legacy reason and should be removed in future
-        self.client.call('simSetCameraFov', str(camera_name), fov_degrees, vehicle_name)
+        self.client.call('simSetCameraFov', str(camera_name), fov_degrees, vehicle_name, external)
 
     def simGetGroundTruthKinematics(self, vehicle_name = ''):
         """
@@ -585,6 +724,19 @@ class VehicleClient:
         kinematics_state = self.client.call('simGetGroundTruthKinematics', vehicle_name)
         return KinematicsState.from_msgpack(kinematics_state)
     simGetGroundTruthKinematics.__annotations__ = {'return': KinematicsState}
+
+    def simSetKinematics(self, state, ignore_collision, vehicle_name = ''):
+        """
+        Set the kinematics state of the vehicle
+
+        If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values
+
+        Args:
+            state (KinematicsState): Desired Pose pf the vehicle
+            ignore_collision (bool): Whether to ignore any collision or not
+            vehicle_name (str, optional): Name of the vehicle to move
+        """
+        self.client.call('simSetKinematics', state, ignore_collision, vehicle_name)
 
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
         """
@@ -669,6 +821,7 @@ class VehicleClient:
 
     def simGetLidarSegmentation(self, lidar_name = '', vehicle_name = ''):
         """
+        NOTE: Deprecated API, use `getLidarData()` API instead
         Returns Segmentation ID of each point's collided object in the last Lidar update
 
         Args:
@@ -678,7 +831,8 @@ class VehicleClient:
         Returns:
             list[int]: Segmentation IDs of the objects
         """
-        return self.client.call('simGetLidarSegmentation', lidar_name, vehicle_name)
+        logging.warning("simGetLidarSegmentation API is deprecated, use getLidarData() API instead")
+        return self.getLidarData(lidar_name, vehicle_name).segmentation
 
     #  Plotting APIs
     def simFlushPersistentMarkers(self):
@@ -792,20 +946,6 @@ class VehicleClient:
         """
         self.client.call('cancelLastTask', vehicle_name)
 
-    def waitOnLastTask(self, timeout_sec = float('nan')):
-        """
-        Wait for the last Async task to complete
-
-        Args:
-            timeout_sec (float, optional): Time for the task to complete
-
-        Returns:
-            bool: Result of the last task
-
-                  True if the task completed without cancellation or timeout
-        """
-        return self.client.call('waitOnLastTask', timeout_sec)
-
     # Recording APIs
     def startRecording(self):
         """
@@ -853,6 +993,40 @@ class VehicleClient:
             bool: True if output written to file successfully, else False
         """
         return self.client.call('simCreateVoxelGrid', position, x, y, z, res, of)
+
+    # Add new vehicle via RPC
+    def simAddVehicle(self, vehicle_name, vehicle_type, pose, pawn_path = ""):
+        """
+        Create vehicle at runtime
+
+        Args:
+            vehicle_name (str): Name of the vehicle being created
+            vehicle_type (str): Type of vehicle, e.g. "simpleflight"
+            pose (Pose): Initial pose of the vehicle
+            pawn_path (str, optional): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type
+
+        Returns:
+            bool: Whether vehicle was created
+        """
+        return self.client.call('simAddVehicle', vehicle_name, vehicle_type, pose, pawn_path)
+
+    def listVehicles(self):
+        """
+        Lists the names of current vehicles
+
+        Returns:
+            list[str]: List containing names of all vehicles
+        """
+        return self.client.call('listVehicles')
+
+    def getSettingsString(self):
+        """
+        Fetch the settings text being used by AirSim
+
+        Returns:
+            str: Settings text in JSON format
+        """
+        return self.client.call('getSettingsString')
 
 # -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
@@ -914,7 +1088,24 @@ class MultirotorClient(VehicleClient, object):
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
         return self.client.call_async('moveByVelocityBodyFrame', vx, vy, vz, duration, drivetrain, yaw_mode, vehicle_name)
-        
+
+    def moveByVelocityZBodyFrameAsync(self, vx, vy, z, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
+        """
+        Args:
+            vx (float): desired velocity in the X axis of the vehicle's local NED frame
+            vy (float): desired velocity in the Y axis of the vehicle's local NED frame
+            z (float): desired Z value (in local NED frame of the vehicle)
+            duration (float): Desired amount of time (seconds), to send this command for
+            drivetrain (DrivetrainType, optional):
+            yaw_mode (YawMode, optional):
+            vehicle_name (str, optional): Name of the multirotor to send this command to
+
+        Returns:
+            msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
+        """
+
+        return self.client.call_async('moveByVelocityZBodyFrame', vx, vy, z, duration, drivetrain, yaw_mode, vehicle_name)
+
     def moveByAngleZAsync(self, pitch, roll, z, yaw, duration, vehicle_name = ''):
         return self.client.call_async('moveByAngleZ', pitch, roll, z, yaw, duration, vehicle_name)
 
@@ -1043,7 +1234,7 @@ class MultirotorClient(VehicleClient, object):
     def moveByRollPitchYawThrottleAsync(self, roll, pitch, yaw, throttle, duration, vehicle_name = ''):
         """
         - Desired throttle is between 0.0 to 1.0
-        - Roll angle, pitch angle, and yaw angle are given in **radians**, in the body frame.
+        - Roll angle, pitch angle, and yaw angle are given in **degrees** when using PX4 and in **radians** when using SimpleFlight, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
 
         - Frame Convention:
@@ -1063,9 +1254,9 @@ class MultirotorClient(VehicleClient, object):
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
 
         Args:
-            roll (float): Desired roll angle, in radians.
-            pitch (float): Desired pitch angle, in radians.
-            yaw (float): Desired yaw angle, in radians.
+            roll (float): Desired roll angle.
+            pitch (float): Desired pitch angle.
+            yaw (float): Desired yaw angle.
             throttle (float): Desired throttle (between 0.0 to 1.0)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
@@ -1286,7 +1477,20 @@ class MultirotorClient(VehicleClient, object):
         """
         return MultirotorState.from_msgpack(self.client.call('getMultirotorState', vehicle_name))
     getMultirotorState.__annotations__ = {'return': MultirotorState}
+    # query rotor states
+    def getRotorStates(self, vehicle_name = ''):
+        """
+        Used to obtain the current state of all a multirotor's rotors. The state includes the speeds,
+        thrusts and torques for all rotors.
 
+        Args:
+            vehicle_name (str, optional): Vehicle to get the rotor state of
+
+        Returns:
+            RotorStates: Containing a timestamp and the speed, thrust and torque of all rotors.
+        """
+        return RotorStates.from_msgpack(self.client.call('getRotorStates', vehicle_name))
+    getRotorStates.__annotations__ = {'return': RotorStates}
 
 # -----------------------------------  Car APIs ---------------------------------------------
 class CarClient(VehicleClient, object):
