@@ -7,8 +7,8 @@
 using namespace msr::airlib;
 
 CarPawnSimApi::CarPawnSimApi(const Params& params,
-                             const msr::airlib::CarApiBase::CarControls& keyboard_controls, UWheeledVehicleMovementComponent* movement)
-    : PawnSimApi(params), params_(params), keyboard_controls_(keyboard_controls)
+                             const msr::airlib::CarApiBase::CarControls& keyboard_controls)
+    : PawnSimApi(params), keyboard_controls_(keyboard_controls)
 {
 }
 
@@ -16,19 +16,17 @@ void CarPawnSimApi::initialize()
 {
     PawnSimApi::initialize();
 
-    createVehicleApi(static_cast<ACarPawn*>(params_.pawn), params_.home_geopoint);
-
-    //TODO: should do reset() here?
-    joystick_controls_ = msr::airlib::CarApiBase::CarControls();
-}
-
-void CarPawnSimApi::createVehicleApi(ACarPawn* pawn, const msr::airlib::GeoPoint& home_geopoint)
-{
     //create vehicle params
     std::shared_ptr<UnrealSensorFactory> sensor_factory = std::make_shared<UnrealSensorFactory>(getPawn(), &getNedTransform());
 
-    vehicle_api_ = CarApiFactory::createApi(getVehicleSetting(), sensor_factory, (*getGroundTruthKinematics()), (*getGroundTruthEnvironment()), home_geopoint);
-    pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(pawn, getGroundTruthKinematics(), vehicle_api_.get()));
+    vehicle_api_ = CarApiFactory::createApi(getVehicleSetting(),
+                                            sensor_factory,
+                                            *getGroundTruthKinematics(),
+                                            *getGroundTruthEnvironment());
+    pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(static_cast<ACarPawn*>(getPawn()), getGroundTruthKinematics(), vehicle_api_.get()));
+
+    //TODO: should do reset() here?
+    joystick_controls_ = msr::airlib::CarApiBase::CarControls();
 }
 
 std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
