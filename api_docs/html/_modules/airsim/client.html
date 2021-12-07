@@ -176,7 +176,7 @@
 <span class="sd">            seconds (float): Time to run the simulation for</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simContinueForTime&#39;</span><span class="p">,</span> <span class="n">seconds</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="VehicleClient.simContinueForFrames"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simContinueForFrames">[docs]</a>    <span class="k">def</span> <span class="nf">simContinueForFrames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Continue (or resume if paused) the simulation for the specified number of frames, after which the simulation will be paused.</span>
@@ -371,7 +371,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">responses_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetImages&#39;</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">ImageResponse</span><span class="o">.</span><span class="n">from_msgpack</span><span class="p">(</span><span class="n">response_raw</span><span class="p">)</span> <span class="k">for</span> <span class="n">response_raw</span> <span class="ow">in</span> <span class="n">responses_raw</span><span class="p">]</span></div>
-        
+
 <div class="viewcode-block" id="VehicleClient.simTestLineOfSightToPoint"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simTestLineOfSightToPoint">[docs]</a>    <span class="k">def</span> <span class="nf">simTestLineOfSightToPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns whether the target point is visible from the perspective of the inputted vehicle</span>
@@ -384,7 +384,7 @@
 <span class="sd">            [bool]: Success</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simTestLineOfSightToPoint&#39;</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="VehicleClient.simTestLineOfSightBetweenPoints"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simTestLineOfSightBetweenPoints">[docs]</a>    <span class="k">def</span> <span class="nf">simTestLineOfSightBetweenPoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point1</span><span class="p">,</span> <span class="n">point2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns whether the target point is visible from the perspective of the source point</span>
@@ -397,7 +397,7 @@
 <span class="sd">            [bool]: Success</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simTestLineOfSightBetweenPoints&#39;</span><span class="p">,</span> <span class="n">point1</span><span class="p">,</span> <span class="n">point2</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="VehicleClient.simGetWorldExtents"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetWorldExtents">[docs]</a>    <span class="k">def</span> <span class="nf">simGetWorldExtents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of GeoPoints representing the minimum and maximum extents of the world</span>
@@ -549,7 +549,7 @@
 <span class="sd">            list[str]: List containing all the names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simListSceneObjects&#39;</span><span class="p">,</span> <span class="n">name_regex</span><span class="p">)</span></div>
-        
+
 <div class="viewcode-block" id="VehicleClient.simLoadLevel"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simLoadLevel">[docs]</a>    <span class="k">def</span> <span class="nf">simLoadLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads a level specified by its name</span>
@@ -562,9 +562,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simLoadLevel&#39;</span><span class="p">,</span> <span class="n">level_name</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="VehicleClient.simListAssets"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simListAssets">[docs]</a>    <span class="k">def</span> <span class="nf">simListAssets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lists all the assets present in the Asset Registry</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: Names of all the assets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simListAssets&#39;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="VehicleClient.simSpawnObject"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSpawnObject">[docs]</a>    <span class="k">def</span> <span class="nf">simSpawnObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">physics_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_blueprint</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Spawned selected object in the world</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            object_name (str): Desired name of new object</span>
 <span class="sd">            asset_name (str): Name of asset(mesh) in the project database</span>
@@ -572,7 +581,7 @@
 <span class="sd">            scale (airsim.Vector3r): Desired scale of object</span>
 <span class="sd">            physics_enabled (bool, optional): Whether to enable physics for the object</span>
 <span class="sd">            is_blueprint (bool, optional): Whether to spawn a blueprint or an actor</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Name of spawned object, in case it had to be modified</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -580,10 +589,10 @@
 
 <div class="viewcode-block" id="VehicleClient.simDestroyObject"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simDestroyObject">[docs]</a>    <span class="k">def</span> <span class="nf">simDestroyObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Removes selected object from the world</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            object_name (str): Name of object to be removed</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if object is queued up for removal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -633,7 +642,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simAddDetectionFilterMeshName&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">mesh_name</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="VehicleClient.simSetDetectionFilterRadius"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDetectionFilterRadius">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDetectionFilterRadius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">radius_cm</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set detection radius for all cameras</span>
@@ -646,7 +655,7 @@
 <span class="sd">            external (bool, optional): Whether the camera is an External Camera</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetDetectionFilterRadius&#39;</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">radius_cm</span><span class="p">,</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
-     
+
 <div class="viewcode-block" id="VehicleClient.simClearDetectionMeshNames"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simClearDetectionMeshNames">[docs]</a>    <span class="k">def</span> <span class="nf">simClearDetectionMeshNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">image_type</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear all mesh names from detection filter</span>
@@ -720,7 +729,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-    
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simGetDistortionParams&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">camera_name</span><span class="p">),</span> <span class="n">vehicle_name</span><span class="p">,</span> <span class="n">external</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="VehicleClient.simSetDistortionParams"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simSetDistortionParams">[docs]</a>    <span class="k">def</span> <span class="nf">simSetDistortionParams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_name</span><span class="p">,</span> <span class="n">distortion_params</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">external</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
@@ -1041,7 +1050,7 @@
 <span class="sd">        Set simulated wind, in World frame, NED direction, m/s</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            wind (Vector3r): Wind, in World frame, NED direction, in m/s </span>
+<span class="sd">            wind (Vector3r): Wind, in World frame, NED direction, in m/s</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;simSetWind&#39;</span><span class="p">,</span> <span class="n">wind</span><span class="p">)</span></div>
 
