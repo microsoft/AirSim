@@ -85,6 +85,17 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
     return result;
 }
 
+std::vector<std::string> WorldSimApi::listAssets() const
+{
+    std::vector<std::string> all_assets;
+
+    for (const TPair<FString, FAssetData>& pair : simmode_->asset_map) {
+        all_assets.push_back(std::string(TCHAR_TO_UTF8(*pair.Key)));
+    }
+
+    return all_assets;
+}
+
 std::string WorldSimApi::spawnObject(const std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled, bool is_blueprint)
 {
     FString asset_name(load_object.c_str());

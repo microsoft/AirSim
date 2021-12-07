@@ -310,6 +310,10 @@ namespace airlib
             return getWorldSimApi()->destroyObject(object_name);
         });
 
+        pimpl_->server.bind("simListAssets", [&]() -> std::vector<std::string> {
+            return getWorldSimApi()->listAssets();
+        });
+
         pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name) -> RpcLibAdaptorsBase::Pose {
             const auto& pose = getWorldSimApi()->getObjectPose(object_name);
             return RpcLibAdaptorsBase::Pose(pose);

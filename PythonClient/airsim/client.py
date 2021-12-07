@@ -110,7 +110,7 @@ class VehicleClient:
             seconds (float): Time to run the simulation for
         """
         self.client.call('simContinueForTime', seconds)
-    
+
     def simContinueForFrames(self, frames):
         """
         Continue (or resume if paused) the simulation for the specified number of frames, after which the simulation will be paused.
@@ -305,7 +305,7 @@ class VehicleClient:
         """
         responses_raw = self.client.call('simGetImages', requests, vehicle_name, external)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
-        
+
     def simTestLineOfSightToPoint(self, point, vehicle_name = ''):
         """
         Returns whether the target point is visible from the perspective of the inputted vehicle
@@ -318,7 +318,7 @@ class VehicleClient:
             [bool]: Success
         """
         return self.client.call('simTestLineOfSightToPoint', point, vehicle_name)
-        
+
     def simTestLineOfSightBetweenPoints(self, point1, point2):
         """
         Returns whether the target point is visible from the perspective of the source point
@@ -331,7 +331,7 @@ class VehicleClient:
             [bool]: Success
         """
         return self.client.call('simTestLineOfSightBetweenPoints', point1, point2)
-        
+
     def simGetWorldExtents(self):
         """
         Returns a list of GeoPoints representing the minimum and maximum extents of the world
@@ -483,7 +483,7 @@ class VehicleClient:
             list[str]: List containing all the names
         """
         return self.client.call('simListSceneObjects', name_regex)
-        
+
     def simLoadLevel(self, level_name):
         """
         Loads a level specified by its name
@@ -496,9 +496,18 @@ class VehicleClient:
         """
         return self.client.call('simLoadLevel', level_name)
 
+    def simListAssets(self):
+        """
+        Lists all the assets present in the Asset Registry
+
+        Returns:
+            list[str]: Names of all the assets
+        """
+        return self.client.call('simListAssets')
+
     def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False, is_blueprint=False):
         """Spawned selected object in the world
-        
+
         Args:
             object_name (str): Desired name of new object
             asset_name (str): Name of asset(mesh) in the project database
@@ -506,7 +515,7 @@ class VehicleClient:
             scale (airsim.Vector3r): Desired scale of object
             physics_enabled (bool, optional): Whether to enable physics for the object
             is_blueprint (bool, optional): Whether to spawn a blueprint or an actor
-        
+
         Returns:
             str: Name of spawned object, in case it had to be modified
         """
@@ -514,10 +523,10 @@ class VehicleClient:
 
     def simDestroyObject(self, object_name):
         """Removes selected object from the world
-        
+
         Args:
             object_name (str): Name of object to be removed
-        
+
         Returns:
             bool: True if object is queued up for removal
         """
@@ -567,7 +576,7 @@ class VehicleClient:
 
         """
         self.client.call('simAddDetectionFilterMeshName', camera_name, image_type, mesh_name, vehicle_name, external)
-    
+
     def simSetDetectionFilterRadius(self, camera_name, image_type, radius_cm, vehicle_name = '', external = False):
         """
         Set detection radius for all cameras
@@ -580,7 +589,7 @@ class VehicleClient:
             external (bool, optional): Whether the camera is an External Camera
         """
         self.client.call('simSetDetectionFilterRadius', camera_name, image_type, radius_cm, vehicle_name, external)
-     
+
     def simClearDetectionMeshNames(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Clear all mesh names from detection filter
@@ -654,7 +663,7 @@ class VehicleClient:
         Returns:
             List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.
         """
-    
+
         return self.client.call('simGetDistortionParams', str(camera_name), vehicle_name, external)
 
     def simSetDistortionParams(self, camera_name, distortion_params, vehicle_name = '', external = False):
@@ -975,7 +984,7 @@ class VehicleClient:
         Set simulated wind, in World frame, NED direction, m/s
 
         Args:
-            wind (Vector3r): Wind, in World frame, NED direction, in m/s 
+            wind (Vector3r): Wind, in World frame, NED direction, in m/s
         """
         self.client.call('simSetWind', wind)
 

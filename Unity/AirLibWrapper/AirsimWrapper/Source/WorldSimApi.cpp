@@ -397,4 +397,12 @@ std::vector<msr::airlib::DetectionInfo> WorldSimApi::getDetections(ImageCaptureB
     return std::vector<msr::airlib::DetectionInfo>();
 }
 
+std::vector<std::string> WorldSimApi::listAssets() const
+{
+    throw std::invalid_argument(common_utils::Utils::stringf(
+                                    "listAssets API is not supported on Unity")
+                                    .c_str());
+    return {};
+}
+
 #pragma endregion
