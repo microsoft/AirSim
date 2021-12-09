@@ -1109,7 +1109,7 @@ ros::Time AirsimROSWrapper::update_state()
 
     return curr_ros_time;
 }
-
+//
 void AirsimROSWrapper::publish_vehicle_state()
 {
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
