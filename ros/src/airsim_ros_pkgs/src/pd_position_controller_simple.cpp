@@ -178,10 +178,6 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
         msr::airlib::GeoPoint goal_gps_point(request.latitude, request.longitude, request.altitude);
         msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
         if constexpr (use_eth_lib_for_geodetic_conv_) {
-            // double initial_latitude, initial_longitude;
-            // float initial_altitude;
-            // geodetic_converter_.getHome(&initial_latitude, &initial_longitude, &initial_altitude);
-            // ROS_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
             double n, e, d;
             geodetic_converter_.geodetic2Ned(request.latitude, request.longitude, request.altitude, &n, &e, &d);
             target_position_.x = n;
@@ -227,10 +223,6 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosi
     msr::airlib::GeoPoint goal_gps_point(request.latitude, request.longitude, request.altitude);
     msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
     if constexpr (use_eth_lib_for_geodetic_conv_) {
-        // double initial_latitude, initial_longitude;
-        // float initial_altitude;
-        // geodetic_converter_.getHome(&initial_latitude, &initial_longitude, &initial_altitude);
-        // ROS_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
         double n, e, d;
         geodetic_converter_.geodetic2Ned(request.latitude, request.longitude, request.altitude, &n, &e, &d);
         target_position_.x = n;
