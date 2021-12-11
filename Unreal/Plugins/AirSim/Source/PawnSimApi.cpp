@@ -22,7 +22,7 @@ PawnSimApi::PawnSimApi(const Params& params)
 void PawnSimApi::initialize()
 {
     Kinematics::State initial_kinematic_state = Kinematics::State::zero();
-    ;
+
     initial_kinematic_state.pose = getPose();
     kinematics_.reset(new Kinematics(initial_kinematic_state));
 

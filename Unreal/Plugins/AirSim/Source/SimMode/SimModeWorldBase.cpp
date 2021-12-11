@@ -91,7 +91,7 @@ bool ASimModeWorldBase::isPaused() const
 void ASimModeWorldBase::pause(bool is_paused)
 {
     physics_world_->pause(is_paused);
-    UGameplayStatics::SetGamePaused(this->GetWorld(), is_paused);
+    ASimModeBase::pause(is_paused);
 }
 
 void ASimModeWorldBase::continueForTime(double seconds)

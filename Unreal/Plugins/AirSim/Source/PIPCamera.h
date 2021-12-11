@@ -41,6 +41,9 @@ public:
 
     void setCameraTypeEnabled(ImageType type, bool enabled);
     bool getCameraTypeEnabled(ImageType type) const;
+    void setCaptureUpdate(USceneCaptureComponent2D* capture, bool nodisplay);
+    void setCameraTypeUpdate(ImageType type, bool nodisplay);
+
     void setupCameraFromSettings(const CameraSetting& camera_setting, const NedTransform& ned_transform);
     void setCameraPose(const msr::airlib::Pose& relative_pose);
     void setCameraFoV(float fov_degrees);

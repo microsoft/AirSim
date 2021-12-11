@@ -14,7 +14,6 @@ public:
     typedef msr::airlib::Pose Pose;
 
 private:
-    void createVehicleApi(const msr::airlib::GeoPoint& home_geopoint);
     void updateCarControls();
 
 public:
@@ -37,8 +36,6 @@ protected:
     virtual void resetImplementation() override;
 
 private:
-    Params params_;
-
     std::unique_ptr<msr::airlib::CarApiBase> vehicle_api_;
     std::unique_ptr<CarPawnApi> pawn_api_;
     std::vector<std::string> vehicle_api_messages_;

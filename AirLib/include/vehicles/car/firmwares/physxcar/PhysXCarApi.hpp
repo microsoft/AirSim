@@ -15,8 +15,8 @@ namespace airlib
     {
     public:
         PhysXCarApi(const AirSimSettings::VehicleSetting* vehicle_setting, std::shared_ptr<SensorFactory> sensor_factory,
-                    const Kinematics::State& state, const Environment& environment, const msr::airlib::GeoPoint& home_geopoint)
-            : CarApiBase(vehicle_setting, sensor_factory, state, environment), home_geopoint_(home_geopoint)
+                    const Kinematics::State& state, const Environment& environment)
+            : CarApiBase(vehicle_setting, sensor_factory, state, environment), home_geopoint_(environment.getHomeGeoPoint())
         {
         }
 
