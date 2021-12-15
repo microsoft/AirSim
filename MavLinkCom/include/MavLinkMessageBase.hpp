@@ -118,6 +118,7 @@ class MavLinkCommand
 {
 public:
     uint16_t command = 0;
+    virtual ~MavLinkCommand() = default;
 
 protected:
     virtual void pack() = 0;
