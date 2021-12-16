@@ -768,7 +768,7 @@ std::string APIPCamera::getCurrentFieldOfView()
 
 void APIPCamera::copyCameraSettingsToAllSceneCapture(UCameraComponent* camera)
 {
-   int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
+    int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
     for (int image_type = image_count - 1; image_type >= 0; image_type--) {
         if (image_type >= 0) { //scene capture components
             copyCameraSettingsToSceneCapture(camera_, captures_[image_type]);
