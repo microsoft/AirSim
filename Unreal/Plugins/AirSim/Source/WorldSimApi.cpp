@@ -7,8 +7,11 @@
 #include "DrawDebugHelpers.h"
 #include "Runtime/Engine/Classes/Components/LineBatchComponent.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
+#include "Misc/OutputDeviceNull.h"
+#include "ImageUtils.h"
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
     : simmode_(simmode) {}
@@ -82,65 +85,80 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
     return result;
 }
 
-std::string WorldSimApi::spawnObject(std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled)
+std::vector<std::string> WorldSimApi::listAssets() const
 {
+    std::vector<std::string> all_assets;
+
+    for (const TPair<FString, FAssetData>& pair : simmode_->asset_map) {
+        all_assets.push_back(std::string(TCHAR_TO_UTF8(*pair.Key)));
+    }
+
+    return all_assets;
+}
+
+std::string WorldSimApi::spawnObject(const std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled, bool is_blueprint)
+{
+    FString asset_name(load_object.c_str());
+    FAssetData* load_asset = simmode_->asset_map.Find(asset_name);
+
+    if (!load_asset->IsValid()) {
+        throw std::invalid_argument("There were no objects with name " + load_object + " found in the Registry");
+    }
+
     // Create struct for Location and Rotation of actor in Unreal
     FTransform actor_transform = simmode_->getGlobalNedTransform().fromGlobalNed(pose);
 
-    bool found_object = false, spawned_object = false;
-    UAirBlueprintLib::RunCommandOnGameThread([this, load_object, &object_name, &actor_transform, &found_object, &spawned_object, &scale, &physics_enabled]() {
-        FString asset_name = FString(load_object.c_str());
-        FAssetData* LoadAsset = simmode_->asset_map.Find(asset_name);
+    bool spawned_object = false;
+    std::string final_object_name = object_name;
 
-        if (LoadAsset) {
-            found_object = true;
-            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(LoadAsset->GetAsset());
-            std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_->GetWorld(), ".*" + object_name + ".*");
-            if (matching_names.size() > 0) {
-                size_t greatest_num{ 0 }, result{ 0 };
-                for (auto match : matching_names) {
-                    std::string number_extension = match.substr(match.find_last_not_of("0123456789") + 1);
-                    if (number_extension != "") {
-                        result = std::stoi(number_extension);
-                        greatest_num = greatest_num > result ? greatest_num : result;
-                    }
+    UAirBlueprintLib::RunCommandOnGameThread([this, load_asset, &final_object_name, &spawned_object, &actor_transform, &scale, &physics_enabled, &is_blueprint]() {
+        // Ensure new non-matching name for the object
+        std::vector<std::string> matching_names = UAirBlueprintLib::ListMatchingActors(simmode_, ".*" + final_object_name + ".*");
+        if (matching_names.size() > 0) {
+            int greatest_num{ 0 };
+            for (const auto& match : matching_names) {
+                std::string number_extension = match.substr(match.find_last_not_of("0123456789") + 1);
+                if (number_extension != "") {
+                    greatest_num = std::max(greatest_num, std::stoi(number_extension));
                 }
-                object_name += std::to_string(greatest_num + 1);
             }
-            FActorSpawnParameters new_actor_spawn_params;
-            new_actor_spawn_params.Name = FName(object_name.c_str());
-            //new_actor_spawn_params.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Required_ReturnNull;
-            AActor* NewActor = this->createNewActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
+            final_object_name += std::to_string(greatest_num + 1);
+        }
 
-            if (NewActor) {
-                spawned_object = true;
-                simmode_->scene_object_map.Add(FString(object_name.c_str()), NewActor);
-            }
+        FActorSpawnParameters new_actor_spawn_params;
+        new_actor_spawn_params.Name = FName(final_object_name.c_str());
 
-            UAirBlueprintLib::setSimulatePhysics(NewActor, physics_enabled);
+        AActor* NewActor;
+        if (is_blueprint) {
+            UBlueprint* LoadObject = Cast<UBlueprint>(load_asset->GetAsset());
+            NewActor = this->createNewBPActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
         }
         else {
-            found_object = false;
+            UStaticMesh* LoadObject = dynamic_cast<UStaticMesh*>(load_asset->GetAsset());
+            NewActor = this->createNewStaticMeshActor(new_actor_spawn_params, actor_transform, scale, LoadObject);
         }
+
+        if (IsValid(NewActor)) {
+            spawned_object = true;
+            simmode_->scene_object_map.Add(FString(final_object_name.c_str()), NewActor);
+        }
+
+        UAirBlueprintLib::setSimulatePhysics(NewActor, physics_enabled);
     },
                                              true);
 
-    if (!found_object) {
-        throw std::invalid_argument(
-            "There were no objects with name " + load_object + " found in the Registry");
-    }
     if (!spawned_object) {
         throw std::invalid_argument(
             "Engine could not spawn " + load_object + " because of a stale reference of same name");
     }
-    return object_name;
+    return final_object_name;
 }
 
-AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
+AActor* WorldSimApi::createNewStaticMeshActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UStaticMesh* static_mesh)
 {
     AActor* NewActor = simmode_->GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, spawn_params);
 
-    if (NewActor) {
+    if (IsValid(NewActor)) {
         UStaticMeshComponent* ObjectComponent = NewObject<UStaticMeshComponent>(NewActor);
         ObjectComponent->SetStaticMesh(static_mesh);
         ObjectComponent->SetRelativeLocation(FVector(0, 0, 0));
@@ -151,6 +169,33 @@ AActor* WorldSimApi::createNewActor(const FActorSpawnParameters& spawn_params, c
         NewActor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
     }
     return NewActor;
+}
+
+AActor* WorldSimApi::createNewBPActor(const FActorSpawnParameters& spawn_params, const FTransform& actor_transform, const Vector3r& scale, UBlueprint* blueprint)
+{
+    UClass* new_bp = static_cast<UClass*>(blueprint->GeneratedClass);
+    AActor* new_actor = simmode_->GetWorld()->SpawnActor<AActor>(new_bp, FVector::ZeroVector, FRotator::ZeroRotator, spawn_params);
+
+    if (new_actor) {
+        new_actor->SetActorLocationAndRotation(actor_transform.GetLocation(), actor_transform.GetRotation(), false, nullptr, ETeleportType::TeleportPhysics);
+    }
+    return new_actor;
+}
+
+bool WorldSimApi::setLightIntensity(const std::string& light_name, float intensity)
+{
+    bool result = false;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &light_name, &intensity, &result]() {
+        AActor* light_actor = simmode_->scene_object_map.FindRef(FString(light_name.c_str()));
+
+        if (light_actor) {
+            const FString command = FString::Printf(TEXT("SetIntensity %f"), intensity);
+            FOutputDeviceNull ar;
+            result = light_actor->CallFunctionByNameWithArguments(*command, ar, nullptr, true);
+        }
+    },
+                                             true);
+    return result;
 }
 
 bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file)
@@ -429,6 +474,74 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
     },
                                              true);
     return swappedObjectNames;
+}
+
+bool WorldSimApi::setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path)
+{
+    bool success = false;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &texture_path, &success]() {
+        if (!IsValid(simmode_->domain_rand_material_)) {
+            UAirBlueprintLib::LogMessageString("Cannot find material for domain randomization",
+                                               "",
+                                               LogDebugLevel::Failure);
+        }
+        else {
+            UTexture2D* texture_desired = FImageUtils::ImportFileAsTexture2D(FString(texture_path.c_str()));
+            AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+
+            if (IsValid(actor)) {
+                TArray<UStaticMeshComponent*> components;
+                actor->GetComponents<UStaticMeshComponent>(components);
+                for (UStaticMeshComponent* staticMeshComponent : components) {
+                    UMaterialInstanceDynamic* dynamic_material = UMaterialInstanceDynamic::Create(simmode_->domain_rand_material_, staticMeshComponent);
+                    dynamic_material->SetTextureParameterValue("TextureParameter", texture_desired);
+                    staticMeshComponent->SetMaterial(0, dynamic_material);
+                }
+                success = true;
+            }
+            else {
+                UAirBlueprintLib::LogMessageString("Cannot find specified actor for domain randomization",
+                                                   "",
+                                                   LogDebugLevel::Failure);
+            }
+        }
+    },
+                                             true);
+
+    return success;
+}
+
+bool WorldSimApi::setObjectMaterial(const std::string& object_name, const std::string& material_name)
+{
+    bool success = false;
+    UAirBlueprintLib::RunCommandOnGameThread([this, &object_name, &material_name, &success]() {
+        AActor* actor = UAirBlueprintLib::FindActor<AActor>(simmode_, FString(object_name.c_str()));
+        UMaterial* material = static_cast<UMaterial*>(StaticLoadObject(UMaterial::StaticClass(), nullptr, *FString(material_name.c_str())));
+
+        if (!IsValid(material)) {
+            UAirBlueprintLib::LogMessageString("Cannot find specified material for domain randomization",
+                                               "",
+                                               LogDebugLevel::Failure);
+        }
+        else {
+            if (IsValid(actor)) {
+                TArray<UStaticMeshComponent*> components;
+                actor->GetComponents<UStaticMeshComponent>(components);
+                for (UStaticMeshComponent* staticMeshComponent : components) {
+                    staticMeshComponent->SetMaterial(0, material);
+                }
+                success = true;
+            }
+            else {
+                UAirBlueprintLib::LogMessageString("Cannot find specified actor for domain randomization",
+                                                   "",
+                                                   LogDebugLevel::Failure);
+            }
+        }
+    },
+                                             true);
+
+    return success;
 }
 
 //----------- Plotting APIs ----------/

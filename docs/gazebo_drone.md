@@ -41,7 +41,7 @@ Execute this from your AirSim root folder:
 ```
 cd GazeboDrone
 mkdir build && cd build
-cmake ..
+cmake -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 ..
 make
 ```
 

@@ -44,6 +44,8 @@ APIPCamera::APIPCamera(const FObjectInitializer& ObjectInitializer)
     image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(8, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(9, EPixelFormat::PF_B8G8R8A8);
 
     object_filter_ = FObjectFilter();
 }
@@ -74,6 +76,10 @@ void APIPCamera::PostInitializeComponents()
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("InfraredCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::SurfaceNormals)] =
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::OpticalFlow)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("OpticalFlowCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::OpticalFlowVis)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("OpticalFlowVisCaptureComponent"));
 
     for (unsigned int i = 0; i < imageTypeCount(); ++i) {
         detections_[i] = NewObject<UDetectionComponent>(this);
@@ -102,7 +108,9 @@ void APIPCamera::BeginPlay()
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
     }
 
-    onViewModeChanged(false);
+    //We set all cameras to start as nodisplay
+    //This improves performance because the capture components are no longer updating every frame and only update while requesting an image
+    onViewModeChanged(true);
 
     gimbal_stabilization_ = 0;
     gimbald_rotator_ = this->GetActorRotation();
@@ -274,6 +282,20 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
+void APIPCamera::setCaptureUpdate(USceneCaptureComponent2D* capture, bool nodisplay)
+{
+    capture->bCaptureEveryFrame = !nodisplay;
+    capture->bCaptureOnMovement = !nodisplay;
+    capture->bAlwaysPersistRenderingState = true;
+}
+
+void APIPCamera::setCameraTypeUpdate(ImageType type, bool nodisplay)
+{
+    USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
+    if (capture != nullptr)
+        setCaptureUpdate(capture, nodisplay);
+}
+
 void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
 {
     FTransform pose = ned_transform_->fromRelativeNed(relative_pose);
@@ -287,7 +309,9 @@ void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
         gimbald_rotator_.Roll = rotator.Roll;
         gimbald_rotator_.Yaw = rotator.Yaw;
     }
-    this->SetActorRelativeRotation(rotator);
+    else {
+        this->SetActorRelativeRotation(rotator);
+    }
 }
 
 void APIPCamera::setCameraFoV(float fov_degrees)
@@ -584,14 +608,7 @@ void APIPCamera::onViewModeChanged(bool nodisplay)
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
         if (capture) {
-            if (nodisplay) {
-                capture->bCaptureEveryFrame = false;
-                capture->bCaptureOnMovement = false;
-            }
-            else {
-                capture->bCaptureEveryFrame = true;
-                capture->bCaptureOnMovement = true;
-            }
+            setCaptureUpdate(capture, nodisplay);
         }
     }
 }

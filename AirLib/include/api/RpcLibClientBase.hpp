@@ -65,6 +65,9 @@ namespace airlib
         Vector3r simGetObjectScale(const std::string& object_name) const;
         bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
         bool simSetObjectScale(const std::string& object_name, const Vector3r& scale);
+        std::string simSpawnObject(const std::string& object_name, const std::string& load_component, const Pose& pose,
+                                   const Vector3r& scale, bool physics_enabled);
+        bool simDestroyObject(const std::string& object_name);
 
         //task management APIs
         void cancelLastTask(const std::string& vehicle_name = "");
@@ -146,8 +149,11 @@ namespace airlib
 
         bool simCreateVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file);
         msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
+        void simSetKinematics(const Kinematics::State& state, bool ignore_collision, const std::string& vehicle_name = "");
         msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
         std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
+        bool simSetObjectMaterial(const std::string& object_name, const std::string& material_name);
+        bool simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path);
 
         // Recording APIs
         void startRecording();
@@ -158,6 +164,8 @@ namespace airlib
         vector<string> listVehicles();
 
         std::string getSettingsString() const;
+
+        std::vector<std::string> simListAssets() const;
 
     protected:
         void* getClient();

@@ -306,6 +306,47 @@ namespace airlib
                 return GeoPoint(home_geo_point.home_geo_point.latitude, home_geo_point.home_geo_point.longitude, home_geo_point.home_geo_point.altitude - v.z());
         }
 
+        static Vector3r GeodeticToEcef(const GeoPoint& geo)
+        {
+            // Convert geodetic coordinates to ECEF.
+            // http://code.google.com/p/pysatel/source/browse/trunk/coord.py?r=22
+            double lat_rad = Utils::degreesToRadians(geo.latitude);
+            double lon_rad = Utils::degreesToRadians(geo.longitude);
+            double xi = sqrt(1 - (6.69437999014 * 0.001) * sin(lat_rad) * sin(lat_rad));
+            real_T x = static_cast<real_T>((EARTH_RADIUS / xi + geo.altitude) * cos(lat_rad) * cos(lon_rad));
+            real_T y = static_cast<real_T>((EARTH_RADIUS / xi + geo.altitude) * cos(lat_rad) * sin(lon_rad));
+            real_T z = static_cast<real_T>((EARTH_RADIUS / xi * (1 - (6.69437999014 * 0.001)) + geo.altitude) * sin(lat_rad));
+            return Vector3r(x, y, z);
+        }
+
+        static Vector3r EcefToNed(const Vector3r& ecefxyz, const Vector3r& ecefhome, const GeoPoint& geohome)
+        {
+            // Converts ECEF coordinate position into local-tangent-plane NED.
+            // Coordinates relative to given ECEF coordinate frame.
+
+            Vector3r vect, ret;
+            Matrix3x3r ecef_to_ned_matrix_;
+            double lat_rad = Utils::degreesToRadians(geohome.latitude);
+            double lon_rad = Utils::degreesToRadians(geohome.longitude);
+            vect = ecefxyz - ecefhome;
+            ecef_to_ned_matrix_(0, 0) = static_cast<float>(-sin(lat_rad) * cos(lon_rad));
+            ecef_to_ned_matrix_(0, 1) = static_cast<float>(-sin(lat_rad) * sin(lon_rad));
+            ecef_to_ned_matrix_(0, 2) = static_cast<float>(cos(lat_rad));
+            ecef_to_ned_matrix_(1, 0) = static_cast<float>(-sin(lon_rad));
+            ecef_to_ned_matrix_(1, 1) = static_cast<float>(cos(lon_rad));
+            ecef_to_ned_matrix_(1, 2) = 0.0f;
+            ecef_to_ned_matrix_(2, 0) = static_cast<float>(cos(lat_rad) * cos(lon_rad));
+            ecef_to_ned_matrix_(2, 1) = static_cast<float>(cos(lat_rad) * sin(lon_rad));
+            ecef_to_ned_matrix_(2, 2) = static_cast<float>(sin(lat_rad));
+            ret = ecef_to_ned_matrix_ * vect;
+            return Vector3r(ret(0), ret(1), -ret(2));
+        }
+
+        static Vector3r GeodeticToNed(const GeoPoint& geo, const GeoPoint& geohome)
+        {
+            return EcefToNed(GeodeticToEcef(geo), GeodeticToEcef(geohome), geohome);
+        }
+
         //below are approximate versions and would produce errors of more than 10m for points farther than 1km
         //for more accurate versions, please use the version in EarthUtils::nedToGeodetic
         static Vector3r GeodeticToNedFast(const GeoPoint& geo, const GeoPoint& home)

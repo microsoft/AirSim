@@ -7,7 +7,7 @@
 #include "../../UnitySensors/UnitySensorFactory.h"
 
 CarPawnSimApi::CarPawnSimApi(const Params& params, std::string car_name)
-    : PawnSimApi(params), params_(params), car_name_(car_name)
+    : PawnSimApi(params), car_name_(car_name)
 {
 }
 
@@ -15,18 +15,16 @@ void CarPawnSimApi::initialize()
 {
     PawnSimApi::initialize();
 
-    createVehicleApi(params_.home_geopoint);
+    std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(car_name_, &getNedTransform());
+
+    vehicle_api_ = CarApiFactory::createApi(getVehicleSetting(),
+                                            sensor_factory,
+                                            *getGroundTruthKinematics(),
+                                            *getGroundTruthEnvironment());
+    pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(getGroundTruthKinematics(), car_name_, vehicle_api_.get()));
 
     //TODO: should do reset() here?
     joystick_controls_ = msr::airlib::CarApiBase::CarControls();
-}
-
-void CarPawnSimApi::createVehicleApi(const msr::airlib::GeoPoint& home_geopoint)
-{
-    std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(car_name_, &getNedTransform());
-
-    vehicle_api_ = CarApiFactory::createApi(getVehicleSetting(), sensor_factory, (*getGroundTruthKinematics()), (*getGroundTruthEnvironment()), home_geopoint);
-    pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(getGroundTruthKinematics(), car_name_, vehicle_api_.get()));
 }
 
 std::string CarPawnSimApi::getRecordFileLine(bool is_header_line) const
@@ -158,7 +156,7 @@ void CarPawnSimApi::updateCarControls()
 void CarPawnSimApi::resetImplementation()
 {
     setPose(UnityUtilities::Convert_to_Pose(GetInitialPose()), false);
-    Reset(getVehicleName().c_str());
+    Reset();
 
     PawnSimApi::resetImplementation();
     pawn_api_->reset();

@@ -246,6 +246,11 @@ __pragma(warning(disable : 4239))
             pimpl_->client.call("simSetVehiclePose", RpcLibAdaptorsBase::Pose(pose), ignore_collision, vehicle_name);
         }
 
+        void RpcLibClientBase::simSetKinematics(const Kinematics::State& state, bool ignore_collision, const std::string& vehicle_name)
+        {
+            pimpl_->client.call("simSetKinematics", RpcLibAdaptorsBase::KinematicsState(state), ignore_collision, vehicle_name);
+        }
+
         void RpcLibClientBase::simSetTraceLine(const std::vector<float>& color_rgba, float thickness, const std::string& vehicle_name)
         {
             pimpl_->client.call("simSetTraceLine", color_rgba, thickness, vehicle_name);
@@ -497,9 +502,30 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simSwapTextures", tags, tex_id, component_id, material_id).as<vector<string>>();
         }
 
+        bool RpcLibClientBase::simSetObjectMaterial(const std::string& object_name, const std::string& material_name)
+        {
+            return pimpl_->client.call("simSetObjectMaterial", object_name, material_name).as<bool>();
+        }
+
+        bool RpcLibClientBase::simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path)
+        {
+            return pimpl_->client.call("simSetObjectMaterialFromTexture", object_name, texture_path).as<bool>();
+        }
+
         bool RpcLibClientBase::simLoadLevel(const string& level_name)
         {
             return pimpl_->client.call("simLoadLevel", level_name).as<bool>();
+        }
+
+        std::string RpcLibClientBase::simSpawnObject(const std::string& object_name, const std::string& load_component, const Pose& pose,
+                                                     const Vector3r& scale, bool physics_enabled)
+        {
+            return pimpl_->client.call("simSpawnObject", object_name, load_component, RpcLibAdaptorsBase::Pose(pose), RpcLibAdaptorsBase::Vector3r(scale), physics_enabled).as<std::string>();
+        }
+
+        bool RpcLibClientBase::simDestroyObject(const std::string& object_name)
+        {
+            return pimpl_->client.call("simDestroyObject", object_name).as<bool>();
         }
 
         msr::airlib::Vector3r RpcLibClientBase::simGetObjectScale(const std::string& object_name) const
@@ -612,6 +638,11 @@ __pragma(warning(disable : 4239))
         std::string RpcLibClientBase::getSettingsString() const
         {
             return pimpl_->client.call("getSettingsString").as<std::string>();
+        }
+
+        std::vector<std::string> RpcLibClientBase::simListAssets() const
+        {
+            return pimpl_->client.call("simListAssets").as<std::vector<std::string>>();
         }
 
         void* RpcLibClientBase::getClient()
