@@ -374,6 +374,9 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
     else
         this->SetActorTickEnabled(false);
 
+    //set initial focal length
+    camera_->CurrentFocalLength = 11.9;
+
     int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
     for (int image_type = -1; image_type < image_count; ++image_type) {
         const auto& capture_setting = camera_setting.capture_settings.at(image_type);
@@ -765,10 +768,11 @@ std::string APIPCamera::getCurrentFieldOfView()
 
 void APIPCamera::copyCameraSettingsToAllSceneCapture(UCameraComponent* camera)
 {
-    int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
-    for (image_type >= 0) {
-        //scene capture components
-        copyCameraSettingsToSceneCapture(camera_, captures_[image_type]);
+   int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
+    for (int image_type = image_count - 1; image_type >= 0; image_type--) {
+        if (image_type >= 0) { //scene capture components
+            copyCameraSettingsToSceneCapture(camera_, captures_[image_type]);
+        }
     }
 }
 
