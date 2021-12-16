@@ -116,6 +116,8 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#demo">Demo</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-vehicles-at-runtime-through-api">Creating vehicles at runtime through API</a>
+    </li>
         </ul>
     </li>
     </ul>
@@ -359,14 +361,30 @@
     }
 }</code></pre>
 <h2 id="using-apis-for-multiple-vehicles">Using APIs for Multiple Vehicles<a class="headerlink" href="#using-apis-for-multiple-vehicles" title="Permanent link">#</a></h2>
-<p>The new APIs since AirSim 1.2 allows you to specify <code>vehicle_name</code>. This name corresponds to keys in json settings (for example, Car1 or Drone2 above). </p>
-<p><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/multi_agent_car.py">Example code for cars</a></p>
-<p><a href="https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/multi_agent_drone.py">Example code for multirotors</a></p>
+<p>The new APIs since AirSim 1.2 allows you to specify <code>vehicle_name</code>. This name corresponds to keys in json settings (for example, Car1 or Drone2 above).</p>
+<p><a href="https://github.com/microsoft/AirSim/blob/master/PythonClient/car/multi_agent_car.py">Example code for cars</a></p>
+<p><a href="https://github.com/microsoft/AirSim/blob/master/PythonClient/multirotor/multi_agent_drone.py">Example code for multirotors</a></p>
 <p>Using APIs for multi-vehicles requires specifying the <code>vehicle_name</code>, which needs to be hardcoded in the script or requires parsing of the settings file. There's also a simple API <code>listVehicles()</code> which returns a list (vector in C++) of strings containing names of the current vehicles. For example, with the above settings for 2 Cars -</p>
-<pre class="highlight"><code>&gt;&gt;&gt; client.listVehicles()
+<pre class="highlight"><code class="language-python">&gt;&gt;&gt; client.listVehicles()
 ['Car1', 'Car2']</code></pre>
 <h3 id="demo">Demo<a class="headerlink" href="#demo" title="Permanent link">#</a></h3>
 <p><a href="https://youtu.be/35dgcuLuF5M"><img alt="AirSimMultiple Vehicles Demo Video" src="../images/demo_multi_vehicles.png" /></a></p>
+<h3 id="creating-vehicles-at-runtime-through-api">Creating vehicles at runtime through API<a class="headerlink" href="#creating-vehicles-at-runtime-through-api" title="Permanent link">#</a></h3>
+<p>In the latest master of AirSim, the <code>simAddVehicle</code> API can be used to create vehicles at runtime. This is useful to create many such vehicles without needing to specify them in the settings. There are some limitations of this currently, described below -</p>
+<p><code>simAddVehicle</code> takes in the following arguments:</p>
+<ul>
+<li><code>vehicle_name</code>: Name of the vehicle to be created, this should be unique for each vehicle including any exisiting ones defined in the settings.json</li>
+<li><code>vehicle_type</code>: Type of vehicle, e.g. "simpleflight". Currently only SimpleFlight, PhysXCar, ComputerVision are supported, in their respective SimModes.
+                  Other vehicle types including PX4 and ArduPilot-related aren't supported</li>
+<li><code>pose</code>: Initial pose of the vehicle</li>
+<li><code>pawn_path</code>: Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type</li>
+</ul>
+<p>Returns: <code>bool</code> Whether vehicle was created</p>
+<p>The usual APIs can be used to control and interact with the vehicle once created, with the <code>vehicle_name</code> parameter. Specifying other settings such as additional cameras, etc. isn't possible currently, a future enhancement could be passing JSON string of settings for the vehicle. It also works with the <code>listVehicles()</code> API described above, so the vehicles spawned would be included in the list.</p>
+<p>For some examples, check out <a href="https://github.com/microsoft/AirSim/blob/master/HelloSpawnedDrones/HelloSpawnedDrones.cpp">HelloSpawnedDrones.cpp</a> -</p>
+<p><img alt="HelloSpawnedDrones" src="../images/HelloSpawnedDrones.gif" /></p>
+<p>And <a href="https://github.com/microsoft/AirSim/tree/master/PythonClient/car/runtime_car.py">runtime_car.py</a> -</p>
+<p><img alt="runtime_car" src="../images/simAddVehicle_Car.gif" /></p>
               
             </div>
           </div>
