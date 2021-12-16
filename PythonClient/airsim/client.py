@@ -110,7 +110,7 @@ class VehicleClient:
             seconds (float): Time to run the simulation for
         """
         self.client.call('simContinueForTime', seconds)
-    
+
     def simContinueForFrames(self, frames):
         """
         Continue (or resume if paused) the simulation for the specified number of frames, after which the simulation will be paused.
@@ -158,6 +158,19 @@ class VehicleClient:
             print(ver_info)
         print('')
 
+    def simSetLightIntensity(self, light_name, intensity):
+        """
+        Change intensity of named light
+
+        Args:
+            light_name (str): Name of light to change
+            intensity (float): New intensity value
+
+        Returns:
+            bool: True if successful, otherwise False
+        """
+        return self.client.call("simSetLightIntensity", light_name, intensity)
+
     def simSwapTextures(self, tags, tex_id = 0, component_id = 0, material_id = 0):
         """
         Runtime Swap Texture API
@@ -176,6 +189,33 @@ class VehicleClient:
             list[str]: List of objects which matched the provided tags and had the texture swap perfomed
         """
         return self.client.call("simSwapTextures", tags, tex_id, component_id, material_id)
+
+    def simSetObjectMaterial(self, object_name, material_name):
+        """
+        Runtime Swap Texture API
+        See https://microsoft.github.io/AirSim/retexturing/ for details
+        Args:
+            object_name (str): name of object to set material for
+            material_name (str): name of material to set for object
+
+        Returns:
+            bool: True if material was set
+        """
+        return self.client.call("simSetObjectMaterial", object_name, material_name)
+
+    def simSetObjectMaterialFromTexture(self, object_name, texture_path):
+        """
+        Runtime Swap Texture API
+        See https://microsoft.github.io/AirSim/retexturing/ for details
+        Args:
+            object_name (str): name of object to set material for
+            texture_path (str): path to texture to set for object
+
+        Returns:
+            bool: True if material was set
+        """
+        return self.client.call("simSetObjectMaterialFromTexture", object_name, texture_path)
+
 
     # time-of-day control
     def simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True):
@@ -265,7 +305,7 @@ class VehicleClient:
         """
         responses_raw = self.client.call('simGetImages', requests, vehicle_name, external)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
-        
+
     def simTestLineOfSightToPoint(self, point, vehicle_name = ''):
         """
         Returns whether the target point is visible from the perspective of the inputted vehicle
@@ -278,7 +318,7 @@ class VehicleClient:
             [bool]: Success
         """
         return self.client.call('simTestLineOfSightToPoint', point, vehicle_name)
-        
+
     def simTestLineOfSightBetweenPoints(self, point1, point2):
         """
         Returns whether the target point is visible from the perspective of the source point
@@ -291,7 +331,7 @@ class VehicleClient:
             [bool]: Success
         """
         return self.client.call('simTestLineOfSightBetweenPoints', point1, point2)
-        
+
     def simGetWorldExtents(self):
         """
         Returns a list of GeoPoints representing the minimum and maximum extents of the world
@@ -443,7 +483,7 @@ class VehicleClient:
             list[str]: List containing all the names
         """
         return self.client.call('simListSceneObjects', name_regex)
-        
+
     def simLoadLevel(self, level_name):
         """
         Loads a level specified by its name
@@ -456,26 +496,37 @@ class VehicleClient:
         """
         return self.client.call('simLoadLevel', level_name)
 
-    def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False):
+    def simListAssets(self):
+        """
+        Lists all the assets present in the Asset Registry
+
+        Returns:
+            list[str]: Names of all the assets
+        """
+        return self.client.call('simListAssets')
+
+    def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False, is_blueprint=False):
         """Spawned selected object in the world
-        
+
         Args:
             object_name (str): Desired name of new object
             asset_name (str): Name of asset(mesh) in the project database
             pose (airsim.Pose): Desired pose of object
             scale (airsim.Vector3r): Desired scale of object
-        
+            physics_enabled (bool, optional): Whether to enable physics for the object
+            is_blueprint (bool, optional): Whether to spawn a blueprint or an actor
+
         Returns:
             str: Name of spawned object, in case it had to be modified
         """
-        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale, physics_enabled)
+        return self.client.call('simSpawnObject', object_name, asset_name, pose, scale, physics_enabled, is_blueprint)
 
     def simDestroyObject(self, object_name):
         """Removes selected object from the world
-        
+
         Args:
             object_name (str): Name of object to be removed
-        
+
         Returns:
             bool: True if object is queued up for removal
         """
@@ -525,7 +576,7 @@ class VehicleClient:
 
         """
         self.client.call('simAddDetectionFilterMeshName', camera_name, image_type, mesh_name, vehicle_name, external)
-    
+
     def simSetDetectionFilterRadius(self, camera_name, image_type, radius_cm, vehicle_name = '', external = False):
         """
         Set detection radius for all cameras
@@ -538,7 +589,7 @@ class VehicleClient:
             external (bool, optional): Whether the camera is an External Camera
         """
         self.client.call('simSetDetectionFilterRadius', camera_name, image_type, radius_cm, vehicle_name, external)
-     
+
     def simClearDetectionMeshNames(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Clear all mesh names from detection filter
@@ -612,7 +663,7 @@ class VehicleClient:
         Returns:
             List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.
         """
-    
+
         return self.client.call('simGetDistortionParams', str(camera_name), vehicle_name, external)
 
     def simSetDistortionParams(self, camera_name, distortion_params, vehicle_name = '', external = False):
@@ -682,6 +733,19 @@ class VehicleClient:
         kinematics_state = self.client.call('simGetGroundTruthKinematics', vehicle_name)
         return KinematicsState.from_msgpack(kinematics_state)
     simGetGroundTruthKinematics.__annotations__ = {'return': KinematicsState}
+
+    def simSetKinematics(self, state, ignore_collision, vehicle_name = ''):
+        """
+        Set the kinematics state of the vehicle
+
+        If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values
+
+        Args:
+            state (KinematicsState): Desired Pose pf the vehicle
+            ignore_collision (bool): Whether to ignore any collision or not
+            vehicle_name (str, optional): Name of the vehicle to move
+        """
+        self.client.call('simSetKinematics', state, ignore_collision, vehicle_name)
 
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
         """
@@ -920,7 +984,7 @@ class VehicleClient:
         Set simulated wind, in World frame, NED direction, m/s
 
         Args:
-            wind (Vector3r): Wind, in World frame, NED direction, in m/s 
+            wind (Vector3r): Wind, in World frame, NED direction, in m/s
         """
         self.client.call('simSetWind', wind)
 
@@ -1084,6 +1148,10 @@ class MultirotorClient(VehicleClient, object):
         lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
         return self.client.call_async('moveToPosition', x, y, z, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
 
+    def moveToGPSAsync(self, latitude, longitude, altitude, velocity, timeout_sec = 3e+38, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(),
+        lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
+        return self.client.call_async('moveToGPS', latitude, longitude, altitude, velocity, timeout_sec, drivetrain, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
+
     def moveToZAsync(self, z, velocity, timeout_sec = 3e+38, yaw_mode = YawMode(), lookahead = -1, adaptive_lookahead = 1, vehicle_name = ''):
         return self.client.call_async('moveToZ', z, velocity, timeout_sec, yaw_mode, lookahead, adaptive_lookahead, vehicle_name)
 
@@ -1175,7 +1243,7 @@ class MultirotorClient(VehicleClient, object):
     def moveByRollPitchYawThrottleAsync(self, roll, pitch, yaw, throttle, duration, vehicle_name = ''):
         """
         - Desired throttle is between 0.0 to 1.0
-        - Roll angle, pitch angle, and yaw angle are given in **radians**, in the body frame.
+        - Roll angle, pitch angle, and yaw angle are given in **degrees** when using PX4 and in **radians** when using SimpleFlight, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
 
         - Frame Convention:
@@ -1195,9 +1263,9 @@ class MultirotorClient(VehicleClient, object):
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
 
         Args:
-            roll (float): Desired roll angle, in radians.
-            pitch (float): Desired pitch angle, in radians.
-            yaw (float): Desired yaw angle, in radians.
+            roll (float): Desired roll angle.
+            pitch (float): Desired pitch angle.
+            yaw (float): Desired yaw angle.
             throttle (float): Desired throttle (between 0.0 to 1.0)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to

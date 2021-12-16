@@ -355,7 +355,22 @@ Each simulation mode will go through the list of vehicles specified in this sett
 
 ### Common Vehicle Setting
 - `VehicleType`: This could be any one of the following - `PhysXCar`, `SimpleFlight`, `PX4Multirotor`, `ComputerVision`, `ArduCopter` & `ArduRover`. There is no default value therefore this element must be specified.
-- `PawnPath`: This allows to override the pawn blueprint to use for the vehicle. For example, you may create new pawn blueprint derived from ACarPawn for a warehouse robot in your own project outside the AirSim code and then specify its path here. See also [PawnPaths](#PawnPaths).
+- `PawnPath`: This allows to override the pawn blueprint to use for the vehicle. For example, you may create new pawn blueprint derived from ACarPawn for a warehouse robot in your own project outside the AirSim code and then specify its path here. See also [PawnPaths](settings.md#PawnPaths). Note that you have to specify your custom pawn blueprint class path inside the global `PawnPaths` object using your proprietarily defined object name, and quote that name inside the `Vehicles` setting. For example,
+```json
+    {
+      ...
+      "PawnPaths": {
+        "CustomPawn": {"PawnBP": "Class'/Game/Assets/Blueprints/MyPawn.MyPawn_C'"}
+      },
+      "Vehicles": {
+        "MyVehicle": {
+          "VehicleType": ...,
+          "PawnPath": "CustomPawn",
+          ...
+        }
+      }
+    }
+```
 - `DefaultVehicleState`: Possible value for multirotors is `Armed` or `Disarmed`.
 - `AutoCreate`: If true then this vehicle would be spawned (if supported by selected sim mode).
 - `RC`: This sub-element allows to specify which remote controller to use for vehicle using `RemoteControlID`. The value of -1 means use keyboard (not supported yet for multirotors). The value >= 0 specifies one of many remote controllers connected to the system. The list of available RCs can be seen in Game Controllers panel in Windows, for example.

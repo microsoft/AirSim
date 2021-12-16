@@ -30,6 +30,7 @@ public:
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
+    virtual void setKinematics(const msr::airlib::Kinematics::State& state, bool ignore_collision) override;
 
     msr::airlib::MultirotorApiBase* getVehicleApi() const
     {

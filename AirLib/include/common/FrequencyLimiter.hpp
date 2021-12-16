@@ -48,6 +48,7 @@ namespace airlib
 
         virtual void failResetUpdateOrdering(std::string err) override
         {
+            unused(err);
             // Do nothing.
             // Disable checks for reset/update sequence because
             // this object may get created but not used.

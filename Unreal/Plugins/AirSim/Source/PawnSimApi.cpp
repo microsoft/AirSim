@@ -22,7 +22,7 @@ PawnSimApi::PawnSimApi(const Params& params)
 void PawnSimApi::initialize()
 {
     Kinematics::State initial_kinematic_state = Kinematics::State::zero();
-    ;
+
     initial_kinematic_state.pose = getPose();
     kinematics_.reset(new Kinematics(initial_kinematic_state));
 
@@ -527,6 +527,13 @@ void PawnSimApi::updateRendering(float dt)
 const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() const
 {
     return &kinematics_->getState();
+}
+
+void PawnSimApi::setKinematics(const Kinematics::State& state, bool ignore_collision)
+{
+    unused(ignore_collision);
+
+    return kinematics_->setState(state);
 }
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
 {

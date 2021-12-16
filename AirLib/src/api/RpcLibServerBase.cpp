@@ -302,12 +302,16 @@ namespace airlib
             return getWorldSimApi()->loadLevel(level_name);
         });
 
-        pimpl_->server.bind("simSpawnObject", [&](string& object_name, const string& load_component, const RpcLibAdaptorsBase::Pose& pose, const RpcLibAdaptorsBase::Vector3r& scale, bool physics_enabled) -> string {
-            return getWorldSimApi()->spawnObject(object_name, load_component, pose.to(), scale.to(), physics_enabled);
+        pimpl_->server.bind("simSpawnObject", [&](string& object_name, const string& load_component, const RpcLibAdaptorsBase::Pose& pose, const RpcLibAdaptorsBase::Vector3r& scale, bool physics_enabled, bool is_blueprint) -> string {
+            return getWorldSimApi()->spawnObject(object_name, load_component, pose.to(), scale.to(), physics_enabled, is_blueprint);
         });
 
         pimpl_->server.bind("simDestroyObject", [&](const string& object_name) -> bool {
             return getWorldSimApi()->destroyObject(object_name);
+        });
+
+        pimpl_->server.bind("simListAssets", [&]() -> std::vector<std::string> {
+            return getWorldSimApi()->listAssets();
         });
 
         pimpl_->server.bind("simGetObjectPose", [&](const std::string& object_name) -> RpcLibAdaptorsBase::Pose {
@@ -381,12 +385,21 @@ namespace airlib
             return RpcLibAdaptorsBase::KinematicsState(result);
         });
 
+        pimpl_->server.bind("simSetKinematics", [&](const RpcLibAdaptorsBase::KinematicsState& state, bool ignore_collision, const std::string& vehicle_name) {
+            getVehicleSimApi(vehicle_name)->setKinematics(state.to(), ignore_collision);
+        });
+
         pimpl_->server.bind("simGetGroundTruthEnvironment", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::EnvironmentState {
             const Environment::State& result = (*getVehicleSimApi(vehicle_name)->getGroundTruthEnvironment()).getState();
             return RpcLibAdaptorsBase::EnvironmentState(result);
         });
+
         pimpl_->server.bind("simCreateVoxelGrid", [&](const RpcLibAdaptorsBase::Vector3r& position, const int& x, const int& y, const int& z, const float& res, const std::string& output_file) -> bool {
             return getWorldSimApi()->createVoxelGrid(position.to(), x, y, z, res, output_file);
+        });
+
+        pimpl_->server.bind("simSetLightIntensity", [&](const std::string& light_name, float intensity) -> bool {
+            return getWorldSimApi()->setLightIntensity(light_name, intensity);
         });
 
         pimpl_->server.bind("cancelLastTask", [&](const std::string& vehicle_name) -> void {
@@ -395,6 +408,14 @@ namespace airlib
 
         pimpl_->server.bind("simSwapTextures", [&](const std::string tag, int tex_id, int component_id, int material_id) -> std::vector<string> {
             return *getWorldSimApi()->swapTextures(tag, tex_id, component_id, material_id);
+        });
+
+        pimpl_->server.bind("simSetObjectMaterial", [&](const std::string& object_name, const std::string& material_name) -> bool {
+            return getWorldSimApi()->setObjectMaterial(object_name, material_name);
+        });
+
+        pimpl_->server.bind("simSetObjectMaterialFromTexture", [&](const std::string& object_name, const std::string& texture_path) -> bool {
+            return getWorldSimApi()->setObjectMaterialFromTexture(object_name, texture_path);
         });
 
         pimpl_->server.bind("startRecording", [&]() -> void {

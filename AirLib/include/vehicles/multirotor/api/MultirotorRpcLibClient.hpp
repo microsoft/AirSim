@@ -26,6 +26,9 @@ namespace airlib
         MultirotorRpcLibClient* landAsync(float timeout_sec = 60, const std::string& vehicle_name = "");
         MultirotorRpcLibClient* goHomeAsync(float timeout_sec = Utils::max<float>(), const std::string& vehicle_name = "");
 
+        MultirotorRpcLibClient* moveToGPSAsync(float latitude, float longitude, float altitude, float velocity, float timeout_sec = Utils::max<float>(),
+                                               DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(),
+                                               float lookahead = -1, float adaptive_lookahead = 1, const std::string& vehicle_name = "");
         MultirotorRpcLibClient* moveByVelocityBodyFrameAsync(float vx, float vy, float vz, float duration,
                                                              DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), const std::string& vehicle_name = "");
         MultirotorRpcLibClient* moveByVelocityZBodyFrameAsync(float vx, float vy, float z, float duration,

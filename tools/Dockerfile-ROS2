@@ -1,0 +1,12 @@
+FROM ros:foxy-ros-base
+
+RUN     apt-get update &&\
+        apt-get install -y\
+        apt-utils \
+        gcc-8 g++-8 \
+        ros-$ROS_DISTRO-tf2-sensor-msgs ros-$ROS_DISTRO-tf2-geometry-msgs ros-$ROS_DISTRO-mavros* \
+        ros-$ROS_DISTRO-vision-opencv ros-$ROS_DISTRO-image-transport \
+        libyaml-cpp-dev &&\
+        echo 'source /opt/ros/$ROS_DISTRO/setup.bash' >> ~/.bashrc &&\
+        rm -rf /var/lib/apt/lists/* &&\
+        apt-get clean

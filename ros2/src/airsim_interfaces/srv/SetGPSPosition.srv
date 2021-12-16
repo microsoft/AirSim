@@ -1,0 +1,8 @@
+float64 latitude
+float64 longitude
+float64 altitude
+float64 yaw
+string vehicle_name
+---
+#Response : return success=true, (if async=false && if setpoint reached before timeout = 30sec) || (if async=true && command sent to autopilot)
+bool success

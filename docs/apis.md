@@ -217,6 +217,19 @@ AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. Y
 
 More on [lidar APIs and settings](lidar.md) and [sensor settings](sensors.md)
 
+### Light Control APIs
+
+Lights that can be manipulated inside AirSim can be created via the `simSpawnObject()` API by passing either `PointLightBP` or `SpotLightBP` as the `asset_name` parameter and `True` as the `is_blueprint` parameter. Once a light has been spawned, it can be manipulated using the following API:
+
+* `simSetLightIntensity`: This allows you to edit a light's intensity or brightness. It takes two parameters, `light_name`, the name of the light object returned by a previous call to `simSpawnObject()`, and `intensity`, a float value.
+
+### Texture APIs
+
+Textures can be dynamically set on objects via these APIs:
+
+* `simSetObjectMaterial`: This sets an object's material using an existing Unreal material asset. It takes two string parameters, `object_name` and `material_name`.
+* `simSetObjectMaterialFromTexture`: This sets an object's material using a path to a texture. It takes two string parameters, `object_name` and `texture_path`.
+
 ### Multiple Vehicles
 AirSim supports multiple vehicles and control them through APIs. Please [Multiple Vehicles](multi_vehicle.md) doc.
 

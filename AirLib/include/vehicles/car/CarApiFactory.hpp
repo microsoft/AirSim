@@ -17,15 +17,14 @@ namespace airlib
     public:
         static std::unique_ptr<CarApiBase> createApi(const AirSimSettings::VehicleSetting* vehicle_setting,
                                                      std::shared_ptr<SensorFactory> sensor_factory,
-                                                     const Kinematics::State& state, const Environment& environment,
-                                                     const msr::airlib::GeoPoint& home_geopoint)
+                                                     const Kinematics::State& state, const Environment& environment)
         {
             if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeArduRover) {
-                return std::unique_ptr<CarApiBase>(new ArduRoverApi(vehicle_setting, sensor_factory, state, environment, home_geopoint));
+                return std::unique_ptr<CarApiBase>(new ArduRoverApi(vehicle_setting, sensor_factory, state, environment));
             }
             else if (vehicle_setting->vehicle_type == "" || //default config
                      vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypePhysXCar) {
-                return std::unique_ptr<CarApiBase>(new PhysXCarApi(vehicle_setting, sensor_factory, state, environment, home_geopoint));
+                return std::unique_ptr<CarApiBase>(new PhysXCarApi(vehicle_setting, sensor_factory, state, environment));
             }
             else
                 throw std::runtime_error(Utils::stringf(
