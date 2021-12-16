@@ -308,6 +308,7 @@ class VehicleClient:
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
 
 
+
 #CinemAirSim
     def simGetPresetLensSettings(self, camera_name, vehicle_name = '', external = False):  
         result = self.client.call('simGetPresetLensSettings', camera_name, vehicle_name, external)
