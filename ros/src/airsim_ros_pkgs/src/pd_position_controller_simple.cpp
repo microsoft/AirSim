@@ -104,6 +104,8 @@ void PIDPositionController::check_reached_goal()
 
 bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response)
 {
+    response.success = false;
+
     // this tells the update timer callback to not do active hovering
     if (!got_goal_once_)
         got_goal_once_ = true;
@@ -111,7 +113,7 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
     if (has_goal_ && !reached_goal_) {
         // todo maintain array of position goals
         ROS_ERROR_STREAM("[PIDPositionController] denying position goal request. I am still following the previous goal");
-        return false;
+        return response.success;
     }
 
     if (!has_goal_) {
@@ -126,12 +128,13 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
         has_goal_ = true;
         reached_goal_ = false;
         reset_errors(); // todo
-        return true;
+        response.success = true;
+        return response.success;
     }
 
     // Already have goal, and have reached it
     ROS_INFO_STREAM("[PIDPositionController] Already have goal and have reached it");
-    return false;
+    return response.success;
 }
 
 bool PIDPositionController::local_position_goal_srv_override_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response)
@@ -151,7 +154,8 @@ bool PIDPositionController::local_position_goal_srv_override_cb(airsim_ros_pkgs:
     has_goal_ = true;
     reached_goal_ = false;
     reset_errors(); // todo
-    return true;
+    response.success = true;
+    return response.success;
 }
 
 void PIDPositionController::home_geopoint_cb(const airsim_ros_pkgs::GPSYaw& gps_msg)
@@ -167,9 +171,11 @@ void PIDPositionController::home_geopoint_cb(const airsim_ros_pkgs::GPSYaw& gps_
 // todo do relative altitude, or add an option for the same?
 bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response)
 {
+    response.success = false;
+
     if (!has_home_geo_) {
         ROS_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
-        response.success = false;
+        return response.success;
     }
 
     // convert GPS goal to NED goal
@@ -202,7 +208,7 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
         has_goal_ = true;
         reached_goal_ = false;
         reset_errors(); // todo
-        return true;
+        return response.success;
     }
 
     // Already have goal, this shouldn't happen
@@ -213,9 +219,11 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
 // todo do relative altitude, or add an option for the same?
 bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response)
 {
+    response.success = false;
+
     if (!has_home_geo_) {
         ROS_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
-        response.success = false;
+        return response.success;
     }
 
     // convert GPS goal to NED goal
@@ -247,7 +255,8 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosi
     has_goal_ = true;
     reached_goal_ = false;
     reset_errors(); // todo
-    return true;
+    response.success = true;
+    return response.success;
 }
 
 void PIDPositionController::update_control_cmd_timer_cb(const ros::TimerEvent& event)
