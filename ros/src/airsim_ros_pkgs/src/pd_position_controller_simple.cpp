@@ -105,7 +105,7 @@ void PIDPositionController::check_reached_goal()
 bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response)
 {
     response.success = false;
-    
+
     // this tells the update timer callback to not do active hovering
     if (!got_goal_once_)
         got_goal_once_ = true;
@@ -172,7 +172,7 @@ void PIDPositionController::home_geopoint_cb(const airsim_ros_pkgs::GPSYaw& gps_
 bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response)
 {
     response.success = false;
-    
+
     if (!has_home_geo_) {
         ROS_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
         return response.success;
@@ -225,7 +225,7 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
 bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response)
 {
     response.success = false;
-    
+
     if (!has_home_geo_) {
         ROS_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
         return response.success;
