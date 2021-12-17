@@ -644,7 +644,9 @@ std::unique_ptr<PawnSimApi> ASimModeBase::createVehicleApi(APawn* vehicle_pawn)
 bool ASimModeBase::createVehicleAtRuntime(const std::string& vehicle_name, const std::string& vehicle_type,
                                           const msr::airlib::Pose& pose, const std::string& pawn_path)
 {
-    if (!isVehicleTypeSupported(vehicle_type)) {
+    // Convert to lowercase as done during settings loading
+    const std::string vehicle_type_lower = Utils::toLower(vehicle_type);
+    if (!isVehicleTypeSupported(vehicle_type_lower)) {
         Utils::log(Utils::stringf("Vehicle type %s is not supported in this game mode", vehicle_type.c_str()), Utils::kLogLevelWarn);
         return false;
     }
@@ -653,20 +655,14 @@ bool ASimModeBase::createVehicleAtRuntime(const std::string& vehicle_name, const
     //       Maybe allow passing a JSON string for the vehicle settings?
 
     // Retroactively adjust AirSimSettings, so it's like we knew about this vehicle all along
-    AirSimSettings::singleton().addVehicleSetting(vehicle_name, vehicle_type, pose, pawn_path);
+    AirSimSettings::singleton().addVehicleSetting(vehicle_name, vehicle_type_lower, pose, pawn_path);
     const auto* vehicle_setting = getSettings().getVehicleSetting(vehicle_name);
 
     auto spawned_pawn = createVehiclePawn(*vehicle_setting);
-
     auto vehicle_sim_api = createVehicleApi(spawned_pawn);
 
     // Usually physics registration happens at init, in ASimModeWorldBase::initializeForPlay(), but not in this case
-    vehicle_sim_api->reset();
     registerPhysicsBody(vehicle_sim_api.get());
-
-    // Can't be done before the vehicle apis have been created
-    if ((vehicle_setting->is_fpv_vehicle || !getApiProvider()->hasDefaultVehicle()) && vehicle_name != "")
-        getApiProvider()->makeDefaultVehicle(vehicle_name);
 
     vehicle_sim_apis_.push_back(std::move(vehicle_sim_api));
 

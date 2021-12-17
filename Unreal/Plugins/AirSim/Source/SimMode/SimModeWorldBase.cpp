@@ -25,6 +25,9 @@ void ASimModeWorldBase::initializeForPlay()
 
 void ASimModeWorldBase::registerPhysicsBody(msr::airlib::VehicleSimApiBase* physicsBody)
 {
+    // Reset the vehicle as well before registering it
+    // Similar to what happens in initializeForPlay() above
+    physicsBody->reset();
     physics_world_.get()->addBody(physicsBody);
 }
 

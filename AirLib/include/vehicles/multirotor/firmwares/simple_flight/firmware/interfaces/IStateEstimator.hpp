@@ -20,5 +20,7 @@ public:
     virtual GeoPoint getHomeGeoPoint() const = 0;
 
     virtual Axis3r transformToBodyFrame(const Axis3r& world_frame_val) const = 0;
+
+    virtual ~IStateEstimator() = default;
 };
 }

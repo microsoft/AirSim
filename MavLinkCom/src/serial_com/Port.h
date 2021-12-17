@@ -21,5 +21,7 @@ public:
     virtual bool isClosed() = 0;
 
     virtual int getRssi(const char* ifaceName) = 0;
+
+    virtual ~Port() = default;
 };
 #endif // !PORT_H

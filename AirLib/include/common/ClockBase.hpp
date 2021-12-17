@@ -26,6 +26,8 @@ namespace airlib
             wall_clock_start_ = Utils::getTimeSinceEpochNanos();
         }
 
+        virtual ~ClockBase() = default;
+
         TTimeDelta elapsedSince(TTimePoint since) const
         {
             return elapsedBetween(nowNanos(), since);
