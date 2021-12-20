@@ -89,6 +89,8 @@ void APIPCamera::PostInitializeComponents()
             detections_[i]->Deactivate();
         }
     }
+    //set initial focal length
+    camera_->CurrentFocalLength = 11.9;
 }
 
 void APIPCamera::BeginPlay()
@@ -374,9 +376,6 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
     else
         this->SetActorTickEnabled(false);
 
-    //set initial focal length
-    camera_->CurrentFocalLength = 11.9;
-
     int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
     for (int image_type = -1; image_type < image_count; ++image_type) {
         const auto& capture_setting = camera_setting.capture_settings.at(image_type);
@@ -617,87 +616,81 @@ void APIPCamera::onViewModeChanged(bool nodisplay)
 }
 
 //CinemAirSim methods
-std::vector<std::string> APIPCamera::getPresetLensSettings()
+std::vector<std::string> APIPCamera::getPresetLensSettings() const
 {
     std::vector<std::string> vector;
-    TArray<FNamedLensPreset> lens_presets = camera_->GetLensPresets();
-    for (FNamedLensPreset preset : lens_presets) {
-        std::ostringstream ss;
+    const TArray<FNamedLensPreset> lens_presets = camera_->GetLensPresets();
+    for (const FNamedLensPreset preset : lens_presets) {
+        std::ostringstream current_lens_string;
         std::string name = (TCHAR_TO_UTF8(*preset.Name));
 
-        ss << "Name: " << name << ";\n\t MinFocalLength: " << preset.LensSettings.MinFocalLength << "; \t MaxFocalLength: " << preset.LensSettings.MaxFocalLength;
-        ss << "\n\t Min FStop: " << preset.LensSettings.MinFStop << "; \t Max Fstop: " << preset.LensSettings.MaxFStop;
-        std::string final_string(ss.str());
-        vector.push_back(final_string);
+        current_lens_string << "Name: " << name << ";\n\t MinFocalLength: " << preset.LensSettings.MinFocalLength << "; \t MaxFocalLength: " << preset.LensSettings.MaxFocalLength;
+        current_lens_string << "\n\t Min FStop: " << preset.LensSettings.MinFStop << "; \t Max Fstop: " << preset.LensSettings.MaxFStop;
+        vector.push_back(current_lens_string.str());
     }
     return vector;
 }
 
-std::string APIPCamera::getLensSettings()
+std::string APIPCamera::getLensSettings() const
 {
-    std::vector<std::string> vector;
+    const FCameraLensSettings current_lens_params = camera_->LensSettings;
 
-    FCameraLensSettings current_lens_params = camera_->LensSettings;
+    std::ostringstream current_lens_string;
 
-    std::ostringstream ss;
-
-    FString lens_preset_name = camera_->GetLensPresetName();
+    const FString lens_preset_name = camera_->GetLensPresetName();
     std::string name = (TCHAR_TO_UTF8(*lens_preset_name));
 
-    ss << "Name: " << name;
-    ss << ";\n\t MinFocalLength: " << current_lens_params.MinFocalLength;
-    ss << "; \t MaxFocalLength: " << current_lens_params.MaxFocalLength;
-    ss << "\n\t Min FStop: " << current_lens_params.MinFStop;
-    ss << "; \t Max Fstop: " << current_lens_params.MaxFStop;
-    ss << "\n\t Diaphragm Blade Count: " << current_lens_params.DiaphragmBladeCount;
-    ss << "\n\t Minimum focus distance: " << current_lens_params.MinimumFocusDistance;
-    std::string final_string(ss.str());
+    current_lens_string << "Name: " << name;
+    current_lens_string << ";\n\t MinFocalLength: " << current_lens_params.MinFocalLength;
+    current_lens_string << "; \t MaxFocalLength: " << current_lens_params.MaxFocalLength;
+    current_lens_string << "\n\t Min FStop: " << current_lens_params.MinFStop;
+    current_lens_string << "; \t Max Fstop: " << current_lens_params.MaxFStop;
+    current_lens_string << "\n\t Diaphragm Blade Count: " << current_lens_params.DiaphragmBladeCount;
+    current_lens_string << "\n\t Minimum focus distance: " << current_lens_params.MinimumFocusDistance;
 
-    return final_string;
+    return current_lens_string.str();
 }
 
 void APIPCamera::setPresetLensSettings(std::string preset_string)
 {
-    FString preset(preset_string.c_str());
+    const FString preset(preset_string.c_str());
     camera_->SetLensPresetByName(preset);
     copyCameraSettingsToAllSceneCapture(camera_);
 }
 
-std::vector<std::string> APIPCamera::getPresetFilmbackSettings()
+std::vector<std::string> APIPCamera::getPresetFilmbackSettings() const
 {
-    std::vector<std::string> vector;
+    std::vector<std::string> vector_all_presets;
     TArray<FNamedFilmbackPreset> lens_presets = camera_->GetFilmbackPresets();
-    for (FNamedFilmbackPreset preset : lens_presets) {
-        std::ostringstream ss;
+    for (const FNamedFilmbackPreset preset : lens_presets) {
+        std::ostringstream preset_string;
         std::string name = (TCHAR_TO_UTF8(*preset.Name));
 
-        ss << "Name: " << name << ";\n\t Sensor Width: " << preset.FilmbackSettings.SensorWidth << "; \t Sensor Height: " << preset.FilmbackSettings.SensorHeight;
-        ss << "\n\t Sensor Aspect Ratio: " << preset.FilmbackSettings.SensorAspectRatio;
-        std::string final_string(ss.str());
-        vector.push_back(final_string);
+        preset_string << "Name: " << name << ";\n\t Sensor Width: " << preset.FilmbackSettings.SensorWidth << "; \t Sensor Height: " << preset.FilmbackSettings.SensorHeight;
+        preset_string << "\n\t Sensor Aspect Ratio: " << preset.FilmbackSettings.SensorAspectRatio;
+        vector_all_presets.push_back(preset_string.str());
     }
-    return vector;
+    return vector_all_presets;
 }
 
 void APIPCamera::setPresetFilmbackSettings(std::string preset_string)
 {
-    FString preset(preset_string.c_str());
+    const FString preset(preset_string.c_str());
     camera_->SetFilmbackPresetByName(preset);
     copyCameraSettingsToAllSceneCapture(camera_);
 }
 
-std::string APIPCamera::getFilmbackSettings()
+std::string APIPCamera::getFilmbackSettings() const
 {
-    std::vector<std::string> vector;
     FCameraFilmbackSettings current_filmback_settings = camera_->Filmback;
 
-    FString filmback_present_name = camera_->GetFilmbackPresetName();
-    std::ostringstream ss;
+    const FString filmback_present_name = camera_->GetFilmbackPresetName();
+    std::ostringstream current_filmback_string;
     std::string name = (TCHAR_TO_UTF8(*filmback_present_name));
 
-    ss << "Name: " << name << ";\n\t Sensor Width: " << current_filmback_settings.SensorWidth << "; \t Sensor Height: " << current_filmback_settings.SensorHeight;
-    ss << "\n\t Sensor Aspect Ratio: " << current_filmback_settings.SensorAspectRatio;
-    return ss.str();
+    current_filmback_string << "Name: " << name << ";\n\t Sensor Width: " << current_filmback_settings.SensorWidth << "; \t Sensor Height: " << current_filmback_settings.SensorHeight;
+    current_filmback_string << "\n\t Sensor Aspect Ratio: " << current_filmback_settings.SensorAspectRatio;
+    return current_filmback_string.str();
 }
 
 float APIPCamera::setFilmbackSettings(float sensor_width, float sensor_height)
@@ -710,7 +703,7 @@ float APIPCamera::setFilmbackSettings(float sensor_width, float sensor_height)
     return camera_->Filmback.SensorAspectRatio;
 }
 
-float APIPCamera::getFocalLength()
+float APIPCamera::getFocalLength() const
 {
     return camera_->CurrentFocalLength;
 }
@@ -732,7 +725,7 @@ void APIPCamera::enableManualFocus(bool enable)
     copyCameraSettingsToAllSceneCapture(camera_);
 }
 
-float APIPCamera::getFocusDistance()
+float APIPCamera::getFocusDistance() const
 {
     return camera_->FocusSettings.ManualFocusDistance;
 }
@@ -743,7 +736,7 @@ void APIPCamera::setFocusDistance(float focus_distance)
     copyCameraSettingsToAllSceneCapture(camera_);
 }
 
-float APIPCamera::getFocusAperture()
+float APIPCamera::getFocusAperture() const
 {
     return camera_->CurrentAperture;
 }
@@ -759,20 +752,18 @@ void APIPCamera::enableFocusPlane(bool enable)
     camera_->FocusSettings.bDrawDebugFocusPlane = enable;
 }
 
-std::string APIPCamera::getCurrentFieldOfView()
+std::string APIPCamera::getCurrentFieldOfView() const
 {
-    std::ostringstream ss;
-    ss << "Current Field Of View:\n\tHorizontal Field Of View: " << camera_->GetHorizontalFieldOfView() << ";\n\t Vertical Field Of View: " << camera_->GetVerticalFieldOfView();
-    return ss.str();
+    std::ostringstream field_of_view_string;
+    field_of_view_string << "Current Field Of View:\n\tHorizontal Field Of View: " << camera_->GetHorizontalFieldOfView() << ";\n\t Vertical Field Of View: " << camera_->GetVerticalFieldOfView();
+    return field_of_view_string.str();
 }
 
 void APIPCamera::copyCameraSettingsToAllSceneCapture(UCameraComponent* camera)
 {
     int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
     for (int image_type = image_count - 1; image_type >= 0; image_type--) {
-        if (image_type >= 0) { //scene capture components
-            copyCameraSettingsToSceneCapture(camera_, captures_[image_type]);
-        }
+        copyCameraSettingsToSceneCapture(camera_, captures_[image_type]);
     }
 }
 
@@ -785,16 +776,16 @@ void APIPCamera::copyCameraSettingsToSceneCapture(UCameraComponent* src, USceneC
         FMinimalViewInfo camera_view_info;
         src->GetCameraView(/*DeltaTime =*/0.0f, camera_view_info);
 
-        const FPostProcessSettings& SrcPPSettings = camera_view_info.PostProcessSettings;
-        FPostProcessSettings& DstPPSettings = dst->PostProcessSettings;
+        const FPostProcessSettings& src_pp_settings = camera_view_info.PostProcessSettings;
+        FPostProcessSettings& dst_pp_settings = dst->PostProcessSettings;
 
-        FWeightedBlendables DstWeightedBlendables = DstPPSettings.WeightedBlendables;
+        FWeightedBlendables dst_weighted_blendables = dst_pp_settings.WeightedBlendables;
 
         // Copy all of the post processing settings
-        DstPPSettings = SrcPPSettings;
+        dst_pp_settings = src_pp_settings;
 
         // But restore the original blendables
-        DstPPSettings.WeightedBlendables = DstWeightedBlendables;
+        dst_pp_settings.WeightedBlendables = dst_weighted_blendables;
     }
 }
 

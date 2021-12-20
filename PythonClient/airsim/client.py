@@ -341,12 +341,10 @@ class VehicleClient:
         return result
 
     def simSetFilmbackSettings(self, sensor_width, sensor_height, camera_name, vehicle_name = '', external = False):  
-        result = self.client.call("simSetFilmbackSettings", sensor_width, sensor_height, camera_name, vehicle_name, external)
-        return result
+        return self.client.call("simSetFilmbackSettings", sensor_width, sensor_height, camera_name, vehicle_name, external)
 
     def simGetFocalLength(self, camera_name, vehicle_name = '', external = False):  
-        result = self.client.call("simGetFocalLength", camera_name, vehicle_name, external)
-        return result
+        return self.client.call("simGetFocalLength", camera_name, vehicle_name, external)
 
     def simSetFocalLength(self, focal_length, camera_name, vehicle_name = '', external = False):  
         self.client.call("simSetFocalLength", focal_length, camera_name, vehicle_name, external)
@@ -355,15 +353,13 @@ class VehicleClient:
         self.client.call("simEnableManualFocus", enable, camera_name, vehicle_name, external)
 
     def simGetFocusDistance(self, camera_name, vehicle_name = '', external = False):  
-        result = self.client.call("simGetFocusDistance", camera_name, vehicle_name, external)
-        return result
+        return self.client.call("simGetFocusDistance", camera_name, vehicle_name, external)
 
     def simSetFocusDistance(self, focus_distance, camera_name, vehicle_name = '', external = False):  
         self.client.call("simSetFocusDistance", focus_distance, camera_name, vehicle_name, external)
 
     def simGetFocusAperture(self, camera_name, vehicle_name = '', external = False):  
-        result = self.client.call("simGetFocusAperture", camera_name, vehicle_name, external)
-        return result
+        return self.client.call("simGetFocusAperture", camera_name, vehicle_name, external)
 
     def simSetFocusAperture(self, focus_aperture, camera_name, vehicle_name = '', external = False):  
         self.client.call("simSetFocusAperture", focus_aperture, camera_name, vehicle_name, external)
@@ -372,8 +368,7 @@ class VehicleClient:
         self.client.call("simEnableFocusPlane", enable, camera_name, vehicle_name, external)
 
     def simGetCurrentFieldOfView(self, camera_name, vehicle_name = '', external = False):  
-        result = self.client.call("simGetCurrentFieldOfView", camera_name, vehicle_name, external)
-        return result
+        return self.client.call("simGetCurrentFieldOfView", camera_name, vehicle_name, external)
 
 #End CinemAirSim     
     def simTestLineOfSightToPoint(self, point, vehicle_name = ''):

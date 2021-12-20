@@ -44,25 +44,22 @@ public:
     void onViewModeChanged(bool nodisplay);
 
     //CinemAirSim methods
-    std::vector<std::string> getPresetLensSettings();
+    std::vector<std::string> getPresetLensSettings() const;
     void setPresetLensSettings(std::string preset_string);
-    std::vector<std::string> getPresetFilmbackSettings();
+    std::vector<std::string> getPresetFilmbackSettings() const;
     void setPresetFilmbackSettings(std::string preset_string);
-    std::string getLensSettings();
-    std::string getFilmbackSettings();
+    std::string getLensSettings() const;
+    std::string getFilmbackSettings() const;
     float setFilmbackSettings(float sensor_width, float sensor_height);
-    float getFocalLength();
+    float getFocalLength() const;
     void setFocalLength(float focal_length);
     void enableManualFocus(bool enable);
-    float getFocusDistance();
+    float getFocusDistance() const;
     void setFocusDistance(float focus_distance);
-    float getFocusAperture();
+    float getFocusAperture() const;
     void setFocusAperture(float focus_aperture);
     void enableFocusPlane(bool enable);
-    std::string getCurrentFieldOfView();
-
-    void copyCameraSettingsToAllSceneCapture(UCameraComponent* camera);
-    void copyCameraSettingsToSceneCapture(UCameraComponent* src, USceneCaptureComponent2D* dst);
+    std::string getCurrentFieldOfView() const;
     //end CinemAirSim methods
 
     void setCameraTypeEnabled(ImageType type, bool enabled);
@@ -135,4 +132,7 @@ private: //methods
     static void updateCameraPostProcessingSetting(FPostProcessSettings& obj, const CaptureSetting& setting);
     //CinemAirSim
     static void updateCameraSetting(UCineCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform);
+    void copyCameraSettingsToAllSceneCapture(UCameraComponent* camera);
+    void copyCameraSettingsToSceneCapture(UCameraComponent* src, USceneCaptureComponent2D* dst);
+    //end CinemAirSim
 };
