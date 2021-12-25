@@ -389,5 +389,8 @@ build_docs/
 PythonClient/docs/_build
 
 
-# custom: ignore log
-log.txt
+# custom: ignore
+/AirLibUnitTests/data
+/AirLibUnitTests/figures
+/AirLibUnitTests/log.txt
+/AirLibUnitTests/other.txt
