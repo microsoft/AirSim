@@ -134,6 +134,15 @@ namespace airlib
             ecef2Ned(x, y, z, north, east, down);
         }
 
+        void geodetic2Ned(const GeoPoint& geopoint, Vector3r& ned_pos)
+        {
+            double north, east, down;
+            geodetic2Ned(geopoint.latitude, geopoint.longitude, geopoint.altitude, &north, &east, &down);
+            ned_pos[0] = static_cast<float>(north);
+            ned_pos[1] = static_cast<float>(east);
+            ned_pos[2] = static_cast<float>(down);
+        }
+
         void ned2Geodetic(const double north, const double east, const float down, double* latitude,
                           double* longitude, float* altitude)
         {
