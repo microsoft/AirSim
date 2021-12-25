@@ -38,6 +38,10 @@ namespace airlib
         //*** Start: UpdatableState implementation ***//
         virtual void resetImplementation() override
         {
+            // added
+            gauss_dist_pos.reset();
+            gauss_dist_vel.reset();
+
             freq_limiter_.reset();
             delay_line_.reset();
 
@@ -82,9 +86,27 @@ namespace airlib
             //GNSS
             output.gnss.time_utc = static_cast<uint64_t>(clock()->nowNanos() / 1.0E3);
             output.gnss.geo_point = ground_truth.environment->getState().geo_point;
+
+            // // added by Suman
+            // output.gnss.geo_point.longitude = ground_truth.kinematics->pose.position[0];
+            // output.gnss.geo_point.latitude = ground_truth.kinematics->pose.position[1];
+            // output.gnss.geo_point.altitude = ground_truth.kinematics->pose.position[2];
+
+            real_T gps_sigma_pos = 0.00001f; // 1/6378km rad 
+            output.gnss.geo_point.longitude += gauss_dist_pos.next()[0] * gps_sigma_pos;
+            output.gnss.geo_point.latitude  += gauss_dist_pos.next()[1] * gps_sigma_pos;
+            output.gnss.geo_point.altitude  += gauss_dist_pos.next()[2] * 3.0f;
+
+            // //
+
             output.gnss.eph = eph;
             output.gnss.epv = epv;
+
             output.gnss.velocity = ground_truth.kinematics->twist.linear;
+            output.gnss.velocity.x() += gauss_dist_vel.next()[0]*2.0f;
+            output.gnss.velocity.y() += gauss_dist_vel.next()[1]*2.0f;
+            output.gnss.velocity.z() += gauss_dist_vel.next()[2]*2.0f;
+
             output.is_valid = true;
 
             output.gnss.fix_type =
@@ -105,6 +127,10 @@ namespace airlib
         FirstOrderFilter<real_T> eph_filter, epv_filter;
         FrequencyLimiter freq_limiter_;
         DelayLine<Output> delay_line_;
+
+        //added
+        RandomVectorGaussianR gauss_dist_pos = RandomVectorGaussianR(0, 1);
+        RandomVectorGaussianR gauss_dist_vel = RandomVectorGaussianR(0, 1);
     };
 }
 } //namespace
