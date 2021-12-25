@@ -211,6 +211,75 @@ struct KinematicsState
     Axis3r angular_acceleration;
 };
 
+struct SensorMeasurements
+{
+    Axis3r accel;
+    Axis3r gyro;
+
+    Axis3r gps_position;
+    Axis3r gps_velocity;
+
+    TReal baro_altitude;
+
+    Axis3r magnetic_flux;
+};
+
+struct SensorBiases
+{
+    Axis3r accel;
+    Axis3r gyro;
+
+    TReal barometer;
+};
+
+struct EkfKinematicsState
+{
+    Axis3r position;
+    Axis4r orientation;
+    Axis3r angles;
+
+    Axis3r linear_velocity;
+
+    SensorBiases sensor_bias;
+};
+
+struct SensorCharacteristics
+{
+    Axis3r accel_std_dev;
+    Axis3r gyro_std_dev;
+
+    Axis3r gps_pos_std_dev;
+    Axis3r gps_vel_std_dev;
+
+    Axis3r mag_std_dev;
+
+    real_T baro_std_dev;
+};
+
+struct EkfInitialStates
+{
+    Axis3r pos;
+    Axis3r vel;
+
+    Axis4r quaternion;
+
+    Axis3r accel_bias;
+    Axis3r gyro_bias;
+    real_T baro_bias;
+};
+
+struct EkfInitialStdDevs
+{
+    Axis3r pos;
+    Axis3r vel;
+
+    Axis4r quaternion;
+
+    Axis3r accel_bias;
+    Axis3r gyro_bias;
+    real_T baro_bias;
+};
+
 enum class VehicleStateType
 {
     Unknown,
