@@ -60,7 +60,7 @@ public:
         detectLanding();
         detectTakingOff();
 
-        logEkfStates();
+        logEkfValues();
     }
 
     /**************** IOffboardApi ********************/
@@ -206,20 +206,111 @@ public:
 
 private:
 
-    void logEkfStates()
+    void logEkfValues()
     {
         // additional logging of vehicle states, TODO implement a separate log!
         std::ostringstream log_msg;
         log_msg << clock_->millis() << '\t'
-                << state_estimator_->getPosition().x() << '\t'
-                << state_estimator_->getPosition().y() << '\t'
-                << state_estimator_->getPosition().z() << '\t'
-                << state_estimator_->getEkfPostion().x() << '\t'
-                << state_estimator_->getEkfPostion().y() << '\t'
-                << state_estimator_->getEkfPostion().z() << '\t'
+        // ground truth mesurement signals
+                << state_estimator_->getTrueMeasurements().accel.x() << '\t'
+                << state_estimator_->getTrueMeasurements().accel.y() << '\t'
+                << state_estimator_->getTrueMeasurements().accel.z() << '\t'
+                << state_estimator_->getTrueMeasurements().gyro.x() << '\t'
+                << state_estimator_->getTrueMeasurements().gyro.y() << '\t'
+                << state_estimator_->getTrueMeasurements().gyro.z() << '\t'
+        // noisy mesurement signals
+                << state_estimator_->getEkfMeasurements().accel.x() << '\t'
+                << state_estimator_->getEkfMeasurements().accel.y() << '\t'
+                << state_estimator_->getEkfMeasurements().accel.z() << '\t'
+                << state_estimator_->getEkfMeasurements().gyro.x() << '\t'
+                << state_estimator_->getEkfMeasurements().gyro.y() << '\t'
+                << state_estimator_->getEkfMeasurements().gyro.z() << '\t'
+                << state_estimator_->getEkfMeasurements().gps_position.x() << '\t'
+                << state_estimator_->getEkfMeasurements().gps_position.y() << '\t'
+                << state_estimator_->getEkfMeasurements().gps_position.z() << '\t'
+                << state_estimator_->getEkfMeasurements().gps_velocity.x() << '\t'
+                << state_estimator_->getEkfMeasurements().gps_velocity.y() << '\t'
+                << state_estimator_->getEkfMeasurements().gps_velocity.z() << '\t'
+                << state_estimator_->getEkfMeasurements().baro_altitude << '\t'
+                << state_estimator_->getEkfMeasurements().magnetic_flux.x() << '\t'
+                << state_estimator_->getEkfMeasurements().magnetic_flux.y() << '\t'
+                << state_estimator_->getEkfMeasurements().magnetic_flux.z() << '\t'
+        // ground truth states
+                << state_estimator_->getKinematicsEstimated().position.x() << '\t'
+                << state_estimator_->getKinematicsEstimated().position.y() << '\t'
+                << state_estimator_->getKinematicsEstimated().position.z() << '\t'
+                << state_estimator_->getKinematicsEstimated().orientation.val4() << '\t' // ATTENSION val4 is w when converted to axis4r of simple_flight
+                << state_estimator_->getKinematicsEstimated().orientation.x() << '\t'
+                << state_estimator_->getKinematicsEstimated().orientation.y() << '\t'
+                << state_estimator_->getKinematicsEstimated().orientation.z() << '\t'
+                << state_estimator_->getAngles().pitch() << '\t'
+                << state_estimator_->getAngles().roll() << '\t'
+                << state_estimator_->getAngles().yaw() << '\t'
+                << state_estimator_->getKinematicsEstimated().linear_velocity.x() << '\t'
+                << state_estimator_->getKinematicsEstimated().linear_velocity.y() << '\t'
+                << state_estimator_->getKinematicsEstimated().linear_velocity.z() << '\t'
+        // estimated states
+                << state_estimator_->getEkfKinematicsEstimated().position.x() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().position.y() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().position.z() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().orientation.val4() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().orientation.x() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().orientation.y() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().orientation.z() << '\t'
+                << state_estimator_->getEkfAngles().pitch() << '\t'
+                << state_estimator_->getEkfAngles().roll() << '\t'
+                << state_estimator_->getEkfAngles().yaw() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().linear_velocity.x() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().linear_velocity.y() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().linear_velocity.z() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().sensor_bias.accel.x() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().sensor_bias.accel.y() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().sensor_bias.accel.z() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().sensor_bias.gyro.x() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().sensor_bias.gyro.y() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().sensor_bias.gyro.z() << '\t'
+                << state_estimator_->getEkfKinematicsEstimated().sensor_bias.barometer << '\t'
+        // covariances
                 << state_estimator_->getEkfPositionCovariance().x() << '\t'
                 << state_estimator_->getEkfPositionCovariance().y() << '\t'
-                << state_estimator_->getEkfPositionCovariance().z() << '\t';
+                << state_estimator_->getEkfPositionCovariance().z() << '\t'
+                << state_estimator_->getEkfLinearVelocityCovariance().x() << '\t'
+                << state_estimator_->getEkfLinearVelocityCovariance().y() << '\t'
+                << state_estimator_->getEkfLinearVelocityCovariance().z() << '\t'
+                << state_estimator_->getEkfOrientationCovariance().x() << '\t'
+                << state_estimator_->getEkfOrientationCovariance().y() << '\t'
+                << state_estimator_->getEkfOrientationCovariance().z() << '\t'
+                << state_estimator_->getEkfOrientationCovariance().val4() << '\t'
+                << state_estimator_->getEkfImuBiasCovariance().x() << '\t'
+                << state_estimator_->getEkfImuBiasCovariance().y() << '\t'
+                << state_estimator_->getEkfImuBiasCovariance().z() << '\t'
+                << state_estimator_->getEkfGyroBiasCovariance().x() << '\t'
+                << state_estimator_->getEkfGyroBiasCovariance().y() << '\t'
+                << state_estimator_->getEkfGyroBiasCovariance().z() << '\t'
+                << state_estimator_->getEkfBaroBiasCovariance() << '\t'
+        // quaternion norm
+                << state_estimator_->getEkfOrientationNorm() << '\t'
+        // off-diag quaternion covariance
+                << state_estimator_->getEkfOrientationOffDiagCovariance().at(0) << '\t'
+                << state_estimator_->getEkfOrientationOffDiagCovariance().at(1) << '\t'
+                << state_estimator_->getEkfOrientationOffDiagCovariance().at(2) << '\t'
+                << state_estimator_->getEkfOrientationOffDiagCovariance().at(3) << '\t'
+                << state_estimator_->getEkfOrientationOffDiagCovariance().at(4) << '\t'
+                << state_estimator_->getEkfOrientationOffDiagCovariance().at(5) << '\t'
+        // gyro bias quaternion covariance
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(0) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(1) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(2) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(3) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(4) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(5) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(6) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(7) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(8) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(9) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(10) << '\t'
+                << state_estimator_->getEkfOrientationGyroBiasCovariance().at(11) << '\t';
+
         std::string message = log_msg.str();
         comm_link_->log(message);
     }
