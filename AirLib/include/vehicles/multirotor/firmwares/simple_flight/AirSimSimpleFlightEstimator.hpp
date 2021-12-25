@@ -103,15 +103,94 @@ namespace airlib
             return state;
         }
 
-        virtual simple_flight::Axis3r getEkfPostion() const override
+        // additional methods
+
+        virtual simple_flight::SensorMeasurements getTrueMeasurements() const override
+        {
+            simple_flight::SensorMeasurements true_measurements;
+
+            VectorMath::Vector3f linear_acceleration = kinematics_->accelerations.linear - environment_->getState().gravity;
+
+            //acceleration is in world frame so transform to body frame
+            linear_acceleration = VectorMath::transformToBodyFrame(linear_acceleration,
+                                                                   kinematics_->pose.orientation,
+                                                                   true);
+
+            true_measurements.accel.x() = linear_acceleration.x();
+            true_measurements.accel.y() = linear_acceleration.y();
+            true_measurements.accel.z() = linear_acceleration.z();
+            true_measurements.gyro.x() = kinematics_->twist.angular.x();
+            true_measurements.gyro.y() = kinematics_->twist.angular.y();
+            true_measurements.gyro.z() = kinematics_->twist.angular.z();
+            true_measurements.gps_position.x() = kinematics_->pose.position.x();
+            true_measurements.gps_position.y() = kinematics_->pose.position.y();
+            true_measurements.gps_position.z() = kinematics_->pose.position.z();
+            true_measurements.gps_velocity.x() = kinematics_->twist.linear.x();
+            true_measurements.gps_velocity.y() = kinematics_->twist.linear.y();
+            true_measurements.gps_velocity.z() = kinematics_->twist.linear.z();
+            true_measurements.baro_altitude = -1.0f*kinematics_->pose.position.z();
+
+            return true_measurements;
+        }
+
+        virtual simple_flight::SensorMeasurements getEkfMeasurements() const override
+        {
+            simple_flight::SensorMeasurements ekf_measurements;
+            auto ekf_measurements_vector = ekf_->getEkfMeasurements();
+
+            ekf_measurements.accel.x() = ekf_measurements_vector(0);
+            ekf_measurements.accel.y() = ekf_measurements_vector(1);
+            ekf_measurements.accel.z() = ekf_measurements_vector(2);
+            ekf_measurements.gyro.x() = ekf_measurements_vector(3);
+            ekf_measurements.gyro.y() = ekf_measurements_vector(4);
+            ekf_measurements.gyro.z() = ekf_measurements_vector(5);
+            ekf_measurements.gps_position.x() = ekf_measurements_vector(6);
+            ekf_measurements.gps_position.y() = ekf_measurements_vector(7);
+            ekf_measurements.gps_position.z() = ekf_measurements_vector(8);
+            ekf_measurements.gps_velocity.x() = ekf_measurements_vector(9);
+            ekf_measurements.gps_velocity.y() = ekf_measurements_vector(10);
+            ekf_measurements.gps_velocity.z() = ekf_measurements_vector(11);
+            ekf_measurements.baro_altitude = ekf_measurements_vector(12);
+            ekf_measurements.magnetic_flux.x() = ekf_measurements_vector(13);
+            ekf_measurements.magnetic_flux.y() = ekf_measurements_vector(14);
+            ekf_measurements.magnetic_flux.z() = ekf_measurements_vector(15);
+
+            return ekf_measurements;
+        }
+
+        virtual simple_flight::Axis3r getEkfPosition() const override
         {
             simple_flight::Axis3r position;
             auto ekf_states = ekf_->getEkfStates();
-            position.x() = ekf_states[0];
-            position.y() = ekf_states[1];
-            position.z() = ekf_states[2];
+            position.x() = ekf_states(0);
+            position.y() = ekf_states(1);
+            position.z() = ekf_states(2);
 
             return position;
+        }
+
+        virtual simple_flight::Axis3r getEkfLinearVelocity() const override
+        {
+            simple_flight::Axis3r velocity;
+            auto ekf_states = ekf_->getEkfStates();
+            velocity.x() = ekf_states(3);
+            velocity.y() = ekf_states(4);
+            velocity.z() = ekf_states(5);
+
+            return velocity;
+        }
+
+        virtual simple_flight::Axis4r getEkfOrientation() const override
+        {
+            simple_flight::Axis4r orientation;
+            auto ekf_states = ekf_->getEkfStates();
+
+            orientation.x()   = ekf_states(6);
+            orientation.y()   = ekf_states(7);
+            orientation.z()   = ekf_states(8);
+            orientation.val4()= ekf_states(9);
+
+            return orientation;
         }
 
         virtual simple_flight::Axis3r getEkfAngles() const override
@@ -120,10 +199,10 @@ namespace airlib
             Quaternionr orientation;
 
             auto ekf_states = ekf_->getEkfStates();
-            orientation.x() = ekf_states[6];
-            orientation.y() = ekf_states[7];
-            orientation.z() = ekf_states[8];
-            orientation.w() = ekf_states[9];
+            orientation.w() = ekf_states(6);
+            orientation.x() = ekf_states(7);
+            orientation.y() = ekf_states(8);
+            orientation.z() = ekf_states(9);
 
             VectorMath::toEulerianAngle(orientation,
                                         angles.pitch(),
@@ -133,10 +212,37 @@ namespace airlib
             return angles;
         }
 
+        virtual simple_flight::SensorBiases getEkfSensorBias() const override
+        {
+            simple_flight::SensorBiases bias;
+            auto ekf_states = ekf_->getEkfStates();
+            bias.accel.x() = ekf_states(10);
+            bias.accel.y() = ekf_states(11);
+            bias.accel.z() = ekf_states(12);
+            bias.gyro.x() = ekf_states(13);
+            bias.gyro.y() = ekf_states(14);
+            bias.gyro.z() = ekf_states(15);
+            bias.barometer = ekf_states(16);
+
+            return bias;
+        }
+
+        virtual simple_flight::EkfKinematicsState getEkfKinematicsEstimated() const override
+        {
+            simple_flight::EkfKinematicsState state;
+            state.position = getEkfPosition();
+            state.orientation = getEkfOrientation();
+            state.angles = getEkfAngles();
+            state.linear_velocity = getEkfLinearVelocity();
+            state.sensor_bias = getEkfSensorBias();
+
+            return state;
+        }
+
         virtual simple_flight::Axis3r getEkfPositionCovariance() const override
         {
             simple_flight::Axis3r position_cov;
-            auto ekf_covariance = ekf_->getEkfCovariance();
+            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
             position_cov.x() = ekf_covariance(0, 0);
             position_cov.y() = ekf_covariance(1, 1);
             position_cov.z() = ekf_covariance(2, 2);
@@ -144,16 +250,107 @@ namespace airlib
             return position_cov;
         }
 
-        virtual simple_flight::Axis3r getEkfAngleCovariance() const override
+        virtual simple_flight::Axis3r getEkfLinearVelocityCovariance() const override
+        {
+            simple_flight::Axis3r velocity_cov;
+            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            velocity_cov.x() = ekf_covariance(3, 3);
+            velocity_cov.y() = ekf_covariance(4, 4);
+            velocity_cov.z() = ekf_covariance(5, 5);
+
+            return velocity_cov;
+        }
+
+        virtual simple_flight::Axis4r getEkfOrientationCovariance() const override
         {
             simple_flight::Axis4r angle_cov;
-            auto ekf_covariance = ekf_->getEkfCovariance();
+            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
             angle_cov.x()   = ekf_covariance(6, 6);
             angle_cov.y()   = ekf_covariance(7, 7);
             angle_cov.z()   = ekf_covariance(8, 8);
             angle_cov.val4()= ekf_covariance(9, 9);
 
             return angle_cov;
+        }
+
+        virtual simple_flight::Axis3r getEkfImuBiasCovariance() const override
+        {
+            simple_flight::Axis3r imu_bias_cov;
+            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            imu_bias_cov.x()   = ekf_covariance(10, 10);
+            imu_bias_cov.y()   = ekf_covariance(11, 11);
+            imu_bias_cov.z()   = ekf_covariance(12, 12);
+
+            return imu_bias_cov;
+        }
+
+        virtual simple_flight::Axis3r getEkfGyroBiasCovariance() const override
+        {
+            simple_flight::Axis3r gyro_bias_cov;
+            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            gyro_bias_cov.x()   = ekf_covariance(13, 13);
+            gyro_bias_cov.y()   = ekf_covariance(14, 14);
+            gyro_bias_cov.z()   = ekf_covariance(15, 15);
+
+            return gyro_bias_cov;
+        }
+
+        virtual float getEkfBaroBiasCovariance() const override
+        {
+            float baro_bias_cov;
+            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            baro_bias_cov = ekf_covariance(16, 16);
+
+            return baro_bias_cov;
+        }
+
+        virtual float getEkfOrientationNorm() const override
+        {
+            float norm;
+            Quaternionr orientation;
+
+            auto ekf_states = ekf_->getEkfStates();
+            norm = ekf_states(6)*ekf_states(6) 
+                 + ekf_states(7)*ekf_states(7)
+                 + ekf_states(8)*ekf_states(8)
+                 + ekf_states(9)*ekf_states(9);
+            norm = sqrt(norm);
+
+            return norm;
+        }
+
+        virtual std::array<float, 6> getEkfOrientationOffDiagCovariance() const override
+        {
+            std::array<float, 6> ori_offdiag_cov;
+            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            ori_offdiag_cov.at(0) = ekf_covariance(6, 7);
+            ori_offdiag_cov.at(1) = ekf_covariance(6, 8);
+            ori_offdiag_cov.at(2) = ekf_covariance(6, 9);
+            ori_offdiag_cov.at(3) = ekf_covariance(7, 8);
+            ori_offdiag_cov.at(4) = ekf_covariance(7, 9);
+            ori_offdiag_cov.at(5) = ekf_covariance(8, 9);
+
+            return ori_offdiag_cov;
+        }
+
+        virtual std::array<float, 12> getEkfOrientationGyroBiasCovariance() const override
+        {
+            std::array<float, 12> ori_gyro_bias_cov;
+            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            ori_gyro_bias_cov.at(0)  = ekf_covariance(6, 13);
+            ori_gyro_bias_cov.at(1)  = ekf_covariance(6, 14);
+            ori_gyro_bias_cov.at(2)  = ekf_covariance(6, 15);
+            ori_gyro_bias_cov.at(3)  = ekf_covariance(7, 13);
+            ori_gyro_bias_cov.at(4)  = ekf_covariance(7, 14);
+            ori_gyro_bias_cov.at(5)  = ekf_covariance(7, 15);
+            ori_gyro_bias_cov.at(6)  = ekf_covariance(8, 13);
+            ori_gyro_bias_cov.at(7)  = ekf_covariance(8, 14);
+            ori_gyro_bias_cov.at(8)  = ekf_covariance(8, 15);
+            ori_gyro_bias_cov.at(9)  = ekf_covariance(9, 13);
+            ori_gyro_bias_cov.at(10) = ekf_covariance(9, 14);
+            ori_gyro_bias_cov.at(11) = ekf_covariance(9, 15);
+
+            return ori_gyro_bias_cov;
         }
 
     private:
