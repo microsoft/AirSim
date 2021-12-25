@@ -43,6 +43,15 @@ namespace airlib
         typedef Eigen::Matrix<float, 17, 17> Matrix17x17f;
         typedef Eigen::Matrix<float, 17, 13> Matrix17x13f;
         typedef Eigen::Matrix<float, 13, 13> Matrix13x13f;
+        typedef Eigen::Matrix<float, 1, 17> Matrix1x17f;
+        typedef Eigen::Matrix<float, 17, 1> Matrix17x1f;
+        typedef Eigen::Matrix<float, 3, 17> Matrix3x17f;
+        typedef Eigen::Matrix<float, 17, 3> Matrix17x3f;
+        typedef Eigen::Matrix<float, 6, 6> Matrix6x6f;
+        typedef Eigen::Matrix<float, 6, 17> Matrix6x17f;
+        typedef Eigen::Matrix<float, 17, 6> Matrix17x6f;
+        typedef Eigen::Matrix<float, 13, 1> Vector13f;
+        typedef Eigen::Matrix<float, 7, 1> Vector7f;
 
         typedef Eigen::AngleAxisd AngleAxisd;
         typedef Eigen::AngleAxisf AngleAxisf;
