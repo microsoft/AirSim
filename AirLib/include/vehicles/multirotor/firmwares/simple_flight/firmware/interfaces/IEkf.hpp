@@ -28,6 +28,11 @@ public:
         return states_;
     }
 
+    const VectorMath::Vector17f& getEkfMeasurements() const
+    {
+        return measurement_;
+    }
+
     // setters
     void setEkfCovariance(VectorMath::Matrix17x17f covariance)
     {
@@ -43,7 +48,7 @@ public:
 protected:
     VectorMath::Vector17f states_;
     VectorMath::Matrix17x17f covariance_;
-    VectorMath::Matrix13x13f Q_;
+    VectorMath::Vector17f measurement_ = VectorMath::Vector17f::Zero();
 };
 
 } //namespace
