@@ -15,7 +15,7 @@
 #include "AirSimSimpleFlightCommLink.hpp"
 #include "AirSimSimpleFlightEstimator.hpp"
 #include "AirSimSimpleFlightCommon.hpp"
-#include "AirSimSimpleEKF.hpp"
+#include "AirSimSimpleEkf.hpp"
 #include "physics/PhysicsBody.hpp"
 #include "common/AirSimSettings.hpp"
 
@@ -119,6 +119,7 @@ namespace airlib
         {
             board_->setGroundTruthKinematics(kinematics);
             estimator_->setGroundTruthKinematics(kinematics, environment);
+            ekf_->setGroundTruthKinematics(kinematics, environment);
         }
         virtual bool setRCData(const RCData& rc_data) override
         {
