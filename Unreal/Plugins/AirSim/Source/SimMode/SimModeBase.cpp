@@ -513,6 +513,14 @@ bool ASimModeBase::isRecording() const
     return FRecordingThread::isRecording();
 }
 
+void ASimModeBase::toggleTraceAll()
+{
+    for (auto sim_api : getApiProvider()->getVehicleSimApis()) {
+        auto* pawn_sim_api = static_cast<PawnSimApi*>(sim_api);
+        pawn_sim_api->toggleTrace();
+    }
+}
+
 const APIPCamera* ASimModeBase::getCamera(const msr::airlib::CameraDetails& camera_details) const
 {
     return camera_details.external ? getExternalCamera(camera_details.camera_name)
