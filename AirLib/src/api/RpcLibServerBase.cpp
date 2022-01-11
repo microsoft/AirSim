@@ -357,7 +357,7 @@ namespace airlib
         });
 
         pimpl_->server.bind("simGetCollisionInfo", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::CollisionInfo {
-            const auto& collision_info = getVehicleSimApi(vehicle_name)->getCollisionInfo();
+            const auto& collision_info = getVehicleSimApi(vehicle_name)->getCollisionInfoAndReset();
             return RpcLibAdaptorsBase::CollisionInfo(collision_info);
         });
 
