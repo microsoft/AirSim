@@ -580,7 +580,7 @@ namespace airlib
             simple_flight::MatrixNXxNXf P_corrected;
             simple_flight::MatrixNXxNXf identity17x17 = simple_flight::MatrixNXxNXf::Identity();
             simple_flight::MatrixNXxNXf term = identity17x17 - kalman_gain*C_pseudo;
-            P_corrected = term*P*term.transpose() + kalman_gain*R_pseudo*kalman_gain.transpose();
+            P_corrected = term*P*term.transpose() + kalman_gain*R_pseudo_*kalman_gain.transpose();
 
             // write the states to the global variable
             for (int i=0; i<simple_flight::NX; i++){

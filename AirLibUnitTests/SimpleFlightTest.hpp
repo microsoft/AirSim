@@ -120,7 +120,7 @@ namespace airlib
             api->armDisarm(true);
             //checkStatusMsg(api.get(), &myfile);
 
-            clock->sleep_for(6.0f);
+            clock->sleep_for(10.0f);
 
             // take off
             api->takeoff(50);
@@ -146,12 +146,14 @@ namespace airlib
             // pos = api->getMultirotorState().getPosition();
             //checkStatusMsg(api.get(), &myfile);
 
-            clock->sleep_for(6.0f);
+            clock->sleep_for(10.0f);
+            api->moveByAngleRatesZ(0.0f,  0.0f, 4.0f*M_PI/180, -1.53509f, 4.0f);
+            clock->sleep_for(10.0f);
             // // // fly towards a waypoint
             api->moveToPosition(10, 0, -2, 0.5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
-            clock->sleep_for(18.0f);
+            clock->sleep_for(10.0f);
             api->moveToPosition(10, 10, -2, 0.5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
-            clock->sleep_for(18.0f);
+            clock->sleep_for(10.0f);
             api->moveToPosition(10, 10, -20, 0.5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
             pos = api->getMultirotorState().getPosition();
             std::cout << "waypoint position: " << pos << std::endl;

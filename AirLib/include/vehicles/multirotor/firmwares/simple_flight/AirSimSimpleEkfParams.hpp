@@ -163,9 +163,6 @@ namespace airlib
             Settings baro_child;
             if (json.getChild("Barometer", baro_child)){
                 readRealT(baro_child, "PositionErrorStdDevZ", baro.std_error);
-            Settings pseudo_meas_child;
-            if (json.getChild("PseudoMeasurement", pseudo_meas_child)){
-                readRealT(pseudo_meas_child, "QuaternionNormR", pseudo_meas.quaternion_norm_R);
             }
             Settings mag_child;
             if (json.getChild("Magnetometer", mag_child)){
