@@ -32,9 +32,9 @@ namespace airlib
             float x_dotdotNew[17];
             float x_dotdotdotNew[17];
 
-            AirSimSimpleEkfModel::evaluateStateDotOld(x_dotNew,x,u);
-            AirSimSimpleEkfModel::evaluateStateDotOld(x_dotdotNew,x_dotNew,u2);
-            AirSimSimpleEkfModel::evaluateStateDotOld(x_dotdotdotNew,x_dotdotNew,u2);
+            // AirSimSimpleEkfModel::evaluateStateDotOld(x_dotNew,x,u);
+            // AirSimSimpleEkfModel::evaluateStateDotOld(x_dotdotNew,x_dotNew,u2);
+            // AirSimSimpleEkfModel::evaluateStateDotOld(x_dotdotdotNew,x_dotdotNew,u2);
 
             for (int i=0; i<17; i++)
             {
@@ -50,10 +50,10 @@ namespace airlib
                 std::cout << x_dotdotNew[i] << '\t';
                 std::cout << x_dotdotdotNew[i] << '\n';
             }
-            VectorMath::Matrix17x17f A;
-            VectorMath::Matrix17x17f ANew;
+            simple_flight::MatrixNXxNXf A;
+            simple_flight::MatrixNXxNXf ANew;
             AirSimSimpleEkfModel::evaluateA(&A, x_dotdotdot,u2);
-            AirSimSimpleEkfModel::evaluateAOld(&ANew, x_dotdotdot,u2);
+            // AirSimSimpleEkfModel::evaluateAOld(&ANew, x_dotdotdot,u2);
 
             for (int i=0; i<17; i++){
                 for (int j=0; j<17; j++){
@@ -62,15 +62,15 @@ namespace airlib
                 std::cout << '\n';
             }
 
-            for (int i=0; i<17; i++){
-                for (int j=0; j<17; j++){
-                    std::cout << ANew(i,j) << "\t   ";
-                }
-                std::cout << '\n';
-            }
+            // for (int i=0; i<17; i++){
+            //     for (int j=0; j<17; j++){
+            //         std::cout << ANew(i,j) << "\t   ";
+            //     }
+            //     std::cout << '\n';
+            // }
 
             // QuaternionT q = VectorMath::toQuaternion(RealT pitch, RealT roll, RealT yaw);
-            Quaternionr q = VectorMath::toQuaternion(10.0*M_PI/180, 10.0*M_PI/180, 10.0*M_PI/180);
+            Quaternionr q = VectorMath::toQuaternion(0.2*M_PI/180, 0.0*M_PI/180, 0.2*M_PI/180);
             std::cout << q.w() << '\n';
             std::cout << q.x() << '\n';
             std::cout << q.y() << '\n';

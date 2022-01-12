@@ -64,7 +64,8 @@ namespace airlib
             // initial_kinematic_state.pose.orientation.x() = 0.0f;
             // initial_kinematic_state.pose.orientation.y() = 0.08715574f;
             // initial_kinematic_state.pose.orientation.z() = 0.0f;
-            initial_kinematic_state.pose.position.z() = -10.0f;
+
+            // initial_kinematic_state.pose.position.z() = -10.0f;
             kinematics.reset(new Kinematics(initial_kinematic_state));
 
             Environment::State initial_environment;
@@ -99,7 +100,6 @@ namespace airlib
             std::string message;
             testAssert(api->isReady(message), message);
 
-            clock->sleep_for(6.0f);
 
             Utils::getSetMinLogLevel(true, 100);
 
@@ -120,16 +120,21 @@ namespace airlib
             api->armDisarm(true);
             //checkStatusMsg(api.get(), &myfile);
 
+            clock->sleep_for(6.0f);
+
             // take off
             api->takeoff(50);
             pos = api->getMultirotorState().getPosition();
             std::cout << "took-off position: " << pos << std::endl;
             //checkStatusMsg(api.get(), &myfile);
 
+            // clock->sleep_for(60.0f);
+            // api->resetEkf();
+
             // api->commandAngleRatesZ(0.0f, 0.0f, 0.1f, 0.0f);
-            // clock->sleep_for(180.0f);
+            // clock->sleep_for(18.0f);
             // api->moveByAngleRatesZ(0.0f, 0.0f, 9.0f*M_PI/180, -1.53509f, 10.0f);
-            // clock->sleep_for(180.0f);
+            // clock->sleep_for(18.0f);
             // api->moveByAngleRatesZ(0.0f, 4.0f*M_PI/180, 0.0f, -1.53509f, 10.0f);
             // clock->sleep_for(60.0f);
             // api->moveByAngleRatesZ(0.0f, 4.0f*M_PI/180, 0.0f, -1.53509f, 10.0f);
@@ -139,23 +144,33 @@ namespace airlib
             // std::cout << "waypoint position: " << pos << std::endl;
             // api->moveToPosition(0, -1, -1.53509, 0.1, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
             // pos = api->getMultirotorState().getPosition();
-            std::cout << "waypoint position: " << pos << std::endl;
             //checkStatusMsg(api.get(), &myfile);
 
-            // clock->sleep_for(60.0f);
-            // // fly towards a waypoint
-            // api->moveToPosition(15, 17, -20, 5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
-            // pos = api->getMultirotorState().getPosition();
-            // //std::cout << "waypoint position: " << pos << std::endl;
-            // //checkStatusMsg(api.get(), &myfile);
+            clock->sleep_for(6.0f);
+            // // // fly towards a waypoint
+            api->moveToPosition(10, 0, -2, 0.5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
+            clock->sleep_for(18.0f);
+            api->moveToPosition(10, 10, -2, 0.5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
+            clock->sleep_for(18.0f);
+            api->moveToPosition(10, 10, -20, 0.5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
+            pos = api->getMultirotorState().getPosition();
+            std::cout << "waypoint position: " << pos << std::endl;
+            // // api->commandVelocity(10.0f, 0.0f, 0.0f, YawMode(true, 0));
+            // // pos = api->getMultirotorState().getPosition();
+            // // //std::cout << "waypoint position: " << pos << std::endl;
+            // // //checkStatusMsg(api.get(), &myfile);
 
-            //  clock->sleep_for(60.0f);
+            // clock->sleep_for(60.0f);
+            // api->moveToPosition(-100, 100, -50, 15, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
+            // pos = api->getMultirotorState().getPosition();
+            // std::cout << "waypoint position: " << pos << std::endl;
+            clock->sleep_for(6.0f);
 
             // // land
             // //api->land(10);
             // pos = api->getMultirotorState().getPosition();
             // std::cout << "final    position: " << pos << std::endl;
-             checkStatusMsg(api.get(), &myfile);
+            checkStatusMsg(api.get(), &myfile);
 
             // TODO print some values OR log
 

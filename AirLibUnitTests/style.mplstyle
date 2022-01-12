@@ -10,10 +10,10 @@
 # see: https://github.com/garrettj403/SciencePlots
 
 # Set color cycle: blue, green, yellow, red, violet, gray
-axes.prop_cycle : cycler('color', ['0C5DA5', '00B945', 'FF9500', 'FF2C00', '845B97', '474747', '9e9e9e'])
+axes.prop_cycle : cycler('color', ['0C5DA5', '00B945','FF2C00', 'FF9500',  '845B97', '474747', '9e9e9e'])
 
 # Set default figure size
-figure.figsize : 15, 80
+figure.figsize : 5, 100
 
 # Set x axis
 xtick.direction : in
@@ -36,7 +36,7 @@ ytick.right : True
 # Set line widths
 axes.linewidth : 0.5
 grid.linewidth : 0.5
-lines.linewidth : 1
+lines.linewidth : 0.8
 
 # Remove legend frame
 legend.frameon : False
