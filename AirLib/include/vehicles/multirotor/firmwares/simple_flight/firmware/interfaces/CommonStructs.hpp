@@ -243,43 +243,6 @@ struct EkfKinematicsState
     SensorBiases sensor_bias;
 };
 
-struct SensorCharacteristics
-{
-    Axis3r accel_std_dev;
-    Axis3r gyro_std_dev;
-
-    Axis3r gps_pos_std_dev;
-    Axis3r gps_vel_std_dev;
-
-    Axis3r mag_std_dev;
-
-    real_T baro_std_dev;
-};
-
-struct EkfInitialStates
-{
-    Axis3r pos;
-    Axis3r vel;
-
-    Axis4r quaternion;
-
-    Axis3r accel_bias;
-    Axis3r gyro_bias;
-    real_T baro_bias;
-};
-
-struct EkfInitialStdDevs
-{
-    Axis3r pos;
-    Axis3r vel;
-
-    Axis4r quaternion;
-
-    Axis3r accel_bias;
-    Axis3r gyro_bias;
-    real_T baro_bias;
-};
-
 enum class VehicleStateType
 {
     Unknown,
@@ -290,6 +253,30 @@ enum class VehicleStateType
     BeingDisarmed,
     Disarmed
 };
+
+// Ekf typedefs
+constexpr int NX = 17;
+constexpr int NU = 6;
+constexpr int NW = 13;
+typedef VectorMath::Vector17f VectorNXf;
+// typedef VectorMath::Matrix16x16f MatrixNXxNXf;
+// typedef VectorMath::Matrix12x12f MatrixNWxNWf;
+// typedef VectorMath::Matrix16x12f MatrixNXxNWf;
+// typedef VectorMath::Matrix1x16f Matrix1xNXf;
+// typedef VectorMath::Matrix16x1f MatrixNXx1f;
+// typedef VectorMath::Matrix3x16f Matrix3xNXf;
+// typedef VectorMath::Matrix16x3f MatrixNXx3f;
+// typedef VectorMath::Matrix6x16f Matrix6xNXf;
+// typedef VectorMath::Matrix16x6f MatrixNXx6f;
+typedef VectorMath::Matrix17x17f MatrixNXxNXf;
+typedef VectorMath::Matrix13x13f MatrixNWxNWf;
+typedef VectorMath::Matrix17x13f MatrixNXxNWf;
+typedef VectorMath::Matrix1x17f Matrix1xNXf;
+typedef VectorMath::Matrix17x1f MatrixNXx1f;
+typedef VectorMath::Matrix3x17f Matrix3xNXf;
+typedef VectorMath::Matrix17x3f MatrixNXx3f;
+typedef VectorMath::Matrix6x17f Matrix6xNXf;
+typedef VectorMath::Matrix17x6f MatrixNXx6f;
 
 class VehicleState
 {
