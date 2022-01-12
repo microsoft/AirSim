@@ -121,7 +121,7 @@ public:
 
     struct Takeoff
     {
-        float takeoff_z = -10.0f;
+        float takeoff_z = -2.0f;
         //float velocity = -1.0f;
     } takeoff;
 
