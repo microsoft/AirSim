@@ -207,6 +207,12 @@ namespace airlib
             float follow_distance = Utils::nan<float>();
         };
 
+        struct EkfSetting
+        {
+            bool enabled = false;
+            Settings settings;
+        };
+
         struct SensorSetting
         {
             SensorBase::SensorType sensor_type;
@@ -261,6 +267,7 @@ namespace airlib
 
             std::map<std::string, CameraSetting> cameras;
             std::map<std::string, std::shared_ptr<SensorSetting>> sensors;
+            std::shared_ptr<EkfSetting> ekf_setting;
 
             RCSettings rc;
 
@@ -398,6 +405,9 @@ namespace airlib
         float speed_unit_factor = 1.0f;
         std::string speed_unit_label = "m\\s";
         std::map<std::string, std::shared_ptr<SensorSetting>> sensor_defaults;
+
+        std::shared_ptr<EkfSetting> ekf_setting;
+
         Vector3r wind = Vector3r::Zero();
         std::map<std::string, CameraSetting> external_cameras;
 
@@ -434,12 +444,14 @@ namespace airlib
             loadPawnPaths(settings_json, pawn_paths);
             loadOtherSettings(settings_json);
             loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults);
-            loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults);
+            loadEkfSettings(settings_json);
+            loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults, ekf_setting);
             loadExternalCameraSettings(settings_json, external_cameras);
 
             //this should be done last because it depends on vehicles (and/or their type) we have
             loadRecordingSetting(settings_json);
             loadClockSettings(settings_json);
+
         }
 
         static void initializeSettings(const std::string& json_settings_text)
@@ -838,7 +850,8 @@ namespace airlib
         }
 
         static void createDefaultVehicle(const std::string& simmode_name, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles,
-                                         const std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
+                                         const std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults,
+                                         std::shared_ptr<EkfSetting> ekf_setting)
         {
             vehicles.clear();
 
@@ -852,6 +865,7 @@ namespace airlib
                 // currently keyboard is not supported so use rc as default
                 simple_flight_setting->rc.remote_control_id = 0;
                 simple_flight_setting->sensors = sensor_defaults;
+                simple_flight_setting->ekf_setting = ekf_setting;
                 vehicles[simple_flight_setting->vehicle_name] = std::move(simple_flight_setting);
             }
             else if (simmode_name == kSimModeTypeCar) {
@@ -875,9 +889,10 @@ namespace airlib
 
         static void loadVehicleSettings(const std::string& simmode_name, const Settings& settings_json,
                                         std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles,
-                                        std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
+                                        std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults,
+                                        std::shared_ptr<EkfSetting> ekf_setting)
         {
-            createDefaultVehicle(simmode_name, vehicles, sensor_defaults);
+            createDefaultVehicle(simmode_name, vehicles, sensor_defaults, ekf_setting);
 
             msr::airlib::Settings vehicles_child;
             if (settings_json.getChild("Vehicles", vehicles_child)) {
@@ -1304,6 +1319,28 @@ namespace airlib
 
                 if ((present_sensors_bitmask & (1U << type)) == 0)
                     sensors[p.first] = p.second;
+            }
+        }
+        
+        static std::shared_ptr<EkfSetting> createEkfSettings(bool enabled)
+        {
+            std::shared_ptr<EkfSetting> ekf_setting;
+
+            ekf_setting = std::shared_ptr<EkfSetting>(new EkfSetting());
+            ekf_setting->enabled = enabled;
+
+            return ekf_setting;
+        }
+
+        // creates and intializes Extended Kalman Filter (ekf) settings from json
+        void loadEkfSettings(const Settings& settings_json)
+        {
+            msr::airlib::Settings child;
+            if (settings_json.getChild("EkfSetting", child)) {
+                auto enabled = child.getBool("Enabled", false);
+                ekf_setting = createEkfSettings(enabled);
+                ekf_setting->enabled = enabled;
+                ekf_setting->settings = child;
             }
         }
 
