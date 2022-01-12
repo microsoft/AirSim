@@ -40,6 +40,7 @@ namespace airlib
         
         // added by Suman
         typedef Eigen::Matrix<float, 17, 1> Vector17f;
+        typedef Eigen::Matrix<float, 16, 1> Vector16f;
         typedef Eigen::Matrix<float, 17, 17> Matrix17x17f;
         typedef Eigen::Matrix<float, 17, 13> Matrix17x13f;
         typedef Eigen::Matrix<float, 13, 13> Matrix13x13f;
@@ -47,11 +48,23 @@ namespace airlib
         typedef Eigen::Matrix<float, 17, 1> Matrix17x1f;
         typedef Eigen::Matrix<float, 3, 17> Matrix3x17f;
         typedef Eigen::Matrix<float, 17, 3> Matrix17x3f;
-        typedef Eigen::Matrix<float, 6, 6> Matrix6x6f;
         typedef Eigen::Matrix<float, 6, 17> Matrix6x17f;
         typedef Eigen::Matrix<float, 17, 6> Matrix17x6f;
         typedef Eigen::Matrix<float, 13, 1> Vector13f;
         typedef Eigen::Matrix<float, 7, 1> Vector7f;
+        typedef Eigen::Matrix<float, 6, 6> Matrix6x6f;
+        typedef Eigen::Matrix<float, 3, 4> Matrix3x4f;
+        typedef Eigen::Matrix<float, 4, 4> Matrix4x4f;
+
+        typedef Eigen::Matrix<float, 16, 16> Matrix16x16f;
+        typedef Eigen::Matrix<float, 16, 12> Matrix16x12f;
+        typedef Eigen::Matrix<float, 12, 12> Matrix12x12f;
+        typedef Eigen::Matrix<float, 1, 16> Matrix1x16f;
+        typedef Eigen::Matrix<float, 16, 1> Matrix16x1f;
+        typedef Eigen::Matrix<float, 3, 16> Matrix3x16f;
+        typedef Eigen::Matrix<float, 16, 3> Matrix16x3f;
+        typedef Eigen::Matrix<float, 6, 16> Matrix6x16f;
+        typedef Eigen::Matrix<float, 16, 6> Matrix16x6f;
 
         typedef Eigen::AngleAxisd AngleAxisd;
         typedef Eigen::AngleAxisf AngleAxisf;
