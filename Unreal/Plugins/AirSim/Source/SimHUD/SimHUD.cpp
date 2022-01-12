@@ -88,41 +88,7 @@ void ASimHUD::inputEventToggleHelp()
 
 void ASimHUD::inputEventToggleTrace()
 {
-    simmode_->getVehicleSimApi()->toggleTrace();
-}
-
-ASimHUD::ImageType ASimHUD::getSubwindowCameraType(int window_index)
-{
-    //TODO: index check
-    return getSubWindowSettings().at(window_index).image_type;
-}
-
-void ASimHUD::setSubwindowCameraType(int window_index, ImageType type)
-{
-    getSubWindowSettings().at(window_index).image_type = type;
-    updateWidgetSubwindowVisibility();
-}
-
-APIPCamera* ASimHUD::getSubwindowCamera(int window_index)
-{
-    return subwindow_cameras_[window_index]; //TODO: index check
-}
-
-void ASimHUD::setSubwindowCamera(int window_index, APIPCamera* camera)
-{
-    subwindow_cameras_[window_index] = camera; //TODO: index check
-    updateWidgetSubwindowVisibility();
-}
-
-bool ASimHUD::getSubwindowVisible(int window_index)
-{
-    return getSubWindowSettings().at(window_index).visible;
-}
-
-void ASimHUD::setSubwindowVisible(int window_index, bool is_visible)
-{
-    getSubWindowSettings().at(window_index).visible = is_visible;
-    updateWidgetSubwindowVisibility();
+    simmode_->toggleTraceAll();
 }
 
 void ASimHUD::updateWidgetSubwindowVisibility()
@@ -135,7 +101,7 @@ void ASimHUD::updateWidgetSubwindowVisibility()
 
         if (camera != nullptr) {
             camera->setCameraTypeEnabled(camera_type, is_visible);
-            //sub-window captures don’t count as a request, set bCaptureEveryFrame and bCaptureOnMovement to display so we can show correctly the subwindow
+            //sub-window captures don't count as a request, set bCaptureEveryFrame and bCaptureOnMovement to display so we can show correctly the subwindow
             camera->setCameraTypeUpdate(camera_type, false);
         }
 
@@ -150,22 +116,25 @@ bool ASimHUD::isWidgetSubwindowVisible(int window_index)
     return widget_->getSubwindowVisibility(window_index) != 0;
 }
 
+void ASimHUD::toggleSubwindowVisibility(int window_index)
+{
+    getSubWindowSettings().at(window_index).visible = !getSubWindowSettings().at(window_index).visible;
+    updateWidgetSubwindowVisibility();
+}
+
 void ASimHUD::inputEventToggleSubwindow0()
 {
-    getSubWindowSettings().at(0).visible = !getSubWindowSettings().at(0).visible;
-    updateWidgetSubwindowVisibility();
+    toggleSubwindowVisibility(0);
 }
 
 void ASimHUD::inputEventToggleSubwindow1()
 {
-    getSubWindowSettings().at(1).visible = !getSubWindowSettings().at(1).visible;
-    updateWidgetSubwindowVisibility();
+    toggleSubwindowVisibility(1);
 }
 
 void ASimHUD::inputEventToggleSubwindow2()
 {
-    getSubWindowSettings().at(2).visible = !getSubWindowSettings().at(2).visible;
-    updateWidgetSubwindowVisibility();
+    toggleSubwindowVisibility(2);
 }
 
 void ASimHUD::inputEventToggleAll()
