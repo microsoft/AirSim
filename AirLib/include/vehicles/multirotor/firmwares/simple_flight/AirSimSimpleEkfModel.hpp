@@ -8,8 +8,8 @@
 #include "firmware/interfaces/IUpdatable.hpp"
 #include "firmware/interfaces/IBoard.hpp"
    
-float G_0 = EarthUtils::Gravity; // for less than 10000m const gravity is taken       
-float R_E = EARTH_RADIUS;
+constexpr float G_0 = EarthUtils::Gravity; // for less than 10000m const gravity is taken       
+constexpr float R_E = EARTH_RADIUS;
 
 namespace msr
 {
@@ -86,7 +86,7 @@ namespace airlib
             attitude_dot[3] = 0.5f * (-q2*(omega_x + b_omega_x) + q1*(omega_y + b_omega_y) + q0*(omega_z + b_omega_z));
         }
 
-        static void evaluateStateDot(float x_dot[17], float x[17], float u[6])
+        static void evaluateStateDot(float x_dot[simple_flight::NX], float x[simple_flight::NX], float u[simple_flight::NU])
         {
             float lin_velocity[3];
             lin_velocity[0] = x[3];
@@ -169,9 +169,9 @@ namespace airlib
         // Mathematical jacobians
         // ---------------------------------------------------------------------
 
-        static void evaluateA(VectorMath::Matrix17x17f* A, float x[17], float u[6])
+        static void evaluateA(simple_flight::MatrixNXxNXf* A, float x[simple_flight::NX], float u[simple_flight::NU])
         {
-            *A = VectorMath::Matrix17x17f::Zero();
+            *A = simple_flight::MatrixNXxNXf::Zero();
 
             float q0 = x[6]; // quaternions
             float q1 = x[7]; // quaternions
@@ -251,19 +251,19 @@ namespace airlib
             (*A)(9, 15) =  0.5f*q0;
         }
 
-        static void evaluateFiniteDifferenceA(VectorMath::Matrix17x17f* A, float x[17], float u[6])
+        static void evaluateFiniteDifferenceA(simple_flight::MatrixNXxNXf* A, float x[simple_flight::NX], float u[simple_flight::NU])
         {
-            *A = VectorMath::Matrix17x17f::Zero();
+            *A = simple_flight::MatrixNXxNXf::Zero();
 
             float derivative_perturbation = 1E-5f;
-            float x_plus[17];
-            float x_minus[17];
-            float f_plus[17];
-            float f_minus[17];
-            float df_dx_i_column[17];
+            float x_plus[simple_flight::NX];
+            float x_minus[simple_flight::NX];
+            float f_plus[simple_flight::NX];
+            float f_minus[simple_flight::NX];
+            float df_dx_i_column[simple_flight::NX];
 
-            for (int i=0; i<17; i++){
-                for (int j=0; j<17; j++){
+            for (int i=0; i<simple_flight::NX; i++){
+                for (int j=0; j<simple_flight::NX; j++){
                     x_plus[j] = x[j];
                     x_minus[j] = x[j];
                 }
@@ -274,11 +274,11 @@ namespace airlib
                 evaluateStateDot(f_plus, x_plus, u);
                 evaluateStateDot(f_minus, x_minus, u);
 
-                for (int j=0; j<17; j++){
+                for (int j=0; j<simple_flight::NX; j++){
                     df_dx_i_column[j] =  (f_plus[j] - f_minus[j])/(2*perturbation_i);
                 }
 
-                for (int j=0; j<17; j++){
+                for (int j=0; j<simple_flight::NX; j++){
                     (*A)(j,i) = df_dx_i_column[j];
                 }
             }
@@ -323,10 +323,10 @@ namespace airlib
             return true;
         }
 
-        static void evaluateB_w(VectorMath::Matrix17x13f* B_w, float x[17], float u[6])
+        static void evaluateB_w(simple_flight::MatrixNXxNWf* B_w, float x[simple_flight::NX], float u[simple_flight::NU])
         {
             // set all elements to zero
-            *B_w = VectorMath::Matrix17x13f::Zero(); 
+            *B_w = simple_flight::MatrixNXxNWf::Zero(); 
 
             float q0 = x[6]; // quaternions
             float q1 = x[7]; // quaternions
@@ -371,18 +371,18 @@ namespace airlib
             // jacobian wrt the states vector
         }
 
-        static void evaluateCBaro(VectorMath::Matrix1x17f* C_baro)
+        static void evaluateCBaro(simple_flight::Matrix1xNXf* C_baro)
         {
             // dh_baro_dx jacobian wrt the states vector
-            *C_baro = VectorMath::Matrix1x17f::Zero(); 
+            *C_baro = simple_flight::Matrix1xNXf::Zero(); 
             (*C_baro)(2)  = -1.0f;
             (*C_baro)(16) =  1.0f;
         }
 
-        static void evaluateCGps(VectorMath::Matrix6x17f* C_gps)
+        static void evaluateCGps(simple_flight::Matrix6xNXf* C_gps)
         {
             // dh_gps_dx jacobian wrt the states vector
-            *C_gps = VectorMath::Matrix6x17f::Zero(); 
+            *C_gps = simple_flight::Matrix6xNXf::Zero(); 
             (*C_gps)(0, 0) = 1.0f;
             (*C_gps)(1, 1) = 1.0f;
             (*C_gps)(2, 2) = 1.0f;
@@ -413,10 +413,10 @@ namespace airlib
                         +(q0*q0 - q1*q1 - q2*q2 + q3*q3) * tau_z;
         }
 
-        static void evaluateCMag(VectorMath::Matrix3x17f* C_mag, float x[17], float earth_mag[3])
+        static void evaluateCMag(simple_flight::Matrix3xNXf* C_mag, float x[17], float earth_mag[3])
         {
             // dh_mag_dx jacobian wrt the states vector
-            *C_mag = VectorMath::Matrix3x17f::Zero(); 
+            *C_mag = simple_flight::Matrix3xNXf::Zero(); 
 
             float q0 = x[6];
             float q1 = x[7];
@@ -445,10 +445,10 @@ namespace airlib
             (*C_mag)(2, 9) =  2.0f*q1*tau_x + 2.0f*q2*tau_y + 2.0f*q3*tau_z;
         }
 
-        static void evaluateCPseudo(VectorMath::Matrix1x17f* C_pseudo, float x[17])
+        static void evaluateCPseudo(simple_flight::Matrix1xNXf* C_pseudo, float x[17])
         {
             // dh_gps_dx jacobian wrt the states vector
-            *C_pseudo = VectorMath::Matrix1x17f::Zero(); 
+            *C_pseudo = simple_flight::Matrix1xNXf::Zero(); 
 
             float q0 = x[6];
             float q1 = x[7];
@@ -460,6 +460,56 @@ namespace airlib
             (*C_pseudo)(7) = 2.0f*q1;
             (*C_pseudo)(8) = 2.0f*q2;
             (*C_pseudo)(9) = 2.0f*q3;
+        }
+
+        static void evaluateCEulerAngles(VectorMath::Matrix3x4f* C_euler, float x[17])
+        {
+            // dattitude_dq jacobian of euler angles wrt the quaternions
+            *C_euler = VectorMath::Matrix3x4f::Zero(); 
+
+            float q0 = x[6];
+            float q1 = x[7];
+            float q2 = x[8];
+            float q3 = x[9];
+
+            // d_phi_dq
+            float term_1 = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+            float term_2 = q2*q3 + q0*q1;
+            float denominator = term_1*term_1 + 4*term_2*term_2;
+            float dphi_q0 = (2*q1*term_1 - 4*q0*term_2) / denominator;
+            float dphi_q1 = (2*q0*term_1 + 4*q1*term_2) / denominator;
+            float dphi_q2 = (2*q3*term_1 + 4*q2*term_2) / denominator;
+            float dphi_q3 = (2*q2*term_1 - 4*q3*term_2) / denominator;
+
+            // d_theta_dq
+            term_1 = q1*q3 - q0*q2;
+            denominator = sqrt(1 - 4*term_1*term_1);
+            float dtheta_q0 =  2*q2 / denominator;
+            float dtheta_q1 = -2*q3 / denominator;
+            float dtheta_q2 =  2*q0 / denominator;
+            float dtheta_q3 = -2*q1 / denominator;
+
+            // d_psi_dq
+            term_1 = q0*q0 + q1*q1 - q2*q2 - q3*q3;
+            term_2 = q1*q2 + q0*q3;
+            denominator = term_1*term_1 + 4*term_2*term_2;
+            float dpsi_q0 = (2*q3*term_1 - 4*q0*term_2) / denominator;
+            float dpsi_q1 = (2*q2*term_1 - 4*q1*term_2) / denominator;
+            float dpsi_q2 = (2*q1*term_1 + 4*q2*term_2) / denominator;
+            float dpsi_q3 = (2*q0*term_1 + 4*q3*term_2) / denominator;
+
+            (*C_euler)(0, 0) = dphi_q0;
+            (*C_euler)(0, 1) = dphi_q1;
+            (*C_euler)(0, 2) = dphi_q2;
+            (*C_euler)(0, 3) = dphi_q3;
+            (*C_euler)(1, 0) = dtheta_q0;
+            (*C_euler)(1, 1) = dtheta_q1;
+            (*C_euler)(1, 2) = dtheta_q2;
+            (*C_euler)(1, 3) = dtheta_q3;
+            (*C_euler)(2, 0) = dpsi_q0;
+            (*C_euler)(2, 1) = dpsi_q1;
+            (*C_euler)(2, 2) = dpsi_q2;
+            (*C_euler)(2, 3) = dpsi_q3;
         }
 
         static void rungeKutta(float xp[17], float x[17], float u[6], float dt, int size = 17)
@@ -512,9 +562,13 @@ namespace airlib
             }
         }
 
-        static void inertialNavigation(float x_predicted[17], float x[17], float u[6], float up[6], float ang_acc[3], float dt_real)
+        static void inertialNavigation(float x_predicted[simple_flight::NX],
+                                       float x[simple_flight::NX], 
+                                       float u[simple_flight::NU], 
+                                       float up[simple_flight::NU], 
+                                       float ang_acc[3], 
+                                       float dt_real)
         {
-
             float curr_quaternions[4];
             curr_quaternions[0] = x[6];
             curr_quaternions[1] = x[7];
@@ -638,338 +692,7 @@ namespace airlib
             x_predicted[14] = curr_gyro_biases[1];
             x_predicted[15] = curr_gyro_biases[2];
             x_predicted[16] = curr_baro_bias;
-
-            // x_predicted[10] = 0.0f;
-            // x_predicted[11] = 0.0f;
-            // x_predicted[12] = 0.0f;
-            // x_predicted[13] = 0.0f;
-            // x_predicted[14] = 0.0f;
-            // x_predicted[15] = 0.0f;
-            // x_predicted[16] = 0.0f;
         }
-
-        // OLD UNUSED METHODS BELOW!!!
-        //
-        //
-
-        static void evaluateStateDotOld(float f_local[17], float x[17], float u[6])
-        {
-            // compute x_dot = f_local
-            /*
-            x[0] = x
-            x[1] = y
-            x[2] = z
-            x[3] = u
-            x[4] = v
-            x[5] = w
-            x[6] = q0
-            x[7] = q1
-            x[8] = q2
-            x[9] = q3
-            x[10] = bias_accel_x
-            x[11] = bias_accel_y
-            x[12] = bias_accel_z
-            x[13] = bias_gyro_x
-            x[14] = bias_gyro_x
-            x[15] = bias_gyro_x
-            x[16] = bias_baro
-
-            u[0] = accel_x
-            u[1] = accel_y
-            u[2] = accel_z
-            u[3] = gyro_x
-            u[4] = gyro_y
-            u[5] = gyro_z
-            */     
-
-            // f_pos
-            f_local[0] = x[3];
-            f_local[1] = x[4];
-            f_local[2] = x[5];
-            // f_vel
-            f_local[3] =    (x[6]*x[6] + x[7]*x[7] - x[8]*x[8] - x[9]*x[9])*       (u[0] + x[10])
-                            + 2.0f*(x[7]*x[8] - x[6]*x[9])*                        (u[1] + x[11])
-                            + 2.0f*(x[6]*x[8] + x[7]*x[9])*                        (u[2] + x[12]);
-            f_local[4] =    2.0f*(x[7]*x[8] + x[6]*x[9])*                          (u[0] + x[10])
-                            + (x[6]*x[6] - x[7]*x[7] + x[8]*x[8] - x[9]*x[9])*     (u[1] + x[11])
-                            + 2.0f*(x[8]*x[9] - x[6]*x[7])*                        (u[2] + x[12]);
-            f_local[5] =    2.0f*(x[7]*x[9] - x[6]*x[8])*                          (u[0] + x[10])
-                            + 2.0f*(x[8]*x[9] + x[6]*x[7])*                        (u[1] + x[11])
-                            + (x[6]*x[6] - x[7]*x[7] - x[8]*x[8] + x[9]*x[9])*     (u[2] + x[12])
-                            //+ G_0*(1 + 2.0f*x[2]/R_E);
-                            + G_0;//+0.001f;
-            // f_ori
-            f_local[6] = 0.5f * (-x[7]*(u[3] + x[13]) - x[8]*(u[4] + x[14]) - x[9]*(u[5] + x[15]));
-            f_local[7] = 0.5f * ( x[6]*(u[3] + x[13]) - x[9]*(u[4] + x[14]) + x[8]*(u[5] + x[15]));
-            f_local[8] = 0.5f * ( x[9]*(u[3] + x[13]) + x[6]*(u[4] + x[14]) - x[7]*(u[5] + x[15]));
-            f_local[9] = 0.5f * (-x[8]*(u[3] + x[13]) + x[7]*(u[4] + x[14]) + x[6]*(u[5] + x[15]));
-            // f_bias
-            f_local[10] = 0.0f;
-            f_local[11] = 0.0f;
-            f_local[12] = 0.0f;
-            f_local[13] = 0.0f;
-            f_local[14] = 0.0f;
-            f_local[15] = 0.0f;
-            f_local[16] = 0.0f;
-
-        }
- 
-        static void evaluateAOld(VectorMath::Matrix17x17f* A, float x[17], float u[6])
-        {
-            // compute jacobian wrt the states vector df_dx = A
-            /*
-            x[0] = x
-            x[1] = y
-            x[2] = z
-            x[3] = u
-            x[4] = v
-            x[5] = w
-            x[6] = q0
-            x[7] = q1
-            x[8] = q2
-            x[9] = q3
-            x[10] = bias_accel_x
-            x[11] = bias_accel_y
-            x[12] = bias_accel_z
-            x[13] = bias_gyro_x
-            x[14] = bias_gyro_x
-            x[15] = bias_gyro_x
-            x[16] = bias_baro
-
-            u[0] = accel_x
-            u[1] = accel_y
-            u[2] = accel_z
-            u[3] = gyro_x
-            u[4] = gyro_y
-            u[5] = gyro_z
-            */  
-
-            // // set all elements to zero
-            // memset(&A[0][0], 0, sizeof(A)); 
-
-            // // df_pos_dx [0 1 2][:]
-            // A[0][3] = 1.0f;
-            // A[1][4] = 1.0f;
-            // A[2][5] = 1.0f;
-            // // df_vel_dx [3 4 5][:]
-            // A[5][2] = 2.0f*G_0/R_E;
-            // // df_vel_q0 [3 4 5][6]
-            // A[3][6] =  2.0f*x[6]*(u[0] + x[10]) - 2.0f*x[9]*(u[1] + x[11]) + 2.0f*x[8]*(u[2] + x[12]);
-            // A[4][6] =  2.0f*x[9]*(u[0] + x[10]) + 2.0f*x[6]*(u[1] + x[11]) - 2.0f*x[7]*(u[2] + x[12]);
-            // A[5][6] =  2.0f*x[8]*(u[0] + x[10]) - 2.0f*x[7]*(u[1] + x[11]) + 2.0f*x[6]*(u[2] + x[12]);
-            // // df_vel_q1 [3 4 5][7]
-            // A[3][7] =  2.0f*x[7]*(u[0] + x[10]) + 2.0f*x[8]*(u[1] + x[11]) + 2.0f*x[9]*(u[2] + x[12]);
-            // A[4][7] =  2.0f*x[8]*(u[0] + x[10]) - 2.0f*x[7]*(u[1] + x[11]) - 2.0f*x[6]*(u[2] + x[12]);
-            // A[5][7] =  2.0f*x[9]*(u[0] + x[10]) + 2.0f*x[6]*(u[1] + x[11]) - 2.0f*x[7]*(u[2] + x[12]);
-            // // df_vel_q2 [3 4 5][8]
-            // A[3][8] = -2.0f*x[8]*(u[0] + x[10]) + 2.0f*x[7]*(u[1] + x[11]) + 2.0f*x[6]*(u[2] + x[12]);
-            // A[4][8] =  2.0f*x[7]*(u[0] + x[10]) + 2.0f*x[8]*(u[1] + x[11]) + 2.0f*x[9]*(u[2] + x[12]);
-            // A[5][8] = -2.0f*x[6]*(u[0] + x[10]) + 2.0f*x[9]*(u[1] + x[11]) - 2.0f*x[8]*(u[2] + x[12]);
-            // // df_vel_q3 [3 4 5][9]
-            // A[3][9] = -2.0f*x[9]*(u[0] + x[10]) - 2.0f*x[6]*(u[1] + x[11]) + 2.0f*x[7]*(u[2] + x[12]);
-            // A[4][9] =  2.0f*x[6]*(u[0] + x[10]) - 2.0f*x[9]*(u[1] + x[11]) + 2.0f*x[8]*(u[2] + x[12]);
-            // A[5][9] =  2.0f*x[7]*(u[0] + x[10]) + 2.0f*x[8]*(u[1] + x[11]) + 2.0f*x[9]*(u[2] + x[12]);
-            // // df_vel_xbias [3 4 5][10 11 12 ...]
-            // A[3][10] =    x[6]*x[6] + x[7]*x[7] - x[8]*x[8] - x[9]*x[9];
-            // A[3][11] = 2.0f*(x[7]*x[8] - x[6]*x[9]);
-            // A[3][12] = 2.0f*(x[6]*x[8] + x[7]*x[9]);
-            // A[4][10] = 2.0f*(x[7]*x[8] + x[6]*x[9]);
-            // A[4][11] =    x[6]*x[6] - x[7]*x[7] + x[8]*x[8] - x[9]*x[9];
-            // A[4][12] = 2.0f*(x[8]*x[9] - x[6]*x[7]);
-            // A[5][10] = 2.0f*(x[7]*x[9] - x[6]*x[8]);
-            // A[5][11] = 2.0f*(x[8]*x[9] + x[6]*x[7]);
-            // A[5][12] =    x[6]*x[6] - x[7]*x[7] - x[8]*x[8] + x[9]*x[9];
-            // // df_ori_[q0 q1 q2 q3] [6 7 8 9][6 7 8 9]
-            // A[6][7] = -0.5f*(u[3] + x[13]);
-            // A[6][8] = -0.5f*(u[4] + x[14]);
-            // A[6][9] = -0.5f*(u[5] + x[15]);
-            // A[7][6] =  0.5f*(u[3] + x[13]);
-            // A[7][8] = -0.5f*(u[5] + x[15]);
-            // A[7][9] = -0.5f*(u[4] + x[14]);
-            // A[8][6] =  0.5f*(u[4] + x[14]);
-            // A[8][7] = -0.5f*(u[5] + x[15]);
-            // A[8][9] =  0.5f*(u[3] + x[13]);
-            // A[9][6] =  0.5f*(u[5] + x[15]);
-            // A[9][7] =  0.5f*(u[4] + x[14]);
-            // A[9][8] = -0.5f*(u[3] + x[13]);
-            // // df_ori_x_bias [6 7 8 9][10 11 12 13 14 15 16 17]
-            // A[6][13] = -0.5f*x[7];
-            // A[6][14] = -0.5f*x[8];
-            // A[6][15] = -0.5f*x[9];
-            // A[7][13] =  0.5f*x[6];
-            // A[7][14] = -0.5f*x[9];
-            // A[7][15] = -0.5f*x[8];
-            // A[8][13] =  0.5f*x[9];
-            // A[8][14] =  0.5f*x[6];
-            // A[8][15] = -0.5f*x[7];
-            // A[9][13] = -0.5f*x[8];
-            // A[9][14] =  0.5f*x[7];
-            // A[9][15] =  0.5f*x[6];
-
-            *A = VectorMath::Matrix17x17f::Zero(); 
-
-            // df_pos_dx [0 1 2][:]
-            (*A)(0, 3) = 1.0f;
-            (*A)(1, 4) = 1.0f;
-            (*A)(2, 5) = 1.0f;
-            // df_vel_dx [3 4 5][:]
-            //(*A)(5, 2) = 2.0f*G_0/R_E;
-            // df_vel_q0 [3 4 5][6]
-            (*A)(3, 6) =  2.0f*x[6]*(u[0] + x[10]) - 2.0f*x[9]*(u[1] + x[11]) + 2.0f*x[8]*(u[2] + x[12]);
-            (*A)(4, 6) =  2.0f*x[9]*(u[0] + x[10]) + 2.0f*x[6]*(u[1] + x[11]) - 2.0f*x[7]*(u[2] + x[12]);
-            (*A)(5, 6) = -2.0f*x[8]*(u[0] + x[10]) + 2.0f*x[7]*(u[1] + x[11]) + 2.0f*x[6]*(u[2] + x[12]);
-            // df_vel_q1 [3 4 5][7]
-            (*A)(3, 7) =  2.0f*x[7]*(u[0] + x[10]) + 2.0f*x[8]*(u[1] + x[11]) + 2.0f*x[9]*(u[2] + x[12]);
-            (*A)(4, 7) =  2.0f*x[8]*(u[0] + x[10]) - 2.0f*x[7]*(u[1] + x[11]) - 2.0f*x[6]*(u[2] + x[12]);
-            (*A)(5, 7) =  2.0f*x[9]*(u[0] + x[10]) + 2.0f*x[6]*(u[1] + x[11]) - 2.0f*x[7]*(u[2] + x[12]);
-            // df_vel_q2 [3 4 5][8]
-            (*A)(3, 8) = -2.0f*x[8]*(u[0] + x[10]) + 2.0f*x[7]*(u[1] + x[11]) + 2.0f*x[6]*(u[2] + x[12]);
-            (*A)(4, 8) =  2.0f*x[7]*(u[0] + x[10]) + 2.0f*x[8]*(u[1] + x[11]) + 2.0f*x[9]*(u[2] + x[12]);
-            (*A)(5, 8) = -2.0f*x[6]*(u[0] + x[10]) + 2.0f*x[9]*(u[1] + x[11]) - 2.0f*x[8]*(u[2] + x[12]);
-            // df_vel_q3 [3 4 5][9]
-            (*A)(3, 9) = -2.0f*x[9]*(u[0] + x[10]) - 2.0f*x[6]*(u[1] + x[11]) + 2.0f*x[7]*(u[2] + x[12]);
-            (*A)(4, 9) =  2.0f*x[6]*(u[0] + x[10]) - 2.0f*x[9]*(u[1] + x[11]) + 2.0f*x[8]*(u[2] + x[12]);
-            (*A)(5, 9) =  2.0f*x[7]*(u[0] + x[10]) + 2.0f*x[8]*(u[1] + x[11]) + 2.0f*x[9]*(u[2] + x[12]);
-            // df_vel_xbias [3 4 5][10 11 12 ...]
-            (*A)(3, 10) =    x[6]*x[6] + x[7]*x[7] - x[8]*x[8] - x[9]*x[9];
-            (*A)(3, 11) = 2.0f*(x[7]*x[8] - x[6]*x[9]);
-            (*A)(3, 12) = 2.0f*(x[6]*x[8] + x[7]*x[9]);
-            (*A)(4, 10) = 2.0f*(x[7]*x[8] + x[6]*x[9]);
-            (*A)(4, 11) =    x[6]*x[6] - x[7]*x[7] + x[8]*x[8] - x[9]*x[9];
-            (*A)(4, 12) = 2.0f*(x[8]*x[9] - x[6]*x[7]);
-            (*A)(5, 10) = 2.0f*(x[7]*x[9] - x[6]*x[8]);
-            (*A)(5, 11) = 2.0f*(x[8]*x[9] + x[6]*x[7]);
-            (*A)(5, 12) =    x[6]*x[6] - x[7]*x[7] - x[8]*x[8] + x[9]*x[9];
-            // df_ori_[q0 q1 q2 q3] [6 7 8 9][6 7 8 9]
-            (*A)(6, 7) = -0.5f*(u[3] + x[13]);
-            (*A)(6, 8) = -0.5f*(u[4] + x[14]);
-            (*A)(6, 9) = -0.5f*(u[5] + x[15]);
-            (*A)(7, 6) =  0.5f*(u[3] + x[13]);
-            (*A)(7, 8) =  0.5f*(u[5] + x[15]);
-            (*A)(7, 9) = -0.5f*(u[4] + x[14]);
-            (*A)(8, 6) =  0.5f*(u[4] + x[14]);
-            (*A)(8, 7) = -0.5f*(u[5] + x[15]);
-            (*A)(8, 9) =  0.5f*(u[3] + x[13]);
-            (*A)(9, 6) =  0.5f*(u[5] + x[15]);
-            (*A)(9, 7) =  0.5f*(u[4] + x[14]);
-            (*A)(9, 8) = -0.5f*(u[3] + x[13]);
-            // df_ori_x_bias [6 7 8 9][10 11 12 13 14 15 16 17]
-            (*A)(6, 13) = -0.5f*x[7];
-            (*A)(6, 14) = -0.5f*x[8];
-            (*A)(6, 15) = -0.5f*x[9];
-            (*A)(7, 13) =  0.5f*x[6];
-            (*A)(7, 14) = -0.5f*x[9];
-            (*A)(7, 15) =  0.5f*x[8];
-            (*A)(8, 13) =  0.5f*x[9];
-            (*A)(8, 14) =  0.5f*x[6];
-            (*A)(8, 15) = -0.5f*x[7];
-            (*A)(9, 13) = -0.5f*x[8];
-            (*A)(9, 14) =  0.5f*x[7];
-            (*A)(9, 15) =  0.5f*x[6];
-        }
-
-        static void evaluateB_wOld(VectorMath::Matrix17x13f* B_w, float x[17], float u[6])
-        {
-            // compute jacobian wrt the process noise vector df_dw
-            /*
-            x[0] = x
-            x[1] = y
-            x[2] = z
-            x[3] = u
-            x[4] = v
-            x[5] = w
-            x[6] = q0
-            x[7] = q1
-            x[8] = q2
-            x[9] = q3
-            x[10] = bias_accel_x
-            x[11] = bias_accel_y
-            x[12] = bias_accel_z
-            x[13] = bias_gyro_x
-            x[14] = bias_gyro_x
-            x[15] = bias_gyro_x
-            x[16] = bias_baro
-
-            u[0] = accel_x
-            u[1] = accel_y
-            u[2] = accel_z
-            u[3] = gyro_x
-            u[4] = gyro_y
-            u[5] = gyro_z
-            */  
-
-            // // set all elements to zero
-            // memset(&B_w[0][0], 0, sizeof(B_w)); 
-
-            // // df_vel_w [3 4 5][0 1 2 ...]
-            // B_w[3][0] =    x[6]*x[6] + x[7]*x[7] - x[8]*x[8] - x[9]*x[9];
-            // B_w[3][1] = 2.0f*(x[7]*x[8] - x[6]*x[9]);
-            // B_w[3][2] = 2.0f*(x[6]*x[8] + x[7]*x[9]);
-            // B_w[4][0] = 2.0f*(x[7]*x[8] + x[6]*x[9]);
-            // B_w[4][1] =    x[6]*x[6] - x[7]*x[7] + x[8]*x[8] - x[9]*x[9];
-            // B_w[4][2] = 2.0f*(x[8]*x[9] - x[6]*x[7]);
-            // B_w[5][0] = 2.0f*(x[7]*x[9] - x[6]*x[8]);
-            // B_w[5][1] = 2.0f*(x[8]*x[9] + x[6]*x[7]);
-            // B_w[5][2] =    x[6]*x[6] - x[7]*x[7] - x[8]*x[8] + x[9]*x[9];
-            // // df_ori_x_bias [6 7 8 9][10 11 12 13 14 15 16 17]
-            // B_w[6][3] = -0.5f*x[7];
-            // B_w[6][4] = -0.5f*x[8];
-            // B_w[6][5] = -0.5f*x[9];
-            // B_w[7][3] =  0.5f*x[6];
-            // B_w[7][4] = -0.5f*x[9];
-            // B_w[7][5] = -0.5f*x[8];
-            // B_w[8][3] =  0.5f*x[9];
-            // B_w[8][4] =  0.5f*x[6];
-            // B_w[8][5] = -0.5f*x[7];
-            // B_w[9][3] = -0.5f*x[8];
-            // B_w[9][4] =  0.5f*x[7];
-            // B_w[9][5] =  0.5f*x[6];
-            // // df_bias_w
-            // B_w[10][6] =  1.0f;
-            // B_w[11][7] =  1.0f;
-            // B_w[12][8] =  1.0f;
-            // B_w[13][9] =  1.0f;
-            // B_w[14][10] =  1.0f;
-            // B_w[15][11] =  1.0f;
-            // B_w[16][12] =  1.0f;
-
-            // set all elements to zero
-            *B_w = VectorMath::Matrix17x13f::Zero(); 
-
-            // df_vel_w [3 4 5][0 1 2 ...]
-            (*B_w)(3, 0) =    x[6]*x[6] + x[7]*x[7] - x[8]*x[8] - x[9]*x[9];
-            (*B_w)(3, 1) = 2.0f*(x[7]*x[8] - x[6]*x[9]);
-            (*B_w)(3, 2) = 2.0f*(x[6]*x[8] + x[7]*x[9]);
-            (*B_w)(4, 0) = 2.0f*(x[7]*x[8] + x[6]*x[9]);
-            (*B_w)(4, 1) =    x[6]*x[6] - x[7]*x[7] + x[8]*x[8] - x[9]*x[9];
-            (*B_w)(4, 2) = 2.0f*(x[8]*x[9] - x[6]*x[7]);
-            (*B_w)(5, 0) = 2.0f*(x[7]*x[9] - x[6]*x[8]);
-            (*B_w)(5, 1) = 2.0f*(x[8]*x[9] + x[6]*x[7]);
-            (*B_w)(5, 2) =    x[6]*x[6] - x[7]*x[7] - x[8]*x[8] + x[9]*x[9];
-            // df_ori_x_bias [6 7 8 9][10 11 12 13 14 15 16 17]
-            (*B_w)(6, 3) = -0.5f*x[7];
-            (*B_w)(6, 4) = -0.5f*x[8];
-            (*B_w)(6, 5) = -0.5f*x[9];
-            (*B_w)(7, 3) =  0.5f*x[6];
-            (*B_w)(7, 4) = -0.5f*x[9];
-            (*B_w)(7, 5) =  0.5f*x[8];
-            (*B_w)(8, 3) =  0.5f*x[9];
-            (*B_w)(8, 4) =  0.5f*x[6];
-            (*B_w)(8, 5) = -0.5f*x[7];
-            (*B_w)(9, 3) = -0.5f*x[8];
-            (*B_w)(9, 4) =  0.5f*x[7];
-            (*B_w)(9, 5) =  0.5f*x[6];
-            // df_bias_w
-            (*B_w)(10, 6)  =  1.0f;
-            (*B_w)(11, 7)  =  1.0f;
-            (*B_w)(12, 8)  =  1.0f;
-            (*B_w)(13, 9)  =  1.0f;
-            (*B_w)(14, 10) =  1.0f;
-            (*B_w)(15, 11) =  1.0f;
-            (*B_w)(16, 12) =  1.0f;
-        }
-
-
     };
 
 }

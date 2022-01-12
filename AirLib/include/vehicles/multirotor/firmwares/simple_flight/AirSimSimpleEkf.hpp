@@ -5,11 +5,13 @@
 
 #include <exception>
 #include <vector>
+#include <cmath>
 #include "firmware/interfaces/IBoard.hpp"
 #include "firmware/interfaces/ICommLink.hpp"
 #include "common/FrequencyLimiter.hpp"
 #include "AirSimSimpleEkfBase.hpp"
 #include "AirSimSimpleEkfModel.hpp"
+#include "AirSimSimpleEkfParams.hpp"
 #include "common/GeodeticConverter.hpp"       
 
 #define EKF_GROUND_TRUTH_MEAS_DIRECTIVE 0
@@ -28,11 +30,11 @@ namespace airlib
     {
     public:
         // Constructor
-        AirSimSimpleEkf(const simple_flight::IBoard* board, simple_flight::ICommLink* comm_link) //, const AirSimSettings::EKFSetting& setting = AirSimSettings::EKFSetting())
+        AirSimSimpleEkf(const simple_flight::IBoard* board, simple_flight::ICommLink* comm_link, const AirSimSettings::EkfSetting* setting = nullptr)
             : board_(board), comm_link_(comm_link) // commlink is only temporary here
         {
-            // params_ = // get the EKF params from airsim settings. Implement this as a struct for now with constant members ! inspired by sensor model
-            freq_limiter_.initialize(100); // physics engine and the imu refresh at period 3ms ~ 333.33Hz
+            params_.initializeParameters(setting);
+            freq_limiter_.initialize(334); // physics engine and the imu refresh at period 3ms ~ 333.33Hz
         }
 
         virtual void reset() override
@@ -52,10 +54,10 @@ namespace airlib
             freq_limiter_.update();
 
             // if the wait is complete and it is time to update EKF, update EKF
-            // if (freq_limiter_.isWaitComplete())
-            //     updateEKFInternal();
+            if (freq_limiter_.isWaitComplete())
+                updateEKFInternal();
             
-            updateEKFInternal();
+            // updateEKFInternal();
         }
 
         // only to debug and verify estimates 
@@ -73,90 +75,20 @@ namespace airlib
         // initialize filter
         void initializeFilter()
         {
-            simple_flight::SensorCharacteristics sensor_characteristics;
-            simple_flight::EkfInitialStates initial_states;
-            simple_flight::EkfInitialStdDevs initial_std_devs;
-
-            // imu
-            sensor_characteristics.accel_std_dev.x()   = 0.05f; // m/s^2
-            sensor_characteristics.accel_std_dev.y()   = 0.05f; // m/s^2
-            sensor_characteristics.accel_std_dev.z()   = 0.05f; // m/s^2
-            sensor_characteristics.gyro_std_dev.x()    = 0.1f; // deg/s
-            sensor_characteristics.gyro_std_dev.y()    = 0.1f; // deg/s
-            sensor_characteristics.gyro_std_dev.z()    = 0.1f; // deg/s
-            // gps
-            sensor_characteristics.gps_pos_std_dev.x() = 5.0f; // m
-            sensor_characteristics.gps_pos_std_dev.y() = 5.0f; // m
-            sensor_characteristics.gps_pos_std_dev.z() = 10.0f; // m
-            sensor_characteristics.gps_vel_std_dev.x() = 2.0f; // m/s
-            sensor_characteristics.gps_vel_std_dev.y() = 2.0f; // m/s
-            sensor_characteristics.gps_vel_std_dev.z() = 5.0f; // m/s
-            // barometer
-            sensor_characteristics.baro_std_dev        = 1.0f; // m
-            // magnetomter
-            sensor_characteristics.mag_std_dev.x()     = 0.01f; 
-            sensor_characteristics.mag_std_dev.y()     = 0.01f; 
-            sensor_characteristics.mag_std_dev.z()     = 0.01f; 
-
-            // initial position
-            initial_states.pos.x()                    = 2.0f;
-            initial_states.pos.y()                    = 2.0f;
-            initial_states.pos.z()                    = -10.0f + 2.0f;
-            // initial velocity                   
-            initial_states.vel.x()                    = 0.0f;
-            initial_states.vel.y()                    = 0.0f;
-            initial_states.vel.z()                    = 0.0f;
-            // initial quaternions
-            initial_states.quaternion.val4()          = 0.98929;
-            initial_states.quaternion.x()             = 0.0789265;
-            initial_states.quaternion.y()             = 0.0940609;
-            initial_states.quaternion.z()             = 0.0789265;
-            // initial biases      
-            initial_states.accel_bias.x()             = 0.0f; 
-            initial_states.accel_bias.y()             = 0.0f; 
-            initial_states.accel_bias.z()             = 0.0f; 
-            initial_states.gyro_bias.x()              = 0.0f; 
-            initial_states.gyro_bias.y()              = 0.0f; 
-            initial_states.gyro_bias.z()              = 0.0f; 
-            initial_states.baro_bias                  = 0.0f; 
-
-            // initial position standard deviations
-            initial_std_devs.pos.x()                  = 5.0f;
-            initial_std_devs.pos.y()                  = 5.0f;
-            initial_std_devs.pos.z()                  = 10.0f;
-            // initial velocity standard deviations                 
-            initial_std_devs.vel.x()                  = 2.0f;
-            initial_std_devs.vel.y()                  = 2.0f;
-            initial_std_devs.vel.z()                  = 5.0f;
-            // initial quaternions standard deviations    
-            initial_std_devs.quaternion.val4()        = 0.1f;
-            initial_std_devs.quaternion.x()           = 0.1f;
-            initial_std_devs.quaternion.y()           = 0.1f;
-            initial_std_devs.quaternion.z()           = 0.1f;
-            // initial biases standard deviations    
-            initial_std_devs.accel_bias.x()           = 0.05f;
-            initial_std_devs.accel_bias.y()           = 0.05f;
-            initial_std_devs.accel_bias.z()           = 0.05f;
-            initial_std_devs.gyro_bias.x()            = 0.001f;
-            initial_std_devs.gyro_bias.y()            = 0.001f;
-            initial_std_devs.gyro_bias.z()            = 0.001f;
-            initial_std_devs.baro_bias                = 0.1f;
-
-            assignEkfMatrics(sensor_characteristics, initial_states, initial_std_devs);
-            resetIntialGlobalVariables();
+            assignEkfMatrics();
+            resetGlobalVariables();
         }
 
-        void assignEkfMatrics(const simple_flight::SensorCharacteristics& sensor,
-                              const simple_flight::EkfInitialStates& initial_states,
-                              const simple_flight::EkfInitialStdDevs& initial_std_devs)
+        void assignEkfMatrics()
         {
+            Q_ = simple_flight::MatrixNWxNWf::Zero();
             // imu
-            Q_(0, 0) = sensor.accel_std_dev.x()*sensor.accel_std_dev.x(); // accel_x
-            Q_(1, 1) = sensor.accel_std_dev.y()*sensor.accel_std_dev.y(); // accel_y
-            Q_(2, 2) = sensor.accel_std_dev.z()*sensor.accel_std_dev.z(); // accel_z
-            Q_(3, 3) = sensor.gyro_std_dev.x()*sensor.gyro_std_dev.x() * M_PI*M_PI/32400; // gyro_x
-            Q_(4, 4) = sensor.gyro_std_dev.y()*sensor.gyro_std_dev.y() * M_PI*M_PI/32400; // gyro_y
-            Q_(5, 5) = sensor.gyro_std_dev.z()*sensor.gyro_std_dev.z() * M_PI*M_PI/32400; // gyro_z
+            Q_(0, 0) = params_.accel.std_error.x()*params_.accel.std_error.x();
+            Q_(1, 1) = params_.accel.std_error.y()*params_.accel.std_error.y();
+            Q_(2, 2) = params_.accel.std_error.z()*params_.accel.std_error.z();
+            Q_(3, 3) = params_.gyro.std_error.x()*params_.gyro.std_error.x();
+            Q_(4, 4) = params_.gyro.std_error.y()*params_.gyro.std_error.y();
+            Q_(5, 5) = params_.gyro.std_error.z()*params_.gyro.std_error.z();
 
             // biases
             Q_(6, 6)   = 0.0001f;
@@ -168,62 +100,69 @@ namespace airlib
             Q_(12, 12) = 0.0001f;
 
             // gps
-            R_gps_(0, 0) = sensor.gps_pos_std_dev.x()*sensor.gps_pos_std_dev.x(); // gps_pos_x
-            R_gps_(1, 1) = sensor.gps_pos_std_dev.y()*sensor.gps_pos_std_dev.y(); // gps_pos_y
-            R_gps_(2, 2) = sensor.gps_pos_std_dev.z()*sensor.gps_pos_std_dev.z(); // gps_pos_z
-            R_gps_(3, 3) = sensor.gps_vel_std_dev.x()*sensor.gps_vel_std_dev.x(); // gps_vel_x
-            R_gps_(4, 4) = sensor.gps_vel_std_dev.y()*sensor.gps_vel_std_dev.y(); // gps_vel_y
-            R_gps_(5, 5) = sensor.gps_vel_std_dev.z()*sensor.gps_vel_std_dev.z(); // gps_vel_z
+            R_gps_ = VectorMath::Matrix6x6f::Zero();
+            R_gps_(0, 0) = params_.gps.std_error_position.x()*params_.gps.std_error_position.x();
+            R_gps_(1, 1) = params_.gps.std_error_position.y()*params_.gps.std_error_position.y();
+            R_gps_(2, 2) = params_.gps.std_error_position.z()*params_.gps.std_error_position.z();
+            R_gps_(3, 3) = params_.gps.std_error_velocity.x()*params_.gps.std_error_velocity.x();
+            R_gps_(4, 4) = params_.gps.std_error_velocity.y()*params_.gps.std_error_velocity.y();
+            R_gps_(5, 5) = params_.gps.std_error_velocity.z()*params_.gps.std_error_velocity.z();
 
             // magnetometer
-            R_mag_(0, 0) = sensor.mag_std_dev.x()*sensor.mag_std_dev.x(); // mag_x
-            R_mag_(1, 1) = sensor.mag_std_dev.y()*sensor.mag_std_dev.y(); // mag_y
-            R_mag_(2, 2) = sensor.mag_std_dev.z()*sensor.mag_std_dev.z(); // mag_z
+            R_mag_ = VectorMath::Matrix3x3f::Zero();
+            R_mag_(0, 0) = params_.mag.std_error.x()*params_.mag.std_error.x();
+            R_mag_(1, 1) = params_.mag.std_error.y()*params_.mag.std_error.y();
+            R_mag_(2, 2) = params_.mag.std_error.z()*params_.mag.std_error.z();
 
             // barometer
-            R_baro_ = sensor.baro_std_dev*sensor.baro_std_dev; // baro_alt
+            R_baro_ = params_.baro.std_error*params_.baro.std_error;
+
+            // barometer
+            R_pseudo_ = params_.pseudo_meas.quaternion_norm_R;
 
             // intialize the ekf states
-            states_(0)  = initial_states.pos.x();
-            states_(1)  = initial_states.pos.y();
-            states_(2)  = initial_states.pos.z();
-            states_(3)  = initial_states.vel.x();
-            states_(4)  = initial_states.vel.y();
-            states_(5)  = initial_states.vel.z();
-            states_(6)  = initial_states.quaternion.val4();
-            states_(7)  = initial_states.quaternion.x();
-            states_(8)  = initial_states.quaternion.y();
-            states_(9)  = initial_states.quaternion.z();
-            states_(10) = initial_states.accel_bias.x();
-            states_(11) = initial_states.accel_bias.y();
-            states_(12) = initial_states.accel_bias.z();
-            states_(13) = initial_states.gyro_bias.x();
-            states_(14) = initial_states.gyro_bias.y();
-            states_(15) = initial_states.gyro_bias.z();
-            states_(16) = initial_states.baro_bias;
-
+            states_ = simple_flight::VectorNXf::Zero();
+            states_(0)  = params_.initial_states.position.x();
+            states_(1)  = params_.initial_states.position.y();
+            states_(2)  = params_.initial_states.position.z();
+            states_(3)  = params_.initial_states.linear_velocity.x();
+            states_(4)  = params_.initial_states.linear_velocity.y();
+            states_(5)  = params_.initial_states.linear_velocity.z();
+            states_(6)  = params_.initial_states.quaternion.w();
+            states_(7)  = params_.initial_states.quaternion.x();
+            states_(8)  = params_.initial_states.quaternion.y();
+            states_(9)  = params_.initial_states.quaternion.z();
+            states_(10) = params_.initial_states.accel_bias.x();
+            states_(11) = params_.initial_states.accel_bias.y();
+            states_(12) = params_.initial_states.accel_bias.z();
+            states_(13) = params_.initial_states.gyro_bias.x();
+            states_(14) = params_.initial_states.gyro_bias.y();
+            states_(15) = params_.initial_states.gyro_bias.z();
+            states_(16) = params_.initial_states.baro_bias;
+            
             // intitialize the ekf covariances
-            covariance_(0,0)   = initial_std_devs.pos.x()*initial_std_devs.pos.x(); // x
-            covariance_(1,1)   = initial_std_devs.pos.y()*initial_std_devs.pos.y(); // y
-            covariance_(2,2)   = initial_std_devs.pos.z()*initial_std_devs.pos.z(); // z
-            covariance_(3,3)   = initial_std_devs.vel.x()*initial_std_devs.vel.x(); // u
-            covariance_(4,4)   = initial_std_devs.vel.y()*initial_std_devs.vel.y(); // v
-            covariance_(5,5)   = initial_std_devs.vel.z()*initial_std_devs.vel.z(); // w     
-            covariance_(6,6)   = initial_std_devs.quaternion.val4()*initial_std_devs.quaternion.val4(); // q0
-            covariance_(7,7)   = initial_std_devs.quaternion.x()*initial_std_devs.quaternion.x(); // q1
-            covariance_(8,8)   = initial_std_devs.quaternion.y()*initial_std_devs.quaternion.y(); // q2
-            covariance_(9,9)   = initial_std_devs.quaternion.z()*initial_std_devs.quaternion.z(); // q3
-            covariance_(10,10) = initial_std_devs.accel_bias.x()*initial_std_devs.accel_bias.x(); // 
-            covariance_(11,11) = initial_std_devs.accel_bias.y()*initial_std_devs.accel_bias.y(); // 
-            covariance_(12,12) = initial_std_devs.accel_bias.z()*initial_std_devs.accel_bias.z(); // 
-            covariance_(13,13) = initial_std_devs.gyro_bias.x()*initial_std_devs.gyro_bias.x(); // 
-            covariance_(14,14) = initial_std_devs.gyro_bias.y()*initial_std_devs.gyro_bias.y(); // 
-            covariance_(15,15) = initial_std_devs.gyro_bias.z()*initial_std_devs.gyro_bias.z(); // 
-            covariance_(16,16) = initial_std_devs.baro_bias*initial_std_devs.baro_bias; // 
+            error_covariance_ = simple_flight::MatrixNXxNXf::Zero();
+            error_covariance_(0,0)   = pow(params_.initial_states_std_err.position.x(), 2);
+            error_covariance_(1,1)   = pow(params_.initial_states_std_err.position.y(), 2);
+            error_covariance_(2,2)   = pow(params_.initial_states_std_err.position.z(), 2);
+            error_covariance_(3,3)   = pow(params_.initial_states_std_err.linear_velocity.x(), 2);
+            error_covariance_(4,4)   = pow(params_.initial_states_std_err.linear_velocity.y(), 2);
+            error_covariance_(5,5)   = pow(params_.initial_states_std_err.linear_velocity.z(), 2);
+            error_covariance_(6,6)   = pow(params_.initial_states_std_err.quaternion.w(), 2);
+            error_covariance_(7,7)   = pow(params_.initial_states_std_err.quaternion.x(), 2);
+            error_covariance_(8,8)   = pow(params_.initial_states_std_err.quaternion.y(), 2);
+            error_covariance_(9,9)   = pow(params_.initial_states_std_err.quaternion.z(), 2);
+            error_covariance_(10,10) = pow(params_.initial_states_std_err.accel_bias.x(), 2);
+            error_covariance_(11,11) = pow(params_.initial_states_std_err.accel_bias.y(), 2);
+            error_covariance_(12,12) = pow(params_.initial_states_std_err.accel_bias.z(), 2);
+            error_covariance_(13,13) = pow(params_.initial_states_std_err.gyro_bias.x(), 2);
+            error_covariance_(14,14) = pow(params_.initial_states_std_err.gyro_bias.y(), 2);
+            error_covariance_(15,15) = pow(params_.initial_states_std_err.gyro_bias.z(), 2);
+            error_covariance_(16,16) = pow(params_.initial_states_std_err.baro_bias, 2);
 
         }
 
-        void resetIntialGlobalVariables()
+        void resetGlobalVariables()
         {
             // reset last update times
             last_times_.state_propagation = board_->micros();
@@ -231,12 +170,12 @@ namespace airlib
 
             // reset geo and magnetic global variables
             geodetic_converter_.setHome(environment_->getHomeGeoPoint());   
-            VectorMath::Vector3f magnetic_field_true = EarthUtils::getMagField(environment_->getState().geo_point) * 1E4f;
+            VectorMath::Vector3f magnetic_field_true = EarthUtils::getMagField(environment_->getState().geo_point) * 1E4f; // in Gauss
             earth_mag_[0] = magnetic_field_true.x();
             earth_mag_[1] = magnetic_field_true.y();
             earth_mag_[2] = magnetic_field_true.z();
 
-            // reset imu data buffer
+            // reset imu data buffer todo manage this in better way
             real_T accel[3];
             real_T gyro[3];
             bool is_new_and_valid = getImuData(accel, gyro);
@@ -300,6 +239,7 @@ namespace airlib
             pseudoMeasurement();
 #else
 #endif
+            eulerAnglesCovariancePropagation();
         }
 
         // state propagtion
@@ -311,14 +251,14 @@ namespace airlib
             last_times_.state_propagation = board_->micros();
 
             // declare local variables
-            float x_dot[17];
-            float x[17];
-            float u[6];
-            float uplus[6];
+            float x_dot[simple_flight::NX];
+            float x[simple_flight::NX];
+            float u[simple_flight::NU];
+            float uplus[simple_flight::NU];
 
             // extract the current ekf states
-            for (int i=0; i<17; i++){
-                x[i] = states_[i];
+            for (int i=0; i<simple_flight::NX; i++){
+                x[i] = states_(i);
             }
 
             // extract the current controls
@@ -336,7 +276,7 @@ namespace airlib
             ang_accel[2] = prev_imuData_.ang_acc[2];
 
             // do prediction
-            float x_predicted[17];
+            float x_predicted[simple_flight::NX];
             inertialNavigation(x_predicted, x, u, uplus, ang_accel, dt_real);
 
             // runge kutta integration
@@ -344,11 +284,11 @@ namespace airlib
             // rungeKutta(x_predicted, x, u, dt_real);
 
             // heun integration
-            // float x_predicted[17];
+            // float x_predicted[simple_flight::NX];
             // heun(x_predicted, x, u, uplus, dt_real);
 
             // set the predicted states TODO: via an interface or after some checks
-            for (int i=0; i<17; i++){
+            for (int i=0; i<simple_flight::NX; i++){
                 states_(i) = x_predicted[i];
             }
 
@@ -373,18 +313,18 @@ namespace airlib
             last_times_.cov_propagation = board_->micros();
 
             // declare local variables
-            float x[17];
-            float u[6];
-            VectorMath::Matrix17x17f A;
-            VectorMath::Matrix17x17f A_finite;
-            VectorMath::Matrix17x13f B_w;
-            VectorMath::Matrix17x17f Phi;
-            VectorMath::Matrix17x13f GammaB_w;
-            VectorMath::Matrix17x17f P = covariance_;
-            VectorMath::Matrix17x17f next_covariance;
+            float x[simple_flight::NX];
+            float u[simple_flight::NU];
+            simple_flight::MatrixNXxNXf A;
+            simple_flight::MatrixNXxNXf A_finite;
+            simple_flight::MatrixNXxNWf B_w;
+            simple_flight::MatrixNXxNXf Phi;
+            simple_flight::MatrixNXxNWf GammaB_w;
+            simple_flight::MatrixNXxNXf P = error_covariance_;
+            simple_flight::MatrixNXxNXf next_covariance;
 
             // extract the ekf states
-            for (int i=0; i<17; i++){
+            for (int i=0; i<simple_flight::NX; i++){
                 x[i] = states_[i];
             }
 
@@ -406,21 +346,21 @@ namespace airlib
             next_covariance = Phi*P*Phi.transpose() + GammaB_w*Q_*GammaB_w.transpose();
 
             // set the new predicted covariance
-            covariance_ = next_covariance;
+            error_covariance_ = next_covariance;
         }
 
-        void evaluatePhiAndGamma_w( VectorMath::Matrix17x17f* Phi, 
-                                    VectorMath::Matrix17x13f* GammaB_w, 
-                                    VectorMath::Matrix17x13f* B_w, 
-                                    VectorMath::Matrix17x17f* A, 
+        void evaluatePhiAndGamma_w( simple_flight::MatrixNXxNXf* Phi, 
+                                    simple_flight::MatrixNXxNWf* GammaB_w, 
+                                    simple_flight::MatrixNXxNWf* B_w, 
+                                    simple_flight::MatrixNXxNXf* A, 
                                     float dt_real)
         {
             // declare local variables
-            VectorMath::Matrix17x17f identity = VectorMath::Matrix17x17f::Identity();
-            VectorMath::Matrix17x17f A_square = (*A)*(*A);
-            VectorMath::Matrix17x17f A_cube = A_square*(*A);
-            VectorMath::Matrix17x17f A_forth = A_cube*(*A);
-            VectorMath::Matrix17x17f A_fifth = A_forth*(*A);
+            simple_flight::MatrixNXxNXf identity = simple_flight::MatrixNXxNXf::Identity();
+            simple_flight::MatrixNXxNXf A_square = (*A)*(*A);
+            simple_flight::MatrixNXxNXf A_cube = A_square*(*A);
+            simple_flight::MatrixNXxNXf A_forth = A_cube*(*A);
+            simple_flight::MatrixNXxNXf A_fifth = A_forth*(*A);
 
             // calculate Phi matrix
             *Phi = identity
@@ -465,17 +405,17 @@ namespace airlib
             evaluatehMag(h_mag, x, earth_mag_);
 
             // evaluate the C matrix
-            VectorMath::Matrix3x17f C_mag;
+            simple_flight::Matrix3xNXf C_mag;
             evaluateCMag(&C_mag, x, earth_mag_);
 
             // calculate the Kalman gain matrix
-            VectorMath::Matrix17x17f P = covariance_;
+            simple_flight::MatrixNXxNXf P = error_covariance_;
             VectorMath::Matrix3x3f inverse_term = (C_mag*P*C_mag.transpose() + R_mag_).inverse();
-            VectorMath::Matrix17x3f kalman_gain = P * C_mag.transpose() * inverse_term;
+            simple_flight::MatrixNXx3f kalman_gain = P * C_mag.transpose() * inverse_term;
 
             // update states
-            float x_corrected[17];
-            for (int i=0; i<17; i++){
+            float x_corrected[simple_flight::NX];
+            for (int i=0; i<simple_flight::NX; i++){
                 float correction = kalman_gain(i, 0)*(mag[0] - h_mag[0])
                                   +kalman_gain(i, 1)*(mag[1] - h_mag[1])
                                   +kalman_gain(i, 2)*(mag[2] - h_mag[2]);
@@ -483,16 +423,16 @@ namespace airlib
             }
 
             // update covariance
-            VectorMath::Matrix17x17f P_corrected;
-            VectorMath::Matrix17x17f identity17x17 = VectorMath::Matrix17x17f::Identity();
-            VectorMath::Matrix17x17f term = identity17x17 - kalman_gain*C_mag;
+            simple_flight::MatrixNXxNXf P_corrected;
+            simple_flight::MatrixNXxNXf identity17x17 = simple_flight::MatrixNXxNXf::Identity();
+            simple_flight::MatrixNXxNXf term = identity17x17 - kalman_gain*C_mag;
             P_corrected = term*P*term.transpose() + kalman_gain*R_mag_*kalman_gain.transpose();
 
             // write the new states and covariance matrix to global variables
-            for (int i=0; i<17; i++){
+            for (int i=0; i<simple_flight::NX; i++){
                 states_(i) = x_corrected[i];
             }
-            covariance_ = P_corrected;
+            error_covariance_ = P_corrected;
 
         }
 
@@ -513,37 +453,37 @@ namespace airlib
             }
 
             // extract the ekf states
-            float x[17];
-            for (int i=0; i<17; i++){
+            float x[simple_flight::NX];
+            for (int i=0; i<simple_flight::NX; i++){
                 x[i] = states_(i);
             }
 
             // evaluate the C matrix
-            VectorMath::Matrix1x17f C_baro;
+            simple_flight::Matrix1xNXf C_baro;
             evaluateCBaro(&C_baro);
 
             // calculate the Kalman gain matrix
-            VectorMath::Matrix17x17f P = covariance_;
+            simple_flight::MatrixNXxNXf P = error_covariance_;
             float inverse_term = 1.0f/(C_baro*P*C_baro.transpose() + R_baro_);
-            VectorMath::Matrix17x1f kalman_gain = P * C_baro.transpose() * inverse_term;
+            simple_flight::MatrixNXx1f kalman_gain = P * C_baro.transpose() * inverse_term;
 
             // update states
-            float x_corrected[17];
-            for (int i=0; i<17; i++){
+            float x_corrected[simple_flight::NX];
+            for (int i=0; i<simple_flight::NX; i++){
                 x_corrected[i] = x[i] + kalman_gain[i]*(*altitude + x[2]);
             }
 
             // update covariances
-            VectorMath::Matrix17x17f P_corrected;
-            VectorMath::Matrix17x17f identity17x17 = VectorMath::Matrix17x17f::Identity();
-            VectorMath::Matrix17x17f term = identity17x17 - kalman_gain*C_baro;
+            simple_flight::MatrixNXxNXf P_corrected;
+            simple_flight::MatrixNXxNXf identity17x17 = simple_flight::MatrixNXxNXf::Identity();
+            simple_flight::MatrixNXxNXf term = identity17x17 - kalman_gain*C_baro;
             P_corrected = term*P*term.transpose() + kalman_gain*R_baro_*kalman_gain.transpose();
 
             // write the new states and cavariance matrix to the global variables
-            for (int i=0; i<17; i++){
+            for (int i=0; i<simple_flight::NX; i++){
                 states_(i) = x_corrected[i];
             }
-            covariance_ = P_corrected;
+            error_covariance_ = P_corrected;
         }
 
         // GPS update
@@ -564,23 +504,23 @@ namespace airlib
             }
 
             // extract the ekf states
-            float x[17];
-            for (int i=0; i<17; i++){
+            float x[simple_flight::NX];
+            for (int i=0; i<simple_flight::NX; i++){
                 x[i] = states_(i);
             }
 
             // evaluate the C matrix
-            VectorMath::Matrix6x17f C_gps;
+            simple_flight::Matrix6xNXf C_gps;
             evaluateCGps(&C_gps);
 
             // calculate the Kalman gain matrix
-            VectorMath::Matrix17x17f P = covariance_;
+            simple_flight::MatrixNXxNXf P = error_covariance_;
             VectorMath::Matrix6x6f inverse_term = (C_gps*P*C_gps.transpose() + R_gps_).inverse();
-            VectorMath::Matrix17x6f kalman_gain = P * C_gps.transpose() * inverse_term;
+            simple_flight::MatrixNXx6f kalman_gain = P * C_gps.transpose() * inverse_term;
 
             // update the states
-            float x_corrected[17];
-            for (int i=0; i<17; i++){
+            float x_corrected[simple_flight::NX];
+            for (int i=0; i<simple_flight::NX; i++){
                 float correction = kalman_gain(i, 0)*(pos[0] - x[0])
                                   +kalman_gain(i, 1)*(pos[1] - x[1])
                                   +kalman_gain(i, 2)*(pos[2] - x[2])
@@ -591,16 +531,16 @@ namespace airlib
             }
 
             // update the covariance matrix
-            VectorMath::Matrix17x17f P_corrected;
-            VectorMath::Matrix17x17f identity17x17 = VectorMath::Matrix17x17f::Identity();
-            VectorMath::Matrix17x17f term = identity17x17 - kalman_gain*C_gps;
+            simple_flight::MatrixNXxNXf P_corrected;
+            simple_flight::MatrixNXxNXf identity17x17 = simple_flight::MatrixNXxNXf::Identity();
+            simple_flight::MatrixNXxNXf term = identity17x17 - kalman_gain*C_gps;
             P_corrected = term*P*term.transpose() + kalman_gain*R_gps_*kalman_gain.transpose();
 
             // write the new states and covariance matrix to the global variables
-            for (int i=0; i<17; i++){
+            for (int i=0; i<simple_flight::NX; i++){
                 states_(i) = x_corrected[i];
             }
-            covariance_ = P_corrected;
+            error_covariance_ = P_corrected;
 
         }
 
@@ -610,9 +550,9 @@ namespace airlib
                 return;
 
             // extract the states
-            float x[17];
-            for (int i=0; i<17; i++){
-                x[i] = states_[i];
+            float x[simple_flight::NX];
+            for (int i=0; i<simple_flight::NX; i++){
+                x[i] = states_(i);
             }
 
             // evaluate the current quaternion norm square
@@ -623,32 +563,74 @@ namespace airlib
                          + x[9]*x[9]; 
 
             // evaluate the C matrix
-            VectorMath::Matrix1x17f C_pseudo = VectorMath::Matrix1x17f::Zero();
+            simple_flight::Matrix1xNXf C_pseudo;
             evaluateCPseudo(&C_pseudo, x);
 
             // calculate the Kalman gain matrix
-            float R_pseudo = 0.0001f;
-            VectorMath::Matrix17x17f P = covariance_;
-            float inverse_term = 1.0f/(C_pseudo*P*C_pseudo.transpose() + R_pseudo);
-            VectorMath::Matrix17x1f kalman_gain = P* C_pseudo.transpose() * inverse_term;
+            simple_flight::MatrixNXxNXf P = error_covariance_;
+            float inverse_term = 1.0f/(C_pseudo*P*C_pseudo.transpose() + R_pseudo_);
+            simple_flight::MatrixNXx1f kalman_gain = P* C_pseudo.transpose() * inverse_term;
 
             // update the ekf states
-            float x_corrected[17];
-            for (int i=0; i<17; i++){
+            float x_corrected[simple_flight::NX];
+            for (int i=0; i<simple_flight::NX; i++){
                 x_corrected[i] = x[i] + kalman_gain[i]*(1.0f - norm_square);
             }
 
             // covariance correction not done!!??? Is it correct??
-            // VectorMath::Matrix17x17f P_corrected;
-            // VectorMath::Matrix17x17f identity17x17 = VectorMath::Matrix17x17f::Identity();
-            // VectorMath::Matrix17x17f term = identity17x17 - kalman_gain*C_pseudo;
-            // P_corrected = term*P*term.transpose() + kalman_gain*R_pseudo*kalman_gain.transpose();
+            simple_flight::MatrixNXxNXf P_corrected;
+            simple_flight::MatrixNXxNXf identity17x17 = simple_flight::MatrixNXxNXf::Identity();
+            simple_flight::MatrixNXxNXf term = identity17x17 - kalman_gain*C_pseudo;
+            P_corrected = term*P*term.transpose() + kalman_gain*R_pseudo*kalman_gain.transpose();
 
             // write the states to the global variable
-            for (int i=0; i<17; i++){
+            for (int i=0; i<simple_flight::NX; i++){
                 states_(i) = x_corrected[i];
             }
-            // covariance_ = P_corrected;
+            // error_covariance_ = P_corrected;
+        }
+
+        void eulerAnglesCovariancePropagation()
+        {
+            // extract the states
+            float x[simple_flight::NX];
+            for (int i=0; i<simple_flight::NX; i++){
+                x[i] = states_(i);
+            }
+
+            // evaluate the C matrix
+            VectorMath::Matrix3x4f C_euler;
+            evaluateCEulerAngles(&C_euler, x);
+
+            // define the matrices
+            simple_flight::MatrixNXxNXf P = error_covariance_;
+            VectorMath::Matrix3x3f P_euler_angles;
+            VectorMath::Matrix4x4f P_quaternions;
+
+            // map P onto P_quaternions
+            P_quaternions(0, 0) = P(0+5, 0+5);
+            P_quaternions(0, 1) = P(0+5, 1+5);
+            P_quaternions(0, 2) = P(0+5, 2+5);
+            P_quaternions(0, 3) = P(0+5, 3+5);
+
+            P_quaternions(1, 0) = P(1+5, 0+5);
+            P_quaternions(1, 1) = P(1+5, 1+5);
+            P_quaternions(1, 2) = P(1+5, 2+5);
+            P_quaternions(1, 3) = P(1+5, 3+5);
+
+            P_quaternions(2, 0) = P(2+5, 0+5);
+            P_quaternions(2, 1) = P(2+5, 1+5);
+            P_quaternions(2, 2) = P(2+5, 2+5);
+            P_quaternions(2, 3) = P(2+5, 3+5);
+
+            P_quaternions(3, 0) = P(3+5, 0+5);
+            P_quaternions(3, 1) = P(3+5, 1+5);
+            P_quaternions(3, 2) = P(3+5, 2+5);
+            P_quaternions(3, 3) = P(3+5, 3+5);
+
+            P_euler_angles = C_euler*P_quaternions*C_euler.transpose();
+
+            euler_angles_error_covariance_ = P_euler_angles;
         }
 
         // ---------------------------------------------------------------------
@@ -785,37 +767,40 @@ namespace airlib
 
         }
 
+    private:
         struct ImuDataBuffer
         {
             float accel[3];
             float gyro[3];
             float ang_acc[3];
         };
+        struct LastTimes
+        {
+            TTimePoint state_propagation;
+            TTimePoint cov_propagation;
+        };
         
     private:
         // ---------------------------------------------------------------------
         // Class attritubes
         // ---------------------------------------------------------------------
-        // parameter struct instance
-        // params_;
-        // frequency limiter for EKF
         FrequencyLimiter freq_limiter_;
-        // the flight board instance
         const simple_flight::IBoard* board_;
-        simple_flight::ICommLink* comm_link_; // commlink is only temporary here, later transfer logging to OffBoardApi via StateEstimator 
+        simple_flight::ICommLink* comm_link_;
 
         const Kinematics::State* kinematics_;
         const Environment* environment_;
         GeodeticConverter geodetic_converter_;
+        float earth_mag_[3];
+        
+        LastTimes last_times_;
+        ImuDataBuffer prev_imuData_;
 
-        VectorMath::Matrix13x13f Q_;
+        simple_flight::MatrixNWxNWf Q_;
         VectorMath::Matrix6x6f R_gps_;
         VectorMath::Matrix3x3f R_mag_;
         real_T R_baro_;
-
-        ImuDataBuffer prev_imuData_;
-        float earth_mag_[3];
-
+        real_T R_pseudo_;
     };
 
 }
