@@ -56,8 +56,7 @@ namespace airlib
             // if the wait is complete and it is time to update EKF, update EKF
             if (freq_limiter_.isWaitComplete())
                 updateEKFInternal();
-            
-            // updateEKFInternal();
+
         }
 
         // only to debug and verify estimates 
@@ -690,14 +689,6 @@ namespace airlib
             double geo[3];
             board_->readGpsData(geo, vel);
 
-            // GeoPoint geopoint;
-            // geopoint.latitude = geo[0];
-            // geopoint.longitude = geo[1];
-            // geopoint.altitude = geo[2];
-            // GeoPoint geo_home = environment_->getHomeGeoPoint();
-
-            // Vector3r measured =  EarthUtils::GeodeticToNedFast(geopoint, geo_home);
-
             GeoPoint geo_point;
             Vector3r ned_pos;
             geo_point.longitude = geo[0];
@@ -708,9 +699,6 @@ namespace airlib
             pos[0] = ned_pos[0];
             pos[1] = ned_pos[1];
             pos[2] = ned_pos[2];
-            // pos[0] = geo[0];
-            // pos[1] = geo[1];
-            // pos[2] = geo[2];
 #endif
 
             // check if the signal has all data that is valid, else return false
@@ -740,6 +728,7 @@ namespace airlib
             // check if the signal has all data that is valid, else return false
             // TODO: check if at least a subset of data is valid
 
+            // record the measurement signals
             measurement_(12) = altitude[0];
 
             return true;
@@ -759,6 +748,7 @@ namespace airlib
             // check if the signal has all data that is valid, else return false
             // TODO: check if at least a subset of data is valid
 
+            // record the measurement signals
             measurement_(13) = mag[0];
             measurement_(14) = mag[1];
             measurement_(15) = mag[2];

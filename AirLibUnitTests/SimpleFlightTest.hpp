@@ -41,7 +41,7 @@ namespace airlib
 
             SensorFactory sensor_factory;
 
-            // added by Suman, from https://github.com/microsoft/AirSim/pull/2558/commits/9c4e59d1a2b371ebc60cdc18f93b06cbe3e9d305
+            // added from https://github.com/microsoft/AirSim/pull/2558/commits/9c4e59d1a2b371ebc60cdc18f93b06cbe3e9d305
             // loads settings from settings.json or Default setting
             SettingsLoader settings_loader;
 

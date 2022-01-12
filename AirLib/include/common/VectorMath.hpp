@@ -38,7 +38,6 @@ namespace airlib
         typedef Eigen::Matrix<double, 3, 3> Matrix3x3d;
         typedef Eigen::Matrix<float, 3, 3> Matrix3x3f;
         
-        // added by Suman
         typedef Eigen::Matrix<float, 17, 1> Vector17f;
         typedef Eigen::Matrix<float, 16, 1> Vector16f;
         typedef Eigen::Matrix<float, 17, 17> Matrix17x17f;

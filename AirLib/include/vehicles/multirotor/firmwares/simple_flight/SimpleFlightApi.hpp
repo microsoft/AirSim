@@ -42,7 +42,6 @@ namespace airlib
             board_.reset(new AirSimSimpleFlightBoard(&params_, vehicle_params_));
             comm_link_.reset(new AirSimSimpleFlightCommLink());
             
-            // added by Suman
             ekf_.reset(new AirSimSimpleEkf(board_.get(), comm_link_.get(), vehicle_setting->ekf_setting.get()));
             estimator_.reset(new AirSimSimpleFlightEstimator(ekf_.get()));
 
@@ -144,7 +143,7 @@ namespace airlib
             }
 
             return true;
-        }         
+        }
 
     protected:
         virtual Kinematics::State getKinematicsEstimated() const override

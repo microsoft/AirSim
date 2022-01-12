@@ -52,13 +52,11 @@ namespace airlib
             ground_truth_.environment = environment;
         }
 
-        // added by Suman
         virtual void update() override
         {
             is_new_ = false;
         }
 
-        // added by Suman
         const bool& checkIfNew() const
         {
             return is_new_;
@@ -82,7 +80,6 @@ namespace airlib
         std::string name_ = "";
 
     protected:
-        // added by Suman
         bool is_new_ = false;
         
     };

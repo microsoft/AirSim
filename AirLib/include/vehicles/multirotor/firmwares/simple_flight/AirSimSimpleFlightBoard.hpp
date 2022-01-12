@@ -150,7 +150,6 @@ namespace airlib
             return gps_->checkIfNew();
         }
 
-        // added by Suman
         virtual void readImuData(real_T accel[3], real_T gyro[3]) const override
         {
             accel[0] = imu_->getOutput().linear_acceleration.x();
@@ -162,13 +161,11 @@ namespace airlib
             gyro[2] = imu_->getOutput().angular_velocity.z();
         }
 
-        // added by Suman
         virtual void readBarometerData(real_T* altitude) const override
         {
             *altitude = barometer_->getOutput().altitude;
         }
 
-        // added by Suman
         virtual void readMagnetometerData(real_T mag[3]) const override
         {
             mag[0] = magnetometer_->getOutput().magnetic_field_body.x();
@@ -176,7 +173,6 @@ namespace airlib
             mag[2] = magnetometer_->getOutput().magnetic_field_body.z();
         }
 
-        // added by Suman
         virtual void readGpsData(double geo[3], real_T vel[3]) const override
         {
             geo[0] = gps_->getOutput().gnss.geo_point.longitude;
@@ -189,7 +185,6 @@ namespace airlib
         }
 
     private:
-        // added by Suman
         const SensorCollection& getSensors()
         {
             return vehicle_params_->getSensors();
@@ -222,7 +217,6 @@ namespace airlib
             }
         }
 
-        // added by Suman
         const SensorBase* findSensorByName(const std::string& sensor_name, const SensorBase::SensorType type)
         {
             const SensorBase* sensor = nullptr;
@@ -265,7 +259,6 @@ namespace airlib
         const simple_flight::Params* params_;
         const Kinematics::State* kinematics_;
 
-        // added by Suman
         const MultiRotorParams* vehicle_params_;
         const ImuBase* imu_ = nullptr;
         const BarometerBase* barometer_ = nullptr;

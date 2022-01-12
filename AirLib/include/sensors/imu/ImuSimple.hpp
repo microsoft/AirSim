@@ -44,7 +44,6 @@ namespace airlib
 
             updateOutput();
 
-            // added by Suman, isNew flag is set to true if the sensor signal updates
             is_new_ = true;
         }
         //*** End: UpdatableState implementation ***//
