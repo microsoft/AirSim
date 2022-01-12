@@ -33,6 +33,7 @@ public:
     virtual simple_flight::Axis3r getEkfPositionCovariance() const = 0;
     virtual simple_flight::Axis3r getEkfLinearVelocityCovariance() const = 0;
     virtual simple_flight::Axis4r getEkfOrientationCovariance() const = 0;
+    virtual simple_flight::Axis3r getEkfAnglesCovariance() const = 0;
     virtual simple_flight::Axis3r getEkfImuBiasCovariance() const = 0;
     virtual simple_flight::Axis3r getEkfGyroBiasCovariance() const = 0;
     virtual float getEkfBaroBiasCovariance() const = 0;
@@ -41,5 +42,12 @@ public:
 
     virtual std::array<float, 6> getEkfOrientationOffDiagCovariance() const = 0;
     virtual std::array<float, 12> getEkfOrientationGyroBiasCovariance() const = 0;
+
+    virtual simple_flight::Axis3r getTrueAngles() const = 0;
+    virtual simple_flight::Axis3r getTrueAngularVelocity() const = 0;
+    virtual simple_flight::Axis3r getTruePosition() const = 0;
+    virtual simple_flight::Axis3r getTrueLinearVelocity() const = 0;
+    virtual simple_flight::Axis4r getTrueOrientation() const = 0;
+    virtual simple_flight::KinematicsState getTrueKinematicsEstimated() const = 0;
 };
 }

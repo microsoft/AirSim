@@ -10,6 +10,8 @@
 #include "physics/Environment.hpp"
 #include "common/Common.hpp"
 
+#define EKF_ESTIMATED_DIRECTIVE 0
+
 namespace msr
 {
 namespace airlib
@@ -35,52 +37,66 @@ namespace airlib
 
         virtual simple_flight::Axis3r getAngles() const override
         {
-            simple_flight::Axis3r angles;
-            VectorMath::toEulerianAngle(kinematics_->pose.orientation,
-                                        angles.pitch(),
-                                        angles.roll(),
-                                        angles.yaw());
-
-            //Utils::log(Utils::stringf("Ang Est:\t(%f, %f, %f)", angles.pitch(), angles.roll(), angles.yaw()));
-
-            return angles;
+#if EKF_ESTIMATED_DIRECTIVE == 1
+            return getEkfAngles();
+#else
+            return getTrueAngles();
+#endif
         }
 
         virtual simple_flight::Axis3r getAngularVelocity() const override
         {
-            const auto& anguler = kinematics_->twist.angular;
-
-            simple_flight::Axis3r conv;
-            conv.x() = anguler.x();
-            conv.y() = anguler.y();
-            conv.z() = anguler.z();
-
-            return conv;
+#if EKF_ESTIMATED_DIRECTIVE == 1
+            auto ekf_measurements = getEkfMeasurements();
+            return AirSimSimpleFlightCommon::toAxis3r(VectorMath::transformToWorldFrame(AirSimSimpleFlightCommon::toVector3r(ekf_measurements.gyro),
+                                                                                        AirSimSimpleFlightCommon::toQuaternion(getOrientation()),
+                                                                                        true));
+#else
+            return getTrueAngularVelocity();
+#endif
         }
 
         virtual simple_flight::Axis3r getPosition() const override
         {
-            return AirSimSimpleFlightCommon::toAxis3r(kinematics_->pose.position);
+#if EKF_ESTIMATED_DIRECTIVE == 1
+            return getEkfPosition();
+#else
+            return getTruePosition();
+#endif
         }
 
         virtual simple_flight::Axis3r transformToBodyFrame(const simple_flight::Axis3r& world_frame_val) const override
         {
+#if EKF_ESTIMATED_DIRECTIVE == 1
+            const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
+            const Vector3r& trans = VectorMath::transformToBodyFrame(vec, AirSimSimpleFlightCommon::toQuaternion(getOrientation()));
+            return AirSimSimpleFlightCommon::toAxis3r(trans);
+#else
             const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
             const Vector3r& trans = VectorMath::transformToBodyFrame(vec, kinematics_->pose.orientation);
             return AirSimSimpleFlightCommon::toAxis3r(trans);
+#endif
         }
 
         virtual simple_flight::Axis3r getLinearVelocity() const override
         {
-            return AirSimSimpleFlightCommon::toAxis3r(kinematics_->twist.linear);
+#if EKF_ESTIMATED_DIRECTIVE == 1
+            return getEkfLinearVelocity();
+#else
+            return getTrueLinearVelocity();
+#endif
         }
 
         virtual simple_flight::Axis4r getOrientation() const override
         {
-            return AirSimSimpleFlightCommon::toAxis4r(kinematics_->pose.orientation);
+#if EKF_ESTIMATED_DIRECTIVE == 1
+            return getEkfOrientation();
+#else
+            return getTrueOrientation();
+#endif
         }
 
-        virtual simple_flight::GeoPoint getGeoPoint() const override
+        virtual simple_flight::GeoPoint getGeoPoint() const override // TODO return this from measurement
         {
             return AirSimSimpleFlightCommon::toSimpleFlightGeoPoint(environment_->getState().geo_point);
         }
@@ -97,13 +113,13 @@ namespace airlib
             state.orientation = getOrientation();
             state.linear_velocity = getLinearVelocity();
             state.angular_velocity = getAngularVelocity();
-            state.linear_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.linear);
-            state.angular_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.angular);
+            state.linear_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.linear); // remove this
+            state.angular_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.angular); // remove this
 
             return state;
         }
 
-        // additional methods
+        // additional methods to get ground truth
 
         virtual simple_flight::SensorMeasurements getTrueMeasurements() const override
         {
@@ -132,6 +148,54 @@ namespace airlib
 
             return true_measurements;
         }
+        virtual simple_flight::Axis3r getTrueAngles() const override
+        {
+            simple_flight::Axis3r angles;
+            VectorMath::toEulerianAngle(kinematics_->pose.orientation,
+                                        angles.pitch(),
+                                        angles.roll(),
+                                        angles.yaw());
+            //Utils::log(Utils::stringf("Ang Est:\t(%f, %f, %f)", angles.pitch(), angles.roll(), angles.yaw()));
+
+            return angles;
+        }
+        virtual simple_flight::Axis3r getTrueAngularVelocity() const override
+        {
+            const auto& anguler = kinematics_->twist.angular;
+
+            simple_flight::Axis3r conv;
+            conv.x() = anguler.x();
+            conv.y() = anguler.y();
+            conv.z() = anguler.z();
+
+            return conv;
+        }
+        virtual simple_flight::Axis3r getTruePosition() const override
+        {
+            return AirSimSimpleFlightCommon::toAxis3r(kinematics_->pose.position);
+        }
+        virtual simple_flight::Axis3r getTrueLinearVelocity() const override
+        {
+            return AirSimSimpleFlightCommon::toAxis3r(kinematics_->twist.linear);
+        }
+        virtual simple_flight::Axis4r getTrueOrientation() const override
+        {
+            return AirSimSimpleFlightCommon::toAxis4r(kinematics_->pose.orientation);
+        }
+        virtual simple_flight::KinematicsState getTrueKinematicsEstimated() const override
+        {
+            simple_flight::KinematicsState state;
+            state.position = getTruePosition();
+            state.orientation = getTrueOrientation();
+            state.linear_velocity = getTrueLinearVelocity();
+            state.angular_velocity = getTrueAngularVelocity();
+            state.linear_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.linear); // remove this
+            state.angular_acceleration = AirSimSimpleFlightCommon::toAxis3r(kinematics_->accelerations.angular); // remove this
+
+            return state;
+        }
+
+        // additional methods to get Ekf results
 
         virtual simple_flight::SensorMeasurements getEkfMeasurements() const override
         {
@@ -242,7 +306,7 @@ namespace airlib
         virtual simple_flight::Axis3r getEkfPositionCovariance() const override
         {
             simple_flight::Axis3r position_cov;
-            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            auto ekf_covariance = ekf_->getEkfCovariance();
             position_cov.x() = ekf_covariance(0, 0);
             position_cov.y() = ekf_covariance(1, 1);
             position_cov.z() = ekf_covariance(2, 2);
@@ -253,7 +317,7 @@ namespace airlib
         virtual simple_flight::Axis3r getEkfLinearVelocityCovariance() const override
         {
             simple_flight::Axis3r velocity_cov;
-            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            auto ekf_covariance = ekf_->getEkfCovariance();
             velocity_cov.x() = ekf_covariance(3, 3);
             velocity_cov.y() = ekf_covariance(4, 4);
             velocity_cov.z() = ekf_covariance(5, 5);
@@ -263,20 +327,31 @@ namespace airlib
 
         virtual simple_flight::Axis4r getEkfOrientationCovariance() const override
         {
-            simple_flight::Axis4r angle_cov;
-            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
-            angle_cov.x()   = ekf_covariance(6, 6);
-            angle_cov.y()   = ekf_covariance(7, 7);
-            angle_cov.z()   = ekf_covariance(8, 8);
-            angle_cov.val4()= ekf_covariance(9, 9);
+            simple_flight::Axis4r orientation_cov;
+            auto ekf_covariance = ekf_->getEkfCovariance();
+            orientation_cov.val4()= ekf_covariance(6, 6);
+            orientation_cov.x()   = ekf_covariance(7, 7);
+            orientation_cov.y()   = ekf_covariance(8, 8);
+            orientation_cov.z()   = ekf_covariance(9, 9);
 
-            return angle_cov;
+            return orientation_cov;
+        }
+
+        virtual simple_flight::Axis3r getEkfAnglesCovariance() const override
+        {
+            simple_flight::Axis3r angles_cov;
+            auto ekf_angles_covariance = ekf_->getEkfEulerAnglesCovariance();
+            angles_cov.x()   = ekf_angles_covariance(0, 0);
+            angles_cov.y()   = ekf_angles_covariance(1, 1);
+            angles_cov.z()   = ekf_angles_covariance(2, 2);
+
+            return angles_cov;
         }
 
         virtual simple_flight::Axis3r getEkfImuBiasCovariance() const override
         {
             simple_flight::Axis3r imu_bias_cov;
-            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            auto ekf_covariance = ekf_->getEkfCovariance();
             imu_bias_cov.x()   = ekf_covariance(10, 10);
             imu_bias_cov.y()   = ekf_covariance(11, 11);
             imu_bias_cov.z()   = ekf_covariance(12, 12);
@@ -287,7 +362,7 @@ namespace airlib
         virtual simple_flight::Axis3r getEkfGyroBiasCovariance() const override
         {
             simple_flight::Axis3r gyro_bias_cov;
-            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            auto ekf_covariance = ekf_->getEkfCovariance();
             gyro_bias_cov.x()   = ekf_covariance(13, 13);
             gyro_bias_cov.y()   = ekf_covariance(14, 14);
             gyro_bias_cov.z()   = ekf_covariance(15, 15);
@@ -298,8 +373,9 @@ namespace airlib
         virtual float getEkfBaroBiasCovariance() const override
         {
             float baro_bias_cov;
-            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            auto ekf_covariance = ekf_->getEkfCovariance();
             baro_bias_cov = ekf_covariance(16, 16);
+            // baro_bias_cov = ekf_covariance(15, 15);
 
             return baro_bias_cov;
         }
@@ -322,7 +398,7 @@ namespace airlib
         virtual std::array<float, 6> getEkfOrientationOffDiagCovariance() const override
         {
             std::array<float, 6> ori_offdiag_cov;
-            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            auto ekf_covariance = ekf_->getEkfCovariance();
             ori_offdiag_cov.at(0) = ekf_covariance(6, 7);
             ori_offdiag_cov.at(1) = ekf_covariance(6, 8);
             ori_offdiag_cov.at(2) = ekf_covariance(6, 9);
@@ -336,7 +412,7 @@ namespace airlib
         virtual std::array<float, 12> getEkfOrientationGyroBiasCovariance() const override
         {
             std::array<float, 12> ori_gyro_bias_cov;
-            VectorMath::Matrix17x17f ekf_covariance = ekf_->getEkfCovariance();
+            auto ekf_covariance = ekf_->getEkfCovariance();
             ori_gyro_bias_cov.at(0)  = ekf_covariance(6, 13);
             ori_gyro_bias_cov.at(1)  = ekf_covariance(6, 14);
             ori_gyro_bias_cov.at(2)  = ekf_covariance(6, 15);
