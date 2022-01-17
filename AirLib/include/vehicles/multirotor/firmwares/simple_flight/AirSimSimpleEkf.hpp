@@ -586,7 +586,7 @@ namespace airlib
             for (int i=0; i<simple_flight::NX; i++){
                 states_(i) = x_corrected[i];
             }
-            // error_covariance_ = P_corrected;
+            error_covariance_ = P_corrected;
         }
 
         void eulerAnglesCovariancePropagation()
@@ -607,25 +607,25 @@ namespace airlib
             VectorMath::Matrix4x4f P_quaternions;
 
             // map P onto P_quaternions
-            P_quaternions(0, 0) = P(0+5, 0+5);
-            P_quaternions(0, 1) = P(0+5, 1+5);
-            P_quaternions(0, 2) = P(0+5, 2+5);
-            P_quaternions(0, 3) = P(0+5, 3+5);
+            P_quaternions(0, 0) = P(0+6, 0+6);
+            P_quaternions(0, 1) = P(0+6, 1+6);
+            P_quaternions(0, 2) = P(0+6, 2+6);
+            P_quaternions(0, 3) = P(0+6, 3+6);
 
-            P_quaternions(1, 0) = P(1+5, 0+5);
-            P_quaternions(1, 1) = P(1+5, 1+5);
-            P_quaternions(1, 2) = P(1+5, 2+5);
-            P_quaternions(1, 3) = P(1+5, 3+5);
+            P_quaternions(1, 0) = P(1+6, 0+6);
+            P_quaternions(1, 1) = P(1+6, 1+6);
+            P_quaternions(1, 2) = P(1+6, 2+6);
+            P_quaternions(1, 3) = P(1+6, 3+6);
 
-            P_quaternions(2, 0) = P(2+5, 0+5);
-            P_quaternions(2, 1) = P(2+5, 1+5);
-            P_quaternions(2, 2) = P(2+5, 2+5);
-            P_quaternions(2, 3) = P(2+5, 3+5);
+            P_quaternions(2, 0) = P(2+6, 0+6);
+            P_quaternions(2, 1) = P(2+6, 1+6);
+            P_quaternions(2, 2) = P(2+6, 2+6);
+            P_quaternions(2, 3) = P(2+6, 3+6);
 
-            P_quaternions(3, 0) = P(3+5, 0+5);
-            P_quaternions(3, 1) = P(3+5, 1+5);
-            P_quaternions(3, 2) = P(3+5, 2+5);
-            P_quaternions(3, 3) = P(3+5, 3+5);
+            P_quaternions(3, 0) = P(3+6, 0+6);
+            P_quaternions(3, 1) = P(3+6, 1+6);
+            P_quaternions(3, 2) = P(3+6, 2+6);
+            P_quaternions(3, 3) = P(3+6, 3+6);
 
             P_euler_angles = C_euler*P_quaternions*C_euler.transpose();
 
