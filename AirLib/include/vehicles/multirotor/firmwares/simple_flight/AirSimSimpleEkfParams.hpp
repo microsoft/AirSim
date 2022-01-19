@@ -109,6 +109,12 @@ namespace airlib
                 }
         }
 
+        void initializeParameters(const AirSimSettings::EkfSetting* settings)
+        {
+            initializeFromSettigns(settings);
+            refreshAndUnitConversion();
+        }
+
         void refreshAndUnitConversion()
         {
             gyro.std_error = gyro.std_error * M_PI/180; // deg/s to rad/s
@@ -119,7 +125,7 @@ namespace airlib
                                                                 initial_states.attitude.z());
         }
 
-        void initializeParameters(const AirSimSettings::EkfSetting* settings)
+        void initializeFromSettigns(const AirSimSettings::EkfSetting* settings)
         {
             if (settings == nullptr){
                 return;
@@ -246,7 +252,6 @@ namespace airlib
                 readVector3r(initial_states_child, gyro_bias_str, initial_states.gyro_bias);
                 readRealT(initial_states_child, "BaroBias", initial_states.baro_bias);
             }
-            refreshAndUnitConversion();
         }
     };
 
