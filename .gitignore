@@ -397,14 +397,9 @@ build_docs/
 # api docs
 PythonClient/docs/_build
 
-<<<<<<< HEAD
 
 # custom: ignore
 /AirLibUnitTests/data
 /AirLibUnitTests/figures
 /AirLibUnitTests/log.txt
 /AirLibUnitTests/other.txt
-=======
-# Docker
-/docker/Blocks/
->>>>>>> 0becf9148d88c19c3ffd69359ebe1f9c3ae43826

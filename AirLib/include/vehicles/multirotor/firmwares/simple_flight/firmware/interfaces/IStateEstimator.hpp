@@ -21,7 +21,6 @@ public:
 
     virtual Axis3r transformToBodyFrame(const Axis3r& world_frame_val) const = 0;
 
-<<<<<<< HEAD
     virtual simple_flight::SensorMeasurements getTrueMeasurements() const = 0;
     virtual simple_flight::SensorMeasurements getEkfMeasurements() const = 0;
     virtual simple_flight::Axis3r getEkfPosition() const = 0;
@@ -50,8 +49,5 @@ public:
     virtual simple_flight::Axis3r getTrueLinearVelocity() const = 0;
     virtual simple_flight::Axis4r getTrueOrientation() const = 0;
     virtual simple_flight::KinematicsState getTrueKinematicsEstimated() const = 0;
-=======
-    virtual ~IStateEstimator() = default;
->>>>>>> 0becf9148d88c19c3ffd69359ebe1f9c3ae43826
 };
 }
