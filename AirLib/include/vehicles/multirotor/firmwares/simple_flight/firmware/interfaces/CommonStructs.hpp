@@ -17,6 +17,8 @@ public:
     {
     }
 
+    virtual ~Axis3() = default;
+
     //access by index
     virtual T& operator[](unsigned int index)
     {

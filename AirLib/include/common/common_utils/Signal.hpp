@@ -44,9 +44,9 @@ public:
     Signal()
         : current_id_(0) {}
 
-    // copy creates new signal
-    Signal(Signal const& other)
-        : current_id_(0) {}
+    // Currently deleted since unused and there shouldn't be any need for this
+    Signal(Signal const& other) = delete;
+    Signal& operator=(Signal const& other) = delete;
 
     // connects a member function to this Signal
     template <typename T>
@@ -93,12 +93,6 @@ public:
             // Increment here so that the entry can be erased from inside the method as well
             (it++)->second(p...);
         }
-    }
-
-    // assignment creates new Signal
-    Signal& operator=(Signal const& other)
-    {
-        disconnect_all();
     }
 
 private:

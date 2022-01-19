@@ -74,6 +74,7 @@ public:
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
 
     virtual CollisionInfo getCollisionInfo() const override;
+    virtual CollisionInfo getCollisionInfoAndReset() override;
     virtual int getRemoteControlID() const override;
     virtual msr::airlib::RCData getRCData() const override;
     virtual std::string getVehicleName() const override

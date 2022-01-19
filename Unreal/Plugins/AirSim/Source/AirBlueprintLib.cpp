@@ -248,7 +248,7 @@ void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FSt
         AssetRegistryModule.Get().GetAssets(Filter, AssetData);
 
         UObject* LoadObject = NULL;
-        for (auto asset : AssetData) {
+        for (const auto& asset : AssetData) {
             FString asset_name = asset.AssetName.ToString();
             asset_map.Add(asset_name, asset);
         }

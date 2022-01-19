@@ -10,7 +10,10 @@
 #include <exception>
 #include "AirBlueprintLib.h"
 
-APIPCamera::APIPCamera()
+//CinemAirSim
+APIPCamera::APIPCamera(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer
+                .SetDefaultSubobjectClass<UCineCameraComponent>(TEXT("CameraComponent")))
 {
     static ConstructorHelpers::FObjectFinder<UMaterial> mat_finder(TEXT("Material'/AirSim/HUDAssets/CameraSensorNoise.CameraSensorNoise'"));
     if (mat_finder.Succeeded()) {
@@ -41,6 +44,8 @@ APIPCamera::APIPCamera()
     image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
     image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(8, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(9, EPixelFormat::PF_B8G8R8A8);
 
     object_filter_ = FObjectFilter();
 }
@@ -49,7 +54,8 @@ void APIPCamera::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
 
-    camera_ = UAirBlueprintLib::GetActorComponent<UCameraComponent>(this, TEXT("CameraComponent"));
+    //CinemAirSim
+    camera_ = UAirBlueprintLib::GetActorComponent<UCineCameraComponent>(this, TEXT("CameraComponent"));
     captures_.Init(nullptr, imageTypeCount());
     render_targets_.Init(nullptr, imageTypeCount());
     detections_.Init(nullptr, imageTypeCount());
@@ -70,6 +76,10 @@ void APIPCamera::PostInitializeComponents()
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("InfraredCaptureComponent"));
     captures_[Utils::toNumeric(ImageType::SurfaceNormals)] =
         UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("NormalsCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::OpticalFlow)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("OpticalFlowCaptureComponent"));
+    captures_[Utils::toNumeric(ImageType::OpticalFlowVis)] =
+        UAirBlueprintLib::GetActorComponent<USceneCaptureComponent2D>(this, TEXT("OpticalFlowVisCaptureComponent"));
 
     for (unsigned int i = 0; i < imageTypeCount(); ++i) {
         detections_[i] = NewObject<UDetectionComponent>(this);
@@ -79,6 +89,8 @@ void APIPCamera::PostInitializeComponents()
             detections_[i]->Deactivate();
         }
     }
+    //set initial focal length
+    camera_->CurrentFocalLength = 11.9;
 }
 
 void APIPCamera::BeginPlay()
@@ -98,7 +110,9 @@ void APIPCamera::BeginPlay()
         render_targets_[image_type] = NewObject<UTextureRenderTarget2D>();
     }
 
-    onViewModeChanged(false);
+    //We set all cameras to start as nodisplay
+    //This improves performance because the capture components are no longer updating every frame and only update while requesting an image
+    onViewModeChanged(true);
 
     gimbal_stabilization_ = 0;
     gimbald_rotator_ = this->GetActorRotation();
@@ -270,6 +284,20 @@ void APIPCamera::setCameraTypeEnabled(ImageType type, bool enabled)
     enableCaptureComponent(type, enabled);
 }
 
+void APIPCamera::setCaptureUpdate(USceneCaptureComponent2D* capture, bool nodisplay)
+{
+    capture->bCaptureEveryFrame = !nodisplay;
+    capture->bCaptureOnMovement = !nodisplay;
+    capture->bAlwaysPersistRenderingState = true;
+}
+
+void APIPCamera::setCameraTypeUpdate(ImageType type, bool nodisplay)
+{
+    USceneCaptureComponent2D* capture = getCaptureComponent(type, false);
+    if (capture != nullptr)
+        setCaptureUpdate(capture, nodisplay);
+}
+
 void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
 {
     FTransform pose = ned_transform_->fromRelativeNed(relative_pose);
@@ -371,11 +399,13 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
             }
             setDistortionMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings);
             setNoiseMaterial(image_type, captures_[image_type], captures_[image_type]->PostProcessSettings, noise_setting);
+            copyCameraSettingsToSceneCapture(camera_, captures_[image_type]); //CinemAirSim
         }
         else { //camera component
             updateCameraSetting(camera_, capture_setting, ned_transform);
             setDistortionMaterial(image_type, camera_, camera_->PostProcessSettings);
             setNoiseMaterial(image_type, camera_, camera_->PostProcessSettings, noise_setting);
+            copyCameraSettingsToAllSceneCapture(camera_); //CinemAirSim
         }
     }
 }
@@ -404,7 +434,8 @@ void APIPCamera::updateCaptureComponentSetting(USceneCaptureComponent2D* capture
     updateCameraPostProcessingSetting(capture->PostProcessSettings, setting);
 }
 
-void APIPCamera::updateCameraSetting(UCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform)
+//CinemAirSim
+void APIPCamera::updateCameraSetting(UCineCameraComponent* camera, const CaptureSetting& setting, const NedTransform& ned_transform)
 {
     //if (!std::isnan(setting.target_gamma))
     //    camera-> = setting.target_gamma;
@@ -579,14 +610,183 @@ void APIPCamera::onViewModeChanged(bool nodisplay)
     for (unsigned int image_type = 0; image_type < imageTypeCount(); ++image_type) {
         USceneCaptureComponent2D* capture = getCaptureComponent(static_cast<ImageType>(image_type), false);
         if (capture) {
-            if (nodisplay) {
-                capture->bCaptureEveryFrame = false;
-                capture->bCaptureOnMovement = false;
-            }
-            else {
-                capture->bCaptureEveryFrame = true;
-                capture->bCaptureOnMovement = true;
-            }
+            setCaptureUpdate(capture, nodisplay);
         }
     }
 }
+
+//CinemAirSim methods
+std::vector<std::string> APIPCamera::getPresetLensSettings() const
+{
+    std::vector<std::string> vector;
+    const TArray<FNamedLensPreset> lens_presets = camera_->GetLensPresets();
+    for (const FNamedLensPreset& preset : lens_presets) {
+        std::ostringstream current_lens_string;
+        std::string name = (TCHAR_TO_UTF8(*preset.Name));
+
+        current_lens_string << "Name: " << name << ";\n\t MinFocalLength: " << preset.LensSettings.MinFocalLength << "; \t MaxFocalLength: " << preset.LensSettings.MaxFocalLength;
+        current_lens_string << "\n\t Min FStop: " << preset.LensSettings.MinFStop << "; \t Max Fstop: " << preset.LensSettings.MaxFStop;
+        vector.push_back(current_lens_string.str());
+    }
+    return vector;
+}
+
+std::string APIPCamera::getLensSettings() const
+{
+    const FCameraLensSettings current_lens_params = camera_->LensSettings;
+
+    std::ostringstream current_lens_string;
+
+    const FString lens_preset_name = camera_->GetLensPresetName();
+    std::string name = (TCHAR_TO_UTF8(*lens_preset_name));
+
+    current_lens_string << "Name: " << name;
+    current_lens_string << ";\n\t MinFocalLength: " << current_lens_params.MinFocalLength;
+    current_lens_string << "; \t MaxFocalLength: " << current_lens_params.MaxFocalLength;
+    current_lens_string << "\n\t Min FStop: " << current_lens_params.MinFStop;
+    current_lens_string << "; \t Max Fstop: " << current_lens_params.MaxFStop;
+    current_lens_string << "\n\t Diaphragm Blade Count: " << current_lens_params.DiaphragmBladeCount;
+    current_lens_string << "\n\t Minimum focus distance: " << current_lens_params.MinimumFocusDistance;
+
+    return current_lens_string.str();
+}
+
+void APIPCamera::setPresetLensSettings(std::string preset_string)
+{
+    const FString preset(preset_string.c_str());
+    camera_->SetLensPresetByName(preset);
+    copyCameraSettingsToAllSceneCapture(camera_);
+}
+
+std::vector<std::string> APIPCamera::getPresetFilmbackSettings() const
+{
+    std::vector<std::string> vector_all_presets;
+    TArray<FNamedFilmbackPreset> lens_presets = camera_->GetFilmbackPresets();
+    for (const FNamedFilmbackPreset& preset : lens_presets) {
+        std::ostringstream preset_string;
+        std::string name = (TCHAR_TO_UTF8(*preset.Name));
+
+        preset_string << "Name: " << name << ";\n\t Sensor Width: " << preset.FilmbackSettings.SensorWidth << "; \t Sensor Height: " << preset.FilmbackSettings.SensorHeight;
+        preset_string << "\n\t Sensor Aspect Ratio: " << preset.FilmbackSettings.SensorAspectRatio;
+        vector_all_presets.push_back(preset_string.str());
+    }
+    return vector_all_presets;
+}
+
+void APIPCamera::setPresetFilmbackSettings(std::string preset_string)
+{
+    const FString preset(preset_string.c_str());
+    camera_->SetFilmbackPresetByName(preset);
+    copyCameraSettingsToAllSceneCapture(camera_);
+}
+
+std::string APIPCamera::getFilmbackSettings() const
+{
+    FCameraFilmbackSettings current_filmback_settings = camera_->Filmback;
+
+    const FString filmback_present_name = camera_->GetFilmbackPresetName();
+    std::ostringstream current_filmback_string;
+    std::string name = (TCHAR_TO_UTF8(*filmback_present_name));
+
+    current_filmback_string << "Name: " << name << ";\n\t Sensor Width: " << current_filmback_settings.SensorWidth << "; \t Sensor Height: " << current_filmback_settings.SensorHeight;
+    current_filmback_string << "\n\t Sensor Aspect Ratio: " << current_filmback_settings.SensorAspectRatio;
+    return current_filmback_string.str();
+}
+
+float APIPCamera::setFilmbackSettings(float sensor_width, float sensor_height)
+{
+    camera_->Filmback.SensorWidth = sensor_width;
+    camera_->Filmback.SensorHeight = sensor_height;
+
+    copyCameraSettingsToAllSceneCapture(camera_);
+
+    return camera_->Filmback.SensorAspectRatio;
+}
+
+float APIPCamera::getFocalLength() const
+{
+    return camera_->CurrentFocalLength;
+}
+
+void APIPCamera::setFocalLength(float focal_length)
+{
+    camera_->CurrentFocalLength = focal_length;
+    copyCameraSettingsToAllSceneCapture(camera_);
+}
+
+void APIPCamera::enableManualFocus(bool enable)
+{
+    if (enable) {
+        camera_->FocusSettings.FocusMethod = ECameraFocusMethod::Manual;
+    }
+    else {
+        camera_->FocusSettings.FocusMethod = ECameraFocusMethod::Disable;
+    }
+    copyCameraSettingsToAllSceneCapture(camera_);
+}
+
+float APIPCamera::getFocusDistance() const
+{
+    return camera_->FocusSettings.ManualFocusDistance;
+}
+
+void APIPCamera::setFocusDistance(float focus_distance)
+{
+    camera_->FocusSettings.ManualFocusDistance = focus_distance;
+    copyCameraSettingsToAllSceneCapture(camera_);
+}
+
+float APIPCamera::getFocusAperture() const
+{
+    return camera_->CurrentAperture;
+}
+
+void APIPCamera::setFocusAperture(float focus_aperture)
+{
+    camera_->CurrentAperture = focus_aperture;
+    copyCameraSettingsToAllSceneCapture(camera_);
+}
+
+void APIPCamera::enableFocusPlane(bool enable)
+{
+    camera_->FocusSettings.bDrawDebugFocusPlane = enable;
+}
+
+std::string APIPCamera::getCurrentFieldOfView() const
+{
+    std::ostringstream field_of_view_string;
+    field_of_view_string << "Current Field Of View:\n\tHorizontal Field Of View: " << camera_->GetHorizontalFieldOfView() << ";\n\t Vertical Field Of View: " << camera_->GetVerticalFieldOfView();
+    return field_of_view_string.str();
+}
+
+void APIPCamera::copyCameraSettingsToAllSceneCapture(UCameraComponent* camera)
+{
+    int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
+    for (int image_type = image_count - 1; image_type >= 0; image_type--) {
+        copyCameraSettingsToSceneCapture(camera_, captures_[image_type]);
+    }
+}
+
+void APIPCamera::copyCameraSettingsToSceneCapture(UCameraComponent* src, USceneCaptureComponent2D* dst)
+{
+    if (src && dst) {
+        dst->SetWorldLocationAndRotation(src->GetComponentLocation(), src->GetComponentRotation());
+        dst->FOVAngle = src->FieldOfView;
+
+        FMinimalViewInfo camera_view_info;
+        src->GetCameraView(/*DeltaTime =*/0.0f, camera_view_info);
+
+        const FPostProcessSettings& src_pp_settings = camera_view_info.PostProcessSettings;
+        FPostProcessSettings& dst_pp_settings = dst->PostProcessSettings;
+
+        FWeightedBlendables dst_weighted_blendables = dst_pp_settings.WeightedBlendables;
+
+        // Copy all of the post processing settings
+        dst_pp_settings = src_pp_settings;
+
+        // But restore the original blendables
+        dst_pp_settings.WeightedBlendables = dst_weighted_blendables;
+    }
+}
+
+//end CinemAirSim methods

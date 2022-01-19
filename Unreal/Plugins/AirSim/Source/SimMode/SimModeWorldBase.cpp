@@ -25,6 +25,9 @@ void ASimModeWorldBase::initializeForPlay()
 
 void ASimModeWorldBase::registerPhysicsBody(msr::airlib::VehicleSimApiBase* physicsBody)
 {
+    // Reset the vehicle as well before registering it
+    // Similar to what happens in initializeForPlay() above
+    physicsBody->reset();
     physics_world_.get()->addBody(physicsBody);
 }
 
@@ -91,7 +94,7 @@ bool ASimModeWorldBase::isPaused() const
 void ASimModeWorldBase::pause(bool is_paused)
 {
     physics_world_->pause(is_paused);
-    UGameplayStatics::SetGamePaused(this->GetWorld(), is_paused);
+    ASimModeBase::pause(is_paused);
 }
 
 void ASimModeWorldBase::continueForTime(double seconds)

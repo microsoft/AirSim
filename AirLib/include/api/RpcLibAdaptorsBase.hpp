@@ -491,22 +491,16 @@ namespace airlib_rpclib
             }
 
             ImageRequest(const msr::airlib::ImageCaptureBase::ImageRequest& s)
+                : camera_name(s.camera_name)
+                , image_type(s.image_type)
+                , pixels_as_float(s.pixels_as_float)
+                , compress(s.compress)
             {
-                camera_name = s.camera_name;
-                image_type = s.image_type;
-                pixels_as_float = s.pixels_as_float;
-                compress = s.compress;
             }
 
             msr::airlib::ImageCaptureBase::ImageRequest to() const
             {
-                msr::airlib::ImageCaptureBase::ImageRequest d;
-                d.camera_name = camera_name;
-                d.image_type = image_type;
-                d.pixels_as_float = pixels_as_float;
-                d.compress = compress;
-
-                return d;
+                return { camera_name, image_type, pixels_as_float, compress };
             }
 
             static std::vector<ImageRequest> from(

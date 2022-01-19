@@ -17,7 +17,7 @@ class CarCommandTranslator(object):
 
         self.last_forward_btn = 0
         self.last_reverse_btn = 0
-        self.last_nuetral_btn = 0
+        self.last_neutral_btn = 0
         self.last_park_btn = 0
         self.last_shift_down_btn = 0
         self.last_shift_up_btn = 0
@@ -33,7 +33,8 @@ class CarCommandTranslator(object):
         self.manual_transmission = rospy.get_param('~manual_transmission', True)
         self.forward_btn_index = rospy.get_param('~forward_button_index', 0)
         self.reverse_btn_index = rospy.get_param('~reverse_button_index', 1)
-        self.nuetral_btn_index = rospy.get_param('~nuetral_button_index', 2)
+        # Below was an earlier typo, written like this for compatibility
+        self.neutral_btn_index = rospy.get_param('~neutral_button_index', rospy.get_param('~nuetral_button_index', 2))
         self.park_btn_index = rospy.get_param('~park_button_index', 3)
         self.shift_down_btn_index = rospy.get_param('~shift_down_index', 4)
         self.shift_up_btn_index = rospy.get_param('~shift_up_index', 5)
@@ -82,7 +83,7 @@ class CarCommandTranslator(object):
 
         forward_btn    = joy.buttons[self.forward_btn_index]
         reverse_btn    = joy.buttons[self.reverse_btn_index]
-        nuetral_btn    = joy.buttons[self.nuetral_btn_index]
+        neutral_btn    = joy.buttons[self.neutral_btn_index]
         park_btn       = joy.buttons[self.park_btn_index]
         shift_up_btn   = joy.buttons[self.shift_up_btn_index]
         shift_down_btn = joy.buttons[self.shift_down_btn_index]
@@ -90,7 +91,7 @@ class CarCommandTranslator(object):
 
         # gearing: -1 reverse, 0 N, >= 1 drive
         controls.manual = True #set to False for automatic transmission along with manual_gear > 1
-        if not self.last_nuetral_btn and nuetral_btn:
+        if not self.last_neutral_btn and neutral_btn:
             self.last_gear = 0
             self.parked = False
             controls.manual = True
@@ -132,7 +133,7 @@ class CarCommandTranslator(object):
         controls.header.stamp = now
         controls.gear_immediate = True
 
-        self.last_nuetral_btn = nuetral_btn
+        self.last_neutral_btn = neutral_btn
         self.last_forward_btn = forward_btn
         self.last_reverse_btn = reverse_btn
         self.last_park_btn = park_btn

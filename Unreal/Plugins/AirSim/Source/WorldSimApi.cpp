@@ -85,6 +85,17 @@ bool WorldSimApi::destroyObject(const std::string& object_name)
     return result;
 }
 
+std::vector<std::string> WorldSimApi::listAssets() const
+{
+    std::vector<std::string> all_assets;
+
+    for (const TPair<FString, FAssetData>& pair : simmode_->asset_map) {
+        all_assets.push_back(std::string(TCHAR_TO_UTF8(*pair.Key)));
+    }
+
+    return all_assets;
+}
+
 std::string WorldSimApi::spawnObject(const std::string& object_name, const std::string& load_object, const WorldSimApi::Pose& pose, const WorldSimApi::Vector3r& scale, bool physics_enabled, bool is_blueprint)
 {
     FString asset_name(load_object.c_str());
@@ -907,6 +918,88 @@ std::vector<uint8_t> WorldSimApi::getImage(ImageCaptureBase::ImageType image_typ
     else
         return std::vector<uint8_t>();
 }
+
+//CinemAirSim
+std::vector<std::string> WorldSimApi::getPresetLensSettings(const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->getPresetLensSettings();
+}
+
+std::string WorldSimApi::getLensSettings(const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->getLensSettings();
+}
+
+void WorldSimApi::setPresetLensSettings(std::string preset, const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->setPresetLensSettings(preset);
+}
+
+std::vector<std::string> WorldSimApi::getPresetFilmbackSettings(const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->getPresetFilmbackSettings();
+}
+
+void WorldSimApi::setPresetFilmbackSettings(std::string preset, const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->setPresetFilmbackSettings(preset);
+}
+
+std::string WorldSimApi::getFilmbackSettings(const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->getFilmbackSettings();
+}
+
+float WorldSimApi::setFilmbackSettings(float width, float height, const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->setFilmbackSettings(width, height);
+}
+
+float WorldSimApi::getFocalLength(const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->getFocalLength();
+}
+
+void WorldSimApi::setFocalLength(float focal_length, const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->setFocalLength(focal_length);
+}
+
+void WorldSimApi::enableManualFocus(bool enable, const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->enableManualFocus(enable);
+}
+
+float WorldSimApi::getFocusDistance(const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->getFocusDistance();
+}
+
+void WorldSimApi::setFocusDistance(float focus_distance, const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->setFocusDistance(focus_distance);
+}
+
+float WorldSimApi::getFocusAperture(const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->getFocusAperture();
+}
+
+void WorldSimApi::setFocusAperture(float focus_aperture, const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->setFocusAperture(focus_aperture);
+}
+
+void WorldSimApi::enableFocusPlane(bool enable, const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->enableFocusPlane(enable);
+}
+
+std::string WorldSimApi::getCurrentFieldOfView(const CameraDetails& camera_details)
+{
+    return simmode_->getCamera(camera_details)->getCurrentFieldOfView();
+}
+//End CinemAirSim
 
 void WorldSimApi::addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details)
 {
