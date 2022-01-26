@@ -111,7 +111,7 @@ namespace airlib
 
         void initializeParameters(const AirSimSettings::EkfSetting* settings)
         {
-            initializeFromSettigns(settings);
+            initializeFromSettings(settings);
             refreshAndUnitConversion();
         }
 
@@ -125,7 +125,7 @@ namespace airlib
                                                                 initial_states.attitude.z());
         }
 
-        void initializeFromSettigns(const AirSimSettings::EkfSetting* settings)
+        void initializeFromSettings(const AirSimSettings::EkfSetting* settings)
         {
             if (settings == nullptr){
                 return;
