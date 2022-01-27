@@ -35,8 +35,12 @@ public:
     float GetLinearVelocity();
     UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
     float GetAngularVelocity();
+    void SetLinearVelocity(float);
+    void SetAngularVelocity(float);
 
 private:
     msr::airlib::WarthogApiBase::WarthogControls keyboard_controls_;
+    float desired_liner_vel_ ;
+    float desired_angular_vel_;
 
 };
