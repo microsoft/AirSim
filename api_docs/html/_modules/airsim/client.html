@@ -525,6 +525,8 @@
 
 <div class="viewcode-block" id="VehicleClient.simGetVehiclePose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetVehiclePose">[docs]</a>    <span class="k">def</span> <span class="nf">simGetVehiclePose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The position inside the returned Pose is in the frame of the vehicle&#39;s starting point</span>
+<span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            vehicle_name (str, optional): Name of the vehicle to get the Pose of</span>
 
@@ -549,6 +551,8 @@
 
 <div class="viewcode-block" id="VehicleClient.simGetObjectPose"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetObjectPose">[docs]</a>    <span class="k">def</span> <span class="nf">simGetObjectPose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The position inside the returned Pose is in the world frame</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            object_name (str): Object to get the Pose of</span>
 
@@ -855,6 +859,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Ground truth kinematics of the vehicle</span>
 
+<span class="sd">        The position inside the returned KinematicsState is in the frame of the vehicle&#39;s starting point</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            vehicle_name (str, optional): Name of the vehicle</span>
 
@@ -881,6 +887,8 @@
 <div class="viewcode-block" id="VehicleClient.simGetGroundTruthEnvironment"><a class="viewcode-back" href="../../index.html#airsim.client.VehicleClient.simGetGroundTruthEnvironment">[docs]</a>    <span class="k">def</span> <span class="nf">simGetGroundTruthEnvironment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get ground truth environment state</span>
+
+<span class="sd">        The position inside the returned EnvironmentState is in the frame of the vehicle&#39;s starting point</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            vehicle_name (str, optional): Name of the vehicle</span>
@@ -1610,6 +1618,8 @@
 <span class="c1">#query vehicle state</span>
 <div class="viewcode-block" id="MultirotorClient.getMultirotorState"><a class="viewcode-back" href="../../index.html#airsim.client.MultirotorClient.getMultirotorState">[docs]</a>    <span class="k">def</span> <span class="nf">getMultirotorState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The position inside the returned MultirotorState is in the frame of the vehicle&#39;s starting point</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            vehicle_name (str, optional): Vehicle to get the state of</span>
 
@@ -1650,6 +1660,8 @@
 
 <div class="viewcode-block" id="CarClient.getCarState"><a class="viewcode-back" href="../../index.html#airsim.client.CarClient.getCarState">[docs]</a>    <span class="k">def</span> <span class="nf">getCarState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vehicle_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The position inside the returned CarState is in the frame of the vehicle&#39;s starting point</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            vehicle_name (str, optional): Name of vehicle</span>
 
