@@ -459,6 +459,8 @@ class VehicleClient:
 
     def simGetVehiclePose(self, vehicle_name = ''):
         """
+        The position inside the returned Pose is in the frame of the vehicle's starting point
+        
         Args:
             vehicle_name (str, optional): Name of the vehicle to get the Pose of
 
@@ -483,6 +485,8 @@ class VehicleClient:
 
     def simGetObjectPose(self, object_name):
         """
+        The position inside the returned Pose is in the world frame
+
         Args:
             object_name (str): Object to get the Pose of
 
@@ -789,6 +793,8 @@ class VehicleClient:
         """
         Get Ground truth kinematics of the vehicle
 
+        The position inside the returned KinematicsState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Name of the vehicle
 
@@ -815,6 +821,8 @@ class VehicleClient:
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
         """
         Get ground truth environment state
+
+        The position inside the returned EnvironmentState is in the frame of the vehicle's starting point
 
         Args:
             vehicle_name (str, optional): Name of the vehicle
@@ -1544,6 +1552,8 @@ class MultirotorClient(VehicleClient, object):
 #query vehicle state
     def getMultirotorState(self, vehicle_name = ''):
         """
+        The position inside the returned MultirotorState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Vehicle to get the state of
 
@@ -1584,6 +1594,8 @@ class CarClient(VehicleClient, object):
 
     def getCarState(self, vehicle_name = ''):
         """
+        The position inside the returned CarState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Name of vehicle
 
