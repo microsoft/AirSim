@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Enable Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1.4.1
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build AirLib
         shell: cmd
