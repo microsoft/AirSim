@@ -382,7 +382,9 @@ namespace airlib
         int initial_view_mode = 2; //ECameraDirectorMode::CAMERA_DIRECTOR_MODE_FLY_WITH_ME
         bool enable_rpc = true;
         std::string api_server_address = "";
-        int api_port = RpcLibPort;
+        int api_port_cv = RpcLibPortCV;
+        int api_port_car = RpcLibPortCar;
+        int api_port_multirotor = RpcLibPortMultirotor;
         std::string physics_engine_name = "";
 
         std::string clock_type = "";
@@ -424,7 +426,7 @@ namespace airlib
             const Settings& settings_json = Settings::singleton();
             checkSettingsVersion(settings_json);
 
-            loadCoreSimModeSettings(settings_json, simmode_getter);
+            //loadCoreSimModeSettings(settings_json, simmode_getter);
             loadLevelSettings(settings_json);
             loadDefaultCameraSetting(settings_json, camera_defaults);
             loadCameraDirectorSetting(settings_json, camera_director, simmode_name);
@@ -435,6 +437,7 @@ namespace airlib
             loadOtherSettings(settings_json);
             loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults);
             loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults);
+            loadCoreSimModeSettings(settings_json, simmode_getter);
             loadExternalCameraSettings(settings_json, external_cameras);
 
             //this should be done last because it depends on vehicles (and/or their type) we have
@@ -572,6 +575,24 @@ namespace airlib
 
         void loadCoreSimModeSettings(const Settings& settings_json, std::function<std::string(void)> simmode_getter)
         {
+            /*
+            for (const auto& vehicle : vehicles) {
+                if (vehicle.second->vehicle_type == kVehicleTypePX4 ||
+                    kVehicleTypeArduCopterSolo ||
+                    kVehicleTypeSimpleFlight || 
+                    kVehicleTypeArduCopter || 
+                    kVehicleTypeArduRover)
+                {
+                }
+
+               
+
+                recording_setting.requests[vehicle.first].push_back(ImageCaptureBase::ImageRequest(
+                    "", ImageType::Scene, false, true));
+            }
+
+            return;
+
             //get the simmode from user if not specified
             simmode_name = settings_json.getString("SimMode", "");
             if (simmode_name == "") {
@@ -579,14 +600,14 @@ namespace airlib
                     simmode_name = simmode_getter();
                 else
                     throw std::invalid_argument("simmode_name is not expected empty in SimModeBase");
-            }
+            }*/
 
             physics_engine_name = settings_json.getString("PhysicsEngineName", "");
             if (physics_engine_name == "") {
-                if (simmode_name == kSimModeTypeMultirotor)
-                    physics_engine_name = "FastPhysicsEngine";
-                else
-                    physics_engine_name = "PhysX"; //this value is only informational for now
+                //if (simmode_name == kSimModeTypeMultirotor)
+                physics_engine_name = "FastPhysicsEngine";
+                //else
+                //physics_engine_name = "PhysX"; //this value is only informational for now
             }
         }
 
@@ -877,7 +898,8 @@ namespace airlib
                                         std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles,
                                         std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
         {
-            createDefaultVehicle(simmode_name, vehicles, sensor_defaults);
+            //ToDo alon
+            //createDefaultVehicle(simmode_name, vehicles, sensor_defaults);
 
             msr::airlib::Settings vehicles_child;
             if (settings_json.getChild("Vehicles", vehicles_child)) {
@@ -1116,7 +1138,9 @@ namespace airlib
             //because for docker container default is 0.0.0.0 and people get really confused why things
             //don't work
             api_server_address = settings_json.getString("LocalHostIp", "");
-            api_port = settings_json.getInt("ApiServerPort", RpcLibPort);
+            api_port_cv = settings_json.getInt("ApiServerPortCV", RpcLibPortCV);
+            api_port_car = settings_json.getInt("ApiServerPortCar", RpcLibPortCar);
+            api_port_multirotor = settings_json.getInt("ApiServerPortMultirotor", RpcLibPortMultirotor);
             is_record_ui_visible = settings_json.getBool("RecordUIVisible", true);
             engine_sound = settings_json.getBool("EngineSound", false);
             enable_rpc = settings_json.getBool("EnableRpc", enable_rpc);

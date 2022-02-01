@@ -19,7 +19,9 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
-#define RpcLibPort 41451
+#define RpcLibPortCV 41451
+#define RpcLibPortCar 41461
+#define RpcLibPortMultirotor 41471
 
 namespace msr
 {

@@ -70,7 +70,7 @@ private:
     UPROPERTY()
     USimHUDWidget* widget_;
     UPROPERTY()
-    ASimModeBase* simmode_;
+    TArray<ASimModeBase*> simmode_;
 
     APIPCamera* subwindow_cameras_[AirSimSettings::kSubwindowCount];
 };
