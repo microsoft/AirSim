@@ -777,12 +777,10 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
                 ros::Duration(1.0).sleep();
             }
         }
-    
     }
     else {
         // msg = []
     }
-
 
     return lidar_msg;
 }
