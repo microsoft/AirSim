@@ -677,26 +677,26 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
         const unsigned char* bytes = reinterpret_cast<const unsigned char*>(data_std.data());
         vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
         lidar_msg.data = std::move(lidar_msg_data);
+
+        if (isENU_) {
+            try {
+                sensor_msgs::msg::PointCloud2 lidar_msg_enu;
+                auto transformStampedENU = tf_buffer_->lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration(1));
+                tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
+
+                lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
+                lidar_msg_enu.header.frame_id = lidar_msg.header.frame_id;
+
+                lidar_msg = std::move(lidar_msg_enu);
+            }
+            catch (tf2::TransformException& ex) {
+                RCLCPP_WARN(nh_->get_logger(), "%s", ex.what());
+                rclcpp::Rate(1.0).sleep();
+            }
+        }
     }
     else {
         // msg = []
-    }
-
-    if (isENU_) {
-        try {
-            sensor_msgs::msg::PointCloud2 lidar_msg_enu;
-            auto transformStampedENU = tf_buffer_->lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration(1));
-            tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
-
-            lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
-            lidar_msg_enu.header.frame_id = lidar_msg.header.frame_id;
-
-            lidar_msg = std::move(lidar_msg_enu);
-        }
-        catch (tf2::TransformException& ex) {
-            RCLCPP_WARN(nh_->get_logger(), "%s", ex.what());
-            rclcpp::Rate(1.0).sleep();
-        }
     }
 
     return lidar_msg;
