@@ -1105,7 +1105,7 @@ class VehicleClient:
 
 #----------------------------------- Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
-    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
+    def __init__(self, ip = "", port = 41471, timeout_value = 3600):
         super(MultirotorClient, self).__init__(ip, port, timeout_value)
 
     def takeoffAsync(self, timeout_sec = 20, vehicle_name = ''):
@@ -1569,7 +1569,7 @@ class MultirotorClient(VehicleClient, object):
 
 #----------------------------------- Car APIs ---------------------------------------------
 class CarClient(VehicleClient, object):
-    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
+    def __init__(self, ip = "", port = 41461, timeout_value = 3600):
         super(CarClient, self).__init__(ip, port, timeout_value)
 
     def setCarControls(self, controls, vehicle_name = ''):
