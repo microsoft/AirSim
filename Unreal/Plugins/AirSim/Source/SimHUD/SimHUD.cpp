@@ -314,27 +314,32 @@ void ASimHUD::createSimMode()
 
 void ASimHUD::initializeSubWindows()
 {
-    // ToDo - alon default value
-    if (!simmode_[0])
-        return;
+    // ToDo - alon, this is not necessary
+    //if (!simmode_)
+    //    return;
+    int default_simmode_index = -1;
 
-    auto default_vehicle_sim_api = simmode_[0]->getVehicleSimApi();
+    for (const auto& simmode : simmode_) {
+        default_simmode_index++;
+        const auto& default_vehicle_sim_api = simmode->getVehicleSimApi();
+        if (default_vehicle_sim_api) {
+            auto camera_count = default_vehicle_sim_api->getCameraCount();
 
-    if (default_vehicle_sim_api) {
-        auto camera_count = default_vehicle_sim_api->getCameraCount();
-
-        //setup defaults
-        if (camera_count > 0) {
-            subwindow_cameras_[0] = default_vehicle_sim_api->getCamera("");
-            subwindow_cameras_[1] = default_vehicle_sim_api->getCamera(""); //camera_count > 3 ? 3 : 0
-            subwindow_cameras_[2] = default_vehicle_sim_api->getCamera(""); //camera_count > 4 ? 4 : 0
+            //setup defaults
+            if (camera_count > 0) {
+                subwindow_cameras_[0] = default_vehicle_sim_api->getCamera("");
+                subwindow_cameras_[1] = default_vehicle_sim_api->getCamera(""); //camera_count > 3 ? 3 : 0
+                subwindow_cameras_[2] = default_vehicle_sim_api->getCamera(""); //camera_count > 4 ? 4 : 0
+            }
+            else
+                subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
+            
+            break;
         }
-        else
-            subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
     }
 
     for (const auto& setting : getSubWindowSettings()) {
-        APIPCamera* camera = simmode_[0]->getCamera(msr::airlib::CameraDetails(setting.camera_name, setting.vehicle_name, setting.external));
+        APIPCamera* camera = simmode_[default_simmode_index]->getCamera(msr::airlib::CameraDetails(setting.camera_name, setting.vehicle_name, setting.external));
         if (camera)
             subwindow_cameras_[setting.window_index] = camera;
         else
