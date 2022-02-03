@@ -739,8 +739,8 @@ void ASimModeBase::setupVehiclesAndCamera()
         getVehicleSimApi()->possess();
         CameraDirector->initializeForBeginPlay(getInitialViewMode(), getVehicleSimApi()->getPawn(), getVehicleSimApi()->getCamera("fpv"), getVehicleSimApi()->getCamera("back_center"), nullptr);
     }
-    else
-        CameraDirector->initializeForBeginPlay(getInitialViewMode(), nullptr, nullptr, nullptr, nullptr);
+    //else
+    //    CameraDirector->initializeForBeginPlay(getInitialViewMode(), nullptr, nullptr, nullptr, nullptr);
 
     checkVehicleReady();
 }
