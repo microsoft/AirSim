@@ -887,8 +887,7 @@ namespace airlib
 
         static void createDefaultVehicle(const std::string& simmode_name, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles,
                                          const std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_car,
-                                         const std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_multirotor
-        )
+                                         const std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_multirotor)
         {
             //vehicles.clear();
 
@@ -914,7 +913,7 @@ namespace airlib
                 // create default computer vision vehicle
                 auto cv_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting("ComputerVision", kVehicleTypeComputerVision));
                 // ToDo - alon - this is not possible bc airsim not support cv as default and anyway it doesny have sensors
-                cv_setting->sensors = sensor_car; 
+                cv_setting->sensors = sensor_car;
                 vehicles[cv_setting->vehicle_name] = std::move(cv_setting);
             }
             else {
