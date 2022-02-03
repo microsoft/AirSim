@@ -333,7 +333,7 @@ void ASimHUD::initializeSubWindows()
             }
             else
                 subwindow_cameras_[0] = subwindow_cameras_[1] = subwindow_cameras_[2] = nullptr;
-            
+
             break;
         }
     }
