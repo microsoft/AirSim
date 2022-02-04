@@ -40,8 +40,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Recording")
     bool toggleRecording();
 
-    UFUNCTION(BlueprintPure, Category = "Airsim | get stuff")
-    static ASimModeBase* getSimMode();
+    //UFUNCTION(BlueprintPure, Category = "Airsim | get stuff")
+    //static ASimModeBase* getSimMode();
 
     UFUNCTION(BlueprintCallable, Category = "Airsim | get stuff")
     void toggleLoadingScreen(bool is_visible);
@@ -214,7 +214,6 @@ private:
 
     bool lidar_checks_done_ = false;
     bool lidar_draw_debug_points_ = false;
-    static ASimModeBase* SIMMODE;
 
     FRecordingThread* recording_thread_;
 
