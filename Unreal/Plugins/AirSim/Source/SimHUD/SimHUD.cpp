@@ -81,10 +81,10 @@ void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ASimHUD::toggleRecordHandler()
 {
     // ToDo - alon differnet rec files, not default
-    //for (const auto& simmode : simmode_) {
-    //    simmode->toggleRecording();
-    //}
-    simmode_[0]->toggleRecording();
+    for (const auto& simmode : simmode_) {
+        simmode->toggleRecording();
+    }
+    //simmode_[0]->toggleRecording();
 }
 
 void ASimHUD::inputEventToggleRecording()

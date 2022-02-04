@@ -123,9 +123,21 @@ RecordingFile::~RecordingFile()
 void RecordingFile::startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_api, const std::string& folder)
 {
     try {
+        std::string vehicle_type_str;
+        const auto& vehicle_type = vehicle_sim_api->getVehicleSetting()->vehicle_type;
+        if (msr::airlib::AirSimSettings::isComputerVision(vehicle_type)) {
+            vehicle_type_str = "cv";
+        }
+        else if (msr::airlib::AirSimSettings::isCar(vehicle_type)) {
+            vehicle_type_str = "car";
+        }
+        else if (msr::airlib::AirSimSettings::isMultirotor(vehicle_type)) {
+            vehicle_type_str = "multirotor";
+        }
+
         std::string log_folderpath = common_utils::FileSystem::getLogFolderPath(true, folder);
         image_path_ = common_utils::FileSystem::ensureFolder(log_folderpath, "images");
-        std::string log_filepath = common_utils::FileSystem::getLogFileNamePath(log_folderpath, record_filename, "", ".txt", false);
+        std::string log_filepath = common_utils::FileSystem::getLogFileNamePath(log_folderpath, record_filename + vehicle_type_str, "", ".txt", false);
         if (log_filepath != "")
             createFile(log_filepath, vehicle_sim_api->getRecordFileLine(true));
         else {

@@ -68,6 +68,8 @@ ASimModeBase::ASimModeBase()
     if (domain_rand_mat_finder.Succeeded()) {
         domain_rand_material_ = domain_rand_mat_finder.Object;
     }
+
+    recording_thread_ = new FRecordingThread();
 }
 
 void ASimModeBase::toggleLoadingScreen(bool is_visible)
@@ -141,7 +143,7 @@ void ASimModeBase::BeginPlay()
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
     setupVehiclesAndCamera();
-    FRecordingThread::init();
+    recording_thread_->init();
 
     if (getSettings().recording_setting.enabled)
         startRecording();
@@ -191,8 +193,8 @@ void ASimModeBase::setStencilIDs()
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    FRecordingThread::stopRecording();
-    FRecordingThread::killRecording();
+    recording_thread_->stopRecording();
+    recording_thread_->killRecording();
     world_sim_api_.reset();
     api_provider_.reset();
     api_server_.reset();
@@ -500,17 +502,17 @@ bool ASimModeBase::toggleRecording()
 
 void ASimModeBase::stopRecording()
 {
-    FRecordingThread::stopRecording();
+    recording_thread_->stopRecording();
 }
 
 void ASimModeBase::startRecording()
 {
-    FRecordingThread::startRecording(getSettings().recording_setting, getApiProvider()->getVehicleSimApis());
+    recording_thread_->startRecording(getSettings().recording_setting, getApiProvider()->getVehicleSimApis());
 }
 
 bool ASimModeBase::isRecording() const
 {
-    return FRecordingThread::isRecording();
+    return recording_thread_->isRecording();
 }
 
 void ASimModeBase::toggleTraceAll()

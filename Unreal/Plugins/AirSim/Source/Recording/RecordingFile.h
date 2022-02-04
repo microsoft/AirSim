@@ -25,7 +25,7 @@ private:
     bool isFileOpen() const;
 
 private:
-    std::string record_filename = "airsim_rec";
+    std::string record_filename = "airsim_rec_";
     std::string image_path_;
     bool is_recording_ = false;
     IFileHandle* log_file_handle_ = nullptr;

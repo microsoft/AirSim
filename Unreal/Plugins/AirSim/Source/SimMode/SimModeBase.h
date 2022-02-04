@@ -18,6 +18,8 @@
 #include "UnrealImageCapture.h"
 #include "SimModeBase.generated.h"
 
+class FRecordingThread;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
 
 UCLASS()
@@ -213,6 +215,8 @@ private:
     bool lidar_checks_done_ = false;
     bool lidar_draw_debug_points_ = false;
     static ASimModeBase* SIMMODE;
+
+    FRecordingThread* recording_thread_;
 
 private:
     void setStencilIDs();
