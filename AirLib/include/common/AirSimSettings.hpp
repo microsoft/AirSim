@@ -510,6 +510,21 @@ namespace airlib
                             settings_json.getFloat("Roll", default_rot.roll));
         }
 
+        static bool isMultirotor(const std::string& vehicle_type)
+        {
+            return vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo || vehicle_type == kVehicleTypeArduCopter || vehicle_type == kVehicleTypeSimpleFlight;
+        }
+
+        static bool isCar(const std::string& vehicle_type)
+        {
+            return vehicle_type == kVehicleTypePhysXCar || vehicle_type == kVehicleTypeArduRover;
+        }
+
+        static bool isComputerVision(const std::string& vehicle_type)
+        {
+            return vehicle_type == kVehicleTypeComputerVision;
+        }
+
     private:
         void checkSettingsVersion(const Settings& settings_json)
         {
@@ -873,16 +888,6 @@ namespace airlib
             loadSensorSettings(settings_json, "Sensors", vehicle_setting->sensors, sensor_defaults);
 
             return vehicle_setting;
-        }
-
-        static bool isMultirotor(const std::string& vehicle_type)
-        {
-            return vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo || vehicle_type == kVehicleTypeArduCopter || vehicle_type == kVehicleTypeSimpleFlight;
-        }
-
-        static bool isCar(const std::string& vehicle_type)
-        {
-            return vehicle_type == kVehicleTypePhysXCar || vehicle_type == kVehicleTypeArduRover;
         }
 
         static void createDefaultVehicle(const std::string& simmode_name, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles,
