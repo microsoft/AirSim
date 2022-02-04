@@ -430,7 +430,6 @@ namespace airlib
             //loadCoreSimModeSettings(settings_json, simmode_getter);
             loadLevelSettings(settings_json);
             loadDefaultCameraSetting(settings_json, camera_defaults);
-            loadCameraDirectorSetting(settings_json, camera_director, simmode_name);
             loadSubWindowsSettings(settings_json, subwindow_settings);
             loadViewModeSettings(settings_json);
             loadSegmentationSetting(settings_json, segmentation_setting);
@@ -438,6 +437,7 @@ namespace airlib
             loadOtherSettings(settings_json);
             loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults_car, sensor_defaults_multirotor);
             loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults_car, sensor_defaults_multirotor, simmode_getter);
+            loadCameraDirectorSetting(settings_json, camera_director, vehicles);
             loadCoreSimModeSettings(settings_json, simmode_getter);
             loadExternalCameraSettings(settings_json, external_cameras);
 
@@ -1228,9 +1228,12 @@ namespace airlib
         }
 
         static void loadCameraDirectorSetting(const Settings& settings_json,
-                                              CameraDirectorSetting& camera_director, const std::string& simmode_name)
+                                              CameraDirectorSetting& camera_director,
+                                              std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
         {
             camera_director = CameraDirectorSetting();
+            // AirSim always follow after the first vehicle
+            const auto& vehicle_type = vehicles.begin()->second->vehicle_type;
 
             Settings child_json;
             if (settings_json.getChild("CameraDirector", child_json)) {
@@ -1240,7 +1243,7 @@ namespace airlib
             }
 
             if (std::isnan(camera_director.follow_distance)) {
-                if (simmode_name == kSimModeTypeCar)
+                if (isCar(vehicle_type))
                     camera_director.follow_distance = -8;
                 else
                     camera_director.follow_distance = -3;
@@ -1250,7 +1253,7 @@ namespace airlib
             if (std::isnan(camera_director.position.y()))
                 camera_director.position.y() = 0;
             if (std::isnan(camera_director.position.z())) {
-                if (simmode_name == kSimModeTypeCar)
+                if (isCar(vehicle_type))
                     camera_director.position.z() = -4;
                 else
                     camera_director.position.z() = -2;
