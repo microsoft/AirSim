@@ -183,7 +183,7 @@ void ASimHUD::createMainWidget()
 
     //synchronize PIP views
     widget_->initializeForPlay();
-    
+
     // ToDo - alon - is it right?
     for (const auto& simmode : simmode_) {
         if (simmode)
