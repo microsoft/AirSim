@@ -43,9 +43,10 @@ void ASimHUD::BeginPlay()
 
 void ASimHUD::Tick(float DeltaSeconds)
 {
-    //ToDo - alon default value?
-    if (simmode_[0] && simmode_[0]->EnableReport)
-        widget_->updateDebugReport(simmode_[0]->getDebugReport());
+    for (const auto& simmode : simmode_) {
+        if (simmode && simmode->EnableReport)
+            widget_->updateDebugReport(simmode->getDebugReport());
+    }
 }
 
 void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -83,9 +84,10 @@ void ASimHUD::inputEventToggleRecording()
 
 void ASimHUD::inputEventToggleReport()
 {
-    //ToDo - alon default vallue?
-    simmode_[0]->EnableReport = !simmode_[0]->EnableReport;
-    widget_->setReportVisible(simmode_[0]->EnableReport);
+    for (const auto& simmode : simmode_) {
+        simmode->EnableReport = !simmode->EnableReport;
+        widget_->setReportVisible(simmode->EnableReport);
+    }
 }
 
 void ASimHUD::inputEventToggleHelp()
@@ -98,7 +100,6 @@ void ASimHUD::inputEventToggleTrace()
     for (const auto& simmode : simmode_) {
         simmode->toggleTraceAll();
     }
-    //simmode_->toggleTraceAll();
 }
 
 void ASimHUD::updateWidgetSubwindowVisibility()
@@ -182,9 +183,12 @@ void ASimHUD::createMainWidget()
 
     //synchronize PIP views
     widget_->initializeForPlay();
-    // ToDo - alon defualt value?
-    if (simmode_[0])
-        widget_->setReportVisible(simmode_[0]->EnableReport);
+    
+    // ToDo - alon - is it right?
+    for (const auto& simmode : simmode_) {
+        if (simmode)
+            widget_->setReportVisible(simmode->EnableReport);
+    }
     widget_->setOnToggleRecordingHandler(std::bind(&ASimHUD::toggleRecordHandler, this));
     widget_->setRecordButtonVisibility(AirSimSettings::singleton().is_record_ui_visible);
     updateWidgetSubwindowVisibility();
@@ -273,14 +277,6 @@ void ASimHUD::createSimMode()
 {
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-    const TArray<TSubclassOf<ASimModeBase>> simmode_classes(
-        { TSubclassOf<ASimModeBase>(ASimModeComputerVision::StaticClass()),
-          TSubclassOf<ASimModeBase>(ASimModeCar::StaticClass()),
-          TSubclassOf<ASimModeBase>(ASimModeWorldMultiRotor::StaticClass()) });
-    simmode_.SetNum(simmode_classes.Num());
-    //for (UClass* simmode_class : simmode_classes) {
-    //    simmode_.Add(this->GetWorld()->SpawnActor<ASimModeBase>(simmode_class, FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params));
-    //}
 
     //spawn at origin. We will use this to do global NED transforms, for ex, non-vehicle objects in environment
     simmode_[0] = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
