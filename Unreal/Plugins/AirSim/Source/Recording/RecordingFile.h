@@ -29,4 +29,5 @@ private:
     std::string image_path_;
     bool is_recording_ = false;
     IFileHandle* log_file_handle_ = nullptr;
+    static std::string log_folderpath_;
 };

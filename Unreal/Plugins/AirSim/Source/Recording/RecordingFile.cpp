@@ -6,6 +6,8 @@
 #include "common/ClockFactory.hpp"
 #include "common/common_utils/FileSystem.hpp"
 
+std::string RecordingFile::log_folderpath_;
+
 void RecordingFile::appendRecord(const std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses,
                                  msr::airlib::VehicleSimApiBase* vehicle_sim_api) const
 {
@@ -118,6 +120,7 @@ void RecordingFile::writeString(const std::string& str) const
 RecordingFile::~RecordingFile()
 {
     stopRecording(true);
+    log_folderpath_ = "";
 }
 
 void RecordingFile::startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_api, const std::string& folder)
@@ -134,10 +137,12 @@ void RecordingFile::startRecording(msr::airlib::VehicleSimApiBase* vehicle_sim_a
         else if (msr::airlib::AirSimSettings::isMultirotor(vehicle_type)) {
             vehicle_type_str = "multirotor";
         }
+        if (log_folderpath_ == "") {
+            log_folderpath_ = common_utils::FileSystem::getLogFolderPath(true, folder);
+        }
 
-        std::string log_folderpath = common_utils::FileSystem::getLogFolderPath(true, folder);
-        image_path_ = common_utils::FileSystem::ensureFolder(log_folderpath, "images");
-        std::string log_filepath = common_utils::FileSystem::getLogFileNamePath(log_folderpath, record_filename + vehicle_type_str, "", ".txt", false);
+        image_path_ = common_utils::FileSystem::ensureFolder(log_folderpath_, "images");
+        std::string log_filepath = common_utils::FileSystem::getLogFileNamePath(log_folderpath_, record_filename + vehicle_type_str, "", ".txt", false);
         if (log_filepath != "")
             createFile(log_filepath, vehicle_sim_api->getRecordFileLine(true));
         else {
