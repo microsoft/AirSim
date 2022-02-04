@@ -277,7 +277,7 @@ void ASimHUD::createSimMode()
 {
     FActorSpawnParameters simmode_spawn_params;
     simmode_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
+    simmode_.SetNum(3);
     //spawn at origin. We will use this to do global NED transforms, for ex, non-vehicle objects in environment
     simmode_[0] = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
     simmode_[1] = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector,
