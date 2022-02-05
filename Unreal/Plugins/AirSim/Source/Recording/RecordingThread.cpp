@@ -13,7 +13,7 @@
 //bool FRecordingThread::first_ = true;
 
 FRecordingThread::FRecordingThread()
-    : stop_task_counter_(0), recording_file_(nullptr), first_(true), is_ready_(false)
+    : stop_task_counter_(0), first_(true), recording_file_(nullptr), is_ready_(false)
 {
     thread_.reset(FRunnableThread::Create(this, TEXT("FRecordingThread"), 0, TPri_BelowNormal)); // Windows default, possible to specify more priority
 }
