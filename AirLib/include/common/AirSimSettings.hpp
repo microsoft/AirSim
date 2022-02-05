@@ -431,13 +431,13 @@ namespace airlib
             loadLevelSettings(settings_json);
             loadDefaultCameraSetting(settings_json, camera_defaults);
             loadSubWindowsSettings(settings_json, subwindow_settings);
-            loadViewModeSettings(settings_json);
             loadSegmentationSetting(settings_json, segmentation_setting);
             loadPawnPaths(settings_json, pawn_paths);
             loadOtherSettings(settings_json);
             loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults_car, sensor_defaults_multirotor);
             loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults_car, sensor_defaults_multirotor, simmode_getter);
             loadCameraDirectorSetting(settings_json, camera_director, vehicles);
+            loadViewModeSettings(settings_json);
             loadCoreSimModeSettings(settings_json, simmode_getter);
             loadExternalCameraSettings(settings_json, external_cameras);
 
@@ -595,39 +595,9 @@ namespace airlib
 
         void loadCoreSimModeSettings(const Settings& settings_json, std::function<std::string(void)> simmode_getter)
         {
-            /*
-            for (const auto& vehicle : vehicles) {
-                if (vehicle.second->vehicle_type == kVehicleTypePX4 ||
-                    kVehicleTypeArduCopterSolo ||
-                    kVehicleTypeSimpleFlight || 
-                    kVehicleTypeArduCopter || 
-                    kVehicleTypeArduRover)
-                {
-                }
-
-               
-
-                recording_setting.requests[vehicle.first].push_back(ImageCaptureBase::ImageRequest(
-                    "", ImageType::Scene, false, true));
-            }
-
-            return;
-
-            //get the simmode from user if not specified
-            simmode_name = settings_json.getString("SimMode", "");
-            if (simmode_name == "") {
-                if (simmode_getter)
-                    simmode_name = simmode_getter();
-                else
-                    throw std::invalid_argument("simmode_name is not expected empty in SimModeBase");
-            }*/
-
             physics_engine_name = settings_json.getString("PhysicsEngineName", "");
             if (physics_engine_name == "") {
-                //if (simmode_name == kSimModeTypeMultirotor)
                 physics_engine_name = "FastPhysicsEngine";
-                //else
-                //physics_engine_name = "PhysX"; //this value is only informational for now
             }
         }
 
@@ -638,12 +608,14 @@ namespace airlib
 
         void loadViewModeSettings(const Settings& settings_json)
         {
+            const auto& vehicle_type = getFirstVehicleTypeUnordered(settings_json, vehicles);
+
             std::string view_mode_string = settings_json.getString("ViewMode", "");
 
             if (view_mode_string == "") {
-                if (simmode_name == kSimModeTypeMultirotor)
+                if (isMultirotor(vehicle_type))
                     view_mode_string = "FlyWithMe";
-                else if (simmode_name == kSimModeTypeComputerVision)
+                else if (isComputerVision(vehicle_type))
                     view_mode_string = "Fpv";
                 else
                     view_mode_string = "SpringArmChase";
@@ -917,7 +889,6 @@ namespace airlib
             else if (simmode_name == kSimModeTypeComputerVision) {
                 // create default computer vision vehicle
                 auto cv_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting("ComputerVision", kVehicleTypeComputerVision));
-                // ToDo - alon - this is not possible bc airsim not support cv as default and anyway it doesny have sensors
                 cv_setting->sensors = sensor_car;
                 vehicles[cv_setting->vehicle_name] = std::move(cv_setting);
             }
@@ -1233,7 +1204,7 @@ namespace airlib
         {
             camera_director = CameraDirectorSetting();
             // AirSim always follow after the first vehicle
-            const auto& vehicle_type = vehicles.begin()->second->vehicle_type;
+            const auto& vehicle_type = getFirstVehicleTypeUnordered(settings_json, vehicles);
 
             Settings child_json;
             if (settings_json.getChild("CameraDirector", child_json)) {
@@ -1258,6 +1229,21 @@ namespace airlib
                 else
                     camera_director.position.z() = -2;
             }
+        }
+
+        static const std::string getFirstVehicleTypeUnordered(const Settings& settings_json, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
+        {
+            std::string vehicle_type;
+            Settings vehicles_child;
+            if (settings_json.getChild("Vehicles", vehicles_child)) {
+                std::vector<std::string> keys;
+                vehicles_child.getChildNames(keys);
+                vehicle_type = vehicles.find(keys[0])->second->vehicle_type;
+            }
+            else {
+                vehicle_type = vehicles.begin()->second->vehicle_type;
+            }
+            return vehicle_type;
         }
 
         void loadClockSettings(const Settings& settings_json)
