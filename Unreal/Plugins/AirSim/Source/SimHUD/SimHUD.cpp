@@ -73,7 +73,9 @@ void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ASimHUD::toggleRecordHandler()
 {
     for (const auto& simmode : simmode_) {
-        simmode->toggleRecording();
+        if (simmode->getApiProvider()->hasDefaultVehicle()) {
+            simmode->toggleRecording();
+        }
     }
 }
 
