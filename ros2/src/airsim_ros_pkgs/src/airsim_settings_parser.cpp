@@ -21,21 +21,11 @@ bool AirSimSettingsParser::getSettingsText(std::string& settings_text) const
     return !settings_text.empty();
 }
 
-std::string AirSimSettingsParser::getSimMode()
-{
-    Settings& settings_json = Settings::loadJSonString(settings_text_);
-    return settings_json.getString("SimMode", "");
-}
-
 // mimics void ASimHUD::initializeSettings()
 bool AirSimSettingsParser::initializeSettings()
 {
     if (getSettingsText(settings_text_)) {
         AirSimSettings::initializeSettings(settings_text_);
-
-        AirSimSettings::singleton().load(std::bind(&AirSimSettingsParser::getSimMode, this));
-        std::cout << "SimMode: " << AirSimSettings::singleton().simmode_name << std::endl;
-
         return true;
     }
 
