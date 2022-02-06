@@ -112,12 +112,6 @@ struct SensorPublisher
 class AirsimROSWrapper
 {
 public:
-    enum class AIRSIM_MODE : unsigned
-    {
-        DRONE,
-        CAR
-    };
-
     AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip);
     ~AirsimROSWrapper(){};
 
@@ -158,6 +152,8 @@ private:
         rclcpp::Time stamp_;
 
         std::string odom_frame_id_;
+
+        std::string vehicle_type;
     };
 
     class CarROS : public VehicleROS
@@ -284,6 +280,8 @@ private:
     template <typename T>
     const SensorPublisher<T> create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS);
 
+    msr::airlib::RpcLibClientBase* get_client_by_vehicle_type(std::string vehicle_type);
+
 private:
     // subscriber / services for ALL robots
     rclcpp::Subscription<airsim_interfaces::msg::VelCmd>::SharedPtr vel_cmd_all_body_frame_sub_;
@@ -297,7 +295,7 @@ private:
     rclcpp::Service<airsim_interfaces::srv::TakeoffGroup>::SharedPtr takeoff_group_srvr_;
     rclcpp::Service<airsim_interfaces::srv::LandGroup>::SharedPtr land_group_srvr_;
 
-    AIRSIM_MODE airsim_mode_ = AIRSIM_MODE::DRONE;
+    // AIRSIM_MODE airsim_mode_ = AIRSIM_MODE::DRONE;
 
     rclcpp::Service<airsim_interfaces::srv::Reset>::SharedPtr reset_srvr_;
     rclcpp::Publisher<airsim_interfaces::msg::GPSYaw>::SharedPtr origin_geo_point_pub_; // home geo coord of drones
@@ -306,12 +304,14 @@ private:
 
     AirSimSettingsParser airsim_settings_parser_;
     std::unordered_map<std::string, std::unique_ptr<VehicleROS>> vehicle_name_ptr_map_;
+    // std::unordered_map<std::string, std::unique_ptr<VehicleROS>> vehicle_car_name_ptr_map_;
     static const std::unordered_map<int, std::string> image_type_int_to_string_map_;
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
     std::string host_ip_;
-    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_client_;
+    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_multirotor_client_;
+    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_car_client_;
     // seperate busy connections to airsim, update in their own thread
     msr::airlib::RpcLibClientBase airsim_client_images_;
     msr::airlib::RpcLibClientBase airsim_client_lidar_;
