@@ -434,7 +434,7 @@ namespace airlib
             loadSegmentationSetting(settings_json, segmentation_setting);
             loadPawnPaths(settings_json, pawn_paths);
             loadOtherSettings(settings_json);
-            loadDefaultSensorSettings(simmode_name, settings_json, sensor_defaults_car, sensor_defaults_multirotor);
+            loadDefaultSensorSettings(settings_json, sensor_defaults_car, sensor_defaults_multirotor);
             loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults_car, sensor_defaults_multirotor, simmode_getter);
             loadCameraDirectorSetting(settings_json, camera_director, vehicles);
             loadViewModeSettings(settings_json);
@@ -1362,8 +1362,7 @@ namespace airlib
         }
 
         // loads or creates default sensor list
-        static void loadDefaultSensorSettings(const std::string& simmode_name,
-                                              const Settings& settings_json,
+        static void loadDefaultSensorSettings(const Settings& settings_json,
                                               std::map<std::string, std::shared_ptr<SensorSetting>>& sensors_car,
                                               std::map<std::string, std::shared_ptr<SensorSetting>>& sensors_multirotor)
         {
