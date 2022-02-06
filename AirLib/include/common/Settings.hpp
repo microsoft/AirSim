@@ -27,7 +27,7 @@ namespace airlib
     {
     private:
         std::string full_filepath_;
-        nlohmann::ordered_json doc_;
+        nlohmann::json doc_;
         bool load_success_ = false;
 
     private:
@@ -122,7 +122,7 @@ namespace airlib
             if (doc_.count(name) == 1 &&
                 (doc_[name].type() == nlohmann::detail::value_t::object ||
                  doc_[name].type() == nlohmann::detail::value_t::array)) {
-                child.doc_ = doc_[name].get<nlohmann::ordered_json>();
+                child.doc_ = doc_[name].get<nlohmann::json>();
                 return true;
             }
             return false;
@@ -147,7 +147,7 @@ namespace airlib
                 (doc_[index].type() == nlohmann::detail::value_t::object ||
                  doc_[index].type() == nlohmann::detail::value_t::array)) {
 
-                child.doc_ = doc_[index].get<nlohmann::ordered_json>();
+                child.doc_ = doc_[index].get<nlohmann::json>();
                 return true;
             }
             return false;
