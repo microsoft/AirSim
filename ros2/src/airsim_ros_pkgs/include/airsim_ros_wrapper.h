@@ -212,7 +212,7 @@ private:
     rclcpp::Time update_state();
     void update_and_publish_static_transforms(VehicleROS* vehicle_ros);
     void publish_vehicle_state();
-    
+
     /// ROS service callbacks
     bool takeoff_srv_cb(const std::shared_ptr<airsim_interfaces::srv::Takeoff::Request> request, const std::shared_ptr<airsim_interfaces::srv::Takeoff::Response> response, const std::string& vehicle_name);
     bool takeoff_group_srv_cb(const std::shared_ptr<airsim_interfaces::srv::TakeoffGroup::Request> request, const std::shared_ptr<airsim_interfaces::srv::TakeoffGroup::Response> response);
