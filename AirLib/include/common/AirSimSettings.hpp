@@ -608,11 +608,12 @@ namespace airlib
 
         void loadViewModeSettings(const Settings& settings_json)
         {
-            const auto& vehicle_type = getFirstVehicleTypeUnordered(settings_json, vehicles);
 
             std::string view_mode_string = settings_json.getString("ViewMode", "");
 
             if (view_mode_string == "") {
+                const auto& vehicle_type = vehicles.begin()->second->vehicle_type;
+                //getFirstVehicleTypeUnordered(settings_json, vehicles);
                 if (isMultirotor(vehicle_type))
                     view_mode_string = "FlyWithMe";
                 else if (isComputerVision(vehicle_type))
@@ -1204,7 +1205,8 @@ namespace airlib
         {
             camera_director = CameraDirectorSetting();
             // AirSim always follow after the first vehicle
-            const auto& vehicle_type = getFirstVehicleTypeUnordered(settings_json, vehicles);
+            const auto& vehicle_type = vehicles.begin()->second->vehicle_type;
+            //getFirstVehicleTypeUnordered(settings_json, vehicles);
 
             Settings child_json;
             if (settings_json.getChild("CameraDirector", child_json)) {
@@ -1231,20 +1233,21 @@ namespace airlib
             }
         }
 
-        static const std::string getFirstVehicleTypeUnordered(const Settings& settings_json, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
-        {
-            std::string vehicle_type;
-            Settings vehicles_child;
-            if (settings_json.getChild("Vehicles", vehicles_child)) {
-                std::vector<std::string> keys;
-                vehicles_child.getChildNames(keys);
-                vehicle_type = vehicles.find(keys[0])->second->vehicle_type;
-            }
-            else {
-                vehicle_type = vehicles.begin()->second->vehicle_type;
-            }
-            return vehicle_type;
-        }
+        //static const std::string getFirstVehicleTypeUnordered(const Settings& settings_json, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
+        //{
+        //    return vehicles.begin()->second->vehicle_type;
+        //    //std::string vehicle_type;
+        //    //Settings vehicles_child;
+        //    //if (settings_json.getChild("Vehicles", vehicles_child)) {
+        //    //    std::vector<std::string> keys;
+        //    //    vehicles_child.getChildNames(keys);
+        //    //    vehicle_type = vehicles.find(keys[keys.size()-1])->second->vehicle_type;
+        //    //}
+        //    //else {
+        //    //    vehicle_type = vehicles.end()->second->vehicle_type;
+        //    //}
+        //    //return vehicle_type;
+        //}
 
         void loadClockSettings(const Settings& settings_json)
         {
