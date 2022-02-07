@@ -66,7 +66,7 @@ void AirsimROSWrapper::initialize_airsim()
             get_client_by_vehicle_type(vehicle_name_ptr_pair.second->vehicle_type_)->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
         }
 
-        origin_geo_point_ = airsim_client_->getHomeGeoPoint("");
+        origin_geo_point_ = get_origin_geo_point();
         // todo there's only one global origin geopoint for environment. but airsim API accept a parameter vehicle_name? inside carsimpawnapi.cpp, there's a geopoint being assigned in the constructor. by?
         origin_geo_point_msg_ = get_gps_msg_from_airsim_geo_point(origin_geo_point_);
     }
@@ -447,6 +447,12 @@ bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, ai
 
     response.success = true;
     return response.success; //todo
+}
+
+msr::airlib::GeoPoint AirsimROSWrapper::get_origin_geo_point() const
+{
+    HomeGeoPoint geo_point = AirSimSettings::singleton().origin_geopoint;
+    return geo_point.home_geo_point;
 }
 
 tf2::Quaternion AirsimROSWrapper::get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat) const
