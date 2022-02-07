@@ -299,6 +299,7 @@ private:
     // Utility methods to convert airsim_client_
     msr::airlib::MultirotorRpcLibClient* get_multirotor_client();
     msr::airlib::CarRpcLibClient* get_car_client();
+    msr::airlib::RpcLibClientBase* get_client_by_vehicle_type(std::string vehicle_type);
 
 private:
     ros::NodeHandle nh_;
