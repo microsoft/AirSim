@@ -23,6 +23,8 @@ namespace airlib
         virtual std::shared_ptr<SensorBase> createSensorFromSettings(
             const AirSimSettings::SensorSetting* sensor_setting, const std::string& vehicle_type = "") const
         {
+            unused(vehicle_type);
+
             switch (sensor_setting->sensor_type) {
             case SensorBase::SensorType::Imu:
                 return std::shared_ptr<ImuSimple>(new ImuSimple(*static_cast<const AirSimSettings::ImuSetting*>(sensor_setting)));
