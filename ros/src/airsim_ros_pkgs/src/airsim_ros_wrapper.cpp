@@ -269,7 +269,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     ROS_INFO_STREAM(sensor_name << ": Lidar");
                     auto lidar_setting = *static_cast<LidarSetting*>(sensor_setting.get());
                     msr::airlib::LidarSimpleParams params;
-                    params.initializeFromSettings(lidar_setting);
+                    params.initializeFromSettings(lidar_setting, vehicle_setting->vehicle_type);
                     append_static_lidar_tf(vehicle_ros.get(), sensor_name, params);
                     sensor_publisher.publisher = nh_private_.advertise<sensor_msgs::PointCloud2>(curr_vehicle_name + "/lidar/" + sensor_name, 10);
                     break;
