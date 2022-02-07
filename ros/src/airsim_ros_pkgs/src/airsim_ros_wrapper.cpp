@@ -1029,7 +1029,7 @@ ros::Time AirsimROSWrapper::update_state()
             vehicle_ros->curr_odom = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
         }
         else if (msr::airlib::AirSimSettings::isCar(vehicle_name_ptr_pair.second->vehicle_type_)) {
-            env_data = get_car_client()->simGetGroundTruthEnvironment(vehicle_ros->vehicle_name_);
+            env_data = get_car_client()->simGetGroundTruthEnvironment(vehicle_ros->vehicle_name);
             auto car = static_cast<CarROS*>(vehicle_ros.get());
             car->curr_car_state = get_car_client()->getCarState(vehicle_ros->vehicle_name);
 
