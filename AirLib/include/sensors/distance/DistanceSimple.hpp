@@ -20,11 +20,11 @@ namespace airlib
     class DistanceSimple : public DistanceBase
     {
     public:
-        DistanceSimple(const AirSimSettings::DistanceSetting& setting = AirSimSettings::DistanceSetting())
+        DistanceSimple(const std::string& vehicle_type, const AirSimSettings::DistanceSetting& setting = AirSimSettings::DistanceSetting())
             : DistanceBase(setting.sensor_name)
         {
             // initialize params
-            params_.initializeFromSettings(setting);
+            params_.initializeFromSettings(setting, vehicle_type);
 
             uncorrelated_noise_ = RandomGeneratorGausianR(0.0f, params_.uncorrelated_noise_sigma);
             //correlated_noise_.initialize(params_.correlated_noise_tau, params_.correlated_noise_sigma, 0.0f);

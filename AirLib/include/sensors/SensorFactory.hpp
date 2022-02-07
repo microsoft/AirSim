@@ -21,7 +21,7 @@ namespace airlib
     public:
         // creates one sensor from settings
         virtual std::shared_ptr<SensorBase> createSensorFromSettings(
-            const AirSimSettings::SensorSetting* sensor_setting) const
+            const AirSimSettings::SensorSetting* sensor_setting, const std::string& vehicle_type = "") const
         {
             switch (sensor_setting->sensor_type) {
             case SensorBase::SensorType::Imu:
@@ -41,7 +41,8 @@ namespace airlib
         virtual void createSensorsFromSettings(
             const std::map<std::string, std::shared_ptr<AirSimSettings::SensorSetting>>& sensors_settings,
             SensorCollection& sensors,
-            vector<shared_ptr<SensorBase>>& sensor_storage) const
+            vector<shared_ptr<SensorBase>>& sensor_storage,
+            const std::string& vehicle_type = "") const
         {
             for (const auto& sensor_setting_pair : sensors_settings) {
                 const AirSimSettings::SensorSetting* sensor_setting = sensor_setting_pair.second.get();
@@ -50,7 +51,7 @@ namespace airlib
                 if (sensor_setting == nullptr || !sensor_setting->enabled)
                     continue;
 
-                std::shared_ptr<SensorBase> sensor = createSensorFromSettings(sensor_setting);
+                std::shared_ptr<SensorBase> sensor = createSensorFromSettings(sensor_setting, vehicle_type);
                 if (sensor) {
                     sensor_storage.push_back(sensor);
                     sensors.insert(sensor.get(), sensor_setting->sensor_type);

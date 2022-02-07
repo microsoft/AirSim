@@ -94,7 +94,7 @@ namespace airlib
         {
             const auto& sensor_settings = vehicle_setting->sensors;
 
-            getSensorFactory()->createSensorsFromSettings(sensor_settings, sensors_, sensor_storage_);
+            getSensorFactory()->createSensorsFromSettings(sensor_settings, sensors_, sensor_storage_, vehicle_setting->vehicle_type);
         }
 
     protected: //static utility functions for derived classes to use
