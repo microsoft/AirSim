@@ -435,7 +435,7 @@ namespace airlib
             loadPawnPaths(settings_json, pawn_paths);
             loadOtherSettings(settings_json);
             loadDefaultSensorSettings(settings_json, sensor_defaults_car, sensor_defaults_multirotor);
-            loadVehicleSettings(simmode_name, settings_json, vehicles, sensor_defaults_car, sensor_defaults_multirotor, simmode_getter);
+            loadVehicleSettings(settings_json, vehicles, sensor_defaults_car, sensor_defaults_multirotor, simmode_getter);
             loadCameraDirectorSetting(settings_json, camera_director, vehicles);
             loadViewModeSettings(settings_json);
             loadCoreSimModeSettings(settings_json, simmode_getter);
@@ -641,12 +641,12 @@ namespace airlib
                 error_messages.push_back("ViewMode setting is not recognized: " + view_mode_string);
         }
 
-        static void loadRCSetting(const std::string& simmode_name, const Settings& settings_json, RCSettings& rc_setting)
+        static void loadRCSetting(const std::string& vehicle_type, const Settings& settings_json, RCSettings& rc_setting)
         {
             Settings rc_json;
             if (settings_json.getChild("RC", rc_json)) {
                 rc_setting.remote_control_id = rc_json.getInt("RemoteControlID",
-                                                              simmode_name == kSimModeTypeMultirotor ? 0 : -1);
+                                                              isMultirotor(vehicle_type) ? 0 : -1);
                 rc_setting.allow_api_when_disconnected = rc_json.getBool("AllowAPIWhenDisconnected",
                                                                          rc_setting.allow_api_when_disconnected);
             }
@@ -800,7 +800,7 @@ namespace airlib
             return vehicle_setting_p;
         }
 
-        static std::unique_ptr<VehicleSetting> createVehicleSetting(const std::string& simmode_name, const Settings& settings_json,
+        static std::unique_ptr<VehicleSetting> createVehicleSetting(const Settings& settings_json,
                                                                     const std::string vehicle_name,
                                                                     std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_car,
                                                                     std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_multirotor
@@ -842,7 +842,7 @@ namespace airlib
             vehicle_setting->is_fpv_vehicle = settings_json.getBool("IsFpvVehicle",
                                                                     vehicle_setting->is_fpv_vehicle);
 
-            loadRCSetting(simmode_name, settings_json, vehicle_setting->rc);
+            loadRCSetting(vehicle_setting->vehicle_type, settings_json, vehicle_setting->rc);
 
             vehicle_setting->position = createVectorSetting(settings_json, vehicle_setting->position);
             vehicle_setting->rotation = createRotationSetting(settings_json, vehicle_setting->rotation);
@@ -899,7 +899,7 @@ namespace airlib
             }
         }
 
-        static void loadVehicleSettings(const std::string& simmode_name, const Settings& settings_json,
+        static void loadVehicleSettings(const Settings& settings_json,
                                         std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles,
                                         std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_car,
                                         std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_multirotor,
@@ -919,7 +919,7 @@ namespace airlib
                 for (const auto& key : keys) {
                     msr::airlib::Settings child;
                     vehicles_child.getChild(key, child);
-                    vehicles[key] = createVehicleSetting(simmode_name, child, key, sensor_car, sensor_multirotor);
+                    vehicles[key] = createVehicleSetting(child, key, sensor_car, sensor_multirotor);
                 }
             }
             else {
