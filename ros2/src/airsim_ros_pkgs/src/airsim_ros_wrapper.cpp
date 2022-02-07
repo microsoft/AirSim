@@ -66,14 +66,8 @@ void AirsimROSWrapper::initialize_airsim()
         airsim_client_lidar_.confirmConnection();
 
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
-            if (msr::airlib::AirSimSettings::isCar(vehicle_name_ptr_pair.second->vehicle_type_)) {
-                airsim_car_client_->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
-                airsim_car_client_->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
-            }
-            else if (msr::airlib::AirSimSettings::isMultirotor(vehicle_name_ptr_pair.second->vehicle_type_)) {
-                airsim_multirotor_client_->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
-                airsim_multirotor_client_->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
-            }
+            get_client_by_vehicle_type(vehicle_name_ptr_pair.second->vehicle_type_)->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
+            get_client_by_vehicle_type(vehicle_name_ptr_pair.second->vehicle_type_)->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
         }
 
         airsim_client_images_.confirmConnection();
@@ -133,6 +127,9 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     for (const auto& curr_vehicle_elem : AirSimSettings::singleton().vehicles) {
         auto& vehicle_setting = curr_vehicle_elem.second;
         auto curr_vehicle_name = curr_vehicle_elem.first;
+
+        if (msr::airlib::AirSimSettings::isComputerVision(vehicle_setting->vehicle_type))
+            continue;
 
         nh_->set_parameter(rclcpp::Parameter("vehicle_name", curr_vehicle_name));
 
