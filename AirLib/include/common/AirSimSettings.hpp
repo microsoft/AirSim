@@ -367,6 +367,7 @@ namespace airlib
         float settings_version_minimum = 1.2f;
 
     public: //fields
+        std::string simmode_name = "";
         std::string level_name = "";
 
         std::vector<SubwindowSetting> subwindow_settings;
