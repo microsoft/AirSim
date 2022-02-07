@@ -1240,7 +1240,7 @@ namespace airlib
                 clock_type = "ScalableClock";
 
                 //override if multirotor simmode with simple_flight
-                /*if (simmode_name == kSimModeTypeMultirotor) */{
+                /*if (simmode_name == kSimModeTypeMultirotor) */ {
                     //TODO: this won't work if simple_flight and PX4 is combined together!
 
                     //for multirotors we select steppable fixed interval clock unless we have
