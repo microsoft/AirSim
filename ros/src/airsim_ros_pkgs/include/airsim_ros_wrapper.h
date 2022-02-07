@@ -177,6 +177,8 @@ private:
         ros::Time stamp;
 
         std::string odom_frame_id;
+
+        std::string vehicle_type_;
         /// Status
         // bool is_armed_;
         // std::string mode_;
@@ -335,7 +337,7 @@ private:
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
-    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_client_ = nullptr;
+    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_client_;
     // seperate busy connections to airsim, update in their own thread
     msr::airlib::RpcLibClientBase airsim_client_images_;
     msr::airlib::RpcLibClientBase airsim_client_lidar_;

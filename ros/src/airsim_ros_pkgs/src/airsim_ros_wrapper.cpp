@@ -34,21 +34,14 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHan
     , nh_private_(nh_private)
     , host_ip_(host_ip)
     , airsim_settings_parser_(host_ip)
+    , airsim_multirotor_client_(nullptr)
+    , airsim_car_client_(nullptr)
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
     , has_gimbal_cmd_(false)
     , tf_listener_(tf_buffer_)
 {
     ros_clock_.clock.fromSec(0);
-
-    if (AirSimSettings::singleton().simmode_name != AirSimSettings::kSimModeTypeCar) {
-        airsim_mode_ = AIRSIM_MODE::DRONE;
-        ROS_INFO("Setting ROS wrapper to DRONE mode");
-    }
-    else {
-        airsim_mode_ = AIRSIM_MODE::CAR;
-        ROS_INFO("Setting ROS wrapper to CAR mode");
-    }
 
     initialize_ros();
 
@@ -60,19 +53,17 @@ void AirsimROSWrapper::initialize_airsim()
     // todo do not reset if already in air?
     try {
 
-        if (airsim_mode_ == AIRSIM_MODE::DRONE) {
-            airsim_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::MultirotorRpcLibClient(host_ip_));
-        }
-        else {
-            airsim_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::CarRpcLibClient(host_ip_));
-        }
-        airsim_client_->confirmConnection();
+        airsim_multirotor_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::MultirotorRpcLibClient(host_ip_));
+        airsim_car_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::CarRpcLibClient(host_ip_));
+
+        airsim_multirotor_client_->confirmConnection();
+        airsim_car_client_->confirmConnection();
         airsim_client_images_.confirmConnection();
         airsim_client_lidar_.confirmConnection();
 
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
-            airsim_client_->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
-            airsim_client_->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
+            get_client_by_vehicle_type(vehicle_name_ptr_pair.second->vehicle_type_)->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
+            get_client_by_vehicle_type(vehicle_name_ptr_pair.second->vehicle_type_)->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
         }
 
         origin_geo_point_ = airsim_client_->getHomeGeoPoint("");
@@ -130,18 +121,21 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         auto& vehicle_setting = curr_vehicle_elem.second;
         auto curr_vehicle_name = curr_vehicle_elem.first;
 
+        if (msr::airlib::AirSimSettings::isComputerVision(vehicle_setting->vehicle_type))
+            continue;
+
         nh_.setParam("/vehicle_name", curr_vehicle_name);
 
         set_nans_to_zeros_in_pose(*vehicle_setting);
 
         std::unique_ptr<VehicleROS> vehicle_ros = nullptr;
-
-        if (airsim_mode_ == AIRSIM_MODE::DRONE) {
+        if (msr::airlib::AirSimSettings::isMultirotor(vehicle_setting->vehicle_type)) {
             vehicle_ros = std::unique_ptr<MultiRotorROS>(new MultiRotorROS());
         }
-        else {
+        else if (msr::airlib::AirSimSettings::isCar(vehicle_setting->vehicle_type)) {
             vehicle_ros = std::unique_ptr<CarROS>(new CarROS());
         }
+        vehicle_ros->vehicle_type_ = vehicle_setting->vehicle_type;
 
         vehicle_ros->odom_frame_id = curr_vehicle_name + "/" + odom_frame_id_;
         vehicle_ros->vehicle_name = curr_vehicle_name;
@@ -154,7 +148,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         vehicle_ros->global_gps_pub = nh_private_.advertise<sensor_msgs::NavSatFix>(curr_vehicle_name + "/global_gps", 10);
 
-        if (airsim_mode_ == AIRSIM_MODE::DRONE) {
+        if (msr::airlib::AirSimSettings::isMultirotor(vehicle_setting->vehicle_type)) {
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
 
             // bind to a single callback. todo optimal subs queue length
@@ -180,7 +174,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
             // vehicle_ros.reset_srvr = nh_private_.advertiseService(curr_vehicle_name + "/reset",&AirsimROSWrapper::reset_srv_cb, this);
         }
-        else {
+        else if (msr::airlib::AirSimSettings::isCar(vehicle_setting->vehicle_type)) {
             auto car = static_cast<CarROS*>(vehicle_ros.get());
             car->car_cmd_sub = nh_private_.subscribe<airsim_ros_pkgs::CarControls>(
                 curr_vehicle_name + "/car_cmd",
@@ -295,8 +289,14 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         vehicle_name_ptr_map_.emplace(curr_vehicle_name, std::move(vehicle_ros)); // allows fast lookup in command callbacks in case of a lot of drones
     }
 
+    int drone_count = 0;
+    for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
+        if (msr::airlib::AirSimSettings::isMultirotor(vehicle_name_ptr_pair.second->vehicle_type_))
+            drone_count++;
+    }
+
     // add takeoff and land all services if more than 2 drones
-    if (vehicle_name_ptr_map_.size() > 1 && airsim_mode_ == AIRSIM_MODE::DRONE) {
+    if (drone_count > 1) {
         takeoff_all_srvr_ = nh_private_.advertiseService("all_robots/takeoff", &AirsimROSWrapper::takeoff_all_srv_cb, this);
         land_all_srvr_ = nh_private_.advertiseService("all_robots/land", &AirsimROSWrapper::land_all_srv_cb, this);
 
@@ -442,7 +442,8 @@ bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, ai
 {
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
-    airsim_client_.reset();
+    airsim_multirotor_client_.reset();
+    airsim_car_client_.reset();
 
     response.success = true;
     return response.success; //todo
@@ -936,12 +937,12 @@ ros::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoin
 
 msr::airlib::MultirotorRpcLibClient* AirsimROSWrapper::get_multirotor_client()
 {
-    return static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get());
+    return static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_multirotor_client_.get());
 }
 
 msr::airlib::CarRpcLibClient* AirsimROSWrapper::get_car_client()
 {
-    return static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get());
+    return static_cast<msr::airlib::CarRpcLibClient*>(airsim_car_client_.get());
 }
 
 void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
@@ -954,7 +955,7 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
         const auto now = update_state();
 
         // on init, will publish 0 to /clock as expected for use_sim_time compatibility
-        if (!airsim_client_->simIsPaused()) {
+        if (!get_multirotor_client()->simIsPaused()) {
             // airsim_client needs to provide the simulation time in a future version of the API
             ros_clock_.clock = now;
         }
@@ -1003,9 +1004,10 @@ ros::Time AirsimROSWrapper::update_state()
         auto& vehicle_ros = vehicle_name_ptr_pair.second;
 
         // vehicle environment, we can get ambient temperature here and other truths
-        auto env_data = airsim_client_->simGetGroundTruthEnvironment(vehicle_ros->vehicle_name);
+        msr::airlib::Environment::State env_data;
 
-        if (airsim_mode_ == AIRSIM_MODE::DRONE) {
+        if (msr::airlib::AirSimSettings::isMultirotor(vehicle_name_ptr_pair.second->vehicle_type_)) {
+            env_data = get_multirotor_client()->simGetGroundTruthEnvironment(vehicle_ros->vehicle_name);
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
             drone->curr_drone_state = get_multirotor_client()->getMultirotorState(vehicle_ros->vehicle_name);
 
@@ -1020,7 +1022,8 @@ ros::Time AirsimROSWrapper::update_state()
 
             vehicle_ros->curr_odom = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
         }
-        else {
+        else if (msr::airlib::AirSimSettings::isCar(vehicle_name_ptr_pair.second->vehicle_type_)) {
+            env_data = get_car_client()->simGetGroundTruthEnvironment(vehicle_ros->vehicle_name_);
             auto car = static_cast<CarROS*>(vehicle_ros.get());
             car->curr_car_state = get_car_client()->getCarState(vehicle_ros->vehicle_name);
 
@@ -1064,7 +1067,7 @@ void AirsimROSWrapper::publish_vehicle_state()
         // simulation environment truth
         vehicle_ros->env_pub.publish(vehicle_ros->env_msg);
 
-        if (airsim_mode_ == AIRSIM_MODE::CAR) {
+        if (msr::airlib::AirSimSettings::isCar(vehicle_ros->vehicle_type_)) {
             // dashboard reading from car, RPM, gear, etc
             auto car = static_cast<CarROS*>(vehicle_ros.get());
             car->car_state_pub.publish(car->car_state_msg);
@@ -1080,28 +1083,28 @@ void AirsimROSWrapper::publish_vehicle_state()
         for (auto& sensor_publisher : vehicle_ros->sensor_pubs) {
             switch (sensor_publisher.sensor_type) {
             case SensorBase::SensorType::Barometer: {
-                auto baro_data = airsim_client_->getBarometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto baro_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getBarometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 airsim_ros_pkgs::Altimeter alt_msg = get_altimeter_msg_from_airsim(baro_data);
                 alt_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(alt_msg);
                 break;
             }
             case SensorBase::SensorType::Imu: {
-                auto imu_data = airsim_client_->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto imu_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 sensor_msgs::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
                 imu_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(imu_msg);
                 break;
             }
             case SensorBase::SensorType::Distance: {
-                auto distance_data = airsim_client_->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto distance_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 sensor_msgs::Range dist_msg = get_range_from_airsim(distance_data);
                 dist_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(dist_msg);
                 break;
             }
             case SensorBase::SensorType::Gps: {
-                auto gps_data = airsim_client_->getGpsData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto gps_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getGpsData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 sensor_msgs::NavSatFix gps_msg = get_gps_msg_from_airsim(gps_data);
                 gps_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(gps_msg);
@@ -1112,7 +1115,7 @@ void AirsimROSWrapper::publish_vehicle_state()
                 break;
             }
             case SensorBase::SensorType::Magnetometer: {
-                auto mag_data = airsim_client_->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto mag_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 sensor_msgs::MagneticField mag_msg = get_mag_msg_from_airsim(mag_data);
                 mag_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(mag_msg);
@@ -1125,12 +1128,22 @@ void AirsimROSWrapper::publish_vehicle_state()
     }
 }
 
+msr::airlib::RpcLibClientBase* AirsimROSWrapper::get_client_by_vehicle_type(std::string vehicle_type)
+{
+    if (msr::airlib::AirSimSettings::isCar(vehicle_type)) {
+        return airsim_car_client_.get();
+    }
+    else if (msr::airlib::AirSimSettings::isMultirotor(vehicle_type)) {
+        return airsim_multirotor_client_.get();
+    }
+}
+
 void AirsimROSWrapper::update_commands()
 {
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
         auto& vehicle_ros = vehicle_name_ptr_pair.second;
 
-        if (airsim_mode_ == AIRSIM_MODE::DRONE) {
+        if (msr::airlib::AirSimSettings::isMultirotor(vehicle_ros->vehicle_type_)) {
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
 
             // send control commands from the last callback to airsim
@@ -1146,7 +1159,7 @@ void AirsimROSWrapper::update_commands()
             }
             drone->has_vel_cmd = false;
         }
-        else {
+        else if (msr::airlib::AirSimSettings::isCar(vehicle_ros->vehicle_type_)) {
             // send control commands from the last callback to airsim
             auto car = static_cast<CarROS*>(vehicle_ros.get());
             if (car->has_car_cmd) {
@@ -1160,7 +1173,18 @@ void AirsimROSWrapper::update_commands()
     // Only camera rotation, no translation movement of camera
     if (has_gimbal_cmd_) {
         std::lock_guard<std::mutex> guard(drone_control_mutex_);
-        airsim_client_->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(0, 0, 0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
+
+        std::vector<std::string> vehicle_names = get_car_client()->listVehicles();
+
+        if (!vehicle_names.empty() && std::find(vehicle_names.begin(), vehicle_names.end(), gimbal_cmd_.vehicle_name) != std::end(vehicle_names)) {
+            airsim_car_client_->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(0, 0, 0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
+        }
+        else {
+            vehicle_names = get_multirotor_client()->listVehicles();
+            if (!vehicle_names.empty() && std::find(vehicle_names.begin(), vehicle_names.end(), gimbal_cmd_.vehicle_name) != std::end(vehicle_names)) {
+                airsim_multirotor_client_->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(0, 0, 0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
+            }
+        }
     }
 
     has_gimbal_cmd_ = false;
