@@ -265,7 +265,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                 case SensorBase::SensorType::Lidar: {
                     auto lidar_setting = *static_cast<LidarSetting*>(sensor_setting.get());
                     msr::airlib::LidarSimpleParams params;
-                    params.initializeFromSettings(lidar_setting);
+                    params.initializeFromSettings(lidar_setting, vehicle_setting->vehicle_type);
                     append_static_lidar_tf(vehicle_ros.get(), sensor_name, params);
 
                     SensorPublisher<sensor_msgs::msg::PointCloud2> sensor_publisher =
