@@ -367,7 +367,6 @@ namespace airlib
         float settings_version_minimum = 1.2f;
 
     public: //fields
-        std::string simmode_name = "";
         std::string level_name = "";
 
         std::vector<SubwindowSetting> subwindow_settings;
@@ -1233,6 +1232,7 @@ namespace airlib
 
         void loadClockSettings(const Settings& settings_json)
         {
+            //ToDo - what should be the clock type in case of car and multirotor?
             clock_type = settings_json.getString("ClockType", "");
 
             if (clock_type == "") {
@@ -1240,7 +1240,7 @@ namespace airlib
                 clock_type = "ScalableClock";
 
                 //override if multirotor simmode with simple_flight
-                if (simmode_name == kSimModeTypeMultirotor) {
+                /*if (simmode_name == kSimModeTypeMultirotor) */{
                     //TODO: this won't work if simple_flight and PX4 is combined together!
 
                     //for multirotors we select steppable fixed interval clock unless we have
