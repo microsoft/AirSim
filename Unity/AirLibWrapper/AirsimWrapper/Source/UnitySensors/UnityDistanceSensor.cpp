@@ -4,7 +4,7 @@
 #include "../UnityUtilities.hpp"
 
 UnityDistanceSensor::UnityDistanceSensor(const std::string& vehicle_type, std::string vehicle_name, const NedTransform* ned_transform)
-    : vehicle_name_(vehicle_name), ned_transform_(ned_transform)
+    : DistanceSimple(vehicle_type), vehicle_name_(vehicle_name), ned_transform_(ned_transform)
 {
 }
 
