@@ -153,7 +153,7 @@ private:
 
         std::string odom_frame_id_;
 
-        std::string vehicle_type;
+        std::string vehicle_type_;
     };
 
     class CarROS : public VehicleROS
