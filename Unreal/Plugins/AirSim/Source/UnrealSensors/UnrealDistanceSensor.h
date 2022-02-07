@@ -15,7 +15,8 @@ public:
 
 public:
     UnrealDistanceSensor(const AirSimSettings::DistanceSetting& setting,
-                         AActor* actor, const NedTransform* ned_transform);
+                         AActor* actor, const NedTransform* ned_transform,
+                         const std::string& vehicle_type);
 
 protected:
     virtual msr::airlib::real_T getRayLength(const msr::airlib::Pose& pose) override;

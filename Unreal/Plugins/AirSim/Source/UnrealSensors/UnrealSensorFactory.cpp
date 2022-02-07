@@ -10,17 +10,18 @@ UnrealSensorFactory::UnrealSensorFactory(AActor* actor, const NedTransform* ned_
 }
 
 std::shared_ptr<msr::airlib::SensorBase> UnrealSensorFactory::createSensorFromSettings(
-    const AirSimSettings::SensorSetting* sensor_setting) const
+    const AirSimSettings::SensorSetting* sensor_setting,
+    const std::string& vehicle_type) const
 {
     using SensorBase = msr::airlib::SensorBase;
 
     switch (sensor_setting->sensor_type) {
     case SensorBase::SensorType::Distance:
         return std::shared_ptr<UnrealDistanceSensor>(new UnrealDistanceSensor(
-            *static_cast<const AirSimSettings::DistanceSetting*>(sensor_setting), actor_, ned_transform_));
+            *static_cast<const AirSimSettings::DistanceSetting*>(sensor_setting), actor_, ned_transform_, vehicle_type));
     case SensorBase::SensorType::Lidar:
         return std::shared_ptr<UnrealLidarSensor>(new UnrealLidarSensor(
-            *static_cast<const AirSimSettings::LidarSetting*>(sensor_setting), actor_, ned_transform_));
+            *static_cast<const AirSimSettings::LidarSetting*>(sensor_setting), actor_, ned_transform_, vehicle_type));
     default:
         return msr::airlib::SensorFactory::createSensorFromSettings(sensor_setting);
     }
