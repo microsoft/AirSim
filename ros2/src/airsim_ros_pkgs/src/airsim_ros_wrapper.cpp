@@ -439,7 +439,7 @@ bool AirsimROSWrapper::reset_srv_cb(std::shared_ptr<airsim_interfaces::srv::Rese
     unused(response);
     std::lock_guard<std::mutex> guard(control_mutex_);
 
-    airsim_client_.reset();
+    airsim_client_->reset();
     return true; //todo
 }
 

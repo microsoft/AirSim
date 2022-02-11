@@ -442,7 +442,7 @@ bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, ai
 {
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
-    airsim_client_.reset();
+    airsim_client_->reset();
 
     response.success = true;
     return response.success; //todo
