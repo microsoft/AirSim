@@ -381,39 +381,39 @@ def plotResults(data):
     # print(k)
     # print(k[2,1])
 
-    # theta_error = np.zeros(len(timestamp))
-    # phi_error = np.zeros(len(timestamp))
-    # psi_error = np.zeros(len(timestamp))
+    theta_error = np.zeros(len(timestamp))
+    phi_error = np.zeros(len(timestamp))
+    psi_error = np.zeros(len(timestamp))
     # # print(psi_error)
 
-    # for i in range(0, len(timestamp)):
-    #     ground = M_OB(true_q0[i],
-    #                   true_q1[i],
-    #                   true_q2[i],
-    #                   true_q3[i])
-    #     estimated = M_OB(estimated_q0[i],
-    #                      estimated_q1[i],
-    #                      estimated_q2[i],
-    #                      estimated_q3[i])
-    #     # print(ground_error)
+    for i in range(0, len(timestamp)):
+        ground = M_OB(true_q0[i],
+                      true_q1[i],
+                      true_q2[i],
+                      true_q3[i])
+        estimated = M_OB(estimated_q0[i],
+                         estimated_q1[i],
+                         estimated_q2[i],
+                         estimated_q3[i])
+        # print(ground_error)
 
-    #     error_direction_cosine = ground*estimated.transpose()
-    #     # print(error_direction_cosine[2, 0])
+        error_direction_cosine = ground*estimated.transpose()
+        # print(error_direction_cosine[2, 0])
 
-    #     #     euler = [atan2(mat(3,2),mat(3,3));
-    #     #              -asin(mat(3,1));
-    #     #              atan2(mat(2,1),mat(1,1))];
+        #     euler = [atan2(mat(3,2),mat(3,3));
+        #              -asin(mat(3,1));
+        #              atan2(mat(2,1),mat(1,1))];
 
-    #     phi_error[i]   = np.arctan2(error_direction_cosine[2, 1],error_direction_cosine[2, 2])*180/np.pi
-    #     theta_error[i] = -np.arcsin(error_direction_cosine[2, 0])*180/np.pi
-    #     psi_error[i]   = np.arctan2(error_direction_cosine[1, 0],error_direction_cosine[0, 0])*180/np.pi
+        phi_error[i]   = np.arctan2(error_direction_cosine[2, 1],error_direction_cosine[2, 2])*180/np.pi
+        theta_error[i] = -np.arcsin(error_direction_cosine[2, 0])*180/np.pi
+        psi_error[i]   = np.arctan2(error_direction_cosine[1, 0],error_direction_cosine[0, 0])*180/np.pi
 
 
     # apply style
     plt.style.use('./style.mplstyle')
 
     # define the plot
-    fig, ax = plt.subplots(36, 1)
+    fig, ax = plt.subplots(38, 1)
 
     # begin plotting
     i=0
@@ -585,6 +585,24 @@ def plotResults(data):
     ax[i].plot(timestamp, err_estimated_yaw, linestyle='dotted', color='C5', label="yaw")
     ax[i].legend()
     ax[i].set_ylabel('angles error(deg)')
+    # ax[i].set_xlim([5, 6])
+    # ax[i].set_ylim([-0.0001, 0.0001])
+    ax[i].grid(True)
+
+    i+=1
+    ax[i].plot(timestamp, theta_error, linestyle='solid', color='C1', label="pitch")
+    ax[i].legend()
+    ax[i].plot(timestamp, phi_error, linestyle='solid', color='C2', label="roll")
+    ax[i].legend()
+    ax[i].set_ylabel('angles error dir cos(deg)')
+    # ax[i].set_xlim([5, 6])
+    # ax[i].set_ylim([-0.0001, 0.0001])
+    ax[i].grid(True)
+
+    i+=1
+    ax[i].plot(timestamp, psi_error, linestyle='dotted', color='C5', label="yaw")
+    ax[i].legend()
+    ax[i].set_ylabel('angles error dir cos(deg)')
     # ax[i].set_xlim([5, 6])
     # ax[i].set_ylim([-0.0001, 0.0001])
     ax[i].grid(True)
