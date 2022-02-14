@@ -32,6 +32,7 @@ namespace airlib
         static constexpr char const* kVehicleTypeArduCopterSolo = "arducoptersolo";
         static constexpr char const* kVehicleTypeSimpleFlight = "simpleflight";
         static constexpr char const* kVehicleTypeArduCopter = "arducopter";
+        static constexpr char const* kVehicleTypeBetaflight = "betaflight";
         static constexpr char const* kVehicleTypePhysXCar = "physxcar";
         static constexpr char const* kVehicleTypeArduRover = "ardurover";
         static constexpr char const* kVehicleTypeComputerVision = "computervision";
@@ -794,7 +795,7 @@ namespace airlib
             auto vehicle_type = Utils::toLower(settings_json.getString("VehicleType", ""));
 
             std::unique_ptr<VehicleSetting> vehicle_setting;
-            if (vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo || vehicle_type == kVehicleTypeArduCopter || vehicle_type == kVehicleTypeArduRover)
+            if (vehicle_type == kVehicleTypePX4 || vehicle_type == kVehicleTypeArduCopterSolo || vehicle_type == kVehicleTypeArduCopter || vehicle_type == kVehicleTypeBetaflight || vehicle_type == kVehicleTypeArduRover)
                 vehicle_setting = createMavLinkVehicleSetting(settings_json);
             //for everything else we don't need derived class yet
             else {
