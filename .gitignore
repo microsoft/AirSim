@@ -402,4 +402,7 @@ PythonClient/docs/_build
 /AirLibUnitTests/data
 /AirLibUnitTests/figures
 /AirLibUnitTests/log.txt
+/AirLibUnitTests/data.csv
+/AirLibUnitTests/figure.pdf
 /AirLibUnitTests/other.txt
+build_AirSimEkfPod/
