@@ -27,11 +27,11 @@ namespace airlib
         SingleTaskCall lock(this);
 
         auto kinematics = getKinematicsEstimated();
-        if (kinematics.twist.linear.norm() > approx_zero_vel_) {
-            throw VehicleMoveException(Utils::stringf(
-                "Cannot perform takeoff because vehicle is already moving with velocity %f m/s",
-                kinematics.twist.linear.norm()));
-        }
+        // if (kinematics.twist.linear.norm() > approx_zero_vel_) {
+        //     throw VehicleMoveException(Utils::stringf(
+        //         "Cannot perform takeoff because vehicle is already moving with velocity %f m/s",
+        //         kinematics.twist.linear.norm()));
+        // }
 
         bool ret = moveToPosition(kinematics.pose.position.x(),
                                   kinematics.pose.position.y(),

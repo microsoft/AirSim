@@ -10,7 +10,7 @@
 #include "physics/Environment.hpp"
 #include "common/Common.hpp"
 
-#define EKF_ESTIMATED_DIRECTIVE 0
+#define EKF_ESTIMATED_DIRECTIVE 1
 
 namespace msr
 {
@@ -249,10 +249,10 @@ namespace airlib
             simple_flight::Axis4r orientation;
             auto ekf_states = ekf_->getEkfStates();
 
-            orientation.x()   = ekf_states(6);
-            orientation.y()   = ekf_states(7);
-            orientation.z()   = ekf_states(8);
-            orientation.val4()= ekf_states(9);
+            orientation.val4()= ekf_states(6);
+            orientation.x()   = ekf_states(7);
+            orientation.y()   = ekf_states(8);
+            orientation.z()   = ekf_states(9);
 
             return orientation;
         }
