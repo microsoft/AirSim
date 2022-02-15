@@ -10,7 +10,6 @@
 #include "physics/Environment.hpp"
 #include "common/Common.hpp"
 
-#define EKF_ESTIMATED_DIRECTIVE 1
 
 namespace msr
 {
@@ -21,7 +20,7 @@ namespace airlib
     {
     public:
         AirSimSimpleFlightEstimator(simple_flight::IEkf* ekf)
-        : ekf_(ekf)
+        : ekf_(ekf), ekf_enabled_(ekf_->checkEkfEnabled())
         {
 
         }
@@ -37,63 +36,63 @@ namespace airlib
 
         virtual simple_flight::Axis3r getAngles() const override
         {
-#if EKF_ESTIMATED_DIRECTIVE == 1
-            return getEkfAngles();
-#else
-            return getTrueAngles();
-#endif
+            if (ekf_enabled_) {
+                return getEkfAngles();
+            } else {
+                return getTrueAngles();
+            }
         }
 
         virtual simple_flight::Axis3r getAngularVelocity() const override
         {
-#if EKF_ESTIMATED_DIRECTIVE == 1
-            auto ekf_measurements = getEkfMeasurements();
-            return AirSimSimpleFlightCommon::toAxis3r(VectorMath::transformToWorldFrame(AirSimSimpleFlightCommon::toVector3r(ekf_measurements.gyro),
-                                                                                        AirSimSimpleFlightCommon::toQuaternion(getOrientation()),
-                                                                                        true));
-#else
-            return getTrueAngularVelocity();
-#endif
+            if (ekf_enabled_) {
+                auto ekf_measurements = getEkfMeasurements();
+                return AirSimSimpleFlightCommon::toAxis3r(VectorMath::transformToWorldFrame(AirSimSimpleFlightCommon::toVector3r(ekf_measurements.gyro),
+                                                                                            AirSimSimpleFlightCommon::toQuaternion(getOrientation()),
+                                                                                            true));
+            } else {
+                return getTrueAngularVelocity();
+            }
         }
 
         virtual simple_flight::Axis3r getPosition() const override
         {
-#if EKF_ESTIMATED_DIRECTIVE == 1
-            return getEkfPosition();
-#else
-            return getTruePosition();
-#endif
+            if (ekf_enabled_) {
+                return getEkfPosition();
+            } else {
+                return getTruePosition();
+            }
         }
 
         virtual simple_flight::Axis3r transformToBodyFrame(const simple_flight::Axis3r& world_frame_val) const override
         {
-#if EKF_ESTIMATED_DIRECTIVE == 1
-            const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
-            const Vector3r& trans = VectorMath::transformToBodyFrame(vec, AirSimSimpleFlightCommon::toQuaternion(getOrientation()));
-            return AirSimSimpleFlightCommon::toAxis3r(trans);
-#else
-            const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
-            const Vector3r& trans = VectorMath::transformToBodyFrame(vec, kinematics_->pose.orientation);
-            return AirSimSimpleFlightCommon::toAxis3r(trans);
-#endif
+            if (ekf_enabled_) {
+                const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
+                const Vector3r& trans = VectorMath::transformToBodyFrame(vec, AirSimSimpleFlightCommon::toQuaternion(getOrientation()));
+                return AirSimSimpleFlightCommon::toAxis3r(trans);
+            } else {
+                const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
+                const Vector3r& trans = VectorMath::transformToBodyFrame(vec, kinematics_->pose.orientation);
+                return AirSimSimpleFlightCommon::toAxis3r(trans);
+            }
         }
 
         virtual simple_flight::Axis3r getLinearVelocity() const override
         {
-#if EKF_ESTIMATED_DIRECTIVE == 1
-            return getEkfLinearVelocity();
-#else
-            return getTrueLinearVelocity();
-#endif
+            if (ekf_enabled_) {
+                return getEkfLinearVelocity();
+            } else {
+                return getTrueLinearVelocity();
+            }
         }
 
         virtual simple_flight::Axis4r getOrientation() const override
         {
-#if EKF_ESTIMATED_DIRECTIVE == 1
-            return getEkfOrientation();
-#else
-            return getTrueOrientation();
-#endif
+            if (ekf_enabled_) {
+                return getEkfOrientation();
+            } else {
+                return getTrueOrientation();
+            }
         }
 
         virtual simple_flight::GeoPoint getGeoPoint() const override // TODO return this from measurement
@@ -433,6 +432,7 @@ namespace airlib
         const Kinematics::State* kinematics_;
         const Environment* environment_;
         const simple_flight::IEkf* ekf_;
+        bool ekf_enabled_;
     };
 }
 } //namespace

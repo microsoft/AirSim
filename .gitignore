@@ -403,6 +403,6 @@ PythonClient/docs/_build
 /AirLibUnitTests/figures
 /AirLibUnitTests/log.txt
 /AirLibUnitTests/data.csv
-/AirLibUnitTests/figure.pdf
+/AirLibUnitTests/figure*.pdf
 /AirLibUnitTests/other.txt
 build_AirSimEkfPod/
