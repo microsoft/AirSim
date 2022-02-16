@@ -8,6 +8,10 @@ namespace simple_flight
 class IStateEstimator
 {
 public:
+    bool checkEkfEnabled()
+    {
+        return ekf_enabled_;
+    }
     virtual Axis3r getAngles() const = 0;
     virtual Axis3r getAngularVelocity() const = 0;
     virtual Axis3r getPosition() const = 0;
@@ -30,13 +34,14 @@ public:
     virtual simple_flight::SensorBiases getEkfSensorBias() const = 0;
     virtual simple_flight::EkfKinematicsState getEkfKinematicsEstimated() const = 0;
 
-    virtual simple_flight::Axis3r getEkfPositionCovariance() const = 0;
-    virtual simple_flight::Axis3r getEkfLinearVelocityCovariance() const = 0;
-    virtual simple_flight::Axis4r getEkfOrientationCovariance() const = 0;
-    virtual simple_flight::Axis3r getEkfAnglesCovariance() const = 0;
-    virtual simple_flight::Axis3r getEkfImuBiasCovariance() const = 0;
-    virtual simple_flight::Axis3r getEkfGyroBiasCovariance() const = 0;
-    virtual float getEkfBaroBiasCovariance() const = 0;
+    virtual simple_flight::Axis3r getEkfPositionVariance() const = 0;
+    virtual simple_flight::Axis3r getEkfLinearVelocityVariance() const = 0;
+    virtual simple_flight::Axis4r getEkfOrientationVariance() const = 0;
+    virtual simple_flight::Axis3r getEkfAnglesVariance() const = 0;
+    virtual simple_flight::Axis3r getEkfAccelBiasVariance() const = 0;
+    virtual simple_flight::Axis3r getEkfGyroBiasVariance() const = 0;
+    virtual float getEkfBaroBiasVariance() const = 0;
+    virtual simple_flight::EkfKinematicsState getEkfStateVariance() const = 0;
     
     virtual float getEkfOrientationNorm() const = 0;
 
@@ -49,5 +54,8 @@ public:
     virtual simple_flight::Axis3r getTrueLinearVelocity() const = 0;
     virtual simple_flight::Axis4r getTrueOrientation() const = 0;
     virtual simple_flight::KinematicsState getTrueKinematicsEstimated() const = 0;
+
+public:
+    bool ekf_enabled_;
 };
 }

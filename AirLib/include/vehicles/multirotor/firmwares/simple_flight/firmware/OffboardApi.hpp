@@ -97,8 +97,12 @@ public:
             //initial value from RC for smooth transition
             updateGoalFromRc();
 
-            comm_link_->log("requestApiControl was successful", ICommLink::kLogLevelInfo);
-
+            if (state_estimator_->checkEkfEnabled()) {
+                message = string("requestApiControl was successful. ") + string("Ekf enabled: ") + string("True");
+            } else {
+                message = string("requestApiControl was successful. ") + string("Ekf enabled: ") + string("False");
+            }
+            comm_link_->log(message, ICommLink::kLogLevelInfo);
             return true;
         }
         else {
@@ -270,27 +274,27 @@ private:
                 << state_estimator_->getEkfKinematicsEstimated().sensor_bias.gyro.y() << '\t'
                 << state_estimator_->getEkfKinematicsEstimated().sensor_bias.gyro.z() << '\t'
                 << state_estimator_->getEkfKinematicsEstimated().sensor_bias.barometer << '\t'
-        // covariances
-                << state_estimator_->getEkfPositionCovariance().x() << '\t'
-                << state_estimator_->getEkfPositionCovariance().y() << '\t'
-                << state_estimator_->getEkfPositionCovariance().z() << '\t'
-                << state_estimator_->getEkfLinearVelocityCovariance().x() << '\t'
-                << state_estimator_->getEkfLinearVelocityCovariance().y() << '\t'
-                << state_estimator_->getEkfLinearVelocityCovariance().z() << '\t'
-                << state_estimator_->getEkfOrientationCovariance().val4() << '\t'
-                << state_estimator_->getEkfOrientationCovariance().x() << '\t'
-                << state_estimator_->getEkfOrientationCovariance().y() << '\t'
-                << state_estimator_->getEkfOrientationCovariance().z() << '\t'
-                << state_estimator_->getEkfAnglesCovariance().x() << '\t'
-                << state_estimator_->getEkfAnglesCovariance().y() << '\t'
-                << state_estimator_->getEkfAnglesCovariance().z() << '\t'
-                << state_estimator_->getEkfImuBiasCovariance().x() << '\t'
-                << state_estimator_->getEkfImuBiasCovariance().y() << '\t'
-                << state_estimator_->getEkfImuBiasCovariance().z() << '\t'
-                << state_estimator_->getEkfGyroBiasCovariance().x() << '\t'
-                << state_estimator_->getEkfGyroBiasCovariance().y() << '\t'
-                << state_estimator_->getEkfGyroBiasCovariance().z() << '\t'
-                << state_estimator_->getEkfBaroBiasCovariance() << '\t'
+        // variances
+                << state_estimator_->getEkfPositionVariance().x() << '\t'
+                << state_estimator_->getEkfPositionVariance().y() << '\t'
+                << state_estimator_->getEkfPositionVariance().z() << '\t'
+                << state_estimator_->getEkfLinearVelocityVariance().x() << '\t'
+                << state_estimator_->getEkfLinearVelocityVariance().y() << '\t'
+                << state_estimator_->getEkfLinearVelocityVariance().z() << '\t'
+                << state_estimator_->getEkfOrientationVariance().val4() << '\t'
+                << state_estimator_->getEkfOrientationVariance().x() << '\t'
+                << state_estimator_->getEkfOrientationVariance().y() << '\t'
+                << state_estimator_->getEkfOrientationVariance().z() << '\t'
+                << state_estimator_->getEkfAnglesVariance().x() << '\t'
+                << state_estimator_->getEkfAnglesVariance().y() << '\t'
+                << state_estimator_->getEkfAnglesVariance().z() << '\t'
+                << state_estimator_->getEkfAccelBiasVariance().x() << '\t'
+                << state_estimator_->getEkfAccelBiasVariance().y() << '\t'
+                << state_estimator_->getEkfAccelBiasVariance().z() << '\t'
+                << state_estimator_->getEkfGyroBiasVariance().x() << '\t'
+                << state_estimator_->getEkfGyroBiasVariance().y() << '\t'
+                << state_estimator_->getEkfGyroBiasVariance().z() << '\t'
+                << state_estimator_->getEkfBaroBiasVariance() << '\t'
         // quaternion norm
                 << state_estimator_->getEkfOrientationNorm() << '\t'
         // off-diag quaternion covariance
