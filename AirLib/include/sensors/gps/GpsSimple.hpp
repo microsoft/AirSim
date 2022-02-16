@@ -87,18 +87,18 @@ namespace airlib
             
             // add Gaussian white noise to the ground truth gps position outputs
             real_T gps_sigma_pos = 0.00001f; // 1/6378km rad 
-            output.gnss.geo_point.longitude += gauss_dist_pos.next()[0] * gps_sigma_pos;
-            output.gnss.geo_point.latitude  += gauss_dist_pos.next()[1] * gps_sigma_pos;
-            output.gnss.geo_point.altitude  += gauss_dist_pos.next()[2] * 3.0f;
+            output.gnss.geo_point.longitude += gauss_dist_pos.next()[0] * params_.sigma_long;
+            output.gnss.geo_point.latitude  += gauss_dist_pos.next()[1] * params_.sigma_lat;
+            output.gnss.geo_point.altitude  += gauss_dist_pos.next()[2] * params_.sigma_alt;
 
             output.gnss.eph = eph;
             output.gnss.epv = epv;
 
             // add Gaussian white noise to the ground truth gps position outputs
             output.gnss.velocity = ground_truth.kinematics->twist.linear;
-            output.gnss.velocity.x() += gauss_dist_vel.next()[0]*2.0f;
-            output.gnss.velocity.y() += gauss_dist_vel.next()[1]*2.0f;
-            output.gnss.velocity.z() += gauss_dist_vel.next()[2]*2.0f;
+            output.gnss.velocity.x() += gauss_dist_vel.next()[0] * params_.sigma_vel_x;
+            output.gnss.velocity.y() += gauss_dist_vel.next()[1] * params_.sigma_vel_y;
+            output.gnss.velocity.z() += gauss_dist_vel.next()[2] * params_.sigma_vel_z;
 
             output.is_valid = true;
 

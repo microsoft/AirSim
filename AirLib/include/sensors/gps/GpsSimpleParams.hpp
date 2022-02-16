@@ -18,6 +18,13 @@ namespace airlib
         real_T eph_final = 0.1f, epv_final = 0.1f; // PX4 won't converge GPS sensor fusion until we get to 10% accuracty.
         real_T eph_min_3d = 3.0f, eph_min_2d = 4.0f;
 
+        double sigma_long = 0.000001; // deg
+        double sigma_lat = 0.000001; // deg
+        real_T sigma_alt = 1.0f; // m
+        real_T sigma_vel_x = 0.1f; // m/s
+        real_T sigma_vel_y = 0.1f; // m/s
+        real_T sigma_vel_z = 0.1f; // m/s
+
         real_T update_latency = 0.2f; //sec
         real_T update_frequency = 50; //Hz
         real_T startup_delay = 1; //sec
@@ -33,6 +40,14 @@ namespace airlib
             epv_final = json.getFloat("EpvFinal", epv_final);
             eph_min_3d = json.getFloat("EphMin3d", eph_min_3d);
             eph_min_2d = json.getFloat("EphMin2d", eph_min_2d);
+
+            sigma_long = json.getDouble("SigmaLong", sigma_long);
+            sigma_lat = json.getDouble("SigmaLat", sigma_lat);
+            sigma_alt = json.getFloat("SigmaAlt", sigma_alt);
+            sigma_vel_x = json.getFloat("SigmaVelX", sigma_vel_x);
+            sigma_vel_y = json.getFloat("SigmaVelY", sigma_vel_y);
+            sigma_vel_z = json.getFloat("SigmaVelZ", sigma_vel_z);
+
             update_latency = json.getFloat("UpdateLatency", update_latency);
             update_frequency = json.getFloat("UpdateFrequency", update_frequency);
             startup_delay = json.getFloat("StartupDelay", startup_delay);
