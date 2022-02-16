@@ -19,14 +19,13 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
-#define RpcLibPortCV 41451
-#define RpcLibPortCar 41461
-#define RpcLibPortMultirotor 41471
-
 namespace msr
 {
 namespace airlib
 {
+    static constexpr int RpcLibPortCV = 41451;
+    static constexpr int RpcLibPortCar = 41461;
+    static constexpr int RpcLibPortMultirotor = 41471;
 
     //numericals
     typedef float real_T;
