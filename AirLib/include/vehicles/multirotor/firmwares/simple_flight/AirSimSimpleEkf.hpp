@@ -14,11 +14,8 @@
 #include "AirSimSimpleEkfParams.hpp"
 #include "common/GeodeticConverter.hpp"       
 
-#define EKF_GROUND_TRUTH_MEAS_DIRECTIVE 0
-#define EKF_BARO_DIRECTIVE 1
-#define EKF_MAGNETO_DIRECTIVE 1
-#define EKF_GPS_DIRECTIVE 1
-#define EKF_PSEUDOMEAS_DIRECTIVE 1
+#define AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE 0
+#define AirSimSimpleEkf_PSEUDOMEAS_DIRECTIVE 1
 
 namespace msr
 {
@@ -174,6 +171,9 @@ namespace airlib
             earth_mag_[1] = magnetic_field_true.y();
             earth_mag_[2] = magnetic_field_true.z();
 
+            // reset home altitude
+            home_altitude_ = environment_->getHomeGeoPoint().altitude;
+
             // reset imu data buffer todo manage this in better way
             real_T accel[3];
             real_T gyro[3];
@@ -222,19 +222,16 @@ namespace airlib
         // measurement update step
         void measurementUpdateStep()
         {
-#if EKF_BARO_DIRECTIVE == 1
-            barometerUpdate();
-#else
-#endif
-#if EKF_MAGNETO_DIRECTIVE == 1
-            magnetometerUpdate();
-#else
-#endif
-#if EKF_GPS_DIRECTIVE == 1
-            gpsUpdate();
-#else
-#endif
-#if EKF_PSEUDOMEAS_DIRECTIVE == 1
+            if (params_.fuse_baro) {
+                barometerUpdate();
+            }
+            if (params_.fuse_mag) {
+                magnetometerUpdate();
+            }
+            if (params_.fuse_gps) {
+                gpsUpdate();
+            }
+#if AirSimSimpleEkf_PSEUDOMEAS_DIRECTIVE == 1
             pseudoMeasurement();
 #else
 #endif
@@ -441,10 +438,10 @@ namespace airlib
             if(!board_->checkBarometerIfNew())
                 return;
 
-            real_T altitude[1];
+            real_T ned_altitude[1];
 
             // check if the barometer gives new measurement and it is valid
-            bool is_valid = getBarometerData(altitude);
+            bool is_valid = getBarometerData(ned_altitude);
 
             if(!is_valid)
             {
@@ -469,7 +466,7 @@ namespace airlib
             // update states
             float x_corrected[simple_flight::NX];
             for (int i=0; i<simple_flight::NX; i++){
-                x_corrected[i] = x[i] + kalman_gain[i]*(*altitude + x[2]);
+                x_corrected[i] = x[i] + kalman_gain[i]*(*ned_altitude + x[2]);
             }
 
             // update covariances
@@ -641,7 +638,7 @@ namespace airlib
                         real_T gyro[3])
         {
 
-#if EKF_GROUND_TRUTH_MEAS_DIRECTIVE == 1
+#if AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE == 1
             // >>>>> only for verification, with ground truth measurements
             VectorMath::Vector3f linear_acceleration = kinematics_->accelerations.linear - environment_->getState().gravity;
             // acceleration is in world frame so transform to body frame
@@ -679,7 +676,7 @@ namespace airlib
                         real_T vel[3])
         {
 
-#if EKF_GROUND_TRUTH_MEAS_DIRECTIVE == 1
+#if AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE == 1
             // >>>>> only for verification, with ground truth measurements
             pos[0] = kinematics_->pose.position.x();
             pos[1] = kinematics_->pose.position.y();
@@ -717,19 +714,22 @@ namespace airlib
         }
 
         // reads barometer data
-        bool getBarometerData(real_T* altitude)
+        bool getBarometerData(real_T* ned_altitude)
         {
-#if EKF_GROUND_TRUTH_MEAS_DIRECTIVE == 1
+#if AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE == 1
             altitude[0] = -1.0f*kinematics_->pose.position.z();
 #else
+            real_T altitude[1];
             board_->readBarometerData(altitude);
 #endif
 
             // check if the signal has all data that is valid, else return false
             // TODO: check if at least a subset of data is valid
 
+            ned_altitude[0] = altitude[0] - home_altitude_;
+
             // record the measurement signals
-            measurement_(12) = altitude[0];
+            measurement_(12) = ned_altitude[0];
 
             return true;
 
@@ -739,7 +739,7 @@ namespace airlib
         bool getMagnetometerData(real_T mag[3])
         {
             
-#if EKF_GROUND_TRUTH_MEAS_DIRECTIVE == 1
+#if AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE == 1
 
 #else
             board_->readMagnetometerData(mag);
@@ -782,6 +782,7 @@ namespace airlib
         const Environment* environment_;
         GeodeticConverter geodetic_converter_;
         float earth_mag_[3];
+        float home_altitude_;
         
         LastTimes last_times_;
         ImuDataBuffer prev_imuData_;

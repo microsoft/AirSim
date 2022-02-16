@@ -14,6 +14,9 @@ namespace airlib
     struct AirSimSimpleEkfParams
     {
         bool ekf_enabled = false;
+        bool fuse_gps = false;
+        bool fuse_baro = false;
+        bool fuse_mag = false;
 
         struct Gyroscope
         {
@@ -135,6 +138,18 @@ namespace airlib
             float enabled = json.getBool("Enabled", Utils::nan<bool>());
             if (!std::isnan(enabled)) {
                 ekf_enabled = enabled;
+            }
+            float gps_fusion = json.getBool("GpsFusion", Utils::nan<bool>());
+            if (!std::isnan(gps_fusion)) {
+                fuse_gps = gps_fusion;
+            }
+            float baro_fusion = json.getBool("BaroFusion", Utils::nan<bool>());
+            if (!std::isnan(baro_fusion)) {
+                fuse_baro = baro_fusion;
+            }
+            float mag_fusion = json.getBool("MagnetoFusion", Utils::nan<bool>());
+            if (!std::isnan(mag_fusion)) {
+                fuse_mag = mag_fusion;
             }
             Settings imu_child;
             if (json.getChild("Imu", imu_child)){
