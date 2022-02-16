@@ -10,8 +10,12 @@ import time
 import math
 import logging
 
+RPCLIB_PORT_CV = 41451
+RPCLIB_PORT_CAR = 41461
+RPCLIB_PORT_MULTIROTOR = 41471
+
 class VehicleClient:
-    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
+    def __init__(self, ip = "", port = RPCLIB_PORT_CV, timeout_value = 3600):
         if (ip == ""):
             ip = "127.0.0.1"
         self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = timeout_value, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
@@ -1105,7 +1109,7 @@ class VehicleClient:
 
 #----------------------------------- Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
-    def __init__(self, ip = "", port = 41471, timeout_value = 3600):
+    def __init__(self, ip = "", port = RPCLIB_PORT_MULTIROTOR, timeout_value = 3600):
         super(MultirotorClient, self).__init__(ip, port, timeout_value)
 
     def takeoffAsync(self, timeout_sec = 20, vehicle_name = ''):
@@ -1569,7 +1573,7 @@ class MultirotorClient(VehicleClient, object):
 
 #----------------------------------- Car APIs ---------------------------------------------
 class CarClient(VehicleClient, object):
-    def __init__(self, ip = "", port = 41461, timeout_value = 3600):
+    def __init__(self, ip = "", port = RPCLIB_PORT_CAR, timeout_value = 3600):
         super(CarClient, self).__init__(ip, port, timeout_value)
 
     def setCarControls(self, controls, vehicle_name = ''):
