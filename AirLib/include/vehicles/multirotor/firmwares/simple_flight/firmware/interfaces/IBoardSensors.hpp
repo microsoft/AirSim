@@ -17,5 +17,7 @@ public:
     virtual void readBarometerData(real_T* altitude) const = 0;
     virtual void readMagnetometerData(real_T mag[3]) const = 0;
     virtual void readGpsData(double geo[3], real_T vel[3]) const = 0;
+
+    virtual ~IBoardSensors() = default;
 };
 }
