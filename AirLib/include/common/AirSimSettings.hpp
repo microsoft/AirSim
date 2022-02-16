@@ -1234,26 +1234,19 @@ namespace airlib
 
         void loadClockSettings(const Settings& settings_json)
         {
-            //ToDo - what should be the clock type in case of car and multirotor?
             clock_type = settings_json.getString("ClockType", "");
 
             if (clock_type == "") {
                 //default value
-                clock_type = "ScalableClock";
+                clock_type = "SteppableClock";
 
-                //override if multirotor simmode with simple_flight
-                /*if (simmode_name == kSimModeTypeMultirotor) */ {
-                    //TODO: this won't work if simple_flight and PX4 is combined together!
-
-                    //for multirotors we select steppable fixed interval clock unless we have
-                    //PX4 enabled vehicle
-                    clock_type = "SteppableClock";
-                    for (auto const& vehicle : vehicles) {
-                        if (vehicle.second->auto_create &&
-                            vehicle.second->vehicle_type == kVehicleTypePX4) {
-                            clock_type = "ScalableClock";
-                            break;
-                        }
+                //for multirotors we select steppable fixed interval clock unless we have
+                //PX4 enabled vehicle
+                for (auto const& vehicle : vehicles) {
+                    if (vehicle.second->auto_create &&
+                        vehicle.second->vehicle_type == kVehicleTypePX4) {
+                        clock_type = "ScalableClock";
+                        break;
                     }
                 }
             }
