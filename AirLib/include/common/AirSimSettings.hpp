@@ -801,7 +801,8 @@ namespace airlib
 
         static std::unique_ptr<VehicleSetting> createVehicleSetting(const std::string& simmode_name, const Settings& settings_json,
                                                                     const std::string vehicle_name,
-                                                                    std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
+                                                                    std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults,
+                                                                    std::shared_ptr<EkfSetting> ekf_setting)
         {
             auto vehicle_type = Utils::toLower(settings_json.getString("VehicleType", ""));
 
@@ -846,6 +847,9 @@ namespace airlib
             loadCameraSettings(settings_json, vehicle_setting->cameras);
             loadSensorSettings(settings_json, "Sensors", vehicle_setting->sensors, sensor_defaults);
 
+            // add ekf setting
+            vehicle_setting->ekf_setting = ekf_setting;
+
             return vehicle_setting;
         }
 
@@ -865,7 +869,10 @@ namespace airlib
                 // currently keyboard is not supported so use rc as default
                 simple_flight_setting->rc.remote_control_id = 0;
                 simple_flight_setting->sensors = sensor_defaults;
+
+                // add ekf setting
                 simple_flight_setting->ekf_setting = ekf_setting;
+
                 vehicles[simple_flight_setting->vehicle_name] = std::move(simple_flight_setting);
             }
             else if (simmode_name == kSimModeTypeCar) {
@@ -906,7 +913,7 @@ namespace airlib
                 for (const auto& key : keys) {
                     msr::airlib::Settings child;
                     vehicles_child.getChild(key, child);
-                    vehicles[key] = createVehicleSetting(simmode_name, child, key, sensor_defaults);
+                    vehicles[key] = createVehicleSetting(simmode_name, child, key, sensor_defaults, ekf_setting);
                 }
             }
         }
