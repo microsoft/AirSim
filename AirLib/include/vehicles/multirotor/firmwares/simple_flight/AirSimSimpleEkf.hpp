@@ -133,13 +133,13 @@ namespace airlib
             states_(7)  = params_.initial_states_err.quaternion.x();
             states_(8)  = params_.initial_states_err.quaternion.y();
             states_(9)  = params_.initial_states_err.quaternion.z();
-            states_(10) = 0.0f - params_.initial_states_err.accel_bias.x();
-            states_(11) = 0.0f - params_.initial_states_err.accel_bias.y();
-            states_(12) = 0.0f - params_.initial_states_err.accel_bias.z();
-            states_(13) = 0.0f - params_.initial_states_err.gyro_bias.x();
-            states_(14) = 0.0f - params_.initial_states_err.gyro_bias.y();
-            states_(15) = 0.0f - params_.initial_states_err.gyro_bias.z();
-            states_(16) = 0.0f - params_.initial_states_err.baro_bias;
+            states_(10) = params_.initial_states_err.accel_bias.x();
+            states_(11) = params_.initial_states_err.accel_bias.y();
+            states_(12) = params_.initial_states_err.accel_bias.z();
+            states_(13) = params_.initial_states_err.gyro_bias.x();
+            states_(14) = params_.initial_states_err.gyro_bias.y();
+            states_(15) = params_.initial_states_err.gyro_bias.z();
+            states_(16) = params_.initial_states_err.baro_bias;
             
             // intitialize the ekf covariances
             error_covariance_ = simple_flight::MatrixNXxNXf::Zero();

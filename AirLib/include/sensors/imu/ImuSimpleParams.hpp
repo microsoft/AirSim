@@ -69,6 +69,12 @@ namespace airlib
             if (!std::isnan(bias_stability)) {
                 accel.bias_stability = bias_stability * 1E-6f * EarthUtils::Gravity; //ug converted to m/s^2
             }
+            accel.turn_on_bias.x() = json.getFloat("AccelTurnOnBiasX", accel.turn_on_bias.x());
+            accel.turn_on_bias.y() = json.getFloat("AccelTurnOnBiasY", accel.turn_on_bias.y());
+            accel.turn_on_bias.z() = json.getFloat("AccelTurnOnBiasZ", accel.turn_on_bias.z());
+            gyro.turn_on_bias.x() = json.getFloat("GyroTurnOnBiasX", gyro.turn_on_bias.x());
+            gyro.turn_on_bias.y() = json.getFloat("GyroTurnOnBiasY", gyro.turn_on_bias.y());
+            gyro.turn_on_bias.z() = json.getFloat("GyroTurnOnBiasZ", gyro.turn_on_bias.z());
         }
     };
 }
