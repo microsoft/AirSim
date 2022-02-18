@@ -72,9 +72,19 @@ namespace airlib
             accel.turn_on_bias.x() = json.getFloat("AccelTurnOnBiasX", accel.turn_on_bias.x());
             accel.turn_on_bias.y() = json.getFloat("AccelTurnOnBiasY", accel.turn_on_bias.y());
             accel.turn_on_bias.z() = json.getFloat("AccelTurnOnBiasZ", accel.turn_on_bias.z());
-            gyro.turn_on_bias.x() = json.getFloat("GyroTurnOnBiasX", gyro.turn_on_bias.x());
-            gyro.turn_on_bias.y() = json.getFloat("GyroTurnOnBiasY", gyro.turn_on_bias.y());
-            gyro.turn_on_bias.z() = json.getFloat("GyroTurnOnBiasZ", gyro.turn_on_bias.z());
+
+            auto gyro_turn_on_bias_x = json.getFloat("GyroTurnOnBiasX", Utils::nan<float>());
+            if (!std::isnan(gyro_turn_on_bias_x)) {
+                gyro.turn_on_bias.x() = gyro_turn_on_bias_x * M_PI/180; // deg/s to rad/s
+            }
+            auto gyro_turn_on_bias_y = json.getFloat("GyroTurnOnBiasY", Utils::nan<float>());
+            if (!std::isnan(gyro_turn_on_bias_y)) {
+                gyro.turn_on_bias.y() = gyro_turn_on_bias_y * M_PI/180; // deg/s to rad/s
+            }
+            auto gyro_turn_on_bias_z = json.getFloat("GyroTurnOnBiasZ", Utils::nan<float>());
+            if (!std::isnan(gyro_turn_on_bias_z)) {
+                gyro.turn_on_bias.z() = gyro_turn_on_bias_z * M_PI/180; // deg/s to rad/s
+            }
         }
     };
 }

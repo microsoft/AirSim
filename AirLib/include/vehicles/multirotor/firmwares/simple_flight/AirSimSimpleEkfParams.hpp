@@ -121,8 +121,10 @@ namespace airlib
         void refreshAndUnitConversion()
         {
             gyro.std_error = gyro.std_error * M_PI/180; // deg/s to rad/s
-            initial_states_err.attitude = initial_states_err.attitude * M_PI/180; //deg to rad
+            initial_states_err.gyro_bias = initial_states_err.gyro_bias * M_PI/180; // deg/s to rad/s
+            initial_states_std_err.gyro_bias = initial_states_std_err.gyro_bias * M_PI/180; // deg/s to rad/s
 
+            initial_states_err.attitude = initial_states_err.attitude * M_PI/180; //deg to rad
             initial_states_err.quaternion = VectorMath::toQuaternion(initial_states_err.attitude.y(), 
                                                                      initial_states_err.attitude.x(), 
                                                                      initial_states_err.attitude.z());

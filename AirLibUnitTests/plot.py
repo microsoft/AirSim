@@ -208,11 +208,11 @@ def plotResults(data):
     i+=1
     bias_accel_z =      data[i].to_numpy(float) * 1000 / 9.80665
     i+=1
-    bias_gyro_x =       data[i].to_numpy(float) * 180/np.pi * 3600
+    bias_gyro_x =       data[i].to_numpy(float) * 180/np.pi
     i+=1
-    bias_gyro_y =       data[i].to_numpy(float) * 180/np.pi * 3600
+    bias_gyro_y =       data[i].to_numpy(float) * 180/np.pi
     i+=1
-    bias_gyro_z =       data[i].to_numpy(float) * 180/np.pi * 3600
+    bias_gyro_z =       data[i].to_numpy(float) * 180/np.pi
     i+=1
     bias_baro =         data[i].to_numpy(float)
     i+=1
@@ -258,11 +258,11 @@ def plotResults(data):
     i+=1
 
     # variance of gyro bias
-    cov_b_omega_x =             (data[i].to_numpy(float)) * (180/np.pi * 3600)* (180/np.pi * 3600)
+    cov_b_omega_x =             (data[i].to_numpy(float)) * (180/np.pi)* (180/np.pi)
     i+=1
-    cov_b_omega_y =             (data[i].to_numpy(float)) * (180/np.pi * 3600)* (180/np.pi * 3600)
+    cov_b_omega_y =             (data[i].to_numpy(float)) * (180/np.pi)* (180/np.pi)
     i+=1
-    cov_b_omega_z =             (data[i].to_numpy(float)) * (180/np.pi * 3600)* (180/np.pi * 3600)
+    cov_b_omega_z =             (data[i].to_numpy(float)) * (180/np.pi)* (180/np.pi)
     i+=1
 
     # variance baro
@@ -717,7 +717,7 @@ def plotResults(data):
                     bias_gyro_x-3*np.sqrt(cov_b_omega_x), 
                     bias_gyro_x+3*np.sqrt(cov_b_omega_x), 
                     alpha=0.3,linewidth=0, color='C5')
-    ax[i].set_ylabel('x gyro biases deg/hr')
+    ax[i].set_ylabel('x gyro biases deg/s')
     ax[i].grid(True)
 
     i+=1
@@ -727,7 +727,7 @@ def plotResults(data):
                     bias_gyro_y-3*np.sqrt(cov_b_omega_y), 
                     bias_gyro_y+3*np.sqrt(cov_b_omega_y), 
                     alpha=0.3,linewidth=0, color='C5')
-    ax[i].set_ylabel('y gyro biases deg/hr')
+    ax[i].set_ylabel('y gyro biases deg/s')
     ax[i].grid(True)
 
     i+=1
@@ -737,7 +737,7 @@ def plotResults(data):
                     bias_gyro_z-3*np.sqrt(cov_b_omega_z), 
                     bias_gyro_z+3*np.sqrt(cov_b_omega_z), 
                     alpha=0.3,linewidth=0, color='C5')
-    ax[i].set_ylabel('z gyro biases deg/hr')
+    ax[i].set_ylabel('z gyro biases deg/s')
     ax[i].grid(True)
 
     i+=1
@@ -747,7 +747,7 @@ def plotResults(data):
                     bias_baro-3*np.sqrt(cov_b_baro), 
                     bias_baro+3*np.sqrt(cov_b_baro), 
                     alpha=0.3,linewidth=0, color='C5')
-    ax[i].set_ylabel('baro biases deg/hr')
+    ax[i].set_ylabel('baro bias m')
     ax[i].grid(True)
     
     i+=1
@@ -824,7 +824,7 @@ def plotResults(data):
     ax[i].plot(timestamp, np.sqrt(cov_b_omega_z), linestyle='solid', color='C2', label="std_dev_b_omega_z")
     ax[i].legend()
     ax[i].set_yscale("log")
-    ax[i].set_ylabel('std_dev_gyro_bias(deg/hr)')
+    ax[i].set_ylabel('std_dev_gyro_bias(deg/s)')
     ax[i].grid(True)
     
     i+=1
