@@ -55,7 +55,7 @@ namespace airlib
             std::unique_ptr<msr::airlib::Environment> environment;
             Kinematics::State initial_kinematic_state = Kinematics::State::zero();
             
-            initial_kinematic_state.pose = Pose();
+            initial_kinematic_state.pose = Pose(Vector3r(1.0f, 2.0f, 3.0f), Quaternionr(1, 0, 0, 0));
             // states_(6) = 0.9961946f; // q0
             // states_(7) = 0.0f; // q1
             // states_(8) = 0.08715574f; // q2
@@ -84,9 +84,11 @@ namespace airlib
 
             // added by Suman, to fix calling update before reset https://github.com/microsoft/AirSim/issues/2773#issuecomment-703888477
             // TODO not sure if it should be here? see wrt to PawnSimApi, no side effects so far
+            // for the order of the reset see void MultirotorPawnSimApi::resetImplementation()
             api->setSimulatedGroundTruth(&kinematics.get()->getState(), environment.get());
+            kinematics->reset(); // sets initial kinematics as current among other things
+            environment->reset(); 
             api->reset();
-            kinematics->reset();
 
             // set the vehicle as grounded, otherwise can not take off, needs to to be done after physics world construction!
             vehicle.setGrounded(true);
