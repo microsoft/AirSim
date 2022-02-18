@@ -2,7 +2,6 @@
 #define msr_airlib_BetaflightDroneController_hpp
 
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
-#include "sensors/SensorCollection.hpp"
 #include "physics/Environment.hpp"
 #include "physics/Kinematics.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
@@ -12,31 +11,29 @@
 
 // Sensors
 #include "sensors/imu/ImuBase.hpp"
-#include "sensors/gps/GpsBase.hpp"
-#include "sensors/magnetometer/MagnetometerBase.hpp"
-#include "sensors/barometer/BarometerBase.hpp"
-#include "sensors/distance/DistanceSimple.hpp"
-#include "sensors/lidar/LidarSimple.hpp"
+
 #include "UdpSocket.hpp"
 
-#include <sstream>
 
+namespace msr
+{ 
+namespace airlib 
+{
 
-namespace msr{ namespace airlib {
-
-class BetaflightApi: public MultirotorApiBase{
+    class BetaflightApi: public MultirotorApiBase
+    {
 
     public:
-    // Contstructor
-    BetaflightApi(const MultiRotorParams* vehicle_params,  const AirSimSettings::MavLinkConnectionInfo& connection_info): 
-        connection_info_(connection_info), vehicle_params_(vehicle_params)
+        BetaflightApi(const MultiRotorParams* vehicle_params,  const AirSimSettings::MavLinkConnectionInfo& connection_info)
+            : connection_info_(connection_info), vehicle_params_(vehicle_params)
         {
             connect();
         }
 
-    ~BetaflightApi(){
-         closeConnections();
-    }
+        ~BetaflightApi()
+        {
+            closeConnections();
+        }
 
     public:
         virtual void resetImplementation() override
@@ -47,7 +44,8 @@ class BetaflightApi: public MultirotorApiBase{
         }
 
         // Update sensor data & send to betaflight
-        virtual void update() override {
+        virtual void update() override 
+        {
             MultirotorApiBase::update();
 
             sendState();
@@ -323,12 +321,12 @@ class BetaflightApi: public MultirotorApiBase{
             }
         }
 
-        void sendState(){    // send fdmPacket to betaflight i.e udp:9002
-            
-            fdmPacket pkt;
+        void sendState() // send fdmPacket to betaflight i.e udp:9002
+        {   
+            FdmPacket pkt;
 
             // Time
-            pkt.timestamp = ClockFactory::get()->nowNanos() / 1000;
+            pkt.timestamp = ClockFactory::get()->nowNanos() / 1E9;
             
             // IMU
             const auto& imu_output = getImuData("");
@@ -342,7 +340,7 @@ class BetaflightApi: public MultirotorApiBase{
                 pkt.imu_linear_acceleration_xyz[1] = imu_output.linear_acceleration[1];
                 pkt.imu_linear_acceleration_xyz[2] = imu_output.linear_acceleration[2];
 
-                // Orientation Quaternion. In case USE_IMU_CALC is defined on betaflight side
+                // Orientation Quaternion. In case USE_IMU_CALC is not defined on betaflight side
                 pkt.imu_orientation_quat[0] = imu_output.orientation.w();
                 pkt.imu_orientation_quat[1] = imu_output.orientation.x();
                 pkt.imu_orientation_quat[2] = imu_output.orientation.y();
@@ -357,8 +355,9 @@ class BetaflightApi: public MultirotorApiBase{
             }
         }
 
-        void recvControl(){
-            servoPacket pkt;
+        void recvControl()
+        {
+            ServoPacket pkt;
             int recv_ret = udp_socket_->recv(&pkt, sizeof(pkt), 100);
             while (recv_ret != sizeof(pkt)) {
                 if (recv_ret <= 0) {
@@ -375,39 +374,41 @@ class BetaflightApi: public MultirotorApiBase{
             }
 
             normalizeRotorControls();
-            Utils::log(Utils::stringf("pwm received: [ %f, %f, %f, %f ]", rotor_controls_[0], rotor_controls_[1], rotor_controls_[2], rotor_controls_[3]), Utils::kLogLevelInfo);
-    }
+           // Utils::log(Utils::stringf("pwm received: [ %f, %f, %f, %f ]", rotor_controls_[0], rotor_controls_[1], rotor_controls_[2], rotor_controls_[3]), Utils::kLogLevelInfo);
+        }
 
-private:
-    
-    struct fdmPacket{  // equivalent of fdm_packet in betaflight SITL
-        double timestamp;                   // in seconds
-        double imu_angular_velocity_rpy[3]; // rad/s -> range: +/- 8192; +/- 2000 deg/se
-        double imu_linear_acceleration_xyz[3];    // m/s/s NED, body frame -> sim 1G = 9.80665, FC 1G = 256
-        double imu_orientation_quat[4];     // w, x, y, z
-        double velocity_xyz[3];             // m/s, earth frame
-        double position_xyz[3];             // meters, NED from origin
-    } ;
-    
-    static const int kBetaflightRotorControlCount = 4;
-    
-    struct servoPacket {  // equivalent of servo_packet in betaflight SITL
-        u_int16_t pwm[kBetaflightRotorControlCount]; //
+    private:
+        
+        struct FdmPacket // equivalent of fdm_packet in betaflight SITL
+        {  
+            double timestamp;                   // in seconds
+            double imu_angular_velocity_rpy[3]; // rad/s -> range: +/- 8192; +/- 2000 deg/se
+            double imu_linear_acceleration_xyz[3];    // m/s/s NED, body frame -> sim 1G = 9.80665, FC 1G = 256
+            double imu_orientation_quat[4];     // w, x, y, z
+            double velocity_xyz[3];             // m/s, earth frame
+            double position_xyz[3];             // meters, NED from origin
+        };
+        
+        static const int kBetaflightRotorControlCount = 4;
+        
+        struct ServoPacket // equivalent of servo_packet in betaflight SITL
+        {  
+            u_int16_t pwm[kBetaflightRotorControlCount]; 
+        };
+
+        float rotor_controls_[kBetaflightRotorControlCount];
+
+        std::unique_ptr<mavlinkcom::UdpSocket> udp_socket_;
+        MultirotorApiParams safety_params_;
+        AirSimSettings::MavLinkConnectionInfo connection_info_;
+        const MultiRotorParams* vehicle_params_;
+
+        uint16_t port_;
+        std::string ip_;
+        RCData last_rcData_;
+        bool is_rc_connected_;
     };
-
-    float rotor_controls_[kBetaflightRotorControlCount];
-
-    std::unique_ptr<mavlinkcom::UdpSocket> udp_socket_;
-    MultirotorApiParams safety_params_;
-    AirSimSettings::MavLinkConnectionInfo connection_info_;
-    const MultiRotorParams* vehicle_params_;
-
-    uint16_t port_;
-    std::string ip_;
-    RCData last_rcData_;
-    bool is_rc_connected_;
-};
-
-}} // namespace 
+}
+} // namespace 
 
 #endif
