@@ -56,7 +56,7 @@ namespace airlib
 
         }
 
-        // only to debug and verify estimates 
+        // only in simulation
         void setGroundTruthKinematics(const Kinematics::State* kinematics, const Environment* environment)
         {
             kinematics_ = kinematics;
@@ -71,11 +71,12 @@ namespace airlib
         // initialize filter
         void initializeFilter()
         {
-            assignEkfMatrics();
+            assignEkfMeasurementMatrics();
+            assignEkfStateMatrics();
             resetGlobalVariables();
         }
 
-        void assignEkfMatrics()
+        void assignEkfMeasurementMatrics()
         {
             Q_ = simple_flight::MatrixNWxNWf::Zero();
             // imu
@@ -115,26 +116,30 @@ namespace airlib
 
             // barometer
             R_pseudo_ = params_.pseudo_meas.quaternion_norm_R;
-
+        }
+        
+        void assignEkfStateMatrics()
+        {
             // intialize the ekf states
             states_ = simple_flight::VectorNXf::Zero();
-            states_(0)  = params_.initial_states.position.x();
-            states_(1)  = params_.initial_states.position.y();
-            states_(2)  = params_.initial_states.position.z();
-            states_(3)  = params_.initial_states.linear_velocity.x();
-            states_(4)  = params_.initial_states.linear_velocity.y();
-            states_(5)  = params_.initial_states.linear_velocity.z();
-            states_(6)  = params_.initial_states.quaternion.w();
-            states_(7)  = params_.initial_states.quaternion.x();
-            states_(8)  = params_.initial_states.quaternion.y();
-            states_(9)  = params_.initial_states.quaternion.z();
-            states_(10) = params_.initial_states.accel_bias.x();
-            states_(11) = params_.initial_states.accel_bias.y();
-            states_(12) = params_.initial_states.accel_bias.z();
-            states_(13) = params_.initial_states.gyro_bias.x();
-            states_(14) = params_.initial_states.gyro_bias.y();
-            states_(15) = params_.initial_states.gyro_bias.z();
-            states_(16) = params_.initial_states.baro_bias;
+
+            states_(0)  = kinematics_->pose.position.x() - params_.initial_states_err.position.x();
+            states_(1)  = kinematics_->pose.position.y() - params_.initial_states_err.position.y();
+            states_(2)  = kinematics_->pose.position.z() - params_.initial_states_err.position.z();
+            states_(3)  = kinematics_->twist.linear.x() - params_.initial_states_err.linear_velocity.x();
+            states_(4)  = kinematics_->twist.linear.y() - params_.initial_states_err.linear_velocity.y();
+            states_(5)  = kinematics_->twist.linear.z() - params_.initial_states_err.linear_velocity.z();
+            states_(6)  = params_.initial_states_err.quaternion.w();
+            states_(7)  = params_.initial_states_err.quaternion.x();
+            states_(8)  = params_.initial_states_err.quaternion.y();
+            states_(9)  = params_.initial_states_err.quaternion.z();
+            states_(10) = 0.0f - params_.initial_states_err.accel_bias.x();
+            states_(11) = 0.0f - params_.initial_states_err.accel_bias.y();
+            states_(12) = 0.0f - params_.initial_states_err.accel_bias.z();
+            states_(13) = 0.0f - params_.initial_states_err.gyro_bias.x();
+            states_(14) = 0.0f - params_.initial_states_err.gyro_bias.y();
+            states_(15) = 0.0f - params_.initial_states_err.gyro_bias.z();
+            states_(16) = 0.0f - params_.initial_states_err.baro_bias;
             
             // intitialize the ekf covariances
             error_covariance_ = simple_flight::MatrixNXxNXf::Zero();
@@ -155,7 +160,6 @@ namespace airlib
             error_covariance_(14,14) = pow(params_.initial_states_std_err.gyro_bias.y(), 2);
             error_covariance_(15,15) = pow(params_.initial_states_std_err.gyro_bias.z(), 2);
             error_covariance_(16,16) = pow(params_.initial_states_std_err.baro_bias, 2);
-
         }
 
         void resetGlobalVariables()
@@ -429,7 +433,6 @@ namespace airlib
                 states_(i) = x_corrected[i];
             }
             error_covariance_ = P_corrected;
-
         }
 
         // barometer update
@@ -537,7 +540,6 @@ namespace airlib
                 states_(i) = x_corrected[i];
             }
             error_covariance_ = P_corrected;
-
         }
 
         void pseudoMeasurement()
@@ -668,7 +670,6 @@ namespace airlib
             measurement_(5) = gyro[2];
 
             return true;
-
         }
 
         // reads GPS data
@@ -710,7 +711,6 @@ namespace airlib
             measurement_(11) = vel[2];
 
             return true;
-
         }
 
         // reads barometer data
@@ -732,7 +732,6 @@ namespace airlib
             measurement_(12) = ned_altitude[0];
 
             return true;
-
         }
  
         // reads magnetometer data
@@ -754,7 +753,6 @@ namespace airlib
             measurement_(15) = mag[2];
 
             return true;
-
         }
 
     private:

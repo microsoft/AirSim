@@ -60,7 +60,7 @@ namespace airlib
             Quaternionr quaternion = Quaternionr(0.03f, 0.03f, 0.03f, 0.03f);
         } initial_states_std_err;
 
-        struct InitialStates
+        struct InitialStatesErr
         {
             Vector3r position = Vector3r(0.0f, 0.0f, 0.0f);
             Vector3r linear_velocity = Vector3r(0.0f, 0.0f, 0.0f);
@@ -69,7 +69,7 @@ namespace airlib
             Vector3r gyro_bias = Vector3r(0.0f, 0.0f, 0.0f);
             real_T baro_bias = 0.0f;
             Quaternionr quaternion;
-        } initial_states;
+        } initial_states_err;
 
         void readVector3r(const Settings& json_child, const std::array<std::string, 3>& json_str, Vector3r& vector)
         {
@@ -121,11 +121,11 @@ namespace airlib
         void refreshAndUnitConversion()
         {
             gyro.std_error = gyro.std_error * M_PI/180; // deg/s to rad/s
-            initial_states.attitude = initial_states.attitude * M_PI/180; //deg to rad
+            initial_states_err.attitude = initial_states_err.attitude * M_PI/180; //deg to rad
 
-            initial_states.quaternion = VectorMath::toQuaternion(initial_states.attitude.y(), 
-                                                                initial_states.attitude.x(), 
-                                                                initial_states.attitude.z());
+            initial_states_err.quaternion = VectorMath::toQuaternion(initial_states_err.attitude.y(), 
+                                                                     initial_states_err.attitude.x(), 
+                                                                     initial_states_err.attitude.z());
         }
 
         void initializeFromSettings(const AirSimSettings::EkfSetting* settings)
@@ -233,39 +233,39 @@ namespace airlib
                 readVector3r(initial_states_std_err_child, gyro_bias_str, initial_states_std_err.gyro_bias);
                 readRealT(initial_states_std_err_child, "BaroBias", initial_states_std_err.baro_bias);
             }
-            Settings initial_states_child;
-            if (json.getChild("InitialStates", initial_states_child)){
+            Settings initial_states_err_child;
+            if (json.getChild("InitialStatesErr", initial_states_err_child)){
                 std::array<std::string, 3> pos_str = {
                     "PositionX",
                     "PositionY",
                     "PositionZ"
                 };
-                readVector3r(initial_states_child, pos_str, initial_states.position);
+                readVector3r(initial_states_err_child, pos_str, initial_states_err.position);
                 std::array<std::string, 3> lin_vel_str = {
                     "LinearVelocityX",
                     "LinearVelocityY",
                     "LinearVelocityZ"
                 };
-                readVector3r(initial_states_child, lin_vel_str, initial_states.linear_velocity);
+                readVector3r(initial_states_err_child, lin_vel_str, initial_states_err.linear_velocity);
                 std::array<std::string, 3> attitude_str = {
                     "AttitideRoll",
                     "AttitidePitch",
                     "AttitideYaw"
                 };
-                readVector3r(initial_states_child, attitude_str, initial_states.attitude);
+                readVector3r(initial_states_err_child, attitude_str, initial_states_err.attitude);
                 std::array<std::string, 3> accel_bias_str = {
                     "AccelBiasX",
                     "AccelBiasY",
                     "AccelBiasZ"
                 };
-                readVector3r(initial_states_child, accel_bias_str, initial_states.accel_bias);
+                readVector3r(initial_states_err_child, accel_bias_str, initial_states_err.accel_bias);
                 std::array<std::string, 3> gyro_bias_str = {
                     "GyroBiasX",
                     "GyroBiasY",
                     "GyroBiasZ"
                 };
-                readVector3r(initial_states_child, gyro_bias_str, initial_states.gyro_bias);
-                readRealT(initial_states_child, "BaroBias", initial_states.baro_bias);
+                readVector3r(initial_states_err_child, gyro_bias_str, initial_states_err.gyro_bias);
+                readRealT(initial_states_err_child, "BaroBias", initial_states_err.baro_bias);
             }
         }
     };
