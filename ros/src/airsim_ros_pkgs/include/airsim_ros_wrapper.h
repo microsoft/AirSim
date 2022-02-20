@@ -300,7 +300,7 @@ private:
     // Utility methods to convert airsim_client_
     msr::airlib::MultirotorRpcLibClient* get_multirotor_client();
     msr::airlib::CarRpcLibClient* get_car_client();
-    msr::airlib::RpcLibClientBase* get_client_by_vehicle_type(std::string vehicle_type);
+    msr::airlib::RpcLibClientBase* get_client(const std::string& vehicle_type);
 
 private:
     ros::NodeHandle nh_;
@@ -331,8 +331,8 @@ private:
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
-    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_multirotor_client_;
-    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_car_client_;
+    std::unique_ptr<msr::airlib::MultirotorRpcLibClient> airsim_multirotor_client_;
+    std::unique_ptr<msr::airlib::CarRpcLibClient> airsim_car_client_;
     // seperate busy connections to airsim, update in their own thread
     msr::airlib::RpcLibClientBase airsim_client_images_;
     msr::airlib::RpcLibClientBase airsim_client_lidar_;
