@@ -283,11 +283,11 @@ void ASimHUD::createAllSimModes()
     //spawn at origin. We will use this to do global NED transforms, for ex, non-vehicle objects in environment
     simmodes_[0] = this->GetWorld()->SpawnActor<ASimModeWorldMultiRotor>(FVector::ZeroVector, FRotator::ZeroRotator, simmode_spawn_params);
     simmodes_[1] = this->GetWorld()->SpawnActor<ASimModeCar>(FVector::ZeroVector,
-                                                            FRotator::ZeroRotator,
-                                                            simmode_spawn_params);
+                                                             FRotator::ZeroRotator,
+                                                             simmode_spawn_params);
     simmodes_[2] = this->GetWorld()->SpawnActor<ASimModeComputerVision>(FVector::ZeroVector,
-                                                                       FRotator::ZeroRotator,
-                                                                       simmode_spawn_params);
+                                                                        FRotator::ZeroRotator,
+                                                                        simmode_spawn_params);
 }
 
 void ASimHUD::initializeSubWindows()
