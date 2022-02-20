@@ -130,10 +130,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         std::unique_ptr<VehicleROS> vehicle_ros = nullptr;
         if (msr::airlib::AirSimSettings::isMultirotor(vehicle_setting->vehicle_type)) {
-            vehicle_ros = std::make_uniqe<MultiRotorROS>();
+            vehicle_ros = std::make_unique<MultiRotorROS>();
         }
         else if (msr::airlib::AirSimSettings::isCar(vehicle_setting->vehicle_type)) {
-            vehicle_ros = std::make_uniqe<CarROS>();
+            vehicle_ros = std::make_unique<CarROS>();
         }
         vehicle_ros->vehicle_type_ = vehicle_setting->vehicle_type;
 
