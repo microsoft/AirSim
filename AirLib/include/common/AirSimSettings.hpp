@@ -239,6 +239,8 @@ namespace airlib
         {
         };
 
+        using SensorSettingsMap = std::map<std::string, std::shared_ptr<SensorSetting>>;
+
         struct VehicleSetting
         {
             //required
@@ -416,19 +418,18 @@ namespace airlib
             initializeSubwindowSettings(subwindow_settings);
             initializePawnPaths(pawn_paths);
         }
-
-        static std::map<std::string, std::shared_ptr<SensorSetting>>& GetDefaultSensors(const std::string& vehicle_type)
+        static SensorSettingsMap& GetDefaultSensors(const std::string& vehicle_type)
         {
             if (isCar(vehicle_type)) {
-                static std::map<std::string, std::shared_ptr<SensorSetting>> sensor_defaults_car;
+                static SensorSettingsMap sensor_defaults_car;
                 return sensor_defaults_car;
             }
             else if (isComputerVision(vehicle_type)) { // for now, we use car default sensors for CV
-                static std::map<std::string, std::shared_ptr<SensorSetting>> sensor_defaults_car;
+                static SensorSettingsMap sensor_defaults_car;
                 return sensor_defaults_car;
             }
             else if (isMultirotor(vehicle_type)) {
-                static std::map<std::string, std::shared_ptr<SensorSetting>> sensor_defaults_multirotor;
+                static SensorSettingsMap sensor_defaults_multirotor;
                 return sensor_defaults_multirotor;
             }
             else {
@@ -856,7 +857,7 @@ namespace airlib
 
             loadCameraSettings(settings_json, vehicle_setting->cameras);
 
-            std::map<std::string, std::shared_ptr<SensorSetting>> sensor_defaults = GetDefaultSensors(vehicle_type);
+            SensorSettingsMap sensor_defaults = GetDefaultSensors(vehicle_type);
 
             loadSensorSettings(settings_json, "Sensors", vehicle_setting->sensors, sensor_defaults);
 
@@ -1298,8 +1299,8 @@ namespace airlib
 
         // creates and intializes sensor settings from json
         static void loadSensorSettings(const Settings& settings_json, const std::string& collectionName,
-                                       std::map<std::string, std::shared_ptr<SensorSetting>>& sensors,
-                                       std::map<std::string, std::shared_ptr<SensorSetting>>& sensor_defaults)
+                                       SensorSettingsMap& sensors,
+                                       SensorSettingsMap& sensor_defaults)
 
         {
             // NOTE: Increase type if number of sensors goes above 8
@@ -1336,7 +1337,7 @@ namespace airlib
 
         // creates default sensor list when none specified in json
         static void createDefaultSensorSettings(const std::string& simmode_name,
-                                                std::map<std::string, std::shared_ptr<SensorSetting>>& sensors)
+                                                SensorSettingsMap& sensors)
         {
             if (simmode_name == kSimModeTypeMultirotor) {
                 sensors["imu"] = createSensorSetting(SensorBase::SensorType::Imu, "imu", true);
