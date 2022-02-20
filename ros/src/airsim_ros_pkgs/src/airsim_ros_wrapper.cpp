@@ -53,17 +53,17 @@ void AirsimROSWrapper::initialize_airsim()
     // todo do not reset if already in air?
     try {
 
-        airsim_multirotor_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::MultirotorRpcLibClient(host_ip_));
-        airsim_car_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::CarRpcLibClient(host_ip_));
+        airsim_multirotor_client_ = std::make_unique<msr::airlib::MultirotorRpcLibClient>(host_ip_);
+        airsim_car_client_ = std::make_unique<msr::airlib::CarRpcLibClient>(host_ip_);
 
         airsim_multirotor_client_->confirmConnection();
         airsim_car_client_->confirmConnection();
         airsim_client_images_.confirmConnection();
         airsim_client_lidar_.confirmConnection();
 
-        for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
-            get_client_by_vehicle_type(vehicle_name_ptr_pair.second->vehicle_type_)->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
-            get_client_by_vehicle_type(vehicle_name_ptr_pair.second->vehicle_type_)->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
+        for (const auto& [name, vehicle_ros] : vehicle_name_ptr_map_) {
+            get_client(vehicle_ros->vehicle_type_)->enableApiControl(true, name); // todo expose as rosservice?
+            get_client(vehicle_ros->vehicle_type_)->armDisarm(true, name); // todo exposes as rosservice?
         }
 
         origin_geo_point_ = get_origin_geo_point();
@@ -130,10 +130,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         std::unique_ptr<VehicleROS> vehicle_ros = nullptr;
         if (msr::airlib::AirSimSettings::isMultirotor(vehicle_setting->vehicle_type)) {
-            vehicle_ros = std::unique_ptr<MultiRotorROS>(new MultiRotorROS());
+            vehicle_ros = std::make_unique<MultiRotorROS>();
         }
         else if (msr::airlib::AirSimSettings::isCar(vehicle_setting->vehicle_type)) {
-            vehicle_ros = std::unique_ptr<CarROS>(new CarROS());
+            vehicle_ros = std::make_unique<CarROS>();
         }
         vehicle_ros->vehicle_type_ = vehicle_setting->vehicle_type;
 
@@ -442,8 +442,8 @@ bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, ai
 {
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
-    airsim_multirotor_client_.reset();
-    airsim_car_client_.reset();
+    get_multirotor_client()->reset();
+    get_car_client()->reset();
 
     response.success = true;
     return response.success; //todo
@@ -943,12 +943,12 @@ ros::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoin
 
 msr::airlib::MultirotorRpcLibClient* AirsimROSWrapper::get_multirotor_client()
 {
-    return static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_multirotor_client_.get());
+    return airsim_multirotor_client_.get();
 }
 
 msr::airlib::CarRpcLibClient* AirsimROSWrapper::get_car_client()
 {
-    return static_cast<msr::airlib::CarRpcLibClient*>(airsim_car_client_.get());
+    return airsim_car_client_.get();
 }
 
 void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
@@ -1089,28 +1089,28 @@ void AirsimROSWrapper::publish_vehicle_state()
         for (auto& sensor_publisher : vehicle_ros->sensor_pubs) {
             switch (sensor_publisher.sensor_type) {
             case SensorBase::SensorType::Barometer: {
-                auto baro_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getBarometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto baro_data = get_client(vehicle_ros->vehicle_type_)->getBarometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 airsim_ros_pkgs::Altimeter alt_msg = get_altimeter_msg_from_airsim(baro_data);
                 alt_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(alt_msg);
                 break;
             }
             case SensorBase::SensorType::Imu: {
-                auto imu_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto imu_data = get_client(vehicle_ros->vehicle_type_)->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 sensor_msgs::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
                 imu_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(imu_msg);
                 break;
             }
             case SensorBase::SensorType::Distance: {
-                auto distance_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto distance_data = get_client(vehicle_ros->vehicle_type_)->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 sensor_msgs::Range dist_msg = get_range_from_airsim(distance_data);
                 dist_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(dist_msg);
                 break;
             }
             case SensorBase::SensorType::Gps: {
-                auto gps_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getGpsData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto gps_data = get_client(vehicle_ros->vehicle_type_)->getGpsData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 sensor_msgs::NavSatFix gps_msg = get_gps_msg_from_airsim(gps_data);
                 gps_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(gps_msg);
@@ -1121,7 +1121,7 @@ void AirsimROSWrapper::publish_vehicle_state()
                 break;
             }
             case SensorBase::SensorType::Magnetometer: {
-                auto mag_data = get_client_by_vehicle_type(vehicle_ros->vehicle_type_)->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
+                auto mag_data = get_client(vehicle_ros->vehicle_type_)->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name);
                 sensor_msgs::MagneticField mag_msg = get_mag_msg_from_airsim(mag_data);
                 mag_msg.header.frame_id = vehicle_ros->vehicle_name;
                 sensor_publisher.publisher.publish(mag_msg);
@@ -1134,13 +1134,16 @@ void AirsimROSWrapper::publish_vehicle_state()
     }
 }
 
-msr::airlib::RpcLibClientBase* AirsimROSWrapper::get_client_by_vehicle_type(std::string vehicle_type)
+msr::airlib::RpcLibClientBase* AirsimROSWrapper::get_client(const std::string& vehicle_type)
 {
     if (msr::airlib::AirSimSettings::isCar(vehicle_type)) {
-        return airsim_car_client_.get();
+        return get_car_client();
     }
     else if (msr::airlib::AirSimSettings::isMultirotor(vehicle_type)) {
-        return airsim_multirotor_client_.get();
+        return get_multirotor_client();
+    }
+    else {
+        throw std::invalid_argument(std::string("get_client called with invalid vehicle_type = ") + vehicle_type);
     }
 }
 
