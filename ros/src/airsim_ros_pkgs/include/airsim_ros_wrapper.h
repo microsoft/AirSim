@@ -127,12 +127,6 @@ struct GimbalCmd
 class AirsimROSWrapper
 {
 public:
-    enum class AIRSIM_MODE : unsigned
-    {
-        DRONE,
-        CAR
-    };
-
     AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string& host_ip);
     ~AirsimROSWrapper(){};
 
@@ -177,6 +171,8 @@ private:
         ros::Time stamp;
 
         std::string odom_frame_id;
+
+        std::string vehicle_type_;
         /// Status
         // bool is_armed_;
         // std::string mode_;
@@ -291,6 +287,7 @@ private:
     sensor_msgs::NavSatFix get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const;
     sensor_msgs::MagneticField get_mag_msg_from_airsim(const msr::airlib::MagnetometerBase::Output& mag_data) const;
     airsim_ros_pkgs::Environment get_environment_msg_from_airsim(const msr::airlib::Environment::State& env_data) const;
+    msr::airlib::GeoPoint get_origin_geo_point() const;
 
     // not used anymore, but can be useful in future with an unreal camera calibration environment
     void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info) const;
@@ -303,6 +300,7 @@ private:
     // Utility methods to convert airsim_client_
     msr::airlib::MultirotorRpcLibClient* get_multirotor_client();
     msr::airlib::CarRpcLibClient* get_car_client();
+    msr::airlib::RpcLibClientBase* get_client_by_vehicle_type(std::string vehicle_type);
 
 private:
     ros::NodeHandle nh_;
@@ -322,8 +320,6 @@ private:
     ros::ServiceServer takeoff_group_srvr_;
     ros::ServiceServer land_group_srvr_;
 
-    AIRSIM_MODE airsim_mode_ = AIRSIM_MODE::DRONE;
-
     ros::ServiceServer reset_srvr_;
     ros::Publisher origin_geo_point_pub_; // home geo coord of drones
     msr::airlib::GeoPoint origin_geo_point_; // gps coord of unreal origin
@@ -335,7 +331,8 @@ private:
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
-    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_client_ = nullptr;
+    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_multirotor_client_;
+    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_car_client_;
     // seperate busy connections to airsim, update in their own thread
     msr::airlib::RpcLibClientBase airsim_client_images_;
     msr::airlib::RpcLibClientBase airsim_client_lidar_;
