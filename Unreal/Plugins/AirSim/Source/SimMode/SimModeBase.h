@@ -119,6 +119,8 @@ public:
 
     const UnrealImageCapture* getImageCapture(const std::string& vehicle_name = "", bool external = false) const;
 
+    virtual bool isVehicleTypeSupported(const std::string& vehicle_type) const;
+
     TMap<FString, FAssetData> asset_map;
     TMap<FString, AActor*> scene_object_map;
     UMaterial* domain_rand_material_;
@@ -128,7 +130,6 @@ protected: //must overrides
 
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
     virtual void getExistingVehiclePawns(TArray<AActor*>& pawns) const;
-    virtual bool isVehicleTypeSupported(const std::string& vehicle_type) const;
     virtual std::string getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const;
     virtual PawnEvents* getVehiclePawnEvents(APawn* pawn) const;
     virtual const common_utils::UniqueValueMap<std::string, APIPCamera*> getVehiclePawnCameras(APawn* pawn) const;

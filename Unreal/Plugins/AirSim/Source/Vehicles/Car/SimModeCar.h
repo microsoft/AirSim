@@ -20,6 +20,8 @@ public:
     virtual void continueForTime(double seconds) override;
     virtual void continueForFrames(uint32_t frames) override;
 
+    virtual bool isVehicleTypeSupported(const std::string& vehicle_type) const override;
+
 private:
     typedef msr::airlib::ClockFactory ClockFactory;
     typedef common_utils::Utils Utils;
@@ -37,7 +39,6 @@ protected:
     virtual void setupClockSpeed() override;
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const override;
     virtual void getExistingVehiclePawns(TArray<AActor*>& pawns) const override;
-    virtual bool isVehicleTypeSupported(const std::string& vehicle_type) const override;
     virtual std::string getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const override;
     virtual PawnEvents* getVehiclePawnEvents(APawn* pawn) const override;
     virtual const common_utils::UniqueValueMap<std::string, APIPCamera*> getVehiclePawnCameras(APawn* pawn) const override;

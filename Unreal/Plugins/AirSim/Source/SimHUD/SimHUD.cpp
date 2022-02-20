@@ -292,16 +292,16 @@ void ASimHUD::createAllSimModes()
 
 void ASimHUD::initializeSubWindows()
 {
-    // ToDo - alon, this is not necessary
-    //if (!simmode_)
-    //    return;
     int default_simmode_index = -1;
-
     for (const auto& simmode : simmodes_) {
         default_simmode_index++;
+
+    if (simmode->getApiProvider()->hasDefaultVehicle() && simmode->isVehicleTypeSupported(AirSimSettings::singleton().vehicles.begin()->second->vehicle_type)) {
+
+
         const auto& default_vehicle_sim_api = simmode->getVehicleSimApi();
-        if (default_vehicle_sim_api) {
-            auto camera_count = default_vehicle_sim_api->getCameraCount();
+        //if (default_vehicle_sim_api) {
+        auto camera_count = default_vehicle_sim_api->getCameraCount();
 
             //setup defaults
             if (camera_count > 0) {
