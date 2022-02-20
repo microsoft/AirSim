@@ -280,7 +280,9 @@ private:
     template <typename T>
     const SensorPublisher<T> create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS);
 
-    msr::airlib::RpcLibClientBase* get_client_by_vehicle_type(std::string vehicle_type);
+    msr::airlib::RpcLibClientBase* get_client(const std::string& vehicle_type);
+    msr::airlib::MultirotorRpcLibClient* get_multirotor_client();
+    msr::airlib::CarRpcLibClient* get_car_client();
 
 private:
     // subscriber / services for ALL robots
@@ -310,8 +312,8 @@ private:
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
     std::string host_ip_;
-    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_multirotor_client_;
-    std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_car_client_;
+    std::unique_ptr<msr::airlib::MultirotorRpcLibClient> airsim_multirotor_client_;
+    std::unique_ptr<msr::airlib::CarRpcLibClient> airsim_car_client_;
     // seperate busy connections to airsim, update in their own thread
     msr::airlib::RpcLibClientBase airsim_client_images_;
     msr::airlib::RpcLibClientBase airsim_client_lidar_;
