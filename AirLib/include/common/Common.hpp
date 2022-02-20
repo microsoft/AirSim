@@ -23,9 +23,9 @@ namespace msr
 {
 namespace airlib
 {
-    static constexpr int RpcLibPortCV = 41451;
-    static constexpr int RpcLibPortCar = 41461;
-    static constexpr int RpcLibPortMultirotor = 41471;
+    static constexpr uint16_t RpcLibPortCV = 41451;
+    static constexpr uint16_t RpcLibPortCar = 41461;
+    static constexpr uint16_t RpcLibPortMultirotor = 41471;
 
     //numericals
     typedef float real_T;
