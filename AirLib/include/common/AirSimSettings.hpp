@@ -39,10 +39,6 @@ namespace airlib
         static constexpr char const* kVehicleInertialFrame = "VehicleInertialFrame";
         static constexpr char const* kSensorLocalFrame = "SensorLocalFrame";
 
-        static constexpr char const* kSimModeTypeMultirotor = "Multirotor";
-        static constexpr char const* kSimModeTypeCar = "Car";
-        static constexpr char const* kSimModeTypeComputerVision = "ComputerVision";
-
         struct SubwindowSetting
         {
             int window_index;
@@ -438,14 +434,13 @@ namespace airlib
         }
 
         //returns number of warnings
-        void load(std::function<std::string(void)> simmode_getter)
+        void load(std::function<std::string(void)> vehicle_type_getter)
         {
             warning_messages.clear();
             error_messages.clear();
             const Settings& settings_json = Settings::singleton();
             checkSettingsVersion(settings_json);
 
-            //loadCoreSimModeSettings(settings_json, simmode_getter);
             loadLevelSettings(settings_json);
             loadDefaultCameraSetting(settings_json, camera_defaults);
             loadSubWindowsSettings(settings_json, subwindow_settings);
@@ -453,10 +448,10 @@ namespace airlib
             loadPawnPaths(settings_json, pawn_paths);
             loadOtherSettings(settings_json);
             loadDefaultSensorSettings(settings_json);
-            loadVehicleSettings(settings_json, vehicles, simmode_getter);
+            loadVehicleSettings(settings_json, vehicles, vehicle_type_getter);
             loadCameraDirectorSetting(settings_json, camera_director, vehicles);
             loadViewModeSettings(settings_json);
-            loadCoreSimModeSettings(settings_json, simmode_getter);
+            loadCoreSimModeSettings(settings_json);
             loadExternalCameraSettings(settings_json, external_cameras);
 
             //this should be done last because it depends on vehicles (and/or their type) we have
@@ -606,7 +601,7 @@ namespace airlib
             return has_default;
         }
 
-        void loadCoreSimModeSettings(const Settings& settings_json, std::function<std::string(void)> simmode_getter)
+        void loadCoreSimModeSettings(const Settings& settings_json)
         {
             physics_engine_name = settings_json.getString("PhysicsEngineName", "");
             if (physics_engine_name == "") {
@@ -864,13 +859,13 @@ namespace airlib
             return vehicle_setting;
         }
 
-        static void createDefaultVehicle(const std::string& simmode_name, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
+        static void createDefaultVehicle(const std::string& vehicle_type, std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles)
         {
             //vehicles.clear();
 
             //NOTE: Do not set defaults for vehicle type here. If you do then make sure
             //to sync code in createVehicleSetting() as well.
-            if (simmode_name == kSimModeTypeMultirotor) {
+            if (vehicle_type == kVehicleTypeSimpleFlight) {
                 // create simple flight as default multirotor
                 auto simple_flight_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting("SimpleFlight",
                                                                                                 kVehicleTypeSimpleFlight));
@@ -880,13 +875,13 @@ namespace airlib
                 simple_flight_setting->sensors = GetDefaultSensors(simple_flight_setting->vehicle_type);
                 vehicles[simple_flight_setting->vehicle_name] = std::move(simple_flight_setting);
             }
-            else if (simmode_name == kSimModeTypeCar) {
+            else if (vehicle_type == kVehicleTypePhysXCar) {
                 // create PhysX as default car vehicle
                 auto physx_car_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting("PhysXCar", kVehicleTypePhysXCar));
                 physx_car_setting->sensors = GetDefaultSensors(physx_car_setting->vehicle_type);
                 vehicles[physx_car_setting->vehicle_name] = std::move(physx_car_setting);
             }
-            else if (simmode_name == kSimModeTypeComputerVision) {
+            else if (vehicle_type == kVehicleTypeComputerVision) {
                 // create default computer vision vehicle
                 auto cv_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting("ComputerVision", kVehicleTypeComputerVision));
                 cv_setting->sensors = GetDefaultSensors(cv_setting->vehicle_type);
@@ -894,14 +889,14 @@ namespace airlib
             }
             else {
                 throw std::invalid_argument(Utils::stringf(
-                                                "Unknown SimMode: %s, failed to set default vehicle settings", simmode_name.c_str())
+                                                "Unknown vehicle_type: %s, failed to set default vehicle settings", vehicle_type.c_str())
                                                 .c_str());
             }
         }
 
         static void loadVehicleSettings(const Settings& settings_json,
                                         std::map<std::string, std::unique_ptr<VehicleSetting>>& vehicles,
-                                        std::function<std::string(void)> simmode_getter)
+                                        std::function<std::string(void)> vehicle_type_getter)
         {
             vehicles.clear();
 
@@ -921,7 +916,7 @@ namespace airlib
                 }
             }
             else {
-                createDefaultVehicle(simmode_getter(), vehicles);
+                createDefaultVehicle(vehicle_type_getter(), vehicles);
             }
         }
 
@@ -1336,16 +1331,16 @@ namespace airlib
         }
 
         // creates default sensor list when none specified in json
-        static void createDefaultSensorSettings(const std::string& simmode_name,
+        static void createDefaultSensorSettings(const std::string& vehicle_type,
                                                 SensorSettingsMap& sensors)
         {
-            if (simmode_name == kSimModeTypeMultirotor) {
+            if (isMultirotor(vehicle_type)) {
                 sensors["imu"] = createSensorSetting(SensorBase::SensorType::Imu, "imu", true);
                 sensors["magnetometer"] = createSensorSetting(SensorBase::SensorType::Magnetometer, "magnetometer", true);
                 sensors["gps"] = createSensorSetting(SensorBase::SensorType::Gps, "gps", true);
                 sensors["barometer"] = createSensorSetting(SensorBase::SensorType::Barometer, "barometer", true);
             }
-            else if (simmode_name == kSimModeTypeCar) {
+            else if (isCar(vehicle_type)) {
                 sensors["gps"] = createSensorSetting(SensorBase::SensorType::Gps, "gps", true);
             }
             else {
@@ -1360,12 +1355,12 @@ namespace airlib
             if (settings_json.getChild("DefaultSensorsCar", sensors_child))
                 loadSensorSettings(settings_json, "DefaultSensorsCar", GetDefaultSensors(kVehicleTypePhysXCar), GetDefaultSensors(kVehicleTypePhysXCar));
             else
-                createDefaultSensorSettings(kSimModeTypeCar, GetDefaultSensors(kVehicleTypePhysXCar));
+                createDefaultSensorSettings(kVehicleTypePhysXCar, GetDefaultSensors(kVehicleTypePhysXCar));
 
             if (settings_json.getChild("DefaultSensorsMultirotor", sensors_child))
                 loadSensorSettings(settings_json, "DefaultSensorsMultirotor", GetDefaultSensors(kVehicleTypeSimpleFlight), GetDefaultSensors(kVehicleTypeSimpleFlight));
             else
-                createDefaultSensorSettings(kSimModeTypeMultirotor, GetDefaultSensors(kVehicleTypeSimpleFlight));
+                createDefaultSensorSettings(kVehicleTypeSimpleFlight, GetDefaultSensors(kVehicleTypeSimpleFlight));
         }
 
         static void loadExternalCameraSettings(const Settings& settings_json, std::map<std::string, CameraSetting>& external_cameras)

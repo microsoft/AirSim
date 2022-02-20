@@ -262,10 +262,10 @@ std::string ASimHUD::getSimModeFromUser()
     if (EAppReturnType::No == UAirBlueprintLib::ShowMessage(EAppMsgType::YesNo,
                                                             "Would you like to use car simulation? Choose no to use quadrotor simulation.",
                                                             "Choose Vehicle")) {
-        return AirSimSettings::kSimModeTypeMultirotor;
+        return AirSimSettings::kVehicleTypeSimpleFlight;
     }
     else
-        return AirSimSettings::kSimModeTypeCar;
+        return AirSimSettings::kVehicleTypePhysXCar;
 }
 
 void ASimHUD::loadLevel()
