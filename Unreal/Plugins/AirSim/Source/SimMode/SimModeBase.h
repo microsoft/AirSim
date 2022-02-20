@@ -16,9 +16,8 @@
 #include "common/StateReporterWrapper.hpp"
 #include "LoadingScreenWidget.h"
 #include "UnrealImageCapture.h"
+#include "Recording/RecordingThread.h"
 #include "SimModeBase.generated.h"
-
-class FRecordingThread;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
 
