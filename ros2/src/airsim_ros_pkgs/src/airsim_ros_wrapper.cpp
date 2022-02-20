@@ -65,7 +65,7 @@ void AirsimROSWrapper::initialize_airsim()
         airsim_client_images_.confirmConnection();
         airsim_client_lidar_.confirmConnection();
 
-        for (const auto& [name, vehicle_ros]: vehicle_name_ptr_map_) {
+        for (const auto& [name, vehicle_ros] : vehicle_name_ptr_map_) {
             get_client(vehicle_ros->vehicle_type_)->enableApiControl(true, name); // todo expose as rosservice?
             get_client(vehicle_ros->vehicle_type_)->armDisarm(true, name); // todo exposes as rosservice?
         }
@@ -76,7 +76,8 @@ void AirsimROSWrapper::initialize_airsim()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR_STREAM(nh_->get_logger(), "Exception raised by the API, something went wrong.\n" << msg);
+        RCLCPP_ERROR_STREAM(nh_->get_logger(), "Exception raised by the API, something went wrong.\n"
+                                                   << msg);
         rclcpp::shutdown();
     }
 }
@@ -944,7 +945,8 @@ void AirsimROSWrapper::drone_state_timer_cb()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR_STREAM(nh_->get_logger(), "Exception raised by the API:\n" << msg);
+        RCLCPP_ERROR_STREAM(nh_->get_logger(), "Exception raised by the API:\n"
+                                                   << msg);
     }
 }
 
@@ -1104,8 +1106,7 @@ msr::airlib::RpcLibClientBase* AirsimROSWrapper::get_client(const std::string& v
     else if (msr::airlib::AirSimSettings::isMultirotor(vehicle_type)) {
         return get_multirotor_client();
     }
-    else
-    {
+    else {
         throw std::invalid_argument(std::string("get_client called with invalid vehicle_type = ") + vehicle_type);
     }
 }
@@ -1300,7 +1301,8 @@ void AirsimROSWrapper::lidar_timer_cb()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR_STREAM(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n" << msg);
+        RCLCPP_ERROR_STREAM(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n"
+                                                   << msg);
     }
 }
 
