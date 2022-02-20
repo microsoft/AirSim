@@ -27,13 +27,13 @@ namespace airlib
 
             switch (sensor_setting->sensor_type) {
             case SensorBase::SensorType::Imu:
-                return std::shared_ptr<ImuSimple>(new ImuSimple(*static_cast<const AirSimSettings::ImuSetting*>(sensor_setting)));
+                return std::make_shared<ImuSimple>(*static_cast<const AirSimSettings::ImuSetting*>(sensor_setting));
             case SensorBase::SensorType::Magnetometer:
-                return std::shared_ptr<MagnetometerSimple>(new MagnetometerSimple(*static_cast<const AirSimSettings::MagnetometerSetting*>(sensor_setting)));
+                return std::make_shared<MagnetometerSimple>(*static_cast<const AirSimSettings::MagnetometerSetting*>(sensor_setting));
             case SensorBase::SensorType::Gps:
-                return std::shared_ptr<GpsSimple>(new GpsSimple(*static_cast<const AirSimSettings::GpsSetting*>(sensor_setting)));
+                return std::make_shared<GpsSimple>(*static_cast<const AirSimSettings::GpsSetting*>(sensor_setting));
             case SensorBase::SensorType::Barometer:
-                return std::shared_ptr<BarometerSimple>(new BarometerSimple(*static_cast<const AirSimSettings::BarometerSetting*>(sensor_setting)));
+                return std::make_shared<BarometerSimple>(*static_cast<const AirSimSettings::BarometerSetting*>(sensor_setting));
             default:
                 throw new std::invalid_argument("Unexpected sensor type");
             }
