@@ -1182,7 +1182,7 @@ void AirsimROSWrapper::update_commands()
     // Only camera rotation, no translation movement of camera
     // Only camera rotation, no translation movement of camera
     if (has_gimbal_cmd_) {
-        std::lock_guard<std::mutex> guard(control_mutex_);
+        std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
         if (auto it{ AirSimSettings::singleton().vehicles.find(gimbal_cmd_.vehicle_name) }; it != std::end(AirSimSettings::singleton().vehicles)) {
             const auto& [key, value]{ *it };
