@@ -2,6 +2,7 @@
 #define msr_airlib_BetaflightDroneController_hpp
 
 #include "vehicles/multirotor/api/MultirotorApiBase.hpp"
+#include "sensors/SensorCollection.hpp"
 #include "physics/Environment.hpp"
 #include "physics/Kinematics.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
@@ -14,19 +15,20 @@
 
 #include "UdpSocket.hpp"
 
-
 namespace msr
-{ 
-namespace airlib 
+{
+namespace airlib
 {
 
-    class BetaflightApi: public MultirotorApiBase
+    class BetaflightApi : public MultirotorApiBase
     {
 
     public:
-        BetaflightApi(const MultiRotorParams* vehicle_params,  const AirSimSettings::MavLinkConnectionInfo& connection_info)
+        BetaflightApi(const MultiRotorParams* vehicle_params, const AirSimSettings::MavLinkConnectionInfo& connection_info)
             : connection_info_(connection_info), vehicle_params_(vehicle_params)
         {
+            sensors_ = &getSensors();
+            start_time_ = ClockFactory::get()->nowNanos();
             connect();
         }
 
@@ -44,7 +46,7 @@ namespace airlib
         }
 
         // Update sensor data & send to betaflight
-        virtual void update() override 
+        virtual void update() override
         {
             MultirotorApiBase::update();
 
@@ -305,7 +307,7 @@ namespace airlib
             }
 
             Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for sending sensor data", port_, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
-            Utils::log(Utils::stringf("Using UDP port %d for receiving rotor power", connection_info_.control_port_local, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
+            Utils::log(Utils::stringf("Using UDP port %d, local IP %s, remote IP %s for receiving rotor power", connection_info_.control_port_local, connection_info_.local_host_ip.c_str(), ip_.c_str()), Utils::kLogLevelInfo);
 
             udp_socket_ = std::make_unique<mavlinkcom::UdpSocket>();
             udp_socket_->bind(connection_info_.local_host_ip, connection_info_.control_port_local);
@@ -322,37 +324,39 @@ namespace airlib
         }
 
         void sendState() // send fdmPacket to betaflight i.e udp:9002
-        {   
+        {
+            if (sensors_ == nullptr || udp_socket_ == nullptr)
+                return;
             FdmPacket pkt;
 
             // Time
-            pkt.timestamp = ClockFactory::get()->nowNanos() / 1E9;
-            
+            pkt.timestamp = static_cast<double>(ClockFactory::get()->nowNanos()-start_time_)/ 1E9;
+
             // IMU
             const auto& imu_output = getImuData("");
-                // Angular Velocity
-                pkt.imu_angular_velocity_rpy[0] = imu_output.angular_velocity[0];
-                pkt.imu_angular_velocity_rpy[1] = imu_output.angular_velocity[1];
-                pkt.imu_angular_velocity_rpy[2] = imu_output.angular_velocity[2];
+            // Angular Velocity
+            pkt.imu_angular_velocity_rpy[0] = imu_output.angular_velocity[0];
+            pkt.imu_angular_velocity_rpy[1] = imu_output.angular_velocity[1];
+            pkt.imu_angular_velocity_rpy[2] = imu_output.angular_velocity[2];
+    
+            // Linear Acceleration
+            pkt.imu_linear_acceleration_xyz[0] = imu_output.linear_acceleration[0];
+            pkt.imu_linear_acceleration_xyz[1] = imu_output.linear_acceleration[1];
+            pkt.imu_linear_acceleration_xyz[2] = imu_output.linear_acceleration[2];
 
-                // Linear Acceleration
-                pkt.imu_linear_acceleration_xyz[0] = imu_output.linear_acceleration[0];
-                pkt.imu_linear_acceleration_xyz[1] = imu_output.linear_acceleration[1];
-                pkt.imu_linear_acceleration_xyz[2] = imu_output.linear_acceleration[2];
-
-                // Orientation Quaternion. In case USE_IMU_CALC is not defined on betaflight side
-                pkt.imu_orientation_quat[0] = imu_output.orientation.w();
-                pkt.imu_orientation_quat[1] = imu_output.orientation.x();
-                pkt.imu_orientation_quat[2] = imu_output.orientation.y();
-                pkt.imu_orientation_quat[3] = imu_output.orientation.z();
+            // Orientation Quaternion. In case USE_IMU_CALC is not defined on betaflight side
+            pkt.imu_orientation_quat[0] = imu_output.orientation.w();
+            pkt.imu_orientation_quat[1] = imu_output.orientation.x();
+            pkt.imu_orientation_quat[2] = imu_output.orientation.y();
+            pkt.imu_orientation_quat[3] = imu_output.orientation.z();
             // GPS
 
-                // Position
+            // Position
 
-                // Velocity
-            if (udp_socket_ != nullptr) {
-                udp_socket_->sendto(&pkt, sizeof(pkt), ip_, port_);
-            }
+            // Velocity
+            
+            udp_socket_->sendto(&pkt, sizeof(pkt), ip_, port_);
+            
         }
 
         void recvControl()
@@ -374,26 +378,25 @@ namespace airlib
             }
 
             normalizeRotorControls();
-           // Utils::log(Utils::stringf("pwm received: [ %f, %f, %f, %f ]", rotor_controls_[0], rotor_controls_[1], rotor_controls_[2], rotor_controls_[3]), Utils::kLogLevelInfo);
+            // Utils::log(Utils::stringf("pwm received: [ %f, %f, %f, %f ]", rotor_controls_[0], rotor_controls_[1], rotor_controls_[2], rotor_controls_[3]), Utils::kLogLevelInfo);
         }
 
     private:
-        
         struct FdmPacket // equivalent of fdm_packet in betaflight SITL
-        {  
-            double timestamp;                   // in seconds
+        {
+            double timestamp; // in seconds
             double imu_angular_velocity_rpy[3]; // rad/s -> range: +/- 8192; +/- 2000 deg/se
-            double imu_linear_acceleration_xyz[3];    // m/s/s NED, body frame -> sim 1G = 9.80665, FC 1G = 256
-            double imu_orientation_quat[4];     // w, x, y, z
-            double velocity_xyz[3];             // m/s, earth frame
-            double position_xyz[3];             // meters, NED from origin
+            double imu_linear_acceleration_xyz[3]; // m/s/s NED, body frame -> sim 1G = 9.80665, FC 1G = 256
+            double imu_orientation_quat[4]; // w, x, y, z
+            double velocity_xyz[3]; // m/s, earth frame
+            double position_xyz[3]; // meters, NED from origin
         };
-        
+
         static const int kBetaflightRotorControlCount = 4;
-        
+
         struct ServoPacket // equivalent of servo_packet in betaflight SITL
-        {  
-            u_int16_t pwm[kBetaflightRotorControlCount]; 
+        {
+            uint16_t pwm[kBetaflightRotorControlCount];
         };
 
         float rotor_controls_[kBetaflightRotorControlCount];
@@ -402,13 +405,14 @@ namespace airlib
         MultirotorApiParams safety_params_;
         AirSimSettings::MavLinkConnectionInfo connection_info_;
         const MultiRotorParams* vehicle_params_;
-
+        const SensorCollection* sensors_;
         uint16_t port_;
         std::string ip_;
         RCData last_rcData_;
         bool is_rc_connected_;
+        uint64_t start_time_; // changed in contructor call 
     };
 }
-} // namespace 
+} // namespace
 
 #endif
