@@ -1141,20 +1141,14 @@ void AirsimROSWrapper::update_commands()
     if (has_gimbal_cmd_) {
         std::lock_guard<std::mutex> guard(control_mutex_);
 
-        std::vector<std::string> vehicle_names = airsim_car_client_->listVehicles();
+        if (auto it{ AirSimSettings::singleton().vehicles.find(gimbal_cmd_.vehicle_name) }; it != std::end(AirSimSettings::singleton().vehicles)) {
+            const auto& [key, value]{ *it };
+            const auto& mvalue{ it->second };
+            get_client(mvalue->vehicle_type)->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(0, 0, 0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
+        }
 
-        if (!vehicle_names.empty() && std::find(vehicle_names.begin(), vehicle_names.end(), gimbal_cmd_.vehicle_name) != std::end(vehicle_names)) {
-            airsim_car_client_->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(0, 0, 0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
-        }
-        else {
-            vehicle_names = get_multirotor_client()->listVehicles();
-            if (!vehicle_names.empty() && std::find(vehicle_names.begin(), vehicle_names.end(), gimbal_cmd_.vehicle_name) != std::end(vehicle_names)) {
-                get_multirotor_client()->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(0, 0, 0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
-            }
-        }
+        has_gimbal_cmd_ = false;
     }
-
-    has_gimbal_cmd_ = false;
 }
 
 // airsim uses nans for zeros in settings.json. we set them to zeros here for handling tfs in ROS
