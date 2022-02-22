@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # get path of current script: https://stackoverflow.com/a/39340259/207661
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -62,8 +62,8 @@ else
         export CC="gcc-8"
         export CXX="g++-8"
     else
-        export CC="clang-8"
-        export CXX="clang++-8"
+        export CC="clang-11"
+        export CXX="clang++-11"
     fi
 fi
 

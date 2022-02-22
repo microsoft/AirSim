@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using UnrealBuildTool;
+using System;
 using System.IO;
 
 public class AirSim : ModuleRules
@@ -105,12 +106,12 @@ public class AirSim : ModuleRules
             PublicAdditionalLibraries.Add("dxguid.lib");
         }
 
-		if (Target.Platform == UnrealTargetPlatform.Linux)
-		{
-			// needed when packaging
-			PublicAdditionalLibraries.Add("stdc++");
-			PublicAdditionalLibraries.Add("supc++");
-		}
+        if (Target.Platform == UnrealTargetPlatform.Linux)
+        {
+            // needed when packaging
+            PublicAdditionalLibraries.Add("stdc++");
+            PublicAdditionalLibraries.Add("supc++");
+        }
     }
 
     static void CopyFileIfNewer(string srcFilePath, string destFolder)
