@@ -414,15 +414,16 @@ namespace airlib
             initializeSubwindowSettings(subwindow_settings);
             initializePawnPaths(pawn_paths);
         }
+
         static SensorSettingsMap& GetDefaultSensors(const std::string& vehicle_type)
         {
             if (isCar(vehicle_type)) {
                 static SensorSettingsMap sensor_defaults_car;
                 return sensor_defaults_car;
             }
-            else if (isComputerVision(vehicle_type)) { // for now, we use car default sensors for CV
-                static SensorSettingsMap sensor_defaults_car;
-                return sensor_defaults_car;
+            else if (isComputerVision(vehicle_type)) {
+                static SensorSettingsMap sensor_defaults_cv;
+                return sensor_defaults_cv;
             }
             else if (isMultirotor(vehicle_type)) {
                 static SensorSettingsMap sensor_defaults_multirotor;
@@ -451,7 +452,7 @@ namespace airlib
             loadVehicleSettings(settings_json, vehicles, vehicle_type_getter);
             loadCameraDirectorSetting(settings_json, camera_director, vehicles);
             loadViewModeSettings(settings_json);
-            loadCoreSimModeSettings(settings_json);
+            loadPhysicsEngineSettings(settings_json);
             loadExternalCameraSettings(settings_json, external_cameras);
 
             //this should be done last because it depends on vehicles (and/or their type) we have
@@ -601,7 +602,7 @@ namespace airlib
             return has_default;
         }
 
-        void loadCoreSimModeSettings(const Settings& settings_json)
+        void loadPhysicsEngineSettings(const Settings& settings_json)
         {
             physics_engine_name = settings_json.getString("PhysicsEngineName", "");
             if (physics_engine_name == "") {
