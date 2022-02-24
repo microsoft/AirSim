@@ -726,7 +726,7 @@ void ASimModeBase::setupVehiclesAndCamera()
     initializeExternalCameras();
     external_image_capture_ = std::make_unique<UnrealImageCapture>(&external_cameras_);
 
-    if (getApiProvider()->hasDefaultVehicle() && isVehicleTypeSupported(getSettings().vehicles.begin()->second->vehicle_type)) {
+    if (getApiProvider()->hasDefaultVehicle() && isVehicleTypeSupported(getSettings().getFirstVehicleSetting()->vehicle_type)) {
         //TODO: better handle no FPV vehicles scenario
         getVehicleSimApi()->possess();
         CameraDirector->initializeForBeginPlay(getInitialViewMode(), getVehicleSimApi()->getPawn(), getVehicleSimApi()->getCamera("fpv"), getVehicleSimApi()->getCamera("back_center"), nullptr);

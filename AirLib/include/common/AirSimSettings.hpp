@@ -506,6 +506,11 @@ namespace airlib
             return it->second.get();
         }
 
+        const VehicleSetting* getFirstVehicleSetting() const
+        {
+            return vehicles.begin()->second.get();
+        }
+
         static Vector3r createVectorSetting(const Settings& settings_json, const Vector3r& default_vec)
         {
             return Vector3r(settings_json.getFloat("X", default_vec.x()),
@@ -621,7 +626,7 @@ namespace airlib
             std::string view_mode_string = settings_json.getString("ViewMode", "");
 
             if (view_mode_string == "") {
-                const auto& vehicle_type = vehicles.begin()->second->vehicle_type;
+                const auto& vehicle_type = getFirstVehicleSetting()->vehicle_type;
                 if (isMultirotor(vehicle_type))
                     view_mode_string = "FlyWithMe";
                 else if (isComputerVision(vehicle_type))

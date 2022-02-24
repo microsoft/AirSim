@@ -297,7 +297,7 @@ void ASimHUD::initializeSubWindows()
         default_simmode_index++;
 
         // find the first vehicle from the settings and its corresponding simmode
-        if (simmode->getApiProvider()->hasDefaultVehicle() && simmode->isVehicleTypeSupported(AirSimSettings::singleton().vehicles.begin()->second->vehicle_type)) {
+        if (simmode->getApiProvider()->hasDefaultVehicle() && simmode->isVehicleTypeSupported(AirSimSettings::singleton().getFirstVehicleSetting()->vehicle_type)) {
             const auto& default_vehicle_sim_api = simmode->getVehicleSimApi();
             auto camera_count = default_vehicle_sim_api->getCameraCount();
 
