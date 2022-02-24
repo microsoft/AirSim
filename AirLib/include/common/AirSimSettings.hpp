@@ -906,14 +906,10 @@ namespace airlib
                 std::vector<std::string> keys;
                 vehicles_child.getChildNames(keys);
 
-                //remove default vehicles, if values are specified in settings
-                //if (keys.size())
-                //    vehicles.clear();
-
-                for (const auto& key : keys) {
+                for (const auto& vehicle_name : keys) {
                     msr::airlib::Settings child;
-                    vehicles_child.getChild(key, child);
-                    vehicles[key] = createVehicleSetting(child, key);
+                    vehicles_child.getChild(vehicle_name, child);
+                    vehicles[vehicle_name] = createVehicleSetting(child, vehicle_name);
                 }
             }
             else {
