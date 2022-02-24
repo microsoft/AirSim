@@ -1281,7 +1281,7 @@ namespace airlib
         // creates and intializes sensor settings from json
         static void loadSensorSettings(const Settings& settings_json, const std::string& collectionName,
                                        SensorSettingsMap& sensors,
-                                       SensorSettingsMap& sensor_defaults)
+                                       const SensorSettingsMap& sensor_defaults)
 
         {
             // NOTE: Increase type if number of sensors goes above 8
