@@ -48,6 +48,11 @@ AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHan
     std::cout << "AirsimROSWrapper Initialized!\n";
 }
 
+const msr::airlib::AirSimSettings& AirsimROSWrapper::get_settings() const
+{
+    return AirSimSettings::singleton();
+}
+
 void AirsimROSWrapper::initialize_airsim()
 {
     // todo do not reset if already in air?
@@ -117,7 +122,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     image_transport::ImageTransport image_transporter(nh_private_);
 
     // iterate over std::map<std::string, std::unique_ptr<VehicleSetting>> vehicles;
-    for (const auto& curr_vehicle_elem : AirSimSettings::singleton().vehicles) {
+    for (const auto& curr_vehicle_elem : get_settings().vehicles) {
         auto& vehicle_setting = curr_vehicle_elem.second;
         auto curr_vehicle_name = curr_vehicle_elem.first;
 
@@ -451,7 +456,7 @@ bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, ai
 
 msr::airlib::GeoPoint AirsimROSWrapper::get_origin_geo_point() const
 {
-    HomeGeoPoint geo_point = AirSimSettings::singleton().origin_geopoint;
+    HomeGeoPoint geo_point = get_settings().origin_geopoint;
     return geo_point.home_geo_point;
 }
 
@@ -1184,7 +1189,7 @@ void AirsimROSWrapper::update_commands()
     if (has_gimbal_cmd_) {
         std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
-        if (auto it{ AirSimSettings::singleton().vehicles.find(gimbal_cmd_.vehicle_name) }; it != std::end(AirSimSettings::singleton().vehicles)) {
+        if (auto it{ get_settings().vehicles.find(gimbal_cmd_.vehicle_name) }; it != std::end(get_settings().vehicles)) {
             const auto& [key, value]{ *it };
             const auto& mvalue{ it->second };
             get_client(mvalue->vehicle_type)->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(0, 0, 0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
