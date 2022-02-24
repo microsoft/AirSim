@@ -18,8 +18,9 @@ public:
 
     // ------ Level setting apis ----- //
     virtual bool loadLevel(const std::string& level_name) override { return false; };
-    virtual std::string spawnObject(std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled) override { return ""; };
+    virtual std::string spawnObject(const std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled, bool is_blueprint) override { return ""; };
     virtual bool destroyObject(const std::string& object_name) override { return false; };
+    virtual std::vector<std::string> listAssets() const override;
 
     virtual bool isPaused() const override;
     virtual void reset() override;
@@ -37,7 +38,10 @@ public:
     virtual void printLogMessage(const std::string& message,
                                  const std::string& message_param = "", unsigned char severity = 0) override;
 
+    virtual bool setLightIntensity(const std::string& light_name, float intensity) override;
     virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) override;
+    virtual bool setObjectMaterial(const std::string& object_name, const std::string& material_name) override;
+    virtual bool setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path) override;
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;
     virtual Pose getObjectPose(const std::string& object_name) const override;
 
@@ -84,6 +88,25 @@ public:
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,
                                                                    const std::string& vehicle_name, bool external) const override;
     virtual std::vector<uint8_t> getImage(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) const override;
+
+    //CinemAirSim
+    virtual std::vector<std::string> getPresetLensSettings(const CameraDetails& camera_details) override;
+    virtual std::string getLensSettings(const CameraDetails& camera_details) override;
+    virtual void setPresetLensSettings(std::string preset, const CameraDetails& camera_details) override;
+    virtual std::vector<std::string> getPresetFilmbackSettings(const CameraDetails& camera_details) override;
+    virtual void setPresetFilmbackSettings(std::string preset, const CameraDetails& camera_details) override;
+    virtual std::string getFilmbackSettings(const CameraDetails& camera_details) override;
+    virtual float setFilmbackSettings(float width, float height, const CameraDetails& camera_details) override;
+    virtual float getFocalLength(const CameraDetails& camera_details) override;
+    virtual void setFocalLength(float focal_length, const CameraDetails& camera_details) override;
+    virtual void enableManualFocus(bool enable, const CameraDetails& camera_details) override;
+    virtual float getFocusDistance(const CameraDetails& camera_details) override;
+    virtual void setFocusDistance(float focus_distance, const CameraDetails& camera_details) override;
+    virtual float getFocusAperture(const CameraDetails& camera_details) override;
+    virtual void setFocusAperture(float focus_aperture, const CameraDetails& camera_details) override;
+    virtual void enableFocusPlane(bool enable, const CameraDetails& camera_details) override;
+    virtual std::string getCurrentFieldOfView(const CameraDetails& camera_details) override;
+    //end CinemAirSim
 
     virtual void addDetectionFilterMeshName(ImageCaptureBase::ImageType image_type, const std::string& mesh_name, const CameraDetails& camera_details) override;
     virtual void setDetectionFilterRadius(ImageCaptureBase::ImageType image_type, float radius_cm, const CameraDetails& camera_details) override;

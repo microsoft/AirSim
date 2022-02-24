@@ -22,7 +22,7 @@ PawnSimApi::PawnSimApi(const Params& params)
 void PawnSimApi::initialize()
 {
     Kinematics::State initial_kinematic_state = Kinematics::State::zero();
-    ;
+
     initial_kinematic_state.pose = getPose();
     kinematics_.reset(new Kinematics(initial_kinematic_state));
 
@@ -360,6 +360,13 @@ PawnSimApi::CollisionInfo PawnSimApi::getCollisionInfo() const
     return state_.collision_info;
 }
 
+PawnSimApi::CollisionInfo PawnSimApi::getCollisionInfoAndReset()
+{
+    CollisionInfo collision_info = getCollisionInfo();
+    state_.collision_info.has_collided = false;
+    return collision_info;
+}
+
 FVector PawnSimApi::getUUPosition() const
 {
     return params_.pawn->GetActorLocation(); // - state_.mesh_origin
@@ -447,10 +454,6 @@ void PawnSimApi::setPoseInternal(const Pose& pose, bool ignore_collision)
 
     bool enable_teleport = ignore_collision || canTeleportWhileMove();
 
-    //must reset collision before we set pose. Setting pose will immediately call NotifyHit if there was collision
-    //if there was no collision than has_collided would remain false, else it will be set so its value can be
-    //checked at the start of next tick
-    state_.collision_info.has_collided = false;
     state_.was_last_move_teleport = enable_teleport;
 
     if (enable_teleport)
@@ -527,6 +530,13 @@ void PawnSimApi::updateRendering(float dt)
 const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() const
 {
     return &kinematics_->getState();
+}
+
+void PawnSimApi::setKinematics(const Kinematics::State& state, bool ignore_collision)
+{
+    unused(ignore_collision);
+
+    return kinematics_->setState(state);
 }
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
 {

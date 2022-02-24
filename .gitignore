@@ -361,6 +361,10 @@ xcuserdata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
 # Unity
 /Unity/UnityDemo/Assembly-CSharp.csproj
 /Unity/UnityDemo/UnityDemo.sln
@@ -381,9 +385,17 @@ ros/logs/
 ros/.catkin_workspace
 ros/src/CMakeLists.txt
 
+# ROS2
+ros2/install/
+ros2/log/
+ros2/src/log
+
 # docs
 docs/README.md
 build_docs/
 
 # api docs
 PythonClient/docs/_build
+
+# Docker
+/docker/Blocks/

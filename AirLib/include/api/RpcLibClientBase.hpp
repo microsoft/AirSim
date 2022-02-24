@@ -65,6 +65,9 @@ namespace airlib
         Vector3r simGetObjectScale(const std::string& object_name) const;
         bool simSetObjectPose(const std::string& object_name, const Pose& pose, bool teleport = true);
         bool simSetObjectScale(const std::string& object_name, const Vector3r& scale);
+        std::string simSpawnObject(const std::string& object_name, const std::string& load_component, const Pose& pose,
+                                   const Vector3r& scale, bool physics_enabled);
+        bool simDestroyObject(const std::string& object_name);
 
         //task management APIs
         void cancelLastTask(const std::string& vehicle_name = "");
@@ -111,6 +114,24 @@ namespace airlib
         vector<ImageCaptureBase::ImageResponse> simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name = "", bool external = false);
         vector<uint8_t> simGetImage(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name = "", bool external = false);
 
+        //CinemAirSim
+        std::vector<std::string> simGetPresetLensSettings(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        std::string simGetLensSettings(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        void simSetPresetLensSettings(const std::string& preset_lens_settings, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        std::vector<std::string> simGetPresetFilmbackSettings(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        void simSetPresetFilmbackSettings(const std::string& preset_filmback_settings, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        std::string simGetFilmbackSettings(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        float simSetFilmbackSettings(const float sensor_width, const float sensor_heigth, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        float simGetFocalLength(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        void simSetFocalLength(float focal_length, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        void simEnableManualFocus(const bool enable, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        float simGetFocusDistance(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        void simSetFocusDistance(float focus_distance, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        float simGetFocusAperture(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        void simSetFocusAperture(const float focus_aperture, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        void simEnableFocusPlane(const bool enable, const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        std::string simGetCurrentFieldOfView(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        //end CinemAirSim
         bool simTestLineOfSightToPoint(const msr::airlib::GeoPoint& point, const std::string& vehicle_name = "");
         bool simTestLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2);
         vector<msr::airlib::GeoPoint> simGetWorldExtents();
@@ -128,8 +149,11 @@ namespace airlib
 
         bool simCreateVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file);
         msr::airlib::Kinematics::State simGetGroundTruthKinematics(const std::string& vehicle_name = "") const;
+        void simSetKinematics(const Kinematics::State& state, bool ignore_collision, const std::string& vehicle_name = "");
         msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
         std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
+        bool simSetObjectMaterial(const std::string& object_name, const std::string& material_name);
+        bool simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path);
 
         // Recording APIs
         void startRecording();
@@ -140,6 +164,8 @@ namespace airlib
         vector<string> listVehicles();
 
         std::string getSettingsString() const;
+
+        std::vector<std::string> simListAssets() const;
 
     protected:
         void* getClient();

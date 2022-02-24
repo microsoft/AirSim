@@ -37,6 +37,7 @@ public: //types
     typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
     typedef msr::airlib::ImageCaptureBase ImageCaptureBase;
     typedef msr::airlib::DetectionInfo DetectionInfo;
+    typedef msr::airlib::Kinematics Kinematics;
 
     struct Params
     {
@@ -80,6 +81,7 @@ public: //implementation of VehicleSimApiBase
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
 
     virtual CollisionInfo getCollisionInfo() const override;
+    virtual CollisionInfo getCollisionInfoAndReset() override;
     virtual int getRemoteControlID() const override;
     virtual msr::airlib::RCData getRCData() const override;
     virtual std::string getVehicleName() const override
@@ -92,6 +94,7 @@ public: //implementation of VehicleSimApiBase
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
     virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
+    virtual void setKinematics(const msr::airlib::Kinematics::State& state, bool ignore_collision) override;
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
     virtual std::string getRecordFileLine(bool is_header_line) const override;
     virtual void reportState(msr::airlib::StateReporter& reporter) override;
@@ -149,7 +152,6 @@ private: //methods
 
 private: //vars
     typedef msr::airlib::AirSimSettings AirSimSettings;
-    typedef msr::airlib::Kinematics Kinematics;
     typedef msr::airlib::Environment Environment;
 
     Params params_;

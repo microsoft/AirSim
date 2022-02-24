@@ -108,7 +108,7 @@ print('Retrieved images: %d', len(responses))
 for response in responses:
     if response.pixels_as_float:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-        airsim.write_pfm(os.path.normpath('/temp/py1.pfm'), airsim.getPfmArray(response))
+        airsim.write_pfm(os.path.normpath('/temp/py1.pfm'), airsim.get_pfm_array(response))
     else:
         print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
         airsim.write_file(os.path.normpath('/temp/py1.png'), response.image_data_uint8)
@@ -122,7 +122,7 @@ for response in responses:
 * `isApiControlEnabled`: Returns true if API control is established. If false (which is default) then API calls would be ignored. After a successful call to `enableApiControl`, the `isApiControlEnabled` should return true.
 * `ping`: If connection is established then this call will return true otherwise it will be blocked until timeout.
 * `simPrintLogMessage`: Prints the specified message in the simulator's window. If message_param is also supplied then its printed next to the message and in that case if this API is called with same message value but different message_param again then previous line is overwritten with new line (instead of API creating new line on display). For example, `simPrintLogMessage("Iteration: ", to_string(i))` keeps updating same line on display when API is called with different values of i. The valid values of severity parameter is 0 to 3 inclusive that corresponds to different colors.
-* `simGetObjectPose`, `simSetObjectPose`: Gets and sets the pose of specified object in Unreal environment. Here the object means "actor" in Unreal terminology. They are searched by tag as well as name. Please note that the names shown in UE Editor are *auto-generated* in each run and are not permanent. So if you want to refer to actor by name, you must change its auto-generated name in UE Editor. Alternatively you can add a tag to actor which can be done by clicking on that actor in Unreal Editor and then going to [Tags property](https://answers.unrealengine.com/questions/543807/whats-the-difference-between-tag-and-tag.html), click "+" sign and add some string value. If multiple actors have same tag then the first match is returned. If no matches are found then NaN pose is returned. The returned pose is in NED coordinates in SI units with its origin at Player Start. For `simSetObjectPose`, the specified actor must have [Mobility](https://docs.unrealengine.com/en-us/Engine/Actors/Mobility) set to Movable or otherwise you will get undefined behavior. The `simSetObjectPose` has parameter `teleport` which means object is [moved through other objects](https://www.unrealengine.com/en-US/blog/moving-physical-objects) in its way and it returns true if move was successful
+* `simGetObjectPose`, `simSetObjectPose`: Gets and sets the pose of specified object in Unreal environment. Here the object means "actor" in Unreal terminology. They are searched by tag as well as name. Please note that the names shown in UE Editor are *auto-generated* in each run and are not permanent. So if you want to refer to actor by name, you must change its auto-generated name in UE Editor. Alternatively you can add a tag to actor which can be done by clicking on that actor in Unreal Editor and then going to [Tags property](https://answers.unrealengine.com/questions/543807/whats-the-difference-between-tag-and-tag.html), click "+" sign and add some string value. If multiple actors have same tag then the first match is returned. If no matches are found then NaN pose is returned. The returned pose is in NED coordinates in SI units in the world frame. For `simSetObjectPose`, the specified actor must have [Mobility](https://docs.unrealengine.com/en-us/Engine/Actors/Mobility) set to Movable or otherwise you will get undefined behavior. The `simSetObjectPose` has parameter `teleport` which means object is [moved through other objects](https://www.unrealengine.com/en-US/blog/moving-physical-objects) in its way and it returns true if move was successful
 
 ### Image / Computer Vision APIs
 AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plane, computation of disparity image and saving it to [pfm format](pfm.md).
@@ -216,6 +216,19 @@ Also see example script in [set_wind.py](https://github.com/Microsoft/AirSim/blo
 AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in [settings.json](settings.md).
 
 More on [lidar APIs and settings](lidar.md) and [sensor settings](sensors.md)
+
+### Light Control APIs
+
+Lights that can be manipulated inside AirSim can be created via the `simSpawnObject()` API by passing either `PointLightBP` or `SpotLightBP` as the `asset_name` parameter and `True` as the `is_blueprint` parameter. Once a light has been spawned, it can be manipulated using the following API:
+
+* `simSetLightIntensity`: This allows you to edit a light's intensity or brightness. It takes two parameters, `light_name`, the name of the light object returned by a previous call to `simSpawnObject()`, and `intensity`, a float value.
+
+### Texture APIs
+
+Textures can be dynamically set on objects via these APIs:
+
+* `simSetObjectMaterial`: This sets an object's material using an existing Unreal material asset. It takes two string parameters, `object_name` and `material_name`.
+* `simSetObjectMaterialFromTexture`: This sets an object's material using a path to a texture. It takes two string parameters, `object_name` and `texture_path`.
 
 ### Multiple Vehicles
 AirSim supports multiple vehicles and control them through APIs. Please [Multiple Vehicles](multi_vehicle.md) doc.

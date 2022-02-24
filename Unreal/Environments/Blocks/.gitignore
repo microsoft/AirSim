@@ -1,5 +1,7 @@
 # don't check-in Plugins folder we copied from AirSim folder
 Plugins/
+# Don't add packaged binaries
+Packaged/
 
 # don't check-in generated files
 *.sln

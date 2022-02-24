@@ -25,21 +25,6 @@ void ASimModeCar::initializePauseState()
     pause(false);
 }
 
-bool ASimModeCar::isPaused() const
-{
-    return current_clockspeed_ == 0;
-}
-
-void ASimModeCar::pause(bool is_paused)
-{
-    if (is_paused)
-        current_clockspeed_ = 0;
-    else
-        current_clockspeed_ = getSettings().clock_speed;
-
-    UAirBlueprintLib::setUnrealClockSpeed(this, current_clockspeed_);
-}
-
 void ASimModeCar::continueForTime(double seconds)
 {
     pause_period_start_ = ClockFactory::get()->nowNanos();
@@ -56,6 +41,8 @@ void ASimModeCar::continueForFrames(uint32_t frames)
 
 void ASimModeCar::setupClockSpeed()
 {
+    Super::setupClockSpeed();
+
     current_clockspeed_ = getSettings().clock_speed;
 
     //setup clock in PhysX
@@ -138,8 +125,7 @@ std::unique_ptr<PawnSimApi> ASimModeCar::createVehicleSimApi(
 {
     auto vehicle_pawn = static_cast<TVehiclePawn*>(pawn_sim_api_params.pawn);
     auto vehicle_sim_api = std::unique_ptr<PawnSimApi>(new CarPawnSimApi(pawn_sim_api_params,
-                                                                         vehicle_pawn->getKeyBoardControls(),
-                                                                         vehicle_pawn->getVehicleMovementComponent()));
+                                                                         vehicle_pawn->getKeyBoardControls()));
     vehicle_sim_api->initialize();
     vehicle_sim_api->reset();
     return vehicle_sim_api;

@@ -74,6 +74,7 @@ public:
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
 
     virtual CollisionInfo getCollisionInfo() const override;
+    virtual CollisionInfo getCollisionInfoAndReset() override;
     virtual int getRemoteControlID() const override;
     virtual msr::airlib::RCData getRCData() const override;
     virtual std::string getVehicleName() const override
@@ -85,6 +86,7 @@ public:
     virtual void updateRenderedState(float dt) override;
     virtual void updateRendering(float dt) override;
     virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
+    virtual void setKinematics(const Kinematics::State& state, bool ignore_collision) override;
     virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
     virtual std::string getRecordFileLine(bool is_header_line) const override;
     virtual void reportState(msr::airlib::StateReporter& reporter) override;

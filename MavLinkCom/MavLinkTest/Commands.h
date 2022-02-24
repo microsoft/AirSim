@@ -53,7 +53,7 @@ class Command
 {
 public:
     Command();
-    ~Command();
+    virtual ~Command();
 
     std::string Name;
 

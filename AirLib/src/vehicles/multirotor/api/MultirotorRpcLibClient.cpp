@@ -156,6 +156,13 @@ __pragma(warning(disable : 4239))
             return this;
         }
 
+        MultirotorRpcLibClient* MultirotorRpcLibClient::moveToGPSAsync(float latitude, float longitude, float altitude, float velocity, float timeout_sec,
+                                                                       DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name)
+        {
+            pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("movetoGPS", latitude, longitude, altitude, velocity, timeout_sec, drivetrain, MultirotorRpcLibAdaptors::YawMode(yaw_mode), lookahead, adaptive_lookahead, vehicle_name);
+            return this;
+        }
+
         MultirotorRpcLibClient* MultirotorRpcLibClient::moveToPositionAsync(float x, float y, float z, float velocity, float timeout_sec,
                                                                             DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name)
         {

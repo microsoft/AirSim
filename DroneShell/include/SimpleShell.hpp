@@ -104,10 +104,12 @@ namespace airlib
             std::unordered_map<std::string, ShellCommandSwitch> switches_;
 
         public:
-            ShellCommand(std::string name, std::string help)
+            ShellCommand(const std::string& name, const std::string& help)
                 : name_(name), help_(help)
             {
             }
+
+            virtual ~ShellCommand() = default;
 
             void addSwitch(const ShellCommandSwitch& s)
             {
@@ -442,6 +444,8 @@ namespace airlib
             //Setup the command completion
             linenoise::SetCompletionCallback(std::bind(&SimpleShell::commandCompletitionCallBack, this, std::placeholders::_1, std::placeholders::_2));
         }
+
+        virtual ~SimpleShell() = default;
 
         // add a reference to a command (this object must remain valid, we do not copy it)
         void addCommand(ShellCommand& command)

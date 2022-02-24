@@ -26,18 +26,20 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
 };
 
 AirsimROSWrapper::AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string& host_ip)
-    : nh_(nh), nh_private_(nh_private), img_async_spinner_(1, &img_timer_cb_queue_), // a thread for image callbacks to be 'spun' by img_async_spinner_
-    lidar_async_spinner_(1, &lidar_timer_cb_queue_)
-    , // same as above, but for lidar
-    host_ip_(host_ip)
+    : img_async_spinner_(1, &img_timer_cb_queue_) // a thread for image callbacks to be 'spun' by img_async_spinner_
+    , lidar_async_spinner_(1, &lidar_timer_cb_queue_) // same as above, but for lidar
+    , is_used_lidar_timer_cb_queue_(false)
+    , is_used_img_timer_cb_queue_(false)
+    , nh_(nh)
+    , nh_private_(nh_private)
+    , host_ip_(host_ip)
+    , airsim_settings_parser_(host_ip)
     , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
-    , airsim_settings_parser_(host_ip)
+    , has_gimbal_cmd_(false)
     , tf_listener_(tf_buffer_)
 {
     ros_clock_.clock.fromSec(0);
-    is_used_lidar_timer_cb_queue_ = false;
-    is_used_img_timer_cb_queue_ = false;
 
     if (AirSimSettings::singleton().simmode_name != AirSimSettings::kSimModeTypeCar) {
         airsim_mode_ = AIRSIM_MODE::DRONE;
@@ -157,18 +159,34 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
             // bind to a single callback. todo optimal subs queue length
             // bind multiple topics to a single callback, but keep track of which vehicle name it was by passing curr_vehicle_name as the 2nd argument
-            drone->vel_cmd_body_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/vel_cmd_body_frame", 1, boost::bind(&AirsimROSWrapper::vel_cmd_body_frame_cb, this, _1, vehicle_ros->vehicle_name)); // todo ros::TransportHints().tcpNoDelay();
-            drone->vel_cmd_world_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/vel_cmd_world_frame", 1, boost::bind(&AirsimROSWrapper::vel_cmd_world_frame_cb, this, _1, vehicle_ros->vehicle_name));
+            drone->vel_cmd_body_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(
+                curr_vehicle_name + "/vel_cmd_body_frame",
+                1,
+                boost::bind(&AirsimROSWrapper::vel_cmd_body_frame_cb, this, _1, vehicle_ros->vehicle_name));
+            // TODO: ros::TransportHints().tcpNoDelay();
 
-            drone->takeoff_srvr = nh_private_.advertiseService<airsim_ros_pkgs::Takeoff::Request, airsim_ros_pkgs::Takeoff::Response>(curr_vehicle_name + "/takeoff",
-                                                                                                                                      boost::bind(&AirsimROSWrapper::takeoff_srv_cb, this, _1, _2, vehicle_ros->vehicle_name));
-            drone->land_srvr = nh_private_.advertiseService<airsim_ros_pkgs::Land::Request, airsim_ros_pkgs::Land::Response>(curr_vehicle_name + "/land",
-                                                                                                                             boost::bind(&AirsimROSWrapper::land_srv_cb, this, _1, _2, vehicle_ros->vehicle_name));
+            drone->vel_cmd_world_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(
+                curr_vehicle_name + "/vel_cmd_world_frame",
+                1,
+                boost::bind(&AirsimROSWrapper::vel_cmd_world_frame_cb, this, _1, vehicle_ros->vehicle_name));
+
+            drone->takeoff_srvr = nh_private_.advertiseService<airsim_ros_pkgs::Takeoff::Request, airsim_ros_pkgs::Takeoff::Response>(
+                curr_vehicle_name + "/takeoff",
+                boost::bind(&AirsimROSWrapper::takeoff_srv_cb, this, _1, _2, vehicle_ros->vehicle_name));
+
+            drone->land_srvr = nh_private_.advertiseService<airsim_ros_pkgs::Land::Request, airsim_ros_pkgs::Land::Response>(
+                curr_vehicle_name + "/land",
+                boost::bind(&AirsimROSWrapper::land_srv_cb, this, _1, _2, vehicle_ros->vehicle_name));
+
             // vehicle_ros.reset_srvr = nh_private_.advertiseService(curr_vehicle_name + "/reset",&AirsimROSWrapper::reset_srv_cb, this);
         }
         else {
             auto car = static_cast<CarROS*>(vehicle_ros.get());
-            car->car_cmd_sub = nh_private_.subscribe<airsim_ros_pkgs::CarControls>(curr_vehicle_name + "/car_cmd", 1, boost::bind(&AirsimROSWrapper::car_cmd_cb, this, _1, vehicle_ros->vehicle_name));
+            car->car_cmd_sub = nh_private_.subscribe<airsim_ros_pkgs::CarControls>(
+                curr_vehicle_name + "/car_cmd",
+                1,
+                boost::bind(&AirsimROSWrapper::car_cmd_cb, this, _1, vehicle_ros->vehicle_name));
+
             car->car_state_pub = nh_private_.advertise<airsim_ros_pkgs::CarState>(curr_vehicle_name + "/car_state", 10);
         }
 
@@ -181,18 +199,20 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
             append_static_camera_tf(vehicle_ros.get(), curr_camera_name, camera_setting);
             // camera_setting.gimbal
             std::vector<ImageRequest> current_image_request_vec;
-            current_image_request_vec.clear();
 
             // iterate over capture_setting std::map<int, CaptureSetting> capture_settings
             for (const auto& curr_capture_elem : camera_setting.capture_settings) {
-                auto& capture_setting = curr_capture_elem.second;
+                const auto& capture_setting = curr_capture_elem.second;
 
                 // todo why does AirSimSettings::loadCaptureSettings calls AirSimSettings::initializeCaptureSettings()
                 // which initializes default capture settings for _all_ NINE msr::airlib::ImageCaptureBase::ImageType
                 if (!(std::isnan(capture_setting.fov_degrees))) {
-                    ImageType curr_image_type = msr::airlib::Utils::toEnum<ImageType>(capture_setting.image_type);
+                    const ImageType curr_image_type = msr::airlib::Utils::toEnum<ImageType>(capture_setting.image_type);
                     // if scene / segmentation / surface normals / infrared, get uncompressed image with pixels_as_floats = false
-                    if (capture_setting.image_type == 0 || capture_setting.image_type == 5 || capture_setting.image_type == 6 || capture_setting.image_type == 7) {
+                    if (curr_image_type == ImageType::Scene ||
+                        curr_image_type == ImageType::Segmentation ||
+                        curr_image_type == ImageType::SurfaceNormals ||
+                        curr_image_type == ImageType::Infrared) {
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, false, false));
                     }
                     // if {DepthPlanar, DepthPerspective,DepthVis, DisparityNormalized}, get float image
@@ -200,53 +220,53 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
                     }
 
-                    image_pub_vec_.push_back(image_transporter.advertise(curr_vehicle_name + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type), 1));
-                    cam_info_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::CameraInfo>(curr_vehicle_name + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type) + "/camera_info", 10));
+                    const std::string cam_image_topic = curr_vehicle_name + "/" + curr_camera_name + "/" +
+                                                        image_type_int_to_string_map_.at(capture_setting.image_type);
+
+                    image_pub_vec_.push_back(image_transporter.advertise(cam_image_topic, 1));
+                    cam_info_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::CameraInfo>(cam_image_topic + "/camera_info", 10));
                     camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
                 }
             }
             // push back pair (vector of image captures, current vehicle name)
-            airsim_img_request_vehicle_name_pair_vec_.push_back(std::make_pair(current_image_request_vec, curr_vehicle_name));
+            airsim_img_request_vehicle_name_pair_vec_.push_back({ current_image_request_vec, curr_vehicle_name });
         }
 
         // iterate over sensors
         std::vector<SensorPublisher> sensors;
-        for (auto& curr_sensor_map : vehicle_setting->sensors) {
-            auto& sensor_name = curr_sensor_map.first;
-            auto& sensor_setting = curr_sensor_map.second;
-
+        for (const auto& [sensor_name, sensor_setting] : vehicle_setting->sensors) {
             if (sensor_setting->enabled) {
                 SensorPublisher sensor_publisher;
-                sensor_publisher.sensor_name = sensor_setting->sensor_name;
+                sensor_publisher.sensor_name = sensor_name;
                 sensor_publisher.sensor_type = sensor_setting->sensor_type;
                 switch (sensor_setting->sensor_type) {
                 case SensorBase::SensorType::Barometer: {
-                    std::cout << "Barometer" << std::endl;
+                    ROS_INFO_STREAM(sensor_name << ": Barometer");
                     sensor_publisher.publisher = nh_private_.advertise<airsim_ros_pkgs::Altimeter>(curr_vehicle_name + "/altimeter/" + sensor_name, 10);
                     break;
                 }
                 case SensorBase::SensorType::Imu: {
-                    std::cout << "Imu" << std::endl;
+                    ROS_INFO_STREAM(sensor_name << ": IMU");
                     sensor_publisher.publisher = nh_private_.advertise<sensor_msgs::Imu>(curr_vehicle_name + "/imu/" + sensor_name, 10);
                     break;
                 }
                 case SensorBase::SensorType::Gps: {
-                    std::cout << "Gps" << std::endl;
+                    ROS_INFO_STREAM(sensor_name << ": GPS");
                     sensor_publisher.publisher = nh_private_.advertise<sensor_msgs::NavSatFix>(curr_vehicle_name + "/gps/" + sensor_name, 10);
                     break;
                 }
                 case SensorBase::SensorType::Magnetometer: {
-                    std::cout << "Magnetometer" << std::endl;
+                    ROS_INFO_STREAM(sensor_name << ": Magnetometer");
                     sensor_publisher.publisher = nh_private_.advertise<sensor_msgs::MagneticField>(curr_vehicle_name + "/magnetometer/" + sensor_name, 10);
                     break;
                 }
                 case SensorBase::SensorType::Distance: {
-                    std::cout << "Distance" << std::endl;
+                    ROS_INFO_STREAM(sensor_name << ": Distance sensor");
                     sensor_publisher.publisher = nh_private_.advertise<sensor_msgs::Range>(curr_vehicle_name + "/distance/" + sensor_name, 10);
                     break;
                 }
                 case SensorBase::SensorType::Lidar: {
-                    std::cout << "Lidar" << std::endl;
+                    ROS_INFO_STREAM(sensor_name << ": Lidar");
                     auto lidar_setting = *static_cast<LidarSetting*>(sensor_setting.get());
                     msr::airlib::LidarSimpleParams params;
                     params.initializeFromSettings(lidar_setting);
@@ -263,9 +283,9 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
 
         // we want fast access to the lidar sensors for callback handling, sort them out now
-        auto isLidar = std::function<bool(const SensorPublisher& pub)>([](const SensorPublisher& pub) {
+        auto isLidar = [](const SensorPublisher& pub) {
             return pub.sensor_type == SensorBase::SensorType::Lidar;
-        });
+        };
         size_t cnt = std::count_if(sensors.begin(), sensors.end(), isLidar);
         lidar_cnt += cnt;
         vehicle_ros->lidar_pubs.resize(cnt);
@@ -304,7 +324,10 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_airsim_img_response_every_n_sec;
         nh_private_.getParam("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
 
-        ros::TimerOptions timer_options(ros::Duration(update_airsim_img_response_every_n_sec), boost::bind(&AirsimROSWrapper::img_response_timer_cb, this, _1), &img_timer_cb_queue_);
+        ros::TimerOptions timer_options(ros::Duration(update_airsim_img_response_every_n_sec),
+                                        boost::bind(&AirsimROSWrapper::img_response_timer_cb, this, _1),
+                                        &img_timer_cb_queue_);
+
         airsim_img_response_timer_ = nh_private_.createTimer(timer_options);
         is_used_img_timer_cb_queue_ = true;
     }
@@ -314,7 +337,11 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         double update_lidar_every_n_sec;
         nh_private_.getParam("update_lidar_every_n_sec", update_lidar_every_n_sec);
         // nh_private_.setCallbackQueue(&lidar_timer_cb_queue_);
-        ros::TimerOptions timer_options(ros::Duration(update_lidar_every_n_sec), boost::bind(&AirsimROSWrapper::lidar_timer_cb, this, _1), &lidar_timer_cb_queue_);
+
+        ros::TimerOptions timer_options(ros::Duration(update_lidar_every_n_sec),
+                                        boost::bind(&AirsimROSWrapper::lidar_timer_cb, this, _1),
+                                        &lidar_timer_cb_queue_);
+
         airsim_lidar_update_timer_ = nh_private_.createTimer(timer_options);
         is_used_lidar_timer_cb_queue_ = true;
     }
@@ -328,13 +355,12 @@ bool AirsimROSWrapper::takeoff_srv_cb(airsim_ros_pkgs::Takeoff::Request& request
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request.waitOnLastTask)
-        static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->takeoffAsync(20, vehicle_name)->waitOnLastTask(); // todo value for timeout_sec?
-    // response.success =
+        get_multirotor_client()->takeoffAsync(20, vehicle_name)->waitOnLastTask(); // todo value for timeout_sec?
     else
-        static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->takeoffAsync(20, vehicle_name);
-    // response.success =
+        get_multirotor_client()->takeoffAsync(20, vehicle_name);
 
-    return true;
+    response.success = true;
+    return response.success;
 }
 
 bool AirsimROSWrapper::takeoff_group_srv_cb(airsim_ros_pkgs::TakeoffGroup::Request& request, airsim_ros_pkgs::TakeoffGroup::Response& response)
@@ -343,14 +369,13 @@ bool AirsimROSWrapper::takeoff_group_srv_cb(airsim_ros_pkgs::TakeoffGroup::Reque
 
     if (request.waitOnLastTask)
         for (const auto& vehicle_name : request.vehicle_names)
-            static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->takeoffAsync(20, vehicle_name)->waitOnLastTask(); // todo value for timeout_sec?
-    // response.success =
+            get_multirotor_client()->takeoffAsync(20, vehicle_name)->waitOnLastTask(); // todo value for timeout_sec?
     else
         for (const auto& vehicle_name : request.vehicle_names)
-            static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->takeoffAsync(20, vehicle_name);
-    // response.success =
+            get_multirotor_client()->takeoffAsync(20, vehicle_name);
 
-    return true;
+    response.success = true;
+    return response.success;
 }
 
 bool AirsimROSWrapper::takeoff_all_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response)
@@ -359,14 +384,13 @@ bool AirsimROSWrapper::takeoff_all_srv_cb(airsim_ros_pkgs::Takeoff::Request& req
 
     if (request.waitOnLastTask)
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
-            static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->takeoffAsync(20, vehicle_name_ptr_pair.first)->waitOnLastTask(); // todo value for timeout_sec?
-    // response.success =
+            get_multirotor_client()->takeoffAsync(20, vehicle_name_ptr_pair.first)->waitOnLastTask(); // todo value for timeout_sec?
     else
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
-            static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->takeoffAsync(20, vehicle_name_ptr_pair.first);
-    // response.success =
+            get_multirotor_client()->takeoffAsync(20, vehicle_name_ptr_pair.first);
 
-    return true;
+    response.success = true;
+    return response.success;
 }
 
 bool AirsimROSWrapper::land_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response, const std::string& vehicle_name)
@@ -374,11 +398,12 @@ bool AirsimROSWrapper::land_srv_cb(airsim_ros_pkgs::Land::Request& request, airs
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
     if (request.waitOnLastTask)
-        static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->landAsync(60, vehicle_name)->waitOnLastTask();
+        get_multirotor_client()->landAsync(60, vehicle_name)->waitOnLastTask();
     else
-        static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->landAsync(60, vehicle_name);
+        get_multirotor_client()->landAsync(60, vehicle_name);
 
-    return true; //todo
+    response.success = true;
+    return response.success; //todo
 }
 
 bool AirsimROSWrapper::land_group_srv_cb(airsim_ros_pkgs::LandGroup::Request& request, airsim_ros_pkgs::LandGroup::Response& response)
@@ -387,12 +412,13 @@ bool AirsimROSWrapper::land_group_srv_cb(airsim_ros_pkgs::LandGroup::Request& re
 
     if (request.waitOnLastTask)
         for (const auto& vehicle_name : request.vehicle_names)
-            static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->landAsync(60, vehicle_name)->waitOnLastTask();
+            get_multirotor_client()->landAsync(60, vehicle_name)->waitOnLastTask();
     else
         for (const auto& vehicle_name : request.vehicle_names)
-            static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->landAsync(60, vehicle_name);
+            get_multirotor_client()->landAsync(60, vehicle_name);
 
-    return true; //todo
+    response.success = true;
+    return response.success; //todo
 }
 
 bool AirsimROSWrapper::land_all_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response)
@@ -401,12 +427,13 @@ bool AirsimROSWrapper::land_all_srv_cb(airsim_ros_pkgs::Land::Request& request, 
 
     if (request.waitOnLastTask)
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
-            static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->landAsync(60, vehicle_name_ptr_pair.first)->waitOnLastTask();
+            get_multirotor_client()->landAsync(60, vehicle_name_ptr_pair.first)->waitOnLastTask();
     else
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_)
-            static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->landAsync(60, vehicle_name_ptr_pair.first);
+            get_multirotor_client()->landAsync(60, vehicle_name_ptr_pair.first);
 
-    return true; //todo
+    response.success = true;
+    return response.success; //todo
 }
 
 // todo add reset by vehicle_name API to airlib
@@ -415,8 +442,10 @@ bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, ai
 {
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
 
-    airsim_client_.reset();
-    return true; //todo
+    airsim_client_->reset();
+
+    response.success = true;
+    return response.success; //todo
 }
 
 tf2::Quaternion AirsimROSWrapper::get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat) const
@@ -598,7 +627,9 @@ void AirsimROSWrapper::gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAn
 {
     try {
         tf2::Quaternion quat_control_cmd;
-        quat_control_cmd.setRPY(math_common::deg2rad(gimbal_angle_euler_cmd_msg.roll), math_common::deg2rad(gimbal_angle_euler_cmd_msg.pitch), math_common::deg2rad(gimbal_angle_euler_cmd_msg.yaw));
+        quat_control_cmd.setRPY(math_common::deg2rad(gimbal_angle_euler_cmd_msg.roll),
+                                math_common::deg2rad(gimbal_angle_euler_cmd_msg.pitch),
+                                math_common::deg2rad(gimbal_angle_euler_cmd_msg.yaw));
         quat_control_cmd.normalize();
         gimbal_cmd_.target_quat = get_airlib_quat(quat_control_cmd);
         gimbal_cmd_.camera_name = gimbal_angle_euler_cmd_msg.camera_name;
@@ -729,26 +760,26 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
         const unsigned char* bytes = reinterpret_cast<const unsigned char*>(data_std.data());
         vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
         lidar_msg.data = std::move(lidar_msg_data);
+
+        if (isENU_) {
+            try {
+                sensor_msgs::PointCloud2 lidar_msg_enu;
+                auto transformStampedENU = tf_buffer_.lookupTransform(AIRSIM_FRAME_ID, vehicle_name, ros::Time(0), ros::Duration(1));
+                tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
+
+                lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
+                lidar_msg_enu.header.frame_id = lidar_msg.header.frame_id;
+
+                lidar_msg = std::move(lidar_msg_enu);
+            }
+            catch (tf2::TransformException& ex) {
+                ROS_WARN("%s", ex.what());
+                ros::Duration(1.0).sleep();
+            }
+        }
     }
     else {
         // msg = []
-    }
-
-    if (isENU_) {
-        try {
-            sensor_msgs::PointCloud2 lidar_msg_enu;
-            auto transformStampedENU = tf_buffer_.lookupTransform(AIRSIM_FRAME_ID, vehicle_name, ros::Time(0), ros::Duration(1));
-            tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
-
-            lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
-            lidar_msg_enu.header.frame_id = lidar_msg.header.frame_id;
-
-            lidar_msg = std::move(lidar_msg_enu);
-        }
-        catch (tf2::TransformException& ex) {
-            ROS_WARN("%s", ex.what());
-            ros::Duration(1.0).sleep();
-        }
     }
 
     return lidar_msg;
@@ -903,6 +934,16 @@ ros::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoin
     return cur_time;
 }
 
+msr::airlib::MultirotorRpcLibClient* AirsimROSWrapper::get_multirotor_client()
+{
+    return static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get());
+}
+
+msr::airlib::CarRpcLibClient* AirsimROSWrapper::get_car_client()
+{
+    return static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get());
+}
+
 void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
 {
     try {
@@ -966,8 +1007,7 @@ ros::Time AirsimROSWrapper::update_state()
 
         if (airsim_mode_ == AIRSIM_MODE::DRONE) {
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
-            auto rpc = static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get());
-            drone->curr_drone_state = rpc->getMultirotorState(vehicle_ros->vehicle_name);
+            drone->curr_drone_state = get_multirotor_client()->getMultirotorState(vehicle_ros->vehicle_name);
 
             vehicle_time = airsim_timestamp_to_ros(drone->curr_drone_state.timestamp);
             if (!got_sim_time) {
@@ -982,8 +1022,7 @@ ros::Time AirsimROSWrapper::update_state()
         }
         else {
             auto car = static_cast<CarROS*>(vehicle_ros.get());
-            auto rpc = static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get());
-            car->curr_car_state = rpc->getCarState(vehicle_ros->vehicle_name);
+            car->curr_car_state = get_car_client()->getCarState(vehicle_ros->vehicle_name);
 
             vehicle_time = airsim_timestamp_to_ros(car->curr_car_state.timestamp);
             if (!got_sim_time) {
@@ -1097,7 +1136,13 @@ void AirsimROSWrapper::update_commands()
             // send control commands from the last callback to airsim
             if (drone->has_vel_cmd) {
                 std::lock_guard<std::mutex> guard(drone_control_mutex_);
-                static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get())->moveByVelocityAsync(drone->vel_cmd.x, drone->vel_cmd.y, drone->vel_cmd.z, vel_cmd_duration_, msr::airlib::DrivetrainType::MaxDegreeOfFreedom, drone->vel_cmd.yaw_mode, drone->vehicle_name);
+                get_multirotor_client()->moveByVelocityAsync(drone->vel_cmd.x,
+                                                             drone->vel_cmd.y,
+                                                             drone->vel_cmd.z,
+                                                             vel_cmd_duration_,
+                                                             msr::airlib::DrivetrainType::MaxDegreeOfFreedom,
+                                                             drone->vel_cmd.yaw_mode,
+                                                             drone->vehicle_name);
             }
             drone->has_vel_cmd = false;
         }
@@ -1106,7 +1151,7 @@ void AirsimROSWrapper::update_commands()
             auto car = static_cast<CarROS*>(vehicle_ros.get());
             if (car->has_car_cmd) {
                 std::lock_guard<std::mutex> guard(drone_control_mutex_);
-                static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get())->setCarControls(car->car_cmd, vehicle_ros->vehicle_name);
+                get_car_client()->setCarControls(car->car_cmd, vehicle_ros->vehicle_name);
             }
             car->has_car_cmd = false;
         }

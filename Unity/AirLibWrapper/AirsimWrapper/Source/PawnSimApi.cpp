@@ -168,6 +168,13 @@ PawnSimApi::CollisionInfo PawnSimApi::getCollisionInfo() const
     return state_.collision_info;
 }
 
+PawnSimApi::CollisionInfo PawnSimApi::getCollisionInfoAndReset()
+{
+    CollisionInfo collision_info = getCollisionInfo();
+    state_.collision_info.has_collided = false;
+    return collision_info;
+}
+
 void PawnSimApi::toggleTrace()
 {
     state_.tracing_enabled = !state_.tracing_enabled;
@@ -224,6 +231,12 @@ void PawnSimApi::updateRendering(float dt)
 const msr::airlib::Kinematics::State* PawnSimApi::getGroundTruthKinematics() const
 {
     return &kinematics_->getState();
+}
+
+void PawnSimApi::setKinematics(const Kinematics::State& state, bool ignore_collision)
+{
+    unused(ignore_collision);
+    return kinematics_->setState(state);
 }
 
 const msr::airlib::Environment* PawnSimApi::getGroundTruthEnvironment() const
