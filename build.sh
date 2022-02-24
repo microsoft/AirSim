@@ -4,6 +4,8 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR"  >/dev/null
 
+set -e
+set -x
 
 debug=false
 gcc=false
@@ -24,11 +26,6 @@ do
     esac
 
 done
-
-if $debug; then
-    set -e
-    set -x
-fi 
 
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 

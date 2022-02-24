@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# only for debugging
+set -x
+set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
@@ -28,11 +29,6 @@ case $key in
 esac
 
 done
-
-if $DEBUG; then
-    set -x
-    set -e
-fi 
 
 # llvm tools
 if [ "$(uname)" == "Darwin" ]; then # osx
