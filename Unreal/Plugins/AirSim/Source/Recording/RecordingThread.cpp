@@ -7,11 +7,6 @@
 #include "RenderRequest.h"
 #include "PIPCamera.h"
 
-//std::unique_ptr<FRecordingThread> FRecordingThread::running_instance_;
-//std::unique_ptr<FRecordingThread> FRecordingThread::finishing_instance_;
-//msr::airlib::WorkerThreadSignal FRecordingThread::finishing_signal_;
-//bool FRecordingThread::first_ = true;
-
 FRecordingThread::FRecordingThread()
     : stop_task_counter_(0), first_(true), recording_file_(nullptr), is_ready_(false)
 {
