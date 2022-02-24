@@ -1226,18 +1226,7 @@ namespace airlib
             clock_type = settings_json.getString("ClockType", "");
 
             if (clock_type == "") {
-                //default value
                 clock_type = "SteppableClock";
-
-                //for multirotors we select steppable fixed interval clock unless we have
-                //PX4 enabled vehicle
-                for (auto const& vehicle : vehicles) {
-                    if (vehicle.second->auto_create &&
-                        vehicle.second->vehicle_type == kVehicleTypePX4) {
-                        clock_type = "ScalableClock";
-                        break;
-                    }
-                }
             }
 
             clock_speed = settings_json.getFloat("ClockSpeed", 1.0f);
