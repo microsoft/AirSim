@@ -441,7 +441,7 @@ bool AirsimROSWrapper::reset_srv_cb(std::shared_ptr<airsim_interfaces::srv::Rese
 
     get_multirotor_client()->reset();
     get_car_client()->reset();
-    
+
     return true; //todo
 }
 
