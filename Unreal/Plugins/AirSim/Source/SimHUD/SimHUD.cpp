@@ -29,7 +29,7 @@ void ASimHUD::BeginPlay()
         createAllSimModes();
         createMainWidget();
         setupInputBindings();
-        for (const auto& simmode : simmodes_) {
+        for (auto simmode : simmodes_) {
             simmode->startApiServer();
         }
     }
@@ -43,7 +43,7 @@ void ASimHUD::BeginPlay()
 
 void ASimHUD::Tick(float DeltaSeconds)
 {
-    for (const auto& simmode : simmodes_) {
+    for (auto simmode : simmodes_) {
         if (simmode && simmode->EnableReport)
             widget_->updateDebugReport(simmode->getDebugReport());
     }
@@ -51,7 +51,7 @@ void ASimHUD::Tick(float DeltaSeconds)
 
 void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    for (const auto& simmode : simmodes_) {
+    for (auto simmode : simmodes_) {
         simmode->stopApiServer();
     }
 
@@ -72,7 +72,7 @@ void ASimHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ASimHUD::toggleRecordHandler()
 {
-    for (const auto& simmode : simmodes_) {
+    for (auto simmode : simmodes_) {
         if (simmode->getApiProvider()->hasDefaultVehicle()) {
             simmode->toggleRecording();
         }
@@ -86,7 +86,7 @@ void ASimHUD::inputEventToggleRecording()
 
 void ASimHUD::inputEventToggleReport()
 {
-    for (const auto& simmode : simmodes_) {
+    for (auto simmode : simmodes_) {
         simmode->EnableReport = !simmode->EnableReport;
         widget_->setReportVisible(simmode->EnableReport);
     }
@@ -99,7 +99,7 @@ void ASimHUD::inputEventToggleHelp()
 
 void ASimHUD::inputEventToggleTrace()
 {
-    for (const auto& simmode : simmodes_) {
+    for (auto simmode : simmodes_) {
         simmode->toggleTraceAll();
     }
 }
@@ -187,7 +187,7 @@ void ASimHUD::createMainWidget()
     widget_->initializeForPlay();
 
     // ToDo - alon - is it right?
-    for (const auto& simmode : simmodes_) {
+    for (auto simmode : simmodes_) {
         if (simmode)
             widget_->setReportVisible(simmode->EnableReport);
     }
@@ -293,7 +293,7 @@ void ASimHUD::createAllSimModes()
 void ASimHUD::initializeSubWindows()
 {
     int default_simmode_index = -1;
-    for (const auto& simmode : simmodes_) {
+    for (auto simmode : simmodes_) {
         default_simmode_index++;
 
         // find the first vehicle from the settings and its corresponding simmode
