@@ -298,9 +298,6 @@ private:
     rclcpp::Subscription<airsim_interfaces::msg::VelCmdGroup>::SharedPtr vel_cmd_group_world_frame_sub_;
     rclcpp::Service<airsim_interfaces::srv::TakeoffGroup>::SharedPtr takeoff_group_srvr_;
     rclcpp::Service<airsim_interfaces::srv::LandGroup>::SharedPtr land_group_srvr_;
-
-    // AIRSIM_MODE airsim_mode_ = AIRSIM_MODE::DRONE;
-
     rclcpp::Service<airsim_interfaces::srv::Reset>::SharedPtr reset_srvr_;
     rclcpp::Publisher<airsim_interfaces::msg::GPSYaw>::SharedPtr origin_geo_point_pub_; // home geo coord of drones
     msr::airlib::GeoPoint origin_geo_point_; // gps coord of unreal origin
@@ -308,7 +305,6 @@ private:
 
     AirSimSettingsParser airsim_settings_parser_;
     std::unordered_map<std::string, std::unique_ptr<VehicleROS>> vehicle_name_ptr_map_;
-    // std::unordered_map<std::string, std::unique_ptr<VehicleROS>> vehicle_car_name_ptr_map_;
     static const std::unordered_map<int, std::string> image_type_int_to_string_map_;
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
