@@ -41,8 +41,6 @@ void ASimModeCar::continueForFrames(uint32_t frames)
 
 void ASimModeCar::setupClockSpeed()
 {
-    Super::setupClockSpeed();
-
     current_clockspeed_ = getSettings().clock_speed;
 
     //setup clock in PhysX

@@ -35,7 +35,7 @@ msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
         movement_->GetEngineMaxRotationSpeed(),
         last_controls_.handbrake,
         *pawn_kinematics_,
-        vehicle_api_->clock()->nowNanos());
+        msr::airlib::ClockFactory::get()->nowNanos());
     return state;
 }
 
