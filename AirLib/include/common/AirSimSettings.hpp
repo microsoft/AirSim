@@ -1228,12 +1228,7 @@ namespace airlib
 
         void loadClockSettings(const Settings& settings_json)
         {
-            clock_type = settings_json.getString("ClockType", "");
-
-            if (clock_type == "") {
-                clock_type = "SteppableClock";
-            }
-
+            clock_type = settings_json.getString("ClockType", "SteppableClock");
             clock_speed = settings_json.getFloat("ClockSpeed", 1.0f);
         }
 
