@@ -59,7 +59,7 @@ ASimModeBase::ASimModeBase()
         domain_rand_material_ = domain_rand_mat_finder.Object;
     }
 
-    recording_thread_ = new FRecordingThread();
+    recording_thread_.reset(new FRecordingThread());
 }
 
 void ASimModeBase::toggleLoadingScreen(bool is_visible)
