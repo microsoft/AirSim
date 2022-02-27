@@ -23,7 +23,7 @@ std::shared_ptr<msr::airlib::SensorBase> UnrealSensorFactory::createSensorFromSe
         return std::make_shared<UnrealLidarSensor>(
             *static_cast<const AirSimSettings::LidarSetting*>(sensor_setting), actor_, ned_transform_, vehicle_type);
     default:
-        return msr::airlib::SensorFactory::createSensorFromSettings(sensor_setting);
+        return msr::airlib::SensorFactory::createSensorFromSettings(sensor_setting, vehicle_type);
     }
 }
 
