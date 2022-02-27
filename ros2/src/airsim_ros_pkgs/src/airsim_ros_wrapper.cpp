@@ -220,7 +220,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
 
         // iterate over sensors
-        for (auto& [sensor_name, sensor_setting] : vehicle_setting->sensors) {
+        for (const auto& [sensor_name, sensor_setting] : vehicle_setting->sensors) {
             if (sensor_setting->enabled) {
 
                 switch (sensor_setting->sensor_type) {
