@@ -17,5 +17,5 @@ protected:
     virtual msr::airlib::real_T getRayLength(const msr::airlib::Pose& pose) override;
 
 public:
-    UnityDistanceSensor(const std::string& vehicle_type, std::string vehicle_name, const NedTransform* ned_transform);
+    UnityDistanceSensor(const std::string& vehicle_type, std::string vehicle_name, const NedTransform* ned_transform, const msr::airlib::AirSimSettings::DistanceSetting& setting);
 };

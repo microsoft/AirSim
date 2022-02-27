@@ -19,7 +19,7 @@ std::shared_ptr<msr::airlib::SensorBase> UnitySensorFactory::createSensorFromSet
 
     switch (sensor_setting->sensor_type) {
     case SensorBase::SensorType::Distance:
-        return std::make_shared<UnityDistanceSensor>(vehicle_type, vehicle_name_, ned_transform_);
+        return std::make_shared<UnityDistanceSensor>(vehicle_type, vehicle_name_, ned_transform_, *static_cast<const AirSimSettings::DistanceSetting*>(sensor_setting));
     default:
         return msr::airlib::SensorFactory::createSensorFromSettings(sensor_setting, vehicle_type);
     }
