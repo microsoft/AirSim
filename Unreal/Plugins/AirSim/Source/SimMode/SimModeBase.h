@@ -212,7 +212,7 @@ private:
     bool lidar_checks_done_ = false;
     bool lidar_draw_debug_points_ = false;
 
-    FRecordingThread* recording_thread_;
+    std::unique_ptr<FRecordingThread> recording_thread_;
 
 private:
     void setStencilIDs();
