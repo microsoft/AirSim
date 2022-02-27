@@ -463,6 +463,8 @@ class VehicleClient:
 
     def simGetVehiclePose(self, vehicle_name = ''):
         """
+        The position inside the returned Pose is in the frame of the vehicle's starting point
+        
         Args:
             vehicle_name (str, optional): Name of the vehicle to get the Pose of
 
@@ -487,6 +489,8 @@ class VehicleClient:
 
     def simGetObjectPose(self, object_name):
         """
+        The position inside the returned Pose is in the world frame
+
         Args:
             object_name (str): Object to get the Pose of
 
@@ -793,6 +797,8 @@ class VehicleClient:
         """
         Get Ground truth kinematics of the vehicle
 
+        The position inside the returned KinematicsState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Name of the vehicle
 
@@ -819,6 +825,8 @@ class VehicleClient:
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
         """
         Get ground truth environment state
+
+        The position inside the returned EnvironmentState is in the frame of the vehicle's starting point
 
         Args:
             vehicle_name (str, optional): Name of the vehicle
@@ -1186,10 +1194,12 @@ class MultirotorClient(VehicleClient, object):
         return self.client.call_async('moveByVelocityZBodyFrame', vx, vy, z, duration, drivetrain, yaw_mode, vehicle_name)
 
     def moveByAngleZAsync(self, pitch, roll, z, yaw, duration, vehicle_name = ''):
-        return self.client.call_async('moveByAngleZ', pitch, roll, z, yaw, duration, vehicle_name)
+        logging.warning("moveByAngleZAsync API is deprecated, use moveByRollPitchYawZAsync() API instead")
+        return self.client.call_async('moveByRollPitchYawZ', roll, -pitch, -yaw, z, duration, vehicle_name)
 
     def moveByAngleThrottleAsync(self, pitch, roll, throttle, yaw_rate, duration, vehicle_name = ''):
-        return self.client.call_async('moveByAngleThrottle', pitch, roll, throttle, yaw_rate, duration, vehicle_name)
+        logging.warning("moveByAngleThrottleAsync API is deprecated, use moveByRollPitchYawrateThrottleAsync() API instead")
+        return self.client.call_async('moveByRollPitchYawrateThrottle', roll, -pitch, -yaw_rate, throttle, duration, vehicle_name)
 
     def moveByVelocityAsync(self, vx, vy, vz, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
         """
@@ -1548,6 +1558,8 @@ class MultirotorClient(VehicleClient, object):
 #query vehicle state
     def getMultirotorState(self, vehicle_name = ''):
         """
+        The position inside the returned MultirotorState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Vehicle to get the state of
 
@@ -1588,6 +1600,8 @@ class CarClient(VehicleClient, object):
 
     def getCarState(self, vehicle_name = ''):
         """
+        The position inside the returned CarState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Name of vehicle
 

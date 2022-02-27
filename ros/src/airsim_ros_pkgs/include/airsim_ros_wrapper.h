@@ -211,6 +211,8 @@ private:
         // bool in_air_; // todo change to "status" and keep track of this
     };
 
+    const msr::airlib::AirSimSettings& get_settings() const;
+
     /// ROS timer callbacks
     void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(const ros::TimerEvent& event); // update drone state from airsim_client_ every nth sec

@@ -185,6 +185,8 @@ private:
         VelCmd vel_cmd_;
     };
 
+    const msr::airlib::AirSimSettings& get_settings() const;
+
     /// ROS timer callbacks
     void img_response_timer_cb(); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(); // update drone state from airsim_client_ every nth sec
