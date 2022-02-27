@@ -19,7 +19,7 @@ namespace airlib
     class LidarSimple : public LidarBase
     {
     public:
-        LidarSimple(const std::string& vehicle_type, const AirSimSettings::LidarSetting& setting = AirSimSettings::LidarSetting())
+        LidarSimple(const std::string& vehicle_type, const AirSimSettings::LidarSetting& setting)
             : LidarBase(setting.sensor_name)
         {
             // initialize params

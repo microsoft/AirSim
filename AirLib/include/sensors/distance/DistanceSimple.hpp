@@ -20,7 +20,7 @@ namespace airlib
     class DistanceSimple : public DistanceBase
     {
     public:
-        DistanceSimple(const std::string& vehicle_type, const AirSimSettings::DistanceSetting& setting = AirSimSettings::DistanceSetting())
+        DistanceSimple(const std::string& vehicle_type, const AirSimSettings::DistanceSetting& setting)
             : DistanceBase(setting.sensor_name)
         {
             // initialize params
