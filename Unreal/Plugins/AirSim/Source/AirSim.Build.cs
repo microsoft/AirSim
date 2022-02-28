@@ -109,8 +109,8 @@ public class AirSim : ModuleRules
         if (Target.Platform == UnrealTargetPlatform.Linux)
         {
             // needed when packaging
-            PublicAdditionalLibraries.Add("stdc++");
-            PublicAdditionalLibraries.Add("supc++");
+            // PublicAdditionalLibraries.Add("stdc++");
+            // PublicAdditionalLibraries.Add("supc++");
         }
     }
 
