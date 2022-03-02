@@ -48,6 +48,11 @@ namespace airlib
             return elapsed;
         }
 
+        virtual TTimePoint stepBy(TTimeDelta amount)
+        {
+            return step();
+        }
+
         virtual TTimePoint step()
         {
             //by default step doesn't do anything

@@ -28,7 +28,7 @@ void ASimModeCar::initializePauseState()
 void ASimModeCar::continueForTime(double seconds)
 {
     pause_period_start_ = ClockFactory::get()->nowNanos();
-    pause_period_ = seconds;
+    pause_period_ = seconds * current_clockspeed_;
     pause(false);
 }
 
@@ -53,6 +53,9 @@ void ASimModeCar::setupClockSpeed()
 void ASimModeCar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+
+    if (!isPaused())
+        ClockFactory::get()->stepBy(DeltaSeconds);
 
     if (pause_period_start_ > 0) {
         if (ClockFactory::get()->elapsedSince(pause_period_start_) >= pause_period_) {
