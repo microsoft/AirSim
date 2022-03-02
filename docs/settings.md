@@ -3,13 +3,13 @@
 ## Where are Settings Stored?
 AirSim is searching for the settings definition in the following order. The first match will be used:
 
-1. Looking at the (absolute) path specified by the `--settings` command line argument.
-For example, in Windows: `AirSim.exe --settings 'C:\path\to\settings.json'`
-In Linux `./Blocks.sh --settings '/home/$USER/path/to/settings.json'`
+1. Looking at the (absolute) path specified by the `-settings` command line argument.
+For example, in Windows: `AirSim.exe -settings="C:\path\to\settings.json"`
+In Linux `./Blocks.sh -settings="/home/$USER/path/to/settings.json"`
 
-2. Looking for a json document passed as a command line argument by the `--settings` argument.
-For example, in Windows: `AirSim.exe --settings '{"foo" : "bar"}'`
-In Linux `./Blocks.sh --settings '{"foo" : "bar"}'`
+2. Looking for a json document passed as a command line argument by the `-settings` argument.
+For example, in Windows: `AirSim.exe -settings="{"foo" : "bar"}"`
+In Linux `./Blocks.sh -settings="{"foo" : "bar"}"`
 
 3. Looking in the folder of the executable for a file called `settings.json`.
 This will be a deep location where the actual executable of the Editor or binary is stored.

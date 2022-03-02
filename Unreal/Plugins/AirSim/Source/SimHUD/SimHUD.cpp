@@ -337,33 +337,27 @@ bool ASimHUD::getSettingsText(std::string& settingsText)
 }
 
 // Attempts to parse the settings file path or the settings text from the command line
-// Looks for the flag "--settings". If it exists, settingsText will be set to the value.
-// Example (Path): AirSim.exe --settings "C:\path\to\settings.json"
-// Example (Text): AirSim.exe -s '{"foo" : "bar"}' -> settingsText will be set to {"foo": "bar"}
+// Looks for the flag "-settings=". If it exists, settingsText will be set to the value.
+// Example (Path): AirSim.exe -settings="C:\path\to\settings.json"
+// Example (Text): AirSim.exe -settings="{"foo" : "bar"}" -> settingsText will be set to {"foo": "bar"}
 // Returns true if the argument is present, false otherwise.
 bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText)
 {
-
-    bool found = false;
-    FString settingsTextFString;
     const TCHAR* commandLineArgs = FCommandLine::Get();
+    FString settingsJsonFString;
 
-    if (FParse::Param(commandLineArgs, TEXT("-settings"))) {
-        FString commandLineArgsFString = FString(commandLineArgs);
-        int idx = commandLineArgsFString.Find(TEXT("-settings"));
-        FString settingsJsonFString = commandLineArgsFString.RightChop(idx + 10);
-
-        if (readSettingsTextFromFile(settingsJsonFString.TrimQuotes(), settingsText)) {
+    if (FParse::Value(commandLineArgs, TEXT("-settings="), settingsJsonFString, false)) {
+        if (readSettingsTextFromFile(settingsJsonFString, settingsText)) {
             return true;
         }
-
-        if (FParse::QuotedString(*settingsJsonFString, settingsTextFString)) {
-            settingsText = std::string(TCHAR_TO_UTF8(*settingsTextFString));
-            found = true;
+        else {
+            UAirBlueprintLib::LogMessageString("Loaded settings from commandline: ", TCHAR_TO_UTF8(*settingsJsonFString), LogDebugLevel::Informational);
+            settingsText = TCHAR_TO_UTF8(*settingsJsonFString);
+            return true;
         }
     }
 
-    return found;
+    return false;
 }
 
 bool ASimHUD::readSettingsTextFromFile(const FString& settingsFilepath, std::string& settingsText)
