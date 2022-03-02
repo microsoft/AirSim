@@ -68,7 +68,7 @@ std::unique_ptr<SimModeWorldBase::PhysicsEngineBase> SimModeWorldBase::createPhy
             physics_engine.reset(new msr::airlib::FastPhysicsEngine());
         }
     }
-    else if (physics_engine_name == "ExternalPhysicsEngine") {        
+    else if (physics_engine_name == "ExternalPhysicsEngine") {
         physics_engine.reset(new msr::airlib::ExternalPhysicsEngine());
     }
     else {
