@@ -50,6 +50,7 @@ namespace airlib
 
         virtual TTimePoint stepBy(TTimeDelta amount)
         {
+            unused(amount);
             return step();
         }
 
