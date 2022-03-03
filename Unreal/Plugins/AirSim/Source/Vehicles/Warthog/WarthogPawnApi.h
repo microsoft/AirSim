@@ -14,7 +14,7 @@ public:
 
     void updateMovement(const msr::airlib::WarthogApiBase::WarthogControls& controls);
 
-    msr::airlib::WarthogApiBase::CarState getCarState() const;
+    msr::airlib::WarthogApiBase::WarthogState getWarthogState() const;
 
     void reset();
     void update();
@@ -22,7 +22,7 @@ public:
     virtual ~WarthogPawnApi();
 
 private:
-    msr::airlib::CarApiBase::WarthogControls last_controls_;
+    msr::airlib::WarthogApiBase::WarthogControls last_controls_;
     AWarthogPawn* pawn_;
     const msr::airlib::Kinematics::State* pawn_kinematics_;
     msr::airlib::WarthogApiBase* vehicle_api_;

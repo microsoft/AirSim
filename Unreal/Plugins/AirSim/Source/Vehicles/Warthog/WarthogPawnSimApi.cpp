@@ -23,10 +23,10 @@ void WarthogPawnSimApi::initialize()
      //                                       sensor_factory,
       //                                      *getGroundTruthKinematics(),
        //                                     *getGroundTruthEnvironment());
-    vehicle_api_ = std::unique_ptr<WarthogApiBase>(new WarthogApiBase(getVehicleSettings(),
+    vehicle_api_ = std::unique_ptr<WarthogApiBase>(new WarthogApiBase(getVehicleSetting(),
                                                                       sensor_factory,
                                                                       *getGroundTruthKinematics(),
-                                                                      *getGroundTruthEnvitonment()));
+                                                                      *getGroundTruthEnvironment()));
     pawn_api_ = std::unique_ptr<WarthogPawnApi>(new WarthogPawnApi(static_cast<AWarthogPawn*>(getPawn()), getGroundTruthKinematics(), vehicle_api_.get()));
 
     //TODO: should do reset() here?

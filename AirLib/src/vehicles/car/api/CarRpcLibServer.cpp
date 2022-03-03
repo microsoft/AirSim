@@ -31,7 +31,6 @@ STRICT_MODE_OFF
 #include "vehicles/car/api/CarRpcLibAdaptors.hpp"
 
 STRICT_MODE_ON
-
 namespace msr
 {
 namespace airlib

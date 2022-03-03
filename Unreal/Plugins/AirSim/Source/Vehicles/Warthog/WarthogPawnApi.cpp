@@ -21,17 +21,24 @@ void WarthogPawnApi::updateMovement(const msr::airlib::WarthogApiBase::WarthogCo
 
 msr::airlib::WarthogApiBase::WarthogState WarthogPawnApi::getWarthogState() const
 {
-    msr::airlib::WarthogApiBase::WarthogState state(pawn_->desired_liner_vel,
-        pawn_->desired_angular_vel,
+    //msr::airlib::WarthogApiBase::WarthogState state(pawn_->desired_linear_vel,
+    //    pawn_->desired_angular_vel_,
+    msr::airlib::WarthogApiBase::WarthogState state(0.1,
+        0.4,
         *pawn_kinematics_);
+   // if (1) 
+    //    {
+     //   pawn_->SetLinearVelocity(0.2);
+   // }
     return state;
 }
+
 
 void WarthogPawnApi::reset()
 {
     vehicle_api_->reset();
 
-    last_controls_ = msr::airlib::CarApiBase::WarthogControls();
+    last_controls_ = msr::airlib::WarthogApiBase::WarthogControls();
     auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_);
     UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
         for (auto* phys_comp : phys_comps) {

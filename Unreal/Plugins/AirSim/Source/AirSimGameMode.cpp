@@ -19,6 +19,9 @@ public:
 
             return; //display only
         }
+        if (true) {
+          //  break;
+        }
 
         if (level == msr::airlib::Utils::kLogLevelError) {
             UE_LOG(LogTemp, Error, TEXT("%s"), *FString(message.c_str()));

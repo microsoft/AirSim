@@ -88,7 +88,27 @@ namespace airlib
         {
             return sensors_;
         }
-
+        virtual void enableApiControl(bool is_enabled) override
+        {
+            if (api_control_enabled_ != is_enabled) {
+                last_controls_ = WarthogControls();
+                api_control_enabled_ = is_enabled;
+            }
+        }
+        virtual bool isApiControlEnabled() const override
+        {
+            return api_control_enabled_;
+        }
+        virtual bool armDisarm(bool arm) override
+        {
+            //TODO: implement arming for car
+            unused(arm);
+            return true;
+        }
+        virtual GeoPoint getHomeGeoPoint() const override
+        {
+            return home_geopoint_;
+        }
         void initialize(const AirSimSettings::VehicleSetting* vehicle_setting,
                         std::shared_ptr<SensorFactory> sensor_factory,
                         const Kinematics::State& state, const Environment& environment)
@@ -110,10 +130,23 @@ namespace airlib
             sensor_factory_->createSensorsFromSettings(sensor_settings, sensors_, sensor_storage_);
         }
 
-        virtual void setWarthogControls(const WarthogControls& controls) = 0;
-        virtual void updateWarthogState(const WarthogState& state) = 0;
-        virtual const WarthogState& getWarthogState() const = 0;
-        virtual const WarthogControls& getWarthogControls() const = 0;
+        virtual void setWarthogControls(const WarthogControls& controls)
+        {
+            last_controls_.linear_vel = controls.linear_vel;
+            last_controls_.angular_vel = controls.angular_vel;
+        }
+        virtual void updateWarthogState(const WarthogState& state)
+        {
+            last_warthog_state_ = state;
+        }
+        virtual const WarthogState& getWarthogState()
+        {
+            return last_warthog_state_;
+        }
+        virtual const WarthogControls& getWarthogControls()
+        {
+            return last_controls_;
+        }
 
         virtual ~WarthogApiBase() = default;
 
@@ -126,6 +159,13 @@ namespace airlib
         {
             getSensors().reset();
         }
+
+    private:
+        bool api_control_enabled_ = false;
+        WarthogControls last_controls_;
+        WarthogState last_warthog_state_;
+        GeoPoint home_geopoint_;
+
     };
 }
 }
