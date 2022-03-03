@@ -361,13 +361,13 @@ namespace airlib
             float update_interval_secs = 60;
             bool move_sun = true;
         };
-        
+
         struct PixelFormatOverrideSetting
         {
             int image_type = 0;
             int pixel_format = 0;
         };
-        
+
         struct UnrealEngineSetting
         {
             std::map<int, PixelFormatOverrideSetting> pixel_format_override_settings;
@@ -1159,20 +1159,20 @@ namespace airlib
                     tod_setting.move_sun = tod_settings_json.getBool("MoveSun", tod_setting.move_sun);
                 }
             }
-            
+
             { //unreal engine settings
                 Settings ue_settings_json;
                 if (settings_json.getChild("UnrealEngine", ue_settings_json)) {
                     Settings pixel_format_override_settings_json;
                     ue_setting.pixel_format_override_settings.clear();
-                    
+
                     for (int i = 0; i < 10; i++) {
                         PixelFormatOverrideSetting pixel_format_setting;
                         pixel_format_setting.image_type = i;
                         pixel_format_setting.pixel_format = 0;
                         ue_setting.pixel_format_override_settings[i] = pixel_format_setting;
                     }
-                    
+
                     if (ue_settings_json.getChild("PixelFormatOverride", pixel_format_override_settings_json)) {
                         for (size_t child_index = 0; child_index < pixel_format_override_settings_json.size(); ++child_index) {
                             Settings pixel_format_child_json;

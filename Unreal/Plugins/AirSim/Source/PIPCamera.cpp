@@ -388,7 +388,7 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
                 pixel_format = static_cast<EPixelFormat>(pixel_format_override->second.pixel_format);
             }
             pixel_format = (pixel_format == EPixelFormat::PF_Unknown ? image_type_to_pixel_format_map_[image_type] : pixel_format);
-            
+
             switch (Utils::toEnum<ImageType>(image_type)) {
             case ImageType::Scene:
             case ImageType::Infrared:
