@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SimModeBase.h"
+#include "physics/ExternalPhysicsEngine.hpp"
 #include "physics/FastPhysicsEngine.hpp"
 #include "physics/PhysicsWorld.hpp"
 
