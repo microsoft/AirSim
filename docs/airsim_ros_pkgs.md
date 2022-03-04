@@ -20,7 +20,7 @@ The below steps are meant for Linux. If you're running AirSim on Windows, you ca
     * Install tf2 sensor and mavros packages: `sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-tf2-geometry-msgs ros-melodic-mavros*`
 - Ubuntu 20.04
     * Install [ROS noetic](https://wiki.ros.org/noetic/Installation/Ubuntu)
-    * Install tf2 sensor and mavros packages: `sudo apt-get install ros-melodic-tf2-sensor-msgs ros-melodic-tf2-geometry-msgs ros-melodic-mavros*`
+    * Install tf2 sensor and mavros packages: `sudo apt-get install ros-noetic-tf2-sensor-msgs ros-noetic-tf2-geometry-msgs ros-noetic-mavros*`
 
 - Install [catkin_tools](https://catkin-tools.readthedocs.io/en/latest/installing.html)
     `sudo apt-get install python-catkin-tools` or
