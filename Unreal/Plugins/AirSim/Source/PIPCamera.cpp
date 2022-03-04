@@ -36,16 +36,16 @@ APIPCamera::APIPCamera(const FObjectInitializer& ObjectInitializer)
 
     PrimaryActorTick.bCanEverTick = true;
 
-    image_type_to_pixel_format_map_.Add(0, EPixelFormat::PF_B8G8R8A8);
-    image_type_to_pixel_format_map_.Add(1, EPixelFormat::PF_DepthStencil); // not used. init_auto_format is called in setupCameraFromSettings()
-    image_type_to_pixel_format_map_.Add(2, EPixelFormat::PF_DepthStencil); // not used for same reason as above
-    image_type_to_pixel_format_map_.Add(3, EPixelFormat::PF_DepthStencil); // not used for same reason as above
-    image_type_to_pixel_format_map_.Add(4, EPixelFormat::PF_DepthStencil); // not used for same reason as above
-    image_type_to_pixel_format_map_.Add(5, EPixelFormat::PF_B8G8R8A8);
-    image_type_to_pixel_format_map_.Add(6, EPixelFormat::PF_B8G8R8A8);
-    image_type_to_pixel_format_map_.Add(7, EPixelFormat::PF_B8G8R8A8);
-    image_type_to_pixel_format_map_.Add(8, EPixelFormat::PF_B8G8R8A8);
-    image_type_to_pixel_format_map_.Add(9, EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::Scene), EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::DepthPlanar), EPixelFormat::PF_DepthStencil); // not used. init_auto_format is called in setupCameraFromSettings()
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::DepthPerspective), EPixelFormat::PF_DepthStencil); // not used for same reason as above
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::DepthVis), EPixelFormat::PF_DepthStencil); // not used for same reason as above
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::DisparityNormalized), EPixelFormat::PF_DepthStencil); // not used for same reason as above
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::Segmentation), EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::SurfaceNormals), EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::Infrared), EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::OpticalFlow), EPixelFormat::PF_B8G8R8A8);
+    image_type_to_pixel_format_map_.Add(Utils::toNumeric(ImageType::OpticalFlowVis), EPixelFormat::PF_B8G8R8A8);
 
     object_filter_ = FObjectFilter();
 }
@@ -382,9 +382,9 @@ void APIPCamera::setupCameraFromSettings(const APIPCamera::CameraSetting& camera
         const auto& noise_setting = camera_setting.noise_settings.at(image_type);
 
         if (image_type >= 0) { //scene capture components
-            auto pixel_format_override = AirSimSettings::singleton().ue_setting.pixel_format_override_settings.find(image_type);
+            auto pixel_format_override = camera_setting.ue_setting.pixel_format_override_settings.find(image_type);
             EPixelFormat pixel_format = EPixelFormat::PF_Unknown;
-            if (pixel_format_override != AirSimSettings::singleton().ue_setting.pixel_format_override_settings.end()) {
+            if (pixel_format_override != camera_setting.ue_setting.pixel_format_override_settings.end()) {
                 pixel_format = static_cast<EPixelFormat>(pixel_format_override->second.pixel_format);
             }
             pixel_format = (pixel_format == EPixelFormat::PF_Unknown ? image_type_to_pixel_format_map_[image_type] : pixel_format);

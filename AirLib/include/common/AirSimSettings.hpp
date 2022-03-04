@@ -183,6 +183,16 @@ namespace airlib
             float HorzDistortionStrength = 0.002f;
         };
 
+        struct PixelFormatOverrideSetting
+        {
+            int pixel_format = 0;
+        };
+
+        struct UnrealEngineSetting
+        {
+            std::map<int, PixelFormatOverrideSetting> pixel_format_override_settings;
+        };
+
         struct CameraSetting
         {
             //nan means keep the default values set in components
@@ -192,6 +202,8 @@ namespace airlib
             GimbalSetting gimbal;
             std::map<int, CaptureSetting> capture_settings;
             std::map<int, NoiseSetting> noise_settings;
+
+            UnrealEngineSetting ue_setting;
 
             CameraSetting()
             {
@@ -362,17 +374,6 @@ namespace airlib
             bool move_sun = true;
         };
 
-        struct PixelFormatOverrideSetting
-        {
-            int image_type = 0;
-            int pixel_format = 0;
-        };
-
-        struct UnrealEngineSetting
-        {
-            std::map<int, PixelFormatOverrideSetting> pixel_format_override_settings;
-        };
-
     private: //fields
         float settings_version_actual;
         float settings_version_minimum = 1.2f;
@@ -385,7 +386,6 @@ namespace airlib
         RecordingSetting recording_setting;
         SegmentationSetting segmentation_setting;
         TimeOfDaySetting tod_setting;
-        UnrealEngineSetting ue_setting;
 
         std::vector<std::string> warning_messages;
         std::vector<std::string> error_messages;
@@ -1032,6 +1032,32 @@ namespace airlib
             return gimbal;
         }
 
+        static void loadUnrealEngineSetting(const msr::airlib::Settings& settings_json, UnrealEngineSetting& ue_setting)
+        {
+            Settings ue_settings_json;
+            if (settings_json.getChild("UnrealEngine", ue_settings_json)) {
+                Settings pixel_format_override_settings_json;
+                ue_setting.pixel_format_override_settings.clear();
+
+                for (int i = 0; i < Utils::toNumeric(ImageType::Count); i++) {
+                    PixelFormatOverrideSetting pixel_format_setting;
+                    pixel_format_setting.pixel_format = 0; // EXPixelformat::PF_Unknown
+                    ue_setting.pixel_format_override_settings[i] = pixel_format_setting;
+                }
+
+                if (ue_settings_json.getChild("PixelFormatOverride", pixel_format_override_settings_json)) {
+                    for (size_t child_index = 0; child_index < pixel_format_override_settings_json.size(); ++child_index) {
+                        Settings pixel_format_child_json;
+                        if (pixel_format_override_settings_json.getChild(child_index, pixel_format_child_json)) {
+                            int image_type = pixel_format_child_json.getInt("ImageType", 0);
+                            PixelFormatOverrideSetting& pixel_format_setting = ue_setting.pixel_format_override_settings.at(image_type);
+                            pixel_format_setting.pixel_format = pixel_format_child_json.getInt("PixelFormat", 0);
+                        }
+                    }
+                }
+            }
+        }
+
         static CameraSetting createCameraSetting(const Settings& settings_json)
         {
             CameraSetting setting;
@@ -1044,6 +1070,8 @@ namespace airlib
             Settings json_gimbal;
             if (settings_json.getChild("Gimbal", json_gimbal))
                 setting.gimbal = createGimbalSetting(json_gimbal);
+
+            loadUnrealEngineSetting(settings_json, setting.ue_setting);
 
             return setting;
         }
@@ -1157,33 +1185,6 @@ namespace airlib
                     tod_setting.is_start_datetime_dst = tod_settings_json.getBool("StartDateTimeDst", tod_setting.is_start_datetime_dst);
                     tod_setting.update_interval_secs = tod_settings_json.getFloat("UpdateIntervalSecs", tod_setting.update_interval_secs);
                     tod_setting.move_sun = tod_settings_json.getBool("MoveSun", tod_setting.move_sun);
-                }
-            }
-
-            { //unreal engine settings
-                Settings ue_settings_json;
-                if (settings_json.getChild("UnrealEngine", ue_settings_json)) {
-                    Settings pixel_format_override_settings_json;
-                    ue_setting.pixel_format_override_settings.clear();
-
-                    for (int i = 0; i < 10; i++) {
-                        PixelFormatOverrideSetting pixel_format_setting;
-                        pixel_format_setting.image_type = i;
-                        pixel_format_setting.pixel_format = 0;
-                        ue_setting.pixel_format_override_settings[i] = pixel_format_setting;
-                    }
-
-                    if (ue_settings_json.getChild("PixelFormatOverride", pixel_format_override_settings_json)) {
-                        for (size_t child_index = 0; child_index < pixel_format_override_settings_json.size(); ++child_index) {
-                            Settings pixel_format_child_json;
-                            if (pixel_format_override_settings_json.getChild(child_index, pixel_format_child_json)) {
-                                int image_type = pixel_format_child_json.getInt("ImageType", 0);
-                                PixelFormatOverrideSetting& pixel_format_setting = ue_setting.pixel_format_override_settings.at(image_type);
-                                pixel_format_setting.image_type = image_type;
-                                pixel_format_setting.pixel_format = pixel_format_child_json.getInt("PixelFormat", 0);
-                            }
-                        }
-                    }
                 }
             }
 
