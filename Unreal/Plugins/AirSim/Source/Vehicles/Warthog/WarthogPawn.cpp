@@ -27,6 +27,7 @@ void AWarthogPawn::BeginPlay()
 void AWarthogPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    pawn_events_.getPawnTickSignal().emit(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -38,24 +39,29 @@ void AWarthogPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 float AWarthogPawn::GetLinearVelocity()
 {
-   // return desired_liner_vel_;
-    return 3.0;
+   // desired_liner_vel_ = desired_liner_vel_ + 10.0;
+   // UE_LOG(LogTemp, Warning, TEXT("Hello no clue wtf"), desired_liner_vel_);
+    return desired_liner_vel_;
+   // return 3.0;
 }
 
 float AWarthogPawn::GetAngularVelocity()
 {
-    //return desired_angular_vel_;
-    return 1.0;
+    return desired_angular_vel_;
+   // return 1.0;
 }
 
 void AWarthogPawn::SetLinearVelocity(float linear_vel)
 {
+    //UE_LOG(LogTemp, Warning, TEXT("Hello no clue setting linear: %f "), linear_vel);
     desired_liner_vel_ = linear_vel;
+   // desired_liner_vel_ = 2.0;
 }
 
 void AWarthogPawn::SetAngularVelocity(float angular_vel)
 {
     desired_angular_vel_ = angular_vel;
+    //desired_angular_vel_ = 1.0;
 }
 void AWarthogPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
                          FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)

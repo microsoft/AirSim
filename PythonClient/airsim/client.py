@@ -1603,3 +1603,38 @@ class CarClient(VehicleClient, object):
         """
         controls_raw = self.client.call('getCarControls', vehicle_name)
         return CarControls.from_msgpack(controls_raw)
+class WarthogClient(VehicleClient, object):
+    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
+        super(WarthogClient, self).__init__(ip, port, timeout_value)
+
+    def setWarthogControls(self, controls, vehicle_name = ''):
+        """
+        Control the car using throttle, steering, brake, etc.
+
+        Args:
+            controls (CarControls): Struct containing control values
+            vehicle_name (str, optional): Name of vehicle to be controlled
+        """
+        self.client.call('setWarthogControls', controls, vehicle_name)
+
+    def getWarthogState(self, vehicle_name = ''):
+        """
+        Args:
+            vehicle_name (str, optional): Name of vehicle
+
+        Returns:
+            CarState:
+        """
+        state_raw = self.client.call('getWarthogState', vehicle_name)
+        return WarthogState.from_msgpack(state_raw)
+
+    def getWarthogControls(self, vehicle_name=''):
+        """
+        Args:
+            vehicle_name (str, optional): Name of vehicle
+
+        Returns:
+            CarControls:
+        """
+        controls_raw = self.client.call('getWarthogControls', vehicle_name)
+        return WarthogControls.from_msgpack(controls_raw)
