@@ -6,6 +6,7 @@
 #include "Vehicles/Multirotor/SimModeWorldMultiRotor.h"
 #include "Vehicles/Car/SimModeCar.h"
 #include "Vehicles/ComputerVision/SimModeComputerVision.h"
+#include "Vehicles/Warthog/SimModeWarthog.h"
 
 #include "common/AirSimSettings.hpp"
 #include <stdexcept>
@@ -245,7 +246,8 @@ std::string ASimHUD::getSimModeFromUser()
     if (EAppReturnType::No == UAirBlueprintLib::ShowMessage(EAppMsgType::YesNo,
                                                             "Would you like to use car simulation? Choose no to use quadrotor simulation.",
                                                             "Choose Vehicle")) {
-        return AirSimSettings::kSimModeTypeMultirotor;
+        //return AirSimSettings::kSimModeTypeMultirotor;
+        return AirSimSettings::kSimModeTypeWarthog;
     }
     else
         return AirSimSettings::kSimModeTypeCar;
@@ -276,6 +278,10 @@ void ASimHUD::createSimMode()
                                                              simmode_spawn_params);
     else if (simmode_name == AirSimSettings::kSimModeTypeComputerVision)
         simmode_ = this->GetWorld()->SpawnActor<ASimModeComputerVision>(FVector::ZeroVector,
+                                                                        FRotator::ZeroRotator,
+                                                                        simmode_spawn_params);
+    else if (simmode_name == AirSimSettings::kSimModeTypeWarthog)
+        simmode_ = this->GetWorld()->SpawnActor<ASimModeWarthog>(FVector::ZeroVector,
                                                                         FRotator::ZeroRotator,
                                                                         simmode_spawn_params);
     else {

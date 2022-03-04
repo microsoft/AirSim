@@ -862,6 +862,12 @@ namespace airlib
                 physx_car_setting->sensors = sensor_defaults;
                 vehicles[physx_car_setting->vehicle_name] = std::move(physx_car_setting);
             }
+            else if (simmode_name == kSimModeTypeWarthog) {
+                // create PhysX as default car vehicle
+                auto warthog_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting("Warthog", kVehicleTypeWarthog));
+                warthog_setting->sensors = sensor_defaults;
+                vehicles[warthog_setting->vehicle_name] = std::move(warthog_setting);
+            }
             else if (simmode_name == kSimModeTypeComputerVision) {
                 // create default computer vision vehicle
                 auto cv_setting = std::unique_ptr<VehicleSetting>(new VehicleSetting("ComputerVision", kVehicleTypeComputerVision));
@@ -909,6 +915,8 @@ namespace airlib
                                PawnPath("Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"));
             pawn_paths.emplace("DefaultComputerVision",
                                PawnPath("Class'/AirSim/Blueprints/BP_ComputerVisionPawn.BP_ComputerVisionPawn_C'"));
+            pawn_paths.emplace("DefaultWarthog",
+                               PawnPath("Class'/AirSim/VehicleAdv/Warthog/BP_WarthogPawn.BP_WarthogPawn_C'"));
         }
 
         static void loadPawnPaths(const Settings& settings_json, std::map<std::string, PawnPath>& pawn_paths)

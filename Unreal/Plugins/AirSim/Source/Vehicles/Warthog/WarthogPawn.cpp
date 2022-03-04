@@ -38,12 +38,14 @@ void AWarthogPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 float AWarthogPawn::GetLinearVelocity()
 {
-    return desired_liner_vel_;
+   // return desired_liner_vel_;
+    return 3.0;
 }
 
 float AWarthogPawn::GetAngularVelocity()
 {
-    return desired_angular_vel_;
+    //return desired_angular_vel_;
+    return 1.0;
 }
 
 void AWarthogPawn::SetLinearVelocity(float linear_vel)
