@@ -1051,7 +1051,7 @@ namespace airlib
                         if (pixel_format_override_settings_json.getChild(child_index, pixel_format_child_json)) {
                             int image_type = pixel_format_child_json.getInt("ImageType", 0);
                             PixelFormatOverrideSetting& pixel_format_setting = ue_setting.pixel_format_override_settings.at(image_type);
-                            pixel_format_setting.pixel_format = pixel_format_child_json.getInt("PixelFormat", 0);
+                            pixel_format_setting.pixel_format = pixel_format_child_json.getInt("PixelFormat", 0); // default to EXPixelformat::PF_Unknown
                         }
                     }
                 }
