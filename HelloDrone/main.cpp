@@ -33,7 +33,9 @@ int main()
         const vector<ImageResponse>& response = client.simGetImages(request);
         std::cout << "# of images received: " << response.size() << std::endl;
 
-        if (response.size() > 0) {
+        constexpr uint zero = 0;
+
+        if (response.size() > zero) {
             std::cout << "Enter path with ending separator to save images (leave empty for no save)" << std::endl;
             std::string path;
             std::getline(std::cin, path);
@@ -104,14 +106,14 @@ int main()
 
         std::cout << "Press Enter to fly in a 10m box pattern at 3 m/s velocity" << std::endl;
         std::cin.get();
-        // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
+        // moveByVelocityZ is an off board operation, so we need to set offboard mode.
         client.enableApiControl(true);
 
         auto position = client.getMultirotorState().getPosition();
         float z = position.z(); // current position (NED coordinate system).
-        const float speed = 3.0f;
-        const float size = 10.0f;
-        const float duration = size / speed;
+        constexpr float speed = 3.0f;
+        constexpr float size = 10.0f;
+        constexpr float duration = size / speed;
         DrivetrainType drivetrain = DrivetrainType::ForwardOnly;
         YawMode yaw_mode(true, 0);
 
@@ -139,7 +141,7 @@ int main()
         client.armDisarm(false);
     }
     catch (rpc::rpc_error& e) {
-        std::string msg = e.get_error().as<std::string>();
+        const auto msg = e.get_error().as<std::string>();
         std::cout << "Exception raised by the API, something went wrong." << std::endl
                   << msg << std::endl;
     }

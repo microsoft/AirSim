@@ -5,14 +5,14 @@
 #include "GaussianMarkovTest.hpp"
 #include "DepthNav/DepthNavCost.hpp"
 #include "DepthNav/DepthNavThreshold.hpp"
-#include "DepthNav/DepthNavOptAStar.hpp"
+// #include "DepthNav/DepthNavOptAStar.hpp"
 #include <iostream>
 #include <string>
-#include <sys/stat.h>
+// #include <sys/stat.h>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include <math.h>
+#include <cmath>
 
 int runStandAloneSensors(int argc, const char* argv[])
 {
@@ -40,8 +40,8 @@ int runStandAloneSensors(int argc, const char* argv[])
     //marymoore park
     //GeoPoint testLocation(47.662804385, -122.1167039875, 9.93f);
 
-    GeoPoint testLocation(47.7631699747, -122.0685655406, 9.93f); // woodinville
-    float yawOffset = 0; // static_cast<float>(91.27622  * M_PI / 180.0); // I was aligned with the road...
+    const GeoPoint testLocation(47.7631699747, -122.0685655406, 9.93f); // woodinville
+    constexpr float yawOffset = 0; // static_cast<float>(91.27622  * M_PI / 180.0); // I was aligned with the road...
 
     std::ofstream out_file(argv[1]);
     StandALoneSensors::generateImuStaticData(out_file, period, total_duration);
@@ -62,25 +62,26 @@ int runStandAlonePhysics(int argc, const char* argv[])
     return 0;
 }
 
-void runDataCollectorSGM(int num_samples, std::string storage_path)
+void runDataCollectorSGM(const int num_samples, const std::string storage_path)
 {
     DataCollectorSGM gen(storage_path);
     gen.generate(num_samples);
 }
 
-void runDataCollectorSGM(int argc, const char* argv[])
+void runDataCollectorSGM(const int argc, const char* argv[])
 {
     runDataCollectorSGM(argc < 2 ? 5000 : std::stoi(argv[1]), argc < 3 ? common_utils::FileSystem::combine(common_utils::FileSystem::getAppDataFolder(), "data_sgm") : std::string(argv[2]));
 }
-void runSteroImageGenerator(int num_samples, std::string storage_path)
+
+void runStereoImageGenerator(const int num_samples, const std::string storage_path)
 {
     StereoImageGenerator gen(storage_path);
     gen.generate(num_samples);
 }
 
-void runSteroImageGenerator(int argc, const char* argv[])
+void runStereoImageGenerator(const int argc, const char* argv[])
 {
-    runSteroImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]), argc < 3 ? common_utils::FileSystem::combine(common_utils::FileSystem::getAppDataFolder(), "stereo_gen") : std::string(argv[2]));
+    runStereoImageGenerator(argc < 2 ? 50000 : std::stoi(argv[1]), argc < 3 ? common_utils::FileSystem::combine(common_utils::FileSystem::getAppDataFolder(), "stereo_gen") : std::string(argv[2]));
 }
 
 void runGaussianMarkovTest()
@@ -96,7 +97,7 @@ void runDepthNavGT()
     typedef ImageCaptureBase::ImageRequest ImageRequest;
     typedef ImageCaptureBase::ImageType ImageType;
 
-    std::vector<ImageRequest> request = {
+    const std::vector<ImageRequest> request = {
         ImageRequest("front_left", ImageType::DepthPlanar, true) /*,
         ImageRequest("front_left", ImageType::Scene),
         ImageRequest("front_left", ImageType::DisparityNormalized, true) */
@@ -126,7 +127,7 @@ void runDepthNavSGM()
     typedef ImageCaptureBase::ImageRequest ImageRequest;
     typedef ImageCaptureBase::ImageType ImageType;
 
-    std::vector<ImageRequest> request = {
+    const std::vector<ImageRequest> request = {
         ImageRequest("front_left", ImageType::Scene, false, false),
         ImageRequest("front_right", ImageType::Scene, false, false), /*
         ImageRequest("front_left", ImageType::DepthPlanar, true),
@@ -150,15 +151,14 @@ void runDepthNavSGM()
     depthNav.initialize(client, request);
 
     SGMOptions params;
-    CStateStereo* p_state;
+    auto* p_state = new CStateStereo();
 
-    if (params.maxImageDimensionWidth != (int)depthNav.params_.depth_width)
+    if (params.maxImageDimensionWidth != static_cast<int>(depthNav.params_.depth_width))
         printf("WARNING: Width Mismatch between SGM and DepthNav. Overwriting parameters.\n");
-    params.maxImageDimensionWidth = depthNav.params_.depth_width;
+    params.maxImageDimensionWidth = static_cast<int>(depthNav.params_.depth_width);
 
     params.Print();
-    p_state = new CStateStereo();
-    p_state->Initialize(params, depthNav.params_.depth_height, depthNav.params_.depth_width);
+    p_state->Initialize(params, static_cast<int>(depthNav.params_.depth_height), static_cast<int>(depthNav.params_.depth_width));
 
     depthNav.gotoGoalSGM(goalPose, client, request, p_state);
 
@@ -166,7 +166,7 @@ void runDepthNavSGM()
     delete p_state;
 }
 
-int main(int argc, const char* argv[])
+int main(const int argc, const char* argv[])
 {
     //runDepthNavGT();
     //runDepthNavSGM();
