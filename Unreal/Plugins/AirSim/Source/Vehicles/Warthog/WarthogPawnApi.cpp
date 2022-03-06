@@ -15,8 +15,8 @@ void WarthogPawnApi::updateMovement(const msr::airlib::WarthogApiBase::WarthogCo
     //   movement_->SetTargetGear(0, true); //in auto gear we must have gear >= 0
     //if (controls.is_manual_gear && movement_->GetTargetGear() != controls.manual_gear)
     //   movement_->SetTargetGear(controls.manual_gear, controls.gear_immediate);
-    pawn_->SetLinearVelocity(controls.linear_vel);
-    pawn_->SetAngularVelocity(controls.angular_vel);
+    pawn_->SetDesiredVelocities(controls.linear_vel, controls.angular_vel);
+    //pawn_->SetAngularVelocity(controls.angular_vel);
 }
 
 msr::airlib::WarthogApiBase::WarthogState WarthogPawnApi::getWarthogState() const

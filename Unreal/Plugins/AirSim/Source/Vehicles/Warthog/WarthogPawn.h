@@ -7,6 +7,7 @@
 #include "api/VehicleSimApiBase.hpp"
 #include "common/AirSimSettings.hpp"
 #include "AirBlueprintLib.h"
+#include "Components/PrimitiveComponent.h"
 #include "common/common_utils/Signal.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
 #include "PawnEvents.h"
@@ -50,8 +51,15 @@ public:
     float GetLinearVelocity();
     UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
     float GetAngularVelocity();
-    void SetLinearVelocity(float);
-    void SetAngularVelocity(float);
+    UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
+    void GetWarthogMesh(UPrimitiveComponent* temp);
+    void SetDesiredVelocities(float, float);
+    UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
+    void SetKp(float kp);
+    UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
+    void SetKd(float kd);
+    UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
+    void SetKi(float ki);
 
 private:
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -62,8 +70,25 @@ private:
     UPROPERTY()
     USceneComponent* camera_front_center_;
     USceneComponent* camera_rig_;
+    UPrimitiveComponent* war_mesh_;
     msr::airlib::WarthogApiBase::WarthogControls keyboard_controls_;
-    float desired_liner_vel_ ;
+    float desired_linear_vel_ ; 
     float desired_angular_vel_;
+    float kp_;
+    float kd_;
+    float ki_;
+    float warthog_half_diff_radius_;
+    //pid variables
+    float prev_l_error_;
+    float prev_r_error_;
+    float left_error_sum_;
+    float right_error_sum_;
+    //Sets left and right wheel velocities from 
+    //linear and angular velocities
+    //arg: linear vel, angular vel, left wheel vel
+    // right wheel vel
+    void SetWheelVelocities(float, float, float&, float&);
+    void DoPidUpdate(float);
+    void GetCurrentVOmega(float&, float&);
 
 };
