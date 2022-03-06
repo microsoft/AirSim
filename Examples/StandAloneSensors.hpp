@@ -136,7 +136,7 @@ namespace airlib
                 msr::airlib::Environment environment(initial_environment);
                 environment.reset();
 
-                MagnetometerSimple mag((AirSimSettings::MagnetometerSetting());
+                MagnetometerSimple mag(AirSimSettings::MagnetometerSetting());
                 mag.initialize(&kinematics, &environment);
                 mag.reset();
 
