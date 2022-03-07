@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 # get path of current script: https://stackoverflow.com/a/39340259/207661
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -55,8 +55,13 @@ else
     build_dir=build_release
 fi 
 if [ "$(uname)" == "Darwin" ]; then
-    export CC=/usr/local/opt/llvm@8/bin/clang
-    export CXX=/usr/local/opt/llvm@8/bin/clang++
+    # llvm v8 is too old for Big Sur see
+    # https://github.com/microsoft/AirSim/issues/3691
+    #export CC=/usr/local/opt/llvm@8/bin/clang
+    #export CXX=/usr/local/opt/llvm@8/bin/clang++
+    #now pick up whatever setup.sh installs
+    export CC=/usr/local/opt/llvm/bin/clang
+    export CXX=/usr/local/opt/llvm/bin/clang++
 else
     if $gcc; then
         export CC="gcc-8"
@@ -68,7 +73,7 @@ else
 fi
 
 #install EIGEN library
-if [[ !(-d "./AirLib/deps/eigen3/Eigen") ]]; then
+if [[ ! -d "./AirLib/deps/eigen3/Eigen" ]]; then
     echo "### Eigen is not installed. Please run setup.sh first."
     exit 1
 fi
@@ -106,7 +111,7 @@ pushd $build_dir  >/dev/null
 # final linking of the binaries can fail due to a missing libc++abi library
 # (happens on Fedora, see https://bugzilla.redhat.com/show_bug.cgi?id=1332306).
 # So we only build the libraries here for now
-make -j`nproc`
+make -j"$(nproc)"
 popd >/dev/null
 
 mkdir -p AirLib/lib/x64/$folder_name

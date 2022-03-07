@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 set -x
 set -e
 
@@ -7,10 +7,11 @@ pushd "$SCRIPT_DIR" >/dev/null
 
 downloadHighPolySuv=true
 MIN_CMAKE_VERSION=3.10.0
+DEBUG="${DEBUG:-false}"
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
 # brew gives error if package is already installed
-function brew_install() { brew list $1 &>/dev/null || brew install $1; }
+function brew_install() { brew list "$1" &>/dev/null || brew install "$1"; }
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]
@@ -18,18 +19,23 @@ do
 key="$1"
 
 case $key in
+    --debug)
+        DEBUG=true
+        ;;
     --no-full-poly-car)
-    downloadHighPolySuv=false
-    shift # past value
-    ;;
+        downloadHighPolySuv=false
+        shift # past value
+        ;;
 esac
+
 done
 
 # llvm tools
 if [ "$(uname)" == "Darwin" ]; then # osx
     brew update
     # Update below line for newer versions
-    brew install llvm@8
+    #brew install llvm@8
+    brew install llvm
 else #linux
     sudo apt-get update
     sudo apt-get -y install --no-install-recommends \
@@ -62,29 +68,29 @@ fi
 #TODO: figure out how to do below in travis
 # Install additional tools, CMake if required
 if [ "$(uname)" == "Darwin" ]; then # osx
-    if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
-        sudo dseditgroup -o edit -a `whoami` -t user dialout
+    if [[ -n "${whoami}" ]]; then #this happens when running in travis
+        sudo dseditgroup -o edit -a "$(whoami)" -t user dialout
     fi
 
     brew_install wget
     brew_install coreutils
 
-    if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
+    if version_less_than_equal_to "$cmake_ver" "$MIN_CMAKE_VERSION"; then
         brew install cmake  # should get cmake 3.8
     else
         echo "Already have good version of cmake: $cmake_ver"
     fi
 
 else #linux
-    if [[ ! -z "${whoami}" ]]; then #this happens when running in travis
-        sudo /usr/sbin/useradd -G dialout $USER
-        sudo usermod -a -G dialout $USER
+    if [[  -n "${whoami}" ]]; then #this happens when running in travis
+        sudo /usr/sbin/useradd -G dialout "$USER"
+        sudo usermod -a -G dialout "$USER"
     fi
 
     # install additional tools
     sudo apt-get install -y build-essential unzip
 
-    if version_less_than_equal_to $cmake_ver $MIN_CMAKE_VERSION; then
+    if version_less_than_equal_to "$cmake_ver" "$MIN_CMAKE_VERSION"; then
         # in ubuntu 18 docker CI, avoid building cmake from scratch to save time
         # ref: https://apt.kitware.com/
         if [ "$(lsb_release -rs)" == "18.04" ]; then
