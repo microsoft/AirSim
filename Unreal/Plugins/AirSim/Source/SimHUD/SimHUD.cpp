@@ -315,7 +315,20 @@ void ASimHUD::initializeSubWindows()
     }
 
     for (const auto& setting : getSubWindowSettings()) {
-        APIPCamera* camera = simmodes_[default_simmode_index]->getCamera(msr::airlib::CameraDetails(setting.camera_name, setting.vehicle_name, setting.external));
+        APIPCamera* camera = nullptr;
+        if (setting.vehicle_name.empty()) {
+            // vehicle_name not specified - use the default simmode
+            camera = simmodes_[default_simmode_index]->getCamera(msr::airlib::CameraDetails(setting.camera_name, setting.vehicle_name, setting.external));
+        }
+        else {
+            // vehicle_name specified - find in which simmode and break in case it was found
+            for (auto simmode : simmodes_) {
+                if (simmode->getVehicleSimApi(setting.vehicle_name)) {
+                    camera = simmode->getCamera(msr::airlib::CameraDetails(setting.camera_name, setting.vehicle_name, setting.external));
+                    break;
+                }
+            }
+        }
         if (camera)
             subwindow_cameras_[setting.window_index] = camera;
         else
