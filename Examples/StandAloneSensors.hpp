@@ -21,7 +21,7 @@ namespace airlib
             msr::airlib::Environment environment(initial_environment);
             environment.reset();
 
-            ImuSimple imu = ImuSimple(AirSimSettings::ImuSetting());
+            ImuSimple imu{ AirSimSettings::ImuSetting() };
             imu.initialize(&kinematics, &environment);
             imu.reset();
 
@@ -52,7 +52,7 @@ namespace airlib
             msr::airlib::Environment environment(initial_environment);
             environment.reset();
 
-            BarometerSimple baro({ AirSimSettings::BarometerSetting() });
+            BarometerSimple baro{ AirSimSettings::BarometerSetting() };
             baro.initialize(&kinematics, &environment);
             baro.reset();
 
@@ -82,7 +82,7 @@ namespace airlib
             msr::airlib::Environment environment(initial_environment);
             environment.reset();
 
-            BarometerSimple baro({ AirSimSettings::BarometerSetting() });
+            BarometerSimple baro{ AirSimSettings::BarometerSetting() };
             baro.initialize(&kinematics, &environment);
             baro.reset();
 
@@ -136,7 +136,7 @@ namespace airlib
                 msr::airlib::Environment environment(initial_environment);
                 environment.reset();
 
-                MagnetometerSimple mag({ AirSimSettings::MagnetometerSetting() });
+                MagnetometerSimple mag{ AirSimSettings::MagnetometerSetting() };
                 mag.initialize(&kinematics, &environment);
                 mag.reset();
 
@@ -182,7 +182,7 @@ namespace airlib
                         msr::airlib::Environment environment(initial_environment);
                         environment.reset();
 
-                        MagnetometerSimple mag({ AirSimSettings::MagnetometerSetting() });
+                        MagnetometerSimple mag{ AirSimSettings::MagnetometerSetting() };
                         mag.initialize(&kinematics, &environment);
                         mag.reset();
 
@@ -218,7 +218,7 @@ namespace airlib
             msr::airlib::Environment environment(initial_environment);
             environment.reset();
 
-            MagnetometerSimple mag({ AirSimSettings::MagnetometerSetting() });
+            MagnetometerSimple mag{ AirSimSettings::MagnetometerSetting() };
             mag.initialize(&kinematics, &environment);
             mag.reset();
 
