@@ -26,6 +26,8 @@
 //it to AirLib and directly implement WorldSimApiBase interface
 #include "WorldSimApi.h"
 
+bool ASimModeBase::is_first_ = true;
+
 ASimModeBase::ASimModeBase()
 {
     static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
@@ -100,13 +102,18 @@ void ASimModeBase::BeginPlay()
         APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
         fpv_pawn = player_controller->GetViewTarget();
     }
-    player_start_transform = fpv_pawn->GetActorTransform();
-    player_loc = player_start_transform.GetLocation();
-    // Move the world origin to the player's location (this moves the coordinate system and adds
-    // a corresponding offset to all positions to compensate for the shift)
-    this->GetWorld()->SetNewWorldOrigin(FIntVector(player_loc) + this->GetWorld()->OriginLocation);
-    // Regrab the player's position after the offset has been added (which should be 0,0,0 now)
-    player_start_transform = fpv_pawn->GetActorTransform();
+
+    // We shouldn't call SetNewWorldOrigin() more than once
+    if (is_first_) {
+        player_start_transform = fpv_pawn->GetActorTransform();
+        player_loc = player_start_transform.GetLocation();
+        // Move the world origin to the player's location (this moves the coordinate system and adds
+        // a corresponding offset to all positions to compensate for the shift)
+        this->GetWorld()->SetNewWorldOrigin(FIntVector(player_loc) + this->GetWorld()->OriginLocation);
+        // Regrab the player's position after the offset has been added (which should be 0,0,0 now)
+        player_start_transform = fpv_pawn->GetActorTransform();
+        is_first_ = false;
+    }
     global_ned_transform_.reset(new NedTransform(player_start_transform,
                                                  UAirBlueprintLib::GetWorldToMetersScale(this)));
 
@@ -196,6 +203,8 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     spawned_actors_.Empty();
     vehicle_sim_apis_.clear();
+
+    is_first_ = true;
 
     Super::EndPlay(EndPlayReason);
 }

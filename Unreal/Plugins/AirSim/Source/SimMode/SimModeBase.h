@@ -214,6 +214,8 @@ private:
 
     std::unique_ptr<FRecordingThread> recording_thread_;
 
+    static bool is_first_;
+
 private:
     void setStencilIDs();
     void initializeTimeOfDay();
