@@ -138,6 +138,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#gimbal">Gimbal</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#unrealengine">UnrealEngine</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#external-cameras">External Cameras</a>
@@ -500,7 +502,15 @@ For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-bina
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN
     },
     "X": NaN, "Y": NaN, "Z": NaN,
-    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN,
+    "UnrealEngine": {
+      "PixelFormatOverride": [
+        {
+          "ImageType": 0,
+          "PixelFormat": 0
+        }
+      ]
+    }
   },
   "OriginGeopoint": {
     "Latitude": 47.641468,
@@ -694,6 +704,9 @@ For e.g. with the Blocks binary, the location searched is <code>&lt;path-of-bina
 * <code>HorzDistortionStrength</code>: This determines how large is the distortion.</p>
 <h3 id="gimbal">Gimbal<a class="headerlink" href="#gimbal" title="Permanent link">#</a></h3>
 <p>The <code>Gimbal</code> element allows to freeze camera orientation for pitch, roll and/or yaw. This setting is ignored unless <code>ImageType</code> is -1. The <code>Stabilization</code> is defaulted to 0 meaning no gimbal i.e. camera orientation changes with body orientation on all axis. The value of 1 means full stabilization. The value between 0 to 1 acts as a weight for fixed angles specified (in degrees, in world-frame) in <code>Pitch</code>, <code>Roll</code> and <code>Yaw</code> elements and orientation of the vehicle body. When any of the angles is omitted from json or set to NaN, that angle is not stabilized (i.e. it moves along with vehicle body).</p>
+<h3 id="unrealengine">UnrealEngine<a class="headerlink" href="#unrealengine" title="Permanent link">#</a></h3>
+<p>This element contains settings specific to the Unreal Engine. These will be ignored in the Unity project.
+* <code>PixelFormatOverride</code>: This contains a list of elements that have both a <code>ImageType</code> and <code>PixelFormat</code> setting. Each element allows you to override the default pixel format of the UTextureRenderTarget2D object instantiated for the capture specified by the <code>ImageType</code> setting. Specifying this element allows you to prevent crashes caused by unexpected pixel formats (see <a href="https://github.com/microsoft/AirSim/issues/4120">#4120</a> and <a href="https://github.com/microsoft/AirSim/issues/4339">#4339</a> for examples of these crashes). A full list of pixel formats can be viewed <a href="https://docs.unrealengine.com/4.27/en-US/API/Runtime/Core/EPixelFormat/">here</a>.</p>
 <h2 id="external-cameras">External Cameras<a class="headerlink" href="#external-cameras" title="Permanent link">#</a></h2>
 <p>This element allows specifying cameras which are separate from the cameras attached to the vehicle, such as a CCTV camera. These are fixed cameras, and don't move along with the vehicles. The key in the element is the name of the camera, and the value i.e. settings are the same as <code>CameraDefaults</code> described above. All the camera APIs work with external cameras, including capturing images, changing the pose, etc by passing the parameter <code>external=True</code> in the API call.</p>
 <h2 id="vehicles-settings">Vehicles Settings<a class="headerlink" href="#vehicles-settings" title="Permanent link">#</a></h2>
