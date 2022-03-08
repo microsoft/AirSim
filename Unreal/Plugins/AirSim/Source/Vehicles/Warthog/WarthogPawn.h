@@ -76,8 +76,10 @@ private:
 
     PawnEvents pawn_events_;
     UPROPERTY()
-    USceneComponent* camera_front_center_;
-    USceneComponent* camera_rig_;
+    USceneComponent* camera_front_center_base_;
+    UPROPERTY()
+    APIPCamera* camera_front_center_;
+    //USceneComponent* camera_rig_;
     UPrimitiveComponent* war_mesh_;
     msr::airlib::WarthogApiBase::WarthogControls keyboard_controls_;
     float desired_linear_vel_ ; 

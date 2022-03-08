@@ -1327,6 +1327,11 @@ namespace airlib
                 sensors["gps"] = createSensorSetting(SensorBase::SensorType::Gps, "gps", true);
                 sensors["barometer"] = createSensorSetting(SensorBase::SensorType::Barometer, "barometer", true);
             }
+            if (simmode_name == kSimModeTypeWarthog) {
+                sensors["imu"] = createSensorSetting(SensorBase::SensorType::Imu, "imu", true);
+                sensors["magnetometer"] = createSensorSetting(SensorBase::SensorType::Magnetometer, "magnetometer", true);
+                sensors["gps"] = createSensorSetting(SensorBase::SensorType::Gps, "gps", true);
+            }
             else if (simmode_name == kSimModeTypeCar) {
                 sensors["gps"] = createSensorSetting(SensorBase::SensorType::Gps, "gps", true);
             }

@@ -1,6 +1,6 @@
 import setup_path
 import airsim
-#import cv2
+import cv2
 import numpy as np
 import os
 import time
@@ -17,22 +17,51 @@ print("API Control enabled: %s" % client.isApiControlEnabled())
 war_controls = airsim.WarthogControls()
 lin = []
 ang = []
+dlt = []
 #ar_controls.linear_vel = 4.0
 #ar_controls.angular_vel = 1.0
 client.setWarthogControls(war_controls)
-for i in range(0,10000):
+for i in range(0,1000):
+    st_time = time.time()
     for event in pygame.event.get():
         pass
     a0 = joystick.get_axis(1)
     a1 = joystick.get_axis(2)
+    button = joystick.get_button(0)
+    if button == 1:
+        break
     war_controls.linear_vel = -a0*4.0
     war_controls.angular_vel = -a1
     client.setWarthogControls(war_controls)
     war_state = client.getWarthogState()
     lin.append(war_state.linear_vel)
     ang.append(war_state.angular_vel)
-    time.sleep(0.01)
+    gps_data = client.getGpsData()
+    responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
+    response = responses[0]
+
+# get numpy array
+    img1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8) 
+
+# reshape array to 4 channel image array H X W X 4
+    img_rgb = img1d.reshape(response.height, response.width, 3)
+    cv2.imshow("war", img_rgb)
+    cv2.waitKey(1)
+    dlt.append(time.time() - st_time)
+    
+   # print(gps_data)
+   # time.sleep(0.01)
+
+# get numpy array
+
+# reshape array to 4 channel image array H X W X 4
+
+# original image is fliped vertically
+#img_rgb = np.flipud(img_rgb)
+
+# write to png 
 a = input("input key to stop")
+print(dlt)
 plt.figure()
 plt.plot(ang, 'r')
 plt.plot(lin, 'g')

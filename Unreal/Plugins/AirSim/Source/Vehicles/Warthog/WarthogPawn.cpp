@@ -8,6 +8,8 @@ AWarthogPawn::AWarthogPawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+    static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
+    pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
     kp_ = 0;
     kd_ = 0;
     ki_ = 0;
@@ -93,6 +95,19 @@ void AWarthogPawn::SetDesiredVelocities(float linear_vel, float angular_vel)
 void AWarthogPawn::GetWarthogMesh(UPrimitiveComponent* temp) 
 {
     war_mesh_ = temp;
+    //camera_front_center_base_ = this->CreateDefaultSubobject<USceneComponent>(TEXT("camera_front_center_base_"));
+    camera_front_center_base_ = NewObject<USceneComponent>(this, TEXT("camera_front_center_base_"));
+    camera_front_center_base_->RegisterComponent();
+    camera_front_center_base_->SetRelativeLocation(FVector(-700, 0, 100)); //center
+    FAttachmentTransformRules rig_att_rules(EAttachmentRule::KeepRelative, true);
+    camera_front_center_base_->AttachToComponent(war_mesh_, rig_att_rules);
+    FTransform camera_transform(FVector::ZeroVector);
+    FActorSpawnParameters camera_spawn_params;
+    camera_spawn_params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+    camera_spawn_params.Name = FName(*(this->GetName() + "_camera_front_center"));
+    camera_front_center_ = this->GetWorld()->SpawnActor<APIPCamera>(pip_camera_class_, camera_transform, camera_spawn_params);
+    camera_front_center_->AttachToComponent(camera_front_center_base_, FAttachmentTransformRules::KeepRelativeTransform);
     return;
 }
 void AWarthogPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
@@ -102,13 +117,13 @@ void AWarthogPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Ot
 }
 void AWarthogPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    /*camera_front_center_ = nullptr;
-    camera_front_left_ = nullptr;
+    camera_front_center_ = nullptr;
+    camera_front_center_base_ = nullptr;
+    /* camera_front_left_ = nullptr;
     camera_front_right_ = nullptr;
     camera_driver_ = nullptr;
     camera_back_center_ = nullptr;
 
-    camera_front_center_base_ = nullptr;
     camera_front_left_base_ = nullptr;
     camera_front_right_base_ = nullptr;
     camera_driver_base_ = nullptr;
@@ -122,6 +137,8 @@ void AWarthogPawn::initializeForBeginPlay(bool engine_sound)
 const common_utils::UniqueValueMap<std::string, APIPCamera*> AWarthogPawn::getCameras() const
 {
     common_utils::UniqueValueMap<std::string, APIPCamera*> cameras;
+    cameras.insert_or_assign("front_center", camera_front_center_);
+    cameras.insert_or_assign("0", camera_front_center_);
     /* cameras.insert_or_assign("front_center", camera_front_center_);
     cameras.insert_or_assign("front_right", camera_front_right_);
     cameras.insert_or_assign("front_left", camera_front_left_);
