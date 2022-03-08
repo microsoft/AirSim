@@ -23,8 +23,8 @@ msr::airlib::WarthogApiBase::WarthogState WarthogPawnApi::getWarthogState() cons
 {
     //msr::airlib::WarthogApiBase::WarthogState state(pawn_->desired_linear_vel,
     //    pawn_->desired_angular_vel_,
-    msr::airlib::WarthogApiBase::WarthogState state(0.1,
-        0.4,
+    msr::airlib::WarthogApiBase::WarthogState state(pawn_->curr_v,
+        pawn_->curr_w,
         *pawn_kinematics_);
    // if (1) 
     //    {

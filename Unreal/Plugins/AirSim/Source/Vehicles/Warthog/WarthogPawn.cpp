@@ -15,7 +15,13 @@ AWarthogPawn::AWarthogPawn()
     prev_r_error_ = 0;
     left_error_sum_ = 0;
     right_error_sum_ = 0;
-    warthog_half_diff_radius_ = 0.285;
+    warthog_half_diff_radius_ = 0.568;
+    left_torque_ = 0;
+    right_torque_ = 0;
+    pid_update_time_ = 0.02;
+    time_since_last_pid_ = 0;
+    curr_v = 0;
+    curr_w = 0;
  //   static ConstructorHelpers::FClassFinder<APIPCamera> pip_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
  //   pip_camera_class_ = pip_camera_class.Succeeded() ? pip_camera_class.Class : nullptr;
  //   camera_rig_ = CreateDefaultSubobject<USceneComponent>(TEXT("camera_rig_")); 
@@ -25,8 +31,12 @@ AWarthogPawn::AWarthogPawn()
 }
 
 // Called when the game starts or when spawned
-void AWarthogPawn::BeginPlay()
+void AWarthogPawn::SetPidUpdateTime(float pid_update_time)
 {
+    pid_update_time_ = pid_update_time;
+}
+void AWarthogPawn::BeginPlay()
+    {
 	Super::BeginPlay();
 	
 }
@@ -35,11 +45,30 @@ void AWarthogPawn::BeginPlay()
 void AWarthogPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    float v, omega;
+    GetCurrentVOmega(v, omega);
+    //curr_v = v;
+    //curr_w = omega;
     pawn_events_.getPawnTickSignal().emit(DeltaTime);
-    DoPidUpdate(DeltaTime);
+    time_since_last_pid_ = time_since_last_pid_ + DeltaTime;
+   // DoPidUpdate(time_since_last_pid_);
+    if (time_since_last_pid_ >= pid_update_time_) {
+        DoPidUpdate(time_since_last_pid_);
+        time_since_last_pid_ = 0;
+    }
+    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("lin_vel_cpp %f"), v));
+    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("ang_vel_cpp %f"), omega));
+    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("step time %f"), DeltaTime));
 }
-
-// Called to bind functionality to input
+float AWarthogPawn::GetLeftTorque()
+{
+    return left_torque_;
+}
+float AWarthogPawn::GetRightTorque()
+{
+    return right_torque_;
+}
+    // Called to bind functionality to input
 void AWarthogPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -127,37 +156,48 @@ void AWarthogPawn::SetKi(float ki)
 }
 void AWarthogPawn::GetCurrentVOmega(float&v, float&omega)
 {
+    //return;
     FMatrix t = war_mesh_->GetRelativeTransform().ToMatrixWithScale();
     FVector lin_vel_vec = war_mesh_->GetComponentVelocity();
     FVector lin_vel_vec_local_frame = t.InverseTransformVector(lin_vel_vec);
     v = lin_vel_vec_local_frame.X/100.0; //report in m/s
     omega = -1 * war_mesh_->GetPhysicsAngularVelocityInRadians().Z;
-   // GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("lin_vel_cpp %f"), v));
-   // GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("ang_vel_cpp %f"), omega));
+    //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("lin_vel_cpp %f"), v));
+    //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("ang_vel_cpp %f"), omega));
+    //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("diff_rad %f"), warthog_half_diff_radius_));
 }
 void AWarthogPawn::SetWheelVelocities(float v, float omega, float& vl, float& vr)
 {
-    vl = v - omega * warthog_half_diff_radius_;
-    vr = v + omega * warthog_half_diff_radius_;
+    vl = v - (omega * warthog_half_diff_radius_);
+    vr = v + (omega * warthog_half_diff_radius_);
 }
 void AWarthogPawn::DoPidUpdate(float dt)
 {
     float v, omega, vl, vr, vl_desired, vr_desired;
-    float left_torque;
-    float right_torque;
     GetCurrentVOmega(v, omega);
     SetWheelVelocities(v, omega, vl, vr);
     SetWheelVelocities(desired_linear_vel_, desired_angular_vel_, vl_desired, vr_desired);
+    //if ((FMath::Abs(vl_desired) <= 0.2) && (FMath::Abs(vr_desired) <= 0.2)) {
+      //  left_torque_ = 0; 
+      //  right_torque_ = 0; 
+       // return;
+   // }
     float curr_l_error = vl_desired - vl;
     float curr_r_error = vr_desired - vr;
-    left_torque = kp_ * (curr_l_error) + kd_ * (curr_l_error - prev_l_error_) + (ki_ * (left_error_sum_ + curr_l_error ));
-    right_torque = kp_ * (curr_r_error) + kd_ * (curr_r_error - prev_r_error_)  + (ki_ * (right_error_sum_ + curr_r_error));
-    left_error_sum_ = left_error_sum_ + curr_l_error ;
-    right_error_sum_ = right_error_sum_ + curr_r_error ;
+    left_torque_ = kp_ * (curr_l_error) + kd_ * (curr_l_error - prev_l_error_)/dt + (ki_ * (left_error_sum_ + curr_l_error*dt ));
+    right_torque_ = kp_ * (curr_r_error) + kd_ * (curr_r_error - prev_r_error_)/dt + (ki_ * (right_error_sum_ + curr_r_error*dt));
+    left_error_sum_ = left_error_sum_ + curr_l_error*dt ;
+    right_error_sum_ = right_error_sum_ + curr_r_error*dt ;
     prev_l_error_ = curr_l_error;
     prev_r_error_ = curr_r_error;
-    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("left_t %f"), left_torque));
-    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("right_t_cpp %f"), right_torque));
+    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("left_t %f"), left_torque_));
+    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("right_t_cpp %f"), right_torque_));
+    GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, FString::Printf(TEXT("right_t_cppkk %f"), ki_));
+    curr_v = curr_l_error;
+    curr_w = curr_r_error;
+    return;
+    //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("left_t %f"), curr_l_error));
+    //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("right_t_cpp %f"), curr_r_error));
 
 
 }

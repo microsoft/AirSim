@@ -40,6 +40,8 @@ public:
     {
         return keyboard_controls_;
     }
+    float curr_v;
+    float curr_w;
 
 
 public:	
@@ -60,6 +62,12 @@ public:
     void SetKd(float kd);
     UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
     void SetKi(float ki);
+    UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
+    float GetLeftTorque();
+    UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
+    float GetRightTorque();
+    UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
+    void SetPidUpdateTime(float pid_update_time);
 
 private:
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -78,11 +86,15 @@ private:
     float kd_;
     float ki_;
     float warthog_half_diff_radius_;
+    float left_torque_;
+    float right_torque_;
     //pid variables
     float prev_l_error_;
     float prev_r_error_;
     float left_error_sum_;
     float right_error_sum_;
+    float pid_update_time_;
+    float time_since_last_pid_;
     //Sets left and right wheel velocities from 
     //linear and angular velocities
     //arg: linear vel, angular vel, left wheel vel
