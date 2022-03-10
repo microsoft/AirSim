@@ -1,5 +1,9 @@
 #include "RecordingFile.h"
-#include "HAL/PlatformFilemanager.h"
+#if ENGINE_MAJOR_VERSION > 4
+  #include "HAL/PlatformFileManager.h"
+#elif
+  #include "HAL/PlatformFilemanager.h"
+#endif
 #include "Misc/FileHelper.h"
 #include <sstream>
 #include "ImageUtils.h"

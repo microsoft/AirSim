@@ -455,8 +455,12 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
 
         //Various checks if there is even a valid mesh
         if (!comp->GetStaticMesh()) continue;
-        if (!comp->GetStaticMesh()->RenderData) continue;
-        if (comp->GetStaticMesh()->RenderData->LODResources.Num() == 0) continue;
+        if (!comp->GetStaticMesh()->HasValidRenderData()) continue;
+        #if (ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION > 26)
+            if (comp->GetStaticMesh()->GetRenderData()->LODResources.Num() == 0) continue;
+        #else
+            if (comp->GetStaticMesh()->RenderData->LODResources.Num() == 0) continue;
+        #endif
 
         msr::airlib::MeshPositionVertexBuffersResponse mesh;
         mesh.name = name;
@@ -471,7 +475,11 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
         mesh.orientation.y() = att.Y;
         mesh.orientation.z() = att.Z;
 
-        FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->RenderData->LODResources[0].VertexBuffers.PositionVertexBuffer;
+        #if (ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION > 26)
+            FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->GetRenderData()->LODResources[0].VertexBuffers.PositionVertexBuffer;
+        #else
+            FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->RenderData->LODResources[0].VertexBuffers.PositionVertexBuffer;
+        #endif
         if (vertex_buffer) {
             const int32 vertex_count = vertex_buffer->VertexBufferRHI->GetSize();
             TArray<FVector> vertices;
@@ -486,7 +494,11 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
                     RHIUnlockVertexBuffer(vertex_buffer->VertexBufferRHI);
                 });
 
-            FStaticMeshLODResources& lod = comp->GetStaticMesh()->RenderData->LODResources[0];
+            #if (ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION > 26)
+                FStaticMeshLODResources& lod = comp->GetStaticMesh()->GetRenderData()->LODResources[0];
+            #else
+                FStaticMeshLODResources& lod = comp->GetStaticMesh()->RenderData->LODResources[0];
+            #endif
             FRawStaticIndexBuffer* IndexBuffer = &lod.IndexBuffer;
             int num_indices = IndexBuffer->IndexBufferRHI->GetSize() / IndexBuffer->IndexBufferRHI->GetStride();
 
