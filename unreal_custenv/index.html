@@ -344,6 +344,10 @@
 <li>
 <p>Open <code>LandscapeMountains.uproject</code>, it should launch the Unreal Editor.</p>
 <p><img alt="unreal editor" src="../images/unreal_editor.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Landscape Mountains project is supported up to Unreal Engine version 4.24. If you do not have 4.24 installed, you should see a dialog titled <code>Select Unreal Engine Version</code> with a dropdown to select from installed versions. Select 4.25 or greater to migrate the project to a supported engine version. If you have 4.24 installed, you can manually migrate the project by navigating to the corresponding .uproject file in Windows Explorer, right-clicking it, and selecting the <code>Switch Unreal Engine version...</code> option. </p>
+</div>
 </li>
 <li>
 <p>From the <code>File menu</code> select <code>New C++ class</code>, leave default <code>None</code> on the type of class, click <code>Next</code>, leave default name <code>MyClass</code>, and click <code>Create Class</code>. We need to do this because Unreal requires at least one source file in project. It should trigger compile and open up Visual Studio solution <code>LandscapeMountains.sln</code>.</p>
