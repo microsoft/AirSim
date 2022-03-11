@@ -68,6 +68,8 @@ public:
     float GetRightTorque();
     UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
     void SetPidUpdateTime(float pid_update_time);
+    UFUNCTION(BlueprintCallable, meta = (Tooltip = "Return our PawnMovementComponent, if we have one."), Category = Pawn)
+    void SetLQRParams(float lin, float ang);
 
 private:
     typedef msr::airlib::AirSimSettings AirSimSettings;
@@ -87,6 +89,8 @@ private:
     float kp_;
     float kd_;
     float ki_;
+    float lqr_param_lin_;
+    float lqr_param_ang_;
     float warthog_half_diff_radius_;
     float left_torque_;
     float right_torque_;
@@ -103,6 +107,7 @@ private:
     // right wheel vel
     void SetWheelVelocities(float, float, float&, float&);
     void DoPidUpdate(float);
+    void DoLQRUpdate(float);
     void GetCurrentVOmega(float&, float&);
 
 };

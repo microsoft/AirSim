@@ -53,9 +53,10 @@ void AWarthogPawn::Tick(float DeltaTime)
     //curr_w = omega;
     pawn_events_.getPawnTickSignal().emit(DeltaTime);
     time_since_last_pid_ = time_since_last_pid_ + DeltaTime;
+    DoLQRUpdate(DeltaTime);
    // DoPidUpdate(time_since_last_pid_);
     if (time_since_last_pid_ >= pid_update_time_) {
-        DoPidUpdate(time_since_last_pid_);
+       // DoPidUpdate(time_since_last_pid_);
         time_since_last_pid_ = 0;
     }
     GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("lin_vel_cpp %f"), v));
@@ -171,6 +172,12 @@ void AWarthogPawn::SetKi(float ki)
     ki_ = ki;
     return;
 }
+void AWarthogPawn::SetLQRParams(float lin, float ang)
+{
+    lqr_param_lin_ = lin;
+    lqr_param_ang_ = ang;
+    return;
+}
 void AWarthogPawn::GetCurrentVOmega(float&v, float&omega)
 {
     //return;
@@ -201,8 +208,12 @@ void AWarthogPawn::DoPidUpdate(float dt)
    // }
     float curr_l_error = vl_desired - vl;
     float curr_r_error = vr_desired - vr;
-    left_torque_ = kp_ * (curr_l_error) + kd_ * (curr_l_error - prev_l_error_)/dt + (ki_ * (left_error_sum_ + curr_l_error*dt ));
-    right_torque_ = kp_ * (curr_r_error) + kd_ * (curr_r_error - prev_r_error_)/dt + (ki_ * (right_error_sum_ + curr_r_error*dt));
+    left_torque_ = kp_ * (curr_l_error) + 
+        kd_ * (curr_l_error - prev_l_error_)/dt + 
+        (ki_ * (left_error_sum_ + curr_l_error*dt ));
+    right_torque_ = kp_ * (curr_r_error) + 
+        kd_ * (curr_r_error - prev_r_error_)/dt + 
+        (ki_ * (right_error_sum_ + curr_r_error*dt));
     left_error_sum_ = left_error_sum_ + curr_l_error*dt ;
     right_error_sum_ = right_error_sum_ + curr_r_error*dt ;
     prev_l_error_ = curr_l_error;
@@ -212,10 +223,26 @@ void AWarthogPawn::DoPidUpdate(float dt)
     GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, FString::Printf(TEXT("right_t_cppkk %f"), ki_));
     curr_v = curr_l_error;
     curr_w = curr_r_error;
+    float v_err = v - desired_linear_vel_;
+    float w_err = omega - desired_angular_vel_;
+    right_torque_ = -(kp_ * v_err + kd_ * w_err)/2;
+    left_torque_ = -(kp_ * v_err - kd_ * w_err)/2;
     return;
     //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("left_t %f"), curr_l_error));
     //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("right_t_cpp %f"), curr_r_error));
 
 
+}
+void AWarthogPawn::DoLQRUpdate(float dt)
+{
+    float v, omega;
+    GetCurrentVOmega(v, omega);
+    float v_err = v - desired_linear_vel_;
+    float w_err = omega - desired_angular_vel_;
+    right_torque_ = -(lqr_param_lin_ * v_err + lqr_param_ang_ * w_err) / 2;
+    left_torque_ = -(lqr_param_lin_ * v_err - lqr_param_ang_* w_err) / 2;
+    return;
+    //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("left_t %f"), curr_l_error));
+    //GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow, FString::Printf(TEXT("right_t_cpp %f"), curr_r_error));
 }
 

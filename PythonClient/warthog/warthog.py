@@ -21,7 +21,8 @@ dlt = []
 #ar_controls.linear_vel = 4.0
 #ar_controls.angular_vel = 1.0
 client.setWarthogControls(war_controls)
-for i in range(0,1000):
+not_done = True;
+while not_done:
     st_time = time.time()
     for event in pygame.event.get():
         pass
@@ -29,9 +30,10 @@ for i in range(0,1000):
     a1 = joystick.get_axis(2)
     button = joystick.get_button(0)
     if button == 1:
+        not_done=False
         break
-    war_controls.linear_vel = -a0*4.0
-    war_controls.angular_vel = -a1
+    war_controls.linear_vel = -a0*5.0
+    war_controls.angular_vel = -a1*2.0
     client.setWarthogControls(war_controls)
     war_state = client.getWarthogState()
     lin.append(war_state.linear_vel)
@@ -60,17 +62,18 @@ for i in range(0,1000):
 #img_rgb = np.flipud(img_rgb)
 
 # write to png 
-a = input("input key to stop")
-print(dlt)
-plt.figure()
-plt.plot(ang, 'r')
-plt.plot(lin, 'g')
+cv2.destroyAllWindows() 
+#a = input("input key to stop")
+#print(dlt)
 #plt.figure()
-plt.show()
+#plt.plot(ang, 'r')
+#plt.plot(lin, 'g')
+#plt.figure()
+#plt.show()'''
 war_controls.linear_vel = 0
 war_controls.angular_vel = 0
 client.setWarthogControls(war_controls)
-a = input("input key to stop")
+#a = input("input key to stop")
 client.reset()
 client.enableApiControl(False)
 
