@@ -6,7 +6,9 @@ set -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
 
-UnrealDir=$1
+if [[ ! -e "$UnrealDir" ]]; then
+    UnrealDir=$1
+fi
 if [[ ! -e "$UnrealDir" ]]; then
     # UnrealDir variable must be set like '/Users/Shared/Epic\ Games/UE_4.16'
     echo "UnrealDir is not set."
