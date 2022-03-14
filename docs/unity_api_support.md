@@ -133,8 +133,3 @@
 | setCarControls | <span style="color:green">Supported</span> | NA |
 | getCarState | <span style="color:green">Supported</span> | NA |
 | getCarControls | <span style="color:green">Supported</span> | NA |
-| getGpsLocation | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
-| getLandedState | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
-| getOrientation | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
-| getPosition | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
-| getVelocity | <span style="color:orange">TODO</span> | <span style="color:orange">TODO</span> |
