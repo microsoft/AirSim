@@ -339,7 +339,7 @@ bool ASimHUD::getSettingsText(std::string& settingsText)
 // Attempts to parse the settings file path or the settings text from the command line
 // Looks for the flag "-settings=". If it exists, settingsText will be set to the value.
 // Example (Path): AirSim.exe -settings="C:\path\to\settings.json"
-// Example (Text): AirSim.exe -settings="{"foo" : "bar"}" -> settingsText will be set to {"foo": "bar"}
+// Example (Text): AirSim.exe -settings={"foo":"bar"} -> settingsText will be set to {"foo":"bar"}
 // Returns true if the argument is present, false otherwise.
 bool ASimHUD::getSettingsTextFromCommandLine(std::string& settingsText)
 {

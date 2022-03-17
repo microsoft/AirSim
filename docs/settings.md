@@ -8,8 +8,8 @@ For example, in Windows: `AirSim.exe -settings="C:\path\to\settings.json"`
 In Linux `./Blocks.sh -settings="/home/$USER/path/to/settings.json"`
 
 2. Looking for a json document passed as a command line argument by the `-settings` argument.
-For example, in Windows: `AirSim.exe -settings="{"foo" : "bar"}"`
-In Linux `./Blocks.sh -settings="{"foo" : "bar"}"`
+For example, in Windows: `AirSim.exe -settings={"foo":"bar"}`
+In Linux `./Blocks.sh -settings={"foo":"bar"}`
 
 3. Looking in the folder of the executable for a file called `settings.json`.
 This will be a deep location where the actual executable of the Editor or binary is stored.
