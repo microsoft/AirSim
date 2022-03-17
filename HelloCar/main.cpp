@@ -12,7 +12,6 @@ STRICT_MODE_ON
 #include "vehicles/car/api/CarRpcLibClient.hpp"
 #include "common/common_utils/FileSystem.hpp"
 #include <iostream>
-// #include <chrono>
 
 int main()
 {

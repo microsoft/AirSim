@@ -5,10 +5,8 @@
 #include "GaussianMarkovTest.hpp"
 #include "DepthNav/DepthNavCost.hpp"
 #include "DepthNav/DepthNavThreshold.hpp"
-// #include "DepthNav/DepthNavOptAStar.hpp"
 #include <iostream>
 #include <string>
-// #include <sys/stat.h>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
@@ -97,7 +95,7 @@ void runDepthNavGT()
     typedef ImageCaptureBase::ImageRequest ImageRequest;
     typedef ImageCaptureBase::ImageType ImageType;
 
-    const std::vector<ImageRequest> request = {
+    std::vector<ImageRequest> request = {
         ImageRequest("front_left", ImageType::DepthPlanar, true) /*,
         ImageRequest("front_left", ImageType::Scene),
         ImageRequest("front_left", ImageType::DisparityNormalized, true) */

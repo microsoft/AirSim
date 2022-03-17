@@ -29,7 +29,7 @@ int main()
 
         std::cout << "Press Enter to get FPV image" << std::endl;
         std::cin.get();
-        vector<ImageRequest> request = { ImageRequest("0", ImageType::Scene), ImageRequest("1", ImageType::DepthPlanar, true) };
+        const vector<ImageRequest> request = { ImageRequest("0", ImageType::Scene), ImageRequest("1", ImageType::DepthPlanar, true) };
         const vector<ImageResponse>& response = client.simGetImages(request);
         std::cout << "# of images received: " << response.size() << std::endl;
 
@@ -106,7 +106,7 @@ int main()
 
         std::cout << "Press Enter to fly in a 10m box pattern at 3 m/s velocity" << std::endl;
         std::cin.get();
-        // moveByVelocityZ is an off board operation, so we need to set offboard mode.
+        // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
         client.enableApiControl(true);
 
         auto position = client.getMultirotorState().getPosition();

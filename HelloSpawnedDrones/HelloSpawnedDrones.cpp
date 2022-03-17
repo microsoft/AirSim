@@ -13,14 +13,13 @@ STRICT_MODE_ON
 #include "common/common_utils/FileSystem.hpp"
 #include <iostream>
 #include <chrono>
-// #include <cstdlib>
 #include <thread>
 
 void runSingleClient(const uint16_t port, const int ordinal)
 {
     using namespace msr::airlib;
 
-    constexpr char host[] = "localhost";
+    const char host[] = "localhost";
     float timeout_s = 60;
 
     try {
@@ -37,7 +36,7 @@ void runSingleClient(const uint16_t port, const int ordinal)
         // This is a bit crude, but give it a moment to settle on the ground, else takeoff will fail
         std::this_thread::sleep_for(std::chrono::duration<double>(2));
 
-        // moveByVelocityZ is an off board operation, so we need to set offboard mode.
+        // moveByVelocityZ is an offboard operation, so we need to set offboard mode.
         client->enableApiControl(true, vehicle_name);
         client->armDisarm(true, vehicle_name);
 
