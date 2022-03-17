@@ -1,6 +1,6 @@
 This is a fork of AirSim providing simulation for Clearpath [Warthog](https://clearpathrobotics.com/warthog-unmanned-ground-vehicle-robot/)
 
-Clone this repository and build AirSim following the instructions [AirSim](https://microsoft.github.io/AirSim/build_windows/)  
+Clone this repository and build AirSim following the instructions [AirSim](https://microsoft.github.io/AirSim/build_windows/).  
 
 If you are using Linux follow the instructions to build AirSim on Linux.
 
