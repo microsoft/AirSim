@@ -6,7 +6,7 @@
 #include "WarthogPawnApi.h"
 #include "PawnEvents.h"
 #include "PawnSimApi.h"
-#include "vehicles/Warthog/api/WarthogApiBase.hpp"
+#include "vehicles/warthog/api/WarthogApiBase.hpp"
 #include "physics/Kinematics.hpp"
 #include "common/Common.hpp"
 #include "common/CommonStructs.hpp"

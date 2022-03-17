@@ -27,7 +27,7 @@ STRICT_MODE_OFF
 #define check(expr) (static_cast<void>((expr)))
 #endif
 #include "common/common_utils/WindowsApisCommonPost.hpp"
-#include "vehicles/Warthog/api/WarthogRpcLibAdaptors.hpp"
+#include "vehicles/warthog/api/WarthogRpcLibAdaptors.hpp"
 
 STRICT_MODE_ON
 

@@ -9,7 +9,7 @@
 #include "common/Common.hpp"
 #include <functional>
 #include "api/RpcLibServerBase.hpp"
-#include "vehicles/Warthog/api/WarthogApiBase.hpp"
+#include "vehicles/warthog/api/WarthogApiBase.hpp"
 
 namespace msr
 {

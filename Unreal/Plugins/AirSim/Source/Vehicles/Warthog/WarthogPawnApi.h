@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vehicles/Warthog/api/WarthogApiBase.hpp"
+#include "vehicles/warthog/api/WarthogApiBase.hpp"
 #include "physics/Kinematics.hpp"
 #include "WarthogPawn.h"
 
