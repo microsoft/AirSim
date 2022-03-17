@@ -44,6 +44,7 @@ nav:
     - "Download Binaries": 'use_precompiled.md'
     - "Build on Windows": 'build_windows.md'
     - "Build on Linux": 'build_linux.md'
+    - "Build on macOS": 'build_macos.md'
     - "Docker on Linux": 'docker_ubuntu.md'
     - "AirSim on Azure": 'azure.md'
     - "Custom Unreal Environment": 'unreal_custenv.md'

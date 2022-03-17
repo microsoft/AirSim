@@ -33,6 +33,8 @@ cd AirSim
 
 By default AirSim uses clang 8 to build for compatibility with UE 4.25. The setup script will install the right version of cmake, llvm, and eigen.
 
+CMake 3.19.2 is required for building on Apple Silicon.
+
 ```bash
 ./setup.sh
 ./build.sh
