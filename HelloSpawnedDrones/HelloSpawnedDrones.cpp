@@ -19,11 +19,11 @@ void runSingleClient(const uint16_t port, const int ordinal)
 {
     using namespace msr::airlib;
 
-    const char host[] = "localhost";
+    constexpr char host[] = "localhost";
     float timeout_s = 60;
 
     try {
-        MultirotorRpcLibClient* client = new MultirotorRpcLibClient(host, port, timeout_s);
+        std::unique_ptr<MultirotorRpcLibClient> client(new MultirotorRpcLibClient(host, port, timeout_s));
         std::cout << "Confirming connections..." << std::endl;
         client->confirmConnection();
 
@@ -108,8 +108,6 @@ void runSingleClient(const uint16_t port, const int ordinal)
         client->armDisarm(false, vehicle_name);
 
         std::cout << "Done!..." << std::endl;
-
-        delete client;
 
         std::this_thread::sleep_for(std::chrono::duration<double>(50));
     }
