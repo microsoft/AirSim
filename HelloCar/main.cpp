@@ -33,13 +33,11 @@ int main()
 
         std::cout << "Press Enter to get FPV image" << std::endl;
         std::cin.get();
-        const vector<ImageRequest> request = { ImageRequest("0", ImageType::Scene), ImageRequest("1", ImageType::DepthPlanar, true) };
-        const vector<ImageResponse>& response = client.simGetImages(request);
+        const std::vector<ImageRequest> request = { ImageRequest("0", ImageType::Scene), ImageRequest("1", ImageType::DepthPlanar, true) };
+        const std::vector<ImageResponse>& response = client.simGetImages(request);
         std::cout << "# of images received: " << response.size() << std::endl;
 
-        constexpr uint zero = 0;
-
-        if (response.size() > zero) {
+        if (!response.size()) {
             std::cout << "Enter path with ending separator to save images (leave empty for no save)" << std::endl;
             std::string path;
             std::getline(std::cin, path);
