@@ -125,7 +125,7 @@ void runDepthNavSGM()
     typedef ImageCaptureBase::ImageRequest ImageRequest;
     typedef ImageCaptureBase::ImageType ImageType;
 
-    const std::vector<ImageRequest> request = {
+    const std::vector<ImageRequest> request {
         ImageRequest("front_left", ImageType::Scene, false, false),
         ImageRequest("front_right", ImageType::Scene, false, false), /*
         ImageRequest("front_left", ImageType::DepthPlanar, true),
