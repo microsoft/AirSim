@@ -149,7 +149,7 @@ void runDepthNavSGM()
     depthNav.initialize(client, request);
 
     SGMOptions params;
-    CStateStereo* p_state;
+    CStateStereo p_state;
 
     if (params.maxImageDimensionWidth != static_cast<int>(depthNav.params_.depth_width))
         printf("WARNING: Width Mismatch between SGM and DepthNav. Overwriting parameters.\n");
@@ -157,13 +157,9 @@ void runDepthNavSGM()
 
     params.Print();
 
-    p_state = new CStateStereo;
-    p_state->Initialize(params, static_cast<int>(depthNav.params_.depth_height), static_cast<int>(depthNav.params_.depth_width));
+    p_state.Initialize(params, static_cast<int>(depthNav.params_.depth_height), static_cast<int>(depthNav.params_.depth_width));
 
-    depthNav.gotoGoalSGM(goalPose, client, request, p_state);
-
-    //Cleanup
-    delete p_state;
+    depthNav.gotoGoalSGM(goalPose, client, request, &p_state);
 }
 
 int main(const int argc, const char* argv[])
