@@ -35,7 +35,7 @@ namespace airlib
             case SensorBase::SensorType::Barometer:
                 return std::make_shared<BarometerSimple>(*static_cast<const AirSimSettings::BarometerSetting*>(sensor_setting));
             default:
-                throw new std::invalid_argument("Unexpected sensor type");
+                throw std::invalid_argument("Unexpected sensor type");
             }
         }
 
