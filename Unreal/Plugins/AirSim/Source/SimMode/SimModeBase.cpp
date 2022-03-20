@@ -142,7 +142,7 @@ void ASimModeBase::BeginPlay()
     setupVehiclesAndCamera();
     recording_thread_->init();
 
-    if (getSettings().recording_setting.enabled && vehicle_sim_apis_.size() > 0)
+    if (getSettings().recording_setting.enabled)
         startRecording();
 
     UWorld* World = GetWorld();

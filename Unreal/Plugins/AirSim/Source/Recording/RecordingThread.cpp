@@ -16,6 +16,10 @@ FRecordingThread::FRecordingThread()
 void FRecordingThread::startRecording(const RecordingSetting& settings,
                                       const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis)
 {
+    if (vehicle_sim_apis.mapSize() < 1) {
+        return;
+    }
+
     stopRecording();
 
     //TODO: check FPlatformProcess::SupportsMultithreading()?
