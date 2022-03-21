@@ -441,10 +441,17 @@ bool AirsimROSWrapper::land_all_srv_cb(airsim_ros_pkgs::Land::Request& request, 
 bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, airsim_ros_pkgs::Reset::Response& response)
 {
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
-
-    airsim_client_->reset();
-
-    response.success = true;
+    if(airsim_client_!=nullptr){
+        airsim_client_->reset();
+        for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
+            airsim_client_->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
+            airsim_client_->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
+        }
+        response.success = true;
+    }
+    else{
+        response.success = false;
+    }   
     return response.success; //todo
 }
 
