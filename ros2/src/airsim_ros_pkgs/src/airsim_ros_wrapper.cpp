@@ -440,6 +440,10 @@ bool AirsimROSWrapper::reset_srv_cb(std::shared_ptr<airsim_interfaces::srv::Rese
     std::lock_guard<std::mutex> guard(control_mutex_);
 
     airsim_client_->reset();
+    for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
+            airsim_client_->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
+            airsim_client_->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
+        }
     return true; //todo
 }
 
