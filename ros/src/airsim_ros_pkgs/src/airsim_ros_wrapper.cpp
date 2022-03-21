@@ -154,6 +154,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         vehicle_ros->global_gps_pub = nh_private_.advertise<sensor_msgs::NavSatFix>(curr_vehicle_name + "/global_gps", 10);
 
+        vehicle_ros->collision_pub = nh_private_.advertise<std_msgs::Bool>(curr_vehicle_name + "/collision_state", 10);
+
         if (airsim_mode_ == AIRSIM_MODE::DRONE) {
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
 
@@ -1024,6 +1026,7 @@ ros::Time AirsimROSWrapper::update_state()
 
             vehicle_ros->gps_sensor_msg = get_gps_sensor_msg_from_airsim_geo_point(drone->curr_drone_state.gps_location);
             vehicle_ros->gps_sensor_msg.header.stamp = vehicle_time;
+            vehicle_ros->collision_state_msg.data = drone->curr_drone_state.collision.has_collided;
 
             vehicle_ros->curr_odom = get_odom_msg_from_multirotor_state(drone->curr_drone_state);
         }
@@ -1083,6 +1086,9 @@ void AirsimROSWrapper::publish_vehicle_state()
 
         // ground truth GPS position from sim/HITL
         vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
+
+        // collision state from simGetCollisionInfo API
+        vehicle_ros->collision_pub.publish(vehicle_ros->collision_state_msg);
 
         for (auto& sensor_publisher : vehicle_ros->sensor_pubs) {
             switch (sensor_publisher.sensor_type) {

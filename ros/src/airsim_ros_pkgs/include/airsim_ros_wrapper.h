@@ -63,6 +63,8 @@ STRICT_MODE_OFF //todo what does this do?
 #include <tf2/convert.h>
 #include <unordered_map>
 #include <memory>
+
+#include <std_msgs/Bool.h>
     // #include "nodelet/nodelet.h"
 
     // todo move airlib typedefs to separate header file?
@@ -163,6 +165,7 @@ private:
         /// All things ROS
         ros::Publisher odom_local_pub;
         ros::Publisher global_gps_pub;
+        ros::Publisher collision_pub;
         ros::Publisher env_pub;
         airsim_ros_pkgs::Environment env_msg;
         std::vector<SensorPublisher> sensor_pubs;
@@ -171,6 +174,7 @@ private:
 
         nav_msgs::Odometry curr_odom;
         sensor_msgs::NavSatFix gps_sensor_msg;
+        std_msgs::Bool collision_state_msg;
 
         std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec;
 
