@@ -6,7 +6,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd "$SCRIPT_DIR" >/dev/null
 
 downloadHighPolySuv=true
+
 MIN_CMAKE_VERSION=3.10.0
+# On macOS, make sure we have a CMake that will support CMAKE_APPLE_SILICON_PROCESSOR.
+if [ "$(uname)" == "Darwin" ]; then
+    MIN_CMAKE_VERSION=3.19.2
+fi
+
 DEBUG="${DEBUG:-false}"
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
