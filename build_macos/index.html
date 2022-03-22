@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Orbit Trajectory - AirSim</title>
+  <title>Build on macOS - AirSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Orbit Trajectory";
-    var mkdocs_page_input_path = "orbit.md";
+    var mkdocs_page_name = "Build on macOS";
+    var mkdocs_page_input_path = "build_macos.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -56,14 +56,38 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Building AirSim</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../use_precompiled/">Download Binaries</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../build_windows/">Build on Windows</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../build_linux/">Build on Linux</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../build_macos/">Build on macOS</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Build on macOS</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#docker">Docker</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#host-machine">Host machine</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pre-build-setup">Pre-build Setup</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#download-unreal-engine">Download Unreal Engine</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-airsim">Build AirSim</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-unreal-environment">Build Unreal Environment</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-use-airsim">How to Use AirSim</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-setup-remote-control-multirotor-only">[Optional] Setup Remote Control (Multirotor Only)</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
                     </li>
@@ -209,7 +233,7 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
-                <ul class="current">
+                <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../reinforcement_learning/">Reinforcement Learning</a>
                     </li>
                     <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
@@ -226,9 +250,7 @@
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
                     </li>
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Orbit Trajectory</a>
-    <ul class="current">
-    </ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
                     </li>
                     <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
                     </li>
@@ -288,14 +310,14 @@
     
       
         
-          <li>Contributed Tutorials &raquo;</li>
+          <li>Building AirSim &raquo;</li>
         
       
     
-    <li>Orbit Trajectory</li>
+    <li>Build on macOS</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/microsoft/airsim/edit/master/docs/orbit.md"
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/build_macos.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -307,16 +329,50 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="an-orbit-trajectory">An Orbit Trajectory<a class="headerlink" href="#an-orbit-trajectory" title="Permanent link">#</a></h1>
-<p>Moved here from <a href="https://github.com/microsoft/AirSim/wiki/An-Orbit-Trajectory">https://github.com/microsoft/AirSim/wiki/An-Orbit-Trajectory</a></p>
-<p>Have you ever wanted to fly a nice smooth circular orbit? This can be handy for capturing 3D objects from all sides especially if you get multiple orbits at different altitudes.</p>
-<p>So the <code>PythonClient/multirotor</code> folder contains a script named <a href="https://github.com/microsoft/AirSim/blob/master/PythonClient/multirotor/orbit.py">Orbit</a> that will do precisely that.</p>
-<p>See <a href="https://youtu.be/RFG5CTQi3Us">demo video</a></p>
-<p>The demo video was created by running this command line:</p>
-<pre class="highlight"><code class="language-shell">python orbit.py --radius 10 --altitude 5 --speed 1 --center "0,1" --iterations 1</code></pre>
-<p>This flies a 10 meter radius orbit around the center location at (startpos + radius * [0,1]), in other words, the center is located <code>radius</code> meters away in the direction of the provided center vector.  It also keeps the front-facing camera on the drone always pointing at the center of the circle. If you watch the flight using LogViewer you will see a nice circular pattern get traced out on the GPS map:</p>
-<p><img alt="image" src="../images/orbit.png" /></p>
-<p>The core of the algorithm is not that complicated.  At each point on the circle, we look ahead by a small delta in degrees, called the <code>lookahead_angle</code>, where that angle is computed based on our desired velocity.  We then find that lookahead point on the circle using sin/cosine and make that our "target point". Calculating the velocity then is easy, just subtract our current position from that point and feed that into the AirSim method <code>moveByVelocityZ</code>.</p>
+                <h1 id="build-airsim-on-macos">Build AirSim on macOS<a class="headerlink" href="#build-airsim-on-macos" title="Permanent link">#</a></h1>
+<p>Only macOS <strong>Catalina (10.15)</strong> has currently been tested. Theoretically, AirSim should work on higher macOS versions and Apple Silicon hardware, but this path is not offically supported.</p>
+<p>We've two options - you can either build inside docker containers or your host machine.</p>
+<h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
+<p>Please see instructions <a href="../docker_ubuntu/">here</a></p>
+<h2 id="host-machine">Host machine<a class="headerlink" href="#host-machine" title="Permanent link">#</a></h2>
+<h3 id="pre-build-setup">Pre-build Setup<a class="headerlink" href="#pre-build-setup" title="Permanent link">#</a></h3>
+<h4 id="download-unreal-engine">Download Unreal Engine<a class="headerlink" href="#download-unreal-engine" title="Permanent link">#</a></h4>
+<ol>
+<li><a href="https://www.unrealengine.com/download">Download</a> the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.</li>
+<li>Run the Epic Games Launcher, open the <code>Library</code> tab on the left pane.
+   Click on the <code>Add Versions</code> which should show the option to download <strong>Unreal 4.27</strong> as shown below. If you have multiple versions of Unreal installed then <strong>make sure 4.27 is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
+</ol>
+<p><strong>Note</strong>: AirSim also works with UE &gt;= 4.24, however, we recommend 4.27.
+   <strong>Note</strong>: If you have UE 4.16 or older projects, please see the <a href="../unreal_upgrade/">upgrade guide</a> to upgrade your projects.</p>
+<h3 id="build-airsim">Build AirSim<a class="headerlink" href="#build-airsim" title="Permanent link">#</a></h3>
+<ul>
+<li>Clone AirSim and build it:</li>
+</ul>
+<pre class="highlight"><code class="language-bash"># go to the folder where you clone GitHub projects
+git clone https://github.com/Microsoft/AirSim.git
+cd AirSim</code></pre>
+<p>By default AirSim uses clang 8 to build for compatibility with UE 4.25. The setup script will install the right version of cmake, llvm, and eigen.</p>
+<p>CMake 3.19.2 is required for building on Apple Silicon.</p>
+<pre class="highlight"><code class="language-bash">./setup.sh
+./build.sh
+# use ./build.sh --debug to build in debug mode</code></pre>
+<h3 id="build-unreal-environment">Build Unreal Environment<a class="headerlink" href="#build-unreal-environment" title="Permanent link">#</a></h3>
+<p>Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see <a href="../unreal_proj/">setting up Unreal Environment</a> if you'd like to setup your own environment.</p>
+<h2 id="how-to-use-airsim">How to Use AirSim<a class="headerlink" href="#how-to-use-airsim" title="Permanent link">#</a></h2>
+<ul>
+<li>Browse to <code>AirSim/Unreal/Environments/Blocks</code>.</li>
+<li>Run <code>./GenerateProjectFiles.sh &lt;UE_PATH&gt;</code> from the terminal, where <code>UE_PATH</code> is the path to the Unreal installation folder. (By default, this is <code>/Users/Shared/Epic\ Games/UE_4.27/</code>) The script creates an XCode workspace by the name Blocks.xcworkspace.</li>
+<li>Open the XCode workspace, and press the Build and run button in the top left.</li>
+<li>After Unreal Editor loads, press Play button.</li>
+</ul>
+<p>See <a href="../apis/">Using APIs</a> and <a href="../settings/">settings.json</a> for various options available for AirSim usage.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+</div>
+<p>Go to 'Edit-&gt;Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.</p>
+<h3 id="optional-setup-remote-control-multirotor-only">[Optional] Setup Remote Control (Multirotor Only)<a class="headerlink" href="#optional-setup-remote-control-multirotor-only" title="Permanent link">#</a></h3>
+<p>A remote control is required if you want to fly manually. See the <a href="../remote_control/">remote control setup</a> for more details.</p>
+<p>Alternatively, you can use <a href="../apis/">APIs</a> for programmatic control or use the so-called <a href="../image_apis/">Computer Vision mode</a> to move around using the keyboard.</p>
               
             </div>
           </div>
@@ -324,10 +380,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../object_detection/" class="btn btn-neutral float-right" title="Object Detection">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../docker_ubuntu/" class="btn btn-neutral float-right" title="Docker on Linux">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../drone_survey/" class="btn btn-neutral" title="Surveying Using Drone"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../build_linux/" class="btn btn-neutral" title="Build on Linux"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -359,10 +415,10 @@
         </span>
     
     
-      <span><a href="../drone_survey/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../build_linux/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../object_detection/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../docker_ubuntu/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -69,9 +69,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#pre-build-setup">Pre-build Setup</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#linux-build-unreal-engine">Linux - Build Unreal Engine</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#macos-download-unreal-engine">macOS - Download Unreal Engine</a>
+    <li class="toctree-l4"><a class="reference internal" href="#build-unreal-engine">Build Unreal Engine</a>
     </li>
         </ul>
     </li>
@@ -83,15 +81,13 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#how-to-use-airsim">How to Use AirSim</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#linux">Linux</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#mac">Mac</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#optional-setup-remote-control-multirotor-only">[Optional] Setup Remote Control (Multirotor Only)</a>
     </li>
         </ul>
     </li>
     </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../build_macos/">Build on macOS</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
                     </li>
@@ -333,15 +329,14 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="build-airsim-on-linux-macos">Build AirSim on Linux &amp; MacOS<a class="headerlink" href="#build-airsim-on-linux-macos" title="Permanent link">#</a></h1>
+                <h1 id="build-airsim-on-linux">Build AirSim on Linux<a class="headerlink" href="#build-airsim-on-linux" title="Permanent link">#</a></h1>
 <p>The current recommended and tested environment is <strong>Ubuntu 18.04 LTS</strong>. Theoretically, you can build on other distros as well, but we haven't tested it.</p>
-<p>Only macOS <strong>Catalina (10.15)</strong> is supported.</p>
 <p>We've two options - you can either build inside docker containers or your host machine.</p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>Please see instructions <a href="../docker_ubuntu/">here</a></p>
 <h2 id="host-machine">Host machine<a class="headerlink" href="#host-machine" title="Permanent link">#</a></h2>
 <h3 id="pre-build-setup">Pre-build Setup<a class="headerlink" href="#pre-build-setup" title="Permanent link">#</a></h3>
-<h4 id="linux-build-unreal-engine">Linux - Build Unreal Engine<a class="headerlink" href="#linux-build-unreal-engine" title="Permanent link">#</a></h4>
+<h4 id="build-unreal-engine">Build Unreal Engine<a class="headerlink" href="#build-unreal-engine" title="Permanent link">#</a></h4>
 <ul>
 <li>
 <p>Make sure you are <a href="https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html">registered with Epic Games</a>. This is required to get source code access for Unreal Engine.</p>
@@ -356,14 +351,6 @@ cd UnrealEngine
 ./Setup.sh
 ./GenerateProjectFiles.sh
 make</code></pre>
-<h4 id="macos-download-unreal-engine">macOS - Download Unreal Engine<a class="headerlink" href="#macos-download-unreal-engine" title="Permanent link">#</a></h4>
-<ol>
-<li><a href="https://www.unrealengine.com/download">Download</a> the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.</li>
-<li>Run the Epic Games Launcher, open the <code>Library</code> tab on the left pane.
-Click on the <code>Add Versions</code> which should show the option to download <strong>Unreal 4.25</strong> as shown below. If you have multiple versions of Unreal installed then <strong>make sure 4.25 is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
-</ol>
-<p><strong>Note</strong>: AirSim also works with UE &gt;= 4.24, however, we recommend 4.25.
-   <strong>Note</strong>: If you have UE 4.16 or older projects, please see the <a href="../unreal_upgrade/">upgrade guide</a> to upgrade your projects.</p>
 <h3 id="build-airsim">Build AirSim<a class="headerlink" href="#build-airsim" title="Permanent link">#</a></h3>
 <ul>
 <li>Clone AirSim and build it:</li>
@@ -378,7 +365,6 @@ cd AirSim</code></pre>
 <h3 id="build-unreal-environment">Build Unreal Environment<a class="headerlink" href="#build-unreal-environment" title="Permanent link">#</a></h3>
 <p>Finally, you will need an Unreal project that hosts the environment for your vehicles. AirSim comes with a built-in "Blocks Environment" which you can use, or you can create your own. Please see <a href="../unreal_proj/">setting up Unreal Environment</a> if you'd like to setup your own environment.</p>
 <h2 id="how-to-use-airsim">How to Use AirSim<a class="headerlink" href="#how-to-use-airsim" title="Permanent link">#</a></h2>
-<h3 id="linux">Linux<a class="headerlink" href="#linux" title="Permanent link">#</a></h3>
 <p>Once AirSim is setup:</p>
 <ul>
 <li>Go to <code>UnrealEngine</code> installation folder and start Unreal by running <code>./Engine/Binaries/Linux/UE4Editor</code>.</li>
@@ -387,18 +373,11 @@ cd AirSim</code></pre>
 <li>If you get prompts to convert project, look for More Options or Convert-In-Place option. If you get prompted to build, choose Yes. If you get prompted to disable AirSim plugin, choose No.</li>
 <li>After Unreal Editor loads, press Play button.</li>
 </ul>
-<h3 id="mac">Mac<a class="headerlink" href="#mac" title="Permanent link">#</a></h3>
-<ul>
-<li>Browse to <code>AirSim/Unreal/Environments/Blocks</code>.</li>
-<li>Run <code>./GenerateProjectFiles.sh &lt;UE_PATH&gt;</code> from the terminal, where <code>UE_PATH</code> is the path to the Unreal installation folder. (By default, this is <code>/Users/Shared/Epic\ Games/UE_4.25/</code>) The script creates an XCode workspace by the name Blocks.xcworkspace.</li>
-<li>Open the XCode workspace, and press the Build and run button in the top left.</li>
-<li>After Unreal Editor loads, press Play button.</li>
-</ul>
 <p>See <a href="../apis/">Using APIs</a> and <a href="../settings/">settings.json</a> for various options available for AirSim usage.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Go to 'Edit-&gt;Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.</p>
 </div>
+<p>Go to 'Edit-&gt;Editor Preferences', in the 'Search' box type 'CPU' and ensure that the 'Use Less CPU when in Background' is unchecked.</p>
 <h3 id="optional-setup-remote-control-multirotor-only">[Optional] Setup Remote Control (Multirotor Only)<a class="headerlink" href="#optional-setup-remote-control-multirotor-only" title="Permanent link">#</a></h3>
 <p>A remote control is required if you want to fly manually. See the <a href="../remote_control/">remote control setup</a> for more details.</p>
 <p>Alternatively, you can use <a href="../apis/">APIs</a> for programmatic control or use the so-called <a href="../image_apis/">Computer Vision mode</a> to move around using the keyboard.</p>
@@ -409,7 +388,7 @@ cd AirSim</code></pre>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../docker_ubuntu/" class="btn btn-neutral float-right" title="Docker on Linux">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../build_macos/" class="btn btn-neutral float-right" title="Build on macOS">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../build_windows/" class="btn btn-neutral" title="Build on Windows"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -447,7 +426,7 @@ cd AirSim</code></pre>
       <span><a href="../build_windows/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../docker_ubuntu/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../build_macos/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
