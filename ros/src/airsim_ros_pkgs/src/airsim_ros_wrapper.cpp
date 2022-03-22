@@ -1088,7 +1088,7 @@ void AirsimROSWrapper::publish_vehicle_state()
         vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
 
         // collision state from simGetCollisionInfo API
-        vehicle_ros->collision_pub.publish(vehicle_ros->collision_count_msg);
+        vehicle_ros->collision_pub.publish(vehicle_ros->collision_state_msg);
 
         for (auto& sensor_publisher : vehicle_ros->sensor_pubs) {
             switch (sensor_publisher.sensor_type) {
