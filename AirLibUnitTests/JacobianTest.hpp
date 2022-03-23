@@ -65,7 +65,7 @@ namespace airlib
             // }
 
             // QuaternionT q = VectorMath::toQuaternion(RealT pitch, RealT roll, RealT yaw);
-            Quaternionr q = VectorMath::toQuaternion(0.2 * M_PI / 180, 0.0 * M_PI / 180, 0.2 * M_PI / 180);
+            Quaternionr q = VectorMath::toQuaternion(0.2 * M_PIf / 180, 0.0 * M_PIf / 180, 0.2 * M_PIf / 180);
             std::cout << q.w() << '\n';
             std::cout << q.x() << '\n';
             std::cout << q.y() << '\n';

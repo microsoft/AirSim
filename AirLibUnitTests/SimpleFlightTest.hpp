@@ -70,7 +70,7 @@ namespace airlib
 
             Environment::State initial_environment;
             initial_environment.position = initial_kinematic_state.pose.position;
-            initial_environment.geo_point = GeoPoint(47.6415, -122.14, 121.173); // this becomes the home geo point with which ned to geo conversion takes place
+            initial_environment.geo_point = GeoPoint(47.6415, -122.14, 121.173f); // this becomes the home geo point with which ned to geo conversion takes place
             // initial_environment.geo_point.altitude = 0.0f; // do not set it equal to kinematics z, this value goes into home geo point and acts as the ref for kinematics z
             environment.reset(new Environment(initial_environment));
 
@@ -148,7 +148,7 @@ namespace airlib
             //checkStatusMsg(api.get(), &myfile);
 
             clock->sleep_for(10.0f);
-            api->moveByAngleRatesZ(0.0f, 0.0f, 4.0f * M_PI / 180, -1.53509f, 4.0f);
+            api->moveByAngleRatesZ(0.0f, 0.0f, 4.0f * M_PIf / 180, -1.53509f, 4.0f);
             clock->sleep_for(10.0f);
             // // // fly towards a waypoint
             api->moveToPosition(10, 0, -2, 0.5, 1E3, DrivetrainType::MaxDegreeOfFreedom, YawMode(true, 0), -1, 0);
