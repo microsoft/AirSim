@@ -86,7 +86,6 @@ namespace airlib
             output.gnss.geo_point = ground_truth.environment->getState().geo_point;
 
             // add Gaussian white noise to the ground truth gps position outputs
-            real_T gps_sigma_pos = 0.00001f; // 1/6378km rad
             output.gnss.geo_point.longitude += gauss_dist_pos.next()[0] * params_.sigma_long;
             output.gnss.geo_point.latitude += gauss_dist_pos.next()[1] * params_.sigma_lat;
             output.gnss.geo_point.altitude += gauss_dist_pos.next()[2] * params_.sigma_alt;
