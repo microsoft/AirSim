@@ -41,10 +41,9 @@ namespace airlib
             //create sim implementations of board and commlink
             board_.reset(new AirSimSimpleFlightBoard(&params_, vehicle_params_));
             comm_link_.reset(new AirSimSimpleFlightCommLink());
-            
+
             ekf_.reset(new AirSimSimpleEkf(board_.get(), comm_link_.get(), vehicle_setting->ekf_setting.get()));
             estimator_.reset(new AirSimSimpleFlightEstimator(ekf_.get()));
-
 
             //create firmware
             firmware_.reset(new simple_flight::Firmware(&params_, board_.get(), comm_link_.get(), estimator_.get(), ekf_.get()));

@@ -97,7 +97,8 @@ public:
 
             if (state_estimator_->checkEkfEnabled()) {
                 message = string("requestApiControl was successful. ") + string("Ekf enabled: ") + string("True");
-            } else {
+            }
+            else {
                 message = string("requestApiControl was successful. ") + string("Ekf enabled: ") + string("False");
             }
             comm_link_->log(message, ICommLink::kLogLevelInfo);

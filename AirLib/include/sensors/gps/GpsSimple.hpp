@@ -64,7 +64,7 @@ namespace airlib
 
             delay_line_.update();
 
-            if (freq_limiter_.isWaitComplete()){
+            if (freq_limiter_.isWaitComplete()) {
                 setOutput(delay_line_.getOutput());
 
                 is_new_ = true;
@@ -84,12 +84,11 @@ namespace airlib
             //GNSS
             output.gnss.time_utc = static_cast<uint64_t>(clock()->nowNanos() / 1.0E3);
             output.gnss.geo_point = ground_truth.environment->getState().geo_point;
-            
+
             // add Gaussian white noise to the ground truth gps position outputs
-            real_T gps_sigma_pos = 0.00001f; // 1/6378km rad 
             output.gnss.geo_point.longitude += gauss_dist_pos.next()[0] * params_.sigma_long;
-            output.gnss.geo_point.latitude  += gauss_dist_pos.next()[1] * params_.sigma_lat;
-            output.gnss.geo_point.altitude  += gauss_dist_pos.next()[2] * params_.sigma_alt;
+            output.gnss.geo_point.latitude += gauss_dist_pos.next()[1] * params_.sigma_lat;
+            output.gnss.geo_point.altitude += gauss_dist_pos.next()[2] * params_.sigma_alt;
 
             output.gnss.eph = eph;
             output.gnss.epv = epv;

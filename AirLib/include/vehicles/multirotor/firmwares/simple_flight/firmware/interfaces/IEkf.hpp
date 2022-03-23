@@ -9,7 +9,7 @@ namespace simple_flight
 {
 
 class IEkf : public IUpdatable
-{    
+{
 public:
     virtual bool checkEkfEnabled() const = 0;
 

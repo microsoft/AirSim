@@ -74,42 +74,42 @@ namespace airlib
         void readVector3r(const Settings& json_child, const std::array<std::string, 3>& json_str, Vector3r& vector)
         {
             float element_x = json_child.getFloat(json_str.at(0), Utils::nan<float>());
-                if (!std::isnan(element_x)) {
-                    vector.x() = element_x;
-                }
+            if (!std::isnan(element_x)) {
+                vector.x() = element_x;
+            }
             float element_y = json_child.getFloat(json_str.at(1), Utils::nan<float>());
-                if (!std::isnan(element_y)) {
-                    vector.y() = element_y;
-                }
+            if (!std::isnan(element_y)) {
+                vector.y() = element_y;
+            }
             float element_z = json_child.getFloat(json_str.at(2), Utils::nan<float>());
-                if (!std::isnan(element_z)) {
-                    vector.z() = element_z;
-                }
+            if (!std::isnan(element_z)) {
+                vector.z() = element_z;
+            }
         }
 
         void readRealT(const Settings& json_child, const std::string json_str, real_T& destination)
         {
             float element = json_child.getFloat(json_str, Utils::nan<float>());
-                if (!std::isnan(element)) {
-                    destination = element;
-                }
+            if (!std::isnan(element)) {
+                destination = element;
+            }
         }
 
         void readQuaternionr(const Settings& json_child, const std::array<std::string, 4>& json_str, Quaternionr& quaternion)
         {
             readRealT(json_child, json_str.at(0), quaternion.w());
             float element_x = json_child.getFloat(json_str.at(1), Utils::nan<float>());
-                if (!std::isnan(element_x)) {
-                    quaternion.x() = element_x;
-                }
+            if (!std::isnan(element_x)) {
+                quaternion.x() = element_x;
+            }
             float element_y = json_child.getFloat(json_str.at(2), Utils::nan<float>());
-                if (!std::isnan(element_y)) {
-                    quaternion.y() = element_y;
-                }
+            if (!std::isnan(element_y)) {
+                quaternion.y() = element_y;
+            }
             float element_z = json_child.getFloat(json_str.at(3), Utils::nan<float>());
-                if (!std::isnan(element_z)) {
-                    quaternion.z() = element_z;
-                }
+            if (!std::isnan(element_z)) {
+                quaternion.z() = element_z;
+            }
         }
 
         void initializeParameters(const AirSimSettings::EkfSetting* settings)
@@ -120,19 +120,19 @@ namespace airlib
 
         void refreshAndUnitConversion()
         {
-            gyro.std_error = gyro.std_error * M_PI/180; // deg/s to rad/s
-            initial_states_err.gyro_bias = initial_states_err.gyro_bias * M_PI/180; // deg/s to rad/s
-            initial_states_std_err.gyro_bias = initial_states_std_err.gyro_bias * M_PI/180; // deg/s to rad/s
+            gyro.std_error = gyro.std_error * M_PI / 180; // deg/s to rad/s
+            initial_states_err.gyro_bias = initial_states_err.gyro_bias * M_PI / 180; // deg/s to rad/s
+            initial_states_std_err.gyro_bias = initial_states_std_err.gyro_bias * M_PI / 180; // deg/s to rad/s
 
-            initial_states_err.attitude = initial_states_err.attitude * M_PI/180; //deg to rad
-            initial_states_err.quaternion = VectorMath::toQuaternion(initial_states_err.attitude.y(), 
-                                                                     initial_states_err.attitude.x(), 
+            initial_states_err.attitude = initial_states_err.attitude * M_PI / 180; //deg to rad
+            initial_states_err.quaternion = VectorMath::toQuaternion(initial_states_err.attitude.y(),
+                                                                     initial_states_err.attitude.x(),
                                                                      initial_states_err.attitude.z());
         }
 
         void initializeFromSettings(const AirSimSettings::EkfSetting* settings)
         {
-            if (settings == nullptr){
+            if (settings == nullptr) {
                 return;
             }
             const auto& json = settings->settings;
@@ -154,7 +154,7 @@ namespace airlib
                 fuse_mag = mag_fusion;
             }
             Settings imu_child;
-            if (json.getChild("Imu", imu_child)){
+            if (json.getChild("Imu", imu_child)) {
                 std::array<std::string, 3> gyro_str = {
                     "GyroErrorStdDevX",
                     "GyroErrorStdDevY",
@@ -169,7 +169,7 @@ namespace airlib
                 readVector3r(imu_child, accel_str, accel.std_error);
             }
             Settings gps_child;
-            if (json.getChild("Gps", gps_child)){
+            if (json.getChild("Gps", gps_child)) {
                 std::array<std::string, 3> gps_pos_str = {
                     "PositionErrorStdDevX",
                     "PositionErrorStdDevY",
@@ -184,11 +184,11 @@ namespace airlib
                 readVector3r(gps_child, gps_vel_str, gps.std_error_velocity);
             }
             Settings baro_child;
-            if (json.getChild("Barometer", baro_child)){
+            if (json.getChild("Barometer", baro_child)) {
                 readRealT(baro_child, "PositionErrorStdDevZ", baro.std_error);
             }
             Settings mag_child;
-            if (json.getChild("Magnetometer", mag_child)){
+            if (json.getChild("Magnetometer", mag_child)) {
                 std::array<std::string, 3> mag_str = {
                     "MagFluxErrorStdDevX",
                     "MagFluxErrorStdDevY",
@@ -197,11 +197,11 @@ namespace airlib
                 readVector3r(mag_child, mag_str, mag.std_error);
             }
             Settings pseudo_meas_child;
-            if (json.getChild("PseudoMeasurement", pseudo_meas_child)){
+            if (json.getChild("PseudoMeasurement", pseudo_meas_child)) {
                 readRealT(pseudo_meas_child, "QuaternionNormR", pseudo_meas.quaternion_norm_R);
             }
             Settings initial_states_std_err_child;
-            if (json.getChild("InitialStatesStdErr", initial_states_std_err_child)){
+            if (json.getChild("InitialStatesStdErr", initial_states_std_err_child)) {
                 std::array<std::string, 3> pos_str = {
                     "PositionX",
                     "PositionY",
@@ -236,7 +236,7 @@ namespace airlib
                 readRealT(initial_states_std_err_child, "BaroBias", initial_states_std_err.baro_bias);
             }
             Settings initial_states_err_child;
-            if (json.getChild("InitialStatesErr", initial_states_err_child)){
+            if (json.getChild("InitialStatesErr", initial_states_err_child)) {
                 std::array<std::string, 3> pos_str = {
                     "PositionX",
                     "PositionY",

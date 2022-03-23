@@ -81,8 +81,7 @@ namespace airlib
 
     protected:
         bool is_new_ = false;
-        
-    };
+        };
 }
 } //namespace
 #endif

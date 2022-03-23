@@ -20,7 +20,7 @@ public:
         initializeSettings();
     }
 
-    ~SettingsLoader() {};
+    ~SettingsLoader(){};
 
 private:
     std::string getSimMode()
@@ -29,24 +29,22 @@ private:
         return settings_json.getString("SimMode", "");
     }
 
-    bool readSettingsTextFromFile(std::string settingsFilepath) 
+    bool readSettingsTextFromFile(std::string settingsFilepath)
     {
         // check if path exists
-        bool found = std::ifstream(settingsFilepath.c_str()).good(); 
-        if (found)
-        {
+        bool found = std::ifstream(settingsFilepath.c_str()).good();
+        if (found) {
             std::ifstream ifs(settingsFilepath);
             std::stringstream buffer;
             buffer << ifs.rdbuf();
-            settingsText_ = buffer.str(); 
+            settingsText_ = buffer.str();
         }
         return found;
     }
 
     bool initializeSettings()
     {
-        if (readSettingsTextFromFile(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json")))
-        {
+        if (readSettingsTextFromFile(msr::airlib::Settings::Settings::getUserDirectoryFullPath("settings.json"))) {
             AirSimSettings::initializeSettings(settingsText_);
 
             Settings& settings_json = Settings::loadJSonString(settingsText_);
@@ -54,8 +52,7 @@ private:
             AirSimSettings::singleton().load(std::bind(&SettingsLoader::getSimMode, this));
             return true;
         }
-        else
-        {
+        else {
             return false;
         }
     }

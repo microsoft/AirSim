@@ -463,7 +463,6 @@ namespace airlib
             //this should be done last because it depends on vehicles (and/or their type) we have
             loadRecordingSetting(settings_json);
             loadClockSettings(settings_json);
-
         }
 
         static void initializeSettings(const std::string& json_settings_text)
@@ -1368,7 +1367,7 @@ namespace airlib
                     sensors[p.first] = p.second;
             }
         }
-        
+
         static std::shared_ptr<EkfSetting> createEkfSettings(bool enabled)
         {
             std::shared_ptr<EkfSetting> ekf_setting;

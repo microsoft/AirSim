@@ -75,15 +75,15 @@ namespace airlib
 
             auto gyro_turn_on_bias_x = json.getFloat("GyroTurnOnBiasX", Utils::nan<float>());
             if (!std::isnan(gyro_turn_on_bias_x)) {
-                gyro.turn_on_bias.x() = gyro_turn_on_bias_x * M_PI/180; // deg/s to rad/s
+                gyro.turn_on_bias.x() = gyro_turn_on_bias_x * M_PIf / 180; // deg/s to rad/s
             }
             auto gyro_turn_on_bias_y = json.getFloat("GyroTurnOnBiasY", Utils::nan<float>());
             if (!std::isnan(gyro_turn_on_bias_y)) {
-                gyro.turn_on_bias.y() = gyro_turn_on_bias_y * M_PI/180; // deg/s to rad/s
+                gyro.turn_on_bias.y() = gyro_turn_on_bias_y * M_PIf / 180; // deg/s to rad/s
             }
             auto gyro_turn_on_bias_z = json.getFloat("GyroTurnOnBiasZ", Utils::nan<float>());
             if (!std::isnan(gyro_turn_on_bias_z)) {
-                gyro.turn_on_bias.z() = gyro_turn_on_bias_z * M_PI/180; // deg/s to rad/s
+                gyro.turn_on_bias.z() = gyro_turn_on_bias_z * M_PIf / 180; // deg/s to rad/s
             }
         }
     };

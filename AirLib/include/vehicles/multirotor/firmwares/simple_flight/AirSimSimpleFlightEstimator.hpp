@@ -10,7 +10,6 @@
 #include "physics/Environment.hpp"
 #include "common/Common.hpp"
 
-
 namespace msr
 {
 namespace airlib
@@ -20,12 +19,11 @@ namespace airlib
     {
     public:
         AirSimSimpleFlightEstimator(simple_flight::IEkf* ekf)
-        : ekf_(ekf), ekf_enabled_(ekf_->checkEkfEnabled())
+            : ekf_(ekf), ekf_enabled_(ekf_->checkEkfEnabled())
         {
-
         }
 
-        virtual ~AirSimSimpleFlightEstimator(){}
+        virtual ~AirSimSimpleFlightEstimator() {}
 
         //for now we don't do any state estimation and use ground truth (i.e. assume perfect sensors)
         void setGroundTruthKinematics(const Kinematics::State* kinematics, const Environment* environment)
@@ -43,7 +41,8 @@ namespace airlib
         {
             if (ekf_enabled_) {
                 return getEkfAngles();
-            } else {
+            }
+            else {
                 return getTrueAngles();
             }
         }
@@ -55,7 +54,8 @@ namespace airlib
                 return AirSimSimpleFlightCommon::toAxis3r(VectorMath::transformToWorldFrame(AirSimSimpleFlightCommon::toVector3r(ekf_measurements.gyro),
                                                                                             AirSimSimpleFlightCommon::toQuaternion(getOrientation()),
                                                                                             true));
-            } else {
+            }
+            else {
                 return getTrueAngularVelocity();
             }
         }
@@ -64,7 +64,8 @@ namespace airlib
         {
             if (ekf_enabled_) {
                 return getEkfPosition();
-            } else {
+            }
+            else {
                 return getTruePosition();
             }
         }
@@ -75,7 +76,8 @@ namespace airlib
                 const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
                 const Vector3r& trans = VectorMath::transformToBodyFrame(vec, AirSimSimpleFlightCommon::toQuaternion(getOrientation()));
                 return AirSimSimpleFlightCommon::toAxis3r(trans);
-            } else {
+            }
+            else {
                 const Vector3r& vec = AirSimSimpleFlightCommon::toVector3r(world_frame_val);
                 const Vector3r& trans = VectorMath::transformToBodyFrame(vec, kinematics_->pose.orientation);
                 return AirSimSimpleFlightCommon::toAxis3r(trans);
@@ -86,7 +88,8 @@ namespace airlib
         {
             if (ekf_enabled_) {
                 return getEkfLinearVelocity();
-            } else {
+            }
+            else {
                 return getTrueLinearVelocity();
             }
         }
@@ -95,7 +98,8 @@ namespace airlib
         {
             if (ekf_enabled_) {
                 return getEkfOrientation();
-            } else {
+            }
+            else {
                 return getTrueOrientation();
             }
         }
@@ -148,7 +152,7 @@ namespace airlib
             true_measurements.gps_velocity.x() = kinematics_->twist.linear.x();
             true_measurements.gps_velocity.y() = kinematics_->twist.linear.y();
             true_measurements.gps_velocity.z() = kinematics_->twist.linear.z();
-            true_measurements.baro_altitude = -1.0f*kinematics_->pose.position.z();
+            true_measurements.baro_altitude = -1.0f * kinematics_->pose.position.z();
 
             return true_measurements;
         }
@@ -253,10 +257,10 @@ namespace airlib
             simple_flight::Axis4r orientation;
             auto ekf_states = ekf_->getEkfStates();
 
-            orientation.val4()= ekf_states(6);
-            orientation.x()   = ekf_states(7);
-            orientation.y()   = ekf_states(8);
-            orientation.z()   = ekf_states(9);
+            orientation.val4() = ekf_states(6);
+            orientation.x() = ekf_states(7);
+            orientation.y() = ekf_states(8);
+            orientation.z() = ekf_states(9);
 
             return orientation;
         }
@@ -333,10 +337,10 @@ namespace airlib
         {
             simple_flight::Axis4r orientation_var;
             auto ekf_covariance = ekf_->getEkfCovariance();
-            orientation_var.val4()= ekf_covariance(6, 6);
-            orientation_var.x()   = ekf_covariance(7, 7);
-            orientation_var.y()   = ekf_covariance(8, 8);
-            orientation_var.z()   = ekf_covariance(9, 9);
+            orientation_var.val4() = ekf_covariance(6, 6);
+            orientation_var.x() = ekf_covariance(7, 7);
+            orientation_var.y() = ekf_covariance(8, 8);
+            orientation_var.z() = ekf_covariance(9, 9);
 
             return orientation_var;
         }
@@ -345,9 +349,9 @@ namespace airlib
         {
             simple_flight::Axis3r angles_var;
             auto ekf_angles_covariance = ekf_->getEkfEulerAnglesCovariance();
-            angles_var.x()   = ekf_angles_covariance(0, 0);
-            angles_var.y()   = ekf_angles_covariance(1, 1);
-            angles_var.z()   = ekf_angles_covariance(2, 2);
+            angles_var.x() = ekf_angles_covariance(0, 0);
+            angles_var.y() = ekf_angles_covariance(1, 1);
+            angles_var.z() = ekf_angles_covariance(2, 2);
 
             return angles_var;
         }
@@ -356,9 +360,9 @@ namespace airlib
         {
             simple_flight::Axis3r accel_bias_var;
             auto ekf_covariance = ekf_->getEkfCovariance();
-            accel_bias_var.x()   = ekf_covariance(10, 10);
-            accel_bias_var.y()   = ekf_covariance(11, 11);
-            accel_bias_var.z()   = ekf_covariance(12, 12);
+            accel_bias_var.x() = ekf_covariance(10, 10);
+            accel_bias_var.y() = ekf_covariance(11, 11);
+            accel_bias_var.z() = ekf_covariance(12, 12);
 
             return accel_bias_var;
         }
@@ -367,9 +371,9 @@ namespace airlib
         {
             simple_flight::Axis3r gyro_bias_var;
             auto ekf_covariance = ekf_->getEkfCovariance();
-            gyro_bias_var.x()   = ekf_covariance(13, 13);
-            gyro_bias_var.y()   = ekf_covariance(14, 14);
-            gyro_bias_var.z()   = ekf_covariance(15, 15);
+            gyro_bias_var.x() = ekf_covariance(13, 13);
+            gyro_bias_var.y() = ekf_covariance(14, 14);
+            gyro_bias_var.z() = ekf_covariance(15, 15);
 
             return gyro_bias_var;
         }
@@ -404,10 +408,7 @@ namespace airlib
             Quaternionr orientation;
 
             auto ekf_states = ekf_->getEkfStates();
-            norm = ekf_states(6)*ekf_states(6) 
-                 + ekf_states(7)*ekf_states(7)
-                 + ekf_states(8)*ekf_states(8)
-                 + ekf_states(9)*ekf_states(9);
+            norm = ekf_states(6) * ekf_states(6) + ekf_states(7) * ekf_states(7) + ekf_states(8) * ekf_states(8) + ekf_states(9) * ekf_states(9);
             norm = sqrt(norm);
 
             return norm;

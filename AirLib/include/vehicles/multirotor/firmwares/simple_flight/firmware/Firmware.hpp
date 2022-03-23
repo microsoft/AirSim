@@ -21,7 +21,7 @@ class Firmware : public IFirmware
 {
 public:
     Firmware(Params* params, IBoard* board, ICommLink* comm_link, IStateEstimator* state_estimator, IEkf* ekf)
-        : params_(params),  board_(board), comm_link_(comm_link), state_estimator_(state_estimator), ekf_(ekf), offboard_api_(params, board, board, state_estimator, comm_link), mixer_(params) 
+        : params_(params), board_(board), comm_link_(comm_link), state_estimator_(state_estimator), ekf_(ekf), offboard_api_(params, board, board, state_estimator, comm_link), mixer_(params)
     {
         switch (params->controller_type) {
         case Params::ControllerType::Cascade:
@@ -78,7 +78,6 @@ public:
             board_->writeOutput(motor_index, motor_outputs_.at(motor_index));
 
         comm_link_->update();
-
     }
 
     virtual IOffboardApi& offboardApi() override
