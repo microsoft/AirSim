@@ -287,7 +287,7 @@ namespace airlib
             }
         }
 
-        static bool checkA(VectorMath::Matrix17x17f* A_error, VectorMath::Matrix17x17f* A, VectorMath::Matrix17x17f* A_finite, volatile float row[17], volatile float column[17])
+        static bool checkA(VectorMath::Matrix17x17f* A_error, VectorMath::Matrix17x17f* A, VectorMath::Matrix17x17f* A_finite, float row[17], float column[17])
         {
             *A_error = VectorMath::Matrix17x17f::Zero();
 
@@ -310,8 +310,8 @@ namespace airlib
             for (int i = 0; i < 17; i++) {
                 for (int j = 0; j < 17; j++) {
                     if ((*A_error)(i, j) > derivative_test_tolerance) {
-                        row[k] = i;
-                        column[k] = j;
+                        row[k] = static_cast<float>(i);
+                        column[k] = static_cast<float>(j);
                         k++;
                     }
                 }
