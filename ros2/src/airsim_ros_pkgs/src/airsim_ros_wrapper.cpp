@@ -908,10 +908,10 @@ rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system
 rclcpp::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const
 {
     // airsim appears to use chrono::system_clock with nanosecond precision
-    std::chrono::nanoseconds dur(stamp);
-    std::chrono::time_point<std::chrono::system_clock> tp(dur);
-    rclcpp::Time cur_time = chrono_timestamp_to_ros(tp);
-    return cur_time;
+    //std::chrono::nanoseconds dur(stamp);
+    //std::chrono::time_point<std::chrono::system_clock> tp(dur);
+    //rclcpp::Time cur_time = chrono_timestamp_to_ros(tp);
+    return rclcpp::Time(stamp);
 }
 
 void AirsimROSWrapper::drone_state_timer_cb()
