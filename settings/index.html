@@ -396,14 +396,14 @@
 <p>AirSim is searching for the settings definition in the following order. The first match will be used:</p>
 <ol>
 <li>
-<p>Looking at the (absolute) path specified by the <code>--settings</code> command line argument.
-For example, in Windows: <code>AirSim.exe --settings 'C:\path\to\settings.json'</code>
-In Linux <code>./Blocks.sh --settings '/home/$USER/path/to/settings.json'</code></p>
+<p>Looking at the (absolute) path specified by the <code>-settings</code> command line argument.
+For example, in Windows: <code>AirSim.exe -settings="C:\path\to\settings.json"</code>
+In Linux <code>./Blocks.sh -settings="/home/$USER/path/to/settings.json"</code></p>
 </li>
 <li>
-<p>Looking for a json document passed as a command line argument by the <code>--settings</code> argument.
-For example, in Windows: <code>AirSim.exe --settings '{"foo" : "bar"}'</code>
-In Linux <code>./Blocks.sh --settings '{"foo" : "bar"}'</code></p>
+<p>Looking for a json document passed as a command line argument by the <code>-settings</code> argument.
+For example, in Windows: <code>AirSim.exe -settings={"foo":"bar"}</code>
+In Linux <code>./Blocks.sh -settings={"foo":"bar"}</code></p>
 </li>
 <li>
 <p>Looking in the folder of the executable for a file called <code>settings.json</code>.
