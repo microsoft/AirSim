@@ -15,7 +15,7 @@ namespace airlib
 {
 
     class AirSimSimpleEkfBase : public simple_flight::IEkf
-    {    
+    {
     public:
         virtual bool checkEkfEnabled() const override
         {

@@ -190,29 +190,25 @@ namespace airlib
             return vehicle_params_->getSensors();
         }
 
-        void setSensors(const std::string& imu_name, 
+        void setSensors(const std::string& imu_name,
                         const std::string& barometer_name,
                         const std::string& magnetometer_name,
                         const std::string& gps_name)
         {
             imu_ = static_cast<const ImuBase*>(findSensorByName(imu_name, SensorBase::SensorType::Imu));
-            if (imu_ == nullptr)
-            {
+            if (imu_ == nullptr) {
                 //throw VehicleControllerException(Utils::stringf("No IMU with name %s exist on vehicle", imu_name.c_str()));
             }
             barometer_ = static_cast<const BarometerBase*>(findSensorByName(barometer_name, SensorBase::SensorType::Barometer));
-            if (barometer_ == nullptr)
-            {
+            if (barometer_ == nullptr) {
                 //throw VehicleControllerException(Utils::stringf("No barometer with name %s exist on vehicle", barometer_name.c_str()));
             }
             magnetometer_ = static_cast<const MagnetometerBase*>(findSensorByName(magnetometer_name, SensorBase::SensorType::Magnetometer));
-            if (magnetometer_ == nullptr)
-            {
+            if (magnetometer_ == nullptr) {
                 //throw VehicleControllerException(Utils::stringf("No magnetometer with name %s exist on vehicle", magnetometer_name.c_str()));
             }
             gps_ = static_cast<const GpsBase*>(findSensorByName(gps_name, SensorBase::SensorType::Gps));
-            if (gps_ == nullptr)
-            {
+            if (gps_ == nullptr) {
                 //throw VehicleControllerException(Utils::stringf("No gps with name %s exist on vehicle", gps_name.c_str()));
             }
         }
@@ -264,7 +260,6 @@ namespace airlib
         const BarometerBase* barometer_ = nullptr;
         const MagnetometerBase* magnetometer_ = nullptr;
         const GpsBase* gps_ = nullptr;
-
     };
 }
 } //namespace

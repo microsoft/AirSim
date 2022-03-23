@@ -39,7 +39,7 @@ public:
     virtual simple_flight::Axis3r getEkfGyroBiasVariance() const = 0;
     virtual float getEkfBaroBiasVariance() const = 0;
     virtual simple_flight::EkfKinematicsState getEkfStateVariance() const = 0;
-    
+
     virtual float getEkfOrientationNorm() const = 0;
 
     virtual std::array<float, 6> getEkfOrientationOffDiagCovariance() const = 0;
@@ -53,6 +53,5 @@ public:
     virtual simple_flight::KinematicsState getTrueKinematicsEstimated() const = 0;
 
     virtual ~IStateEstimator() = default;
-
 };
 }

@@ -25,15 +25,15 @@ int main()
     };
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
-  
+
     start = std::chrono::system_clock::now();
     for (auto& test : tests)
         test->run();
     end = std::chrono::system_clock::now();
-  
+
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "elapsed time (s): " << elapsed_seconds.count() << "\n";
-    std::cout << "elapsed time (min): " << elapsed_seconds.count()/60.0f << "\n";
+    std::cout << "elapsed time (min): " << elapsed_seconds.count() / 60.0f << "\n";
 
     return 0;
 }
