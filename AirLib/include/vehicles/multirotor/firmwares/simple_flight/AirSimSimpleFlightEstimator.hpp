@@ -413,40 +413,6 @@ namespace airlib
             return norm;
         }
 
-        virtual std::array<float, 6> getEkfOrientationOffDiagCovariance() const override
-        {
-            std::array<float, 6> ori_offdiag_cov;
-            auto ekf_covariance = ekf_->getEkfCovariance();
-            ori_offdiag_cov.at(0) = ekf_covariance(6, 7);
-            ori_offdiag_cov.at(1) = ekf_covariance(6, 8);
-            ori_offdiag_cov.at(2) = ekf_covariance(6, 9);
-            ori_offdiag_cov.at(3) = ekf_covariance(7, 8);
-            ori_offdiag_cov.at(4) = ekf_covariance(7, 9);
-            ori_offdiag_cov.at(5) = ekf_covariance(8, 9);
-
-            return ori_offdiag_cov;
-        }
-
-        virtual std::array<float, 12> getEkfOrientationGyroBiasCovariance() const override
-        {
-            std::array<float, 12> ori_gyro_bias_cov;
-            auto ekf_covariance = ekf_->getEkfCovariance();
-            ori_gyro_bias_cov.at(0)  = ekf_covariance(6, 13);
-            ori_gyro_bias_cov.at(1)  = ekf_covariance(6, 14);
-            ori_gyro_bias_cov.at(2)  = ekf_covariance(6, 15);
-            ori_gyro_bias_cov.at(3)  = ekf_covariance(7, 13);
-            ori_gyro_bias_cov.at(4)  = ekf_covariance(7, 14);
-            ori_gyro_bias_cov.at(5)  = ekf_covariance(7, 15);
-            ori_gyro_bias_cov.at(6)  = ekf_covariance(8, 13);
-            ori_gyro_bias_cov.at(7)  = ekf_covariance(8, 14);
-            ori_gyro_bias_cov.at(8)  = ekf_covariance(8, 15);
-            ori_gyro_bias_cov.at(9)  = ekf_covariance(9, 13);
-            ori_gyro_bias_cov.at(10) = ekf_covariance(9, 14);
-            ori_gyro_bias_cov.at(11) = ekf_covariance(9, 15);
-
-            return ori_gyro_bias_cov;
-        }
-
     private:
         const Kinematics::State* kinematics_;
         const Environment* environment_;

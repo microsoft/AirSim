@@ -42,9 +42,6 @@ public:
     
     virtual float getEkfOrientationNorm() const = 0;
 
-    virtual std::array<float, 6> getEkfOrientationOffDiagCovariance() const = 0;
-    virtual std::array<float, 12> getEkfOrientationGyroBiasCovariance() const = 0;
-
     virtual simple_flight::Axis3r getTrueAngles() const = 0;
     virtual simple_flight::Axis3r getTrueAngularVelocity() const = 0;
     virtual simple_flight::Axis3r getTruePosition() const = 0;

@@ -198,22 +198,22 @@ namespace airlib
             imu_ = static_cast<const ImuBase*>(findSensorByName(imu_name, SensorBase::SensorType::Imu));
             if (imu_ == nullptr)
             {
-                //throw VehicleControllerException(Utils::stringf("No IMU with name %s exist on vehicle", imu_name.c_str()));
+                //TODO handle error
             }
             barometer_ = static_cast<const BarometerBase*>(findSensorByName(barometer_name, SensorBase::SensorType::Barometer));
             if (barometer_ == nullptr)
             {
-                //throw VehicleControllerException(Utils::stringf("No barometer with name %s exist on vehicle", barometer_name.c_str()));
+                //TODO handle error
             }
             magnetometer_ = static_cast<const MagnetometerBase*>(findSensorByName(magnetometer_name, SensorBase::SensorType::Magnetometer));
             if (magnetometer_ == nullptr)
             {
-                //throw VehicleControllerException(Utils::stringf("No magnetometer with name %s exist on vehicle", magnetometer_name.c_str()));
+                //TODO handle error
             }
             gps_ = static_cast<const GpsBase*>(findSensorByName(gps_name, SensorBase::SensorType::Gps));
             if (gps_ == nullptr)
             {
-                //throw VehicleControllerException(Utils::stringf("No gps with name %s exist on vehicle", gps_name.c_str()));
+                //TODO handle error
             }
         }
 

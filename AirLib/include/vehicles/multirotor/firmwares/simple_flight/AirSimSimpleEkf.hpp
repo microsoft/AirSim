@@ -12,10 +12,7 @@
 #include "AirSimSimpleEkfBase.hpp"
 #include "AirSimSimpleEkfModel.hpp"
 #include "AirSimSimpleEkfParams.hpp"
-#include "common/GeodeticConverter.hpp"       
-
-#define AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE 0
-#define AirSimSimpleEkf_PSEUDOMEAS_DIRECTIVE 1
+#include "common/GeodeticConverter.hpp"
 
 namespace msr
 {
@@ -235,11 +232,7 @@ namespace airlib
             if (params_.fuse_gps) {
                 gpsUpdate();
             }
-#if AirSimSimpleEkf_PSEUDOMEAS_DIRECTIVE == 1
             pseudoMeasurement();
-#else
-#endif
-            eulerAnglesCovariancePropagation();
         }
 
         // state propagtion
@@ -598,49 +591,6 @@ namespace airlib
             error_covariance_ = P_corrected;
         }
 
-        void eulerAnglesCovariancePropagation()
-        {
-            // extract the states
-            float x[simple_flight::NX];
-            for (int i=0; i<simple_flight::NX; i++){
-                x[i] = states_(i);
-            }
-
-            // evaluate the C matrix
-            VectorMath::Matrix3x4f C_euler;
-            evaluateCEulerAngles(&C_euler, x);
-
-            // define the matrices
-            simple_flight::MatrixNXxNXf P = error_covariance_;
-            VectorMath::Matrix3x3f P_euler_angles;
-            VectorMath::Matrix4x4f P_quaternions;
-
-            // map P onto P_quaternions
-            P_quaternions(0, 0) = P(0+6, 0+6);
-            P_quaternions(0, 1) = P(0+6, 1+6);
-            P_quaternions(0, 2) = P(0+6, 2+6);
-            P_quaternions(0, 3) = P(0+6, 3+6);
-
-            P_quaternions(1, 0) = P(1+6, 0+6);
-            P_quaternions(1, 1) = P(1+6, 1+6);
-            P_quaternions(1, 2) = P(1+6, 2+6);
-            P_quaternions(1, 3) = P(1+6, 3+6);
-
-            P_quaternions(2, 0) = P(2+6, 0+6);
-            P_quaternions(2, 1) = P(2+6, 1+6);
-            P_quaternions(2, 2) = P(2+6, 2+6);
-            P_quaternions(2, 3) = P(2+6, 3+6);
-
-            P_quaternions(3, 0) = P(3+6, 0+6);
-            P_quaternions(3, 1) = P(3+6, 1+6);
-            P_quaternions(3, 2) = P(3+6, 2+6);
-            P_quaternions(3, 3) = P(3+6, 3+6);
-
-            P_euler_angles = C_euler*P_quaternions*C_euler.transpose();
-
-            euler_angles_error_covariance_ = P_euler_angles;
-        }
-
         // ---------------------------------------------------------------------
         // Measurement functions, reads measurement signal from board_
         // ---------------------------------------------------------------------
@@ -649,24 +599,7 @@ namespace airlib
         bool getImuData(real_T accel[3],
                         real_T gyro[3])
         {
-
-#if AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE == 1
-            // >>>>> only for verification, with ground truth measurements
-            VectorMath::Vector3f linear_acceleration = kinematics_->accelerations.linear - environment_->getState().gravity;
-            // acceleration is in world frame so transform to body frame
-            linear_acceleration = VectorMath::transformToBodyFrame(linear_acceleration,
-                                                                   kinematics_->pose.orientation,
-                                                                   true);
-            accel[0] = linear_acceleration.x();
-            accel[1] = linear_acceleration.y();
-            accel[2] = linear_acceleration.z();
-            gyro[0] = kinematics_->twist.angular.x();
-            gyro[1] = kinematics_->twist.angular.y();
-            gyro[2] = kinematics_->twist.angular.z();
-            // >>>>>
-#else
             board_->readImuData(accel, gyro);
-#endif
 
             // check if the signal has all data that is valid, else return false
             // TODO: check if at least a subset of data is valid
@@ -686,14 +619,6 @@ namespace airlib
         bool getGpsData(double pos[3],
                         real_T vel[3])
         {
-
-#if AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE == 1
-            // >>>>> only for verification, with ground truth measurements
-            pos[0] = kinematics_->pose.position.x();
-            pos[1] = kinematics_->pose.position.y();
-            pos[2] = kinematics_->pose.position.z();
-            // >>>>>
-#else
             double geo[3];
             board_->readGpsData(geo, vel);
 
@@ -707,7 +632,6 @@ namespace airlib
             pos[0] = ned_pos[0];
             pos[1] = ned_pos[1];
             pos[2] = ned_pos[2];
-#endif
 
             // check if the signal has all data that is valid, else return false
             // TODO: check if at least a subset of data is valid
@@ -726,12 +650,8 @@ namespace airlib
         // reads barometer data
         bool getBarometerData(real_T* ned_altitude)
         {
-#if AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE == 1
-            altitude[0] = -1.0f*kinematics_->pose.position.z();
-#else
             real_T altitude[1];
             board_->readBarometerData(altitude);
-#endif
 
             // check if the signal has all data that is valid, else return false
             // TODO: check if at least a subset of data is valid
@@ -747,12 +667,7 @@ namespace airlib
         // reads magnetometer data
         bool getMagnetometerData(real_T mag[3])
         {
-            
-#if AirSimSimpleEkf_GROUND_TRUTH_MEAS_DIRECTIVE == 1
-
-#else
             board_->readMagnetometerData(mag);
-#endif
 
             // check if the signal has all data that is valid, else return false
             // TODO: check if at least a subset of data is valid
