@@ -140,23 +140,23 @@ namespace airlib
 
             // intitialize the ekf covariances
             error_covariance_ = simple_flight::MatrixNXxNXf::Zero();
-            error_covariance_(0, 0) = pow(params_.initial_states_std_err.position.x(), 2);
-            error_covariance_(1, 1) = pow(params_.initial_states_std_err.position.y(), 2);
-            error_covariance_(2, 2) = pow(params_.initial_states_std_err.position.z(), 2);
-            error_covariance_(3, 3) = pow(params_.initial_states_std_err.linear_velocity.x(), 2);
-            error_covariance_(4, 4) = pow(params_.initial_states_std_err.linear_velocity.y(), 2);
-            error_covariance_(5, 5) = pow(params_.initial_states_std_err.linear_velocity.z(), 2);
-            error_covariance_(6, 6) = pow(params_.initial_states_std_err.quaternion.w(), 2);
-            error_covariance_(7, 7) = pow(params_.initial_states_std_err.quaternion.x(), 2);
-            error_covariance_(8, 8) = pow(params_.initial_states_std_err.quaternion.y(), 2);
-            error_covariance_(9, 9) = pow(params_.initial_states_std_err.quaternion.z(), 2);
-            error_covariance_(10, 10) = pow(params_.initial_states_std_err.accel_bias.x(), 2);
-            error_covariance_(11, 11) = pow(params_.initial_states_std_err.accel_bias.y(), 2);
-            error_covariance_(12, 12) = pow(params_.initial_states_std_err.accel_bias.z(), 2);
-            error_covariance_(13, 13) = pow(params_.initial_states_std_err.gyro_bias.x(), 2);
-            error_covariance_(14, 14) = pow(params_.initial_states_std_err.gyro_bias.y(), 2);
-            error_covariance_(15, 15) = pow(params_.initial_states_std_err.gyro_bias.z(), 2);
-            error_covariance_(16, 16) = pow(params_.initial_states_std_err.baro_bias, 2);
+            error_covariance_(0, 0) = static_cast<float>(pow(params_.initial_states_std_err.position.x(), 2));
+            error_covariance_(1, 1) = static_cast<float>(pow(params_.initial_states_std_err.position.y(), 2));
+            error_covariance_(2, 2) = static_cast<float>(pow(params_.initial_states_std_err.position.z(), 2));
+            error_covariance_(3, 3) = static_cast<float>(pow(params_.initial_states_std_err.linear_velocity.x(), 2));
+            error_covariance_(4, 4) = static_cast<float>(pow(params_.initial_states_std_err.linear_velocity.y(), 2));
+            error_covariance_(5, 5) = static_cast<float>(pow(params_.initial_states_std_err.linear_velocity.z(), 2));
+            error_covariance_(6, 6) = static_cast<float>(pow(params_.initial_states_std_err.quaternion.w(), 2));
+            error_covariance_(7, 7) = static_cast<float>(pow(params_.initial_states_std_err.quaternion.x(), 2));
+            error_covariance_(8, 8) = static_cast<float>(pow(params_.initial_states_std_err.quaternion.y(), 2));
+            error_covariance_(9, 9) = static_cast<float>(pow(params_.initial_states_std_err.quaternion.z(), 2));
+            error_covariance_(10, 10) = static_cast<float>(pow(params_.initial_states_std_err.accel_bias.x(), 2));
+            error_covariance_(11, 11) = static_cast<float>(pow(params_.initial_states_std_err.accel_bias.y(), 2));
+            error_covariance_(12, 12) = static_cast<float>(pow(params_.initial_states_std_err.accel_bias.z(), 2));
+            error_covariance_(13, 13) = static_cast<float>(pow(params_.initial_states_std_err.gyro_bias.x(), 2));
+            error_covariance_(14, 14) = static_cast<float>(pow(params_.initial_states_std_err.gyro_bias.y(), 2));
+            error_covariance_(15, 15) = static_cast<float>(pow(params_.initial_states_std_err.gyro_bias.z(), 2));
+            error_covariance_(16, 16) = static_cast<float>(pow(params_.initial_states_std_err.baro_bias, 2));
         }
 
         void resetGlobalVariables()
@@ -179,6 +179,7 @@ namespace airlib
             real_T accel[3];
             real_T gyro[3];
             bool is_new_and_valid = getImuData(accel, gyro);
+            unused(is_new_and_valid);
             prev_imuData_.accel[0] = 0.0f;
             prev_imuData_.accel[1] = 0.0f;
             prev_imuData_.accel[2] = -9.80665f;
@@ -245,7 +246,6 @@ namespace airlib
             last_times_.state_propagation = board_->micros();
 
             // declare local variables
-            float x_dot[simple_flight::NX];
             float x[simple_flight::NX];
             float u[simple_flight::NU];
             float uplus[simple_flight::NU];
@@ -481,7 +481,7 @@ namespace airlib
             if (!board_->checkGpsIfNew())
                 return;
 
-            double pos[3];
+            float pos[3];
             real_T vel[3];
 
             // check if the GPS gives new measurement and it is valid
@@ -651,7 +651,7 @@ namespace airlib
         }
 
         // reads GPS data
-        bool getGpsData(double pos[3],
+        bool getGpsData(float pos[3],
                         real_T vel[3])
         {
 
@@ -669,7 +669,7 @@ namespace airlib
             Vector3r ned_pos;
             geo_point.longitude = geo[0];
             geo_point.latitude = geo[1];
-            geo_point.altitude = geo[2];
+            geo_point.altitude = static_cast<float>(geo[2]);
             geodetic_converter_.geodetic2Ned(geo_point, ned_pos);
 
             pos[0] = ned_pos[0];
