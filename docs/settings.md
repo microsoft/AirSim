@@ -117,7 +117,15 @@ Below are complete list of settings available along with their default values. I
       "Pitch": NaN, "Roll": NaN, "Yaw": NaN
     },
     "X": NaN, "Y": NaN, "Z": NaN,
-    "Pitch": NaN, "Roll": NaN, "Yaw": NaN
+    "Pitch": NaN, "Roll": NaN, "Yaw": NaN,
+    "UnrealEngine": {
+      "PixelFormatOverride": [
+        {
+          "ImageType": 0,
+          "PixelFormat": 0
+        }
+      ]
+    }
   },
   "OriginGeopoint": {
     "Latitude": 47.641468,
@@ -346,6 +354,10 @@ This adds fluctuations on horizontal line.
 
 ### Gimbal
 The `Gimbal` element allows to freeze camera orientation for pitch, roll and/or yaw. This setting is ignored unless `ImageType` is -1. The `Stabilization` is defaulted to 0 meaning no gimbal i.e. camera orientation changes with body orientation on all axis. The value of 1 means full stabilization. The value between 0 to 1 acts as a weight for fixed angles specified (in degrees, in world-frame) in `Pitch`, `Roll` and `Yaw` elements and orientation of the vehicle body. When any of the angles is omitted from json or set to NaN, that angle is not stabilized (i.e. it moves along with vehicle body).
+
+### UnrealEngine
+This element contains settings specific to the Unreal Engine. These will be ignored in the Unity project.
+* `PixelFormatOverride`: This contains a list of elements that have both a `ImageType` and `PixelFormat` setting. Each element allows you to override the default pixel format of the UTextureRenderTarget2D object instantiated for the capture specified by the `ImageType` setting. Specifying this element allows you to prevent crashes caused by unexpected pixel formats (see [#4120](https://github.com/microsoft/AirSim/issues/4120) and [#4339](https://github.com/microsoft/AirSim/issues/4339) for examples of these crashes). A full list of pixel formats can be viewed [here](https://docs.unrealengine.com/4.27/en-US/API/Runtime/Core/EPixelFormat/).
 
 ## External Cameras
 This element allows specifying cameras which are separate from the cameras attached to the vehicle, such as a CCTV camera. These are fixed cameras, and don't move along with the vehicles. The key in the element is the name of the camera, and the value i.e. settings are the same as `CameraDefaults` described above. All the camera APIs work with external cameras, including capturing images, changing the pose, etc by passing the parameter `external=True` in the API call.
