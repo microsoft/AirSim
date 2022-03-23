@@ -79,11 +79,14 @@ namespace airlib
             float b_omega_y = gyro_biases[1];
             float b_omega_z = gyro_biases[2];
 
+            float lambda = 1.0f - (q0*q0 + q1*q1 + q3*q2 + q3*q3);
+            float k = 300.0f; // k*h <= 1, h = 0.003
+
             // attitude_dot. Transform specific forces from B frame to O frame and evaluate velocity_dot
-            attitude_dot[0] = 0.5f * (-q1*(omega_x - b_omega_x) - q2*(omega_y - b_omega_y) - q3*(omega_z - b_omega_z));
-            attitude_dot[1] = 0.5f * ( q0*(omega_x - b_omega_x) - q3*(omega_y - b_omega_y) + q2*(omega_z - b_omega_z));
-            attitude_dot[2] = 0.5f * ( q3*(omega_x - b_omega_x) + q0*(omega_y - b_omega_y) - q1*(omega_z - b_omega_z));
-            attitude_dot[3] = 0.5f * (-q2*(omega_x - b_omega_x) + q1*(omega_y - b_omega_y) + q0*(omega_z - b_omega_z));
+            attitude_dot[0] = 0.5f * (-q1*(omega_x - b_omega_x) - q2*(omega_y - b_omega_y) - q3*(omega_z - b_omega_z) + q0*2*k*lambda);
+            attitude_dot[1] = 0.5f * ( q0*(omega_x - b_omega_x) - q3*(omega_y - b_omega_y) + q2*(omega_z - b_omega_z) + q1*2*k*lambda);
+            attitude_dot[2] = 0.5f * ( q3*(omega_x - b_omega_x) + q0*(omega_y - b_omega_y) - q1*(omega_z - b_omega_z) + q2*2*k*lambda);
+            attitude_dot[3] = 0.5f * (-q2*(omega_x - b_omega_x) + q1*(omega_y - b_omega_y) + q0*(omega_z - b_omega_z) + q3*2*k*lambda);
         }
 
         static void evaluateStateDot(float x_dot[simple_flight::NX], float x[simple_flight::NX], float u[simple_flight::NU])
@@ -191,6 +194,8 @@ namespace airlib
             float omega_y = u[4]; // gyro rates
             float omega_z = u[5]; // gyro rates
 
+            float k = 300.0f;
+
             // df_pos_dx [0 1 2][:]
             (*A)(0, 3) = 1.0f;
             (*A)(1, 4) = 1.0f;
@@ -224,18 +229,22 @@ namespace airlib
             (*A)(5, 11) = -2.0f*(q2*q3 + q0*q1);
             (*A)(5, 12) =    -(q0*q0 - q1*q1 - q2*q2 + q3*q3);
             // df_ori_[q0 q1 q2 q3] [6 7 8 9][6 7 8 9]
-            (*A)(6, 7) = -0.5f*(omega_x - b_omega_x);
-            (*A)(6, 8) = -0.5f*(omega_y - b_omega_y);
-            (*A)(6, 9) = -0.5f*(omega_z - b_omega_z);
-            (*A)(7, 6) =  0.5f*(omega_x - b_omega_x);
-            (*A)(7, 8) =  0.5f*(omega_z - b_omega_z);
-            (*A)(7, 9) = -0.5f*(omega_y - b_omega_y);
-            (*A)(8, 6) =  0.5f*(omega_y - b_omega_y);
-            (*A)(8, 7) = -0.5f*(omega_z - b_omega_z);
-            (*A)(8, 9) =  0.5f*(omega_x - b_omega_x);
-            (*A)(9, 6) =  0.5f*(omega_z - b_omega_z);
-            (*A)(9, 7) =  0.5f*(omega_y - b_omega_y);
-            (*A)(9, 8) = -0.5f*(omega_x - b_omega_x);
+            (*A)(6, 6) = 0.5f*(2*k - 6*k*q0*q0 - 2*k*q1*q1 - 2*k*q2*q2 - 2*k*q3*q3);
+            (*A)(6, 7) = 0.5f*(-(omega_x - b_omega_x) - 4*k*q0*q1);
+            (*A)(6, 8) = 0.5f*(-(omega_y - b_omega_y) - 4*k*q0*q2);
+            (*A)(6, 9) = 0.5f*(-(omega_z - b_omega_z) - 4*k*q0*q3);
+            (*A)(7, 6) = 0.5f*(omega_x - b_omega_x - 4*k*q1*q0);
+            (*A)(7, 7) = 0.5f*(2*k - 2*k*q0*q0 - 6*k*q1*q1 - 2*k*q2*q2 - 2*k*q3*q3);
+            (*A)(7, 8) = 0.5f*(omega_z - b_omega_z - 4*k*q1*q2);
+            (*A)(7, 9) = 0.5f*(-(omega_y - b_omega_y) - 4*k*q1*q3);
+            (*A)(8, 6) = 0.5f*(omega_y - b_omega_y - 4*k*q2*q0);
+            (*A)(8, 7) = 0.5f*(-(omega_z - b_omega_z) - 4*k*q2*q1);
+            (*A)(8, 8) = 0.5f*(2*k - 2*k*q0*q0 - 2*k*q1*q1 - 6*k*q2*q2 - 2*k*q3*q3);
+            (*A)(8, 9) = 0.5f*(omega_x - b_omega_x - 4*k*q2*q3);
+            (*A)(9, 6) = 0.5f*(omega_z - b_omega_z - 4*k*q3*q0);
+            (*A)(9, 7) = 0.5f*(omega_y - b_omega_y - 4*k*q3*q1);
+            (*A)(9, 8) = 0.5f*(-(omega_x - b_omega_x) - 4*k*q3*q2);
+            (*A)(9, 9) = 0.5f*(2*k - 2*k*q0*q0 - 2*k*q1*q1 - 2*k*q2*q2 - 6*k*q3*q3);
             // df_ori_x_bias [6 7 8 9][10 11 12 13 14 15 16 17]
             (*A)(6, 13) = 0.5f*q1;
             (*A)(6, 14) = 0.5f*q2;

@@ -286,6 +286,19 @@ namespace airlib
             // heun integration
             // float x_predicted[simple_flight::NX];
             // heun(x_predicted, x, u, uplus, dt_real);
+                        
+            // normalize the quaternions
+            float norm;
+            norm =  sqrt(
+                  x_predicted[6]*x_predicted[6] 
+                + x_predicted[7]*x_predicted[7]
+                + x_predicted[8]*x_predicted[8]
+                + x_predicted[9]*x_predicted[9]
+            );
+            x_predicted[6] = x_predicted[6] / norm;
+            x_predicted[7] = x_predicted[7] / norm;
+            x_predicted[8] = x_predicted[8] / norm;
+            x_predicted[9] = x_predicted[9] / norm;
 
             // set the predicted states TODO: via an interface or after some checks
             for (int i=0; i<simple_flight::NX; i++){
@@ -544,9 +557,6 @@ namespace airlib
 
         void pseudoMeasurement()
         {
-            if(!board_->checkGpsIfNew())
-                return;
-
             // extract the states
             float x[simple_flight::NX];
             for (int i=0; i<simple_flight::NX; i++){
