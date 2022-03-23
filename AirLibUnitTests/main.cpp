@@ -5,20 +5,16 @@
 #include "WorkerThreadTest.hpp"
 #include "QuaternionTest.hpp"
 #include "CelestialTests.hpp"
-#include "JacobianTest.hpp"
-
-#include <chrono>
 
 int main()
 {
     using namespace msr::airlib;
 
     std::unique_ptr<TestBase> tests[] = {
-        //std::unique_ptr<TestBase>(new QuaternionTest()),
-        // std::unique_ptr<TestBase>(new CelestialTest()),
-        //std::unique_ptr<TestBase>(new SettingsTest()),
+        std::unique_ptr<TestBase>(new QuaternionTest()),
+        std::unique_ptr<TestBase>(new CelestialTest()),
+        std::unique_ptr<TestBase>(new SettingsTest()),
         std::unique_ptr<TestBase>(new SimpleFlightTest())
-        // std::unique_ptr<TestBase>(new JacobianTest())
         //,
         //std::unique_ptr<TestBase>(new PixhawkTest()),
         //std::unique_ptr<TestBase>(new WorkerThreadTest())
