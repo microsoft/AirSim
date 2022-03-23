@@ -35,6 +35,10 @@ namespace airlib
         {
             return error_covariance_;
         }
+        virtual const VectorMath::Matrix3x3f& getEkfEulerAnglesCovariance() const override
+        {
+            return euler_angles_error_covariance_;
+        }
 
     protected:
         // setters
@@ -48,6 +52,7 @@ namespace airlib
 
         simple_flight::VectorNXf states_;
         simple_flight::MatrixNXxNXf error_covariance_;
+        VectorMath::Matrix3x3f euler_angles_error_covariance_;
         VectorMath::Vector17f measurement_ = VectorMath::Vector17f::Zero();
     };
 
