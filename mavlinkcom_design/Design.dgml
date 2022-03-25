@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph ZoomLevel="1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="&quot;drone&quot;" Bounds="-598.230019146979,172.687628484788,50,25.96" Label="PX4" UseManualLocation="True" />
+    <Node Id="142835b6-4394-48ae-9ddf-ab8d3a86a8801" Category="Comment" Bounds="251.724877624512,-4.49602149098726,246.44,137.68" Label="Example 2: simulation can talk to jMavSim and jMavSim connects to PX4.  jMavSim can also manage multiple connections, so it can talk to unreal simulator. Another MavLinkConnection can be joined to proxy connections that jMavSim doesn't support, like the LogViewer or a remote camera node." UseManualLocation="True" />
+    <Node Id="772b2464-20b2-4f27-adeb-624676a1f5f91" Category="Comment" Bounds="-402.671555999707,2.58414064609173,241.22,89.8" Label="Example 1, we connect to PX4 over serial, and proxy those messages through to QGroundControl and the LogViewer who are listening on remote ports.  This is how we operate for real flight control" UseManualLocation="True" />
+    <Node Id="JMavSim" Bounds="18.212287902832,184.89902809677,65.1533333333333,25.96" Label="jMavSim" UseManualLocation="True" />
+    <Node Id="JMavSim1" Bounds="-450.428305460612,468.995533765255,65.1533333333333,25.96" Label="jMavSim" UseManualLocation="True" />
+    <Node Id="Laptop" Bounds="-368.385922556175,615.835733763292,56.96,25.96" UseManualLocation="True" />
+    <Node Id="LogViewer" Bounds="-279.617151685562,189.95175761007,75.5066666666667,25.96" UseManualLocation="True" />
+    <Node Id="LogViewer1" Bounds="244.029831644694,219.144178509013,75.5066666666667,25.96" Label="LogViewer" UseManualLocation="True" />
+    <Node Id="LogViewer2" Bounds="-127.836044994531,473.577466398916,72.7633333333333,25.96" Label="logViewer" UseManualLocation="True" />
+    <Node Id="MavLinkConnection" Bounds="-265,-134.591797449561,124.593333333333,25.96" UseManualLocation="True" />
+    <Node Id="MavLinkConnection1" Bounds="-452.852059590609,159.723478005711,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection10" Bounds="-348.385922555646,695.824077148437,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection11" Bounds="76.6857625720998,720.82407146095,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection12" Bounds="-226.3292374279,802.82407146095,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection2" Bounds="-576.154607349428,94.7509097643115,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection3" Bounds="-298.258726257276,130.236470864598,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection4" Bounds="218.054560139974,163.184078509013,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection5" Bounds="48.0004475097687,128.93892809677,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection6" Bounds="-482.232839152018,349.514522800727,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection7" Bounds="-486.169316813151,413.035433765255,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection8" Bounds="-331.57598642985,413.035433765255,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkConnection9" Bounds="-176.982658298785,416.115289167907,124.593333333333,25.96" Label="MavLinkConnection" UseManualLocation="True" />
+    <Node Id="MavLinkFtpClient" Bounds="-429.878561924771,-302.472097449561,111.296666666667,25.96" UseManualLocation="True" />
+    <Node Id="MavLinkNode" Bounds="-259.961375210098,-292.885757059177,93.2899999999999,25.96" UseManualLocation="True" />
+    <Node Id="MavLinkNode1" Bounds="-519.675922555546,696.824077148437,93.29,25.96" Label="MavLinkNode" UseManualLocation="True" />
+    <Node Id="MavLinkNode2" Bounds="-76.3142374279002,718.82407146095,93.29,25.96" Label="MavLinkNode" UseManualLocation="True" />
+    <Node Id="MavLinkVehicle" Bounds="-238.932292926409,-214.049351196289,101.33,25.96" UseManualLocation="True" />
+    <Node Id="MavLinkVehicle1" Bounds="-559.752407538475,28.9828481678056,101.33,25.96" Label="MavLinkVehicle" UseManualLocation="True" />
+    <Node Id="MavLinkVehicle2" Bounds="86.7245645141602,72.9788280967697,101.33,25.96" Label="MavLinkVehicle" UseManualLocation="True" />
+    <Node Id="MavLinkVehicle3" Bounds="-425.541052856445,293.554422800727,101.33,25.96" Label="MavLinkVehicle" UseManualLocation="True" />
+    <Node Id="MavLinkVideoServer" Bounds="-399.639864298503,-190.551897449561,127.693333333333,25.96" UseManualLocation="True" />
+    <Node Id="MavLinkVideoStream" Bounds="-447.116690063477,-246.511997449561,125.05,25.96" Label="MavLinkVideoClient" UseManualLocation="True" />
+    <Node Id="PCWith1080Card" Bounds="-98.1042554219564,569.86397146105,115.216666666667,25.96" Label="PC with 1080 card" UseManualLocation="True" />
+    <Node Id="PX4" Bounds="-23.4130481338501,246.654971618652,50,25.96" UseManualLocation="True" />
+    <Node Id="PX41" Bounds="-591.398864746094,415.447466479492,50,25.96" Label="PX4" UseManualLocation="True" />
+    <Node Id="PX42" Bounds="109.6857625721,787.82407146095,62.6666666666666,25.96" Label="Pixhawk" UseManualLocation="True" />
+    <Node Id="QGroundControl" Bounds="-446.927013766357,219.301278314759,108.556666666667,25.96" UseManualLocation="True" />
+    <Node Id="SerialPort" Bounds="-314,-78,70.29,25.96" UseManualLocation="True" />
+    <Node Id="UdpClientPort" Bounds="-196,-77.4091950500488,94.2866666666666,25.96" UseManualLocation="True" />
+    <Node Id="Unreal" Bounds="73.212287902832,247.654971618652,53.0433333333333,25.96" Label="unreal" UseManualLocation="True" />
+    <Node Id="Unreal1" Bounds="-287.681517740885,468.995533765255,53.0433333333333,25.96" Label="unreal" UseManualLocation="True" />
+    <Node Id="Unreal2" Bounds="-67.3142374279002,644.82407146095,54.4966666666667,25.96" Label="Unreal" UseManualLocation="True" />
+    <Node Id="WeCanAlsoDoDistributed" Category="Comment" Bounds="-391.980646870931,524.955633765255,218.296666666667,57.8800000000001" Label="Exampe 4: We can also do distributed&#xD;&#xA;systems to control the drone&#xD;&#xA;remotely" UseManualLocation="True" />
+    <Node Id="a075ca3d-b34a-4307-a1ab-455ef81bf6911" Category="Comment" Bounds="-109.910415846921,-343.550621479225,244.696666666667,89.8" Label="Base class for all MavLinkNodes, contains the local system id and component id, and connects via a MavLinkConnection.  This also handles sending back heartbeats to keep the connection alive." UseManualLocation="True" />
+    <Node Id="aa5c7fa3-8397-4482-93f6-40fd5795f3e91" Category="Comment" Bounds="-291.97304813385,252.696012573242,238.56,73.84" Label="Example 3: we use MavLinkConnection to connect to PX4 over serial, then join additional connections for all our remote nodes including jMavSim." UseManualLocation="True" />
+    <Node Id="b676fa98-3de9-4fd5-a3c2-349042e910d31" Category="Comment" Bounds="-52.1659530639649,-223.750521479225,230.8,57.88" Label="Tracks the state of the PX4 vehicle and provides helper methods for controlling that vehicle." UseManualLocation="True" />
+    <Node Id="c544a249-d468-4575-963c-e3af77408fb21" Category="Comment" Bounds="-55.4583283487954,-135.870421479225,239.213333333333,41.92" Label="Manages a single connection to a remote mavlink device, either over serial or UDP." UseManualLocation="True" />
+  </Nodes>
+  <Links>
+    <Link Source="142835b6-4394-48ae-9ddf-ab8d3a86a8801" Target="MavLinkVehicle2" Bounds="197.017539007777,75.5556063666738,54.7073386167353,4.97774972937741" />
+    <Link Source="772b2464-20b2-4f27-adeb-624676a1f5f91" Target="MavLinkVehicle1" Bounds="-449.425067962084,43.413842512755,46.7535119623768,1.13705030586462" />
+    <Link Source="JMavSim" Target="PX4" Bounds="17.5364895628326,210.85902809677,22.9110798918361,28.7568651291761" Label="serial" LabelBounds="30.5562691515742,226.483716790659,27.4633333333333,15.96" />
+    <Link Source="JMavSim" Target="Unreal" Bounds="60.9123957026637,210.85902809677,23.1631575009568,29.6991685344469" Label="udp" LabelBounds="76.9664302490806,212.231017267974,20.91,15.96" />
+    <Link Source="Laptop" Target="MavLinkConnection10" Bounds="-331.172901672064,641.795734863281,31.3266205693005,46.5611171697319" Label="connectLocalUdp" LabelBounds="-313.850208028431,647.999849599165,91.64,15.96" />
+    <Link Source="Laptop" Target="MavLinkNode1" Bounds="-444.006060395403,641.795734863281,82.7641908631119,50.3506852321361" />
+    <Link Source="MavLinkConnection" Target="SerialPort" Bounds="-254.165015925813,-108.631797449561,33.9953945811415,25.2635374715441" />
+    <Link Source="MavLinkConnection" Target="UdpClientPort" Bounds="-190.480564449011,-108.631797449561,23.2311608881044,24.6703894331479" />
+    <Link Source="MavLinkConnection1" Target="QGroundControl" Bounds="-391.876600206972,185.683478005711,0.865150299943423,24.623350392021" Label="udp port 14550" LabelBounds="-387.444024295953,190.085380589047,82.1566666666668,15.96" />
+    <Link Source="MavLinkConnection10" Target="MavLinkConnection12" Bounds="-276.275451660156,721.784057617188,85.2402191162109,75.2504272460938" />
+    <Link Source="MavLinkConnection11" Target="PX42" Bounds="139.376995407921,746.78407146095,0.974078551535882,32.0441552960201" />
+    <Link Source="MavLinkConnection12" Target="MavLinkConnection10" Bounds="-260.699279785156,727.83935546875,85.8817749023438,74.9847412109375" />
+    <Link Source="MavLinkConnection12" Target="MavLinkConnection11" Bounds="-116.06751344416,749.135032742965,198.397366672321,53.6890387179856" Label="join" LabelBounds="-29.3681567288109,756.017054404582,19.6333333333333,15.96" />
+    <Link Source="MavLinkConnection2" Target="&quot;drone&quot;" Bounds="-557.887966346153,120.710909764312,34.1418806257556,44.817466656844" Label="serial" LabelBounds="-539.226081130246,144.331622595664,27.4633333333334,15.96" />
+    <Link Source="MavLinkConnection2" Target="MavLinkConnection1" Bounds="-489.22497459832,120.710909764312,66.0743882688512,34.8169829321277" Label="joined" LabelBounds="-490.09679942151,139.888785079505,32.9766666666667,15.96" />
+    <Link Source="MavLinkConnection2" Target="MavLinkConnection3" Bounds="-451.561274016095,115.685803383664,144.375038047613,18.4357868632672" Label="joined" LabelBounds="-394.91007831322,104.943566012565,32.9766666666667,15.96" />
+    <Link Source="MavLinkConnection3" Target="LogViewer" Bounds="-239.695811796453,156.196470864598,2.45091772742356,24.7989219475492" Label="udp port 14570" LabelBounds="-234.470305690587,160.812636744452,82.1566666666667,15.96" />
+    <Link Source="MavLinkConnection4" Target="LogViewer1" Bounds="280.683366267874,189.144078509013,0.537437601165436,21.0030450377967" Label="udp port 14570" LabelBounds="284.952085282682,191.614440661744,82.1566666666668,15.96" />
+    <Link Source="MavLinkConnection5" Target="JMavSim" Bounds="71.1483460900331,154.89892809677,25.3457921857508,23.8345980561715" Label="udp port 14560" LabelBounds="85.1913537259815,168.273208373719,82.1566666666667,15.96" />
+    <Link Source="MavLinkConnection5" Target="MavLinkConnection4" Bounds="171.472019389257,154.238205755308,38.881421862312,7.82986144423444" Label="joined" LabelBounds="181.176609897312,138.192346325458,32.9766666666667,15.96" />
+    <Link Source="MavLinkConnection6" Target="MavLinkConnection7" Bounds="-422.511587424085,375.474522800727,1.77102660006483,28.5781433714917" Label="joined" LabelBounds="-417.626066777744,381.907299905079,32.9766666666667,15.96" />
+    <Link Source="MavLinkConnection6" Target="MavLinkConnection8" Bounds="-389.150626141002,375.474522800727,80.7927445123548,34.0643564366322" Label="joined" LabelBounds="-382.507932668802,394.349593357069,32.9766666666667,15.96" />
+    <Link Source="MavLinkConnection6" Target="MavLinkConnection9" Bounds="-360.467716864486,375.46960018791,177.520132119866,38.732087927806" Label="joined" LabelBounds="-280.663526426468,374.874562699944,32.9766666666667,15.96" />
+    <Link Source="MavLinkConnection6" Target="PX41" Bounds="-533.428679242839,375.474522800727,84.6588821766288,38.1107927507011" Label="serial" LabelBounds="-490.278252707722,396.353646923341,27.4633333333334,15.96" />
+    <Link Source="MavLinkConnection7" Target="JMavSim1" Bounds="-422.476070666534,438.995433765255,2.26505682748763,21.0517468163284" Label="udp port 14560" LabelBounds="-417.343476011089,441.327352603385,82.1566666666666,15.96" />
+    <Link Source="MavLinkConnection8" Target="Unreal1" Bounds="-267.396001048907,438.995433765255,3.06051842366134,21.0933650464962" Label="udp port 14588" LabelBounds="-261.865524813569,441.274935658114,82.1566666666666,15.96" />
+    <Link Source="MavLinkConnection9" Target="LogViewer2" Bounds="-109.438255552141,442.075289167907,9.362761175945,23.1582987809651" Label="udp port 14570" LabelBounds="-100.745409592922,442.280693178201,82.1566666666667,15.96" />
+    <Link Source="MavLinkFtpClient" Target="MavLinkNode" Bounds="-318.581895258104,-286.176883412478,49.6364486328895,2.95705983273575" Label="is" LabelBounds="-297.644733089211,-304.658359771904,8,15.96" />
+    <Link Source="MavLinkNode1" Target="MavLinkConnection10" Bounds="-426.385922555546,709.185461043405,69.0001207358412,0.369099756779519" Label="connect" LabelBounds="-412.916560559516,689.410010921385,42.04,15.96" />
+    <Link Source="MavLinkNode2" Target="MavLinkConnection11" Bounds="16.9757625720998,732.357223421105,50.7106327693389,0.60136533212642" Label="connect" LabelBounds="21.3347948135304,712.697906077281,42.04,15.96" />
+    <Link Source="MavLinkVehicle" Target="MavLinkConnection" Bounds="-198.736290365087,-188.089351196289,8.11075966711044,44.6425130444422" Label="MavLinkMessage&#xD;&#xA;MavLinkCommand" LabelBounds="-190.68038319352,-176.599009718763,99.0366666666667,31.92" />
+    <Link Source="MavLinkVehicle" Target="MavLinkNode" Bounds="-206.466823264064,-258.3483183043,14.0753305535122,44.2989671080107" Label="is" LabelBounds="-211.433784025219,-242.197851980061,8,15.96" />
+    <Link Source="MavLinkVehicle1" Target="MavLinkConnection2" Bounds="-512.265316382711,54.9428481678056,2.23639530849073,30.8316450078773" Label="connected" LabelBounds="-507.147104959613,62.523361952701,55.3833333333333,15.96" />
+    <Link Source="MavLinkVehicle2" Target="MavLinkConnection5" Bounds="120.503040197551,98.9388280967697,10.6024039275524,21.8995172688412" Label="connected" LabelBounds="127.60437165714,110.76009909387,55.3833333333333,15.96" />
+    <Link Source="MavLinkVehicle3" Target="MavLinkConnection6" Bounds="-403.839899885387,319.514422800727,18.5121081510057,22.990161408194" Label="connected" LabelBounds="-393.026081678372,332.263844331941,55.3833333333333,15.96" />
+    <Link Source="MavLinkVideoServer" Target="MavLinkNode" Bounds="-320.258269494671,-261.155122148632,84.5004639408487,70.6032246990712" Label="is" LabelBounds="-287.290400837701,-243.348288067221,8,15.96" />
+    <Link Source="MavLinkVideoStream" Target="MavLinkNode" Bounds="-336.651785998941,-265.229588552596,69.130933882799,18.7175911030353" Label="is" LabelBounds="-306.609010293414,-275.833295763742,8,15.96" />
+    <Link Source="PCWith1080Card" Target="Unreal2" Bounds="-40.4214606943231,595.82397146105,0.229466428723732,40.0002480861508" />
+    <Link Source="Unreal2" Target="MavLinkConnection11" Bounds="-13.1812126505272,669.215719431686,113.29950249197,48.0918310105634" Label="connectSerial" LabelBounds="44.2499877107245,675.460619651793,70.7833333333333,15.96" />
+    <Link Source="Unreal2" Target="MavLinkConnection12" Bounds="-148.292963076409,670.78407146095,98.0429619354284,124.95930077277" Label="connectRemote" LabelBounds="-183.69830415919,716.069163927688,82.8533333333333,15.96" />
+    <Link Source="Unreal2" Target="MavLinkNode2" Bounds="-38.2422725630353,670.78407146095,5.4972419536761,39.1275316997786" />
+    <Link Source="WeCanAlsoDoDistributed" Target="Laptop" Bounds="-324.563968921435,582.835629882813,19.6853619292398,25.8408322721159" />
+    <Link Source="WeCanAlsoDoDistributed" Target="PCWith1080Card" Bounds="-173.683980204264,566.933967766081,66.6432585687424,7.96088256766154" />
+    <Link Source="a075ca3d-b34a-4307-a1ab-455ef81bf6911" Target="MavLinkNode" Bounds="-157.702240227197,-288.491776245503,47.7918243802761,3.96825795733304" />
+    <Link Source="aa5c7fa3-8397-4482-93f6-40fd5795f3e91" Target="MavLinkVehicle3" Bounds="-315.242397899633,299.597207455093,23.2693497657829,1.94714884964981" />
+    <Link Source="b676fa98-3de9-4fd5-a3c2-349042e910d31" Target="MavLinkVehicle" Bounds="-128.605078512054,-199.58460506823,76.4391254480887,1.90225415961024" />
+    <Link Source="c544a249-d468-4575-963c-e3af77408fb21" Target="MavLinkConnection" Bounds="-131.409503248193,-119.821414212276,75.9511748993972,1.90734191485552" />
+  </Links>
+  <Categories>
+    <Category Id="Comment" Label="Comment" Description="Represents a user defined comment on the diagram" CanBeDataDriven="True" IsProviderRoot="False" NavigationActionLabel="Comments" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="Expression" DataType="System.String" />
+    <Property Id="GroupLabel" DataType="System.String" />
+    <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="IsProviderRoot" Label="IsProviderRoot" Description="IsProviderRoot" DataType="System.Boolean" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="LabelBounds" DataType="System.Windows.Rect" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="TargetType" DataType="System.Type" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+    <Property Id="Value" DataType="System.String" />
+    <Property Id="ValueLabel" DataType="System.String" />
+    <Property Id="ZoomLevel" DataType="System.String" />
+  </Properties>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Comment" ValueLabel="Has comment">
+      <Condition Expression="HasCategory('Comment')" />
+      <Setter Property="Background" Value="#FFF7E88B" />
+      <Setter Property="Stroke" Value="#FFE5C365" />
+      <Setter Property="StrokeThickness" Value="1" />
+      <Setter Property="NodeRadius" Value="2" />
+      <Setter Property="MaxWidth" Value="250" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Start" ValueLabel="True">
+      <Condition Expression="HasCategory('Start')" />
+      <Setter Property="Background" Value="#FF48A646" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Problem" ValueLabel="True">
+      <Condition Expression="HasCategory('Problem')" />
+      <Setter Property="Background" Value="#FFA40A0A" />
+    </Style>
+  </Styles>
+</DirectedGraph>
