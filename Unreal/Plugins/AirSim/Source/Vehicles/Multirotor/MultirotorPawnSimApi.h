@@ -56,6 +56,8 @@ public:
         return vehicle_api_.get();
     }
 
+    virtual std::string getRecordFileLine(bool is_header_line) const override;
+
 private:
     std::unique_ptr<msr::airlib::MultirotorApiBase> vehicle_api_;
     std::unique_ptr<msr::airlib::MultiRotorParams> vehicle_params_;

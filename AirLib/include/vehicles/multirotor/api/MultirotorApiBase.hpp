@@ -5,6 +5,7 @@
 #define air_DroneControlServer_hpp
 
 #include "common/Common.hpp"
+#include "common/EkfStructs.hpp"
 #include "MultirotorCommon.hpp"
 #include "safety/SafetyEval.hpp"
 #include "physics/Kinematics.hpp"

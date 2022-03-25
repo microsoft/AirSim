@@ -6,6 +6,7 @@
 
 #include "physics/Kinematics.hpp"
 #include "common/Common.hpp"
+#include "common/EkfStructs.hpp"
 
 namespace msr
 {
@@ -45,6 +46,41 @@ namespace airlib
             state3r.accelerations.angular = toVector3r(state.angular_acceleration);
 
             return state3r;
+        }
+
+        static SensorMeasurements toSensorMeasurements(const simple_flight::SensorMeasurements& sensor_meas)
+        {
+            SensorMeasurements airlib_sensor_meas;
+            airlib_sensor_meas.accel = toVector3r(sensor_meas.accel);
+            airlib_sensor_meas.gyro = toVector3r(sensor_meas.gyro);
+            airlib_sensor_meas.gps_position = toVector3r(sensor_meas.gps_position);
+            airlib_sensor_meas.gps_velocity = toVector3r(sensor_meas.gps_velocity);
+            airlib_sensor_meas.magnetic_flux = toVector3r(sensor_meas.magnetic_flux);
+            airlib_sensor_meas.baro_altitude = sensor_meas.baro_altitude;
+
+            return airlib_sensor_meas;
+        }
+
+        static SensorBiases toSensorBiases(const simple_flight::SensorBiases& sensor_bias)
+        {
+            SensorBiases airlib_sensor_bias;
+            airlib_sensor_bias.accel = toVector3r(sensor_bias.accel);
+            airlib_sensor_bias.gyro = toVector3r(sensor_bias.gyro);
+            airlib_sensor_bias.barometer = sensor_bias.barometer;
+
+            return airlib_sensor_bias;
+        }
+
+        static EkfKinematicsState toEkfKinematicsState(const simple_flight::EkfKinematicsState& ekf_states)
+        {
+            EkfKinematicsState airlib_ekf_states;
+            airlib_ekf_states.position = toVector3r(ekf_states.position);
+            airlib_ekf_states.orientation = toQuaternion(ekf_states.orientation);
+            airlib_ekf_states.angles = toVector3r(ekf_states.angles);
+            airlib_ekf_states.linear_velocity = toVector3r(ekf_states.linear_velocity);
+            airlib_ekf_states.sensor_bias = toSensorBiases(ekf_states.sensor_bias);
+
+            return airlib_ekf_states;
         }
 
         static simple_flight::Axis4r toAxis4r(const Quaternionr& q)

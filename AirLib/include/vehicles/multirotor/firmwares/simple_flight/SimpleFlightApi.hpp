@@ -10,6 +10,7 @@
 #include "physics/Kinematics.hpp"
 #include "vehicles/multirotor/MultiRotorParams.hpp"
 #include "common/Common.hpp"
+#include "common/EkfStructs.hpp"
 #include "firmware/Firmware.hpp"
 #include "AirSimSimpleFlightBoard.hpp"
 #include "AirSimSimpleFlightCommLink.hpp"
@@ -389,6 +390,45 @@ namespace airlib
         }
 
         //*** End: MultirotorApiBase implementation ***//
+
+    public: // additional interface for ekf data recording
+        // Ground Truth quantities
+        Kinematics::State getTrueKinematicsEstimated() const
+        {
+            return AirSimSimpleFlightCommon::toKinematicsState3r(firmware_->offboardApi().getStateEstimator().getTrueKinematicsEstimated());
+        }
+
+        Vector3r getTrueAngles() const
+        {
+            const auto& val = firmware_->offboardApi().getStateEstimator().getTrueAngles();
+            return AirSimSimpleFlightCommon::toVector3r(val);
+        }
+
+        SensorMeasurements getTrueMeasurements() const
+        {
+            return AirSimSimpleFlightCommon::toSensorMeasurements(firmware_->offboardApi().getStateEstimator().getTrueMeasurements());
+        }
+
+        // Estimated quantities
+        EkfKinematicsState getEkfKinematicsEstimated() const
+        {
+            return AirSimSimpleFlightCommon::toEkfKinematicsState(firmware_->offboardApi().getStateEstimator().getEkfKinematicsEstimated());
+        }
+
+        SensorMeasurements getEkfMeasurements() const
+        {
+            return AirSimSimpleFlightCommon::toSensorMeasurements(firmware_->offboardApi().getStateEstimator().getEkfMeasurements());
+        }
+
+        EkfKinematicsState getEkfStateVariance() const
+        {
+            return AirSimSimpleFlightCommon::toEkfKinematicsState(firmware_->offboardApi().getStateEstimator().getEkfStateVariance());
+        }
+
+        float getEkfOrientationNorm() const
+        {
+            return firmware_->offboardApi().getStateEstimator().getEkfOrientationNorm();
+        }
 
     private:
         //convert pitch, roll, yaw from -1 to 1 to PWM
