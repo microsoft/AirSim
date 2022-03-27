@@ -24,7 +24,6 @@ namespace msr
 namespace airlib
 {
 
-    using namespace std;
     using namespace common_utils;
 
     struct CommandContext
@@ -403,7 +402,7 @@ namespace airlib
                 }
             }
             if (path.size() == 0) {
-                std::cout << "incomplete path, please provide at least 3 numbers defining a 3d point" << endl;
+                std::cout << "incomplete path, please provide at least 3 numbers defining a 3d point" << std::endl;
                 return false;
             }
 
@@ -1294,7 +1293,7 @@ See RecordPose for information about log file format")
                 auto image = context->client.simGetImage("0", imageType);
 
                 if (image.size() == 0) {
-                    std::cout << "error getting image, check sim for error messages" << endl;
+                    std::cout << "error getting image, check sim for error messages" << std::endl;
                     return;
                 }
 
@@ -1322,12 +1321,12 @@ See RecordPose for information about log file format")
                 std::string imageName = Utils::stringf("%s_%s%d.png", baseName.c_str(), typeName, image_index_++);
                 std::string file_path_name = FileSystem::combine(path, imageName);
 
-                ofstream file;
+                std::ofstream file;
                 FileSystem::createBinaryFile(file_path_name, file);
                 file.write(reinterpret_cast<const char*>(image.data()), image.size());
                 file.close();
 
-                std::cout << "Image saved to: " << file_path_name << " (" << image.size() << " bytes)" << endl;
+                std::cout << "Image saved to: " << file_path_name << " (" << image.size() << " bytes)" << std::endl;
 
                 context->sleep_for(pause_time / 1000);
             }
@@ -1359,7 +1358,7 @@ See RecordPose for information about log file format")
                 imageType = ImageCaptureBase::ImageType::DisparityNormalized;
             }
             else {
-                cout << "Error: Invalid image type '" << type << "', expecting either 'depth', 'scene' or 'segmentation'" << endl;
+                std::cout << "Error: Invalid image type '" << type << "', expecting either 'depth', 'scene' or 'segmentation'" << std::endl;
                 return true;
             }
 
