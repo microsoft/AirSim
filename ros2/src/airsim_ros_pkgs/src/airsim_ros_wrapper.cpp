@@ -328,7 +328,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 // QoS - The depth of the publisher message queue.
 // more details here - https://docs.ros.org/en/foxy/Concepts/About-Quality-of-Service-Settings.html
 template <typename T>
-const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS)
+const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const std::string& sensor_type_name, const std::string& sensor_name,
+                                                                   SensorBase::SensorType sensor_type, const std::string& topic_name, int QoS)
 {
     RCLCPP_INFO_STREAM(nh_->get_logger(), sensor_type_name);
     SensorPublisher<T> sensor_publisher;
@@ -675,7 +676,7 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
         std::vector<float> data_std = lidar_data.point_cloud;
 
         const unsigned char* bytes = reinterpret_cast<const unsigned char*>(data_std.data());
-        vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
+        std::vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
         lidar_msg.data = std::move(lidar_msg_data);
 
         if (isENU_) {
@@ -833,7 +834,7 @@ sensor_msgs::msg::NavSatFix AirsimROSWrapper::get_gps_sensor_msg_from_airsim_geo
 
 msr::airlib::GeoPoint AirsimROSWrapper::get_origin_geo_point() const
 {
-    HomeGeoPoint geo_point = AirSimSettings::singleton().origin_geopoint;
+    msr::airlib::HomeGeoPoint geo_point = AirSimSettings::singleton().origin_geopoint;
     return geo_point.home_geo_point;
 }
 
