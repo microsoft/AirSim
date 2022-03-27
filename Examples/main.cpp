@@ -92,6 +92,8 @@ void runGaussianMarkovTest()
 
 void runDepthNavGT()
 {
+    using namespace msr::airlib;
+
     typedef ImageCaptureBase::ImageRequest ImageRequest;
     typedef ImageCaptureBase::ImageType ImageType;
 
@@ -122,6 +124,8 @@ void runDepthNavGT()
 
 void runDepthNavSGM()
 {
+    using namespace msr::airlib;
+
     typedef ImageCaptureBase::ImageRequest ImageRequest;
     typedef ImageCaptureBase::ImageType ImageType;
 
