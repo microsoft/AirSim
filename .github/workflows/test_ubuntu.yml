@@ -33,6 +33,7 @@ jobs:
           catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
       
       - name: Build ROS2 Wrapper
+        if: matrix.os == 'ubuntu-20.04'
         run: |
           chmod +x ./tools/install_ros2_deps.sh
           ./tools/install_ros2_deps.sh
