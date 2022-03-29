@@ -7,7 +7,7 @@ set -x
 DISTRO="$(lsb_release -sc)"
 if [[ "$DISTRO" == "focal" ]]; then
     ROS_DISTRO="galactic"
-else 
+else
     echo "ROS2 support only ubuntu focal"
     # We return 0 so we won't fail the CI for Ubuntu 18
     exit 0
