@@ -5,14 +5,14 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
 
       - name: Enable Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1.4.1
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build AirLib
         shell: cmd
