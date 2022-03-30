@@ -9,8 +9,7 @@ if [[ "$DISTRO" == "focal" ]]; then
     ROS_DISTRO="galactic"
 else
     echo "ROS2 support only ubuntu focal"
-    # We return 0 so we won't fail the CI for Ubuntu 18
-    exit 0
+    exit 1
 fi
 
 sudo apt update && sudo apt install curl gnupg lsb-release
