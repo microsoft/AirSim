@@ -30,7 +30,7 @@ namespace airlib
 
         virtual ~SteppableClock() {}
 
-        TTimePoint stepBy(TTimeDelta amount)
+        virtual TTimePoint stepBy(TTimeDelta amount) override
         {
             current_ = addTo(current_, amount);
             return current_;
