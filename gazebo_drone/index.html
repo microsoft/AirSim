@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Import Gazebo models - AirSim</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Import Gazebo models";
+        var mkdocs_page_input_path = "gazebo_drone.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> AirSim
+        </a>
+        <div class="version">
+          master
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Home</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CHANGELOG/">Changelog</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Building AirSim</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../use_precompiled/">Download Binaries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../build_windows/">Build on Windows</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../build_linux/">Build on Linux</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../build_macos/">Build on macOS</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../docker_ubuntu/">Docker on Linux</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../azure/">AirSim on Azure</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../unreal_custenv/">Custom Unreal Environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Unity/">AirSim with Unity</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../custom_unity_environments/">Custom Unity Environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../unity_api_support/">Unity APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../build_faq/">FAQ</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Using AirSim</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../apis/">Core APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../image_apis/">Image APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../apis_cpp/">C++ APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api_docs/html/">API Reference Docs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dev_workflow/">Development Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../settings/">Settings</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../camera_views/">Camera Views</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../using_car/">Car Mode</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../remote_control/">Remote Control</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../xbox_controller/">XBox Controller</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../steering_wheel_installation/">Steering Wheel</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../multi_vehicle/">Multiple Vehicles</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Sensors</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../sensors/">Sensors</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lidar/">LIDAR</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../distance_sensor/">Distance Sensor</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../InfraredCamera/">Infrared Camera</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../airsim_ros_pkgs/">ROS: AirSim ROS Wrapper</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../airsim_tutorial_pkgs/">ROS: AirSim Tutorial Packages</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Import Gazebo models</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#gazebo">Gazebo</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#airlib">AirLib</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#airsim-simulator">AirSim simulator</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#airsim-settings">AirSim settings</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build">Build</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run">Run</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../retexturing/">Domain Randomization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../meshes/">Mesh Vertex Buffers</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../playback/">Playing Logs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../voxel_grid/">Voxel Grid Generator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../event_sim/">Event camera</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Design</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../design/">Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_structure/">Code Structure</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../adding_new_apis/">Adding new APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../modify_recording_data/">Modifying Recording Data</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../coding_guidelines/">Coding Guidelines</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../flight_controller/">Flight Controller</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../simple_flight/">Simple Flight</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../hello_drone/">Hello Drone</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">External Flight Controllers</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="#">MavLink and PX4</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_setup/">PX4 Setup for AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl/">PX4 in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_sitl_wsl2/">PX4 SITL with WSL 2</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_lockstep/">PX4 Lockstep</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_multi_vehicle/">PX4 Multi-vehicle in SITL</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/1oY8Qu5maQQ">AirSim with Pixhawk</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://youtu.be/HNWdYrtw3f0">PX4 Setup with AirSim</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be">Debugging Attitude Estimation</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages">Intercepting MavLink Messages</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones">Rapid Descent on PX4 Drones</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_build/">Building PX4</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../px4_logging/">PX4/MavLink Logging</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../log_viewer/">MavLink LogViewer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom/">MavLinkCom</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../mavlinkcom_mocap/">MavLink MoCap</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="#">ArduPilot</a>
+    <ul>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/building-the-code.html">ArduPilot SITL Setup</a>
+                </li>
+                <li class="toctree-l2"><a class="" href="https://ardupilot.org/dev/docs/sitl-with-airsim.html">AirSim & ArduPilot</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Upgrading</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../unreal_upgrade/">Upgrading Unreal</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../upgrade_apis/">Upgrading APIs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../upgrade_settings/">Upgrading Settings</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributed Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../reinforcement_learning/">Reinforcement Learning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://www.youtube.com/watch?v=y09VbdQWvQY">Using Environments from Marketplace</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/simondlevy/AirSimTensorFlow">Simple Collision Avoidance</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://aka.ms/AutonomousDrivingCookbook">Autonomous Driving on Azure</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/hexacopter">Building Hexacopter</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo">Moving on Path Demo</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../point_clouds/">Building Point Clouds</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../drone_survey/">Surveying Using Drone</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../orbit/">Orbit Trajectory</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://youtu.be/Bp86WiLUC80">Importing a custom multirotor mesh</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../object_detection/">Object Detection</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Misc</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../custom_drone/">AirSim on Real Drones</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cmake_linux/">Installing cmake on Linux</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../hard_drive/">Tips for Busy HDD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../pfm/">pfm format</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../unreal_proj/">Setting up Unreal Environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../unreal_blocks/">Blocks Environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../who_is_using/">Who is Using AirSim</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../working_with_plugin_contents/">Working with UE Plugin Contents</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/Microsoft/AirSim/wiki/technion">Formula Student Technion Self-drive</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Support</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SUPPORT/">Support</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../create_issue/">Create Issue</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING/">Contribute</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">AirSim</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Using AirSim &raquo;</li><li>Import Gazebo models</li>
+    <li class="wy-breadcrumbs-aside">
+        <a href="https://github.com/microsoft/airsim/edit/master/docs/gazebo_drone.md"
+          class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="welcome-to-gazebodrone">Welcome to GazeboDrone<a class="headerlink" href="#welcome-to-gazebodrone" title="Permanent link">#</a></h1>
+<p>GazeboDrone allows connecting a gazebo drone to the AirSim drone, using the gazebo drone as a flight dynamic model (FDM) and AirSim to generate environmental sensor data. It can be used for <strong>Multicopters</strong>, <strong>Fixed-wings</strong> or any other vehicle.</p>
+<h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">#</a></h2>
+<h3 id="gazebo">Gazebo<a class="headerlink" href="#gazebo" title="Permanent link">#</a></h3>
+<p>Make sure you have installed gazebo dependencies:</p>
+<pre class="highlight"><code>sudo apt-get install libgazebo9-dev</code></pre>
+<h3 id="airlib">AirLib<a class="headerlink" href="#airlib" title="Permanent link">#</a></h3>
+<p>This project is built with GCC 8, so AirLib needs to be built with GCC 8 too. 
+Run from your AirSim root folder:<br />
+<pre class="highlight"><code>./clean.sh
+./setup.sh
+./build.sh --gcc</code></pre></p>
+<h2 id="airsim-simulator">AirSim simulator<a class="headerlink" href="#airsim-simulator" title="Permanent link">#</a></h2>
+<p>The AirSim UE plugin needs to be built with clang, so you can't use the one compiled in the previous step. You can use <a href="https://github.com/microsoft/AirSim/releases">our binaries</a> or you can clone AirSim again in another folder and buid it without the above option, then you can <a href="../build_linux/#how-to-use-airsim">run Blocks</a> or your own environment.</p>
+<h3 id="airsim-settings">AirSim settings<a class="headerlink" href="#airsim-settings" title="Permanent link">#</a></h3>
+<p>Inside your <code>settings.json</code> file you need to add this line:<br />
+<code>"PhysicsEngineName":"ExternalPhysicsEngine"</code>.<br />
+You may want to change the visual model of the AirSim drone, for that you can follow <a href="https://youtu.be/Bp86WiLUC80">this tutorial.</a></p>
+<h2 id="build">Build<a class="headerlink" href="#build" title="Permanent link">#</a></h2>
+<p>Execute this from your AirSim root folder:<br />
+<pre class="highlight"><code>cd GazeboDrone
+mkdir build &amp;&amp; cd build
+cmake -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 ..
+make</code></pre></p>
+<h2 id="run">Run<a class="headerlink" href="#run" title="Permanent link">#</a></h2>
+<p>First run the AirSim simulator and your Gazebo model and then execute this from your AirSim root folder:</p>
+<pre class="highlight"><code>cd GazeboDrone/build
+./GazeboDrone</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../airsim_tutorial_pkgs/" class="btn btn-neutral float-left" title="ROS: AirSim Tutorial Packages"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../retexturing/" class="btn btn-neutral float-right" title="Domain Randomization">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2021 Microsoft Research</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/microsoft/airsim" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../airsim_tutorial_pkgs/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../retexturing/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
