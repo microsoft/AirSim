@@ -15,8 +15,7 @@ remote_branch: gh-pages
 
 theme:
   name: 'readthedocs'
-  logo:
-    icon: ' '
+  logo: ' '
 
 extra:
   highlightjs: true

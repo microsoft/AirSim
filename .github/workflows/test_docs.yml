@@ -20,14 +20,12 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install mkdocs pymdown-extensions    # Mkdocs requirements
-          python3 -m pip install jinja2==3.0.3
           
       - name: Build API reference docs
         run: |
           python3 -m venv .env                            # Virtual env to avoid dep. issues 
           source .env/bin/activate
           pip install Sphinx sphinx_rtd_theme numpy msgpack-rpc-python
-          
 
           pushd PythonClient >/dev/null
           ./build_api_docs.sh
