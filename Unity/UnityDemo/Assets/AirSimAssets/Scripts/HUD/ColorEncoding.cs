@@ -11,7 +11,7 @@ public class ColorEncoding {
         return (byte)((value * 0x0202020202 & 0x010884422010) % 1023);
     }
 
-    public static int SparsifyBits(byte value, int sparse) {
+    private static int SparsifyBits(byte value, int sparse) {
         int retVal = 0;
         for (int bits = 0; bits < 8; bits++, value >>= 1) {
             retVal |= (value & 1);
@@ -51,7 +51,7 @@ public class ColorEncoding {
     public static Color EncodeLayerAsColor(int layer) {
         // Following value must be in the range (0.5 .. 1.0)
         // in order to avoid color overlaps when using 'divider' in this func
-        var z = .7f;
+        const float z = .7f;
 
         // First 8 layers are Unity Builtin layers
         // Unity supports up to 32 layers in total
@@ -70,7 +70,7 @@ public class ColorEncoding {
         // Create as many colors as necessary by using base 16 color palette
         // To create more than 16 - will simply adjust brightness with 'divider'
         var color = uniqueColors[layer % uniqueColors.Length];
-        var divider = 1.0f + Mathf.Floor(layer / uniqueColors.Length);
+        var divider = 1.0f + Mathf.Floor(System.Convert.ToInt32(layer / uniqueColors.Length));
         color /= divider;
 
         return color;
