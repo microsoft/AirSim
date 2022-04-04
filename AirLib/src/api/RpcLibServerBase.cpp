@@ -140,6 +140,10 @@ namespace airlib
             return getVehicleApi(vehicle_name)->armDisarm(arm);
         });
 
+        pimpl_->server.bind("resetVehicleApi", [&](const std::string& vehicle_name) -> void {
+            getVehicleApi(vehicle_name)->reset();
+        });
+
         pimpl_->server.bind("simRunConsoleCommand", [&](const std::string& command) -> bool {
             return getWorldSimApi()->runConsoleCommand(command);
         });

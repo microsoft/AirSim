@@ -84,6 +84,15 @@ class VehicleClient:
         """
         return self.client.call('armDisarm', arm, vehicle_name)
 
+    def resetVehicleApi(self, vehicle_name = ''):
+        """
+        Resets vehicle api for vehicle corresponding to vehicle_name
+
+        Args:
+            vehicle_name (str, optional): Name of the vehicle to send this command to
+        """
+        self.client.call('resetVehicleApi', vehicle_name)
+
     def simPause(self, is_paused):
         """
         Pauses simulation
