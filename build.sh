@@ -60,8 +60,8 @@ if [ "$(uname)" == "Darwin" ]; then
     #export CC=/usr/local/opt/llvm@8/bin/clang
     #export CXX=/usr/local/opt/llvm@8/bin/clang++
     #now pick up whatever setup.sh installs
-    export CC=/usr/local/opt/llvm/bin/clang
-    export CXX=/usr/local/opt/llvm/bin/clang++
+    export CC="$(brew --prefix)/opt/llvm/bin/clang"
+    export CXX="$(brew --prefix)/opt/llvm/bin/clang++"
 else
     if $gcc; then
         export CC="gcc-8"
@@ -94,14 +94,20 @@ if [[ ! -d $build_dir ]]; then
     mkdir -p $build_dir
 fi
 
+# Fix for Unreal/Unity using x86_64 (Rosetta) on Apple Silicon hardware.
+CMAKE_VARS=
+if [ "$(uname)" == "Darwin" ]; then
+    CMAKE_VARS="-DCMAKE_APPLE_SILICON_PROCESSOR=x86_64"
+fi
+
 pushd $build_dir  >/dev/null
 if $debug; then
     folder_name="Debug"
-    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug \
+    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug $CMAKE_VARS \
         || (popd && rm -r $build_dir && exit 1)   
 else
     folder_name="Release"
-    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Release \
+    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Release $CMAKE_VARS \
         || (popd && rm -r $build_dir && exit 1)
 fi
 popd >/dev/null
