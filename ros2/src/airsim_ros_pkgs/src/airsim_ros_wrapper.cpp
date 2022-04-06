@@ -1197,8 +1197,10 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
 
     auto opticalQ = msr::airlib::Quaternionr(static_cam_tf_optical_msg.transform.rotation.w, static_cam_tf_optical_msg.transform.rotation.x, static_cam_tf_optical_msg.transform.rotation.y, static_cam_tf_optical_msg.transform.rotation.z);
-    if (isENU_) opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0);//CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
-    else opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5);//CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
+    if (isENU_)
+        opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0); //CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
+    else
+        opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5); //CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
     static_cam_tf_optical_msg.transform.rotation.w = opticalQ.w();
     static_cam_tf_optical_msg.transform.rotation.x = opticalQ.x();
     static_cam_tf_optical_msg.transform.rotation.y = opticalQ.y();
@@ -1367,8 +1369,10 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     cam_tf_optical_msg.transform.translation = cam_tf_body_msg.transform.translation;
 
     auto opticalQ = msr::airlib::Quaternionr(cam_tf_optical_msg.transform.rotation.w, cam_tf_optical_msg.transform.rotation.x, cam_tf_optical_msg.transform.rotation.y, cam_tf_optical_msg.transform.rotation.z);
-    if (isENU_) opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0);//CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
-    else opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5);//CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
+    if (isENU_)
+        opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0); //CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
+    else
+        opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5); //CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
     cam_tf_optical_msg.transform.rotation.w = opticalQ.w();
     cam_tf_optical_msg.transform.rotation.x = opticalQ.x();
     cam_tf_optical_msg.transform.rotation.y = opticalQ.y();
