@@ -7,13 +7,8 @@
 #include "RenderRequest.h"
 #include "PIPCamera.h"
 
-std::unique_ptr<FRecordingThread> FRecordingThread::running_instance_;
-std::unique_ptr<FRecordingThread> FRecordingThread::finishing_instance_;
-msr::airlib::WorkerThreadSignal FRecordingThread::finishing_signal_;
-bool FRecordingThread::first_ = true;
-
 FRecordingThread::FRecordingThread()
-    : stop_task_counter_(0), recording_file_(nullptr), is_ready_(false)
+    : stop_task_counter_(0), first_(true), recording_file_(nullptr), is_ready_(false)
 {
     thread_.reset(FRunnableThread::Create(this, TEXT("FRecordingThread"), 0, TPri_BelowNormal)); // Windows default, possible to specify more priority
 }
@@ -21,6 +16,10 @@ FRecordingThread::FRecordingThread()
 void FRecordingThread::startRecording(const RecordingSetting& settings,
                                       const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis)
 {
+    if (vehicle_sim_apis.mapSize() < 1) {
+        return;
+    }
+
     stopRecording();
 
     //TODO: check FPlatformProcess::SupportsMultithreading()?

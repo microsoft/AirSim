@@ -47,7 +47,7 @@ namespace airlib
         real_T update_frequency = 50; //Hz
         real_T startup_delay = 0; //sec
 
-        void initializeFromSettings(const AirSimSettings::DistanceSetting& settings)
+        void initializeFromSettings(const AirSimSettings::DistanceSetting& settings, const std::string& vehicle_type)
         {
             const auto& settings_json = settings.settings;
             min_distance = settings_json.getFloat("MinDistance", min_distance);
@@ -58,15 +58,13 @@ namespace airlib
             auto position = AirSimSettings::createVectorSetting(settings_json, VectorMath::nanVector());
             auto rotation = AirSimSettings::createRotationSetting(settings_json, AirSimSettings::Rotation::nanRotation());
 
-            std::string simmode_name = AirSimSettings::singleton().simmode_name;
-
             relative_pose.position = position;
             if (std::isnan(relative_pose.position.x()))
                 relative_pose.position.x() = 0;
             if (std::isnan(relative_pose.position.y()))
                 relative_pose.position.y() = 0;
             if (std::isnan(relative_pose.position.z())) {
-                if (simmode_name == AirSimSettings::kSimModeTypeMultirotor)
+                if (AirSimSettings::isMultirotor(vehicle_type))
                     relative_pose.position.z() = 0;
                 else
                     relative_pose.position.z() = -1; // a little bit above for cars

@@ -41,8 +41,6 @@ void ASimModeCar::continueForFrames(uint32_t frames)
 
 void ASimModeCar::setupClockSpeed()
 {
-    Super::setupClockSpeed();
-
     current_clockspeed_ = getSettings().clock_speed;
 
     //setup clock in PhysX
@@ -84,7 +82,7 @@ std::unique_ptr<msr::airlib::ApiServerBase> ASimModeCar::createApiServer() const
     return ASimModeBase::createApiServer();
 #else
     return std::unique_ptr<msr::airlib::ApiServerBase>(new msr::airlib::CarRpcLibServer(
-        getApiProvider(), getSettings().api_server_address, getSettings().api_port));
+        getApiProvider(), getSettings().api_server_address, getSettings().api_port_car));
 #endif
 }
 

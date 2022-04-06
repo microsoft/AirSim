@@ -9,8 +9,8 @@
 
 // ctor
 UnrealLidarSensor::UnrealLidarSensor(const AirSimSettings::LidarSetting& setting,
-                                     AActor* actor, const NedTransform* ned_transform)
-    : LidarSimple(setting), actor_(actor), ned_transform_(ned_transform)
+                                     AActor* actor, const NedTransform* ned_transform, const std::string& vehicle_type)
+    : LidarSimple(vehicle_type, setting), actor_(actor), ned_transform_(ned_transform)
 {
     createLasers();
 }

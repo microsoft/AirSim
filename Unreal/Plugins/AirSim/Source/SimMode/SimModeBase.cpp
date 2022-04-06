@@ -1,5 +1,4 @@
 #include "SimModeBase.h"
-#include "Recording/RecordingThread.h"
 #include "Misc/MessageDialog.h"
 #include "Misc/EngineVersion.h"
 #include "Runtime/Launch/Resources/Version.h"
@@ -27,17 +26,10 @@
 //it to AirLib and directly implement WorldSimApiBase interface
 #include "WorldSimApi.h"
 
-ASimModeBase* ASimModeBase::SIMMODE = nullptr;
-
-ASimModeBase* ASimModeBase::getSimMode()
-{
-    return SIMMODE;
-}
+bool ASimModeBase::is_first_ = true;
 
 ASimModeBase::ASimModeBase()
 {
-    SIMMODE = this;
-
     static ConstructorHelpers::FClassFinder<APIPCamera> external_camera_class(TEXT("Blueprint'/AirSim/Blueprints/BP_PIPCamera'"));
     external_camera_class_ = external_camera_class.Succeeded() ? external_camera_class.Class : nullptr;
     static ConstructorHelpers::FClassFinder<ACameraDirector> camera_director_class(TEXT("Blueprint'/AirSim/Blueprints/BP_CameraDirector'"));
@@ -68,6 +60,8 @@ ASimModeBase::ASimModeBase()
     if (domain_rand_mat_finder.Succeeded()) {
         domain_rand_material_ = domain_rand_mat_finder.Object;
     }
+
+    recording_thread_.reset(new FRecordingThread());
 }
 
 void ASimModeBase::toggleLoadingScreen(bool is_visible)
@@ -108,13 +102,18 @@ void ASimModeBase::BeginPlay()
         APlayerController* player_controller = this->GetWorld()->GetFirstPlayerController();
         fpv_pawn = player_controller->GetViewTarget();
     }
-    player_start_transform = fpv_pawn->GetActorTransform();
-    player_loc = player_start_transform.GetLocation();
-    // Move the world origin to the player's location (this moves the coordinate system and adds
-    // a corresponding offset to all positions to compensate for the shift)
-    this->GetWorld()->SetNewWorldOrigin(FIntVector(player_loc) + this->GetWorld()->OriginLocation);
-    // Regrab the player's position after the offset has been added (which should be 0,0,0 now)
-    player_start_transform = fpv_pawn->GetActorTransform();
+
+    // We shouldn't call SetNewWorldOrigin() more than once
+    if (is_first_) {
+        player_start_transform = fpv_pawn->GetActorTransform();
+        player_loc = player_start_transform.GetLocation();
+        // Move the world origin to the player's location (this moves the coordinate system and adds
+        // a corresponding offset to all positions to compensate for the shift)
+        this->GetWorld()->SetNewWorldOrigin(FIntVector(player_loc) + this->GetWorld()->OriginLocation);
+        // Regrab the player's position after the offset has been added (which should be 0,0,0 now)
+        player_start_transform = fpv_pawn->GetActorTransform();
+        is_first_ = false;
+    }
     global_ned_transform_.reset(new NedTransform(player_start_transform,
                                                  UAirBlueprintLib::GetWorldToMetersScale(this)));
 
@@ -141,7 +140,7 @@ void ASimModeBase::BeginPlay()
     UAirBlueprintLib::LogMessage(TEXT("Press F1 to see help"), TEXT(""), LogDebugLevel::Informational);
 
     setupVehiclesAndCamera();
-    FRecordingThread::init();
+    recording_thread_->init();
 
     if (getSettings().recording_setting.enabled)
         startRecording();
@@ -191,8 +190,8 @@ void ASimModeBase::setStencilIDs()
 
 void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    FRecordingThread::stopRecording();
-    FRecordingThread::killRecording();
+    recording_thread_->stopRecording();
+    recording_thread_->killRecording();
     world_sim_api_.reset();
     api_provider_.reset();
     api_server_.reset();
@@ -204,6 +203,8 @@ void ASimModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     spawned_actors_.Empty();
     vehicle_sim_apis_.clear();
+
+    is_first_ = true;
 
     Super::EndPlay(EndPlayReason);
 }
@@ -500,17 +501,17 @@ bool ASimModeBase::toggleRecording()
 
 void ASimModeBase::stopRecording()
 {
-    FRecordingThread::stopRecording();
+    recording_thread_->stopRecording();
 }
 
 void ASimModeBase::startRecording()
 {
-    FRecordingThread::startRecording(getSettings().recording_setting, getApiProvider()->getVehicleSimApis());
+    recording_thread_->startRecording(getSettings().recording_setting, getApiProvider()->getVehicleSimApis());
 }
 
 bool ASimModeBase::isRecording() const
 {
-    return FRecordingThread::isRecording();
+    return recording_thread_->isRecording();
 }
 
 void ASimModeBase::toggleTraceAll()
@@ -734,13 +735,13 @@ void ASimModeBase::setupVehiclesAndCamera()
     initializeExternalCameras();
     external_image_capture_ = std::make_unique<UnrealImageCapture>(&external_cameras_);
 
-    if (getApiProvider()->hasDefaultVehicle()) {
+    if (getApiProvider()->hasDefaultVehicle() && isVehicleTypeSupported(getSettings().getFirstVehicleSetting()->vehicle_type)) {
         //TODO: better handle no FPV vehicles scenario
         getVehicleSimApi()->possess();
         CameraDirector->initializeForBeginPlay(getInitialViewMode(), getVehicleSimApi()->getPawn(), getVehicleSimApi()->getCamera("fpv"), getVehicleSimApi()->getCamera("back_center"), nullptr);
     }
-    else
-        CameraDirector->initializeForBeginPlay(getInitialViewMode(), nullptr, nullptr, nullptr, nullptr);
+    //else
+    //    CameraDirector->initializeForBeginPlay(getInitialViewMode(), nullptr, nullptr, nullptr, nullptr);
 
     checkVehicleReady();
 }

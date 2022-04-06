@@ -20,7 +20,7 @@ namespace airlib
     class MagnetometerSimple : public MagnetometerBase
     {
     public:
-        MagnetometerSimple(const AirSimSettings::MagnetometerSetting& setting = AirSimSettings::MagnetometerSetting())
+        MagnetometerSimple(const AirSimSettings::MagnetometerSetting& setting)
             : MagnetometerBase(setting.sensor_name)
         {
             // initialize params

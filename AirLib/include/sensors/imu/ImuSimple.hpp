@@ -17,7 +17,7 @@ namespace airlib
     {
     public:
         //constructors
-        ImuSimple(const AirSimSettings::ImuSetting& setting = AirSimSettings::ImuSetting())
+        ImuSimple(const AirSimSettings::ImuSetting& setting)
             : ImuBase(setting.sensor_name)
         {
             // initialize params

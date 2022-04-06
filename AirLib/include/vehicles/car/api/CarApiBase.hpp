@@ -136,7 +136,7 @@ namespace airlib
         {
             const auto& sensor_settings = vehicle_setting->sensors;
 
-            sensor_factory_->createSensorsFromSettings(sensor_settings, sensors_, sensor_storage_);
+            sensor_factory_->createSensorsFromSettings(sensor_settings, sensors_, sensor_storage_, vehicle_setting->vehicle_type);
         }
 
         virtual void setCarControls(const CarControls& controls) = 0;

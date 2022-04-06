@@ -20,7 +20,7 @@ namespace airlib
     class MultirotorRpcLibClient : public RpcLibClientBase
     {
     public:
-        MultirotorRpcLibClient(const string& ip_address = "localhost", uint16_t port = RpcLibPort, float timeout_sec = 60);
+        MultirotorRpcLibClient(const string& ip_address = "localhost", uint16_t port = RpcLibPortMultirotor, float timeout_sec = 60);
 
         MultirotorRpcLibClient* takeoffAsync(float timeout_sec = 20, const std::string& vehicle_name = "");
         MultirotorRpcLibClient* landAsync(float timeout_sec = 60, const std::string& vehicle_name = "");

@@ -16,7 +16,7 @@ namespace airlib
     class RpcLibServerBase : public ApiServerBase
     {
     public:
-        RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port = RpcLibPort);
+        RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port = RpcLibPortCV);
         virtual ~RpcLibServerBase() override;
 
         virtual void start(bool block, std::size_t thread_count) override;

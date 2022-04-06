@@ -19,7 +19,7 @@ namespace airlib
     class CarRpcLibServer : public RpcLibServerBase
     {
     public:
-        CarRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port = RpcLibPort);
+        CarRpcLibServer(ApiProvider* api_provider, string server_address, uint16_t port = RpcLibPortCar);
         virtual ~CarRpcLibServer();
 
     protected:

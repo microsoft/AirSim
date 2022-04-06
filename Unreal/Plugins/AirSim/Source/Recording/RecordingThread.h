@@ -23,12 +23,12 @@ public:
     FRecordingThread();
     virtual ~FRecordingThread();
 
-    static void init();
-    static void startRecording(const RecordingSetting& settings,
-                               const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis);
-    static void stopRecording();
-    static void killRecording();
-    static bool isRecording();
+    void init();
+    void startRecording(const RecordingSetting& settings,
+                        const common_utils::UniqueValueMap<std::string, VehicleSimApiBase*>& vehicle_sim_apis);
+    void stopRecording();
+    void killRecording();
+    bool isRecording();
 
 protected:
     virtual bool Init() override;
@@ -39,10 +39,10 @@ protected:
 private:
     FThreadSafeCounter stop_task_counter_;
 
-    static std::unique_ptr<FRecordingThread> running_instance_;
-    static std::unique_ptr<FRecordingThread> finishing_instance_;
-    static msr::airlib::WorkerThreadSignal finishing_signal_;
-    static bool first_;
+    std::unique_ptr<FRecordingThread> running_instance_;
+    std::unique_ptr<FRecordingThread> finishing_instance_;
+    msr::airlib::WorkerThreadSignal finishing_signal_;
+    bool first_;
 
     static std::unique_ptr<FRecordingThread> instance_;
 

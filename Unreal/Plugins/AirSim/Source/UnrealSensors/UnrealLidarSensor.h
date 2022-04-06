@@ -18,7 +18,8 @@ public:
 
 public:
     UnrealLidarSensor(const AirSimSettings::LidarSetting& setting,
-                      AActor* actor, const NedTransform* ned_transform);
+                      AActor* actor, const NedTransform* ned_transform,
+                      const std::string& vehicle_type);
 
 protected:
     virtual void getPointCloud(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,

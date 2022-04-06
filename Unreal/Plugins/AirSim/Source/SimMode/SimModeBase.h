@@ -16,6 +16,7 @@
 #include "common/StateReporterWrapper.hpp"
 #include "LoadingScreenWidget.h"
 #include "UnrealImageCapture.h"
+#include "Recording/RecordingThread.h"
 #include "SimModeBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelLoaded);
@@ -37,9 +38,6 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Recording")
     bool toggleRecording();
-
-    UFUNCTION(BlueprintPure, Category = "Airsim | get stuff")
-    static ASimModeBase* getSimMode();
 
     UFUNCTION(BlueprintCallable, Category = "Airsim | get stuff")
     void toggleLoadingScreen(bool is_visible);
@@ -120,6 +118,8 @@ public:
 
     const UnrealImageCapture* getImageCapture(const std::string& vehicle_name = "", bool external = false) const;
 
+    virtual bool isVehicleTypeSupported(const std::string& vehicle_type) const;
+
     TMap<FString, FAssetData> asset_map;
     TMap<FString, AActor*> scene_object_map;
     UMaterial* domain_rand_material_;
@@ -129,7 +129,6 @@ protected: //must overrides
 
     virtual std::unique_ptr<msr::airlib::ApiServerBase> createApiServer() const;
     virtual void getExistingVehiclePawns(TArray<AActor*>& pawns) const;
-    virtual bool isVehicleTypeSupported(const std::string& vehicle_type) const;
     virtual std::string getVehiclePawnPathName(const AirSimSettings::VehicleSetting& vehicle_setting) const;
     virtual PawnEvents* getVehiclePawnEvents(APawn* pawn) const;
     virtual const common_utils::UniqueValueMap<std::string, APIPCamera*> getVehiclePawnCameras(APawn* pawn) const;
@@ -212,7 +211,10 @@ private:
 
     bool lidar_checks_done_ = false;
     bool lidar_draw_debug_points_ = false;
-    static ASimModeBase* SIMMODE;
+
+    std::unique_ptr<FRecordingThread> recording_thread_;
+
+    static bool is_first_;
 
 private:
     void setStencilIDs();
