@@ -1196,15 +1196,13 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
     static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
 
-    tf2::Quaternion quat_cam_body;
-    tf2::Quaternion quat_cam_optical;
-    tf2::convert(static_cam_tf_body_msg.transform.rotation, quat_cam_body);
-    tf2::Matrix3x3 mat_cam_body(quat_cam_body);
-    tf2::Matrix3x3 mat_cam_optical;
-    mat_cam_optical.setValue(mat_cam_body.getColumn(1).getX(), mat_cam_body.getColumn(2).getX(), mat_cam_body.getColumn(0).getX(), mat_cam_body.getColumn(1).getY(), mat_cam_body.getColumn(2).getY(), mat_cam_body.getColumn(0).getY(), mat_cam_body.getColumn(1).getZ(), mat_cam_body.getColumn(2).getZ(), mat_cam_body.getColumn(0).getZ());
-    mat_cam_optical.getRotation(quat_cam_optical);
-    quat_cam_optical.normalize();
-    tf2::convert(quat_cam_optical, static_cam_tf_optical_msg.transform.rotation);
+    auto opticalQ = msr::airlib::Quaternionr(static_cam_tf_optical_msg.transform.rotation.w, static_cam_tf_optical_msg.transform.rotation.x, static_cam_tf_optical_msg.transform.rotation.y, static_cam_tf_optical_msg.transform.rotation.z);
+    if (isENU_) opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0);//CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
+    else opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5);//CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
+    static_cam_tf_optical_msg.transform.rotation.w = opticalQ.w();
+    static_cam_tf_optical_msg.transform.rotation.x = opticalQ.x();
+    static_cam_tf_optical_msg.transform.rotation.y = opticalQ.y();
+    static_cam_tf_optical_msg.transform.rotation.z = opticalQ.z();
 
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_body_msg);
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_optical_msg);
@@ -1368,17 +1366,13 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     cam_tf_optical_msg.child_frame_id = child_frame_id + "_optical";
     cam_tf_optical_msg.transform.translation = cam_tf_body_msg.transform.translation;
 
-    tf2::Quaternion quat_cam_body;
-    tf2::Quaternion quat_cam_optical;
-    tf2::convert(cam_tf_body_msg.transform.rotation, quat_cam_body);
-    tf2::Matrix3x3 mat_cam_body(quat_cam_body);
-    // tf2::Matrix3x3 mat_cam_optical = matrix_cam_body_to_optical_ * mat_cam_body * matrix_cam_body_to_optical_inverse_;
-    // tf2::Matrix3x3 mat_cam_optical = matrix_cam_body_to_optical_ * mat_cam_body;
-    tf2::Matrix3x3 mat_cam_optical;
-    mat_cam_optical.setValue(mat_cam_body.getColumn(1).getX(), mat_cam_body.getColumn(2).getX(), mat_cam_body.getColumn(0).getX(), mat_cam_body.getColumn(1).getY(), mat_cam_body.getColumn(2).getY(), mat_cam_body.getColumn(0).getY(), mat_cam_body.getColumn(1).getZ(), mat_cam_body.getColumn(2).getZ(), mat_cam_body.getColumn(0).getZ());
-    mat_cam_optical.getRotation(quat_cam_optical);
-    quat_cam_optical.normalize();
-    tf2::convert(quat_cam_optical, cam_tf_optical_msg.transform.rotation);
+    auto opticalQ = msr::airlib::Quaternionr(cam_tf_optical_msg.transform.rotation.w, cam_tf_optical_msg.transform.rotation.x, cam_tf_optical_msg.transform.rotation.y, cam_tf_optical_msg.transform.rotation.z);
+    if (isENU_) opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0);//CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
+    else opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5);//CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
+    cam_tf_optical_msg.transform.rotation.w = opticalQ.w();
+    cam_tf_optical_msg.transform.rotation.x = opticalQ.x();
+    cam_tf_optical_msg.transform.rotation.y = opticalQ.y();
+    cam_tf_optical_msg.transform.rotation.z = opticalQ.z();
 
     tf_broadcaster_->sendTransform(cam_tf_body_msg);
     tf_broadcaster_->sendTransform(cam_tf_optical_msg);
