@@ -11,3 +11,4 @@ jobs:
       with:
         clang-format-version: '11'
         check-path: '.'
+        exclude-regex: 'AirLib\/include\/common\/common_utils\/json\.hpp'
