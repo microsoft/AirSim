@@ -1153,6 +1153,21 @@ void AirsimROSWrapper::convert_tf_msg_to_enu(geometry_msgs::msg::TransformStampe
     tf_msg.transform.rotation.z = -tf_msg.transform.rotation.z;
 }
 
+geometry_msgs::msg::Transform AirsimROSWrapper::get_camera_optical_tf_from_body_tf(const geometry_msgs::msg::Transform& body_tf) const
+{
+    geometry_msgs::msg::Transform optical_tf = body_tf; //same translation
+    auto opticalQ = msr::airlib::Quaternionr(optical_tf.rotation.w, optical_tf.rotation.x, optical_tf.rotation.y, optical_tf.rotation.z);
+    if (isENU_)
+        opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0); //CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
+    else
+        opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5); //CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
+    optical_tf.rotation.w = opticalQ.w();
+    optical_tf.rotation.x = opticalQ.x();
+    optical_tf.rotation.y = opticalQ.y();
+    optical_tf.rotation.z = opticalQ.z();
+    return optical_tf;
+}
+
 void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting)
 {
     geometry_msgs::msg::TransformStamped vehicle_tf_msg;
@@ -1193,18 +1208,10 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
         convert_tf_msg_to_enu(static_cam_tf_body_msg);
     }
 
-    geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
+    geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg;
+    static_cam_tf_optical_msg.header.frame_id = static_cam_tf_body_msg.header.frame_id;
     static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
-
-    auto opticalQ = msr::airlib::Quaternionr(static_cam_tf_optical_msg.transform.rotation.w, static_cam_tf_optical_msg.transform.rotation.x, static_cam_tf_optical_msg.transform.rotation.y, static_cam_tf_optical_msg.transform.rotation.z);
-    if (isENU_)
-        opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0); //CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
-    else
-        opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5); //CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
-    static_cam_tf_optical_msg.transform.rotation.w = opticalQ.w();
-    static_cam_tf_optical_msg.transform.rotation.x = opticalQ.x();
-    static_cam_tf_optical_msg.transform.rotation.y = opticalQ.y();
-    static_cam_tf_optical_msg.transform.rotation.z = opticalQ.z();
+    static_cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(static_cam_tf_body_msg.transform);
 
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_body_msg);
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_optical_msg);
@@ -1366,17 +1373,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     cam_tf_optical_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
     cam_tf_optical_msg.header.frame_id = frame_id;
     cam_tf_optical_msg.child_frame_id = child_frame_id + "_optical";
-    cam_tf_optical_msg.transform.translation = cam_tf_body_msg.transform.translation;
-
-    auto opticalQ = msr::airlib::Quaternionr(cam_tf_optical_msg.transform.rotation.w, cam_tf_optical_msg.transform.rotation.x, cam_tf_optical_msg.transform.rotation.y, cam_tf_optical_msg.transform.rotation.z);
-    if (isENU_)
-        opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0); //CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
-    else
-        opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5); //CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
-    cam_tf_optical_msg.transform.rotation.w = opticalQ.w();
-    cam_tf_optical_msg.transform.rotation.x = opticalQ.x();
-    cam_tf_optical_msg.transform.rotation.y = opticalQ.y();
-    cam_tf_optical_msg.transform.rotation.z = opticalQ.z();
+    cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(cam_tf_body_msg.transform);
 
     tf_broadcaster_->sendTransform(cam_tf_body_msg);
     tf_broadcaster_->sendTransform(cam_tf_optical_msg);
