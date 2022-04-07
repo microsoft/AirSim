@@ -17,10 +17,10 @@ void CarPawnSimApi::initialize()
 
     std::shared_ptr<UnitySensorFactory> sensor_factory = std::make_shared<UnitySensorFactory>(car_name_, &getNedTransform());
 
-    vehicle_api_ = CarApiFactory::createApi(getVehicleSetting(),
-                                            sensor_factory,
-                                            *getGroundTruthKinematics(),
-                                            *getGroundTruthEnvironment());
+    vehicle_api_ = msr::airlib::CarApiFactory::createApi(getVehicleSetting(),
+                                                         sensor_factory,
+                                                         *getGroundTruthKinematics(),
+                                                         *getGroundTruthEnvironment());
     pawn_api_ = std::unique_ptr<CarPawnApi>(new CarPawnApi(getGroundTruthKinematics(), car_name_, vehicle_api_.get()));
 
     //TODO: should do reset() here?

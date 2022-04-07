@@ -1,7 +1,7 @@
 #include "pd_position_controller_simple.h"
 using namespace std::placeholders;
 
-bool PIDParams::load_from_rosparams(const shared_ptr<rclcpp::Node> nh)
+bool PIDParams::load_from_rosparams(const std::shared_ptr<rclcpp::Node> nh)
 {
     bool found = true;
 

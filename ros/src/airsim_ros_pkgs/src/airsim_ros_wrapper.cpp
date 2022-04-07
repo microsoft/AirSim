@@ -758,7 +758,7 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
         std::vector<float> data_std = lidar_data.point_cloud;
 
         const unsigned char* bytes = reinterpret_cast<const unsigned char*>(data_std.data());
-        vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
+        std::vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
         lidar_msg.data = std::move(lidar_msg_data);
 
         if (isENU_) {

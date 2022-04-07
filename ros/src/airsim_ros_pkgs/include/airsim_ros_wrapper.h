@@ -65,16 +65,7 @@ STRICT_MODE_OFF //todo what does this do?
 #include <memory>
     // #include "nodelet/nodelet.h"
 
-    // todo move airlib typedefs to separate header file?
-    typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
-typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
-typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
-typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
-typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
-typedef msr::airlib::AirSimSettings::CameraSetting CameraSetting;
-typedef msr::airlib::AirSimSettings::LidarSetting LidarSetting;
-
-struct SimpleMatrix
+    struct SimpleMatrix
 {
     int rows;
     int cols;
@@ -126,6 +117,16 @@ struct GimbalCmd
 
 class AirsimROSWrapper
 {
+    using AirSimSettings = msr::airlib::AirSimSettings;
+    using SensorBase = msr::airlib::SensorBase;
+    using CameraSetting = msr::airlib::AirSimSettings::CameraSetting;
+    using CaptureSetting = msr::airlib::AirSimSettings::CaptureSetting;
+    using LidarSetting = msr::airlib::AirSimSettings::LidarSetting;
+    using VehicleSetting = msr::airlib::AirSimSettings::VehicleSetting;
+    using ImageRequest = msr::airlib::ImageCaptureBase::ImageRequest;
+    using ImageResponse = msr::airlib::ImageCaptureBase::ImageResponse;
+    using ImageType = msr::airlib::ImageCaptureBase::ImageType;
+
 public:
     enum class AIRSIM_MODE : unsigned
     {

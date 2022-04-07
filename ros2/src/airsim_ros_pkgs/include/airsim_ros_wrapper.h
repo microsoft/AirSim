@@ -63,16 +63,7 @@ STRICT_MODE_OFF //todo what does this do?
 #include <unordered_map>
 #include <memory>
 
-    // todo move airlib typedefs to separate header file?
-    typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
-typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
-typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
-typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
-typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
-typedef msr::airlib::AirSimSettings::CameraSetting CameraSetting;
-typedef msr::airlib::AirSimSettings::LidarSetting LidarSetting;
-
-struct SimpleMatrix
+    struct SimpleMatrix
 {
     int rows;
     int cols;
@@ -104,13 +95,23 @@ struct GimbalCmd
 template <typename T>
 struct SensorPublisher
 {
-    SensorBase::SensorType sensor_type;
+    msr::airlib::SensorBase::SensorType sensor_type;
     std::string sensor_name;
     typename rclcpp::Publisher<T>::SharedPtr publisher;
 };
 
 class AirsimROSWrapper
 {
+    using AirSimSettings = msr::airlib::AirSimSettings;
+    using SensorBase = msr::airlib::SensorBase;
+    using CameraSetting = msr::airlib::AirSimSettings::CameraSetting;
+    using CaptureSetting = msr::airlib::AirSimSettings::CaptureSetting;
+    using LidarSetting = msr::airlib::AirSimSettings::LidarSetting;
+    using VehicleSetting = msr::airlib::AirSimSettings::VehicleSetting;
+    using ImageRequest = msr::airlib::ImageCaptureBase::ImageRequest;
+    using ImageResponse = msr::airlib::ImageCaptureBase::ImageResponse;
+    using ImageType = msr::airlib::ImageCaptureBase::ImageType;
+
 public:
     enum class AIRSIM_MODE : unsigned
     {
@@ -278,7 +279,8 @@ private:
     void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m) const; // todo ugly
 
     template <typename T>
-    const SensorPublisher<T> create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS);
+    const SensorPublisher<T> create_sensor_publisher(const std::string& sensor_type_name, const std::string& sensor_name,
+                                                     SensorBase::SensorType sensor_type, const std::string& topic_name, int QoS);
 
 private:
     // subscriber / services for ALL robots
