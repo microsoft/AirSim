@@ -321,7 +321,7 @@
 #include &lt;iostream&gt;
 #include "vehicles/car/api/CarRpcLibClient.hpp"
 
-int main() 
+int main()
 {
     msr::airlib::CarRpcLibClient client;
     client.enableApiControl(true); //this disables manual control
@@ -354,25 +354,24 @@ int main()
 #include &lt;iostream&gt;
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 
-int main() 
+int main()
 {
-    using namespace std;
     msr::airlib::MultirotorRpcLibClient client;
 
-    cout &lt;&lt; "Press Enter to enable API control" &lt;&lt; endl; cin.get();
+    std::cout &lt;&lt; "Press Enter to enable API control\n"; std::cin.get();
     client.enableApiControl(true);
 
-    cout &lt;&lt; "Press Enter to arm the drone" &lt;&lt; endl; cin.get();
+    std::cout &lt;&lt; "Press Enter to arm the drone\n"; std::cin.get();
     client.armDisarm(true);
 
-    cout &lt;&lt; "Press Enter to takeoff" &lt;&lt; endl; cin.get();
+    std::cout &lt;&lt; "Press Enter to takeoff\n"; std::cin.get();
     client.takeoffAsync(5)-&gt;waitOnLastTask();
 
-    cout &lt;&lt; "Press Enter to move 5 meters in x direction with 1 m/s velocity" &lt;&lt; endl; cin.get();  
+    std::cout &lt;&lt; "Press Enter to move 5 meters in x direction with 1 m/s velocity\n"; std::cin.get();
     auto position = client.getMultirotorState().getPosition(); // from current location
     client.moveToPositionAsync(position.x() + 5, position.y(), position.z(), 1)-&gt;waitOnLastTask();
 
-    cout &lt;&lt; "Press Enter to land" &lt;&lt; endl; cin.get();
+    std::cout &lt;&lt; "Press Enter to land\n"; std::cin.get();
     client.landAsync()-&gt;waitOnLastTask();
 
     return 0;
