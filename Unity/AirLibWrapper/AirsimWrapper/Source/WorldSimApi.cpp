@@ -75,7 +75,7 @@ std::unique_ptr<std::vector<std::string>> WorldSimApi::swapTextures(const std::s
     return result;
 }
 
-bool WorldSimApi::setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path)
+bool WorldSimApi::setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path, const int component_id)
 {
     throw std::invalid_argument(common_utils::Utils::stringf(
                                     "setObjectMaterialFromTexture is not supported on unity")
@@ -83,7 +83,7 @@ bool WorldSimApi::setObjectMaterialFromTexture(const std::string& object_name, c
     return false;
 }
 
-bool WorldSimApi::setObjectMaterial(const std::string& object_name, const std::string& material_name)
+bool WorldSimApi::setObjectMaterial(const std::string& object_name, const std::string& material_name, const int component_id)
 {
     throw std::invalid_argument(common_utils::Utils::stringf(
                                     "setObjectMaterial is not supported on unity")
