@@ -20,6 +20,13 @@ namespace AirSimUnity
 
         private float steering, throttle, footBreak, handBrake;
 
+        private Rigidbody rigidBody;
+
+        private void Awake()
+        {
+            rigidBody = GetComponent(type: typeof(Rigidbody)) as Rigidbody;
+        }
+
         private new void Start()
         {
             base.Start();
@@ -106,6 +113,12 @@ namespace AirSimUnity
             data.carData = carData;
             data.image = null;
             return data;
+        }
+
+        //Override the method to reduce Missing Reference Exception to the Car
+        public override AirSimVector GetVelocity()
+        {
+            return rigidBody != null ? new AirSimVector(rigidBody.velocity.x, rigidBody.velocity.y, rigidBody.velocity.z) : new AirSimVector(0f, 0f, 0f);
         }
     }
 }
