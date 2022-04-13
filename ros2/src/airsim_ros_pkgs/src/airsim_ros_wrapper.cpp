@@ -1187,7 +1187,7 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
 {
     geometry_msgs::msg::TransformStamped static_cam_tf_body_msg;
     static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
-    static_cam_tf_body_msg.child_frame_id = camera_name + "_body/static";
+    static_cam_tf_body_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_body/static";
     static_cam_tf_body_msg.transform = get_transform_msg_from_airsim(camera_setting.position, camera_setting.rotation);
 
     if (isENU_) {
@@ -1195,7 +1195,7 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     }
 
     geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
-    static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
+    static_cam_tf_optical_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_optical/static";
 
     tf2::Quaternion quat_cam_body;
     tf2::Quaternion quat_cam_optical;
@@ -1356,7 +1356,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     geometry_msgs::msg::TransformStamped cam_tf_body_msg;
     cam_tf_body_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
     cam_tf_body_msg.header.frame_id = frame_id;
-    cam_tf_body_msg.child_frame_id = child_frame_id + "_body";
+    cam_tf_body_msg.child_frame_id = frame_id + "/" + child_frame_id + "_body";
     cam_tf_body_msg.transform = get_transform_msg_from_airsim(img_response.camera_position, img_response.camera_orientation);
 
     if (isENU_) {
@@ -1366,7 +1366,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     geometry_msgs::msg::TransformStamped cam_tf_optical_msg;
     cam_tf_optical_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
     cam_tf_optical_msg.header.frame_id = frame_id;
-    cam_tf_optical_msg.child_frame_id = child_frame_id + "_optical";
+    cam_tf_optical_msg.child_frame_id = frame_id + "/" + child_frame_id + "_optical";
     cam_tf_optical_msg.transform.translation = cam_tf_body_msg.transform.translation;
 
     tf2::Quaternion quat_cam_body;
