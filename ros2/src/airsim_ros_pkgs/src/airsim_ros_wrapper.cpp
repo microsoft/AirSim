@@ -1282,7 +1282,7 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
     depth_img_msg->data.resize(img_response.image_data_float.size() * sizeof(float));
     memcpy(depth_img_msg->data.data(), img_response.image_data_float.data(), depth_img_msg->data.size());
     depth_img_msg->encoding = "32FC1";
-    depth_img_msg->step = img_response.image_data_uint8.size() / img_response.height;
+    depth_img_msg->step = depth_img_msg->data.size() / img_response.height;
     depth_img_msg->is_bigendian = 0;
     depth_img_msg->header.stamp = rclcpp::Time(img_response.time_stamp);
     depth_img_msg->header.frame_id = frame_id;
