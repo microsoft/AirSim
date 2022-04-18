@@ -325,28 +325,12 @@ void ACarPawn::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Up, 1), this, this, &ACarPawn::onMoveForward);
+    UAirBlueprintLib::BindAxis("MoveForward", this, this, &ACarPawn::onMoveForward);
+    UAirBlueprintLib::BindAxis("MoveRight", this, this, &ACarPawn::onMoveRight);
+    UAirBlueprintLib::BindAxis("Footbrake", this, this, &ACarPawn::onFootBrake);
 
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Down, -1), this, this, &ACarPawn::onMoveForward);
-
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Right, 0.5), this, this, &ACarPawn::onMoveRight);
-
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Left, -0.5), this, this, &ACarPawn::onMoveRight);
-
-    UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::End, this, &ACarPawn::onHandbrakePressed, true);
-    UAirBlueprintLib::BindActionToKey("Handbrake", EKeys::End, this, &ACarPawn::onHandbrakeReleased, false);
-
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::SpaceBar, 1), this, this, &ACarPawn::onFootBrake);
-
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveRight", EKeys::Gamepad_LeftX, 1), this, this, &ACarPawn::onMoveRight);
-
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("MoveForward", EKeys::Gamepad_RightTriggerAxis, 1), this, this, &ACarPawn::onMoveForward);
-
-    UAirBlueprintLib::BindAxisToKey(FInputAxisKeyMapping("Footbrake", EKeys::Gamepad_LeftTriggerAxis, 1), this, this, &ACarPawn::onFootBrake);
-
-    //below is not needed
-    //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::onReversePressed, true);
-    //UAirBlueprintLib::BindActionToKey("Reverse", EKeys::Down, this, &ACarPawn::onReverseReleased, false);
+    UAirBlueprintLib::BindAction("Handbrake", this, this, &ACarPawn::onHandbrakePressed, true);
+    UAirBlueprintLib::BindAction("Handbrake", this, this, &ACarPawn::onHandbrakeReleased, false);
 }
 
 void ACarPawn::onMoveForward(float Val)

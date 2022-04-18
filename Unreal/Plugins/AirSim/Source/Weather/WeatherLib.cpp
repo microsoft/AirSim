@@ -263,3 +263,169 @@ void UWeatherLib::setWeatherFog(AExponentialHeightFog* fog)
 {
     weather_fog_ = fog;
 }
+
+FText UWeatherLib::GetKeyboardShortcutsText()
+{
+    FString KeyboardShortcutsString;
+
+    KeyboardShortcutsString += TEXT("Welcome to AirSim!");
+    KeyboardShortcutsString += TEXT("\n\n");
+
+    KeyboardShortcutsString += TEXT("HUD Toggles:\n");
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventToggleHelp"), TEXT("Show Help Text"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventToggleWeather"), TEXT("Show Weather Options"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventToggleRecording"), TEXT("Recording"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventToggleReport"), TEXT("Debug Report"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventToggleTrace"), TEXT("Trace Line"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventToggleAll"), TEXT("All Sub-Windows"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventToggleSubwindow0"), TEXT("Depth Window"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventToggleSubwindow1"), TEXT("Segmentation Window"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventToggleSubwindow2"), TEXT("Scene Window"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("InputEventResetAll"), TEXT("Reset Vehicles"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += TEXT("\n");
+
+    KeyboardShortcutsString += TEXT("Camera Controls:\n");
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventFpvView"), TEXT("FPV View"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventFlyWithView"), TEXT("\"Fly With Me\" View"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventGroundView"), TEXT("Ground Observer View"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventManualView"), TEXT("Manual Camera View"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventSpringArmChaseView"), TEXT("Spring Arm View"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventFrontView"), TEXT("Front View"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventBackupView"), TEXT("Backup View"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputEventNoDisplayView"), TEXT("No Display"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += TEXT("\n");
+
+    KeyboardShortcutsString += TEXT("Manual Camera Controls:\n");
+    KeyboardShortcutsString += MakeInputString(TEXT("inputManualForward"), TEXT("Fly Forward & Back"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputManualArrowRight"), TEXT("Fly Left & Right"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputManualArrowUp"), TEXT("Fly Up & Down"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputManualRightYaw"), TEXT("Yaw"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputManualUpPitch"), TEXT("Pitch"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("inputManualRightRoll"), TEXT("Roll"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += TEXT("\n");
+
+    KeyboardShortcutsString += TEXT("Car Controls:\n");
+    KeyboardShortcutsString += MakeInputString(TEXT("MoveForward"), TEXT("Drive & Reverse"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("MoveRight"), TEXT("Turn Right & Left"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("Footbrake"), TEXT("Footbrake"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += MakeInputString(TEXT("Handbrake"), TEXT("Handbrake"), EInputTypes::EKeyboard);
+    KeyboardShortcutsString += TEXT("\n");
+
+    return FText::FromString(KeyboardShortcutsString);
+}
+
+FString UWeatherLib::MakeInputString(const FName InputName, const FString Descriptor, EInputTypes InputTypes, int WhitespacePadding)
+{
+    const FString InputKeys = GetInputMapKeysString(InputName, InputTypes);
+    FString WhitespaceString;
+
+	WhitespaceString = WhitespaceString.RightPad(WhitespacePadding);
+    WhitespaceString = WhitespaceString.LeftChop(InputKeys.Len());
+
+	return  InputKeys + WhitespaceString + Descriptor + TEXT("\n");
+}
+FString UWeatherLib::GetInputMapKeysString(FName InputName, EInputTypes InputTypes)
+{
+    const UInputSettings* InputSettings = UInputSettings::GetInputSettings();
+
+    TArray<FInputActionKeyMapping> ActionKeyMapping;
+    InputSettings->GetActionMappingByName(InputName, ActionKeyMapping);
+
+    TArray<FInputAxisKeyMapping> AxisKeyMapping;
+    InputSettings->GetAxisMappingByName(InputName, AxisKeyMapping);
+
+    FString JoinedStr = FString(TEXT(""));
+
+    // Remove Keys that don't match type InputType
+	for(int i = ActionKeyMapping.Num()-1; i >= 0; i--)
+	{
+		if (InputTypes == EInputTypes::EKeyboard && ActionKeyMapping[i].Key.IsGamepadKey())
+		{
+			ActionKeyMapping.RemoveAt(i);
+		}
+		if (InputTypes == EInputTypes::EGamepad && !ActionKeyMapping[i].Key.IsGamepadKey())
+		{
+			ActionKeyMapping.RemoveAt(i);
+		}
+	}
+	for (int i = AxisKeyMapping.Num()-1; i >= 0; i--)
+	{
+		if (InputTypes == EInputTypes::EKeyboard && AxisKeyMapping[i].Key.IsGamepadKey())
+		{
+			AxisKeyMapping.RemoveAt(i);
+		}
+		if (InputTypes == EInputTypes::EGamepad && !AxisKeyMapping[i].Key.IsGamepadKey())
+		{
+			AxisKeyMapping.RemoveAt(i);
+		}
+	}
+
+    // Get Action Map Keys
+    JoinedStr += GetInputActionMapString(ActionKeyMapping);
+    JoinedStr += GetInputAxisMapString(AxisKeyMapping);
+
+    // Shorten Gamepad Terms
+    JoinedStr = JoinedStr.Replace(TEXT("Gamepad "), TEXT(""));
+    JoinedStr = JoinedStr.Replace(TEXT("Right "), TEXT("R-"));
+    JoinedStr = JoinedStr.Replace(TEXT("Left "), TEXT("L-"));
+    JoinedStr = JoinedStr.Replace(TEXT("Thumbstick"), TEXT("Stick"));
+    JoinedStr = JoinedStr.Replace(TEXT(" Axis"), TEXT(""));
+
+    return JoinedStr;
+}
+
+FString UWeatherLib::GetInputActionMapString(TArray<FInputActionKeyMapping> ActionKeyMapping, bool bReverseOrder)
+{
+    FString JoinedStr;
+
+    if (bReverseOrder)
+    {
+        for (int Index = 0; Index < ActionKeyMapping.Num(); Index++)
+        {
+            JoinedStr += ActionKeyMapping[Index].Key.GetDisplayName(false).ToString();
+            if (Index + 1 < ActionKeyMapping.Num())
+            {
+                JoinedStr += TEXT(", ");
+            }
+        }
+    }
+    else
+    {
+	    for (int Index = ActionKeyMapping.Num() - 1; Index >= 0; Index--)
+	    {
+	    	JoinedStr += ActionKeyMapping[Index].Key.GetDisplayName(false).ToString();
+	    	if (Index - 1 >= 0)
+	    	{
+	    		JoinedStr += TEXT(", ");
+	    	}
+	    }
+    }
+    return JoinedStr;
+}
+
+FString UWeatherLib::GetInputAxisMapString(TArray<FInputAxisKeyMapping> AxisKeyMapping, bool bReverseOrder)
+{
+    FString JoinedStr;
+    if(bReverseOrder)
+    {
+        for (int Index = 0; Index < AxisKeyMapping.Num(); Index++)
+        {
+            JoinedStr += AxisKeyMapping[Index].Key.GetDisplayName(false).ToString();
+            if (Index + 1 < AxisKeyMapping.Num())
+            {
+                JoinedStr += TEXT(", ");
+            }
+        }
+    }
+    else{
+		for (int Index = AxisKeyMapping.Num() - 1; Index >= 0; Index--)
+		{
+			JoinedStr += AxisKeyMapping[Index].Key.GetDisplayName(false).ToString();
+			if (Index - 1 >= 0)
+			{
+				JoinedStr += TEXT(", ");
+			}
+		}
+	}
+    return JoinedStr;
+}

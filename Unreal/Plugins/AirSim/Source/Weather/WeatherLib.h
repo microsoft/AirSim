@@ -6,6 +6,7 @@
 #include "Runtime/Engine/Classes/Engine/ExponentialHeightFog.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
+#include "GameFramework/InputSettings.h"
 
 #include "WeatherLib.generated.h"
 
@@ -31,6 +32,13 @@ enum class EWeatherParamVector : uint8
 {
     WEATHER_PARAM_VECTOR_WIND = 0 UMETA(DisplayName = "Wind"),
     WEATHER_PARAM_VECTOR_MAX = 1 UMETA(DisplayName = "MAX")
+};
+
+UENUM(BlueprintType)
+enum class EInputTypes : uint8 {
+    EKeyboard UMETA(DisplayName = "Keyboard"),
+    EGamepad UMETA(DisplayName = "Gamepad"),
+    EKeyboardAndGamepad UMETA(DisplayName = "Keyboard & Gamepad"),
 };
 /**
  * 
@@ -175,6 +183,16 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = Weather)
     static void setWeatherFog(AExponentialHeightFog* fog);
+
+    UFUNCTION(BlueprintPure, Category = UI)
+    static FText GetKeyboardShortcutsText();
+
+    UFUNCTION(BlueprintPure, Category = UI)
+    static FString MakeInputString(const FName InputName, const FString Descriptor, EInputTypes InputTypes, int WhitespacePadding = 15);
+
+	static FString GetInputMapKeysString(FName InputName, EInputTypes InputTypes);
+    static FString GetInputActionMapString(TArray<FInputActionKeyMapping> ActionKeyMapping, bool bReverseOrder = false);
+    static FString GetInputAxisMapString(TArray<FInputAxisKeyMapping> AxisKeyMapping, bool bReverseOrder = false);
 
 private:
     static AExponentialHeightFog* weather_fog_;

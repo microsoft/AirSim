@@ -187,14 +187,14 @@ void ACameraDirector::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
 
-    UAirBlueprintLib::BindActionToKey("inputEventFpvView", EKeys::F, this, &ACameraDirector::inputEventFpvView);
-    UAirBlueprintLib::BindActionToKey("inputEventFlyWithView", EKeys::B, this, &ACameraDirector::inputEventFlyWithView);
-    UAirBlueprintLib::BindActionToKey("inputEventGroundView", EKeys::Backslash, this, &ACameraDirector::inputEventGroundView);
-    UAirBlueprintLib::BindActionToKey("inputEventManualView", EKeys::M, this, &ACameraDirector::inputEventManualView);
-    UAirBlueprintLib::BindActionToKey("inputEventSpringArmChaseView", EKeys::Slash, this, &ACameraDirector::inputEventSpringArmChaseView);
-    UAirBlueprintLib::BindActionToKey("inputEventBackupView", EKeys::K, this, &ACameraDirector::inputEventBackupView);
-    UAirBlueprintLib::BindActionToKey("inputEventNoDisplayView", EKeys::Hyphen, this, &ACameraDirector::inputEventNoDisplayView);
-    UAirBlueprintLib::BindActionToKey("inputEventFrontView", EKeys::I, this, &ACameraDirector::inputEventFrontView);
+    UAirBlueprintLib::BindAction("inputEventFpvView", this, this, &ACameraDirector::inputEventFpvView);
+    UAirBlueprintLib::BindAction("inputEventFlyWithView", this, this, &ACameraDirector::inputEventFlyWithView);
+    UAirBlueprintLib::BindAction("inputEventGroundView", this, this, &ACameraDirector::inputEventGroundView);
+    UAirBlueprintLib::BindAction("inputEventManualView", this, this, &ACameraDirector::inputEventManualView);
+    UAirBlueprintLib::BindAction("inputEventSpringArmChaseView", this, this, &ACameraDirector::inputEventSpringArmChaseView);
+    UAirBlueprintLib::BindAction("inputEventBackupView", this, this, &ACameraDirector::inputEventBackupView);
+    UAirBlueprintLib::BindAction("inputEventNoDisplayView", this, this, &ACameraDirector::inputEventNoDisplayView);
+    UAirBlueprintLib::BindAction("inputEventFrontView", this, this, &ACameraDirector::inputEventFrontView);
 }
 
 void ACameraDirector::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -292,7 +292,7 @@ void ACameraDirector::inputEventFrontView()
         disableCameras(true, true, true, false);
     }
     else
-        UAirBlueprintLib::LogMessageString("Camera is not available: ", "backup_camera", LogDebugLevel::Failure);
+        UAirBlueprintLib::LogMessageString("Camera is not available: ", "front_camera", LogDebugLevel::Failure);
 
     notifyViewModeChanged();
 }
