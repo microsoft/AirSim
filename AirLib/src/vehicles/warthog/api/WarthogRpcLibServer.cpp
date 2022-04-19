@@ -7,7 +7,7 @@
 #ifndef AIRLIB_NO_RPC
 //if using Unreal Build system then include precompiled header file first
 //#include "windows.h"
-#include "vehicles/Warthog/api/WarthogRpcLibServer.hpp"
+#include "vehicles/warthog/api/WarthogRpcLibServer.hpp"
 
 #include "common/Common.hpp"
 STRICT_MODE_OFF
