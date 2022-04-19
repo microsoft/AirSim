@@ -2,7 +2,7 @@
 Module to plot the recorded drone data.
 
 Args:
-    --recording=<recording_file_name_in_~/Documents/AirSim/>
+    --recording=<recording_folder_name_in_~/Documents/AirSim/>
     e.g. --recording=2022-04-19-14-57-09
 
 """
