@@ -29,7 +29,7 @@ Cars in AirSim
 
 ### macOS
 [![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml)
-* [Build it](https://microsoft.github.io/AirSim/build_linux)
+* [Build it](https://microsoft.github.io/AirSim/build_macos)
 
 For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 
 
