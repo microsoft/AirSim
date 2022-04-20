@@ -66,7 +66,7 @@ void UManualPoseController::resetDelta()
 
 void UManualPoseController::removeInputBindings()
 {
-        UAirBlueprintLib::DisableInput(actor_);
+    UAirBlueprintLib::DisableInput(actor_);
 }
 
 void UManualPoseController::setupInputBindings()

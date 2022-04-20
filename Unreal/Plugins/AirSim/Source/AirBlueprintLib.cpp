@@ -713,29 +713,27 @@ int UAirBlueprintLib::RemoveAxisBinding(const FInputAxisKeyMapping& axis, FInput
 }
 
 int UAirBlueprintLib::RemoveAxisBinding(FInputAxisBinding* axis_binding, AActor* actorForWorldContext)
-    {
-        if (axis_binding == nullptr && actorForWorldContext == nullptr)
-        {
-            return -1;
-        }
-
-        APlayerController* controller = actorForWorldContext->GetWorld()->GetFirstPlayerController();
-        //removing binding
-        int found_binding_index = -1, cur_binding_index = -1;
-        for (const auto& axisBindingArrayEntry : controller->InputComponent->AxisBindings) {
-            ++cur_binding_index;
-            if (axisBindingArrayEntry.AxisName == axis_binding->AxisName) {
-                found_binding_index = cur_binding_index;
-                break;
-            }
-        }
-    	if (found_binding_index >= 0)
-    	{
-    		controller->InputComponent->AxisBindings.RemoveAt(found_binding_index);
-    	}
-
-        return found_binding_index;
+{
+    if (axis_binding == nullptr && actorForWorldContext == nullptr) {
+        return -1;
     }
+
+    APlayerController* controller = actorForWorldContext->GetWorld()->GetFirstPlayerController();
+    //removing binding
+    int found_binding_index = -1, cur_binding_index = -1;
+    for (const auto& axisBindingArrayEntry : controller->InputComponent->AxisBindings) {
+        ++cur_binding_index;
+        if (axisBindingArrayEntry.AxisName == axis_binding->AxisName) {
+            found_binding_index = cur_binding_index;
+            break;
+        }
+    }
+    if (found_binding_index >= 0) {
+        controller->InputComponent->AxisBindings.RemoveAt(found_binding_index);
+    }
+
+    return found_binding_index;
+}
 
 float UAirBlueprintLib::GetDisplayGamma()
 {
@@ -749,7 +747,7 @@ void UAirBlueprintLib::EnableInput(AActor* actor)
 
 void UAirBlueprintLib::DisableInput(AActor* actor)
 {
-	actor->DisableInput(actor->GetWorld()->GetFirstPlayerController());
+    actor->DisableInput(actor->GetWorld()->GetFirstPlayerController());
 }
 
 UObject* UAirBlueprintLib::LoadObject(const std::string& name)

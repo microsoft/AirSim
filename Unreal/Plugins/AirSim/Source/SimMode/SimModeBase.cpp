@@ -138,7 +138,7 @@ void ASimModeBase::BeginPlay()
     AirSimSettings::TimeOfDaySetting tod_setting = getSettings().tod_setting;
     setTimeOfDay(tod_setting.enabled, tod_setting.start_datetime, tod_setting.is_start_datetime_dst, tod_setting.celestial_clock_speed, tod_setting.update_interval_secs, tod_setting.move_sun);
 
-    UAirBlueprintLib::LogMessage(FString::Printf(TEXT("Press %s to see help"), *UWeatherLib::GetInputMapKeysString("InputEventToggleHelp",EInputTypes::EKeyboardAndGamepad)), TEXT(""), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage(FString::Printf(TEXT("Press %s to see help"), *UWeatherLib::GetInputMapKeysString("InputEventToggleHelp", EInputTypes::EKeyboardAndGamepad)), TEXT(""), LogDebugLevel::Informational);
 
     setupVehiclesAndCamera();
     FRecordingThread::init();

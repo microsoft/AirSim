@@ -319,10 +319,10 @@ FString UWeatherLib::MakeInputString(const FName InputName, const FString Descri
     const FString InputKeys = GetInputMapKeysString(InputName, InputTypes);
     FString WhitespaceString;
 
-	WhitespaceString = WhitespaceString.RightPad(WhitespacePadding);
+    WhitespaceString = WhitespaceString.RightPad(WhitespacePadding);
     WhitespaceString = WhitespaceString.LeftChop(InputKeys.Len());
 
-	return  InputKeys + WhitespaceString + Descriptor + TEXT("\n");
+    return InputKeys + WhitespaceString + Descriptor + TEXT("\n");
 }
 FString UWeatherLib::GetInputMapKeysString(FName InputName, EInputTypes InputTypes)
 {
@@ -337,28 +337,22 @@ FString UWeatherLib::GetInputMapKeysString(FName InputName, EInputTypes InputTyp
     FString JoinedStr = FString(TEXT(""));
 
     // Remove Keys that don't match type InputType
-	for(int i = ActionKeyMapping.Num()-1; i >= 0; i--)
-	{
-		if (InputTypes == EInputTypes::EKeyboard && ActionKeyMapping[i].Key.IsGamepadKey())
-		{
-			ActionKeyMapping.RemoveAt(i);
-		}
-		if (InputTypes == EInputTypes::EGamepad && !ActionKeyMapping[i].Key.IsGamepadKey())
-		{
-			ActionKeyMapping.RemoveAt(i);
-		}
-	}
-	for (int i = AxisKeyMapping.Num()-1; i >= 0; i--)
-	{
-		if (InputTypes == EInputTypes::EKeyboard && AxisKeyMapping[i].Key.IsGamepadKey())
-		{
-			AxisKeyMapping.RemoveAt(i);
-		}
-		if (InputTypes == EInputTypes::EGamepad && !AxisKeyMapping[i].Key.IsGamepadKey())
-		{
-			AxisKeyMapping.RemoveAt(i);
-		}
-	}
+    for (int i = ActionKeyMapping.Num() - 1; i >= 0; i--) {
+        if (InputTypes == EInputTypes::EKeyboard && ActionKeyMapping[i].Key.IsGamepadKey()) {
+            ActionKeyMapping.RemoveAt(i);
+        }
+        if (InputTypes == EInputTypes::EGamepad && !ActionKeyMapping[i].Key.IsGamepadKey()) {
+            ActionKeyMapping.RemoveAt(i);
+        }
+    }
+    for (int i = AxisKeyMapping.Num() - 1; i >= 0; i--) {
+        if (InputTypes == EInputTypes::EKeyboard && AxisKeyMapping[i].Key.IsGamepadKey()) {
+            AxisKeyMapping.RemoveAt(i);
+        }
+        if (InputTypes == EInputTypes::EGamepad && !AxisKeyMapping[i].Key.IsGamepadKey()) {
+            AxisKeyMapping.RemoveAt(i);
+        }
+    }
 
     // Get Action Map Keys
     JoinedStr += GetInputActionMapString(ActionKeyMapping);
@@ -378,27 +372,21 @@ FString UWeatherLib::GetInputActionMapString(TArray<FInputActionKeyMapping> Acti
 {
     FString JoinedStr;
 
-    if (bReverseOrder)
-    {
-        for (int Index = 0; Index < ActionKeyMapping.Num(); Index++)
-        {
+    if (bReverseOrder) {
+        for (int Index = 0; Index < ActionKeyMapping.Num(); Index++) {
             JoinedStr += ActionKeyMapping[Index].Key.GetDisplayName(false).ToString();
-            if (Index + 1 < ActionKeyMapping.Num())
-            {
+            if (Index + 1 < ActionKeyMapping.Num()) {
                 JoinedStr += TEXT(", ");
             }
         }
     }
-    else
-    {
-	    for (int Index = ActionKeyMapping.Num() - 1; Index >= 0; Index--)
-	    {
-	    	JoinedStr += ActionKeyMapping[Index].Key.GetDisplayName(false).ToString();
-	    	if (Index - 1 >= 0)
-	    	{
-	    		JoinedStr += TEXT(", ");
-	    	}
-	    }
+    else {
+        for (int Index = ActionKeyMapping.Num() - 1; Index >= 0; Index--) {
+            JoinedStr += ActionKeyMapping[Index].Key.GetDisplayName(false).ToString();
+            if (Index - 1 >= 0) {
+                JoinedStr += TEXT(", ");
+            }
+        }
     }
     return JoinedStr;
 }
@@ -406,26 +394,21 @@ FString UWeatherLib::GetInputActionMapString(TArray<FInputActionKeyMapping> Acti
 FString UWeatherLib::GetInputAxisMapString(TArray<FInputAxisKeyMapping> AxisKeyMapping, bool bReverseOrder)
 {
     FString JoinedStr;
-    if(bReverseOrder)
-    {
-        for (int Index = 0; Index < AxisKeyMapping.Num(); Index++)
-        {
+    if (bReverseOrder) {
+        for (int Index = 0; Index < AxisKeyMapping.Num(); Index++) {
             JoinedStr += AxisKeyMapping[Index].Key.GetDisplayName(false).ToString();
-            if (Index + 1 < AxisKeyMapping.Num())
-            {
+            if (Index + 1 < AxisKeyMapping.Num()) {
                 JoinedStr += TEXT(", ");
             }
         }
     }
-    else{
-		for (int Index = AxisKeyMapping.Num() - 1; Index >= 0; Index--)
-		{
-			JoinedStr += AxisKeyMapping[Index].Key.GetDisplayName(false).ToString();
-			if (Index - 1 >= 0)
-			{
-				JoinedStr += TEXT(", ");
-			}
-		}
-	}
+    else {
+        for (int Index = AxisKeyMapping.Num() - 1; Index >= 0; Index--) {
+            JoinedStr += AxisKeyMapping[Index].Key.GetDisplayName(false).ToString();
+            if (Index - 1 >= 0) {
+                JoinedStr += TEXT(", ");
+            }
+        }
+    }
     return JoinedStr;
 }

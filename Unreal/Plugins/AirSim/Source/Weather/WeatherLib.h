@@ -35,7 +35,8 @@ enum class EWeatherParamVector : uint8
 };
 
 UENUM(BlueprintType)
-enum class EInputTypes : uint8 {
+enum class EInputTypes : uint8
+{
     EKeyboard UMETA(DisplayName = "Keyboard"),
     EGamepad UMETA(DisplayName = "Gamepad"),
     EKeyboardAndGamepad UMETA(DisplayName = "Keyboard & Gamepad"),
@@ -190,7 +191,7 @@ public:
     UFUNCTION(BlueprintPure, Category = UI)
     static FString MakeInputString(const FName InputName, const FString Descriptor, EInputTypes InputTypes, int WhitespacePadding = 15);
 
-	static FString GetInputMapKeysString(FName InputName, EInputTypes InputTypes);
+    static FString GetInputMapKeysString(FName InputName, EInputTypes InputTypes);
     static FString GetInputActionMapString(TArray<FInputActionKeyMapping> ActionKeyMapping, bool bReverseOrder = false);
     static FString GetInputAxisMapString(TArray<FInputAxisKeyMapping> AxisKeyMapping, bool bReverseOrder = false);
 

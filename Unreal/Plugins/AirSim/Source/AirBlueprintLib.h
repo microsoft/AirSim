@@ -142,10 +142,10 @@ public:
     // BindAction helper function to allow utilization of Unreal's Input mapping from Project Settings.
     template <class UserClass>
     static FInputActionBinding& BindAction(const FName action_name, AActor* actorForWorldContext, UserClass* obj,
-        typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func, bool on_press_or_release = false)
+                                           typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func, bool on_press_or_release = false)
     {
         APlayerController* controller = actorForWorldContext->GetWorld()->GetFirstPlayerController();
-    	return controller->InputComponent->BindAction(action_name, on_press_or_release ? IE_Pressed : IE_Released, obj, func);
+        return controller->InputComponent->BindAction(action_name, on_press_or_release ? IE_Pressed : IE_Released, obj, func);
     }
 
     template <class UserClass>
@@ -170,7 +170,7 @@ public:
     // BindAxis helper function to allow utilization of Unreal's Input mapping from Project Settings.
     template <class UserClass>
     static FInputAxisBinding& BindAxis(const FName axis_name, AActor* actorForWorldContext, UserClass* obj,
-        typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
+                                       typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
     {
         APlayerController* controller = actorForWorldContext->GetWorld()->GetFirstPlayerController();
         return controller->InputComponent->BindAxis(axis_name, obj, func);
