@@ -74,8 +74,8 @@ namespace airlib
         virtual bool setObjectScale(const std::string& object_name, const Vector3r& scale) = 0;
         virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) = 0;
         virtual bool setLightIntensity(const std::string& light_name, float intensity) = 0;
-        virtual bool setObjectMaterial(const std::string& object_name, const std::string& material_name, const int component_id=0) = 0;
-        virtual bool setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path, const int component_id=0) = 0;
+        virtual bool setObjectMaterial(const std::string& object_name, const std::string& material_name, const int component_id = 0) = 0;
+        virtual bool setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path, const int component_id = 0) = 0;
         virtual vector<MeshPositionVertexBuffersResponse> getMeshPositionVertexBuffers() const = 0;
 
         virtual bool createVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file) = 0;
@@ -103,8 +103,6 @@ namespace airlib
         virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,
                                                                        const std::string& vehicle_name, bool external) const = 0;
         virtual std::vector<uint8_t> getImage(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) const = 0;
-
-
 
         //CinemAirSim
         virtual std::vector<std::string> getPresetLensSettings(const CameraDetails& camera_details) = 0;

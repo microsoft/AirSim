@@ -50,8 +50,8 @@ public:
 
     virtual bool setLightIntensity(const std::string& light_name, float intensity) override;
     virtual std::unique_ptr<std::vector<std::string>> swapTextures(const std::string& tag, int tex_id = 0, int component_id = 0, int material_id = 0) override;
-    virtual bool setObjectMaterial(const std::string& object_name, const std::string& material_name, const int component_id=0) override;
-    virtual bool setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path, const int component_id=0) override;
+    virtual bool setObjectMaterial(const std::string& object_name, const std::string& material_name, const int component_id = 0) override;
+    virtual bool setObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path, const int component_id = 0) override;
     virtual std::vector<std::string> listSceneObjects(const std::string& name_regex) const override;
     virtual Pose getObjectPose(const std::string& object_name) const override;
     virtual bool setObjectPose(const std::string& object_name, const Pose& pose, bool teleport) override;
@@ -83,8 +83,6 @@ public:
 
     virtual bool testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& point1, const msr::airlib::GeoPoint& point2) const override;
     virtual std::vector<msr::airlib::GeoPoint> getWorldExtents() const override;
-
-
 
     // Camera APIs
     virtual msr::airlib::CameraInfo getCameraInfo(const CameraDetails& camera_details) const override;

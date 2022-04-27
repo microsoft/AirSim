@@ -16,7 +16,7 @@ class VehicleClient:
             ip = "127.0.0.1"
         self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = timeout_value, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
 
-#----------------------------------- Common vehicle APIs ---------------------------------------------
+#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - Common vehicle APIs -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
     def reset(self):
         """
         Reset the vehicle to its original starting state
@@ -218,8 +218,7 @@ class VehicleClient:
         """
         return self.client.call("simSetObjectMaterialFromTexture", object_name, texture_path, component_id)
 
-
-    # time-of-day control
+#time - of - day control
 #time - of - day control
     def simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True):
         """
@@ -308,8 +307,6 @@ class VehicleClient:
         """
         responses_raw = self.client.call('simGetImages', requests, vehicle_name, external)
         return [ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
-
-
 
 #CinemAirSim
     def simGetPresetLensSettings(self, camera_name, vehicle_name = '', external = False):  
@@ -836,7 +833,6 @@ class VehicleClient:
         return EnvironmentState.from_msgpack(env_state)
     simGetGroundTruthEnvironment.__annotations__ = {'return': EnvironmentState}
 
-
 #sensor APIs
     def getImuData(self, imu_name = '', vehicle_name = ''):
         """
@@ -1113,7 +1109,7 @@ class VehicleClient:
         """
         return self.client.call('getSettingsString')
 
-#----------------------------------- Multirotor APIs ---------------------------------------------
+#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - Multirotor APIs -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 class MultirotorClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):
         super(MultirotorClient, self).__init__(ip, port, timeout_value)
@@ -1579,43 +1575,48 @@ class MultirotorClient(VehicleClient, object):
             RotorStates: Containing a timestamp and the speed, thrust and torque of all rotors.
         """
         return RotorStates.from_msgpack(self.client.call('getRotorStates', vehicle_name))
-    getRotorStates.__annotations__ = {'return': RotorStates}
+    getRotorStates.__annotations__ =
+{
+    'return' : RotorStates
+}
 
-#----------------------------------- Car APIs ---------------------------------------------
-class CarClient(VehicleClient, object):
-    def __init__(self, ip = "", port = 41451, timeout_value = 3600):
-        super(CarClient, self).__init__(ip, port, timeout_value)
+#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- - Car APIs -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+class CarClient(VehicleClient, object)
+    : def __init__(self, ip = "", port = 41451, timeout_value = 3600)
+    : super(CarClient, self).__init__(ip, port, timeout_value)
 
-    def setCarControls(self, controls, vehicle_name = ''):
-        """
-        Control the car using throttle, steering, brake, etc.
+          def setCarControls(self, controls, vehicle_name = '')
+    : ""
+      "
+    Control the car using throttle
+, steering
+, brake
+, etc.
 
-        Args:
-            controls (CarControls): Struct containing control values
-            vehicle_name (str, optional): Name of vehicle to be controlled
-        """
-        self.client.call('setCarControls', controls, vehicle_name)
+  Args : controls(CarControls)
+    : Struct containing control values vehicle_name(str, optional)
+    : Name of vehicle to be controlled ""
+                                       "
+    self.client.call('setCarControls', controls, vehicle_name)
 
-    def getCarState(self, vehicle_name = ''):
-        """
-        The position inside the returned CarState is in the frame of the vehicle's starting point
+        def getCarState(self, vehicle_name = '')
+    : ""
+      "
+    The position inside the returned CarState is in the frame of the vehicle's starting point
 
-        Args:
-            vehicle_name (str, optional): Name of vehicle
+    Args : vehicle_name(str, optional)
+    : Name of vehicle
 
-        Returns:
-            CarState:
-        """
-        state_raw = self.client.call('getCarState', vehicle_name)
-        return CarState.from_msgpack(state_raw)
+    Returns : CarState : ""
+                         "
+                         state_raw = self.client.call('getCarState', vehicle_name) return CarState.from_msgpack(state_raw)
 
-    def getCarControls(self, vehicle_name=''):
-        """
-        Args:
-            vehicle_name (str, optional): Name of vehicle
+                                         def getCarControls(self, vehicle_name ='')
+    : ""
+      "
+    Args : vehicle_name(str, optional)
+    : Name of vehicle
 
-        Returns:
-            CarControls:
-        """
-        controls_raw = self.client.call('getCarControls', vehicle_name)
-        return CarControls.from_msgpack(controls_raw)
+    Returns : CarControls : ""
+                            "
+                            controls_raw = self.client.call('getCarControls', vehicle_name) return CarControls.from_msgpack(controls_raw)
