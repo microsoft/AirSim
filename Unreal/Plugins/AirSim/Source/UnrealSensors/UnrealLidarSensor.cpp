@@ -6,6 +6,7 @@
 #include "common/Common.hpp"
 #include "NedTransform.h"
 #include "DrawDebugHelpers.h"
+#include "Runtime/Core/Public/Async/ParallelFor.h"
 
 // ctor
 UnrealLidarSensor::UnrealLidarSensor(const AirSimSettings::LidarSetting& setting,
@@ -73,28 +74,30 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
     const float laser_start = std::fmod(360.0f + params.horizontal_FOV_start, 360.0f);
     const float laser_end = std::fmod(360.0f + params.horizontal_FOV_end, 360.0f);
 
-    // shoot lasers
-    for (auto laser = 0u; laser < number_of_lasers; ++laser) {
-        const float vertical_angle = laser_angles_[laser];
+    point_cloud.assign(total_points_to_scan * 3, NULL);
+    segmentation_cloud.assign(total_points_to_scan, NULL);
 
-        for (auto i = 0u; i < points_to_scan_with_one_laser; ++i) {
-            const float horizontal_angle = std::fmod(current_horizontal_angle_ + angle_distance_of_laser_measure * i, 360.0f);
+    ParallelFor(total_points_to_scan, [&](int32 idx) {
+        const float vertical_angle = laser_angles_[idx % number_of_lasers];
+        const float horizontal_angle = std::fmod(current_horizontal_angle_ + angle_distance_of_laser_measure * idx, 360.0f);
 
-            // check if the laser is outside the requested horizontal FOV
-            if (!VectorMath::isAngleBetweenAngles(horizontal_angle, laser_start, laser_end))
-                continue;
-
+        // check if the laser is outside the requested horizontal FOV
+        if (VectorMath::isAngleBetweenAngles(horizontal_angle, laser_start, laser_end)) {
             Vector3r point;
             int segmentationID = -1;
             // shoot laser and get the impact point, if any
-            if (shootLaser(lidar_pose, vehicle_pose, laser, horizontal_angle, vertical_angle, params, point, segmentationID)) {
-                point_cloud.emplace_back(point.x());
-                point_cloud.emplace_back(point.y());
-                point_cloud.emplace_back(point.z());
-                segmentation_cloud.emplace_back(segmentationID);
+            if (shootLaser(lidar_pose, vehicle_pose, idx % number_of_lasers, horizontal_angle, vertical_angle, params, point, segmentationID)) {
+                point_cloud[idx * 3] = point.x();
+                point_cloud[idx * 3 + 1] = point.y();
+                point_cloud[idx * 3 + 2] = point.z();
+                segmentation_cloud[idx] = segmentationID;
             }
         }
-    }
+    });
+
+    // erase–remove idiom to handle non-valid elements
+    point_cloud.erase(std::remove(point_cloud.begin(), point_cloud.end(), NULL), point_cloud.end());
+    segmentation_cloud.erase(std::remove(segmentation_cloud.begin(), segmentation_cloud.end(), NULL), segmentation_cloud.end());
 
     current_horizontal_angle_ = std::fmod(current_horizontal_angle_ + angle_distance_of_tick, 360.0f);
 
