@@ -1257,17 +1257,6 @@ void AirsimROSWrapper::lidar_timer_cb()
     }
 }
 
-cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse& img_response) const
-{
-    cv::Mat mat(img_response.height, img_response.width, CV_32FC1, cv::Scalar(0));
-    int img_width = img_response.width;
-
-    for (int row = 0; row < img_response.height; row++)
-        for (int col = 0; col < img_width; col++)
-            mat.at<float>(row, col) = img_response.image_data_float[row * img_width + col];
-    return mat;
-}
-
 std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
                                                                                      const rclcpp::Time curr_ros_time,
                                                                                      const std::string frame_id)
@@ -1292,10 +1281,14 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
                                                                                            const std::string frame_id)
 {
     unused(curr_ros_time);
-    // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error,
-    // hence the dependency on opencv and cv_bridge. however, this is an extremely fast op, so no big deal.
-    cv::Mat depth_img = manual_decode_depth(img_response);
-    std::shared_ptr<sensor_msgs::msg::Image> depth_img_msg = cv_bridge::CvImage(std_msgs::msg::Header(), "32FC1", depth_img).toImageMsg();
+    auto depth_img_msg = std::make_shared<sensor_msgs::msg::Image>();
+    depth_img_msg->width = img_response.width;
+    depth_img_msg->height = img_response.height;
+    depth_img_msg->data.resize(img_response.image_data_float.size() * sizeof(float));
+    memcpy(depth_img_msg->data.data(), img_response.image_data_float.data(), depth_img_msg->data.size());
+    depth_img_msg->encoding = "32FC1";
+    depth_img_msg->step = depth_img_msg->data.size() / img_response.height;
+    depth_img_msg->is_bigendian = 0;
     depth_img_msg->header.stamp = rclcpp::Time(img_response.time_stamp);
     depth_img_msg->header.frame_id = frame_id;
     return depth_img_msg;
