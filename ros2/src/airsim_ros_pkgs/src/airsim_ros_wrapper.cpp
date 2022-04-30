@@ -648,7 +648,7 @@ nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(con
 sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const
 {
     sensor_msgs::msg::PointCloud2 lidar_msg;
-    lidar_msg.header.stamp = nh_->now();
+    lidar_msg.header.stamp = rclcpp::Time(lidar_data.time_stamp);
     lidar_msg.header.frame_id = vehicle_name;
 
     if (lidar_data.point_cloud.size() > 3) {
@@ -758,7 +758,7 @@ sensor_msgs::msg::Range AirsimROSWrapper::get_range_from_airsim(const msr::airli
     dist_msg.header.stamp = rclcpp::Time(dist_data.time_stamp);
     dist_msg.range = dist_data.distance;
     dist_msg.min_range = dist_data.min_distance;
-    dist_msg.max_range = dist_data.min_distance;
+    dist_msg.max_range = dist_data.max_distance;
 
     return dist_msg;
 }
@@ -1154,6 +1154,21 @@ void AirsimROSWrapper::convert_tf_msg_to_enu(geometry_msgs::msg::TransformStampe
     tf_msg.transform.rotation.z = -tf_msg.transform.rotation.z;
 }
 
+geometry_msgs::msg::Transform AirsimROSWrapper::get_camera_optical_tf_from_body_tf(const geometry_msgs::msg::Transform& body_tf) const
+{
+    geometry_msgs::msg::Transform optical_tf = body_tf; //same translation
+    auto opticalQ = msr::airlib::Quaternionr(optical_tf.rotation.w, optical_tf.rotation.x, optical_tf.rotation.y, optical_tf.rotation.z);
+    if (isENU_)
+        opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0); //CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
+    else
+        opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5); //CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
+    optical_tf.rotation.w = opticalQ.w();
+    optical_tf.rotation.x = opticalQ.x();
+    optical_tf.rotation.y = opticalQ.y();
+    optical_tf.rotation.z = opticalQ.z();
+    return optical_tf;
+}
+
 void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting)
 {
     geometry_msgs::msg::TransformStamped vehicle_tf_msg;
@@ -1196,16 +1211,8 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
 
     geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
     static_cam_tf_optical_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_optical/static";
-
-    tf2::Quaternion quat_cam_body;
-    tf2::Quaternion quat_cam_optical;
-    tf2::convert(static_cam_tf_body_msg.transform.rotation, quat_cam_body);
-    tf2::Matrix3x3 mat_cam_body(quat_cam_body);
-    tf2::Matrix3x3 mat_cam_optical;
-    mat_cam_optical.setValue(mat_cam_body.getColumn(1).getX(), mat_cam_body.getColumn(2).getX(), mat_cam_body.getColumn(0).getX(), mat_cam_body.getColumn(1).getY(), mat_cam_body.getColumn(2).getY(), mat_cam_body.getColumn(0).getY(), mat_cam_body.getColumn(1).getZ(), mat_cam_body.getColumn(2).getZ(), mat_cam_body.getColumn(0).getZ());
-    mat_cam_optical.getRotation(quat_cam_optical);
-    quat_cam_optical.normalize();
-    tf2::convert(quat_cam_optical, static_cam_tf_optical_msg.transform.rotation);
+    static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
+    static_cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(static_cam_tf_body_msg.transform);
 
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_body_msg);
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_optical_msg);
@@ -1250,17 +1257,6 @@ void AirsimROSWrapper::lidar_timer_cb()
     }
 }
 
-cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse& img_response) const
-{
-    cv::Mat mat(img_response.height, img_response.width, CV_32FC1, cv::Scalar(0));
-    int img_width = img_response.width;
-
-    for (int row = 0; row < img_response.height; row++)
-        for (int col = 0; col < img_width; col++)
-            mat.at<float>(row, col) = img_response.image_data_float[row * img_width + col];
-    return mat;
-}
-
 std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
                                                                                      const rclcpp::Time curr_ros_time,
                                                                                      const std::string frame_id)
@@ -1285,10 +1281,14 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
                                                                                            const std::string frame_id)
 {
     unused(curr_ros_time);
-    // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error,
-    // hence the dependency on opencv and cv_bridge. however, this is an extremely fast op, so no big deal.
-    cv::Mat depth_img = manual_decode_depth(img_response);
-    std::shared_ptr<sensor_msgs::msg::Image> depth_img_msg = cv_bridge::CvImage(std_msgs::msg::Header(), "32FC1", depth_img).toImageMsg();
+    auto depth_img_msg = std::make_shared<sensor_msgs::msg::Image>();
+    depth_img_msg->width = img_response.width;
+    depth_img_msg->height = img_response.height;
+    depth_img_msg->data.resize(img_response.image_data_float.size() * sizeof(float));
+    memcpy(depth_img_msg->data.data(), img_response.image_data_float.data(), depth_img_msg->data.size());
+    depth_img_msg->encoding = "32FC1";
+    depth_img_msg->step = depth_img_msg->data.size() / img_response.height;
+    depth_img_msg->is_bigendian = 0;
     depth_img_msg->header.stamp = rclcpp::Time(img_response.time_stamp);
     depth_img_msg->header.frame_id = frame_id;
     return depth_img_msg;
@@ -1367,19 +1367,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     cam_tf_optical_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
     cam_tf_optical_msg.header.frame_id = frame_id;
     cam_tf_optical_msg.child_frame_id = frame_id + "/" + child_frame_id + "_optical";
-    cam_tf_optical_msg.transform.translation = cam_tf_body_msg.transform.translation;
-
-    tf2::Quaternion quat_cam_body;
-    tf2::Quaternion quat_cam_optical;
-    tf2::convert(cam_tf_body_msg.transform.rotation, quat_cam_body);
-    tf2::Matrix3x3 mat_cam_body(quat_cam_body);
-    // tf2::Matrix3x3 mat_cam_optical = matrix_cam_body_to_optical_ * mat_cam_body * matrix_cam_body_to_optical_inverse_;
-    // tf2::Matrix3x3 mat_cam_optical = matrix_cam_body_to_optical_ * mat_cam_body;
-    tf2::Matrix3x3 mat_cam_optical;
-    mat_cam_optical.setValue(mat_cam_body.getColumn(1).getX(), mat_cam_body.getColumn(2).getX(), mat_cam_body.getColumn(0).getX(), mat_cam_body.getColumn(1).getY(), mat_cam_body.getColumn(2).getY(), mat_cam_body.getColumn(0).getY(), mat_cam_body.getColumn(1).getZ(), mat_cam_body.getColumn(2).getZ(), mat_cam_body.getColumn(0).getZ());
-    mat_cam_optical.getRotation(quat_cam_optical);
-    quat_cam_optical.normalize();
-    tf2::convert(quat_cam_optical, cam_tf_optical_msg.transform.rotation);
+    cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(cam_tf_body_msg.transform);
 
     tf_broadcaster_->sendTransform(cam_tf_body_msg);
     tf_broadcaster_->sendTransform(cam_tf_optical_msg);
