@@ -1,5 +1,9 @@
 # don't check-in Plugins folder we copied from AirSim folder
-Plugins/
+#Plugins/
+#Plugins/AirSim/Content/
+#Plugins/AirSim/Source/AirLib/
+#Plugins/AirSim/.idea/
+
 # Don't add packaged binaries
 Packaged/
 

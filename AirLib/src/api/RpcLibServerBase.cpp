@@ -144,6 +144,13 @@ namespace airlib
             return getWorldSimApi()->runConsoleCommand(command);
         });
 
+        // TODO: Parralized RL
+        pimpl_->server.bind("simGetBatchImages", [&](const std::vector<RpcLibAdaptorsBase::ImageRequest>& request_adapter, const std::vector<std::string> vehicle_names) -> vector<RpcLibAdaptorsBase::ImageResponse> {
+            const auto& response = getWorldSimApi()->getBatchImages(RpcLibAdaptorsBase::ImageRequest::to(request_adapter), vehicle_names);
+            return RpcLibAdaptorsBase::ImageResponse::from(response);
+        });
+        // TODO: Parralized RL
+
         pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdaptorsBase::ImageRequest>& request_adapter, const std::string& vehicle_name, bool external) -> vector<RpcLibAdaptorsBase::ImageResponse> {
             const auto& response = getWorldSimApi()->getImages(RpcLibAdaptorsBase::ImageRequest::to(request_adapter), vehicle_name, external);
             return RpcLibAdaptorsBase::ImageResponse::from(response);

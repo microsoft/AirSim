@@ -256,6 +256,18 @@ __pragma(warning(disable : 4239))
             pimpl_->client.call("simSetTraceLine", color_rgba, thickness, vehicle_name);
         }
 
+        vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetBatchImages(vector<ImageCaptureBase::ImageRequest> request, const vector<std::string> &vehicle_names)
+        {
+            /*
+             * Mapping by index of image request to vehicle name
+             */
+            const auto& response_adaptor = pimpl_->client.call("simGetBatchImages",
+                                                               RpcLibAdaptorsBase::ImageRequest::from(request),
+                                                               vehicle_names).as<vector<RpcLibAdaptorsBase::ImageResponse>>();
+
+            return RpcLibAdaptorsBase::ImageResponse::to(response_adaptor);
+        }
+
         vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name, bool external)
         {
             const auto& response_adaptor = pimpl_->client.call("simGetImages",
