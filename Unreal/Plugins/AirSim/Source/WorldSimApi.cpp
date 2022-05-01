@@ -13,6 +13,8 @@
 #include <ctime>
 #include <algorithm>
 
+#include "RenderRequest.h"
+
 WorldSimApi::WorldSimApi(ASimModeBase* simmode)
     : simmode_(simmode) {}
 
@@ -895,6 +897,96 @@ std::vector<float> WorldSimApi::getDistortionParams(const CameraDetails& camera_
     return param_values;
 }
 
+std::vector<msr::airlib::ImageCaptureBase::ImageResponse> WorldSimApi::getBatchImages(const std::vector<ImageCaptureBase::ImageRequest>& requests, const msr::airlib::vector<std::string>& vehicle_names) const
+{
+
+    std::vector<msr::airlib::ImageCaptureBase::ImageResponse> responses;
+    std::vector<std::shared_ptr<RenderRequest::RenderParams>> render_params;
+    std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;
+
+    bool visibilityChanged = false;
+    
+    for (unsigned int i = 0; i < requests.size(); ++i) {
+        ImageCaptureBase::ImageRequest request = requests.at(i);
+        std::string vehicle_name = vehicle_names.at(i);
+
+        APIPCamera* camera = simmode_->getVehicleSimApi(vehicle_name)->getCamera(request.camera_name);
+        visibilityChanged = const_cast<UnrealImageCapture*>(simmode_->getVehicleSimApi(vehicle_name)->getImageCapture())->updateCameraVisibility(camera, request) || visibilityChanged;
+    }
+
+    if (visibilityChanged) {
+        // We don't do game/render thread synchronization for safe method.
+        // We just blindly sleep for 200ms (the old way)
+        // Typically only called once, when the quadrotor is created.
+        std::this_thread::sleep_for(std::chrono::duration<double>(0.2));
+    }
+
+    // LOOP AND ADD TO RENDER_PARAMS
+    UGameViewportClient* gameViewport = nullptr;
+    for (unsigned int i = 0; i < requests.size(); ++i) {
+        ImageCaptureBase::ImageRequest request = requests.at(i);
+        APIPCamera* camera = simmode_->getVehicleSimApi(vehicle_names.at(i))->getCamera(request.camera_name);
+        if (gameViewport == nullptr) {
+            gameViewport = camera->GetWorld()->GetGameViewport();
+        }
+
+        responses.push_back(ImageCaptureBase::ImageResponse());
+        ImageCaptureBase::ImageResponse& response = responses.at(i);
+        USceneCaptureComponent2D* capture = camera->getCaptureComponent(request.image_type, false);
+        UTextureRenderTarget2D* textureTarget = nullptr;
+        if (capture == nullptr) {
+            response.message = "Can't take screenshot because none camera type is not active";
+        }
+        else if (capture->TextureTarget == nullptr) {
+            response.message = "Can't take screenshot because texture target is null";
+        }
+        else
+            textureTarget = capture->TextureTarget;
+        render_params.push_back(std::make_shared<RenderRequest::RenderParams>(capture, textureTarget, request.pixels_as_float, request.compress));
+    }
+
+    // Not sure when this would be nullpointer
+    if (nullptr == gameViewport) {
+        UE_LOG(LogTemp, Warning, TEXT("gameViewport is nullptr... not sure why this is."));
+    }
+
+    // LOOP AND ADD TO CAMERA POSE
+    auto query_camera_pose_cb = [this, &requests, &responses, &vehicle_names]() {
+        size_t count = requests.size();
+        for (size_t i = 0; i < count; i++) {
+            const ImageCaptureBase::ImageRequest& request = requests.at(i);
+            APIPCamera* camera = simmode_->getVehicleSimApi(vehicle_names.at(i))->getCamera(request.camera_name);
+            ImageCaptureBase::ImageResponse& response = responses.at(i);
+            auto camera_pose = camera->getPose();
+            response.camera_position = camera_pose.position;
+            response.camera_orientation = camera_pose.orientation;
+        }
+    };
+
+    // .GETSCREENSHOT
+    RenderRequest render_request{ gameViewport, std::move(query_camera_pose_cb) };
+    render_request.getScreenshot(render_params.data(), render_results, render_params.size(), false);
+
+    for (unsigned int i = 0; i < requests.size(); ++i) {
+        const ImageCaptureBase::ImageRequest& request = requests.at(i);
+        ImageCaptureBase::ImageResponse& response = responses.at(i);
+
+        response.camera_name = request.camera_name;
+        response.time_stamp = render_results[i]->time_stamp;
+        response.image_data_uint8 = std::vector<uint8_t>(render_results[i]->image_data_uint8.GetData(), render_results[i]->image_data_uint8.GetData() + render_results[i]->image_data_uint8.Num());
+        response.image_data_float = std::vector<float>(render_results[i]->image_data_float.GetData(), render_results[i]->image_data_float.GetData() + render_results[i]->image_data_float.Num());
+        
+        response.pixels_as_float = request.pixels_as_float;
+        response.compress = request.compress;
+        response.width = render_results[i]->width;
+        response.height = render_results[i]->height;
+        response.image_type = request.image_type;
+    }
+
+    return responses;
+}
+
+
 std::vector<WorldSimApi::ImageCaptureBase::ImageResponse> WorldSimApi::getImages(
     const std::vector<ImageCaptureBase::ImageRequest>& requests, const std::string& vehicle_name, bool external) const
 {
@@ -1049,16 +1141,16 @@ std::vector<msr::airlib::DetectionInfo> WorldSimApi::getDetections(ImageCaptureB
 
             Vector3r nedWrtOrigin = ned_transform.toGlobalNed(detections[i].Actor->GetActorLocation());
             result[i].geo_point = msr::airlib::EarthUtils::nedToGeodetic(nedWrtOrigin,
-                                                                         AirSimSettings::singleton().origin_geopoint);
+                                                                         msr::airlib::AirSimSettings::singleton().origin_geopoint);
 
-            result[i].box2D.min = Vector2r(detections[i].Box2D.Min.X, detections[i].Box2D.Min.Y);
-            result[i].box2D.max = Vector2r(detections[i].Box2D.Max.X, detections[i].Box2D.Max.Y);
+            result[i].box2D.min = msr::airlib::Vector2r(detections[i].Box2D.Min.X, detections[i].Box2D.Min.Y);
+            result[i].box2D.max = msr::airlib::Vector2r(detections[i].Box2D.Max.X, detections[i].Box2D.Max.Y);
 
             result[i].box3D.min = ned_transform.toLocalNed(detections[i].Box3D.Min);
             result[i].box3D.max = ned_transform.toLocalNed(detections[i].Box3D.Max);
 
             const Vector3r& position = ned_transform.toLocalNed(detections[i].RelativeTransform.GetTranslation());
-            const Quaternionr& orientation = ned_transform.toNed(detections[i].RelativeTransform.GetRotation());
+            const msr::airlib::Quaternionr& orientation = ned_transform.toNed(detections[i].RelativeTransform.GetRotation());
 
             result[i].relative_pose = Pose(position, orientation);
         }

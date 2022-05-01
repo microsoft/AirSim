@@ -15,7 +15,7 @@ public:
 
     virtual void getImages(const std::vector<ImageRequest>& requests, std::vector<ImageResponse>& responses) const override;
 
-private:
+public:
     void getSceneCaptureImage(const std::vector<msr::airlib::ImageCaptureBase::ImageRequest>& requests,
                               std::vector<msr::airlib::ImageCaptureBase::ImageResponse>& responses, bool use_safe_method) const;
 
@@ -24,7 +24,7 @@ private:
 
     bool updateCameraVisibility(APIPCamera* camera, const msr::airlib::ImageCaptureBase::ImageRequest& request);
 
-private:
+public:
     const common_utils::UniqueValueMap<std::string, APIPCamera*>* cameras_;
     std::vector<uint8_t> last_compressed_png_;
 };

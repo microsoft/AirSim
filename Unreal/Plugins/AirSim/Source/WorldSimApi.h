@@ -91,6 +91,10 @@ public:
     virtual void setDistortionParam(const std::string& param_name, float value, const CameraDetails& camera_details) override;
     virtual std::vector<float> getDistortionParams(const CameraDetails& camera_details) const override;
 
+    // TODO: parralized RL
+    virtual std::vector<ImageCaptureBase::ImageResponse> getBatchImages(const std::vector<ImageCaptureBase::ImageRequest>& requests, const msr::airlib::vector<std::string>& vehicle_names) const override;
+    // TODO: parralized RL
+    
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,
                                                                    const std::string& vehicle_name, bool external) const override;
     virtual std::vector<uint8_t> getImage(ImageCaptureBase::ImageType image_type, const CameraDetails& camera_details) const override;
