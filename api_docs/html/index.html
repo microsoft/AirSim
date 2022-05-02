@@ -1157,13 +1157,15 @@ Allows the user to create bespoke APIs very easily, by adding a custom event to 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetObjectMaterial">
-<span class="sig-name descname"><span class="pre">simSetObjectMaterial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetObjectMaterial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetObjectMaterial" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">simSetObjectMaterial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetObjectMaterial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetObjectMaterial" title="Permalink to this definition"></a></dt>
 <dd><p>Runtime Swap Texture API
 See <a class="reference external" href="https://microsoft.github.io/AirSim/retexturing/">https://microsoft.github.io/AirSim/retexturing/</a> for details
 :param object_name: name of object to set material for
 :type object_name: str
 :param material_name: name of material to set for object
-:type material_name: str</p>
+:type material_name: str
+:param component_id: index of material elements
+:type component_id: int, optional</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>True if material was set</p>
@@ -1176,13 +1178,15 @@ See <a class="reference external" href="https://microsoft.github.io/AirSim/retex
 
 <dl class="py method">
 <dt class="sig sig-object py" id="airsim.client.VehicleClient.simSetObjectMaterialFromTexture">
-<span class="sig-name descname"><span class="pre">simSetObjectMaterialFromTexture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">texture_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetObjectMaterialFromTexture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetObjectMaterialFromTexture" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">simSetObjectMaterialFromTexture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">texture_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/airsim/client.html#VehicleClient.simSetObjectMaterialFromTexture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#airsim.client.VehicleClient.simSetObjectMaterialFromTexture" title="Permalink to this definition"></a></dt>
 <dd><p>Runtime Swap Texture API
 See <a class="reference external" href="https://microsoft.github.io/AirSim/retexturing/">https://microsoft.github.io/AirSim/retexturing/</a> for details
 :param object_name: name of object to set material for
 :type object_name: str
 :param texture_path: path to texture to set for object
-:type texture_path: str</p>
+:type texture_path: str
+:param component_id: index of material elements
+:type component_id: int, optional</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>True if material was set</p>
