@@ -493,14 +493,14 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simSwapTextures", tags, tex_id, component_id, material_id).as<vector<string>>();
         }
 
-        bool RpcLibClientBase::simSetObjectMaterial(const std::string& object_name, const std::string& material_name)
+        bool RpcLibClientBase::simSetObjectMaterial(const std::string& object_name, const std::string& material_name, const int component_id)
         {
-            return pimpl_->client.call("simSetObjectMaterial", object_name, material_name).as<bool>();
+            return pimpl_->client.call("simSetObjectMaterial", object_name, material_name, component_id).as<bool>();
         }
 
-        bool RpcLibClientBase::simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path)
+        bool RpcLibClientBase::simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path, const int component_id)
         {
-            return pimpl_->client.call("simSetObjectMaterialFromTexture", object_name, texture_path).as<bool>();
+            return pimpl_->client.call("simSetObjectMaterialFromTexture", object_name, texture_path, component_id).as<bool>();
         }
 
         bool RpcLibClientBase::simLoadLevel(const string& level_name)
