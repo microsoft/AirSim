@@ -20,6 +20,7 @@ class VehicleClient:
     def reset(self):
         """
         Reset the vehicle to its original starting state
+
         Note that you must call `enableApiControl` and `armDisarm` again after the call to reset
         """
         self.client.call('reset')
@@ -27,6 +28,7 @@ class VehicleClient:
     def ping(self):
         """
         If connection is established then this call will return true otherwise it will be blocked until timeout
+
         Returns:
             bool:
         """
@@ -48,6 +50,7 @@ class VehicleClient:
     def enableApiControl(self, is_enabled, vehicle_name = ''):
         """
         Enables or disables API control for vehicle corresponding to vehicle_name
+
         Args:
             is_enabled (bool): True to enable, False to disable API control
             vehicle_name (str, optional): Name of the vehicle to send this command to
@@ -57,9 +60,12 @@ class VehicleClient:
     def isApiControlEnabled(self, vehicle_name = ''):
         """
         Returns true if API control is established.
+
         If false (which is default) then API calls would be ignored. After a successful call to `enableApiControl`, `isApiControlEnabled` should return true.
+
         Args:
             vehicle_name (str, optional): Name of the vehicle
+
         Returns:
             bool: If API control is enabled
         """
@@ -68,9 +74,11 @@ class VehicleClient:
     def armDisarm(self, arm, vehicle_name = ''):
         """
         Arms or disarms vehicle
+
         Args:
             arm (bool): True to arm, False to disarm the vehicle
             vehicle_name (str, optional): Name of the vehicle to send this command to
+
         Returns:
             bool: Success
         """
@@ -79,6 +87,7 @@ class VehicleClient:
     def simPause(self, is_paused):
         """
         Pauses simulation
+
         Args:
             is_paused (bool): True to pause the simulation, False to release
         """
@@ -87,6 +96,7 @@ class VehicleClient:
     def simIsPause(self):
         """
         Returns true if the simulation is paused
+
         Returns:
             bool: If the simulation is paused
         """
@@ -95,6 +105,7 @@ class VehicleClient:
     def simContinueForTime(self, seconds):
         """
         Continue the simulation for the specified number of seconds
+
         Args:
             seconds (float): Time to run the simulation for
         """
@@ -103,6 +114,7 @@ class VehicleClient:
     def simContinueForFrames(self, frames):
         """
         Continue (or resume if paused) the simulation for the specified number of frames, after which the simulation will be paused.
+
         Args:
             frames (int): Frames to run the simulation for
         """
@@ -111,8 +123,10 @@ class VehicleClient:
     def getHomeGeoPoint(self, vehicle_name = ''):
         """
         Get the Home location of the vehicle
+
         Args:
             vehicle_name (str, optional): Name of vehicle to get home location of
+
         Returns:
             GeoPoint: Home location of the vehicle
         """
@@ -147,9 +161,11 @@ class VehicleClient:
     def simSetLightIntensity(self, light_name, intensity):
         """
         Change intensity of named light
+
         Args:
             light_name (str): Name of light to change
             intensity (float): New intensity value
+
         Returns:
             bool: True if successful, otherwise False
         """
@@ -158,13 +174,17 @@ class VehicleClient:
     def simSwapTextures(self, tags, tex_id = 0, component_id = 0, material_id = 0):
         """
         Runtime Swap Texture API
+
         See https://microsoft.github.io/AirSim/retexturing/ for details
+
         Args:
             tags (str): string of "," or ", " delimited tags to identify on which actors to perform the swap
             tex_id (int, optional): indexes the array of textures assigned to each actor undergoing a swap
+
                                     If out-of-bounds for some object's texture set, it will be taken modulo the number of textures that were available
             component_id (int, optional):
             material_id (int, optional):
+
         Returns:
             list[str]: List of objects which matched the provided tags and had the texture swap perfomed
         """
@@ -177,7 +197,8 @@ class VehicleClient:
         Args:
             object_name (str): name of object to set material for
             material_name (str): name of material to set for object
-            component_id (int, optional) : index of material elements 
+            component_id (int, optional) : index of material elements
+
         Returns:
             bool: True if material was set
         """
@@ -190,7 +211,8 @@ class VehicleClient:
         Args:
             object_name (str): name of object to set material for
             texture_path (str): path to texture to set for object
-            component_id (int, optional) : index of material elements 
+            component_id (int, optional) : index of material elements
+
         Returns:
             bool: True if material was set
         """
@@ -202,8 +224,10 @@ class VehicleClient:
     def simSetTimeOfDay(self, is_enabled, start_datetime = "", is_start_datetime_dst = False, celestial_clock_speed = 1, update_interval_secs = 60, move_sun = True):
         """
         Control the position of Sun in the environment
+
         Sun's position is computed using the coordinates specified in `OriginGeopoint` in settings for the date-time specified in the argument,
         else if the string is empty, current date & time is used
+
         Args:
             is_enabled (bool): True to enable time-of-day effect, False to reset the position to original
             start_datetime (str, optional): Date & Time in %Y-%m-%d %H:%M:%S format, e.g. `2018-02-12 15:20:00`
@@ -220,6 +244,7 @@ class VehicleClient:
     def simEnableWeather(self, enable):
         """
         Enable Weather effects. Needs to be called before using `simSetWeatherParameter` API
+
         Args:
             enable (bool): True to enable, False to disable
         """
@@ -228,6 +253,7 @@ class VehicleClient:
     def simSetWeatherParameter(self, param, val):
         """
         Enable various weather effects
+
         Args:
             param (WeatherParameter): Weather effect to be enabled
             val (float): Intensity of the effect, Range 0-1
@@ -240,14 +266,17 @@ class VehicleClient:
     def simGetImage(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Get a single image
+
         Returns bytes of png format image which can be dumped into abinary file to create .png image
         `string_to_uint8_array()` can be used to convert into Numpy unit8 array
         See https://microsoft.github.io/AirSim/image_apis/ for details
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
             vehicle_name (str, optional): Name of the vehicle with the camera
             external (bool, optional): Whether the camera is an External Camera
+
         Returns:
             Binary string literal of compressed png image
         """
@@ -266,11 +295,14 @@ class VehicleClient:
     def simGetImages(self, requests, vehicle_name = '', external = False):
         """
         Get multiple images
+
         See https://microsoft.github.io/AirSim/image_apis/ for details and examples
+
         Args:
             requests (list[ImageRequest]): Images required
             vehicle_name (str, optional): Name of vehicle associated with the camera
             external (bool, optional): Whether the camera is an External Camera
+
         Returns:
             list[ImageResponse]:
         """
@@ -344,9 +376,11 @@ class VehicleClient:
     def simTestLineOfSightToPoint(self, point, vehicle_name = ''):
         """
         Returns whether the target point is visible from the perspective of the inputted vehicle
+
         Args:
             point (GeoPoint): target point
             vehicle_name (str, optional): Name of vehicle
+
         Returns:
             [bool]: Success
         """
@@ -355,9 +389,11 @@ class VehicleClient:
     def simTestLineOfSightBetweenPoints(self, point1, point2):
         """
         Returns whether the target point is visible from the perspective of the source point
+
         Args:
             point1 (GeoPoint): source point
             point2 (GeoPoint): target point
+
         Returns:
             [bool]: Success
         """
@@ -366,6 +402,7 @@ class VehicleClient:
     def simGetWorldExtents(self):
         """
         Returns a list of GeoPoints representing the minimum and maximum extents of the world
+
         Returns:
             list[GeoPoint]
         """
@@ -377,8 +414,10 @@ class VehicleClient:
         Allows the client to execute a command in Unreal's native console, via an API.
         Affords access to the countless built-in commands such as "stat unit", "stat fps", "open [map]", adjust any config settings, etc. etc.
         Allows the user to create bespoke APIs very easily, by adding a custom event to the level blueprint, and then calling the console command "ce MyEventName [args]". No recompilation of AirSim needed!
+
         Args:
             command ([string]): Desired Unreal Engine Console command to run
+
         Returns:
             [bool]: Success
         """
@@ -388,7 +427,9 @@ class VehicleClient:
     def simGetMeshPositionVertexBuffers(self):
         """
         Returns the static meshes that make up the scene
+
         See https://microsoft.github.io/AirSim/meshes/ for details and how to use this
+
         Returns:
             list[MeshPositionVertexBuffersResponse]:
         """
@@ -399,6 +440,7 @@ class VehicleClient:
         """
         Args:
             vehicle_name (str, optional): Name of the Vehicle to get the info of
+
         Returns:
             CollisionInfo:
         """
@@ -407,7 +449,9 @@ class VehicleClient:
     def simSetVehiclePose(self, pose, ignore_collision, vehicle_name = ''):
         """
         Set the pose of the vehicle
+
         If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values
+
         Args:
             pose (Pose): Desired Pose pf the vehicle
             ignore_collision (bool): Whether to ignore any collision or not
@@ -421,6 +465,7 @@ class VehicleClient:
         
         Args:
             vehicle_name (str, optional): Name of the vehicle to get the Pose of
+
         Returns:
             Pose:
         """
@@ -430,7 +475,9 @@ class VehicleClient:
     def simSetTraceLine(self, color_rgba, thickness=1.0, vehicle_name = ''):
         """
         Modify the color and thickness of the line when Tracing is enabled
+
         Tracing can be enabled by pressing T in the Editor or setting `EnableTrace` to `True` in the Vehicle Settings
+
         Args:
             color_rgba (list): desired RGBA values from 0.0 to 1.0
             thickness (float, optional): Thickness of the line
@@ -441,8 +488,10 @@ class VehicleClient:
     def simGetObjectPose(self, object_name):
         """
         The position inside the returned Pose is in the world frame
+
         Args:
             object_name (str): Object to get the Pose of
+
         Returns:
             Pose:
         """
@@ -452,12 +501,15 @@ class VehicleClient:
     def simSetObjectPose(self, object_name, pose, teleport = True):
         """
         Set the pose of the object(actor) in the environment
+
         The specified actor must have Mobility set to movable, otherwise there will be undefined behaviour.
         See https://www.unrealengine.com/en-US/blog/moving-physical-objects for details on how to set Mobility and the effect of Teleport parameter
+
         Args:
             object_name (str): Name of the object(actor) to move
             pose (Pose): Desired Pose of the object
             teleport (bool, optional): Whether to move the object immediately without affecting their velocity
+
         Returns:
             bool: If the move was successful
         """
@@ -466,8 +518,10 @@ class VehicleClient:
     def simGetObjectScale(self, object_name):
         """
         Gets scale of an object in the world
+
         Args:
             object_name (str): Object to get the scale of
+
         Returns:
             airsim.Vector3r: Scale
         """
@@ -477,9 +531,11 @@ class VehicleClient:
     def simSetObjectScale(self, object_name, scale_vector):
         """
         Sets scale of an object in the world
+
         Args:
             object_name (str): Object to set the scale of
             scale_vector (airsim.Vector3r): Desired scale of object
+
         Returns:
             bool: True if scale change was successful
         """
@@ -488,9 +544,12 @@ class VehicleClient:
     def simListSceneObjects(self, name_regex = '.*'):
         """
         Lists the objects present in the environment
+
         Default behaviour is to list all objects, regex can be used to return smaller list of matching objects or actors
+
         Args:
             name_regex (str, optional): String to match actor names against, e.g. "Cylinder.*"
+
         Returns:
             list[str]: List containing all the names
         """
@@ -499,8 +558,10 @@ class VehicleClient:
     def simLoadLevel(self, level_name):
         """
         Loads a level specified by its name
+
         Args:
             level_name (str): Name of the level to load
+
         Returns:
             bool: True if the level was successfully loaded
         """
@@ -509,6 +570,7 @@ class VehicleClient:
     def simListAssets(self):
         """
         Lists all the assets present in the Asset Registry
+
         Returns:
             list[str]: Names of all the assets
         """
@@ -516,6 +578,7 @@ class VehicleClient:
 
     def simSpawnObject(self, object_name, asset_name, pose, scale, physics_enabled=False, is_blueprint=False):
         """Spawned selected object in the world
+
         Args:
             object_name (str): Desired name of new object
             asset_name (str): Name of asset(mesh) in the project database
@@ -523,6 +586,7 @@ class VehicleClient:
             scale (airsim.Vector3r): Desired scale of object
             physics_enabled (bool, optional): Whether to enable physics for the object
             is_blueprint (bool, optional): Whether to spawn a blueprint or an actor
+
         Returns:
             str: Name of spawned object, in case it had to be modified
         """
@@ -530,8 +594,10 @@ class VehicleClient:
 
     def simDestroyObject(self, object_name):
         """Removes selected object from the world
+
         Args:
             object_name (str): Name of object to be removed
+
         Returns:
             bool: True if object is queued up for removal
         """
@@ -540,12 +606,16 @@ class VehicleClient:
     def simSetSegmentationObjectID(self, mesh_name, object_id, is_name_regex = False):
         """
         Set segmentation ID for specific objects
+
         See https://microsoft.github.io/AirSim/image_apis/#segmentation for details
+
         Args:
             mesh_name (str): Name of the mesh to set the ID of (supports regex)
             object_id (int): Object ID to be set, range 0-255
+
                              RBG values for IDs can be seen at https://microsoft.github.io/AirSim/seg_rgbs.txt
             is_name_regex (bool, optional): Whether the mesh name is a regex
+
         Returns:
             bool: If the mesh was found
         """
@@ -554,7 +624,9 @@ class VehicleClient:
     def simGetSegmentationObjectID(self, mesh_name):
         """
         Returns Object ID for the given mesh name
+
         Mapping of Object IDs to RGB values can be seen at https://microsoft.github.io/AirSim/seg_rgbs.txt
+
         Args:
             mesh_name (str): Name of the mesh to get the ID of
         """
@@ -563,19 +635,23 @@ class VehicleClient:
     def simAddDetectionFilterMeshName(self, camera_name, image_type, mesh_name, vehicle_name = '', external = False):
         """
         Add mesh name to detect in wild card format
+
         For example: simAddDetectionFilterMeshName("Car_*") will detect all instance named "Car_*"
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
             mesh_name (str): mesh name in wild card format
             vehicle_name (str, optional): Vehicle which the camera is associated with
             external (bool, optional): Whether the camera is an External Camera
+
         """
         self.client.call('simAddDetectionFilterMeshName', camera_name, image_type, mesh_name, vehicle_name, external)
 
     def simSetDetectionFilterRadius(self, camera_name, image_type, radius_cm, vehicle_name = '', external = False):
         """
         Set detection radius for all cameras
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
@@ -588,22 +664,26 @@ class VehicleClient:
     def simClearDetectionMeshNames(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Clear all mesh names from detection filter
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
             vehicle_name (str, optional): Vehicle which the camera is associated with
             external (bool, optional): Whether the camera is an External Camera
+
         """
         self.client.call('simClearDetectionMeshNames', camera_name, image_type, vehicle_name, external)
 
     def simGetDetections(self, camera_name, image_type, vehicle_name = '', external = False):
         """
         Get current detections
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             image_type (ImageType): Type of image required
             vehicle_name (str, optional): Vehicle which the camera is associated with
             external (bool, optional): Whether the camera is an External Camera
+
         Returns:
             DetectionInfo array
         """
@@ -613,10 +693,13 @@ class VehicleClient:
     def simPrintLogMessage(self, message, message_param = "", severity = 0):
         """
         Prints the specified message in the simulator's window.
+
         If message_param is supplied, then it's printed next to the message and in that case if this API is called with same message value
         but different message_param again then previous line is overwritten with new line (instead of API creating new line on display).
+
         For example, `simPrintLogMessage("Iteration: ", to_string(i))` keeps updating same line on display when API is called with different values of i.
         The valid values of severity parameter is 0 to 3 inclusive that corresponds to different colors.
+
         Args:
             message (str): Message to be printed
             message_param (str, optional): Parameter to be printed next to the message
@@ -627,10 +710,12 @@ class VehicleClient:
     def simGetCameraInfo(self, camera_name, vehicle_name = '', external=False):
         """
         Get details about the camera
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             vehicle_name (str, optional): Vehicle which the camera is associated with
             external (bool, optional): Whether the camera is an External Camera
+
         Returns:
             CameraInfo:
         """
@@ -640,10 +725,12 @@ class VehicleClient:
     def simGetDistortionParams(self, camera_name, vehicle_name = '', external = False):
         """
         Get camera distortion parameters
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             vehicle_name (str, optional): Vehicle which the camera is associated with
             external (bool, optional): Whether the camera is an External Camera
+
         Returns:
             List (float): List of distortion parameter values corresponding to K1, K2, K3, P1, P2 respectively.
         """
@@ -653,6 +740,7 @@ class VehicleClient:
     def simSetDistortionParams(self, camera_name, distortion_params, vehicle_name = '', external = False):
         """
         Set camera distortion parameters
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             distortion_params (dict): Dictionary of distortion param names and corresponding values
@@ -667,6 +755,7 @@ class VehicleClient:
     def simSetDistortionParam(self, camera_name, param_name, value, vehicle_name = '', external = False):
         """
         Set single camera distortion parameter
+
         Args:
             camera_name (str): Name of the camera, for backwards compatibility, ID numbers such as 0,1,etc. can also be used
             param_name (str): Name of distortion parameter
@@ -679,6 +768,7 @@ class VehicleClient:
     def simSetCameraPose(self, camera_name, pose, vehicle_name = '', external = False):
         """
         - Control the pose of a selected camera
+
         Args:
             camera_name (str): Name of the camera to be controlled
             pose (Pose): Pose representing the desired position and orientation of the camera
@@ -691,6 +781,7 @@ class VehicleClient:
     def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = '', external = False):
         """
         - Control the field of view of a selected camera
+
         Args:
             camera_name (str): Name of the camera to be controlled
             fov_degrees (float): Value of field of view in degrees
@@ -703,9 +794,12 @@ class VehicleClient:
     def simGetGroundTruthKinematics(self, vehicle_name = ''):
         """
         Get Ground truth kinematics of the vehicle
+
         The position inside the returned KinematicsState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Name of the vehicle
+
         Returns:
             KinematicsState: Ground truth of the vehicle
         """
@@ -716,7 +810,9 @@ class VehicleClient:
     def simSetKinematics(self, state, ignore_collision, vehicle_name = ''):
         """
         Set the kinematics state of the vehicle
+
         If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values
+
         Args:
             state (KinematicsState): Desired Pose pf the vehicle
             ignore_collision (bool): Whether to ignore any collision or not
@@ -727,9 +823,12 @@ class VehicleClient:
     def simGetGroundTruthEnvironment(self, vehicle_name = ''):
         """
         Get ground truth environment state
+
         The position inside the returned EnvironmentState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Name of the vehicle
+
         Returns:
             EnvironmentState: Ground truth environment state
         """
@@ -744,6 +843,7 @@ class VehicleClient:
         Args:
             imu_name (str, optional): Name of IMU to get data from, specified in settings.json
             vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to
+
         Returns:
             ImuData:
         """
@@ -754,6 +854,7 @@ class VehicleClient:
         Args:
             barometer_name (str, optional): Name of Barometer to get data from, specified in settings.json
             vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to
+
         Returns:
             BarometerData:
         """
@@ -764,6 +865,7 @@ class VehicleClient:
         Args:
             magnetometer_name (str, optional): Name of Magnetometer to get data from, specified in settings.json
             vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to
+
         Returns:
             MagnetometerData:
         """
@@ -774,6 +876,7 @@ class VehicleClient:
         Args:
             gps_name (str, optional): Name of GPS to get data from, specified in settings.json
             vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to
+
         Returns:
             GpsData:
         """
@@ -784,6 +887,7 @@ class VehicleClient:
         Args:
             distance_sensor_name (str, optional): Name of Distance Sensor to get data from, specified in settings.json
             vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to
+
         Returns:
             DistanceSensorData:
         """
@@ -794,6 +898,7 @@ class VehicleClient:
         Args:
             lidar_name (str, optional): Name of Lidar to get data from, specified in settings.json
             vehicle_name (str, optional): Name of vehicle to which the sensor corresponds to
+
         Returns:
             LidarData:
         """
@@ -803,9 +908,11 @@ class VehicleClient:
         """
         NOTE: Deprecated API, use `getLidarData()` API instead
         Returns Segmentation ID of each point's collided object in the last Lidar update
+
         Args:
             lidar_name (str, optional): Name of Lidar sensor
             vehicle_name (str, optional): Name of the vehicle wth the sensor
+
         Returns:
             list[int]: Segmentation IDs of the objects
         """
@@ -822,6 +929,7 @@ class VehicleClient:
     def simPlotPoints(self, points, color_rgba=[1.0, 0.0, 0.0, 1.0], size = 10.0, duration = -1.0, is_persistent = False):
         """
         Plot a list of 3D points in World NED frame
+
         Args:
             points (list[Vector3r]): List of Vector3r objects
             color_rgba (list, optional): desired RGBA values from 0.0 to 1.0
@@ -834,6 +942,7 @@ class VehicleClient:
     def simPlotLineStrip(self, points, color_rgba=[1.0, 0.0, 0.0, 1.0], thickness = 5.0, duration = -1.0, is_persistent = False):
         """
         Plots a line strip in World NED frame, defined from points[0] to points[1], points[1] to points[2], ... , points[n-2] to points[n-1]
+
         Args:
             points (list[Vector3r]): List of 3D locations of line start and end points, specified as Vector3r objects
             color_rgba (list, optional): desired RGBA values from 0.0 to 1.0
@@ -846,6 +955,7 @@ class VehicleClient:
     def simPlotLineList(self, points, color_rgba=[1.0, 0.0, 0.0, 1.0], thickness = 5.0, duration = -1.0, is_persistent = False):
         """
         Plots a line strip in World NED frame, defined from points[0] to points[1], points[2] to points[3], ... , points[n-2] to points[n-1]
+
         Args:
             points (list[Vector3r]): List of 3D locations of line start and end points, specified as Vector3r objects. Must be even
             color_rgba (list, optional): desired RGBA values from 0.0 to 1.0
@@ -858,6 +968,7 @@ class VehicleClient:
     def simPlotArrows(self, points_start, points_end, color_rgba=[1.0, 0.0, 0.0, 1.0], thickness = 5.0, arrow_size = 2.0, duration = -1.0, is_persistent = False):
         """
         Plots a list of arrows in World NED frame, defined from points_start[0] to points_end[0], points_start[1] to points_end[1], ... , points_start[n-1] to points_end[n-1]
+
         Args:
             points_start (list[Vector3r]): List of 3D start positions of arrow start positions, specified as Vector3r objects
             points_end (list[Vector3r]): List of 3D end positions of arrow start positions, specified as Vector3r objects
@@ -873,6 +984,7 @@ class VehicleClient:
     def simPlotStrings(self, strings, positions, scale = 5, color_rgba=[1.0, 0.0, 0.0, 1.0], duration = -1.0):
         """
         Plots a list of strings at desired positions in World NED frame.
+
         Args:
             strings (list[String], optional): List of strings to plot
             positions (list[Vector3r]): List of positions where the strings should be plotted. Should be in one-to-one correspondence with the strings' list
@@ -885,6 +997,7 @@ class VehicleClient:
     def simPlotTransforms(self, poses, scale = 5.0, thickness = 5.0, duration = -1.0, is_persistent = False):
         """
         Plots a list of transforms in World NED frame.
+
         Args:
             poses (list[Pose]): List of Pose objects representing the transforms to plot
             scale (float, optional): Length of transforms' axes
@@ -897,6 +1010,7 @@ class VehicleClient:
     def simPlotTransformsWithNames(self, poses, names, tf_scale = 5.0, tf_thickness = 5.0, text_scale = 10.0, text_color_rgba = [1.0, 0.0, 0.0, 1.0], duration = -1.0):
         """
         Plots a list of transforms with their names in World NED frame.
+
         Args:
             poses (list[Pose]): List of Pose objects representing the transforms to plot
             names (list[string]): List of strings with one-to-one correspondence to list of poses
@@ -911,6 +1025,7 @@ class VehicleClient:
     def cancelLastTask(self, vehicle_name = ''):
         """
         Cancel previous Async task
+
         Args:
             vehicle_name (str, optional): Name of the vehicle
         """
@@ -920,6 +1035,7 @@ class VehicleClient:
     def startRecording(self):
         """
         Start Recording
+
         Recording will be done according to the settings
         """
         self.client.call('startRecording')
@@ -933,6 +1049,7 @@ class VehicleClient:
     def isRecording(self):
         """
         Whether Recording is running or not
+
         Returns:
             bool: True if Recording, else False
         """
@@ -941,6 +1058,7 @@ class VehicleClient:
     def simSetWind(self, wind):
         """
         Set simulated wind, in World frame, NED direction, m/s
+
         Args:
             wind (Vector3r): Wind, in World frame, NED direction, in m/s
         """
@@ -949,11 +1067,13 @@ class VehicleClient:
     def simCreateVoxelGrid(self, position, x, y, z, res, of):
         """
         Construct and save a binvox-formatted voxel grid of environment
+
         Args:
             position (Vector3r): Position around which voxel grid is centered in m
             x, y, z (int): Size of each voxel grid dimension in m
             res (float): Resolution of voxel grid in m
             of (str): Name of output file to save voxel grid as
+
         Returns:
             bool: True if output written to file successfully, else False
         """
@@ -963,11 +1083,13 @@ class VehicleClient:
     def simAddVehicle(self, vehicle_name, vehicle_type, pose, pawn_path = ""):
         """
         Create vehicle at runtime
+
         Args:
             vehicle_name (str): Name of the vehicle being created
             vehicle_type (str): Type of vehicle, e.g. "simpleflight"
             pose (Pose): Initial pose of the vehicle
             pawn_path (str, optional): Vehicle blueprint path, default empty wbich uses the default blueprint for the vehicle type
+
         Returns:
             bool: Whether vehicle was created
         """
@@ -976,6 +1098,7 @@ class VehicleClient:
     def listVehicles(self):
         """
         Lists the names of current vehicles
+
         Returns:
             list[str]: List containing names of all vehicles
         """
@@ -984,6 +1107,7 @@ class VehicleClient:
     def getSettingsString(self):
         """
         Fetch the settings text being used by AirSim
+
         Returns:
             str: Settings text in JSON format
         """
@@ -997,9 +1121,11 @@ class MultirotorClient(VehicleClient, object):
     def takeoffAsync(self, timeout_sec = 20, vehicle_name = ''):
         """
         Takeoff vehicle to 3m above ground. Vehicle should not be moving when this API is used
+
         Args:
             timeout_sec (int, optional): Timeout for the vehicle to reach desired altitude
             vehicle_name (str, optional): Name of the vehicle to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1008,9 +1134,11 @@ class MultirotorClient(VehicleClient, object):
     def landAsync(self, timeout_sec = 60, vehicle_name = ''):
         """
         Land the vehicle
+
         Args:
             timeout_sec (int, optional): Timeout for the vehicle to land
             vehicle_name (str, optional): Name of the vehicle to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1019,9 +1147,11 @@ class MultirotorClient(VehicleClient, object):
     def goHomeAsync(self, timeout_sec = 3e+38, vehicle_name = ''):
         """
         Return vehicle to Home i.e. Launch location
+
         Args:
             timeout_sec (int, optional): Timeout for the vehicle to reach desired altitude
             vehicle_name (str, optional): Name of the vehicle to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1038,6 +1168,7 @@ class MultirotorClient(VehicleClient, object):
             drivetrain (DrivetrainType, optional):
             yaw_mode (YawMode, optional):
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1053,6 +1184,7 @@ class MultirotorClient(VehicleClient, object):
             drivetrain (DrivetrainType, optional):
             yaw_mode (YawMode, optional):
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1077,6 +1209,7 @@ class MultirotorClient(VehicleClient, object):
             drivetrain (DrivetrainType, optional):
             yaw_mode (YawMode, optional):
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1103,8 +1236,10 @@ class MultirotorClient(VehicleClient, object):
     def moveByManualAsync(self, vx_max, vy_max, z_min, duration, drivetrain = DrivetrainType.MaxDegreeOfFreedom, yaw_mode = YawMode(), vehicle_name = ''):
         """
         - Read current RC state and use it to control the vehicles.
+
         Parameters sets up the constraints on velocity and minimum altitude while flying. If RC state is detected to violate these constraints
         then that RC state would be ignored.
+
         Args:
             vx_max (float): max velocity allowed in x direction
             vy_max (float): max velocity allowed in y direction
@@ -1135,6 +1270,7 @@ class MultirotorClient(VehicleClient, object):
     def moveByMotorPWMsAsync(self, front_right_pwm, rear_left_pwm, front_left_pwm, rear_right_pwm, duration, vehicle_name = ''):
         """
         - Directly control the motors using PWM values
+
         Args:
             front_right_pwm (float): PWM value for the front right motor (between 0.0 to 1.0)
             rear_left_pwm (float): PWM value for the rear left motor (between 0.0 to 1.0)
@@ -1152,16 +1288,23 @@ class MultirotorClient(VehicleClient, object):
         - z is given in local NED frame of the vehicle.
         - Roll angle, pitch angle, and yaw angle set points are given in **radians**, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
+
         - Frame Convention:
             - X axis is along the **Front** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **roll** angle.
             | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.
+
             - Y axis is along the **Left** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **pitch** angle.
             | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.
+
             - Z axis is along the **Up** direction.
+
             | Clockwise rotation about this axis defines a positive **yaw** angle.
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
+
         Args:
             roll (float): Desired roll angle, in radians.
             pitch (float): Desired pitch angle, in radians.
@@ -1169,6 +1312,7 @@ class MultirotorClient(VehicleClient, object):
             z (float): Desired Z value (in local NED frame of the vehicle)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1179,16 +1323,23 @@ class MultirotorClient(VehicleClient, object):
         - Desired throttle is between 0.0 to 1.0
         - Roll angle, pitch angle, and yaw angle are given in **degrees** when using PX4 and in **radians** when using SimpleFlight, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
+
         - Frame Convention:
             - X axis is along the **Front** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **roll** angle.
             | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.
+
             - Y axis is along the **Left** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **pitch** angle.
             | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.
+
             - Z axis is along the **Up** direction.
+
             | Clockwise rotation about this axis defines a positive **yaw** angle.
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
+
         Args:
             roll (float): Desired roll angle.
             pitch (float): Desired pitch angle.
@@ -1196,6 +1347,7 @@ class MultirotorClient(VehicleClient, object):
             throttle (float): Desired throttle (between 0.0 to 1.0)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1206,16 +1358,23 @@ class MultirotorClient(VehicleClient, object):
         - Desired throttle is between 0.0 to 1.0
         - Roll angle, pitch angle, and yaw rate set points are given in **radians**, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
+
         - Frame Convention:
             - X axis is along the **Front** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **roll** angle.
             | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.
+
             - Y axis is along the **Left** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **pitch** angle.
             | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.
+
             - Z axis is along the **Up** direction.
+
             | Clockwise rotation about this axis defines a positive **yaw** angle.
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
+
         Args:
             roll (float): Desired roll angle, in radians.
             pitch (float): Desired pitch angle, in radians.
@@ -1223,6 +1382,7 @@ class MultirotorClient(VehicleClient, object):
             throttle (float): Desired throttle (between 0.0 to 1.0)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1233,16 +1393,23 @@ class MultirotorClient(VehicleClient, object):
         - z is given in local NED frame of the vehicle.
         - Roll angle, pitch angle, and yaw rate set points are given in **radians**, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
+
         - Frame Convention:
             - X axis is along the **Front** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **roll** angle.
             | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.
+
             - Y axis is along the **Left** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **pitch** angle.
             | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.
+
             - Z axis is along the **Up** direction.
+
             | Clockwise rotation about this axis defines a positive **yaw** angle.
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
+
         Args:
             roll (float): Desired roll angle, in radians.
             pitch (float): Desired pitch angle, in radians.
@@ -1250,6 +1417,7 @@ class MultirotorClient(VehicleClient, object):
             z (float): Desired Z value (in local NED frame of the vehicle)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1260,16 +1428,23 @@ class MultirotorClient(VehicleClient, object):
         - z is given in local NED frame of the vehicle.
         - Roll rate, pitch rate, and yaw rate set points are given in **radians**, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
+
         - Frame Convention:
             - X axis is along the **Front** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **roll** angle.
             | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.
+
             - Y axis is along the **Left** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **pitch** angle.
             | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.
+
             - Z axis is along the **Up** direction.
+
             | Clockwise rotation about this axis defines a positive **yaw** angle.
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
+
         Args:
             roll_rate (float): Desired roll rate, in radians / second
             pitch_rate (float): Desired pitch rate, in radians / second
@@ -1277,6 +1452,7 @@ class MultirotorClient(VehicleClient, object):
             z (float): Desired Z value (in local NED frame of the vehicle)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1287,16 +1463,23 @@ class MultirotorClient(VehicleClient, object):
         - Desired throttle is between 0.0 to 1.0
         - Roll rate, pitch rate, and yaw rate set points are given in **radians**, in the body frame.
         - The body frame follows the Front Left Up (FLU) convention, and right-handedness.
+
         - Frame Convention:
             - X axis is along the **Front** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **roll** angle.
             | Hence, rolling with a positive angle is equivalent to translating in the **right** direction, w.r.t. our FLU body frame.
+
             - Y axis is along the **Left** direction of the quadrotor.
+
             | Clockwise rotation about this axis defines a positive **pitch** angle.
             | Hence, pitching with a positive angle is equivalent to translating in the **front** direction, w.r.t. our FLU body frame.
+
             - Z axis is along the **Up** direction.
+
             | Clockwise rotation about this axis defines a positive **yaw** angle.
             | Hence, yawing with a positive angle is equivalent to rotated towards the **left** direction wrt our FLU body frame. Or in an anticlockwise fashion in the body XY / FL plane.
+
         Args:
             roll_rate (float): Desired roll rate, in radians / second
             pitch_rate (float): Desired pitch rate, in radians / second
@@ -1304,6 +1487,7 @@ class MultirotorClient(VehicleClient, object):
             throttle (float): Desired throttle (between 0.0 to 1.0)
             duration (float): Desired amount of time (seconds), to send this command for
             vehicle_name (str, optional): Name of the multirotor to send this command to
+
         Returns:
             msgpackrpc.future.Future: future. call .join() to wait for method to finish. Example: client.METHOD().join()
         """
@@ -1315,6 +1499,7 @@ class MultirotorClient(VehicleClient, object):
             This is because any velocity setpoint is converted to an angle level setpoint which is tracked with an angle level controllers.
             That angle level setpoint is itself tracked with and angle rate controller.
         - This function should only be called if the default angle rate control PID gains need to be modified.
+
         Args:
             angle_rate_gains (AngleRateControllerGains):
                 - Correspond to the roll, pitch, yaw axes, defined in the body frame.
@@ -1330,6 +1515,7 @@ class MultirotorClient(VehicleClient, object):
             This is because the AirSim flight controller will track velocity setpoints by converting them to angle set points.
         - This function should only be called if the default angle level control PID gains need to be modified.
         - Passing AngleLevelControllerGains() sets gains to default airsim values.
+
         Args:
             angle_level_gains (AngleLevelControllerGains):
                 - Correspond to the roll, pitch, yaw axes, defined in the body frame.
@@ -1343,6 +1529,7 @@ class MultirotorClient(VehicleClient, object):
         - Sets velocity controller gains for moveByVelocityAsync().
         - This function should only be called if the default velocity control PID gains need to be modified.
         - Passing VelocityControllerGains() sets gains to default airsim values.
+
         Args:
             velocity_gains (VelocityControllerGains):
                 - Correspond to the world X, Y, Z axes.
@@ -1357,6 +1544,7 @@ class MultirotorClient(VehicleClient, object):
         """
         Sets position controller gains for moveByPositionAsync.
         This function should only be called if the default position control PID gains need to be modified.
+
         Args:
             position_gains (PositionControllerGains):
                 - Correspond to the X, Y, Z axes.
@@ -1369,8 +1557,10 @@ class MultirotorClient(VehicleClient, object):
     def getMultirotorState(self, vehicle_name = ''):
         """
         The position inside the returned MultirotorState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Vehicle to get the state of
+
         Returns:
             MultirotorState:
         """
@@ -1381,8 +1571,10 @@ class MultirotorClient(VehicleClient, object):
         """
         Used to obtain the current state of all a multirotor's rotors. The state includes the speeds,
         thrusts and torques for all rotors.
+
         Args:
             vehicle_name (str, optional): Vehicle to get the rotor state of
+
         Returns:
             RotorStates: Containing a timestamp and the speed, thrust and torque of all rotors.
         """
@@ -1397,6 +1589,7 @@ class CarClient(VehicleClient, object):
     def setCarControls(self, controls, vehicle_name = ''):
         """
         Control the car using throttle, steering, brake, etc.
+
         Args:
             controls (CarControls): Struct containing control values
             vehicle_name (str, optional): Name of vehicle to be controlled
@@ -1406,8 +1599,10 @@ class CarClient(VehicleClient, object):
     def getCarState(self, vehicle_name = ''):
         """
         The position inside the returned CarState is in the frame of the vehicle's starting point
+
         Args:
             vehicle_name (str, optional): Name of vehicle
+
         Returns:
             CarState:
         """
@@ -1418,6 +1613,7 @@ class CarClient(VehicleClient, object):
         """
         Args:
             vehicle_name (str, optional): Name of vehicle
+
         Returns:
             CarControls:
         """
