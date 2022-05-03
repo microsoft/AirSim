@@ -147,6 +147,13 @@ __pragma(warning(disable : 4239))
             return this;
         }
 
+        MultirotorRpcLibClient* MultirotorRpcLibClient::moveByVelocityZBatchAsync(std::vector<float>& vx_vec, std::vector<float>& vy_vec, std::vector<float>& z_vec, float duration,
+                                                                             DrivetrainType drivetrain, const YawMode& yaw_mode, const std::vector<std::string>& vehicle_names)
+        {
+            pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByVelocityZBatch", vx_vec, vy_vec, z_vec, duration, drivetrain, MultirotorRpcLibAdaptors::YawMode(yaw_mode), vehicle_names);
+            return this;
+        }
+
         MultirotorRpcLibClient* MultirotorRpcLibClient::moveOnPathAsync(const vector<Vector3r>& path, float velocity, float duration,
                                                                         DrivetrainType drivetrain, const YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name)
         {

@@ -44,6 +44,8 @@ namespace airlib
                                                     DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), const std::string& vehicle_name = "");
         MultirotorRpcLibClient* moveByVelocityZAsync(float vx, float vy, float z, float duration,
                                                      DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), const std::string& vehicle_name = "");
+        MultirotorRpcLibClient* moveByVelocityZBatchAsync(std::vector<float>& vx_vec, std::vector<float>& vy_vec, std::vector<float>& z_vec, float duration,
+                                                     DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(), const vector<std::string>& vehicle_names = std::vector<std::string>());
         MultirotorRpcLibClient* moveOnPathAsync(const vector<Vector3r>& path, float velocity, float timeout_sec = Utils::max<float>(),
                                                 DrivetrainType drivetrain = DrivetrainType::MaxDegreeOfFreedom, const YawMode& yaw_mode = YawMode(),
                                                 float lookahead = -1, float adaptive_lookahead = 1, const std::string& vehicle_name = "");

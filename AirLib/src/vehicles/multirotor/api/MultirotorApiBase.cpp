@@ -252,6 +252,17 @@ namespace airlib
             .isTimeout();
     }
 
+    bool MultirotorApiBase::moveByVelocityZNonLock(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
+    {
+        if (duration <= 0)
+            return false;
+
+        YawMode adj_yaw_mode(yaw_mode.is_rate, yaw_mode.yaw_or_rate);
+        adjustYaw(vx, vy, drivetrain, adj_yaw_mode);
+        moveByVelocityZInternal(vx, vy, z, adj_yaw_mode);
+        return false;
+    }
+
     bool MultirotorApiBase::moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode)
     {
         SingleTaskCall lock(this);

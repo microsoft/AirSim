@@ -84,6 +84,18 @@ namespace airlib
         (static_cast<rpc::server*>(getServer()))->bind("moveByVelocityZ", [&](float vx, float vy, float z, float duration, DrivetrainType drivetrain, const MultirotorRpcLibAdaptors::YawMode& yaw_mode, const std::string& vehicle_name) -> bool {
             return getVehicleApi(vehicle_name)->moveByVelocityZ(vx, vy, z, duration, drivetrain, yaw_mode.to());
         });
+
+
+        (static_cast<rpc::server*>(getServer()))->bind("moveByVelocityZBatch", [&](std::vector<float> vx_vec, std::vector<float> vy_vec, std::vector<float> z_vec, float duration, DrivetrainType drivetrain, const MultirotorRpcLibAdaptors::YawMode& yaw_mode, const std::vector<std::string>& vehicle_names) -> bool {
+            auto waiterFunction = [&, vx_vec, vy_vec, z_vec, duration, drivetrain, yaw_mode, vehicle_names]() {
+                for (unsigned int i = 0; i < vehicle_names.size(); i++) {
+                    getVehicleApi(vehicle_names[i])->moveByVelocityZNonLock(vx_vec[i], vy_vec[i], z_vec[i], duration,
+                                                                            drivetrain, yaw_mode.to());
+                }
+                return false;
+            };
+            return getVehicleApi(vehicle_names[0])->waitForFunction(waiterFunction, duration).isComplete();
+        });
         (static_cast<rpc::server*>(getServer()))->bind("moveOnPath", [&](const vector<MultirotorRpcLibAdaptors::Vector3r>& path, float velocity, float timeout_sec, DrivetrainType drivetrain, const MultirotorRpcLibAdaptors::YawMode& yaw_mode, float lookahead, float adaptive_lookahead, const std::string& vehicle_name) -> bool {
             vector<Vector3r> conv_path;
             MultirotorRpcLibAdaptors::to(path, conv_path);

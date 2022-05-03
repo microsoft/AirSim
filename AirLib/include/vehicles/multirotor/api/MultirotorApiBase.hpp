@@ -23,7 +23,7 @@ namespace airlib
     class MultirotorApiBase : public VehicleApiBase
     {
 
-    protected: //must be implemented
+    public: //must be implemented
         /************************* low level move APIs *********************************/
         virtual void commandMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm) = 0;
         virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) = 0;
@@ -102,6 +102,7 @@ namespace airlib
         virtual bool moveByAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle, float duration);
         virtual bool moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
         virtual bool moveByVelocityZ(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
+        virtual bool moveByVelocityZNonLock(float vx, float vy, float z, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
         virtual bool moveOnPath(const vector<Vector3r>& path, float velocity, float timeout_sec, DrivetrainType drivetrain, const YawMode& yaw_mode,
                                 float lookahead, float adaptive_lookahead);
         virtual bool moveToPosition(float x, float y, float z, float velocity, float timeout_sec, DrivetrainType drivetrain,
@@ -157,7 +158,7 @@ namespace airlib
             rotor_states_ = rotor_states;
         }
 
-    protected: //utility methods
+    public: //utility methods
         typedef std::function<bool()> WaitFunction;
 
         //*********************************safe wrapper around low level commands***************************************************
