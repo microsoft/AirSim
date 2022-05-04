@@ -9,7 +9,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"AirSim"
+				"AirSim",
+				"Engine"
 			]
 		}
 	],

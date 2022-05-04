@@ -187,7 +187,6 @@ namespace airlib
 
         pimpl_->server.bind("simSetFilmbackSettings", [&](const float width, const float heigth, const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
             return getWorldSimApi()->setFilmbackSettings(width, heigth, CameraDetails(camera_name, vehicle_name, external));
-            ;
         });
 
         pimpl_->server.bind("simGetFocalLength", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
@@ -255,6 +254,14 @@ namespace airlib
         pimpl_->server.bind("simSetVehiclePose", [&](const RpcLibAdaptorsBase::Pose& pose, bool ignore_collision, const std::string& vehicle_name) -> void {
             getVehicleSimApi(vehicle_name)->setPose(pose.to(), ignore_collision);
         });
+
+        // TODO: parralised RL
+        pimpl_->server.bind("simSetVehiclePoseBatch", [&](const std::vector<RpcLibAdaptorsBase::Pose>& poses, const std::vector<std::string> vehicle_names) -> void {
+            for (unsigned int i = 0; i < vehicle_names.size(); i++) {
+                getVehicleSimApi(vehicle_names[i])->setPose(poses[i].to(), true);
+            }
+        });
+        // TODO: parralised RL
 
         pimpl_->server.bind("simGetVehiclePose", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::Pose {
             const auto& pose = getVehicleSimApi(vehicle_name)->getPose();
