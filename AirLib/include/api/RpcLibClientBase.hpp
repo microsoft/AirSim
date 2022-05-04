@@ -77,9 +77,9 @@ namespace airlib
         int simGetSegmentationObjectID(const std::string& mesh_name) const;
         void simPrintLogMessage(const std::string& message, std::string message_param = "", unsigned char severity = 0);
 
-        void simAddDetectionFilterMeshName(const std::string& camera_name, const std::string& mesh_name, const std::string& vehicle_name = "", bool external = false);
-        void simSetDetectionFilterRadius(const std::string& camera_name, const float radius_cm, const std::string& vehicle_name = "", bool external = false);
-        void simClearDetectionMeshNames(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
+        void simAddDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& mesh_name, const std::string& vehicle_name = "", bool external = false);
+        void simSetDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType type, const float radius_cm, const std::string& vehicle_name = "", bool external = false);
+        void simClearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name = "", bool external = false);
         vector<DetectionInfo> simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name = "", bool external = false);
 
         void simFlushPersistentMarkers();
@@ -152,8 +152,8 @@ namespace airlib
         void simSetKinematics(const Kinematics::State& state, bool ignore_collision, const std::string& vehicle_name = "");
         msr::airlib::Environment::State simGetGroundTruthEnvironment(const std::string& vehicle_name = "") const;
         std::vector<std::string> simSwapTextures(const std::string& tags, int tex_id = 0, int component_id = 0, int material_id = 0);
-        bool simSetObjectMaterial(const std::string& object_name, const std::string& material_name);
-        bool simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path);
+        bool simSetObjectMaterial(const std::string& object_name, const std::string& material_name, const int component_id = 0);
+        bool simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path, const int component_id = 0);
 
         // Recording APIs
         void startRecording();

@@ -16,12 +16,12 @@ namespace AirSimUnity {
     internal class VehicleCompanion : IAirSimInterface {
 
         //All the vehicles that are created in this game.
-        private static List<VehicleCompanion> Vehicles = new List<VehicleCompanion>();
+        private static readonly List<VehicleCompanion> Vehicles = new List<VehicleCompanion>();
 
         private static int basePortId;
 
         //An interface to interact with Unity vehicle component.
-        private IVehicleInterface VehicleInterface;
+        private readonly IVehicleInterface VehicleInterface;
 
         private string vehicleName;
         private readonly bool isDrone;
@@ -36,10 +36,12 @@ namespace AirSimUnity {
             basePortId = AirSimSettings.GetSettings().GetPortIDForVehicle(isDrone);
         }
 
-        public static VehicleCompanion GetVehicleCompanion(string vehicleName, IVehicleInterface vehicleInterface) {
-            var companion = new VehicleCompanion(vehicleInterface);
-
-            companion.vehicleName = vehicleName;
+        public static VehicleCompanion GetVehicleCompanion(string vehicleName, IVehicleInterface vehicleInterface)
+        {
+            var companion = new VehicleCompanion(vehicleInterface)
+            {
+                vehicleName = vehicleName
+            };
 
             Vehicles.Add(companion);
             return companion;

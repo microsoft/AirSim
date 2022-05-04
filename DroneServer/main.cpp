@@ -7,7 +7,6 @@
 #include "vehicles/multirotor/firmwares/mavlink/MavLinkMultirotorApi.hpp"
 #include "common/Settings.hpp"
 
-using namespace std;
 using namespace msr::airlib;
 
 /*
@@ -21,7 +20,7 @@ int main(int argc, const char* argv[])
     if (argc != 2) {
         std::cout << "Usage: " << argv[0] << " is_simulation" << std::endl;
         std::cout << "\t where is_simulation = 0 or 1" << std::endl;
-        cout << "Start the DroneServer using the 'PX4' settings in ~/Documents/AirSim/settings.json." << endl;
+        std::cout << "Start the DroneServer using the 'PX4' settings in ~/Documents/AirSim/settings.json." << std::endl;
         return 1;
     }
 

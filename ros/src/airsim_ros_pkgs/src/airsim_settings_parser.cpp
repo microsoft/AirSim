@@ -23,7 +23,7 @@ bool AirSimSettingsParser::getSettingsText(std::string& settings_text) const
 
 std::string AirSimSettingsParser::getSimMode()
 {
-    Settings& settings_json = Settings::loadJSonString(settings_text_);
+    const auto& settings_json = msr::airlib::Settings::loadJSonString(settings_text_);
     return settings_json.getString("SimMode", "");
 }
 

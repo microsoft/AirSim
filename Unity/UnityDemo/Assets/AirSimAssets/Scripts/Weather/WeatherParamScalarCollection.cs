@@ -15,8 +15,8 @@
 
         public float this[WeatherParamScalar index]
         {
-            get { return values[(int)index]; }
-            set { values[(int)index] = value; }
+            get => values[(int)index];
+            set => values[(int)index] = value;
         }
     }
 }

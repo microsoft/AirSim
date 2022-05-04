@@ -1,0 +1,2 @@
+# Skip json.hpp since it is copied directly from external repo
+AirLib/include/common/common_utils/json.hpp

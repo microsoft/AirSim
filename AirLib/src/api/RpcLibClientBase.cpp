@@ -213,17 +213,17 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simGetSegmentationObjectID", mesh_name).as<int>();
         }
 
-        void RpcLibClientBase::simAddDetectionFilterMeshName(const std::string& camera_name, const std::string& mesh_name, const std::string& vehicle_name, bool external)
+        void RpcLibClientBase::simAddDetectionFilterMeshName(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& mesh_name, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simAddDetectionFilterMeshName", camera_name, mesh_name, vehicle_name, external);
+            pimpl_->client.call("simAddDetectionFilterMeshName", camera_name, type, mesh_name, vehicle_name, external);
         }
-        void RpcLibClientBase::simSetDetectionFilterRadius(const std::string& camera_name, const float radius_cm, const std::string& vehicle_name, bool external)
+        void RpcLibClientBase::simSetDetectionFilterRadius(const std::string& camera_name, ImageCaptureBase::ImageType type, const float radius_cm, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simSetDetectionFilterRadius", camera_name, radius_cm, vehicle_name, external);
+            pimpl_->client.call("simSetDetectionFilterRadius", camera_name, type, radius_cm, vehicle_name, external);
         }
-        void RpcLibClientBase::simClearDetectionMeshNames(const std::string& camera_name, const std::string& vehicle_name, bool external)
+        void RpcLibClientBase::simClearDetectionMeshNames(const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name, bool external)
         {
-            pimpl_->client.call("simClearDetectionMeshNames", camera_name, vehicle_name, external);
+            pimpl_->client.call("simClearDetectionMeshNames", camera_name, type, vehicle_name, external);
         }
         vector<DetectionInfo> RpcLibClientBase::simGetDetections(const std::string& camera_name, ImageCaptureBase::ImageType image_type, const std::string& vehicle_name, bool external)
         {
@@ -493,14 +493,14 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simSwapTextures", tags, tex_id, component_id, material_id).as<vector<string>>();
         }
 
-        bool RpcLibClientBase::simSetObjectMaterial(const std::string& object_name, const std::string& material_name)
+        bool RpcLibClientBase::simSetObjectMaterial(const std::string& object_name, const std::string& material_name, const int component_id)
         {
-            return pimpl_->client.call("simSetObjectMaterial", object_name, material_name).as<bool>();
+            return pimpl_->client.call("simSetObjectMaterial", object_name, material_name, component_id).as<bool>();
         }
 
-        bool RpcLibClientBase::simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path)
+        bool RpcLibClientBase::simSetObjectMaterialFromTexture(const std::string& object_name, const std::string& texture_path, const int component_id)
         {
-            return pimpl_->client.call("simSetObjectMaterialFromTexture", object_name, texture_path).as<bool>();
+            return pimpl_->client.call("simSetObjectMaterialFromTexture", object_name, texture_path, component_id).as<bool>();
         }
 
         bool RpcLibClientBase::simLoadLevel(const string& level_name)
