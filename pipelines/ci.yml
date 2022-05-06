@@ -1,8 +1,8 @@
 variables:
   container_linux: airsimci.azurecr.io/ue4p25p1/ubuntu18:debugeditor_fulldebugoff
   ue4_root_linux: /home/ue4/ue-4.25.1-linux-debugeditor
-  container_win: airsimci.azurecr.io/ue4p25p1/win1809:pipe
-  ue4_root_win: C:\ue-4.25.1-win
+  container_win: airsimci.azurecr.io/ue4p27p2/win1809:pipe
+  ue4_root_win: C:\ue-4.27.2-win
 
 stages:
   - stage: AirSimCI
