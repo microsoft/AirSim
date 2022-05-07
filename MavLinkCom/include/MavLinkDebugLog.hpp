@@ -32,6 +32,8 @@ public:
 
         return logger_;
     }
+
+    virtual ~MavLinkDebugLog() = default;
 };
 }
 

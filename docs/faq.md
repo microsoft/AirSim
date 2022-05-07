@@ -27,7 +27,7 @@
 
 ###### Unreal editor is slow when it is not the active window
 
->Go to Edit/Editor Preferences, select "All Settings" and type "CPU" in the search box. 
+>Go to Edit/Editor Preferences, select "All Settings" and type "CPU" in the search box.
 >It should find the setting titled "Use Less CPU when in Background", and you want to uncheck this checkbox.
 
 <!-- ======================================================================= -->
@@ -40,7 +40,7 @@
 
 ###### Where is the setting file and how do I modify it?
 
->AirSim will create empty settings file at `~/Documents/AirSim/settings.json`. You can view the available [settings options](settings.md). 
+>AirSim will create empty settings file at `~/Documents/AirSim/settings.json`. You can view the available [settings options](settings.md).
 
 <!-- ======================================================================= -->
 
@@ -110,8 +110,8 @@
 <!-- ======================================================================= -->
 
 ###### What computer do you need?
->It depends on how big your Unreal Environment is. The Blocks environment that comes with AirSim is very basic and works on typical laptops. The 
->[Modular Neighborhood Pack](https://www.unrealengine.com/marketplace/modular-neighborhood-pack) that we use ourselves for research requires GPUs with at least 4GB of RAM. The 
+>It depends on how big your Unreal Environment is. The Blocks environment that comes with AirSim is very basic and works on typical laptops. The
+>[Modular Neighborhood Pack](https://www.unrealengine.com/marketplace/modular-neighborhood-pack) that we use ourselves for research requires GPUs with at least 4GB of RAM. The
 >[Open World environment](https://www.unrealengine.com/marketplace/open-world-demo-collection) needs GPU with 8GB RAM. Our typical development machines have 32GB of RAM and
 >NVIDIA TitanX and a [fast hard drive](hard_drive.md).
 
@@ -147,4 +147,4 @@
 * [Remote Control FAQ](remote_control.md#faq)
 * [Unreal Blocks Environment FAQ](unreal_blocks.md#faq)
 * [Unreal Custom Environment FAQ](unreal_custenv.md#faq)
-* [Packaging AirSim](package_binaries.md)
+* [Packaging AirSim](build_faq.md#packaging-a-binary-including-the-airsim-plugin)

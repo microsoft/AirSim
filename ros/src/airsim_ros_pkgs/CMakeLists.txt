@@ -5,11 +5,12 @@ project(airsim_ros_pkgs)
 set(AIRSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 add_subdirectory("${AIRSIM_ROOT}/cmake" AirSim)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wstrict-null-sentinel -Wno-unused")
 set(CXX_EXP_LIB "-nostdinc++ -I/usr/include/c++/8 -I/usr/include/x86_64-linux-gnu/c++/8 -nodefaultlibs 
 -l/usr/lib/x86_64-linux-gnu/libc++.so -l/usr/lib/x86_64-linux-gnu/libc++abi.so
 -lm -lc -lgcc_s -lgcc  
--lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel") 
+-lstdc++fs -fmax-errors=10")
 
 find_package(yaml-cpp CONFIG REQUIRED)
 find_package(rpclib CONFIG REQUIRED)

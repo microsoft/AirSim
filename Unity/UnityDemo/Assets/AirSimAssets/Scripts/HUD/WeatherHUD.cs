@@ -36,7 +36,7 @@ namespace AirSimUnity {
             snowSlider.Value = weather.ParamScalars[WeatherParamScalarCollection.WeatherParamScalar.Snow];
         }
 
-        public void OnWeatherEnabledToggleChanged(bool isEnabled) {
+        private void OnWeatherEnabledToggleChanged(bool isEnabled) {
             AirSimGlobal.Instance.Weather.IsWeatherEnabled = isEnabled;
         }
 

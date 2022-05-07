@@ -168,6 +168,13 @@ PawnSimApi::CollisionInfo PawnSimApi::getCollisionInfo() const
     return state_.collision_info;
 }
 
+PawnSimApi::CollisionInfo PawnSimApi::getCollisionInfoAndReset()
+{
+    CollisionInfo collision_info = getCollisionInfo();
+    state_.collision_info.has_collided = false;
+    return collision_info;
+}
+
 void PawnSimApi::toggleTrace()
 {
     state_.tracing_enabled = !state_.tracing_enabled;

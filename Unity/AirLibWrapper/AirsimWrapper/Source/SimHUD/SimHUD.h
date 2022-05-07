@@ -20,10 +20,6 @@ private:
 public:
     SimHUD(std::string sime_mode_name, int port_number);
     SimModeBase* GetSimMode();
-    ImageType getSubwindowCameraType(int window_index);
-    void setSubwindowCameraType(int window_index, ImageType type);
-    bool getSubwindowVisible(int window_index);
-    void setSubwindowVisible(int window_index, bool is_visible);
     virtual void BeginPlay();
     virtual void EndPlay();
     virtual void Tick(float DeltaSeconds);

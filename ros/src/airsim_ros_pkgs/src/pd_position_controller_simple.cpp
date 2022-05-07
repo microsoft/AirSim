@@ -32,7 +32,7 @@ bool DynamicConstraints::load_from_rosparams(const ros::NodeHandle& nh)
 }
 
 PIDPositionController::PIDPositionController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private)
-    : nh_(nh), nh_private_(nh_private), has_odom_(false), has_goal_(false), reached_goal_(false), got_goal_once_(false), has_home_geo_(false), use_eth_lib_for_geodetic_conv_(true)
+    : nh_(nh), nh_private_(nh_private), has_home_geo_(false), reached_goal_(false), has_goal_(false), has_odom_(false), got_goal_once_(false)
 {
     params_.load_from_rosparams(nh_private_);
     constraints_.load_from_rosparams(nh_);
@@ -104,6 +104,8 @@ void PIDPositionController::check_reached_goal()
 
 bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response)
 {
+    response.success = false;
+
     // this tells the update timer callback to not do active hovering
     if (!got_goal_once_)
         got_goal_once_ = true;
@@ -111,7 +113,7 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
     if (has_goal_ && !reached_goal_) {
         // todo maintain array of position goals
         ROS_ERROR_STREAM("[PIDPositionController] denying position goal request. I am still following the previous goal");
-        return false;
+        return response.success;
     }
 
     if (!has_goal_) {
@@ -126,12 +128,13 @@ bool PIDPositionController::local_position_goal_srv_cb(airsim_ros_pkgs::SetLocal
         has_goal_ = true;
         reached_goal_ = false;
         reset_errors(); // todo
-        return true;
+        response.success = true;
+        return response.success;
     }
 
     // Already have goal, and have reached it
     ROS_INFO_STREAM("[PIDPositionController] Already have goal and have reached it");
-    return false;
+    return response.success;
 }
 
 bool PIDPositionController::local_position_goal_srv_override_cb(airsim_ros_pkgs::SetLocalPosition::Request& request, airsim_ros_pkgs::SetLocalPosition::Response& response)
@@ -151,7 +154,8 @@ bool PIDPositionController::local_position_goal_srv_override_cb(airsim_ros_pkgs:
     has_goal_ = true;
     reached_goal_ = false;
     reset_errors(); // todo
-    return true;
+    response.success = true;
+    return response.success;
 }
 
 void PIDPositionController::home_geopoint_cb(const airsim_ros_pkgs::GPSYaw& gps_msg)
@@ -161,15 +165,17 @@ void PIDPositionController::home_geopoint_cb(const airsim_ros_pkgs::GPSYaw& gps_
     gps_home_msg_ = gps_msg;
     has_home_geo_ = true;
     ROS_INFO_STREAM("[PIDPositionController] GPS reference initializing " << gps_msg.latitude << ", " << gps_msg.longitude << ", " << gps_msg.altitude);
-    geodetic_converter_.initialiseReference(gps_msg.latitude, gps_msg.longitude, gps_msg.altitude);
+    geodetic_converter_.setHome(gps_msg.latitude, gps_msg.longitude, gps_msg.altitude);
 }
 
 // todo do relative altitude, or add an option for the same?
 bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response)
 {
+    response.success = false;
+
     if (!has_home_geo_) {
         ROS_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
-        response.success = false;
+        return response.success;
     }
 
     // convert GPS goal to NED goal
@@ -177,21 +183,16 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
     if (!has_goal_) {
         msr::airlib::GeoPoint goal_gps_point(request.latitude, request.longitude, request.altitude);
         msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
-        bool use_eth_lib = true;
-        if (use_eth_lib_for_geodetic_conv_) {
-            double initial_latitude, initial_longitude, initial_altitude;
-            geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
+        if constexpr (use_eth_lib_for_geodetic_conv_) {
             double n, e, d;
             geodetic_converter_.geodetic2Ned(request.latitude, request.longitude, request.altitude, &n, &e, &d);
-            // ROS_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
             target_position_.x = n;
             target_position_.y = e;
             target_position_.z = d;
         }
         else // use airlib::GeodeticToNedFast
         {
-            ROS_INFO_STREAM("[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
-                                                                          << "todo");
+            ROS_INFO_STREAM("[PIDPositionController] home geopoint: " << gps_home);
             msr::airlib::Vector3r ned_goal = msr::airlib::EarthUtils::GeodeticToNedFast(goal_gps_point, gps_home);
             target_position_.x = ned_goal[0];
             target_position_.y = ned_goal[1];
@@ -207,7 +208,7 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
         has_goal_ = true;
         reached_goal_ = false;
         reset_errors(); // todo
-        return true;
+        return response.success;
     }
 
     // Already have goal, this shouldn't happen
@@ -218,30 +219,27 @@ bool PIDPositionController::gps_goal_srv_cb(airsim_ros_pkgs::SetGPSPosition::Req
 // todo do relative altitude, or add an option for the same?
 bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosition::Request& request, airsim_ros_pkgs::SetGPSPosition::Response& response)
 {
+    response.success = false;
+
     if (!has_home_geo_) {
         ROS_ERROR_STREAM("[PIDPositionController] I don't have home GPS coord. Can't go to GPS goal!");
-        response.success = false;
+        return response.success;
     }
 
     // convert GPS goal to NED goal
 
     msr::airlib::GeoPoint goal_gps_point(request.latitude, request.longitude, request.altitude);
     msr::airlib::GeoPoint gps_home(gps_home_msg_.latitude, gps_home_msg_.longitude, gps_home_msg_.altitude);
-    bool use_eth_lib = true;
-    if (use_eth_lib_for_geodetic_conv_) {
-        double initial_latitude, initial_longitude, initial_altitude;
-        geodetic_converter_.getReference(&initial_latitude, &initial_longitude, &initial_altitude);
+    if constexpr (use_eth_lib_for_geodetic_conv_) {
         double n, e, d;
         geodetic_converter_.geodetic2Ned(request.latitude, request.longitude, request.altitude, &n, &e, &d);
-        // ROS_INFO_STREAM("[PIDPositionController] geodetic_converter_ GPS reference initialized correctly (lat long in radians) " << initial_latitude << ", "<< initial_longitude << ", " << initial_altitude);
         target_position_.x = n;
         target_position_.y = e;
         target_position_.z = d;
     }
     else // use airlib::GeodeticToNedFast
     {
-        ROS_INFO_STREAM("[PIDPositionController] home geopoint: lat=" << gps_home.latitude << " long=" << gps_home.longitude << " alt=" << gps_home.altitude << " yaw="
-                                                                      << "todo");
+        ROS_INFO_STREAM("[PIDPositionController] home geopoint: " << gps_home);
         msr::airlib::Vector3r ned_goal = msr::airlib::EarthUtils::GeodeticToNedFast(goal_gps_point, gps_home);
         target_position_.x = ned_goal[0];
         target_position_.y = ned_goal[1];
@@ -257,7 +255,8 @@ bool PIDPositionController::gps_goal_srv_override_cb(airsim_ros_pkgs::SetGPSPosi
     has_goal_ = true;
     reached_goal_ = false;
     reset_errors(); // todo
-    return true;
+    response.success = true;
+    return response.success;
 }
 
 void PIDPositionController::update_control_cmd_timer_cb(const ros::TimerEvent& event)

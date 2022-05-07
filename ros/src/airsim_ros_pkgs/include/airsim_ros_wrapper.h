@@ -65,16 +65,7 @@ STRICT_MODE_OFF //todo what does this do?
 #include <memory>
     // #include "nodelet/nodelet.h"
 
-    // todo move airlib typedefs to separate header file?
-    typedef msr::airlib::ImageCaptureBase::ImageRequest ImageRequest;
-typedef msr::airlib::ImageCaptureBase::ImageResponse ImageResponse;
-typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
-typedef msr::airlib::AirSimSettings::CaptureSetting CaptureSetting;
-typedef msr::airlib::AirSimSettings::VehicleSetting VehicleSetting;
-typedef msr::airlib::AirSimSettings::CameraSetting CameraSetting;
-typedef msr::airlib::AirSimSettings::LidarSetting LidarSetting;
-
-struct SimpleMatrix
+    struct SimpleMatrix
 {
     int rows;
     int cols;
@@ -126,6 +117,16 @@ struct GimbalCmd
 
 class AirsimROSWrapper
 {
+    using AirSimSettings = msr::airlib::AirSimSettings;
+    using SensorBase = msr::airlib::SensorBase;
+    using CameraSetting = msr::airlib::AirSimSettings::CameraSetting;
+    using CaptureSetting = msr::airlib::AirSimSettings::CaptureSetting;
+    using LidarSetting = msr::airlib::AirSimSettings::LidarSetting;
+    using VehicleSetting = msr::airlib::AirSimSettings::VehicleSetting;
+    using ImageRequest = msr::airlib::ImageCaptureBase::ImageRequest;
+    using ImageResponse = msr::airlib::ImageCaptureBase::ImageResponse;
+    using ImageType = msr::airlib::ImageCaptureBase::ImageType;
+
 public:
     enum class AIRSIM_MODE : unsigned
     {
@@ -300,7 +301,16 @@ private:
     ros::Time airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const;
     ros::Time chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const;
 
+    // Utility methods to convert airsim_client_
+    msr::airlib::MultirotorRpcLibClient* get_multirotor_client();
+    msr::airlib::CarRpcLibClient* get_car_client();
+
 private:
+    ros::NodeHandle nh_;
+    ros::NodeHandle nh_private_;
+
+    std::string host_ip_;
+
     // subscriber / services for ALL robots
     ros::Subscriber vel_cmd_all_body_frame_sub_;
     ros::Subscriber vel_cmd_all_world_frame_sub_;
@@ -326,14 +336,10 @@ private:
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
 
-    std::string host_ip_;
     std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_client_ = nullptr;
     // seperate busy connections to airsim, update in their own thread
     msr::airlib::RpcLibClientBase airsim_client_images_;
     msr::airlib::RpcLibClientBase airsim_client_lidar_;
-
-    ros::NodeHandle nh_;
-    ros::NodeHandle nh_private_;
 
     // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
     // todo for multiple drones with multiple sensors, this won't scale. make it a part of VehicleROS?

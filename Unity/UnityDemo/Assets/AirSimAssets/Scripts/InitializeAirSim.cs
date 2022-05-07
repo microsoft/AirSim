@@ -66,7 +66,7 @@ public class InitializeAirSim : MonoBehaviour
             return string.Empty;
     }
 
-    public static bool CreateSettingsFileWithDefaultValues(string fileName)
+    private static bool CreateSettingsFileWithDefaultValues(string fileName)
     {
         var result = false;
         try
@@ -91,7 +91,7 @@ public class InitializeAirSim : MonoBehaviour
         return result;
     }
 
-    public void LoadSceneAsPerSimMode(string load_name)
+    private void LoadSceneAsPerSimMode(string load_name)
     {
         if (load_name == "Car")
         {

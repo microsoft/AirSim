@@ -67,7 +67,7 @@ bool UDetectionComponent::calcBoundingFromViewInfo(AActor* actor, FBox2D& box_ou
 {
     FVector origin;
     FVector extend;
-    actor->GetActorBounds(false, origin, extend);
+    actor->GetActorBounds(true, origin, extend);
 
     TArray<FVector> points;
     TArray<FVector2D> points_2D;

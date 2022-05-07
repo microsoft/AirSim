@@ -43,27 +43,6 @@ void SimHUD::EndPlay()
     }
 }
 
-SimHUD::ImageType SimHUD::getSubwindowCameraType(int window_index)
-{
-    //TODO: index check
-    return getSubWindowSettings().at(window_index).image_type;
-}
-
-void SimHUD::setSubwindowCameraType(int window_index, ImageType type)
-{
-    getSubWindowSettings().at(window_index).image_type = type;
-}
-
-bool SimHUD::getSubwindowVisible(int window_index)
-{
-    return getSubWindowSettings().at(window_index).visible;
-}
-
-void SimHUD::setSubwindowVisible(int window_index, bool is_visible)
-{
-    getSubWindowSettings().at(window_index).visible = is_visible;
-}
-
 void SimHUD::initializeSettings()
 {
     std::string settingsText;

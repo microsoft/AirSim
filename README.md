@@ -29,7 +29,7 @@ Cars in AirSim
 
 ### macOS
 [![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_macos.yml)
-* [Build it](https://microsoft.github.io/AirSim/build_linux)
+* [Build it](https://microsoft.github.io/AirSim/build_macos)
 
 For more details, see the [use precompiled binaries](docs/use_precompiled.md) document. 
 
@@ -127,13 +127,16 @@ We also have an AirSim group on [Facebook](https://www.facebook.com/groups/12258
 
 ## What's New
 
-- [Python wrapper for Open AI gym interfaces.](https://github.com/microsoft/AirSim/pull/3215)
-- [Python wrapper for Event camera simulation](https://github.com/microsoft/AirSim/pull/3202)
-- [Voxel grid construction](https://github.com/microsoft/AirSim/pull/3209)
-- [Programmable camera distortion](https://github.com/microsoft/AirSim/pull/3039)
-- [Wind simulation](https://github.com/microsoft/AirSim/pull/2867)
-- [Azure development environment with documentation](https://github.com/microsoft/AirSim/pull/2816)
-- ROS wrapper for [multirotor](https://github.com/microsoft/AirSim/blob/master/docs/airsim_ros_pkgs.md) and [car](https://github.com/microsoft/AirSim/pull/2743).
+* [Cinematographic Camera](https://github.com/microsoft/AirSim/pull/3949)
+* [ROS2 wrapper](https://github.com/microsoft/AirSim/pull/3976)
+* [API to list all assets](https://github.com/microsoft/AirSim/pull/3940)
+* [movetoGPS API](https://github.com/microsoft/AirSim/pull/3746)
+* [Optical flow camera](https://github.com/microsoft/AirSim/pull/3938)
+* [simSetKinematics API](https://github.com/microsoft/AirSim/pull/4066)
+* [Dynamically set object textures from existing UE material or texture PNG](https://github.com/microsoft/AirSim/pull/3992)
+* [Ability to spawn/destroy lights and control light parameters](https://github.com/microsoft/AirSim/pull/3991)
+* [Support for multiple drones in Unity](https://github.com/microsoft/AirSim/pull/3128)
+* [Control manual camera speed through the keyboard](https://github.com/microsoft/AirSim/pulls?page=6&q=is%3Apr+is%3Aclosed+sort%3Aupdated-desc#:~:text=1-,Control%20manual%20camera%20speed%20through%20the%20keyboard,-%233221%20by%20saihv) 
 
 For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 

@@ -1,0 +1,25 @@
+limitPerRun: 1
+
+issues:
+  daysUntilStale: 365
+  daysUntilClose: 20
+  exemptProjects: true
+  exemptMilestones: true
+  # Issues with these labels will never be considered stale
+  exemptLabels:
+    - 'bug'
+    - 'feature request'
+  staleLabel: stale
+
+  markComment: >
+    This issue has been automatically marked as stale because
+    it has not had activity from the community in the last year. It will be
+    closed if no further activity occurs within 20 days.
+  closeComment: >
+    This issue has been automatically closed because it is has not had activity
+    from the community in the last year.
+    
+pulls:
+  daysUntilStale: 1000
+  daysUntilClose: 10
+  staleLabel: stale

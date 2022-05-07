@@ -71,6 +71,8 @@ public:
     virtual void stopRecording();
     virtual bool isRecording() const;
 
+    virtual void toggleTraceAll();
+
     void startApiServer();
     void stopApiServer();
     bool isApiServerStarted();

@@ -153,6 +153,73 @@ namespace airlib
             return getWorldSimApi()->getImage(type, CameraDetails(camera_name, vehicle_name, external));
         });
 
+        //CinemAirSim
+        pimpl_->server.bind("simGetPresetLensSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> vector<string> {
+            return getWorldSimApi()->getPresetLensSettings(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetLensSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
+            return getWorldSimApi()->getLensSettings(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetPresetLensSettings", [&](const std::string preset_lens_settings, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setPresetLensSettings(preset_lens_settings, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetPresetFilmbackSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> vector<string> {
+            return getWorldSimApi()->getPresetFilmbackSettings(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetPresetFilmbackSettings", [&](const std::string preset_filmback_settings, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setPresetFilmbackSettings(preset_filmback_settings, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetFilmbackSettings", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
+            return getWorldSimApi()->getFilmbackSettings(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetFilmbackSettings", [&](const float width, const float heigth, const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
+            return getWorldSimApi()->setFilmbackSettings(width, heigth, CameraDetails(camera_name, vehicle_name, external));
+            ;
+        });
+
+        pimpl_->server.bind("simGetFocalLength", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
+            return getWorldSimApi()->getFocalLength(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetFocalLength", [&](const float focal_lenght, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setFocalLength(focal_lenght, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simEnableManualFocus", [&](const bool enable, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->enableManualFocus(enable, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetFocusDistance", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
+            return getWorldSimApi()->getFocusDistance(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetFocusDistance", [&](const float focus_distance, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setFocusDistance(focus_distance, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetFocusAperture", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> float {
+            return getWorldSimApi()->getFocusAperture(CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetFocusAperture", [&](const float focus_aperture, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setFocusAperture(focus_aperture, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simEnableFocusPlane", [&](const bool enable, const std::string& camera_name, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->enableFocusPlane(enable, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simGetCurrentFieldOfView", [&](const std::string& camera_name, const std::string& vehicle_name, bool external) -> string {
+            return getWorldSimApi()->getCurrentFieldOfView(CameraDetails(camera_name, vehicle_name, external));
+        });
+        //end CinemAirSim
+
         pimpl_->server.bind("simTestLineOfSightToPoint", [&](const RpcLibAdaptorsBase::GeoPoint& point, const std::string& vehicle_name) -> bool {
             return getVehicleSimApi(vehicle_name)->testLineOfSightToPoint(point.to());
         });
@@ -290,7 +357,7 @@ namespace airlib
         });
 
         pimpl_->server.bind("simGetCollisionInfo", [&](const std::string& vehicle_name) -> RpcLibAdaptorsBase::CollisionInfo {
-            const auto& collision_info = getVehicleSimApi(vehicle_name)->getCollisionInfo();
+            const auto& collision_info = getVehicleSimApi(vehicle_name)->getCollisionInfoAndReset();
             return RpcLibAdaptorsBase::CollisionInfo(collision_info);
         });
 
@@ -410,12 +477,12 @@ namespace airlib
             return *getWorldSimApi()->swapTextures(tag, tex_id, component_id, material_id);
         });
 
-        pimpl_->server.bind("simSetObjectMaterial", [&](const std::string& object_name, const std::string& material_name) -> bool {
-            return getWorldSimApi()->setObjectMaterial(object_name, material_name);
+        pimpl_->server.bind("simSetObjectMaterial", [&](const std::string& object_name, const std::string& material_name, const int component_id) -> bool {
+            return getWorldSimApi()->setObjectMaterial(object_name, material_name, component_id);
         });
 
-        pimpl_->server.bind("simSetObjectMaterialFromTexture", [&](const std::string& object_name, const std::string& texture_path) -> bool {
-            return getWorldSimApi()->setObjectMaterialFromTexture(object_name, texture_path);
+        pimpl_->server.bind("simSetObjectMaterialFromTexture", [&](const std::string& object_name, const std::string& texture_path, const int component_id) -> bool {
+            return getWorldSimApi()->setObjectMaterialFromTexture(object_name, texture_path, component_id);
         });
 
         pimpl_->server.bind("startRecording", [&]() -> void {
