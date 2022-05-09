@@ -74,8 +74,8 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
     const float laser_start = std::fmod(360.0f + params.horizontal_FOV_start, 360.0f);
     const float laser_end = std::fmod(360.0f + params.horizontal_FOV_end, 360.0f);
 
-    point_cloud.assign(total_points_to_scan * 3, NULL);
-    segmentation_cloud.assign(total_points_to_scan, NULL);
+    point_cloud.assign(total_points_to_scan * 3, -1);
+    segmentation_cloud.assign(total_points_to_scan, -1);
 
     ParallelFor(total_points_to_scan, [&](int32 idx) {
         int32 laser_idx = idx % number_of_lasers;
@@ -97,8 +97,8 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
     });
 
     // erase–remove idiom to handle non-valid elements
-    point_cloud.erase(std::remove(point_cloud.begin(), point_cloud.end(), NULL), point_cloud.end());
-    segmentation_cloud.erase(std::remove(segmentation_cloud.begin(), segmentation_cloud.end(), NULL), segmentation_cloud.end());
+    point_cloud.erase(std::remove(point_cloud.begin(), point_cloud.end(), -1), point_cloud.end());
+    segmentation_cloud.erase(std::remove(segmentation_cloud.begin(), segmentation_cloud.end(), -1), segmentation_cloud.end());
 
     current_horizontal_angle_ = std::fmod(current_horizontal_angle_ + angle_distance_of_tick, 360.0f);
 
