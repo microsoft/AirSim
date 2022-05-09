@@ -161,12 +161,13 @@ bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const ms
         }
 
         // decide the frame for the point-cloud
-        if (params.data_frame == AirSimSettings::kVehicleInertialFrame) {
+        switch (params.data_frame) {
+        case AirSimSettings::LidarSetting::DataFrame::VehicleInertialFrame:
             // current detault behavior; though it is probably not very useful.
             // not changing the default for now to maintain backwards-compat.
             point = ned_transform_->toLocalNed(hit_result.ImpactPoint);
-        }
-        else if (params.data_frame == AirSimSettings::kSensorLocalFrame) {
+            break;
+        case AirSimSettings::LidarSetting::DataFrame::SensorLocalFrame:
             // point in vehicle intertial frame
             Vector3r point_v_i = ned_transform_->toLocalNed(hit_result.ImpactPoint);
 
@@ -184,9 +185,8 @@ bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const ms
 
             // TODO: Optimization -- instead of doing this for every point, it should be possible to do this
             // for the point-cloud together? Need to look into matrix operations to do this together for all points.
+            break;
         }
-        else
-            throw std::runtime_error("Unknown requested data frame");
 
         return true;
     }
