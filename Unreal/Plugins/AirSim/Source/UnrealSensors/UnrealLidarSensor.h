@@ -30,7 +30,7 @@ private:
 
     void createLasers();
     bool shootLaser(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,
-                    const uint32 channel, const float horizontal_angle, const float vertical_angle,
+                    const float horizontal_angle, const float vertical_angle,
                     const msr::airlib::LidarSimpleParams params, Vector3r& point, int& segmentationID);
 
 private:

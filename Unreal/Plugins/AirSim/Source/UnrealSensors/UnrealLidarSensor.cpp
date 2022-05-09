@@ -19,7 +19,7 @@ UnrealLidarSensor::UnrealLidarSensor(const AirSimSettings::LidarSetting& setting
 // initializes information based on lidar configuration
 void UnrealLidarSensor::createLasers()
 {
-    msr::airlib::LidarSimpleParams params = getParams();
+    const msr::airlib::LidarSimpleParams params = getParams();
 
     const auto number_of_lasers = params.number_of_channels;
 
@@ -47,7 +47,7 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
     point_cloud.clear();
     segmentation_cloud.clear();
 
-    msr::airlib::LidarSimpleParams params = getParams();
+    const msr::airlib::LidarSimpleParams params = getParams();
     const auto number_of_lasers = params.number_of_channels;
 
     // cap the points to scan via ray-tracing; this is currently needed for car/Unreal tick scenarios
@@ -87,7 +87,7 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
             Vector3r point;
             int segmentationID = -1;
             // shoot laser and get the impact point, if any
-            if (shootLaser(lidar_pose, vehicle_pose, laser_idx, horizontal_angle, vertical_angle, params, point, segmentationID)) {
+            if (shootLaser(lidar_pose, vehicle_pose, horizontal_angle, vertical_angle, params, point, segmentationID)) {
                 point_cloud[idx * 3] = point.x();
                 point_cloud[idx * 3 + 1] = point.y();
                 point_cloud[idx * 3 + 2] = point.z();
@@ -107,7 +107,7 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
 
 // simulate shooting a laser via Unreal ray-tracing.
 bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const msr::airlib::Pose& vehicle_pose,
-                                   const uint32 laser, const float horizontal_angle, const float vertical_angle,
+                                   const float horizontal_angle, const float vertical_angle,
                                    const msr::airlib::LidarSimpleParams params, Vector3r& point, int& segmentationID)
 {
     // start position
