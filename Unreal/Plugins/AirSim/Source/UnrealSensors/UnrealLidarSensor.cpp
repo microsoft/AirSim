@@ -140,8 +140,10 @@ bool UnrealLidarSensor::shootLaser(const msr::airlib::Pose& lidar_pose, const ms
         if (hitActor != nullptr) {
             TArray<UMeshComponent*> meshComponents;
             hitActor->GetComponents<UMeshComponent>(meshComponents);
-            for (int i = 0; i < meshComponents.Num(); i++) {
-                segmentationID = segmentationID == -1 ? meshComponents[i]->CustomDepthStencilValue : segmentationID;
+            for (auto* comp : meshComponents) {
+                segmentationID = comp->CustomDepthStencilValue;
+                if (segmentationID != -1)
+                    break;
             }
         }
 
