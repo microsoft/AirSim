@@ -78,7 +78,8 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
     segmentation_cloud.assign(total_points_to_scan, NULL);
 
     ParallelFor(total_points_to_scan, [&](int32 idx) {
-        const float vertical_angle = laser_angles_[idx % number_of_lasers];
+        int32 laser_idx = idx % number_of_lasers;
+        const float vertical_angle = laser_angles_[laser_idx];
         const float horizontal_angle = std::fmod(current_horizontal_angle_ + angle_distance_of_laser_measure * idx, 360.0f);
 
         // check if the laser is outside the requested horizontal FOV
@@ -86,7 +87,7 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
             Vector3r point;
             int segmentationID = -1;
             // shoot laser and get the impact point, if any
-            if (shootLaser(lidar_pose, vehicle_pose, idx % number_of_lasers, horizontal_angle, vertical_angle, params, point, segmentationID)) {
+            if (shootLaser(lidar_pose, vehicle_pose, laser_idx, horizontal_angle, vertical_angle, params, point, segmentationID)) {
                 point_cloud[idx * 3] = point.x();
                 point_cloud[idx * 3 + 1] = point.y();
                 point_cloud[idx * 3 + 2] = point.z();
