@@ -68,7 +68,7 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
 
     // calculate needed angle/distance between each point
     const float angle_distance_of_tick = params.horizontal_rotation_frequency * 360.0f * delta_time;
-    const float angle_distance_of_laser_measure = angle_distance_of_tick / points_to_scan_with_one_laser;
+    const float angle_distance_of_laser_measure = angle_distance_of_tick / total_points_to_scan;
 
     // normalize FOV start/end
     const float laser_start = std::fmod(360.0f + params.horizontal_FOV_start, 360.0f);
