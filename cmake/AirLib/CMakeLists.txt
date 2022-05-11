@@ -3,10 +3,6 @@ project(AirLib)
 
 include(GNUInstallDirs)
 
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake-modules") 
-INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../cmake-modules/CommonSetup.cmake")
-CommonSetup()
-
 file(GLOB_RECURSE ${PROJECT_NAME}_sources 
   ${AIRSIM_ROOT}/${PROJECT_NAME}/src/api/*.cpp
   ${AIRSIM_ROOT}/${PROJECT_NAME}/src/common/common_utils/*.cpp

@@ -6,13 +6,6 @@ macro(AddExecutableSource)
     add_executable(${PROJECT_NAME} ${PROJECT_CPP})
 endmacro(AddExecutableSource)
 
-macro(SetupConsoleBuild)
-    IF(MSVC)
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CONSOLE ")
-        set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
-    ENDIF()
-endmacro(SetupConsoleBuild)
-
 macro(CommonSetup)
     find_package(Threads REQUIRED)
     find_path(AIRSIM_ROOT NAMES AirSim.sln PATHS ".." "../.." "../../.." "../../../.." "../../../../.." "../../../../../.." REQUIRED)
@@ -21,9 +14,6 @@ macro(CommonSetup)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
     SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/output/bin)
     SET(LIBRARY_OUTPUT_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-
-    #what is our build type debug or release?
-    string( TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
 
     IF(UNIX)
         set(RPC_LIB_DEFINES "-D MSGPACK_PP_VARIADICS_MSVC=0")
