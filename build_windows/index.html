@@ -305,16 +305,16 @@
 <ol>
 <li><a href="https://www.unrealengine.com/download">Download</a> the Epic Games Launcher. While the Unreal Engine is open source and free to download, registration is still required.</li>
 <li>Run the Epic Games Launcher, open the <code>Unreal Engine</code> tab on the left pane.
-Click on the <code>Install</code> button on the top right, which should show the option to download <strong>Unreal Engine &gt;= 4.25</strong>. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then <strong>make sure the version you are using is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
+Click on the <code>Install</code> button on the top right, which should show the option to download <strong>Unreal Engine &gt;= 4.27</strong>. Chose the install location to suit your needs, as shown in the images below. If you have multiple versions of Unreal installed then <strong>make sure the version you are using is set to <code>current</code></strong> by clicking down arrow next to the Launch button for the version.</li>
 </ol>
 <p><strong>Note</strong>: If you have UE 4.16 or older projects, please see the <a href="../unreal_upgrade/">upgrade guide</a> to upgrade your projects.</p>
 <p><img alt="Unreal Engine Tab UI Screenshot" src="../images/ue_install.png" /></p>
 <p><img alt="Unreal Engine Install Location UI Screenshot" src="../images/ue_install_location.png" /></p>
 <h2 id="build-airsim">Build AirSim<a class="headerlink" href="#build-airsim" title="Permanent link">#</a></h2>
 <ul>
-<li>Install Visual Studio 2019.
-<strong>Make sure</strong> to select <strong>Desktop Development with C++</strong> and <strong>Windows 10 SDK 10.0.18362</strong> (should be selected by default) and select the latest .NET Framework SDK under the 'Individual Components' tab while installing VS 2019.</li>
-<li>Start <code>Developer Command Prompt for VS 2019</code>.</li>
+<li>Install Visual Studio 2022.
+<strong>Make sure</strong> to select <strong>Desktop Development with C++</strong> and <strong>Windows 10 SDK 10.0.19041</strong> (should be selected by default) and select the latest .NET Framework SDK under the 'Individual Components' tab while installing VS 2022.</li>
+<li>Start <code>Developer Command Prompt for VS 2022</code>.</li>
 <li>
 <p>Clone the repo: <code>git clone https://github.com/Microsoft/AirSim.git</code>, and go the AirSim directory by <code>cd AirSim</code>.</p>
 <p><strong>Note:</strong> It's generally not a good idea to install AirSim in C drive. This can cause scripts to fail, and requires running VS in Admin mode. Instead clone in a different drive such as D or E.</p>
@@ -331,8 +331,13 @@ Click on the <code>Install</code> button on the top right, which should show the
 <h2 id="how-to-use-airsim">How to Use AirSim<a class="headerlink" href="#how-to-use-airsim" title="Permanent link">#</a></h2>
 <p>Once AirSim is set up by following above steps, you can,</p>
 <ol>
-<li>Double click on .sln file to load the Blocks project in <code>Unreal\Environments\Blocks</code> (or .sln file in your own <a href="../unreal_custenv/">custom</a> Unreal project). If you don't see .sln file then you probably haven't completed steps in Build Unreal Project section above.</li>
-<li>Select your Unreal project as Start Up project (for example, Blocks project) and make sure Build config is set to "Develop Editor" and x64.</li>
+<li>
+<p>Double click on .sln file to load the Blocks project in <code>Unreal\Environments\Blocks</code> (or .sln file in your own <a href="../unreal_custenv/">custom</a> Unreal project). If you don't see .sln file then you probably haven't completed steps in Build Unreal Project section above.</p>
+<p><strong>Note</strong>: Unreal 4.27 will auto-generate the .sln file targetting Visual Studio 2019. Visual Studio 2022 will be able to load and run this .sln, but if you want full Visual Studio 2022 support, you will need to explicitly enable support by going to 'Edit-&gt;Editor Preferences-&gt;Source Code' and selecting 'Visual Studio 2022' for the 'Source Code Editor' setting.</p>
+</li>
+<li>
+<p>Select your Unreal project as Start Up project (for example, Blocks project) and make sure Build config is set to "Develop Editor" and x64.</p>
+</li>
 <li>After Unreal Editor loads, press Play button. </li>
 </ol>
 <div class="admonition tip">

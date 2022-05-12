@@ -325,11 +325,11 @@
 <p>Make sure you are <a href="https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html">registered with Epic Games</a>. This is required to get source code access for Unreal Engine.</p>
 </li>
 <li>
-<p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal &gt;= 4.25 at present. We recommend using 4.25.</p>
+<p>Clone Unreal in your favorite folder and build it (this may take a while!). <strong>Note</strong>: We only support Unreal &gt;= 4.27 at present. We recommend using 4.27.</p>
 </li>
 </ul>
 <pre class="highlight"><code class="language-bash"># go to the folder where you clone GitHub projects
-git clone -b 4.25 git@github.com:EpicGames/UnrealEngine.git
+git clone -b 4.27 git@github.com:EpicGames/UnrealEngine.git
 cd UnrealEngine
 ./Setup.sh
 ./GenerateProjectFiles.sh
@@ -341,7 +341,7 @@ make</code></pre>
 <pre class="highlight"><code class="language-bash"># go to the folder where you clone GitHub projects
 git clone https://github.com/Microsoft/AirSim.git
 cd AirSim</code></pre>
-<p>By default AirSim uses clang 8 to build for compatibility with UE 4.25. The setup script will install the right version of cmake, llvm, and eigen.</p>
+<p>By default AirSim uses clang 8 to build for compatibility with UE 4.27. The setup script will install the right version of cmake, llvm, and eigen.</p>
 <pre class="highlight"><code class="language-bash">./setup.sh
 ./build.sh
 # use ./build.sh --debug to build in debug mode</code></pre>
