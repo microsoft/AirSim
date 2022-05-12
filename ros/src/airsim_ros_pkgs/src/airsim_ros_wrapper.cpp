@@ -727,11 +727,11 @@ nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(const ms
 // https://docs.ros.org/jade/api/sensor_msgs/html/point__cloud__conversion_8h_source.html#l00066
 // look at UnrealLidarSensor.cpp UnrealLidarSensor::getPointCloud() for math
 // read this carefully https://docs.ros.org/kinetic/api/sensor_msgs/html/msg/PointCloud2.html
-sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const
+sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name, const std::string& sensor_name) const
 {
     sensor_msgs::PointCloud2 lidar_msg;
     lidar_msg.header.stamp = ros::Time::now();
-    lidar_msg.header.frame_id = vehicle_name;
+    lidar_msg.header.frame_id = vehicle_name + "/" + sensor_name;
 
     if (lidar_data.point_cloud.size() > 3) {
         lidar_msg.height = 1;
@@ -1326,7 +1326,7 @@ void AirsimROSWrapper::lidar_timer_cb(const ros::TimerEvent& event)
             if (!vehicle_name_ptr_pair.second->lidar_pubs.empty()) {
                 for (auto& lidar_publisher : vehicle_name_ptr_pair.second->lidar_pubs) {
                     auto lidar_data = airsim_client_lidar_.getLidarData(lidar_publisher.sensor_name, vehicle_name_ptr_pair.first);
-                    sensor_msgs::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data, vehicle_name_ptr_pair.first);
+                    sensor_msgs::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data, vehicle_name_ptr_pair.first, lidar_publisher.sensor_name);
                     lidar_publisher.publisher.publish(lidar_msg);
                 }
             }
