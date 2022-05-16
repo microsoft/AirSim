@@ -246,6 +246,18 @@ __pragma(warning(disable : 4239))
             pimpl_->client.call("simSetVehiclePose", RpcLibAdaptorsBase::Pose(pose), ignore_collision, vehicle_name);
         }
 
+        // TODO: parralised RL
+        void RpcLibClientBase::simSetVehiclePoseBatch(const std::vector<Pose>& poses, const std::vector<std::string>& vehicle_names)
+        {
+            std::vector<RpcLibAdaptorsBase::Pose> poses_adaptors;
+            for (unsigned int i = 0; i < poses.size(); i++) {
+                poses_adaptors.push_back(RpcLibAdaptorsBase::Pose(poses[i]));
+            }
+
+            pimpl_->client.call("simSetVehiclePoseBatch", poses_adaptors, vehicle_names);
+        }
+        // TODO: parralised RL
+
         void RpcLibClientBase::simSetKinematics(const Kinematics::State& state, bool ignore_collision, const std::string& vehicle_name)
         {
             pimpl_->client.call("simSetKinematics", RpcLibAdaptorsBase::KinematicsState(state), ignore_collision, vehicle_name);

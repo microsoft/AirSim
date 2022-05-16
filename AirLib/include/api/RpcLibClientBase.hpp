@@ -15,6 +15,7 @@
 #include "physics/Kinematics.hpp"
 #include "physics/Environment.hpp"
 #include "api/WorldSimApiBase.hpp"
+#include "RpcLibAdaptorsBase.hpp"
 
 namespace msr
 {
@@ -109,6 +110,7 @@ namespace airlib
 
         Pose simGetVehiclePose(const std::string& vehicle_name = "") const;
         void simSetVehiclePose(const Pose& pose, bool ignore_collision, const std::string& vehicle_name = "");
+        void simSetVehiclePoseBatch(const std::vector<Pose>& poses, const std::vector<std::string>& vehicle_names);
         void simSetTraceLine(const std::vector<float>& color_rgba, float thickness = 3.0f, const std::string& vehicle_name = "");
 
         // TODO: parralized RL

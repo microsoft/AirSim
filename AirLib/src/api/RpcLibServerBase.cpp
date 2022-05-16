@@ -256,7 +256,7 @@ namespace airlib
         });
 
         // TODO: parralised RL
-        pimpl_->server.bind("simSetVehiclePoseBatch", [&](const std::vector<RpcLibAdaptorsBase::Pose>& poses, const std::vector<std::string> vehicle_names) -> void {
+        pimpl_->server.bind("simSetVehiclePoseBatch", [&](const std::vector<RpcLibAdaptorsBase::Pose>& poses, const std::vector<std::string>& vehicle_names) -> void {
             for (unsigned int i = 0; i < vehicle_names.size(); i++) {
                 getVehicleSimApi(vehicle_names[i])->setPose(poses[i].to(), true);
             }
