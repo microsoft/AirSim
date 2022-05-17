@@ -549,7 +549,7 @@ __pragma(warning(disable : 4239))
             pimpl_->client.call("simSetCameraPose", camera_name, RpcLibAdaptorsBase::Pose(pose), vehicle_name, external);
         }
 
-                void RpcLibClientBase::simSetCameraPitch(const std::string& camera_name, float pitch, const std::string& vehicle_name, bool external)
+        void RpcLibClientBase::simSetCameraPitch(const std::string& camera_name, float pitch, const std::string& vehicle_name, bool external)
         {
             pimpl_->client.call("simSetCameraPitch", camera_name, pitch, vehicle_name, external);
         }
