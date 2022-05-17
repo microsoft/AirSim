@@ -864,6 +864,36 @@ void WorldSimApi::setCameraPose(const msr::airlib::Pose& pose, const CameraDetai
                                              true);
 }
 
+void WorldSimApi::setCameraPitch(float pitch, const CameraDetails& camera_details)
+{
+    APIPCamera* camera = simmode_->getCamera(camera_details);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, pitch]() {
+        camera->setCameraPitch(pitch);
+    },
+                                             true);
+}
+
+void WorldSimApi::setCameraRoll(float roll, const CameraDetails& camera_details)
+{
+    APIPCamera* camera = simmode_->getCamera(camera_details);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, roll]() {
+        camera->setCameraRoll(roll);
+    },
+                                             true);
+}
+
+void WorldSimApi::setCameraYaw(float yaw, const CameraDetails& camera_details)
+{
+    APIPCamera* camera = simmode_->getCamera(camera_details);
+
+    UAirBlueprintLib::RunCommandOnGameThread([camera, yaw]() {
+        camera->setCameraYaw(yaw);
+    },
+                                             true);
+}
+
 void WorldSimApi::setCameraFoV(float fov_degrees, const CameraDetails& camera_details)
 {
     APIPCamera* camera = simmode_->getCamera(camera_details);
