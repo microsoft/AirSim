@@ -26,6 +26,20 @@ public class InitializeAirSim : MonoBehaviour
                         LoadSceneAsPerSimMode(AirSimSettings.GetSettings().SimMode);
                         break;
                     }
+                    case "":
+                    {
+                        break;
+                    }
+                    default:
+                    {
+                        Debug.LogError("'" + AirSimSettings.GetSettings().SimMode + "' is not a supported SimMode.");
+                        #if UNITY_EDITOR
+                        UnityEditor.EditorApplication.isPlaying = false;
+                        #else
+                        Application.Quit();
+                        #endif
+                        break;
+                    }
 				}
             }
         }
