@@ -142,7 +142,7 @@ bool UDetectionComponent::calcBoundingFromViewInfo(AActor* actor, FBox2D& box_ou
         for (FVector& point : points) {
             is_world_hit = GetWorld()->LineTraceSingleByChannel(result, GetComponentLocation(), point, ECC_WorldStatic);
             if (is_world_hit) {
-                if (result.Actor == actor) {
+                if (result.GetActor() == actor) {
                     is_visible = true;
                     break;
                 }
@@ -156,7 +156,7 @@ bool UDetectionComponent::calcBoundingFromViewInfo(AActor* actor, FBox2D& box_ou
                 FVector point = UKismetMathLibrary::RandomPointInBoundingBox(origin, extend);
                 is_world_hit = GetWorld()->LineTraceSingleByChannel(result, GetComponentLocation(), point, ECC_WorldStatic);
                 if (is_world_hit) {
-                    if (result.Actor == actor) {
+                    if (result.GetActor() == actor) {
                         is_visible = true;
                         break;
                     }
