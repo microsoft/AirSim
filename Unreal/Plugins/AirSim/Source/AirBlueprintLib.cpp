@@ -456,7 +456,7 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
         //Various checks if there is even a valid mesh
         if (!comp->GetStaticMesh()) continue;
         if (!comp->GetStaticMesh()->HasValidRenderData()) continue;
-#if (ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION > 26)
+#if ((ENGINE_MAJOR_VERSION > 4) || (ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION >= 27))
         if (comp->GetStaticMesh()->GetRenderData()->LODResources.Num() == 0) continue;
 #else
         if (comp->GetStaticMesh()->RenderData->LODResources.Num() == 0) continue;
@@ -475,7 +475,7 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
         mesh.orientation.y() = att.Y;
         mesh.orientation.z() = att.Z;
 
-#if (ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION > 26)
+#if ((ENGINE_MAJOR_VERSION > 4) || (ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION >= 27))
         FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->GetRenderData()->LODResources[0].VertexBuffers.PositionVertexBuffer;
 #else
         FPositionVertexBuffer* vertex_buffer = &comp->GetStaticMesh()->RenderData->LODResources[0].VertexBuffers.PositionVertexBuffer;
@@ -494,7 +494,7 @@ std::vector<msr::airlib::MeshPositionVertexBuffersResponse> UAirBlueprintLib::Ge
                     RHIUnlockVertexBuffer(vertex_buffer->VertexBufferRHI);
                 });
 
-#if (ENGINE_MAJOR_VERSION >= 4 && ENGINE_MINOR_VERSION > 26)
+#if ((ENGINE_MAJOR_VERSION > 4) || (ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION >= 27))
             FStaticMeshLODResources& lod = comp->GetStaticMesh()->GetRenderData()->LODResources[0];
 #else
             FStaticMeshLODResources& lod = comp->GetStaticMesh()->RenderData->LODResources[0];
