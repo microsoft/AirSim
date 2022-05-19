@@ -122,6 +122,7 @@ nav:
     - "Orbit Trajectory": "orbit.md"
     - "Importing a custom multirotor mesh": 'https://youtu.be/Bp86WiLUC80'
     - "Object Detection": "object_detection.md"
+    - "AirSim with MAVROS and PX4": 'https://youtu.be/ZonkdMcwXH4'
   - "Misc":
     - "AirSim on Real Drones": 'custom_drone.md'
     - "Installing cmake on Linux": 'cmake_linux.md'
