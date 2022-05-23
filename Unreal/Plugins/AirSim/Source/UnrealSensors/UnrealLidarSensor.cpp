@@ -68,19 +68,21 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
 
     // calculate needed angle/distance between each point
     const float angle_distance_of_tick = params.horizontal_rotation_frequency * 360.0f * delta_time;
-    const float angle_distance_of_laser_measure = angle_distance_of_tick / total_points_to_scan;
+    const float angle_distance_of_laser_measure = angle_distance_of_tick / points_to_scan_with_one_laser;
 
     // normalize FOV start/end
     const float laser_start = std::fmod(360.0f + params.horizontal_FOV_start, 360.0f);
     const float laser_end = std::fmod(360.0f + params.horizontal_FOV_end, 360.0f);
 
-    point_cloud.assign(total_points_to_scan * 3, -1);
-    segmentation_cloud.assign(total_points_to_scan, -1);
+    const uint32 total_jobs = number_of_lasers * points_to_scan_with_one_laser;
 
-    ParallelFor(total_points_to_scan, [&](int32 idx) {
-        int32 laser_idx = idx % number_of_lasers;
+    point_cloud.assign(total_jobs * 3, FLT_MAX);
+    segmentation_cloud.assign(total_jobs, -1);
+
+    ParallelFor(total_jobs, [&](int32 idx) {
+        int32 laser_idx = (idx / points_to_scan_with_one_laser) % number_of_lasers;
         const float vertical_angle = laser_angles_[laser_idx];
-        const float horizontal_angle = std::fmod(current_horizontal_angle_ + angle_distance_of_laser_measure * idx, 360.0f);
+        const float horizontal_angle = std::fmod(current_horizontal_angle_ + angle_distance_of_laser_measure * (idx % points_to_scan_with_one_laser), 360.0f);
 
         // check if the laser is outside the requested horizontal FOV
         if (VectorMath::isAngleBetweenAngles(horizontal_angle, laser_start, laser_end)) {
@@ -97,7 +99,7 @@ void UnrealLidarSensor::getPointCloud(const msr::airlib::Pose& lidar_pose, const
     });
 
     // erase–remove idiom to handle non-valid elements
-    point_cloud.erase(std::remove(point_cloud.begin(), point_cloud.end(), -1), point_cloud.end());
+    point_cloud.erase(std::remove(point_cloud.begin(), point_cloud.end(), FLT_MAX), point_cloud.end());
     segmentation_cloud.erase(std::remove(segmentation_cloud.begin(), segmentation_cloud.end(), -1), segmentation_cloud.end());
 
     current_horizontal_angle_ = std::fmod(current_horizontal_angle_ + angle_distance_of_tick, 360.0f);
