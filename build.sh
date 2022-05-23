@@ -134,10 +134,13 @@ rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
 rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
 rm -rf Unreal/Plugins/AirSim/Source/AirLib/src
 
-# Update Blocks project
-Unreal/Environments/Blocks/clean.sh
-mkdir -p Unreal/Environments/Blocks/Plugins
-rsync -a --delete Unreal/Plugins/AirSim Unreal/Environments/Blocks/Plugins
+# Update all environment projects
+for d in Unreal/Environments/* ; do
+    [ -L "${d%/}" ] && continue
+    $d/clean.sh
+    mkdir -p $d/Plugins
+    rsync -a --delete Unreal/Plugins/AirSim $d/Plugins
+done
 
 set +x
 
@@ -146,11 +149,9 @@ echo ""
 echo "=================================================================="
 echo " AirSim plugin is built! Here's how to build Unreal project."
 echo "=================================================================="
-echo "If you are using Blocks environment, its already updated."
-echo "If you are using your own environment, update plugin using,"
-echo "rsync -a --delete Unreal/Plugins path/to/MyUnrealProject"
+echo "All environments under Unreal/Environments have been updated."
 echo ""
-echo "For help see:"
+echo "For further info see:"
 echo "https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md"
 echo "=================================================================="
 
