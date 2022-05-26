@@ -204,6 +204,13 @@ if NOT exist Unreal\Plugins\AirSim\Source\AirLib mkdir Unreal\Plugins\AirSim\Sou
 robocopy /MIR AirLib Unreal\Plugins\AirSim\Source\AirLib  /XD temp *. /njh /njs /ndl /np
 copy /y AirSim.props Unreal\Plugins\AirSim\Source\AirLib
 
+REM //---------- update all environments ----------
+FOR /D %%E IN (Unreal\Environments\*) DO (
+    cd %%E
+    call .\update_from_git.bat ..\..\..
+    cd ..\..\..
+)
+
 REM //---------- done building ----------
 exit /b 0
 
