@@ -3,7 +3,7 @@
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
 
-### Jan 2021
+### Jan 2022
 * Latest release `v1.7.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.7.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.7.0-linux)
 
 ### Dec 2021

@@ -8,10 +8,9 @@ Here are quick steps to get Blocks environment up and running:
 ## Windows
 
 1. Make sure you have [installed Unreal and built AirSim](build_windows.md).
-2. Navigate to folder `AirSim\Unreal\Environments\Blocks` and run `update_from_git.bat`.
-3. Double click on generated .sln file to open in Visual Studio 2019 or newer.
-4. Make sure `Blocks` project is the startup project, build configuration is set to `DebugGame_Editor` and `Win64`. Hit F5 to run.
-5. Press the Play button in Unreal Editor and you will see something like in below video. Also see [how to use AirSim](https://github.com/Microsoft/AirSim/#how-to-use-it).
+2. Navigate to folder `AirSim\Unreal\Environments\Blocks`, double click on Blocks.sln file to open in Visual Studio. By default, this project is configured for Visual Studio 2019. However, if you want to generate this project for Visual Studio 2022, go to 'Edit->Editor Preferences->Source Code' inside the Unreal Editor and select 'Visual Studio 2022' for the 'Source Code Editor' setting.
+3. Make sure `Blocks` project is the startup project, build configuration is set to `DebugGame_Editor` and `Win64`. Hit F5 to run.
+4. Press the Play button in Unreal Editor and you will see something like in below video. Also see [how to use AirSim](https://github.com/Microsoft/AirSim/#how-to-use-it).
 
 ### Changing Code and Rebuilding
 For Windows, you can just change the code in Visual Studio, press F5 and re-run. There are few batch files available in folder `AirSim\Unreal\Environments\Blocks` that lets you sync code, clean etc.
