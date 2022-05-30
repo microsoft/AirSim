@@ -9,7 +9,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
-#include "Runtime/Engine/Classes/Engine/LevelStreamingDynamic.h"
 #include "UObject/UObjectIterator.h"
 #include "Camera/CameraComponent.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerStart.h"
@@ -35,7 +34,6 @@ Methods -> CamelCase
 parameters -> camel_case
 */
 
-ULevelStreamingDynamic* UAirBlueprintLib::CURRENT_LEVEL = nullptr;
 bool UAirBlueprintLib::log_messages_hidden_ = false;
 msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType UAirBlueprintLib::mesh_naming_method_ =
     msr::airlib::AirSimSettings::SegmentationSetting::MeshNamingMethodType::OwnerName;
@@ -76,18 +74,15 @@ void UAirBlueprintLib::setSimulatePhysics(AActor* actor, bool simulate_physics)
     }
 }
 
-ULevelStreamingDynamic* UAirBlueprintLib::loadLevel(UObject* context, const FString& level_name)
+bool UAirBlueprintLib::loadLevel(UObject* context, const FString& level_name)
 {
-    bool success{ false };
-    context->GetWorld()->SetNewWorldOrigin(FIntVector(0, 0, 0));
-    ULevelStreamingDynamic* new_level = UAirsimLevelStreaming::LoadAirsimLevelInstance(
-        context->GetWorld(), level_name, FVector(0, 0, 0), FRotator(0, 0, 0), success);
+    FString LongPackageName;
+    const bool success = FPackageName::SearchForPackageOnDisk(level_name, &LongPackageName);
     if (success) {
-        if (CURRENT_LEVEL != nullptr && CURRENT_LEVEL->IsValidLowLevel())
-            CURRENT_LEVEL->SetShouldBeLoaded(false);
-        CURRENT_LEVEL = new_level;
+        context->GetWorld()->SetNewWorldOrigin(FIntVector(0, 0, 0));
+        UGameplayStatics::OpenLevel(context->GetWorld(), FName(*LongPackageName), true);
     }
-    return CURRENT_LEVEL;
+    return success;
 }
 
 bool UAirBlueprintLib::spawnPlayer(UWorld* context)
