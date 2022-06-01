@@ -84,7 +84,7 @@ void AirsimROSWrapper::initialize_airsim()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, something went wrong.\n%s", msg);
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, something went wrong.\n%s", msg.c_str());
         rclcpp::shutdown();
     }
 }
@@ -682,7 +682,7 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
         if (isENU_) {
             try {
                 sensor_msgs::msg::PointCloud2 lidar_msg_enu;
-                auto transformStampedENU = tf_buffer_->lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration(1));
+                auto transformStampedENU = tf_buffer_->lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration::from_nanoseconds(1));
                 tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
 
                 lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
@@ -925,7 +925,7 @@ void AirsimROSWrapper::drone_state_timer_cb()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API:\n%s", msg);
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API:\n%s", msg.c_str());
     }
 }
 
@@ -1234,7 +1234,7 @@ void AirsimROSWrapper::img_response_timer_cb()
 
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg);
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg.c_str());
     }
 }
 
@@ -1253,7 +1253,7 @@ void AirsimROSWrapper::lidar_timer_cb()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg);
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg.c_str());
     }
 }
 
