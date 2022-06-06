@@ -778,7 +778,6 @@ void APIPCamera::copyCameraSettingsToSceneCapture(UCameraComponent* src, USceneC
 {
     if (src && dst) {
         dst->SetWorldLocationAndRotation(src->GetComponentLocation(), src->GetComponentRotation());
-        dst->FOVAngle = src->FieldOfView;
 
         FMinimalViewInfo camera_view_info;
         src->GetCameraView(/*DeltaTime =*/0.0f, camera_view_info);
