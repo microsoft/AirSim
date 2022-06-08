@@ -84,7 +84,7 @@ void AirsimROSWrapper::initialize_airsim()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, something went wrong.\n%s", msg);
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, something went wrong.\n%s", msg.c_str());
         rclcpp::shutdown();
     }
 }
@@ -328,7 +328,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 // QoS - The depth of the publisher message queue.
 // more details here - https://docs.ros.org/en/foxy/Concepts/About-Quality-of-Service-Settings.html
 template <typename T>
-const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const string& sensor_type_name, const string& sensor_name, SensorBase::SensorType sensor_type, const string& topic_name, int QoS)
+const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const std::string& sensor_type_name, const std::string& sensor_name,
+                                                                   SensorBase::SensorType sensor_type, const std::string& topic_name, int QoS)
 {
     RCLCPP_INFO_STREAM(nh_->get_logger(), sensor_type_name);
     SensorPublisher<T> sensor_publisher;
@@ -439,7 +440,7 @@ bool AirsimROSWrapper::reset_srv_cb(std::shared_ptr<airsim_interfaces::srv::Rese
     unused(response);
     std::lock_guard<std::mutex> guard(control_mutex_);
 
-    airsim_client_.reset();
+    airsim_client_->reset();
     return true; //todo
 }
 
@@ -593,7 +594,7 @@ airsim_interfaces::msg::CarState AirsimROSWrapper::get_roscarstate_msg_from_car_
     state_msg.rpm = car_state.rpm;
     state_msg.maxrpm = car_state.maxrpm;
     state_msg.handbrake = car_state.handbrake;
-    state_msg.header.stamp = airsim_timestamp_to_ros(car_state.timestamp);
+    state_msg.header.stamp = rclcpp::Time(car_state.timestamp);
 
     return state_msg;
 }
@@ -644,11 +645,11 @@ nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_multirotor_state(con
 // https://docs.ros.org/jade/api/sensor_msgs/html/point__cloud__conversion_8h_source.html#l00066
 // look at UnrealLidarSensor.cpp UnrealLidarSensor::getPointCloud() for math
 // read this carefully https://docs.ros.org/kinetic/api/sensor_msgs/html/msg/PointCloud2.html
-sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const
+sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name, const std::string& sensor_name) const
 {
     sensor_msgs::msg::PointCloud2 lidar_msg;
-    lidar_msg.header.stamp = nh_->now();
-    lidar_msg.header.frame_id = vehicle_name;
+    lidar_msg.header.stamp = rclcpp::Time(lidar_data.time_stamp);
+    lidar_msg.header.frame_id = vehicle_name + "/" + sensor_name;
 
     if (lidar_data.point_cloud.size() > 3) {
         lidar_msg.height = 1;
@@ -675,28 +676,28 @@ sensor_msgs::msg::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const 
         std::vector<float> data_std = lidar_data.point_cloud;
 
         const unsigned char* bytes = reinterpret_cast<const unsigned char*>(data_std.data());
-        vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
+        std::vector<unsigned char> lidar_msg_data(bytes, bytes + sizeof(float) * data_std.size());
         lidar_msg.data = std::move(lidar_msg_data);
+
+        if (isENU_) {
+            try {
+                sensor_msgs::msg::PointCloud2 lidar_msg_enu;
+                auto transformStampedENU = tf_buffer_->lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration::from_nanoseconds(1));
+                tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
+
+                lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
+                lidar_msg_enu.header.frame_id = lidar_msg.header.frame_id;
+
+                lidar_msg = std::move(lidar_msg_enu);
+            }
+            catch (tf2::TransformException& ex) {
+                RCLCPP_WARN(nh_->get_logger(), "%s", ex.what());
+                rclcpp::Rate(1.0).sleep();
+            }
+        }
     }
     else {
         // msg = []
-    }
-
-    if (isENU_) {
-        try {
-            sensor_msgs::msg::PointCloud2 lidar_msg_enu;
-            auto transformStampedENU = tf_buffer_->lookupTransform(AIRSIM_FRAME_ID, vehicle_name, rclcpp::Time(0), rclcpp::Duration(1));
-            tf2::doTransform(lidar_msg, lidar_msg_enu, transformStampedENU);
-
-            lidar_msg_enu.header.stamp = lidar_msg.header.stamp;
-            lidar_msg_enu.header.frame_id = lidar_msg.header.frame_id;
-
-            lidar_msg = std::move(lidar_msg_enu);
-        }
-        catch (tf2::TransformException& ex) {
-            RCLCPP_WARN(nh_->get_logger(), "%s", ex.what());
-            rclcpp::Rate(1.0).sleep();
-        }
     }
 
     return lidar_msg;
@@ -730,7 +731,7 @@ sensor_msgs::msg::MagneticField AirsimROSWrapper::get_mag_msg_from_airsim(const 
     std::copy(std::begin(mag_data.magnetic_field_covariance),
               std::end(mag_data.magnetic_field_covariance),
               std::begin(mag_msg.magnetic_field_covariance));
-    mag_msg.header.stamp = airsim_timestamp_to_ros(mag_data.time_stamp);
+    mag_msg.header.stamp = rclcpp::Time(mag_data.time_stamp);
 
     return mag_msg;
 }
@@ -739,7 +740,7 @@ sensor_msgs::msg::MagneticField AirsimROSWrapper::get_mag_msg_from_airsim(const 
 sensor_msgs::msg::NavSatFix AirsimROSWrapper::get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const
 {
     sensor_msgs::msg::NavSatFix gps_msg;
-    gps_msg.header.stamp = airsim_timestamp_to_ros(gps_data.time_stamp);
+    gps_msg.header.stamp = rclcpp::Time(gps_data.time_stamp);
     gps_msg.latitude = gps_data.gnss.geo_point.latitude;
     gps_msg.longitude = gps_data.gnss.geo_point.longitude;
     gps_msg.altitude = gps_data.gnss.geo_point.altitude;
@@ -754,10 +755,10 @@ sensor_msgs::msg::NavSatFix AirsimROSWrapper::get_gps_msg_from_airsim(const msr:
 sensor_msgs::msg::Range AirsimROSWrapper::get_range_from_airsim(const msr::airlib::DistanceSensorData& dist_data) const
 {
     sensor_msgs::msg::Range dist_msg;
-    dist_msg.header.stamp = airsim_timestamp_to_ros(dist_data.time_stamp);
+    dist_msg.header.stamp = rclcpp::Time(dist_data.time_stamp);
     dist_msg.range = dist_data.distance;
     dist_msg.min_range = dist_data.min_distance;
-    dist_msg.max_range = dist_data.min_distance;
+    dist_msg.max_range = dist_data.max_distance;
 
     return dist_msg;
 }
@@ -765,7 +766,7 @@ sensor_msgs::msg::Range AirsimROSWrapper::get_range_from_airsim(const msr::airli
 airsim_interfaces::msg::Altimeter AirsimROSWrapper::get_altimeter_msg_from_airsim(const msr::airlib::BarometerBase::Output& alt_data) const
 {
     airsim_interfaces::msg::Altimeter alt_msg;
-    alt_msg.header.stamp = airsim_timestamp_to_ros(alt_data.time_stamp);
+    alt_msg.header.stamp = rclcpp::Time(alt_data.time_stamp);
     alt_msg.altitude = alt_data.altitude;
     alt_msg.pressure = alt_data.pressure;
     alt_msg.qnh = alt_data.qnh;
@@ -778,7 +779,7 @@ sensor_msgs::msg::Imu AirsimROSWrapper::get_imu_msg_from_airsim(const msr::airli
 {
     sensor_msgs::msg::Imu imu_msg;
     // imu_msg.header.frame_id = "/airsim/odom_local_ned";// todo multiple drones
-    imu_msg.header.stamp = airsim_timestamp_to_ros(imu_data.time_stamp);
+    imu_msg.header.stamp = rclcpp::Time(imu_data.time_stamp);
     imu_msg.orientation.x = imu_data.orientation.x();
     imu_msg.orientation.y = imu_data.orientation.y();
     imu_msg.orientation.z = imu_data.orientation.z();
@@ -833,7 +834,7 @@ sensor_msgs::msg::NavSatFix AirsimROSWrapper::get_gps_sensor_msg_from_airsim_geo
 
 msr::airlib::GeoPoint AirsimROSWrapper::get_origin_geo_point() const
 {
-    HomeGeoPoint geo_point = AirSimSettings::singleton().origin_geopoint;
+    msr::airlib::HomeGeoPoint geo_point = AirSimSettings::singleton().origin_geopoint;
     return geo_point.home_geo_point;
 }
 
@@ -897,23 +898,6 @@ geometry_msgs::msg::Transform AirsimROSWrapper::get_transform_msg_from_airsim(co
     return transform;
 }
 
-rclcpp::Time AirsimROSWrapper::chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const
-{
-
-    auto dur = std::chrono::duration_cast<std::chrono::nanoseconds>(stamp.time_since_epoch());
-    rclcpp::Time cur_time(dur.count());
-    return cur_time;
-}
-
-rclcpp::Time AirsimROSWrapper::airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const
-{
-    // airsim appears to use chrono::system_clock with nanosecond precision
-    std::chrono::nanoseconds dur(stamp);
-    std::chrono::time_point<std::chrono::system_clock> tp(dur);
-    rclcpp::Time cur_time = chrono_timestamp_to_ros(tp);
-    return cur_time;
-}
-
 void AirsimROSWrapper::drone_state_timer_cb()
 {
     try {
@@ -941,7 +925,7 @@ void AirsimROSWrapper::drone_state_timer_cb()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API:\n%s", msg);
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API:\n%s", msg.c_str());
     }
 }
 
@@ -962,7 +946,7 @@ rclcpp::Time AirsimROSWrapper::update_state()
 
     //should be easier way to get the sim time through API, something like:
     //msr::airlib::Environment::State env = airsim_client_->simGetGroundTruthEnvironment("");
-    //curr_ros_time = airsim_timestamp_to_ros(env.clock().nowNanos());
+    //curr_ros_time = rclcpp::Time(env.clock().nowNanos());
 
     // iterate over drones
     for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
@@ -978,7 +962,7 @@ rclcpp::Time AirsimROSWrapper::update_state()
             auto rpc = static_cast<msr::airlib::MultirotorRpcLibClient*>(airsim_client_.get());
             drone->curr_drone_state_ = rpc->getMultirotorState(vehicle_ros->vehicle_name_);
 
-            vehicle_time = airsim_timestamp_to_ros(drone->curr_drone_state_.timestamp);
+            vehicle_time = rclcpp::Time(drone->curr_drone_state_.timestamp);
             if (!got_sim_time) {
                 curr_ros_time = vehicle_time;
                 got_sim_time = true;
@@ -994,7 +978,7 @@ rclcpp::Time AirsimROSWrapper::update_state()
             auto rpc = static_cast<msr::airlib::CarRpcLibClient*>(airsim_client_.get());
             car->curr_car_state_ = rpc->getCarState(vehicle_ros->vehicle_name_);
 
-            vehicle_time = airsim_timestamp_to_ros(car->curr_car_state_.timestamp);
+            vehicle_time = rclcpp::Time(car->curr_car_state_.timestamp);
             if (!got_sim_time) {
                 curr_ros_time = vehicle_time;
                 got_sim_time = true;
@@ -1170,6 +1154,21 @@ void AirsimROSWrapper::convert_tf_msg_to_enu(geometry_msgs::msg::TransformStampe
     tf_msg.transform.rotation.z = -tf_msg.transform.rotation.z;
 }
 
+geometry_msgs::msg::Transform AirsimROSWrapper::get_camera_optical_tf_from_body_tf(const geometry_msgs::msg::Transform& body_tf) const
+{
+    geometry_msgs::msg::Transform optical_tf = body_tf; //same translation
+    auto opticalQ = msr::airlib::Quaternionr(optical_tf.rotation.w, optical_tf.rotation.x, optical_tf.rotation.y, optical_tf.rotation.z);
+    if (isENU_)
+        opticalQ *= msr::airlib::Quaternionr(0.7071068, -0.7071068, 0, 0); //CamOptical in CamBodyENU is rmat[1,0,0;0,0,-1;0,1,0]==xyzw[-0.7071068,0,0,0.7071068]
+    else
+        opticalQ *= msr::airlib::Quaternionr(0.5, 0.5, 0.5, 0.5); //CamOptical in CamBodyNED is rmat[0,0,1;1,0,0;0,1,0]==xyzw[0.5,0.5,0.5,0.5]
+    optical_tf.rotation.w = opticalQ.w();
+    optical_tf.rotation.x = opticalQ.x();
+    optical_tf.rotation.y = opticalQ.y();
+    optical_tf.rotation.z = opticalQ.z();
+    return optical_tf;
+}
+
 void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting)
 {
     geometry_msgs::msg::TransformStamped vehicle_tf_msg;
@@ -1203,7 +1202,7 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
 {
     geometry_msgs::msg::TransformStamped static_cam_tf_body_msg;
     static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
-    static_cam_tf_body_msg.child_frame_id = camera_name + "_body/static";
+    static_cam_tf_body_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_body/static";
     static_cam_tf_body_msg.transform = get_transform_msg_from_airsim(camera_setting.position, camera_setting.rotation);
 
     if (isENU_) {
@@ -1211,17 +1210,9 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     }
 
     geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
+    static_cam_tf_optical_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_optical/static";
     static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
-
-    tf2::Quaternion quat_cam_body;
-    tf2::Quaternion quat_cam_optical;
-    tf2::convert(static_cam_tf_body_msg.transform.rotation, quat_cam_body);
-    tf2::Matrix3x3 mat_cam_body(quat_cam_body);
-    tf2::Matrix3x3 mat_cam_optical;
-    mat_cam_optical.setValue(mat_cam_body.getColumn(1).getX(), mat_cam_body.getColumn(2).getX(), mat_cam_body.getColumn(0).getX(), mat_cam_body.getColumn(1).getY(), mat_cam_body.getColumn(2).getY(), mat_cam_body.getColumn(0).getY(), mat_cam_body.getColumn(1).getZ(), mat_cam_body.getColumn(2).getZ(), mat_cam_body.getColumn(0).getZ());
-    mat_cam_optical.getRotation(quat_cam_optical);
-    quat_cam_optical.normalize();
-    tf2::convert(quat_cam_optical, static_cam_tf_optical_msg.transform.rotation);
+    static_cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(static_cam_tf_body_msg.transform);
 
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_body_msg);
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_optical_msg);
@@ -1243,7 +1234,7 @@ void AirsimROSWrapper::img_response_timer_cb()
 
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg);
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg.c_str());
     }
 }
 
@@ -1254,7 +1245,7 @@ void AirsimROSWrapper::lidar_timer_cb()
             if (!vehicle_name_ptr_pair.second->lidar_pubs_.empty()) {
                 for (auto& lidar_publisher : vehicle_name_ptr_pair.second->lidar_pubs_) {
                     auto lidar_data = airsim_client_lidar_.getLidarData(lidar_publisher.sensor_name, vehicle_name_ptr_pair.first);
-                    sensor_msgs::msg::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data, vehicle_name_ptr_pair.first);
+                    sensor_msgs::msg::PointCloud2 lidar_msg = get_lidar_msg_from_airsim(lidar_data, vehicle_name_ptr_pair.first, lidar_publisher.sensor_name);
                     lidar_publisher.publisher->publish(lidar_msg);
                 }
             }
@@ -1262,19 +1253,8 @@ void AirsimROSWrapper::lidar_timer_cb()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg);
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg.c_str());
     }
-}
-
-cv::Mat AirsimROSWrapper::manual_decode_depth(const ImageResponse& img_response) const
-{
-    cv::Mat mat(img_response.height, img_response.width, CV_32FC1, cv::Scalar(0));
-    int img_width = img_response.width;
-
-    for (int row = 0; row < img_response.height; row++)
-        for (int col = 0; col < img_width; col++)
-            mat.at<float>(row, col) = img_response.image_data_float[row * img_width + col];
-    return mat;
 }
 
 std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
@@ -1285,7 +1265,7 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_resp
     std::shared_ptr<sensor_msgs::msg::Image> img_msg_ptr = std::make_shared<sensor_msgs::msg::Image>();
     img_msg_ptr->data = img_response.image_data_uint8;
     img_msg_ptr->step = img_response.image_data_uint8.size() / img_response.height;
-    img_msg_ptr->header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
+    img_msg_ptr->header.stamp = rclcpp::Time(img_response.time_stamp);
     img_msg_ptr->header.frame_id = frame_id;
     img_msg_ptr->height = img_response.height;
     img_msg_ptr->width = img_response.width;
@@ -1301,11 +1281,15 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
                                                                                            const std::string frame_id)
 {
     unused(curr_ros_time);
-    // todo using img_response.image_data_float direclty as done get_img_msg_from_response() throws an error,
-    // hence the dependency on opencv and cv_bridge. however, this is an extremely fast op, so no big deal.
-    cv::Mat depth_img = manual_decode_depth(img_response);
-    std::shared_ptr<sensor_msgs::msg::Image> depth_img_msg = cv_bridge::CvImage(std_msgs::msg::Header(), "32FC1", depth_img).toImageMsg();
-    depth_img_msg->header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
+    auto depth_img_msg = std::make_shared<sensor_msgs::msg::Image>();
+    depth_img_msg->width = img_response.width;
+    depth_img_msg->height = img_response.height;
+    depth_img_msg->data.resize(img_response.image_data_float.size() * sizeof(float));
+    memcpy(depth_img_msg->data.data(), img_response.image_data_float.data(), depth_img_msg->data.size());
+    depth_img_msg->encoding = "32FC1";
+    depth_img_msg->step = depth_img_msg->data.size() / img_response.height;
+    depth_img_msg->is_bigendian = 0;
+    depth_img_msg->header.stamp = rclcpp::Time(img_response.time_stamp);
     depth_img_msg->header.frame_id = frame_id;
     return depth_img_msg;
 }
@@ -1344,7 +1328,7 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 
         // update timestamp of saved cam info msgs
 
-        camera_info_msg_vec_[img_response_idx_internal].header.stamp = airsim_timestamp_to_ros(curr_img_response.time_stamp);
+        camera_info_msg_vec_[img_response_idx_internal].header.stamp = rclcpp::Time(curr_img_response.time_stamp);
         cam_info_pub_vec_[img_response_idx_internal]->publish(camera_info_msg_vec_[img_response_idx_internal]);
 
         // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
@@ -1370,9 +1354,9 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
 {
     unused(ros_time);
     geometry_msgs::msg::TransformStamped cam_tf_body_msg;
-    cam_tf_body_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
+    cam_tf_body_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
     cam_tf_body_msg.header.frame_id = frame_id;
-    cam_tf_body_msg.child_frame_id = child_frame_id + "_body";
+    cam_tf_body_msg.child_frame_id = frame_id + "/" + child_frame_id + "_body";
     cam_tf_body_msg.transform = get_transform_msg_from_airsim(img_response.camera_position, img_response.camera_orientation);
 
     if (isENU_) {
@@ -1380,22 +1364,10 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     }
 
     geometry_msgs::msg::TransformStamped cam_tf_optical_msg;
-    cam_tf_optical_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
+    cam_tf_optical_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
     cam_tf_optical_msg.header.frame_id = frame_id;
-    cam_tf_optical_msg.child_frame_id = child_frame_id + "_optical";
-    cam_tf_optical_msg.transform.translation = cam_tf_body_msg.transform.translation;
-
-    tf2::Quaternion quat_cam_body;
-    tf2::Quaternion quat_cam_optical;
-    tf2::convert(cam_tf_body_msg.transform.rotation, quat_cam_body);
-    tf2::Matrix3x3 mat_cam_body(quat_cam_body);
-    // tf2::Matrix3x3 mat_cam_optical = matrix_cam_body_to_optical_ * mat_cam_body * matrix_cam_body_to_optical_inverse_;
-    // tf2::Matrix3x3 mat_cam_optical = matrix_cam_body_to_optical_ * mat_cam_body;
-    tf2::Matrix3x3 mat_cam_optical;
-    mat_cam_optical.setValue(mat_cam_body.getColumn(1).getX(), mat_cam_body.getColumn(2).getX(), mat_cam_body.getColumn(0).getX(), mat_cam_body.getColumn(1).getY(), mat_cam_body.getColumn(2).getY(), mat_cam_body.getColumn(0).getY(), mat_cam_body.getColumn(1).getZ(), mat_cam_body.getColumn(2).getZ(), mat_cam_body.getColumn(0).getZ());
-    mat_cam_optical.getRotation(quat_cam_optical);
-    quat_cam_optical.normalize();
-    tf2::convert(quat_cam_optical, cam_tf_optical_msg.transform.rotation);
+    cam_tf_optical_msg.child_frame_id = frame_id + "/" + child_frame_id + "_optical";
+    cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(cam_tf_body_msg.transform);
 
     tf_broadcaster_->sendTransform(cam_tf_body_msg);
     tf_broadcaster_->sendTransform(cam_tf_optical_msg);

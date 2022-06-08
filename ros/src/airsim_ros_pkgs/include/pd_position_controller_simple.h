@@ -101,7 +101,7 @@ public:
     void check_reached_goal();
 
 private:
-    GeodeticConverter geodetic_converter_;
+    msr::airlib::GeodeticConverter geodetic_converter_;
     static constexpr bool use_eth_lib_for_geodetic_conv_ = true;
 
     ros::NodeHandle nh_;

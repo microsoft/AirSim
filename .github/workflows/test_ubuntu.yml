@@ -31,7 +31,16 @@ jobs:
           source /opt/ros/*/setup.bash
           cd ros
           catkin build -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8
-
+      
+      - name: Build ROS2 Wrapper
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          chmod +x ./tools/install_ros2_deps.sh
+          ./tools/install_ros2_deps.sh
+          source /opt/ros/*/setup.bash
+          cd ros2
+          colcon build --cmake-args -DCMAKE_C_COMPILER=gcc-8 --cmake-args -DCMAKE_CXX_COMPILER=g++-8
+          
       - name: Build GazeboDrone
         run: |
           sudo apt-get install -qq libgazebo9-dev gcc-8 g++-8

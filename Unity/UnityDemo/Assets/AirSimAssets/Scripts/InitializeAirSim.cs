@@ -26,6 +26,20 @@ public class InitializeAirSim : MonoBehaviour
                         LoadSceneAsPerSimMode(AirSimSettings.GetSettings().SimMode);
                         break;
                     }
+                    case "":
+                    {
+                        break;
+                    }
+                    default:
+                    {
+                        Debug.LogError("'" + AirSimSettings.GetSettings().SimMode + "' is not a supported SimMode.");
+                        #if UNITY_EDITOR
+                        UnityEditor.EditorApplication.isPlaying = false;
+                        #else
+                        Application.Quit();
+                        #endif
+                        break;
+                    }
 				}
             }
         }
@@ -66,7 +80,7 @@ public class InitializeAirSim : MonoBehaviour
             return string.Empty;
     }
 
-    public static bool CreateSettingsFileWithDefaultValues(string fileName)
+    private static bool CreateSettingsFileWithDefaultValues(string fileName)
     {
         var result = false;
         try
@@ -91,7 +105,7 @@ public class InitializeAirSim : MonoBehaviour
         return result;
     }
 
-    public void LoadSceneAsPerSimMode(string load_name)
+    private void LoadSceneAsPerSimMode(string load_name)
     {
         if (load_name == "Car")
         {

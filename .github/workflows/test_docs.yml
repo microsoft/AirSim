@@ -20,7 +20,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install mkdocs pymdown-extensions    # Mkdocs requirements
-
+          
       - name: Build API reference docs
         run: |
           python3 -m venv .env                            # Virtual env to avoid dep. issues 

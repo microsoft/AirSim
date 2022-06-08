@@ -4,14 +4,14 @@ public class SmoothFollow : MonoBehaviour {
     public bool shouldRotate = true;
 
     // The target we are following
-    public Transform target;
+    [SerializeField] private Transform target;
 
     private float wantedRotationAngle;
     private float currentRotationAngle;
 
     private Quaternion currentRotation;
 
-    private Vector3 offsetPostion, finalPosition;
+    private Vector3 offsetPostion;
 
     private void Start() {
         offsetPostion = new Vector3(0, 5, -10);

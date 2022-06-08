@@ -8,7 +8,7 @@ namespace AirSimUnity
     /// </summary>
     public class Weather : MonoBehaviour
     {
-        public enum WeatherParamScalar {
+        private enum WeatherParamScalar {
             Snow,
             Count
         }
@@ -18,11 +18,11 @@ namespace AirSimUnity
 
         private bool isEnabled;
         private float[] weatherParamScalars = new float[(int)WeatherParamScalar.Count];
-        private List<WeatherFX> weatherFXInstances = new List<WeatherFX>();
+        private readonly List<WeatherFX> weatherFXInstances = new List<WeatherFX>();
 
         public bool IsWeatherEnabled
         {
-            get { return isEnabled; }
+            get => isEnabled;
 
             set {
                 isEnabled = value;
@@ -39,7 +39,7 @@ namespace AirSimUnity
         /// Removes all weatherFX from the list that have been destroyed (references set to null by Unity).
         /// </summary>
         private void RemoveNullWeatherFXInstances() {
-            weatherFXInstances.RemoveAll(delegate (WeatherFX weatherFX) { return weatherFX == null; });
+            weatherFXInstances.RemoveAll(weatherFX => weatherFX == null);
         }
 
         /// <summary>

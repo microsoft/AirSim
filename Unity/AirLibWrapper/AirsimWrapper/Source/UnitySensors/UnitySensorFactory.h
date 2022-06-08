@@ -3,10 +3,10 @@
 #include "sensors/SensorFactory.hpp"
 #include "../NedTransform.h"
 
-using namespace msr::airlib;
-
-class UnitySensorFactory : public SensorFactory
+class UnitySensorFactory : public msr::airlib::SensorFactory
 {
+    using AirSimSettings = msr::airlib::AirSimSettings;
+
 public:
     UnitySensorFactory(std::string vehicle_name, const NedTransform* ned_transform);
     void setActor(std::string vehicle_name, const NedTransform* ned_transform);

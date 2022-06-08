@@ -3,7 +3,25 @@
 Below is summarized list of important changes. This does not include minor/less important changes or bug fixes or documentation update. This list updated every few months. For complete detailed changes, please review [commit history](https://github.com/Microsoft/AirSim/commits/master).
 
 
+### Jan 2022
+* Latest release `v1.7.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.7.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.7.0-linux)
+
+### Dec 2021
+* [Cinematographic Camera](https://github.com/microsoft/AirSim/pull/3949)
+* [ROS2 wrapper](https://github.com/microsoft/AirSim/pull/3976)
+* [API to list all assets](https://github.com/microsoft/AirSim/pull/3940)
+* [movetoGPS API](https://github.com/microsoft/AirSim/pull/3746)
+
+### Nov 2021
+* [Optical flow camera](https://github.com/microsoft/AirSim/pull/3938)
+* [simSetKinematics API](https://github.com/microsoft/AirSim/pull/4066)
+* [Dynamically set object textures from existing UE material or texture PNG](https://github.com/microsoft/AirSim/pull/3992)
+* [Ability to spawn/destroy lights and control light parameters](https://github.com/microsoft/AirSim/pull/3991)
+
+### Sep 2021
+* [Support for multiple drones in Unity](https://github.com/microsoft/AirSim/pull/3128)
 ### Aug 2021
+* [Control manual camera speed through the keyboard](https://github.com/microsoft/AirSim/pulls?page=6&q=is%3Apr+is%3Aclosed+sort%3Aupdated-desc#:~:text=1-,Control%20manual%20camera%20speed%20through%20the%20keyboard,-%233221%20by%20saihv) 
 * Latest release `v1.6.0` for [Windows](https://github.com/microsoft/AirSim/releases/tag/v1.6.0-windows) and [Linux](https://github.com/microsoft/AirSim/releases/tag/v1.6.0-linux)
 * [Fix: DepthPlanar capture](https://github.com/microsoft/AirSim/pull/3907)
 * [Fix: compression bug in segmentation palette](https://github.com/microsoft/AirSim/pull/3937)
