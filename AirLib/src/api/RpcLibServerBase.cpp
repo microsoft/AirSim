@@ -108,6 +108,10 @@ namespace airlib
             return getWorldSimApi()->isPaused();
         });
 
+        pimpl_->server.bind("getSimClockRate", [&]() -> float {
+            return ClockFactory::get()->getTrueScaleWrtWallClock();
+        });
+
         pimpl_->server.bind("simContinueForTime", [&](double seconds) -> void {
             getWorldSimApi()->continueForTime(seconds);
         });
