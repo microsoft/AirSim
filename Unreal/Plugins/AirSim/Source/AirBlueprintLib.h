@@ -139,6 +139,15 @@ public:
         return controller->InputComponent->BindAction(action_name, on_press_or_release ? IE_Pressed : IE_Released, actor, func);
     }
 
+    // BindAction helper function to allow utilization of Unreal's Input mapping from Project Settings.
+    template <class UserClass>
+    static FInputActionBinding& BindAction(const FName action_name, AActor* actorForWorldContext, UserClass* obj,
+                                           typename FInputActionHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func, bool on_press_or_release = false)
+    {
+        APlayerController* controller = actorForWorldContext->GetWorld()->GetFirstPlayerController();
+        return controller->InputComponent->BindAction(action_name, on_press_or_release ? IE_Pressed : IE_Released, obj, func);
+    }
+
     template <class UserClass>
     static FInputAxisBinding& BindAxisToKey(const FName axis_name, const FKey in_key, AActor* actor, UserClass* obj,
                                             typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
@@ -158,9 +167,20 @@ public:
         return controller->InputComponent->BindAxis(axis.AxisName, obj, func);
     }
 
+    // BindAxis helper function to allow utilization of Unreal's Input mapping from Project Settings.
+    template <class UserClass>
+    static FInputAxisBinding& BindAxis(const FName axis_name, AActor* actorForWorldContext, UserClass* obj,
+                                       typename FInputAxisHandlerSignature::TUObjectMethodDelegate<UserClass>::FMethodPtr func)
+    {
+        APlayerController* controller = actorForWorldContext->GetWorld()->GetFirstPlayerController();
+        return controller->InputComponent->BindAxis(axis_name, obj, func);
+    }
+
     static int RemoveAxisBinding(const FInputAxisKeyMapping& axis, FInputAxisBinding* axis_binding, AActor* actor);
+    static int RemoveAxisBinding(FInputAxisBinding* axis_binding, AActor* actorForWorldContext);
 
     static void EnableInput(AActor* actor);
+    static void DisableInput(AActor* actor);
 
     static void RunCommandOnGameThread(TFunction<void()> InFunction, bool wait = false, const TStatId InStatId = TStatId());
 

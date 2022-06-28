@@ -8,7 +8,7 @@ From left to right is the depth view, segmentation view and the FPV view. See [I
 
 ## Turning ON/OFF Views
 
-Press F1 key to see keyboard shortcuts for turning on/off any or all views. You can also select various view modes there, such as "Fly with Me" mode, FPV mode and "Ground View" mode.
+Press F9 key to see keyboard shortcuts for turning on/off any or all views. You can also select various view modes there, such as "Fly with Me" mode, FPV mode and "Ground View" mode.
 
 ## Controlling Manual Camera
 

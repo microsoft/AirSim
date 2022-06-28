@@ -21,20 +21,13 @@ public:
     void updateDeltaPosition(float dt);
 
 private:
-    void inputManualLeft(float val);
-    void inputManualRight(float val);
-    void inputManualForward(float val);
-    void inputManualBackward(float val);
+    void inputManualMoveForward(float val);
+    void inputManualMoveRight(float val);
     void inputManualMoveUp(float val);
-    void inputManualDown(float val);
-    void inputManualLeftYaw(float val);
-    void inputManualRightYaw(float val);
-    void inputManualLeftRoll(float val);
-    void inputManualRightRoll(float val);
-    void inputManualUpPitch(float val);
-    void inputManualDownPitch(float val);
-    void inputManualSpeedIncrease(float val);
-    void inputManualSpeedDecrease(float val);
+    void inputManualYaw(float val);
+    void inputManualRoll(float val);
+    void inputManualPitch(float val);
+    void inputManualSpeedChange(float val);
 
     void setupInputBindings();
     void removeInputBindings();
@@ -57,6 +50,6 @@ private:
     AActor* actor_;
 
     float acceleration_ = 0, speed_scaler_ = 1000;
-    FVector input_positive_, inpute_negative_;
+    FVector input_;
     FVector last_velocity_;
 };

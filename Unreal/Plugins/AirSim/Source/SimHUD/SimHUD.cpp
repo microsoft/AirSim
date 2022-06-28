@@ -202,15 +202,15 @@ void ASimHUD::setupInputBindings()
 {
     UAirBlueprintLib::EnableInput(this);
 
-    UAirBlueprintLib::BindActionToKey("inputEventToggleRecording", EKeys::R, this, &ASimHUD::inputEventToggleRecording);
-    UAirBlueprintLib::BindActionToKey("InputEventToggleReport", EKeys::Semicolon, this, &ASimHUD::inputEventToggleReport);
-    UAirBlueprintLib::BindActionToKey("InputEventToggleHelp", EKeys::F1, this, &ASimHUD::inputEventToggleHelp);
-    UAirBlueprintLib::BindActionToKey("InputEventToggleTrace", EKeys::T, this, &ASimHUD::inputEventToggleTrace);
+    UAirBlueprintLib::BindAction("inputEventToggleRecording", this, this, &ASimHUD::inputEventToggleRecording);
+    UAirBlueprintLib::BindAction("InputEventToggleReport", this, this, &ASimHUD::inputEventToggleReport);
+    UAirBlueprintLib::BindAction("InputEventToggleHelp", this, this, &ASimHUD::inputEventToggleHelp);
+    UAirBlueprintLib::BindAction("InputEventToggleTrace", this, this, &ASimHUD::inputEventToggleTrace);
 
-    UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow0", EKeys::One, this, &ASimHUD::inputEventToggleSubwindow0);
-    UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow1", EKeys::Two, this, &ASimHUD::inputEventToggleSubwindow1);
-    UAirBlueprintLib::BindActionToKey("InputEventToggleSubwindow2", EKeys::Three, this, &ASimHUD::inputEventToggleSubwindow2);
-    UAirBlueprintLib::BindActionToKey("InputEventToggleAll", EKeys::Zero, this, &ASimHUD::inputEventToggleAll);
+    UAirBlueprintLib::BindAction("InputEventToggleSubwindow0", this, this, &ASimHUD::inputEventToggleSubwindow0);
+    UAirBlueprintLib::BindAction("InputEventToggleSubwindow1", this, this, &ASimHUD::inputEventToggleSubwindow1);
+    UAirBlueprintLib::BindAction("InputEventToggleSubwindow2", this, this, &ASimHUD::inputEventToggleSubwindow2);
+    UAirBlueprintLib::BindAction("InputEventToggleAll", this, this, &ASimHUD::inputEventToggleAll);
 }
 
 void ASimHUD::initializeSettings()

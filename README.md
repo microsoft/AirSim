@@ -76,7 +76,7 @@ Yet another way to use AirSim is the so-called "Computer Vision" mode. In this m
 
 ### Weather Effects
 
-Press F10 to see various options available for weather effects. You can also control the weather using [APIs](https://microsoft.github.io/AirSim/apis#weather-apis). Press F1 to see other options available.
+Press F10 to see various options available for weather effects. You can also control the weather using [APIs](https://microsoft.github.io/AirSim/apis#weather-apis). Press F9 to see other options available.
 
 ![record screenshot](docs/images/weather_menu.png)
 

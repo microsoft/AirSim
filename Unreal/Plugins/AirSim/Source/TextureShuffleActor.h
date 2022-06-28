@@ -5,6 +5,8 @@
 #include "common/common_utils/Utils.hpp"
 #include "common/AirSimSettings.hpp"
 #include "Engine/StaticMeshActor.h"
+#include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "TextureShuffleActor.generated.h"
 
 UCLASS()
