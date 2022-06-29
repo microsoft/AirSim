@@ -7,7 +7,6 @@
 #include "SimMode/SimModeBase.h"
 #include "Components/StaticMeshComponent.h"
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
-#include "Engine/LevelStreamingDynamic.h"
 #include <string>
 
 class WorldSimApi : public msr::airlib::WorldSimApiBase
@@ -126,6 +125,5 @@ private:
 
 private:
     ASimModeBase* simmode_;
-    ULevelStreamingDynamic* current_level_;
     std::vector<bool> voxel_grid_;
 };
