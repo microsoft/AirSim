@@ -1,7 +1,7 @@
 # LockStep
 
 The latest version of PX4 supports a new [lockstep
-feature](https://docs.px4.io/main/en/simulation/#lockstep-simulation) when communicating with the
+feature](https://docs.px4.io/master/en/simulation/#lockstep-simulation) when communicating with the
 simulator over TCP.  Lockstep is an important feature because it synchronizes PX4 and the simulator
 so they essentially use the same clock time.  This makes PX4 behave normally even during unusually
 long delays in Simulator performance.
@@ -42,7 +42,7 @@ in the simulated flight if you look at the updates on screen in realtime.
 If you are running PX4 in cygwin, there is an [open issue with 
 lockstep](https://github.com/microsoft/AirSim/issues/3415). PX4 is configured to use lockstep by 
 default. To disable this feature, first [disable it in 
-PX4](https://docs.px4.io/main/en/simulation/#disable-lockstep-simulation):
+PX4](https://docs.px4.io/master/en/simulation/#disable-lockstep-simulation):
 
 1. Navigate to `boards/px4/sitl/` in your local PX4 repository
 1. Edit `default.cmake` and find the following line:

@@ -2,7 +2,7 @@
 
 The [PX4](http://dev.px4.io) software provides a "software-in-loop" simulation (SITL) version of
 their stack that runs in Linux. If you are on Windows then you can use the [Cygwin
-Toolchain](https://dev.px4.io/main/en/setup/dev_env_windows_cygwin.html) or you can use the
+Toolchain](https://dev.px4.io/master/en/setup/dev_env_windows_cygwin.html) or you can use the
 [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10) and follow
 the PX4 Linux toolchain setup.
 
@@ -12,7 +12,7 @@ instructions](px4_sitl_wsl2.md).
 **Note** that every time you stop the unreal app you have to restart the `px4` app.
 
 1. From your bash terminal follow [these steps for
-   Linux](https://docs.px4.io/main/en/dev_setup/dev_env_linux.html) and follow **all** the
+   Linux](https://docs.px4.io/master/en/dev_setup/dev_env_linux.html) and follow **all** the
    instructions under `NuttX based hardware` to install prerequisites. We've also included our own
    copy of the [PX4 build instructions](px4_build.md) which is a bit more concise about what we need
    exactly.
