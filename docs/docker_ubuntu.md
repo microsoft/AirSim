@@ -128,7 +128,7 @@ You can test it by running `/home/ue4/Binaries/Blocks/LinuxNoEditor/Blocks.sh -w
 ### Specifying settings.json
 #### `airsim_binary` docker image:
   - We're mapping the host machine's `PATH/TO/Airsim/docker/settings.json` to the docker container's `/home/airsim_user/Documents/AirSim/settings.json`.
-  - Hence, we can load any settings file by simply modifying `PATH_TO_YOUR/settings.json` by modifying the following snippets in [`run_airsim_image_binary.sh`](https://github.com/Microsoft/AirSim/blob/master/docker/run_airsim_image_binary.sh)
+  - Hence, we can load any settings file by simply modifying `PATH_TO_YOUR/settings.json` by modifying the following snippets in [`run_airsim_image_binary.sh`](https://github.com/Microsoft/AirSim/blob/main/docker/run_airsim_image_binary.sh)
 
 ```bash
 nvidia-docker run --runtime=nvidia -it \
@@ -157,7 +157,7 @@ docker run --gpus all -it \
 ####  `airsim_source` docker image:
 
   * We're mapping the host machine's `PATH/TO/Airsim/docker/settings.json` to the docker container's `/home/airsim_user/Documents/AirSim/settings.json`.
-  * Hence, we can load any settings file by simply modifying `PATH_TO_YOUR/settings.json` by modifying the following snippets in [`run_airsim_image_source.sh`](https://github.com/Microsoft/AirSim/blob/master/docker/run_airsim_image_source.sh):
+  * Hence, we can load any settings file by simply modifying `PATH_TO_YOUR/settings.json` by modifying the following snippets in [`run_airsim_image_source.sh`](https://github.com/Microsoft/AirSim/blob/main/docker/run_airsim_image_source.sh):
 
 ```bash
    nvidia-docker run --runtime=nvidia -it \

@@ -4,7 +4,7 @@ Please read [general API doc](apis.md) first if you haven't already. This docume
 
 ## Quick Start
 
-Fastest way to get started is to open AirSim.sln in Visual Studio 2019. You will see [Hello Car](https://github.com/Microsoft/AirSim/tree/master/HelloCar/) and [Hello Drone](https://github.com/Microsoft/AirSim/tree/master/HelloDrone/) examples in the solution. These examples will show you the include paths and lib paths you will need to setup in your VC++ projects. If you are using Linux then you will specify these paths either in your [cmake file](https://github.com/Microsoft/AirSim/tree/master/cmake//HelloCar/CMakeLists.txt) or on compiler command line.
+Fastest way to get started is to open AirSim.sln in Visual Studio 2019. You will see [Hello Car](https://github.com/Microsoft/AirSim/tree/main/HelloCar/) and [Hello Drone](https://github.com/Microsoft/AirSim/tree/main/HelloDrone/) examples in the solution. These examples will show you the include paths and lib paths you will need to setup in your VC++ projects. If you are using Linux then you will specify these paths either in your [cmake file](https://github.com/Microsoft/AirSim/tree/main/cmake//HelloCar/CMakeLists.txt) or on compiler command line.
 
 #### Include and Lib Folders
 
@@ -19,7 +19,7 @@ Here's how to use AirSim APIs using C++ to control simulated car (see also [Pyth
 
 ```cpp
 
-// ready to run example: https://github.com/Microsoft/AirSim/blob/master/HelloCar/main.cpp
+// ready to run example: https://github.com/Microsoft/AirSim/blob/main/HelloCar/main.cpp
 
 #include <iostream>
 #include "vehicles/car/api/CarRpcLibClient.hpp"
@@ -57,7 +57,7 @@ Here's how to use AirSim APIs using C++ to control simulated quadrotor (see also
 
 ```cpp
 
-// ready to run example: https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp
+// ready to run example: https://github.com/Microsoft/AirSim/blob/main/HelloDrone/main.cpp
 
 #include <iostream>
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
@@ -88,7 +88,7 @@ int main()
 
 ## See Also
 
-* [Examples](https://github.com/microsoft/AirSim/tree/master/Examples) of how to use internal infrastructure in AirSim in your other projects
-* [DroneShell](https://github.com/microsoft/AirSim/tree/master/DroneShell) app shows how to make simple interface using C++ APIs to control drones
-* [HelloSpawnedDrones](https://github.com/microsoft/AirSim/tree/master/HelloSpawnedDrones) app shows how to make additional vehicles on the fly
+* [Examples](https://github.com/microsoft/AirSim/tree/main/Examples) of how to use internal infrastructure in AirSim in your other projects
+* [DroneShell](https://github.com/microsoft/AirSim/tree/main/DroneShell) app shows how to make simple interface using C++ APIs to control drones
+* [HelloSpawnedDrones](https://github.com/microsoft/AirSim/tree/main/HelloSpawnedDrones) app shows how to make additional vehicles on the fly
 * [Python APIs](apis.md)

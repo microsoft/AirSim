@@ -14,14 +14,14 @@ x and y are the pixel locations of the event firing, timestamp is the global tim
 ![image](images/event_sim.png)
 
 #### Usage
-An example script to run the event simulator alongside AirSim is located at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/test_event_sim.py. The following optional command-line arguments can be passed to this script.
+An example script to run the event simulator alongside AirSim is located at https://github.com/microsoft/AirSim/blob/main/PythonClient/eventcamera_sim/test_event_sim.py. The following optional command-line arguments can be passed to this script.
 
 ```
 args.width, args.height (float): Simulated event camera resolution
 args.save (bool): Whether or not to save the event data to a file, args.debug (bool): Whether or not to display the simulated events as an image
 ```
 
-The implementation of the actual event simulation, written in Python and numba, is at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/event_simulator.py. The event simulator is initialized as follows, with the arguments controlling the resolution of the camera.
+The implementation of the actual event simulation, written in Python and numba, is at https://github.com/microsoft/AirSim/blob/main/PythonClient/eventcamera_sim/event_simulator.py. The event simulator is initialized as follows, with the arguments controlling the resolution of the camera.
 
 ```
 from event_simulator import *

@@ -4,7 +4,7 @@ Moved here from [https://github.com/microsoft/AirSim/wiki/An-Orbit-Trajectory](h
 
 Have you ever wanted to fly a nice smooth circular orbit? This can be handy for capturing 3D objects from all sides especially if you get multiple orbits at different altitudes.
 
-So the `PythonClient/multirotor` folder contains a script named [Orbit](https://github.com/microsoft/AirSim/blob/master/PythonClient/multirotor/orbit.py) that will do precisely that.
+So the `PythonClient/multirotor` folder contains a script named [Orbit](https://github.com/microsoft/AirSim/blob/main/PythonClient/multirotor/orbit.py) that will do precisely that.
 
 See [demo video](https://youtu.be/RFG5CTQi3Us)
 

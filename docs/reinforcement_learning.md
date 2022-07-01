@@ -12,7 +12,7 @@ In order to use AirSim as a gym environment, we extend and reimplement the base 
 
 ## RL with Car
 
-[Source code](https://github.com/Microsoft/AirSim/tree/master/PythonClient/reinforcement_learning)
+[Source code](https://github.com/Microsoft/AirSim/tree/main/PythonClient/reinforcement_learning)
 
 This example works with AirSimNeighborhood environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
@@ -127,7 +127,7 @@ Note that the simulation needs to be up and running before you execute `dqn_car.
 
 ## RL with Quadrotor
 
-[Source code](https://github.com/Microsoft/AirSim/tree/master/PythonClient/reinforcement_learning)
+[Source code](https://github.com/Microsoft/AirSim/tree/main/PythonClient/reinforcement_learning)
 
 This example works with AirSimMountainLandscape environment available in [releases](https://github.com/Microsoft/AirSim/releases).
 
