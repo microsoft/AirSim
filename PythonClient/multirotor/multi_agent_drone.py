@@ -9,7 +9,7 @@ import tempfile
 # Use below in settings.json with Blocks environment
 """
 {
-	"SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+	"SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/main/docs/settings.md",
 	"SettingsVersion": 1.2,
 	"SimMode": "Multirotor",
 	"ClockSpeed": 1,

@@ -3,7 +3,7 @@
 # Sample settings.json used for this script:
 '''
 {
-    "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings_json.md",
+    "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/main/docs/settings_json.md",
     "SettingsVersion": 1.2,
 
     "SimMode": "Multirotor",

@@ -37,10 +37,10 @@ jobs:
       - name: Build AirSim Documentation
         run: ./build_docs.sh
 
-      # Only on commits to 'master' branch
+      # Only on commits to 'main' branch
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build_docs
