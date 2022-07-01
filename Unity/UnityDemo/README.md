@@ -1,6 +1,6 @@
 # Unity AirSim Demo
 
-A Unity project to demonstrate the usage of [AirSimAssets](https://github.com/Microsoft/AirSim/tree/master/Unity/UnityDemo) for *Car* & *Multirotor* simulation.
+A Unity project to demonstrate the usage of [AirSimAssets](https://github.com/Microsoft/AirSim/tree/main/Unity/UnityDemo) for *Car* & *Multirotor* simulation.
 
 ## Usage
 
