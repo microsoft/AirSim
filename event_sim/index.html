@@ -301,10 +301,10 @@
 <p>x and y are the pixel locations of the event firing, timestamp is the global timestamp in microseconds and pol is either +1/-1 depending on whether the brightness increased or decreased. Along with this bytestream, an accumulation of events over a 2D frame is also constructed, known as an 'event image' that visualizes +1 events as red and -1 as blue pixels. An example event image is shown below:</p>
 <p><img alt="image" src="../images/event_sim.png" /></p>
 <h4 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">#</a></h4>
-<p>An example script to run the event simulator alongside AirSim is located at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/test_event_sim.py. The following optional command-line arguments can be passed to this script.</p>
+<p>An example script to run the event simulator alongside AirSim is located at https://github.com/microsoft/AirSim/blob/main/PythonClient/eventcamera_sim/test_event_sim.py. The following optional command-line arguments can be passed to this script.</p>
 <pre class="highlight"><code>args.width, args.height (float): Simulated event camera resolution
 args.save (bool): Whether or not to save the event data to a file, args.debug (bool): Whether or not to display the simulated events as an image</code></pre>
-<p>The implementation of the actual event simulation, written in Python and numba, is at https://github.com/microsoft/AirSim/blob/master/PythonClient/eventcamera_sim/event_simulator.py. The event simulator is initialized as follows, with the arguments controlling the resolution of the camera.</p>
+<p>The implementation of the actual event simulation, written in Python and numba, is at https://github.com/microsoft/AirSim/blob/main/PythonClient/eventcamera_sim/event_simulator.py. The event simulator is initialized as follows, with the arguments controlling the resolution of the camera.</p>
 <pre class="highlight"><code>from event_simulator import *
 ev_sim = EventSimulator(W, H)</code></pre>
 <p>The actual computation of the events is triggered through an <code>image_callback</code> function, which is executed every time a new RGB image is obtained. The first time this function is called, due to the lack of a 'previous' image, it acts as an initialization of the event sim. </p>

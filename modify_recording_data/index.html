@@ -305,7 +305,7 @@
 <h2 id="code-changes">Code Changes<a class="headerlink" href="#code-changes" title="Permanent link">#</a></h2>
 <p>Note that this requires building and using AirSim from source. You can compile a binary yourself after modifying if needed.</p>
 <p>The primary method which fills the data to be stored is <a href="https://github.com/microsoft/AirSim/blob/880c5541fd4824ee2cd9bb82ca5f611eb1ab236a/Unreal/Plugins/AirSim/Source/PawnSimApi.cpp#L544"><code>PawnSimApi::getRecordFileLine</code></a>, it's the base method for all the vehicles, and Car overrides it to log additional data, as can be seen in <a href="https://github.com/microsoft/AirSim/blob/880c5541fd4824ee2cd9bb82ca5f611eb1ab236a/Unreal/Plugins/AirSim/Source/Vehicles/Car/CarPawnSimApi.cpp#L34"><code>CarPawnSimApi::getRecordFileLine</code></a>.</p>
-<p>To record additional data for multirotor, you can add a similar method in <a href="https://github.com/microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Source/Vehicles/Multirotor">MultirotorPawnSimApi.cpp/h</a> files which overrides the base class implementation and append other data. The currently logged data can also be modified and removed as needed.</p>
+<p>To record additional data for multirotor, you can add a similar method in <a href="https://github.com/microsoft/AirSim/tree/main/Unreal/Plugins/AirSim/Source/Vehicles/Multirotor">MultirotorPawnSimApi.cpp/h</a> files which overrides the base class implementation and append other data. The currently logged data can also be modified and removed as needed.</p>
 <p>E.g. recording GPS, IMU and Barometer data also for multirotor -</p>
 <pre class="highlight"><code class="language-cpp">// MultirotorPawnSimApi.cpp
 std::string MultirotorPawnSimApi::getRecordFileLine(bool is_header_line) const

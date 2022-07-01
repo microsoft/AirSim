@@ -307,7 +307,7 @@
                 <h1 id="using-c-apis-for-airsim">Using C++ APIs for AirSim<a class="headerlink" href="#using-c-apis-for-airsim" title="Permanent link">#</a></h1>
 <p>Please read <a href="../apis/">general API doc</a> first if you haven't already. This document describes C++ examples and other C++ specific details.</p>
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">#</a></h2>
-<p>Fastest way to get started is to open AirSim.sln in Visual Studio 2019. You will see <a href="https://github.com/Microsoft/AirSim/tree/master/HelloCar/">Hello Car</a> and <a href="https://github.com/Microsoft/AirSim/tree/master/HelloDrone/">Hello Drone</a> examples in the solution. These examples will show you the include paths and lib paths you will need to setup in your VC++ projects. If you are using Linux then you will specify these paths either in your <a href="https://github.com/Microsoft/AirSim/tree/master/cmake//HelloCar/CMakeLists.txt">cmake file</a> or on compiler command line.</p>
+<p>Fastest way to get started is to open AirSim.sln in Visual Studio 2019. You will see <a href="https://github.com/Microsoft/AirSim/tree/main/HelloCar/">Hello Car</a> and <a href="https://github.com/Microsoft/AirSim/tree/main/HelloDrone/">Hello Drone</a> examples in the solution. These examples will show you the include paths and lib paths you will need to setup in your VC++ projects. If you are using Linux then you will specify these paths either in your <a href="https://github.com/Microsoft/AirSim/tree/main/cmake//HelloCar/CMakeLists.txt">cmake file</a> or on compiler command line.</p>
 <h4 id="include-and-lib-folders">Include and Lib Folders<a class="headerlink" href="#include-and-lib-folders" title="Permanent link">#</a></h4>
 <ul>
 <li>Include folders: <code>$(ProjectDir)..\AirLib\deps\rpclib\include;include;$(ProjectDir)..\AirLib\deps\eigen3;$(ProjectDir)..\AirLib\include</code></li>
@@ -318,7 +318,7 @@
 <h2 id="hello-car">Hello Car<a class="headerlink" href="#hello-car" title="Permanent link">#</a></h2>
 <p>Here's how to use AirSim APIs using C++ to control simulated car (see also <a href="../apis/#hello_car">Python example</a>):</p>
 <pre class="highlight"><code class="language-cpp">
-// ready to run example: https://github.com/Microsoft/AirSim/blob/master/HelloCar/main.cpp
+// ready to run example: https://github.com/Microsoft/AirSim/blob/main/HelloCar/main.cpp
 
 #include &lt;iostream&gt;
 #include "vehicles/car/api/CarRpcLibClient.hpp"
@@ -351,7 +351,7 @@ int main()
 <h2 id="hello-drone">Hello Drone<a class="headerlink" href="#hello-drone" title="Permanent link">#</a></h2>
 <p>Here's how to use AirSim APIs using C++ to control simulated quadrotor (see also <a href="../apis/#hello_drone">Python example</a>):</p>
 <pre class="highlight"><code class="language-cpp">
-// ready to run example: https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp
+// ready to run example: https://github.com/Microsoft/AirSim/blob/main/HelloDrone/main.cpp
 
 #include &lt;iostream&gt;
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
@@ -380,9 +380,9 @@ int main()
 }</code></pre>
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">#</a></h2>
 <ul>
-<li><a href="https://github.com/microsoft/AirSim/tree/master/Examples">Examples</a> of how to use internal infrastructure in AirSim in your other projects</li>
-<li><a href="https://github.com/microsoft/AirSim/tree/master/DroneShell">DroneShell</a> app shows how to make simple interface using C++ APIs to control drones</li>
-<li><a href="https://github.com/microsoft/AirSim/tree/master/HelloSpawnedDrones">HelloSpawnedDrones</a> app shows how to make additional vehicles on the fly</li>
+<li><a href="https://github.com/microsoft/AirSim/tree/main/Examples">Examples</a> of how to use internal infrastructure in AirSim in your other projects</li>
+<li><a href="https://github.com/microsoft/AirSim/tree/main/DroneShell">DroneShell</a> app shows how to make simple interface using C++ APIs to control drones</li>
+<li><a href="https://github.com/microsoft/AirSim/tree/main/HelloSpawnedDrones">HelloSpawnedDrones</a> app shows how to make additional vehicles on the fly</li>
 <li><a href="../apis/">Python APIs</a></li>
 </ul>
               

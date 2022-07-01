@@ -357,7 +357,7 @@ Each sensor is associated with a integer enum specifying its sensor type.</p>
 <ul>
 <li>None</li>
 </ul>
-<p>Behind the scenes, <code>createDefaultSensorSettings</code> method in <a href="https://github.com/Microsoft/AirSim/blob/master/AirLib/include/common/AirSimSettings.hpp">AirSimSettings.hpp</a> sets up the above sensors with their default parameters, depending on the sim mode specified in the <code>settings.json</code> file.</p>
+<p>Behind the scenes, <code>createDefaultSensorSettings</code> method in <a href="https://github.com/Microsoft/AirSim/blob/main/AirLib/include/common/AirSimSettings.hpp">AirSimSettings.hpp</a> sets up the above sensors with their default parameters, depending on the sim mode specified in the <code>settings.json</code> file.</p>
 <h2 id="configuring-the-default-sensor-list">Configuring the default sensor list<a class="headerlink" href="#configuring-the-default-sensor-list" title="Permanent link">#</a></h2>
 <p>The default sensor list can be configured in settings json:</p>
 <pre class="highlight"><code class="language-json">"DefaultSensors": {
@@ -484,7 +484,7 @@ see the following pages:</p>
     "DrawDebugPoints": true
 }</code></pre>
 <h2 id="sensor-apis">Sensor APIs<a class="headerlink" href="#sensor-apis" title="Permanent link">#</a></h2>
-<p>Jump straight to <a href="https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> or <a href="https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp"><code>hello_drone.cpp</code></a> for example usage, or see follow below for the full API.</p>
+<p>Jump straight to <a href="https://github.com/Microsoft/AirSim/blob/main/PythonClient/multirotor/hello_drone.py"><code>hello_drone.py</code></a> or <a href="https://github.com/Microsoft/AirSim/blob/main/HelloDrone/main.cpp"><code>hello_drone.cpp</code></a> for example usage, or see follow below for the full API.</p>
 <h3 id="barometer">Barometer<a class="headerlink" href="#barometer" title="Permanent link">#</a></h3>
 <pre class="highlight"><code class="language-cpp">msr::airlib::BarometerBase::Output getBarometerData(const std::string&amp; barometer_name, const std::string&amp; vehicle_name);</code></pre>
 <pre class="highlight"><code class="language-python">barometer_data = client.getBarometerData(barometer_name = "", vehicle_name = "")</code></pre>
