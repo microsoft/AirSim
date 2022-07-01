@@ -2,7 +2,7 @@
 
 Moved here from [https://github.com/microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script](https://github.com/microsoft/AirSim/wiki/Implementing-a-Drone-Survey-script)
 
-Ever wanted to capture a bunch of top-down pictures of a certain location? Well, the Python API makes this really simple.  See the [code available here](https://github.com/microsoft/AirSim/blob/master/PythonClient/multirotor/survey.py).
+Ever wanted to capture a bunch of top-down pictures of a certain location? Well, the Python API makes this really simple.  See the [code available here](https://github.com/microsoft/AirSim/blob/main/PythonClient/multirotor/survey.py).
 
 ![survey](images/survey.png)
 

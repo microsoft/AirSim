@@ -29,7 +29,7 @@ If no sensors are specified in the `settings.json`, then the following sensors a
 ### ComputerVision
 * None
 
-Behind the scenes, `createDefaultSensorSettings` method in [AirSimSettings.hpp](https://github.com/Microsoft/AirSim/blob/master/AirLib/include/common/AirSimSettings.hpp) sets up the above sensors with their default parameters, depending on the sim mode specified in the `settings.json` file.
+Behind the scenes, `createDefaultSensorSettings` method in [AirSimSettings.hpp](https://github.com/Microsoft/AirSim/blob/main/AirLib/include/common/AirSimSettings.hpp) sets up the above sensors with their default parameters, depending on the sim mode specified in the `settings.json` file.
 
 ## Configuring the default sensor list
 
@@ -173,7 +173,7 @@ Be default, the points hit by distance sensor are not drawn on the viewport. To 
 ```
 
 ## Sensor APIs
-Jump straight to [`hello_drone.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py) or [`hello_drone.cpp`](https://github.com/Microsoft/AirSim/blob/master/HelloDrone/main.cpp) for example usage, or see follow below for the full API.
+Jump straight to [`hello_drone.py`](https://github.com/Microsoft/AirSim/blob/main/PythonClient/multirotor/hello_drone.py) or [`hello_drone.cpp`](https://github.com/Microsoft/AirSim/blob/main/HelloDrone/main.cpp) for example usage, or see follow below for the full API.
 
 ### Barometer
 ```cpp

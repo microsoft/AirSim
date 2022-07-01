@@ -70,7 +70,7 @@ API does not require RC, see [`No Remote Control`](px4_sitl.md#No-Remote-Control
 
 ## Starting SITL instances with PX4 console
 
-If you want to start your SITL instances while being able to view the PX4 console, you will need to run the shell scripts found [here](https://github.com/microsoft/AirSim/tree/master/PX4Scripts) rather than `sitl_multiple_run.sh`.
+If you want to start your SITL instances while being able to view the PX4 console, you will need to run the shell scripts found [here](https://github.com/microsoft/AirSim/tree/main/PX4Scripts) rather than `sitl_multiple_run.sh`.
 Here is how you would do so:
 
 **Note** This script also assumes PX4 is built with `make px4_sitl_default none_iris` as shown [here](px4_sitl.md#setting-up-px4-software-in-loop) before trying to run multiple PX4 instances.
@@ -80,8 +80,8 @@ Here is how you would do so:
     cd PX4
     mkdir -p Scripts
     cd Scripts
-    wget https://github.com/microsoft/AirSim/raw/master/PX4Scripts/sitl_kill.sh
-    wget https://github.com/microsoft/AirSim/raw/master/PX4Scripts/run_airsim_sitl.sh
+    wget https://github.com/microsoft/AirSim/raw/main/PX4Scripts/sitl_kill.sh
+    wget https://github.com/microsoft/AirSim/raw/main/PX4Scripts/run_airsim_sitl.sh
     ```
     **Note** the shell scripts expect the `Scripts` and `Firmware` directories to be within the same parent directory. Also, you may need to make the scripts executable by running `chmod +x sitl_kill.sh` and `chmod +x run_airsim_sitl.sh`.
 2. Run the `sitl_kill.sh` script to kill all active PX4 SITL instances 
