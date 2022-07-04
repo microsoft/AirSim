@@ -22,9 +22,9 @@ void ASimHUD::BeginPlay()
 
     try {
         UAirBlueprintLib::OnBeginPlay();
+        initializeSettings();
         loadLevel();
 
-        initializeSettings();
         setUnrealEngineSettings();
         createSimMode();
         createMainWidget();
