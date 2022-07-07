@@ -77,12 +77,12 @@ void UAirBlueprintLib::setSimulatePhysics(AActor* actor, bool simulate_physics)
 bool UAirBlueprintLib::loadLevel(UObject* context, const FString& level_name)
 {
     
-    bool success{false};
+    bool success{ false };
     // Get name of current level
     auto currMap = context->GetWorld()->GetMapName();
     currMap.RemoveFromStart(context->GetWorld()->StreamingLevelsPrefix);
     // Only load new level if different from current level
-    if (!currMap.Equals((level_name)))
+    if (!currMap.Equals(level_name))
     {
         FString LongPackageName;
         success = FPackageName::SearchForPackageOnDisk(level_name, &LongPackageName);
