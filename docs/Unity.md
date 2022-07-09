@@ -118,7 +118,7 @@ chmod +x "{project_name}.{configuration}"
 ./{project_name}.{configuration}
 ```
 ### Using Airsim API
-* For quickstart with the Python APIs for the car or the drone, simply run the [`hello_car.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/car/hello_car.py) or the [`hello_drone.py`](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/hello_drone.py) script accordingly. 
+* For quickstart with the Python APIs for the car or the drone, simply run the [`hello_car.py`](https://github.com/Microsoft/AirSim/blob/main/PythonClient/car/hello_car.py) or the [`hello_drone.py`](https://github.com/Microsoft/AirSim/blob/main/PythonClient/multirotor/hello_drone.py) script accordingly. 
 * Details of the AirSim C++ and Python APIs are [here](apis.md). 
 
 ### Acknowledgements

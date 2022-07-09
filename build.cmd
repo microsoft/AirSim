@@ -10,14 +10,14 @@ set "buildMode="
 REM //check VS version
 if "%VisualStudioVersion%" == "" (
     echo(
-    echo oh oh... You need to run this command from x64 Native Tools Command Prompt for VS 2019.
+    echo oh oh... You need to run this command from x64 Native Tools Command Prompt for VS 2022.
     goto :buildfailed_nomsg
 )
-if "%VisualStudioVersion%" lss "16.0" (
+if "%VisualStudioVersion%" lss "17.0" (
     echo(
-    echo Hello there! We just upgraded AirSim to Unreal Engine 4.24 and Visual Studio 2019.
+    echo Hello there! We just upgraded AirSim to Unreal Engine 4.27 and Visual Studio 2022.
     echo Here are few easy steps for upgrade so everything is new and shiny:
-    echo https://github.com/Microsoft/AirSim/blob/master/docs/unreal_upgrade.md
+    echo https://github.com/Microsoft/AirSim/blob/main/docs/unreal_upgrade.md
     goto :buildfailed_nomsg
 )
 
@@ -115,6 +115,13 @@ if ERRORLEVEL 1 goto :buildfailed
 cmake --install %buildDir% --config %BuildMode%
 
 robocopy "%installDir%" ".\Unreal\Plugins\AirSim\Source\AirLib\%BuildMode%" /MIR /xd bin share cmake
+
+REM //---------- update all environments ----------
+FOR /D %%E IN (Unreal\Environments\*) DO (
+    cd %%E
+    call .\update_from_git.bat ..\..\..
+    cd ..\..\..
+)
 
 REM //---------- done building ----------
 exit /b 0

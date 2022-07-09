@@ -6,7 +6,7 @@ about: Create a report to help us improve
 <!-- Please read our Rules of Conduct: https://opensource.microsoft.com/codeofconduct/ -->
 <!-- Please search for existing issues to avoid creating duplicates. -->
 <!-- Incomplete reports will lead to closing the issue. -->
-<!-- Also, please test using the latest master make sure your issue has not already been fixed -->
+<!-- Also, please test using the latest main branch make sure your issue has not already been fixed -->
 
 ## Bug report 
 <!-- If any section does not apply, replace its contents with "N/A". -->

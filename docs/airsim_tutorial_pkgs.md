@@ -1,7 +1,7 @@
 # AirSim ROS Tutorials
 
 This is a set of sample AirSim `settings.json`s, roslaunch and rviz files to give a starting point for using AirSim with ROS.     
-See [airsim_ros_pkgs](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_ros_pkgs/README.md) for the ROS API.
+See [airsim_ros_pkgs](https://github.com/microsoft/AirSim/blob/main/ros/src/airsim_ros_pkgs/README.md) for the ROS API.
 
 
 ## Setup
@@ -26,7 +26,7 @@ catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=
 ## Examples
 
 ### Single drone with monocular and depth cameras, and lidar
- - Settings.json - [front_stereo_and_center_mono.json](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/front_stereo_and_center_mono.json)
+ - Settings.json - [front_stereo_and_center_mono.json](https://github.com/microsoft/AirSim/blob/main/ros/src/airsim_tutorial_pkgs/settings/front_stereo_and_center_mono.json)
  ```shell
  $ source PATH_TO/AirSim/ros/devel/setup.bash
  $ roscd airsim_tutorial_pkgs
@@ -40,11 +40,11 @@ catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=
  $ source PATH_TO/AirSim/ros/devel/setup.bash
  $ roslaunch airsim_tutorial_pkgs front_stereo_and_center_mono.launch
  ```
- The above would start rviz with tf's, registered RGBD cloud using [depth_image_proc](https://wiki.ros.org/depth_image_proc) using the [`depth_to_pointcloud` launch file](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch), and the lidar point cloud. 
+ The above would start rviz with tf's, registered RGBD cloud using [depth_image_proc](https://wiki.ros.org/depth_image_proc) using the [`depth_to_pointcloud` launch file](https://github.com/microsoft/AirSim/blob/main/ros/src/airsim_tutorial_pkgs/launch/front_stereo_and_center_mono/depth_to_pointcloud.launch), and the lidar point cloud. 
 
 
 ### Two drones, with cameras, lidar, IMU each
-- Settings.json - [two_drones_camera_lidar_imu.json](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/two_drones_camera_lidar_imu.json) 
+- Settings.json - [two_drones_camera_lidar_imu.json](https://github.com/microsoft/AirSim/blob/main/ros/src/airsim_tutorial_pkgs/settings/two_drones_camera_lidar_imu.json) 
 
  ```shell
  $ source PATH_TO/AirSim/ros/devel/setup.bash
@@ -59,7 +59,7 @@ catkin build airsim_tutorial_pkgs -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=
 You can view the tfs in rviz. And do a `rostopic list` and `rosservice list` to inspect the services avaiable.    
 
 ### Twenty-five drones in a square pattern
-- Settings.json - [twenty_five_drones.json](https://github.com/microsoft/AirSim/blob/master/ros/src/airsim_tutorial_pkgs/settings/twenty_five_drones.json) 
+- Settings.json - [twenty_five_drones.json](https://github.com/microsoft/AirSim/blob/main/ros/src/airsim_tutorial_pkgs/settings/twenty_five_drones.json) 
 
  ```shell
  $ source PATH_TO/AirSim/ros/devel/setup.bash

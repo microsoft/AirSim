@@ -8,7 +8,7 @@ There is no `Epic Games Launcher` for Linux which means that if you need to crea
 
 ## Step by Step Instructions
 
-1. Make sure AirSim is built and Unreal 4.25 is installed as described in [build instructions](build_windows.md).
+1. Make sure AirSim is built and Unreal 4.27 is installed as described in [build instructions](build_windows.md).
 1. In `Epic Games Launcher` click the Learn tab then scroll down and find `Landscape Mountains`. Click the `Create Project` and download this content (~2GB download).
 
     ![current version](images/landscape_mountains.png)
@@ -19,7 +19,7 @@ There is no `Epic Games Launcher` for Linux which means that if you need to crea
     
     !!!note
 
-        The Landscape Mountains project is supported up to Unreal Engine version 4.24. If you do not have 4.24 installed, you should see a dialog titled `Select Unreal Engine Version` with a dropdown to select from installed versions. Select 4.25 or greater to migrate the project to a supported engine version. If you have 4.24 installed, you can manually migrate the project by navigating to the corresponding .uproject file in Windows Explorer, right-clicking it, and selecting the `Switch Unreal Engine version...` option. 
+        The Landscape Mountains project is supported up to Unreal Engine version 4.24. If you do not have 4.24 installed, you should see a dialog titled `Select Unreal Engine Version` with a dropdown to select from installed versions. Select 4.27 or greater to migrate the project to a supported engine version. If you have 4.24 installed, you can manually migrate the project by navigating to the corresponding .uproject file in Windows Explorer, right-clicking it, and selecting the `Switch Unreal Engine version...` option. 
 
 1. From the `File menu` select `New C++ class`, leave default `None` on the type of class, click `Next`, leave default name `MyClass`, and click `Create Class`. We need to do this because Unreal requires at least one source file in project. It should trigger compile and open up Visual Studio solution `LandscapeMountains.sln`.
 
@@ -34,7 +34,7 @@ There is no `Epic Games Launcher` for Linux which means that if you need to crea
     ```json
     {
     	"FileVersion": 3,
-    	"EngineAssociation": "4.24",
+    	"EngineAssociation": "4.27",
     	"Category": "Samples",
     	"Description": "",
     	"Modules": [
@@ -100,7 +100,7 @@ By default AirSim prompts user for which vehicle to use. You can easily change t
 ## Updating Your Environment to Latest Version of AirSim
 Once you have your environment using above instructions, you should frequently update your local AirSim code to latest version from GitHub. Below are the instructions to do this:
 
-1. First put [clean.bat](https://github.com/Microsoft/AirSim/blob/master/Unreal/Environments/Blocks/clean.bat) (or [clean.sh](https://github.com/Microsoft/AirSim/blob/master/Unreal/Environments/Blocks/clean.sh) for Linux users) in the root folder of your environment. Run this file to clean up all intermediate files in your Unreal project.
+1. First put [clean.bat](https://github.com/Microsoft/AirSim/blob/main/Unreal/Environments/Blocks/clean.bat) (or [clean.sh](https://github.com/Microsoft/AirSim/blob/main/Unreal/Environments/Blocks/clean.sh) for Linux users) in the root folder of your environment. Run this file to clean up all intermediate files in your Unreal project.
 2. Do `git pull` in your AirSim repo followed by `build.cmd` (or `./build.sh` for Linux users).
 3. Replace [your project]/Plugins folder with AirSim/Unreal/Plugins folder.
 4. Right click on your .uproject file and chose "Generate Visual Studio project files" option. This is not required for Linux.

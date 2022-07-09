@@ -2,7 +2,7 @@
 
 Moved here from [https://github.com/microsoft/AirSim/wiki/Point-Clouds](https://github.com/microsoft/AirSim/wiki/Point-Clouds)
 
-A Python script [point_cloud.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/point_cloud.py) shows how to convert the depth image returned from AirSim into a point cloud.
+A Python script [point_cloud.py](https://github.com/Microsoft/AirSim/blob/main/PythonClient/multirotor/point_cloud.py) shows how to convert the depth image returned from AirSim into a point cloud.
 
 The following depth image was captured using the Modular Neighborhood environment:
 

@@ -28,7 +28,7 @@ class JSONSettingsCreator(object):
         self.data = {}
 
     def add_minimal(self):
-        self.data["SeeDocsAt"] = "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md"
+        self.data["SeeDocsAt"] = "https://github.com/Microsoft/AirSim/blob/main/docs/settings.md"
         self.data["SettingsVersion"] = 1.2
         self.data["SimMode"] = self.sim_mode #"Multirotor"
         self.data["ClockSpeed"] = 1

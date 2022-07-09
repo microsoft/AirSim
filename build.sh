@@ -110,6 +110,14 @@ popd >/dev/null
 mkdir -p ./Unreal/Plugins/AirSim/Source/AirLib/$buildType
 rsync -a --delete $install_dir/ ./Unreal/Plugins/AirSim/Source/AirLib/$buildType/ --exclude=bin --exclude=share --exclude=cmake
 
+# Update all environment projects
+for d in Unreal/Environments/* ; do
+    [ -L "${d%/}" ] && continue
+    $d/clean.sh
+    mkdir -p $d/Plugins
+    rsync -a --delete Unreal/Plugins/AirSim $d/Plugins
+done
+
 set +x
 
 echo ""
@@ -117,11 +125,9 @@ echo ""
 echo "=================================================================="
 echo " AirSim plugin is built! Here's how to build Unreal project."
 echo "=================================================================="
-echo "If you are using Blocks environment, its already updated."
-echo "If you are using your own environment, update plugin using,"
-echo "rsync -a --delete Unreal/Plugins path/to/MyUnrealProject"
+echo "All environments under Unreal/Environments have been updated."
 echo ""
-echo "For help see:"
+echo "For further info see:"
 echo "https://github.com/Microsoft/AirSim/blob/master/docs/build_linux.md"
 echo "=================================================================="
 

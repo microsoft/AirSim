@@ -24,7 +24,7 @@ Note that this requires building and using AirSim from source. You can compile a
 
 The primary method which fills the data to be stored is [`PawnSimApi::getRecordFileLine`](https://github.com/microsoft/AirSim/blob/880c5541fd4824ee2cd9bb82ca5f611eb1ab236a/Unreal/Plugins/AirSim/Source/PawnSimApi.cpp#L544), it's the base method for all the vehicles, and Car overrides it to log additional data, as can be seen in [`CarPawnSimApi::getRecordFileLine`](https://github.com/microsoft/AirSim/blob/880c5541fd4824ee2cd9bb82ca5f611eb1ab236a/Unreal/Plugins/AirSim/Source/Vehicles/Car/CarPawnSimApi.cpp#L34).
 
-To record additional data for multirotor, you can add a similar method in [MultirotorPawnSimApi.cpp/h](https://github.com/microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Source/Vehicles/Multirotor) files which overrides the base class implementation and append other data. The currently logged data can also be modified and removed as needed.
+To record additional data for multirotor, you can add a similar method in [MultirotorPawnSimApi.cpp/h](https://github.com/microsoft/AirSim/tree/main/Unreal/Plugins/AirSim/Source/Vehicles/Multirotor) files which overrides the base class implementation and append other data. The currently logged data can also be modified and removed as needed.
 
 E.g. recording GPS, IMU and Barometer data also for multirotor -
 

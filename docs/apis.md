@@ -125,13 +125,13 @@ for response in responses:
 * `simGetObjectPose`, `simSetObjectPose`: Gets and sets the pose of specified object in Unreal environment. Here the object means "actor" in Unreal terminology. They are searched by tag as well as name. Please note that the names shown in UE Editor are *auto-generated* in each run and are not permanent. So if you want to refer to actor by name, you must change its auto-generated name in UE Editor. Alternatively you can add a tag to actor which can be done by clicking on that actor in Unreal Editor and then going to [Tags property](https://answers.unrealengine.com/questions/543807/whats-the-difference-between-tag-and-tag.html), click "+" sign and add some string value. If multiple actors have same tag then the first match is returned. If no matches are found then NaN pose is returned. The returned pose is in NED coordinates in SI units in the world frame. For `simSetObjectPose`, the specified actor must have [Mobility](https://docs.unrealengine.com/en-us/Engine/Actors/Mobility) set to Movable or otherwise you will get undefined behavior. The `simSetObjectPose` has parameter `teleport` which means object is [moved through other objects](https://www.unrealengine.com/en-US/blog/moving-physical-objects) in its way and it returns true if move was successful
 
 ### Image / Computer Vision APIs
-AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/master/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plane, computation of disparity image and saving it to [pfm format](pfm.md).
+AirSim offers comprehensive images APIs to retrieve synchronized images from multiple cameras along with ground truth including depth, disparity, surface normals and vision. You can set the resolution, FOV, motion blur etc parameters in [settings.json](settings.md). There is also API for detecting collision state. See also [complete code](https://github.com/Microsoft/AirSim/tree/main/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images and ground truth depth with normalization to camera plane, computation of disparity image and saving it to [pfm format](pfm.md).
 
 More on [image APIs and Computer Vision mode](image_apis.md).
 For vision problems that can benefit from domain randomization, there is also an [object retexturing API](retexturing.md), which can be used in supported scenes.
 
 ### Pause and Continue APIs
-AirSim allows to pause and continue the simulation through `pause(is_paused)` API. To pause the simulation call `pause(True)` and to continue the simulation call `pause(False)`. You may have scenario, especially while using reinforcement learning, to run the simulation for specified amount of time and then automatically pause. While simulation is paused, you may then do some expensive computation, send a new command and then again run the simulation for specified amount of time. This can be achieved by API `continueForTime(seconds)`. This API runs the simulation for the specified number of seconds and then pauses the simulation. For example usage, please see [pause_continue_car.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//car/pause_continue_car.py) and [pause_continue_drone.py](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor/pause_continue_drone.py).
+AirSim allows to pause and continue the simulation through `pause(is_paused)` API. To pause the simulation call `pause(True)` and to continue the simulation call `pause(False)`. You may have scenario, especially while using reinforcement learning, to run the simulation for specified amount of time and then automatically pause. While simulation is paused, you may then do some expensive computation, send a new command and then again run the simulation for specified amount of time. This can be achieved by API `continueForTime(seconds)`. This API runs the simulation for the specified number of seconds and then pauses the simulation. For example usage, please see [pause_continue_car.py](https://github.com/Microsoft/AirSim/tree/main/PythonClient//car/pause_continue_car.py) and [pause_continue_drone.py](https://github.com/Microsoft/AirSim/tree/main/PythonClient//multirotor/pause_continue_drone.py).
 
 
 ### Collision API
@@ -180,9 +180,9 @@ class WeatherParameter:
     Fog = 7
 ```
 
-Please note that `Roadwetness`, `RoadSnow` and `RoadLeaf` effects requires adding [materials](https://github.com/Microsoft/AirSim/tree/master/Unreal/Plugins/AirSim/Content/Weather/WeatherFX) to your scene.
+Please note that `Roadwetness`, `RoadSnow` and `RoadLeaf` effects requires adding [materials](https://github.com/Microsoft/AirSim/tree/main/Unreal/Plugins/AirSim/Content/Weather/WeatherFX) to your scene.
 
-Please see [example code](https://github.com/Microsoft/AirSim/blob/master/PythonClient/environment/weather.py) for more details.
+Please see [example code](https://github.com/Microsoft/AirSim/blob/main/PythonClient/environment/weather.py) for more details.
 
 ### Recording APIs
 
@@ -210,7 +210,7 @@ wind = airsim.Vector3r(20, 0, 0)
 client.simSetWind(wind)
 ```
 
-Also see example script in [set_wind.py](https://github.com/Microsoft/AirSim/blob/master/PythonClient/multirotor/set_wind.py)
+Also see example script in [set_wind.py](https://github.com/Microsoft/AirSim/blob/main/PythonClient/multirotor/set_wind.py)
 
 ### Lidar APIs
 AirSim offers API to retrieve point cloud data from Lidar sensors on vehicles. You can set the number of channels, points per second, horizontal and vertical FOV, etc parameters in [settings.json](settings.md).
@@ -294,9 +294,9 @@ See the [Adding New APIs](adding_new_apis.md) page
 ## References and Examples
 
 * [C++ API Examples](apis_cpp.md)
-* [Car Examples](https://github.com/Microsoft/AirSim/tree/master/PythonClient//car)
-* [Multirotor Examples](https://github.com/Microsoft/AirSim/tree/master/PythonClient//multirotor)
-* [Computer Vision Examples](https://github.com/Microsoft/AirSim/tree/master/PythonClient//computer_vision)
+* [Car Examples](https://github.com/Microsoft/AirSim/tree/main/PythonClient//car)
+* [Multirotor Examples](https://github.com/Microsoft/AirSim/tree/main/PythonClient//multirotor)
+* [Computer Vision Examples](https://github.com/Microsoft/AirSim/tree/main/PythonClient//computer_vision)
 * [Move on Path](https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo) demo showing video of fast multirotor flight through Modular Neighborhood environment
 * [Building a Hexacopter](https://github.com/Microsoft/AirSim/wiki/hexacopter)
 * [Building Point Clouds](https://github.com/Microsoft/AirSim/wiki/Point-Clouds)

@@ -26,6 +26,20 @@ public class InitializeAirSim : MonoBehaviour
                         LoadSceneAsPerSimMode(AirSimSettings.GetSettings().SimMode);
                         break;
                     }
+                    case "":
+                    {
+                        break;
+                    }
+                    default:
+                    {
+                        Debug.LogError("'" + AirSimSettings.GetSettings().SimMode + "' is not a supported SimMode.");
+                        #if UNITY_EDITOR
+                        UnityEditor.EditorApplication.isPlaying = false;
+                        #else
+                        Application.Quit();
+                        #endif
+                        break;
+                    }
 				}
             }
         }
@@ -76,7 +90,7 @@ public class InitializeAirSim : MonoBehaviour
             else
                 Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "AirSim"));
 
-            string content = "{\n \"SimMode\" : \"\", \n \"SettingsVersion\" : 1.2, \n \"SeeDocsAt\" : \"https://github.com/Microsoft/AirSim/blob/master/docs/settings.md\"\n}";
+            string content = "{\n \"SimMode\" : \"\", \n \"SettingsVersion\" : 1.2, \n \"SeeDocsAt\" : \"https://github.com/Microsoft/AirSim/blob/main/docs/settings.md\"\n}";
             //settings file created at Documents\AirSim with name "setting.json".
             StreamWriter writer = new StreamWriter(File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Write));
             writer.WriteLine(content);

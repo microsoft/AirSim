@@ -94,7 +94,7 @@ By default, the lidar points are not drawn on the viewport. To enable the drawin
     },
 ```
 
-**Note:** Enabling `DrawDebugPoints` can cause excessive memory usage and crash in releases `v1.3.1`, `v1.3.0`. This has been fixed in master and should work in later releases
+**Note:** Enabling `DrawDebugPoints` can cause excessive memory usage and crash in releases `v1.3.1`, `v1.3.0`. This has been fixed in the main branch and should work in later releases
 
 ## Client API
 
@@ -112,10 +112,10 @@ Use `getLidarData()` API to retrieve the Lidar data.
 * Segmentation: The segmentation of each lidar point's collided object
 
 ### Python Examples
-- [drone_lidar.py](https://github.com/microsoft/AirSim/blob/master/PythonClient/multirotor/drone_lidar.py)
-- [car_lidar.py](https://github.com/microsoft/AirSim/blob/master/PythonClient/car/car_lidar.py)
-- [sensorframe_lidar_pointcloud.py](https://github.com/microsoft/AirSim/blob/master/PythonClient/multirotor/sensorframe_lidar_pointcloud.py)
-- [vehicleframe_lidar_pointcloud.py](https://github.com/microsoft/AirSim/blob/master/PythonClient/multirotor/vehicleframe_lidar_pointcloud.py)
+- [drone_lidar.py](https://github.com/microsoft/AirSim/blob/main/PythonClient/multirotor/drone_lidar.py)
+- [car_lidar.py](https://github.com/microsoft/AirSim/blob/main/PythonClient/car/car_lidar.py)
+- [sensorframe_lidar_pointcloud.py](https://github.com/microsoft/AirSim/blob/main/PythonClient/multirotor/sensorframe_lidar_pointcloud.py)
+- [vehicleframe_lidar_pointcloud.py](https://github.com/microsoft/AirSim/blob/main/PythonClient/multirotor/vehicleframe_lidar_pointcloud.py)
 
 ## Coming soon
 * Visualization of lidar data on client side.

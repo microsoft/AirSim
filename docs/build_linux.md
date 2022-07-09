@@ -16,11 +16,11 @@ Please see instructions [here](docker_ubuntu.md)
 
 - Make sure you are [registered with Epic Games](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html). This is required to get source code access for Unreal Engine.
 
-- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.25 at present. We recommend using 4.25.
+- Clone Unreal in your favorite folder and build it (this may take a while!). **Note**: We only support Unreal >= 4.27 at present. We recommend using 4.27.
 
 ```bash
 # go to the folder where you clone GitHub projects
-git clone -b 4.25 git@github.com:EpicGames/UnrealEngine.git
+git clone -b 4.27 git@github.com:EpicGames/UnrealEngine.git
 cd UnrealEngine
 ./Setup.sh
 ./GenerateProjectFiles.sh
@@ -37,7 +37,7 @@ git clone https://github.com/Microsoft/AirSim.git
 cd AirSim
 ```
 
-By default AirSim uses clang 8 to build for compatibility with UE 4.25. The setup script will install the right version of cmake, llvm, and eigen.
+By default AirSim uses clang 8 to build for compatibility with UE 4.27. The setup script will install the right version of cmake, llvm, and eigen.
 
 ```bash
 ./setup.sh

@@ -29,7 +29,7 @@ DetectionInfo
     relative_pose = Pose()
 ```
 ## Usage example
-Python script [detection.py](https://github.com/microsoft/AirSim/blob/master/PythonClient/detection/detection.py) shows how to set detection parameters and shows the result in OpenCV capture.
+Python script [detection.py](https://github.com/microsoft/AirSim/blob/main/PythonClient/detection/detection.py) shows how to set detection parameters and shows the result in OpenCV capture.
 
 A minimal example using API with Blocks environment to detect Cylinder objects:
 ```python
