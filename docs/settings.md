@@ -51,6 +51,7 @@ Below are complete list of settings available along with their default values. I
   "ApiServerPort": 41451,
   "RecordUIVisible": true,
   "LogMessagesVisible": true,
+  "ShowLosDebugLines": false,
   "ViewMode": "",
   "RpcEnabled": true,
   "EngineSound": true,
