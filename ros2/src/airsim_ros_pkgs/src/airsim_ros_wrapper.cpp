@@ -153,7 +153,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         const std::string topic_prefix = "~/" + curr_vehicle_name;
         vehicle_ros->odom_local_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>(topic_prefix + "/" + odom_frame_id_, 10);
-        vehicle_ros->odom_local_enu_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>(topic_prefix + "/" + ENU_ODOM_FRAME_ID, 10);
+        if (isENU_)
+            vehicle_ros->odom_local_enu_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>(topic_prefix + "/" + ENU_ODOM_FRAME_ID, 10);
 
         vehicle_ros->env_pub_ = nh_->create_publisher<airsim_interfaces::msg::Environment>(topic_prefix + "/environment", 10);
 
@@ -1055,7 +1056,8 @@ void AirsimROSWrapper::publish_vehicle_state()
 
         // odom and transforms
         vehicle_ros->odom_local_pub_->publish(vehicle_ros->curr_odom_);
-        vehicle_ros->odom_local_enu_pub_->publish(convert_odom_to_enu(vehicle_ros->curr_odom_));
+        if (isENU_)
+            vehicle_ros->odom_local_enu_pub_->publish(convert_odom_to_enu(vehicle_ros->curr_odom_));
 
         publish_odom_tf(vehicle_ros->curr_odom_);
 
