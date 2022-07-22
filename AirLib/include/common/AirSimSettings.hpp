@@ -252,6 +252,11 @@ namespace airlib
 
         struct LidarSetting : SensorSetting
         {
+            enum class DataFrame
+            {
+                VehicleInertialFrame,
+                SensorLocalFrame
+            };
         };
 
         struct VehicleSetting

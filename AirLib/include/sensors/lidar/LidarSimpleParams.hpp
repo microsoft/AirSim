@@ -36,7 +36,7 @@ namespace airlib
         };
 
         bool draw_debug_points = false;
-        std::string data_frame = AirSimSettings::kVehicleInertialFrame;
+        AirSimSettings::LidarSetting::DataFrame data_frame;
 
         bool external_controller = true;
 
@@ -53,7 +53,16 @@ namespace airlib
             points_per_second = settings_json.getInt("PointsPerSecond", points_per_second);
             horizontal_rotation_frequency = settings_json.getInt("RotationsPerSecond", horizontal_rotation_frequency);
             draw_debug_points = settings_json.getBool("DrawDebugPoints", draw_debug_points);
-            data_frame = settings_json.getString("DataFrame", data_frame);
+            std::string frame = settings_json.getString("DataFrame", AirSimSettings::kVehicleInertialFrame);
+            if (frame == AirSimSettings::kVehicleInertialFrame) {
+                data_frame = AirSimSettings::LidarSetting::DataFrame::VehicleInertialFrame;
+            }
+            else if (frame == AirSimSettings::kSensorLocalFrame) {
+                data_frame = AirSimSettings::LidarSetting::DataFrame::SensorLocalFrame;
+            }
+            else {
+                throw std::runtime_error("Unknown requested data frame");
+            }
             external_controller = settings_json.getBool("ExternalController", external_controller);
 
             vertical_FOV_upper = settings_json.getFloat("VerticalFOVUpper", Utils::nan<float>());
