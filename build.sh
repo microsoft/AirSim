@@ -29,14 +29,6 @@ done
 
 function version_less_than_equal_to() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" = "$1"; }
 
-# check for rpclib
-RPC_VERSION_FOLDER="rpclib-2.3.0"
-if [ ! -d "./external/rpclib/$RPC_VERSION_FOLDER" ]; then
-    echo "ERROR: new version of AirSim requires newer rpclib."
-    echo "please run setup.sh first and then run build.sh again."
-    exit 1
-fi
-
 # check for local cmake build created by setup.sh
 if [ -d "./cmake_build" ]; then
     if [ "$(uname)" == "Darwin" ]; then
@@ -48,12 +40,16 @@ else
     CMAKE=$(which cmake)
 fi
 
-# variable for build output
 if $debug; then
-    build_dir=build_debug
+    buildType="Debug"
 else
-    build_dir=build_release
-fi 
+    buildType="Release"
+fi
+
+# variable for build output
+build_dir=./build/build/$buildType
+install_dir=./build/install/$buildType
+
 if [ "$(uname)" == "Darwin" ]; then
     # llvm v8 is too old for Big Sur see
     # https://github.com/microsoft/AirSim/issues/3691
@@ -72,12 +68,6 @@ else
     fi
 fi
 
-#install EIGEN library
-if [[ ! -d "./AirLib/deps/eigen3/Eigen" ]]; then
-    echo "### Eigen is not installed. Please run setup.sh first."
-    exit 1
-fi
-
 echo "putting build in $build_dir folder, to clean, just delete the directory..."
 
 # this ensures the cmake files will be built in our $build_dir instead.
@@ -88,29 +78,25 @@ if [[ -d "./cmake/CMakeFiles" ]]; then
     rm -rf "./cmake/CMakeFiles"
 fi
 
-
-
-if [[ ! -d $build_dir ]]; then
-    mkdir -p $build_dir
-fi
-
 # Fix for Unreal/Unity using x86_64 (Rosetta) on Apple Silicon hardware.
 CMAKE_VARS=
 if [ "$(uname)" == "Darwin" ]; then
     CMAKE_VARS="-DCMAKE_APPLE_SILICON_PROCESSOR=x86_64"
 fi
 
-pushd $build_dir  >/dev/null
-if $debug; then
-    folder_name="Debug"
-    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Debug $CMAKE_VARS \
-        || (popd && rm -r $build_dir && exit 1)   
-else
-    folder_name="Release"
-    "$CMAKE" ../cmake -DCMAKE_BUILD_TYPE=Release $CMAKE_VARS \
-        || (popd && rm -r $build_dir && exit 1)
+"$CMAKE" -S./cmake -B$build_dir -DCMAKE_BUILD_TYPE=$buildType -DCMAKE_INSTALL_PREFIX=$install_dir -DFORCE_INSTALL_3RDPARTY=ON $CMAKE_VARS \
+        || (rm -r $build_dir && exit 1) 
+
+# final linking of the binaries can fail due to a missing libc++abi library
+# (happens on Fedora, see https://bugzilla.redhat.com/show_bug.cgi?id=1332306).
+# So we only build the libraries here for now
+"$CMAKE" --build $build_dir -j`nproc` --config $buildType
+
+"$CMAKE" --install $build_dir  --config $buildType
+
+if [[ ! -d $build_dir ]]; then
+    mkdir -p $build_dir
 fi
-popd >/dev/null
 
 
 pushd $build_dir  >/dev/null
@@ -120,19 +106,9 @@ pushd $build_dir  >/dev/null
 make -j"$(nproc)"
 popd >/dev/null
 
-mkdir -p AirLib/lib/x64/$folder_name
-mkdir -p AirLib/deps/rpclib/lib
-mkdir -p AirLib/deps/MavLinkCom/lib
-cp $build_dir/output/lib/libAirLib.a AirLib/lib
-cp $build_dir/output/lib/libMavLinkCom.a AirLib/deps/MavLinkCom/lib
-cp $build_dir/output/lib/librpc.a AirLib/deps/rpclib/lib/librpc.a
-
-# Update AirLib/lib, AirLib/deps, Plugins folders with new binaries
-rsync -a --delete $build_dir/output/lib/ AirLib/lib/x64/$folder_name
-rsync -a --delete external/rpclib/$RPC_VERSION_FOLDER/include AirLib/deps/rpclib
-rsync -a --delete MavLinkCom/include AirLib/deps/MavLinkCom
-rsync -a --delete AirLib Unreal/Plugins/AirSim/Source
-rm -rf Unreal/Plugins/AirSim/Source/AirLib/src
+# Update AirLib with new binaries
+mkdir -p ./Unreal/Plugins/AirSim/Source/AirLib/$buildType
+rsync -a --delete $install_dir/ ./Unreal/Plugins/AirSim/Source/AirLib/$buildType/ --exclude=bin --exclude=share --exclude=cmake
 
 # Update all environment projects
 for d in Unreal/Environments/* ; do
