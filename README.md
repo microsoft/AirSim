@@ -1,18 +1,19 @@
-## AirSim announcement: This repository will be archived in the coming year 
+# Welcome to Colosseum, a successor of [AirSim](https://github.com/microsoft/AirSim)
 
-In 2017 Microsoft Research created AirSim as a simulation platform for AI research and experimentation. Over the span of five years, this research project has served its purpose—and gained a lot of ground—as a common way to share research code and test new ideas around aerial AI development and simulation. Additionally, time has yielded advancements in the way we apply technology to the real world, particularly through aerial mobility and autonomous systems. For example, drone delivery is no longer a sci-fi storyline—it’s a business reality, which means there are new needs to be met. We’ve learned a lot in the process, and we want to thank this community for your engagement along the way. 
+Colosseum is a simulator for robotic, autonomous systems, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
+  
+This is a fork of the AirSim repository, which Microsoft decided to shutdown in July of 2022. This fork serves as a waypoint to building a new and better simulation platform. The creater and maintainer of this fork is Codex Laboratories LLC (our website is [here](https://www.codex-labs-llc.com). Colosseum is one of the underlying simulation systems that we use in our product, the [SWARM Simulation Platform](https://www.swarmsim.io). This platform exists to provide pre-built tools and low-code/no-code autonomy solutions. Please feel free to check this platform out and reach out if interested.
 
-In the spirit of forward momentum, we will be releasing a new simulation platform in the coming year and subsequently archiving the original 2017 AirSim. Users will still have access to the original AirSim code beyond that point, but no further updates will be made, effective immediately. Instead, we will focus our efforts on a new product, Microsoft Project AirSim, to meet the growing needs of the aerospace industry. Project AirSim will provide an end-to-end platform for safely developing and testing aerial autonomy through simulation. Users will benefit from the safety, code review, testing, advanced simulation, and AI capabilities that are uniquely available in a commercial product. As we get closer to the release of Project AirSim, there will be learning tools and features available to help you migrate to the new platform and to guide you through the product. To learn more about building aerial autonomy with the new Project AirSim, visit [https://aka.ms/projectairsim](https://aka.ms/projectairsim).
-
-# Welcome to AirSim
-
-AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
-
-Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
+## Join the Community
+We have decided to create a Slack to better allow for community engagement. Join here: [Colosseum Slack](https://join.slack.com/t/colosseum-sim/shared_invite/zt-1cz1yke0l-dW9DPIJfwSlzOmn9pNwcjQ)
+  
+## Goals and Project Development
+This section will contain a list of the current features that the community and Codex Labs are working on to support and build.
+Check back soon!
 
 **Check out the quick 1.5 minute demo**
 
-Drones in AirSim
+Quadrotor UAVs in AirSim
 
 [![AirSim Drone Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
@@ -148,7 +149,7 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
 ## FAQ
 
-If you run into problems, check the [FAQ](https://microsoft.github.io/AirSim/faq) and feel free to post issues in the  [AirSim](https://github.com/Microsoft/AirSim/issues) repository.
+If you run into problems, check the [FAQ](https://codexlabsllc.github.io/Colosseum/faq) and feel free to post issues in the  [Colosseum](https://github.com/CodexLabsLLC/Colosseum/issues) repository.
 
 ## Code of Conduct
 
