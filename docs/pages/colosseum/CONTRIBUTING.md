@@ -2,7 +2,7 @@
 
 ## Quick Start
 - Please read our [short and sweet coding guidelines](coding_guidelines.md).
-- For big changes such as adding new feature or refactoring, [file an issue first](https://github.com/Microsoft/AirSim/issues).
+- For big changes such as adding new feature or refactoring, [file an issue first](https://github.com/CodexLabsLLC/Colosseum/issues).
 - Use our [recommended development workflow](dev_workflow.md) to make changes and test it.
 - Use [usual steps](https://www.dataschool.io/how-to-contribute-on-github/) to make contributions just like other GitHub projects. If you are not familiar with Git Branch-Rebase-Merge workflow, please [read this first](https://git-rebase.io/).
 

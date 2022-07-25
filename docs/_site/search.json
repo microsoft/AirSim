@@ -1,0 +1,100 @@
+
+[
+
+{
+"title": "Welcome to SWARM Simulation Platform",
+"tags": "getting_started",
+"keywords": "sample homepage",
+"url": "index.html",
+"summary": "This page provides an overview of the documentation that is offered!"
+}
+,
+
+{
+"title": "Algorithm Input Tool",
+"tags": "special_layouts",
+"keywords": "algorithm, input, input tool, help, behavior tree, tree",
+"url": "mydoc_algorithm_input.html",
+"summary": "An extensive deep dive on the Algorithm Input tool features and functionality."
+}
+,
+
+{
+"title": "FAQ",
+"tags": "special_layouts",
+"keywords": "frequently asked questions, FAQ, question and answer, collapsible sections, expand, collapse",
+"url": "mydoc_faq_layout.html",
+"summary": "You can use an accordion-layout that takes advantage of Bootstrap styling. This is useful for an FAQ page."
+}
+,
+
+{
+"title": "SWARM Robotic Firmware",
+"tags": "firmware",
+"keywords": "ros, robotic, firmware, px4",
+"url": "mydoc_firmware.html",
+"summary": "Learn more about the internal structure of the SWARM system and how each agent is simulated in the cloud."
+}
+,
+
+{
+"title": "Getting started with the SWARM Simulation Platform",
+"tags": "getting_started",
+"keywords": "sample homepage",
+"url": "mydoc_getting_started.html",
+"summary": "These brief instructions will help you get started with the simulator. The other topics in this help provide additional information and detail about working with other aspects of this platform."
+}
+,
+
+{
+"title": "SWARM Simulation Platform Infrastructure",
+"tags": "infrastructure",
+"keywords": "infrastructure",
+"url": "mydoc_infrastructure.html",
+"summary": "This page describes the infrastructure of the SWARM platform."
+}
+,
+
+{
+"title": "Shuffle layout",
+"tags": "special_layouts",
+"keywords": "shuffle, card layout, dynamic grid, doc portal, support portal",
+"url": "mydoc_shuffle.html",
+"summary": "This layout shows an example of a knowledge-base style navigation system, where there is no hierarchy, just groups of pages that have certain tags."
+}
+,
+
+
+
+
+{
+"title": "Sample post",
+"tags": "newsgetting_started",
+"keywords": "",
+"url": "samplepost.html",
+"summary": "This is some summary frontmatter for my sample post."
+}
+,
+
+
+{
+"title": "Welcome to Jekyll!",
+"tags": "news",
+"keywords": "",
+"url": "myupdate.html",
+"summary": ""
+}
+,
+
+
+{
+"title": "Test post from last year",
+"tags": "news",
+"keywords": "",
+"url": "test-post-from-last-year.html",
+"summary": ""
+}
+
+
+
+]

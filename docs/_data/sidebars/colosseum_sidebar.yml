@@ -1,0 +1,74 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: sidebar
+  product: Colosseum 
+  version: 1.0.0
+  folders:
+
+  - title:
+    output: pdf
+    type: frontmatter
+    folderitems:
+    - title:
+      url: /titlepage.html
+      output: pdf
+      type: frontmatter
+    - title:
+      url: /tocpage.html
+      output: pdf
+      type: frontmatter
+
+  - title: Overview
+    output: web, pdf
+    folderitems:
+
+    - title: Get started
+      url: /index.html
+      output: web, pdf
+      type: homepage
+
+    - title: Tutorial
+      url: /mydoc_getting_started.html
+      output: web, pdf
+
+    - title: Infrastructure
+      url: /mydoc_infrastructure.html
+      output: web, pdf
+
+    - title: Algorithm Input
+      url: /mydoc_algorithm_input.html
+      output: web, pdf
+
+  - title: Release Notes
+    output: web, pdf
+    folderitems:
+
+    - title: Release notes
+      url: /mydoc_features.html
+      output: web, pdf
+
+  - title: Infrastructure
+    output: web, pdf
+    folderitems:
+
+    - title: SWARM Infrastructure
+      url: /mydoc_infrastructure.html
+      output: web, pdf
+
+    - title: SWARM Firmware
+      url: /mydoc_firmware.html
+      output: web, pdf
+
+  - title: Troubleshooting
+    output: web, pdf
+
+    folderitems:
+
+    - title: Troubleshooting
+      url: /mydoc_troubleshooting.html
+      output: web, pdf
+
+  
+
+# Copyright 2021 Google LLC

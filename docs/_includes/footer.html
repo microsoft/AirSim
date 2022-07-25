@@ -1,0 +1,11 @@
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;{{ site.time | date: "%Y"  }} {{site.company_name}}. All rights reserved. <br />
+{% if page.last_updated %}<span>Page last updated:</span> {{page.last_updated}}<br/>{% endif %} Site last generated: {{ site.time | date: "%b %-d, %Y"  }} <br />
+<p><img src="{{ "images/company_logo.png" }}" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+{% comment %} Copyright 2021 Google LLC {% endcomment %}

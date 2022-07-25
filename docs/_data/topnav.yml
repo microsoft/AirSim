@@ -1,0 +1,18 @@
+## Topnav single links
+## if you want to list an external url, use external_url instead of url. the theme will apply a different link base.
+topnav:
+- title: Topnav
+  items:
+    - title: SWARM
+      external_url: https://swarmsim.io
+
+#Topnav dropdowns
+topnav_dropdowns:
+- title: Topnav dropdowns
+  folders:
+    - title: Products
+      folderitems:
+        - title: SWARM Platform
+          url: /index.html
+
+# Copyright 2021 Google LLC

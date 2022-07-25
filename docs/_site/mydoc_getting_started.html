@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="These brief instructions will help you get started with the simulator. The other topics in this help provide additional information and detail about working ...">
+<meta name="keywords" content="getting_started,  sample homepage">
+<title>Getting started with the SWARM Simulation Platform | SWARM Simulation Platform Documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/boxshadowproperties.css">
+<!-- most color styles are extracted out to here -->
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- Anchor.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="web-portal" href="http://localhost:4000/feed.xml">
+
+
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> SWARM Simulation Platform</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+
+
+
+
+                
+                
+                
+                <li><a href="https://swarmsim.io" target="_blank" rel="noopener">SWARM</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Products<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="index.html">SWARM Platform</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<li>
+
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:tylerfedrizzi@codex-labs-llc.com?subject=SWARM Simulation Platform feedback&body=I have some feedback about the Getting started with the SWARM Simulation Platform page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Getting started with the SWARM Simulation Platform">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+
+
+<!-- Page Content -->
+<div class="container">
+  <div id="main">
+    <!-- Content Row -->
+    <div class="row">
+        
+        
+            <!-- Sidebar Column -->
+            <div class="col-md-3" id="tg-sb-sidebar">
+                
+
+<ul id="mysidebar" class="nav">
+  <li class="sidebarTitle">SWARM 1.3.1</li>
+  
+  
+  
+      
+  
+  <li>
+      <a title="Overview" href="#">Overview</a>
+      <ul>
+          
+          
+          
+          <li><a title="Get started" href="index.html">Get started</a></li>
+          
+          
+          
+          
+          
+          
+          <li class="active"><a title="Tutorial" href="mydoc_getting_started.html">Tutorial</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="Infrastructure" href="mydoc_infrastructure.html">Infrastructure</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Release Notes" href="#">Release Notes</a>
+      <ul>
+          
+          
+          
+          <li><a title="6.0 Release notes" href="mydoc_release_notes_60.html">6.0 Release notes</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="5.0 Release notes" href="mydoc_release_notes_50.html">5.0 Release notes</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Infrastructure" href="#">Infrastructure</a>
+      <ul>
+          
+          
+          
+          <li><a title="SWARM Infrastructure" href="mydoc_infrastructure.html">SWARM Infrastructure</a></li>
+          
+          
+          
+          
+          
+          
+          <li><a title="SWARM Firmware" href="mydoc_firmware.html">SWARM Firmware</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+  
+  <li>
+      <a title="Troubleshooting" href="#">Troubleshooting</a>
+      <ul>
+          
+          
+          
+          <li><a title="Troubleshooting" href="mydoc_troubleshooting.html">Troubleshooting</a></li>
+          
+          
+          
+          
+      </ul>
+   </li>
+     
+      
+      
+      <!-- if you aren't using the accordion, uncomment this block:
+         <p class="external">
+             <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+         </p>
+         -->
+</ul>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+
+
+            </div>
+            
+        
+
+        <!-- Content Column -->
+        <div class="col-md-9" id="tg-sb-content">
+            <div class="post-header">
+   <h1 class="post-title-main">Getting started with the SWARM Simulation Platform</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+    <div class="summary">These brief instructions will help you get started with the simulator. The other topics in this help provide additional information and detail about working with other aspects of this platform.</div>
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+
+});
+</script>
+
+<div id="toc"></div>
+
+
+
+    
+
+
+    
+
+   <h2 id="building-a-simulation">Building a Simulation</h2>
+
+<p>Follow these instructions to build your first simulation.</p>
+
+<h3 id="1-access-the-main-site">1. Access the Main Site</h3>
+
+<p>First, access the main site at <a href="https://swarmsim.io">SWARM</a>. If you haven’t already, sign up for an account 
+and make sure that you are signed in. You should be seeing the main Forum page.</p>
+
+<h3 id="2-navigate-to-the-dashboard">2. Navigate to the dashboard</h3>
+
+<p>Navigate to the Simulation Dashbaord by using the top navigation bar menu <strong>Simulation</strong> or by clicking the
+blue button that says <strong>Simulator</strong> on the left hand side of the screen.</p>
+
+<h3 id="3-choose-a-scenario">3. Choose a Scenario</h3>
+
+<p>Once on the Simulation dashboard, click the green button at the top that says <strong>Create A Simulation</strong>. This
+will take you to the index for the simulations that are provided. For this tutorial, we will be using the
+Rendezvous scenario but any scenario can be completed with these steps.</p>
+
+<h3 id="4-set-the-runtime">4. Set the Runtime</h3>
+<p>Each simulation can run for up to 5 minutes, with this time cap being extended with a <em>Premium</em> account. Slide
+the ruler to select the amount of time to alot. In general, you will want to give yourself a bit of extra time 
+to ensure that any and all real-world effects are mitigated.</p>
+
+<p>Once completed, click the green button on the bottom that says <strong>Next</strong>.</p>
+
+<h3 id="5-set-up-your-swarm">5. Set up your SWARM</h3>
+<p>Next, you will build your swarm. For the purpose of this scenario, you must have at least 2 agents. Slide the
+ruler to select up to 8 agents.</p>
+
+<p>Next, choose the features that you wish to add. You can select to add a Perception system and an Obstacle Avoidance 
+system. Briefly, the perception system allows you to detect objects in your environment while the obstacle avoidance 
+system provides very basic avoidance of the ground, trees, rocks and other surface objects. See the note below on more information.</p>
+
+<p>Once completed, select the green button that says <strong>Create Swarm</strong>. You will be notified if successful and then 
+taken to the next page.</p>
+
+<ul>
+  <li>Note: This is meant as a brief overview. For more information about the individual agents, please see [SWARM Infrastructure][mydoc_infrastructure].</li>
+</ul>
+
+<h3 id="6-set-the-parameters-of-your-algorithm">6. Set the parameters of your algorithm</h3>
+<p>Next, you need to set the parameters of your algorithm.</p>
+
+<ul>
+  <li><strong>Amount of Time Between Time Steps</strong> - This parameter describes how much time should elapse between the running
+of your algorithm. This loosely translates to the number of hertz that your algorithm runs. For example, if the time is set of 0.5 seconds, then the algorithm you choose will run twice in one second.</li>
+  <li><strong>Max Communication Distance</strong> - Currently, this feature provides a maximum distance between agents that any two agents can communicate. If two agents are beyond this distance, any messages sent to that agent will not be received.</li>
+</ul>
+
+<p>Once selected, click <strong>Submit</strong> to move on to the next page.</p>
+
+<h3 id="7-input-your-algorithm">7. Input your algorithm</h3>
+<p>This section is the most technical of the platform.  Step 4 represents the <em>intelligence</em> of the swarm and allows
+ you to be able to write and design complex algorithms.</p>
+
+<p>A common question at this stage is “Does each agent run a version of this code?”. The answer is yes, each agent is 
+given a copy of this code and runs this code at every timestep completely independently of the other agents. A key 
+feature of this platform is the fact that each agent is completely independent and can operate without any input from any other agent.</p>
+
+<p>To start, you will need to define a set of states that your swarm will be in. States act as independent modules 
+that your agents run indivdually. As can be seen, two states <em>initialize</em> and <em>rendezvous</em> have been created. You can modify 
+these if you wish but for the purpose this tutorial, we will not.</p>
+
+<p>Next, you must validate each state that you have created. As can be seen in the code, each state is defined as a Python 
+function. This function must return 3 items: next_position as a list, message as a dict and next_state as a string. You can 
+also return a boolean False value. Either are accepted. Code validation will ensure that you have no syntax errors and that 
+your function executed. <strong>IT IS NOT</strong> checking if your code is “correct” or will complete the objective.</p>
+
+<p>Validate the initialize funciton, which is required, first. Then, validate the rest of your states. Once validated, click 
+the button at the bottom of the page called “Finalize and Submit”.</p>
+
+<h3 id="8-name--submit">8. Name &amp; Submit</h3>
+<p>Add a name and then choose to either submit your simulation to be run or save to run at a later date.</p>
+
+<p>Once submitted, you will receive emails and notifiations about the status. Once you see that the simulation has 
+been completed, you will be able to view the data analysis section. See [Data Analysis][mydoc_data_analysis] for more information.</p>
+
+
+
+    <div class="tags">
+        
+        <b>Tags: </b>
+        
+        
+        
+        <a href="tag_getting_started.html" class="btn btn-default navbar-btn cursorNorm" role="button">getting_started</a>
+        
+        
+        
+    </div>
+
+
+<div id="commento"></div>
+<script src="https://cdn.commento.io/js/commento.js"></script>
+<noscript>Please enable JavaScript to load the comments.</noscript>
+
+
+
+
+
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2022 Copyright 2021 Codex Laboratories LLC. All rights reserved. <br />
+ Site last generated: May 22, 2022 <br />
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+
+
+
+
+        </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+</div>
+<!-- /#main -->
+    </div>
+
+</body>
+
+</html>
+
+

@@ -1,0 +1,11 @@
+version: '2'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: result/latest
+    ports:
+      - "4000:4000"
+    volumes:
+      - ".:/src"
