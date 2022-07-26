@@ -213,9 +213,11 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
                     }
 
-                    const std::string camera_topic = topic_prefix + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
-                    image_pub_vec_.push_back(image_transporter.advertise(camera_topic, 1));
-                    cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", 10));
+                    const std::string camera_topic_prefix = topic_prefix + "/" + curr_camera_name + "_" + image_type_int_to_string_map_.at(capture_setting.image_type);
+                    const std::string image_topic = camera_topic_prefix + "/image";
+                    const std::string camera_info_topic = camera_topic_prefix + "/camera_info";
+                    image_pub_vec_.push_back(image_transporter.advertise(image_topic, 1));
+                    cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_info_topic, 10));
                     camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
                 }
             }
@@ -1210,8 +1212,8 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     }
 
     geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
+    static_cam_tf_optical_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
     static_cam_tf_optical_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_optical/static";
-    static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
     static_cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(static_cam_tf_body_msg.transform);
 
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_body_msg);
@@ -1335,13 +1337,13 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         if (curr_img_response.pixels_as_float) {
             image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response,
                                                                                               curr_ros_time,
-                                                                                              curr_img_response.camera_name + "_optical"));
+                                                                                              vehicle_name + "/" + curr_img_response.camera_name + "_optical"));
         }
         // Scene / Segmentation / SurfaceNormals / Infrared
         else {
             image_pub_vec_[img_response_idx_internal].publish(get_img_msg_from_response(curr_img_response,
                                                                                         curr_ros_time,
-                                                                                        curr_img_response.camera_name + "_optical"));
+                                                                                        vehicle_name + "/" + curr_img_response.camera_name + "_optical"));
         }
         img_response_idx_internal++;
     }
