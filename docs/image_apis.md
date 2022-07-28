@@ -175,6 +175,13 @@ camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.26179
 client.simSetCameraPose(0, camera_pose);
 ```
 
+- `simSetCameraPitch` allows controlling camera pitch independent of the other angles
+- `simSetCameraRoll` allows controlling camera roll independent of the other angles
+- `simSetCameraYaw` allows controlling camera yaw independent of the other angles
+```
+client.simSetCameraPitch(0, pitch) # in degrees
+```
+
 - `simSetCameraFov` allows changing the Field-of-View of the camera at runtime.
 - `simSetDistortionParams`, `simGetDistortionParams` allow setting and fetching the distortion parameters K1, K2, K3, P1, P2
 
