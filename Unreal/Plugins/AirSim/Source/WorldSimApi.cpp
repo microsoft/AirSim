@@ -719,6 +719,11 @@ void WorldSimApi::setWind(const Vector3r& wind) const
     simmode_->setWind(wind);
 }
 
+void WorldSimApi::setExtForce(const Vector3r& ext_force) const
+{
+    simmode_->setExtForce(ext_force);
+}
+
 std::vector<std::string> WorldSimApi::listVehicles() const
 {
     std::vector<std::string> vehicle_names;
