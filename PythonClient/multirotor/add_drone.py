@@ -19,10 +19,10 @@ client.enableApiControl(True, vehicle_name)
 client.armDisarm(True, vehicle_name)
 client.takeoffAsync(10.0, vehicle_name)
 
-requests = [airsim.ImageRequest("0", airsim.ImageType.DepthVis),  #depth visualization image
-            airsim.ImageRequest("1", airsim.ImageType.DepthPerspective, True), #depth in perspective projection
-            airsim.ImageRequest("1", airsim.ImageType.Scene), #scene vision image in png format
-            airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)]  #scene vision image in uncompressed RGBA array
+requests = [airsim.ImageRequest("front_center", airsim.ImageType.DepthVis),  #depth visualization image
+            airsim.ImageRequest("front_right", airsim.ImageType.DepthPerspective, True), #depth in perspective projection
+            airsim.ImageRequest("front_right", airsim.ImageType.Scene), #scene vision image in png format
+            airsim.ImageRequest("front_right", airsim.ImageType.Scene, False, False)]  #scene vision image in uncompressed RGBA array
 
 responses = client.simGetImages(requests, vehicle_name=vehicle_name)
 print('Retrieved images: %d' % len(responses))

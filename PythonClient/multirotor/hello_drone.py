@@ -51,10 +51,10 @@ print("state: %s" % pprint.pformat(state))
 airsim.wait_key('Press any key to take images')
 # get camera images from the car
 responses = client.simGetImages([
-    airsim.ImageRequest("0", airsim.ImageType.DepthVis),  #depth visualization image
-    airsim.ImageRequest("1", airsim.ImageType.DepthPerspective, True), #depth in perspective projection
-    airsim.ImageRequest("1", airsim.ImageType.Scene), #scene vision image in png format
-    airsim.ImageRequest("1", airsim.ImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
+    airsim.ImageRequest("front_center", airsim.ImageType.DepthVis),  #depth visualization image
+    airsim.ImageRequest("front_right", airsim.ImageType.DepthPerspective, True), #depth in perspective projection
+    airsim.ImageRequest("front_right", airsim.ImageType.Scene), #scene vision image in png format
+    airsim.ImageRequest("front_right", airsim.ImageType.Scene, False, False)])  #scene vision image in uncompressed RGBA array
 print('Retrieved images: %d' % len(responses))
 
 tmp_dir = os.path.join(tempfile.gettempdir(), "airsim_drone")
