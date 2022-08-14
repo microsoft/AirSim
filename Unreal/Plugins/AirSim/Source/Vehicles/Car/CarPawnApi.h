@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vehicles/car/api/CarApiBase.hpp"
-#include "WheeledVehicleMovementComponent4W.h"
+#include "ChaosWheeledVehicleMovementComponent.h"
 #include "physics/Kinematics.hpp"
 #include "CarPawn.h"
 
@@ -23,7 +23,7 @@ public:
     virtual ~CarPawnApi();
 
 private:
-    UWheeledVehicleMovementComponent* movement_;
+    UChaosWheeledVehicleMovementComponent* movement_;
     msr::airlib::CarApiBase::CarControls last_controls_;
     ACarPawn* pawn_;
     const msr::airlib::Kinematics::State* pawn_kinematics_;
