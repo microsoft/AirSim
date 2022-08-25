@@ -18,8 +18,4 @@ UCarWheelRear::UCarWheelRear()
     SuspensionMaxDrop = 10.0f;
     //SuspensionNaturalFrequency = 9.0f;
     SuspensionDampingRatio = 1.5f;
-
-    // Find the tire object and set the data for it
-    //static ConstructorHelpers::FObjectFinder<UTireConfig> TireData(TEXT("/AirSim/VehicleAdv/Vehicle/WheelData/Vehicle_BackTireConfig.Vehicle_BackTireConfig"));
-    //TireConfig = TireData.Object;
 }

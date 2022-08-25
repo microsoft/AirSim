@@ -1,9 +1,7 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
 #include "CarWheelFront.h"
-//#include "TireConfig.h"
 #include "UObject/ConstructorHelpers.h"
-#include <ChaosVehicles/ChaosVehiclesCore/Public/WheelSystem.h>
 
 UCarWheelFront::UCarWheelFront()
 {
@@ -11,6 +9,7 @@ UCarWheelFront::UCarWheelFront()
     WheelWidth = 17.0f;
     //WheelMass = 20.0f;
     bAffectedByHandbrake = false;
+    bAffectedBySteering = true;
     MaxSteerAngle = 50.f;
     AxleType = EAxleType::Front;
 
@@ -20,8 +19,4 @@ UCarWheelFront::UCarWheelFront()
     SuspensionMaxDrop = 10.0f;
     //SuspensionNaturalFrequency = 9.0f;
     SuspensionDampingRatio = 1.5f;
-
-    // Find the tire object and set the data for it
-    //static ConstructorHelpers::FObjectFinder<UTireConfig> TireData(TEXT("/AirSim/VehicleAdv/Vehicle/WheelData/Vehicle_FrontTireConfig.Vehicle_FrontTireConfig"));
-    //TireConfig = TireData.Object;
 }
