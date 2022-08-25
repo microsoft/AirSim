@@ -12,7 +12,6 @@
 #include <vector>
 #include "common/common_utils/Utils.hpp"
 #include "common/ClockFactory.hpp"
-#include <ChaosVehicles/ChaosVehiclesCore/Public/TransmissionSystem.h>
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -93,19 +92,19 @@ void ACarPawn::setupVehicleMovementComponent()
     // Wheels/Tires
     // Setup the wheels
     movement->WheelSetups[0].WheelClass = UCarWheelFront::StaticClass();
-    movement->WheelSetups[0].BoneName = FName("PhysWheel_FL");
+    movement->WheelSetups[0].BoneName = FName("WheelFL");
     movement->WheelSetups[0].AdditionalOffset = FVector(0.f, -8.f, 0.f);
 
     movement->WheelSetups[1].WheelClass = UCarWheelFront::StaticClass();
-    movement->WheelSetups[1].BoneName = FName("PhysWheel_FR");
+    movement->WheelSetups[1].BoneName = FName("WheelFR");
     movement->WheelSetups[1].AdditionalOffset = FVector(0.f, 8.f, 0.f);
 
     movement->WheelSetups[2].WheelClass = UCarWheelRear::StaticClass();
-    movement->WheelSetups[2].BoneName = FName("PhysWheel_BL");
+    movement->WheelSetups[2].BoneName = FName("WheelBL");
     movement->WheelSetups[2].AdditionalOffset = FVector(0.f, -8.f, 0.f);
 
     movement->WheelSetups[3].WheelClass = UCarWheelRear::StaticClass();
-    movement->WheelSetups[3].BoneName = FName("PhysWheel_BR");
+    movement->WheelSetups[3].BoneName = FName("WheelBR");
     movement->WheelSetups[3].AdditionalOffset = FVector(0.f, 8.f, 0.f);
 
     // Adjust the tire loading
@@ -149,10 +148,11 @@ void ACarPawn::setupVehicleMovementComponent()
     if (primitive) {
         primitive->BodyInstance.COMNudge = FVector(8.0f, 0.0f, 0.0f);
     }
-
+    movement->UpdatedPrimitive = primitive;
     // Set the inertia scale. This controls how the mass of the vehicle is distributed.
     movement->InertiaTensorScale = FVector(1.0f, 1.333f, 1.2f);
     //movement->bDeprecatedSpringOffsetMode = true;
+    movement->bAutoRegisterUpdatedComponent = true;
 }
 
 void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,

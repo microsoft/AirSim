@@ -28,4 +28,5 @@ private:
     ACarPawn* pawn_;
     const msr::airlib::Kinematics::State* pawn_kinematics_;
     msr::airlib::CarApiBase* vehicle_api_;
+    UChaosWheeledVehicleMovementComponent* movement_;
 };
