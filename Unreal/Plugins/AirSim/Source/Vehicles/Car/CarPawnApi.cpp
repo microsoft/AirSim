@@ -8,7 +8,6 @@ CarPawnApi::CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* paw
     : pawn_(pawn), pawn_kinematics_(pawn_kinematics), vehicle_api_(vehicle_api)
 {
     movement_ = CastChecked<UChaosWheeledVehicleMovementComponent>(pawn->GetVehicleMovement());
-    
 }
 
 void CarPawnApi::updateMovement(const msr::airlib::CarApiBase::CarControls& controls)
