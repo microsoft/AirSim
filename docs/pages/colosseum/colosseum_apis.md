@@ -1,4 +1,11 @@
-﻿# AirSim APIs
+﻿---
+title: "Colosseum APIs"
+keywords: introduction faq
+tags: [getting_started, introduction]
+sidebar: colosseum_sidebar
+permalink: colosseum_getting_started.html
+summary: These brief instructions will help you get started with the simulator. The other topics in this help provide additional information and detail about working with other aspects of this platform.
+---
 
 ## Introduction
 AirSim exposes APIs so you can interact with vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on.

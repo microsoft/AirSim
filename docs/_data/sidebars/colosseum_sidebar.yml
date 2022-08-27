@@ -29,15 +29,51 @@ entries:
       type: homepage
 
     - title: Tutorial
-      url: /mydoc_getting_started.html
+      url: /colosseum_getting_started.html
       output: web, pdf
 
     - title: Infrastructure
-      url: /mydoc_infrastructure.html
+      url: /colosseum_infrastructure.html
       output: web, pdf
 
-    - title: Algorithm Input
-      url: /mydoc_algorithm_input.html
+  - title: Installation
+    output: web, pdf
+    folderitems:
+
+    - title: Download Binaries
+      url: /colosseum_use_precompiled.html
+      output: web, pdf
+
+    - title: Build on Windows
+      url: /colosseum_build_windows.html
+      output: web, pdf
+
+    - title: Build on Linux
+      url: /colosseum_build_linux.html
+      output: web, pdf
+
+    - title: Build on Mac
+      url: /colosseum_build_macos.html
+      output: web, pdf
+
+    - title: Docker On Linux
+      url: /colosseum_docker_ubuntu.html
+      output: web, pdf
+
+    - "Docker on Linux": 'docker_ubuntu.md'
+    - "AirSim on Azure": 'azure.md'
+    - "Custom Unreal Environment": 'unreal_custenv.md'
+    - "AirSim with Unity": "Unity.md"
+    - "Custom Unity Environment": "custom_unity_environments.md"
+    - "Unity APIs": "unity_api_support.md"
+    - "FAQ": 'build_faq.md'
+
+  - title: Autonomous Agent Development
+    output: web, pdf
+    folderitems:
+
+    - title: APIs
+      url: /colosseum_apis.html
       output: web, pdf
 
   - title: Release Notes
@@ -52,12 +88,12 @@ entries:
     output: web, pdf
     folderitems:
 
-    - title: SWARM Infrastructure
-      url: /mydoc_infrastructure.html
+    - title: Colosseum Infrastructure
+      url: /colosseum_infrastructure.html
       output: web, pdf
 
-    - title: SWARM Firmware
-      url: /mydoc_firmware.html
+    - title: Colosseum Firmware
+      url: /colosseum_firmware.html
       output: web, pdf
 
   - title: Troubleshooting
@@ -66,9 +102,97 @@ entries:
     folderitems:
 
     - title: Troubleshooting
-      url: /mydoc_troubleshooting.html
+      url: /colosseum_troubleshooting.html
       output: web, pdf
 
-  
+ 
+ 
+  - "Using AirSim":
+    - "Core APIs": 'apis.md'
+    - "Image APIs": 'image_apis.md'
+    - "C++ APIs": 'apis_cpp.md'
+    - "API Reference Docs": 'api_docs/html/index.html'
+    - "Development Workflow": 'dev_workflow.md'
+    - "Settings": 'settings.md'
+    - "Camera Views": 'camera_views.md'
+    - "Car Mode": 'using_car.md'
+    - "Remote Control": 'remote_control.md'
+    - "XBox Controller": 'xbox_controller.md'
+    - "Steering Wheel": 'steering_wheel_installation.md'
+    - "Multiple Vehicles": 'multi_vehicle.md'
+    - "Sensors":
+      - "Sensors": 'sensors.md'
+      - "LIDAR": 'lidar.md'
+      - "Distance Sensor": 'distance_sensor.md'
+      - "Infrared Camera": "InfraredCamera.md"
+    - "ROS: AirSim ROS Wrapper": "airsim_ros_pkgs.md"
+    - "ROS: AirSim Tutorial Packages": "airsim_tutorial_pkgs.md"
+    - "Import Gazebo models": "gazebo_drone.md"
+    - "Domain Randomization": "retexturing.md"
+    - "Mesh Vertex Buffers": "meshes.md"
+    - "Playing Logs": 'playback.md'
+    - "Voxel Grid Generator": "voxel_grid.md"
+    - "Event camera" : "event_sim.md"
+  - "Design":
+    - "Architecture": 'design.md'
+    - "Code Structure": 'code_structure.md'
+    - "Adding new APIs": 'adding_new_apis.md'
+    - "Modifying Recording Data": 'modify_recording_data.md'
+    - "Coding Guidelines": 'coding_guidelines.md'
+    - "Flight Controller": 'flight_controller.md'
+    - "Simple Flight": 'simple_flight.md'
+    - "Hello Drone": 'hello_drone.md'
+  - "External Flight Controllers":
+    - "MavLink and PX4":
+      - "PX4 Setup for AirSim": 'px4_setup.md'
+      - "PX4 in SITL": 'px4_sitl.md'
+      - "PX4 SITL with WSL 2": 'px4_sitl_wsl2.md'
+      - "PX4 Lockstep": 'px4_lockstep.md'
+      - "PX4 Multi-vehicle in SITL": 'px4_multi_vehicle.md'
+      - "AirSim with Pixhawk": 'https://youtu.be/1oY8Qu5maQQ'
+      - "PX4 Setup with AirSim": 'https://youtu.be/HNWdYrtw3f0'
+      - "Debugging Attitude Estimation": 'https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be'
+      - "Intercepting MavLink Messages": 'https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages'
+      - "Rapid Descent on PX4 Drones": 'https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones'
+      - "Building PX4": "px4_build.md"
+      - "PX4/MavLink Logging": 'px4_logging.md'
+      - "MavLink LogViewer": "log_viewer.md"
+      - "MavLinkCom": 'mavlinkcom.md'
+      - "MavLink MoCap": 'mavlinkcom_mocap.md'
+    - "ArduPilot":
+      - "ArduPilot SITL Setup": "https://ardupilot.org/dev/docs/building-the-code.html"
+      - "AirSim & ArduPilot": "https://ardupilot.org/dev/docs/sitl-with-airsim.html"
+  - "Upgrading":
+    - "Upgrading Unreal": 'unreal_upgrade.md'
+    - "Upgrading APIs": 'upgrade_apis.md'
+    - "Upgrading Settings": 'upgrade_settings.md'
+  - "Contributed Tutorials":
+    - "Reinforcement Learning": 'reinforcement_learning.md'
+    - "Using Environments from Marketplace": 'https://www.youtube.com/watch?v=y09VbdQWvQY'
+    - "Simple Collision Avoidance": 'https://github.com/simondlevy/AirSimTensorFlow'
+    - "Autonomous Driving on Azure": 'https://aka.ms/AutonomousDrivingCookbook'
+    - "Building Hexacopter": 'https://github.com/Microsoft/AirSim/wiki/hexacopter'
+    - "Moving on Path Demo": 'https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo'
+    - "Building Point Clouds": 'point_clouds.md'
+    - "Surveying Using Drone": 'drone_survey.md'
+    - "Orbit Trajectory": "orbit.md"
+    - "Importing a custom multirotor mesh": 'https://youtu.be/Bp86WiLUC80'
+    - "Object Detection": "object_detection.md"
+    - "AirSim with MAVROS and PX4": 'https://youtu.be/ZonkdMcwXH4'
+  - "Misc":
+    - "AirSim on Real Drones": 'custom_drone.md'
+    - "Installing cmake on Linux": 'cmake_linux.md'
+    - "Tips for Busy HDD": 'hard_drive.md'
+    - "pfm format": 'pfm.md'
+    - "Setting up Unreal Environment": 'unreal_proj.md'
+    - "Blocks Environment": 'unreal_blocks.md'
+    - "Who is Using AirSim": 'who_is_using.md'
+    - "Working with UE Plugin Contents": 'working_with_plugin_contents.md'
+    - "Formula Student Technion Self-drive": 'https://github.com/Microsoft/AirSim/wiki/technion'
+  - "Support":
+    - "FAQ": 'faq.md'
+    - "Support": 'SUPPORT.md'
+    - "Create Issue": 'create_issue.md'
+    - "Contribute": 'CONTRIBUTING.md'
 
 # Copyright 2021 Google LLC
