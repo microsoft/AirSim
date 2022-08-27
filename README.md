@@ -2,24 +2,28 @@
 
 Colosseum is a simulator for robotic, autonomous systems, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
   
-This is a fork of the AirSim repository, which Microsoft decided to shutdown in July of 2022. This fork serves as a waypoint to building a new and better simulation platform. The creater and maintainer of this fork is Codex Laboratories LLC (our website is [here](https://www.codex-labs-llc.com). Colosseum is one of the underlying simulation systems that we use in our product, the [SWARM Simulation Platform](https://www.swarmsim.io). This platform exists to provide pre-built tools and low-code/no-code autonomy solutions. Please feel free to check this platform out and reach out if interested.
+This is a fork of the AirSim repository, which Microsoft decided to shutdown in July of 2022. This fork serves as a waypoint to building a new and better simulation platform. The creater and maintainer of this fork is Codex Laboratories LLC (our website is [here](https://www.codex-labs-llc.com)). Colosseum is one of the underlying simulation systems that we use in our product, the [SWARM Simulation Platform](https://www.swarmsim.io). This platform exists to provide pre-built tools and low-code/no-code autonomy solutions. Please feel free to check this platform out and reach out if interested.
 
 ## Join the Community
 We have decided to create a Slack to better allow for community engagement. Join here: [Colosseum Slack](https://join.slack.com/t/colosseum-sim/shared_invite/zt-1cz1yke0l-dW9DPIJfwSlzOmn9pNwcjQ)
   
 ## Goals and Project Development
 This section will contain a list of the current features that the community and Codex Labs are working on to support and build.
-Check back soon!
+
+Click [here](https://docs.google.com/document/d/1doohQTos4v1tg4Wv6SliQFnKNK1MouKX2efg2mapXFU/edit?usp=sharing) to view our current development goals!
+
+If you want to be apart of the official development team, attend meetings, etc., please utilize the Slack channel (link above) and 
+let Tyler Fedrizzi know!
 
 **Check out the quick 1.5 minute demo**
 
-Quadrotor UAVs in AirSim
+Quadrotor UAVs in Colosseum
 
-[![AirSim Drone Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
+[![Colosseum Drone Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
-Cars in AirSim
+Cars in Colosseum
 
-[![AirSim Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
+[![Colosseum Car Demo Video](docs/images/car_demo_video.png)](https://youtu.be/gnz1X3UNM5Y)
 
 
 ## How to Get It
@@ -44,7 +48,7 @@ For more details, see the [use precompiled binaries](docs/use_precompiled.md) do
 
 ### Documentation
 
-View our [detailed documentation](https://microsoft.github.io/AirSim/) on all aspects of AirSim.
+View our [detailed documentation](https://microsoft.github.io/AirSim/) on all aspects of Colosseum.
 
 ### Manual drive
 
@@ -59,17 +63,17 @@ If you have remote control (RC) as shown below, you can manually control the dro
 
 ### Programmatic control
 
-AirSim exposes APIs so you can interact with the vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through the RPC, and are accessible via a variety of languages, including C++, Python, C# and Java.
+Colosseum exposes APIs so you can interact with the vehicle in the simulation programmatically. You can use these APIs to retrieve images, get state, control the vehicle and so on. The APIs are exposed through the RPC, and are accessible via a variety of languages, including C++, Python, C# and Java.
 
 These APIs are also available as part of a separate, independent cross-platform library, so you can deploy them on a companion computer on your vehicle. This way you can write and test your code in the simulator, and later execute it on the real vehicles. Transfer learning and related research is one of our focus areas.
 
-Note that you can use [SimMode setting](https://microsoft.github.io/AirSim/settings#simmode) to specify the default vehicle or the new [ComputerVision mode](https://microsoft.github.io/AirSim/image_apis#computer-vision-mode-1) so you don't get prompted each time you start AirSim.
+Note that you can use [SimMode setting](https://microsoft.github.io/AirSim/settings#simmode) to specify the default vehicle or the new [ComputerVision mode](https://microsoft.github.io/AirSim/image_apis#computer-vision-mode-1) so you don't get prompted each time you start Colosseum.
 
 [More details](https://microsoft.github.io/AirSim/apis)
 
 ### Gathering training data
 
-There are two ways you can generate training data from AirSim for deep learning. The easiest way is to simply press the record button in the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's content.
+There are two ways you can generate training data from Colosseum for deep learning. The easiest way is to simply press the record button in the lower right corner. This will start writing pose and images for each frame. The data logging code is pretty simple and you can modify it to your heart's content.
 
 ![record screenshot](docs/images/record_data.png)
 
@@ -77,7 +81,7 @@ A better way to generate training data exactly the way you want is by accessing 
 
 ### Computer Vision mode
 
-Yet another way to use AirSim is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation.
+Yet another way to use Colosseum is the so-called "Computer Vision" mode. In this mode, you don't have vehicles or physics. You can use the keyboard to move around the scene, or use APIs to position available cameras in any arbitrary pose, and collect images such as depth, disparity, surface normals or object segmentation.
 
 [More details](https://microsoft.github.io/AirSim/image_apis)
 
@@ -89,11 +93,11 @@ Press F10 to see various options available for weather effects. You can also con
 
 ## Tutorials
 
-- [Video - Setting up AirSim with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) by Chris Lovett
-- [Video - Using AirSim with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0) by Chris Lovett
-- [Video - Using off-the-self environments with AirSim](https://www.youtube.com/watch?v=y09VbdQWvQY) by Jim Piavis
+- [Video - Setting up Colosseum with Pixhawk Tutorial](https://youtu.be/1oY8Qu5maQQ) by Chris Lovett
+- [Video - Using Colosseum with Pixhawk Tutorial](https://youtu.be/HNWdYrtw3f0) by Chris Lovett
+- [Video - Using off-the-self environments with Colosseum](https://www.youtube.com/watch?v=y09VbdQWvQY) by Jim Piavis
 - [Webinar - Harnessing high-fidelity simulation for autonomous systems](https://note.microsoft.com/MSR-Webinar-AirSim-Registration-On-Demand.html) by Sai Vemprala
-- [Reinforcement Learning with AirSim](https://microsoft.github.io/AirSim/reinforcement_learning) by Ashish Kapoor
+- [Reinforcement Learning with Colosseum](https://microsoft.github.io/AirSim/reinforcement_learning) by Ashish Kapoor
 - [The Autonomous Driving Cookbook](https://aka.ms/AutonomousDrivingCookbook) by Microsoft Deep Learning and Robotics Garage Chapter
 - [Using TensorFlow for simple collision avoidance](https://github.com/simondlevy/AirSimTensorFlow) by Simon Levy and WLU team
 
@@ -101,7 +105,7 @@ Press F10 to see various options available for weather effects. You can also con
 
 ### Paper
 
-More technical details are available in [AirSim paper (FSR 2017 Conference)](https://arxiv.org/abs/1705.05065). Please cite this as:
+More technical details are available in [Colosseum paper (FSR 2017 Conference)](https://arxiv.org/abs/1705.05065). Please cite this as:
 ```
 @inproceedings{airsim2017fsr,
   author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
@@ -117,19 +121,19 @@ More technical details are available in [AirSim paper (FSR 2017 Conference)](htt
 
 Please take a look at [open issues](https://github.com/microsoft/airsim/issues) if you are looking for areas to contribute to.
 
-* [More on AirSim design](https://microsoft.github.io/AirSim/design)
+* [More on Colosseum design](https://microsoft.github.io/AirSim/design)
 * [More on code structure](https://microsoft.github.io/AirSim/code_structure)
 * [Contribution Guidelines](CONTRIBUTING.md)
 
-### Who is Using AirSim?
+### Who is Using Colosseum?
 
-We are maintaining a [list](https://microsoft.github.io/AirSim/who_is_using) of a few projects, people and groups that we are aware of. If you would like to be featured in this list please [make a request here](https://github.com/microsoft/airsim/issues).
+We are maintaining a [list](https://microsoft.github.io/AirSim/who_is_using) of a few projects, people and groups that we are aware of. If you would like to be featured in this list please [make a request here](https://github.com/CodexLabsLLC/Colosseum/issues).
 
 ## Contact
 
 Join our [GitHub Discussions group](https://github.com/microsoft/AirSim/discussions) to stay up to date or ask any questions.
 
-We also have an AirSim group on [Facebook](https://www.facebook.com/groups/1225832467530667/). 
+We also have an Colosseum group on [Facebook](https://www.facebook.com/groups/1225832467530667/). 
 
 
 ## What's New
