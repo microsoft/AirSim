@@ -32,7 +32,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/Land.srv"
   "srv/LandGroup.srv"
   "srv/Reset.srv"
-  "srv/SetLocalPosition.srv" DEPENDENCIES std_msgs geometry_msgs geographic_msgs
+  "srv/SetLocalPosition.srv" DEPENDENCIES std_msgs geometry_msgs geographic_msgs LIBRARY_NAME ${PROJECT_NAME}
 )
 
 ament_export_dependencies(rosidl_default_runtime)
