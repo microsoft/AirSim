@@ -22,6 +22,6 @@ sudo apt-get install -y ros-$ROS_DISTRO-ros-base
 
 echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
 
-sudo apt-get install -y ros-$ROS_DISTRO-vision-opencv ros-${ROS_DISTRO}-image-transport libyaml-cpp-dev
+sudo apt-get install -y ros-$ROS_DISTRO-vision-opencv ros-${ROS_DISTRO}-image-transport libyaml-cpp-dev ros-${ROS_DISTRO}-geometry-msgs ros-${ROS_DISTRO}-geographic-msgs
 sudo apt-get install -y ros-${ROS_DISTRO}-tf2-sensor-msgs ros-${ROS_DISTRO}-tf2-geometry-msgs ros-${ROS_DISTRO}-mavros*
 sudo apt-get install -y python3-pip python3-yaml python3-setuptools python3-colcon-common-extensions
