@@ -36,4 +36,5 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 ament_export_dependencies(rosidl_default_runtime)
+ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_package()
