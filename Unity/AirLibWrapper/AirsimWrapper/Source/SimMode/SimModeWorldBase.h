@@ -38,6 +38,8 @@ public:
     virtual void continueForTime(double seconds) override;
 
     virtual void setWind(const msr::airlib::Vector3r& wind) const override;
+    virtual void setExtForce(const Vector3r& ext_force) const override;
+
 
 private:
     std::unique_ptr<msr::airlib::PhysicsWorld> physics_world_;
