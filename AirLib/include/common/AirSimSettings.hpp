@@ -1213,11 +1213,9 @@ namespace airlib
                 // External Force Settings
                 Settings child_json;
                 if (settings_json.getChild("ExternalForce", child_json)) {
-                    ext_force  = createVectorSetting(child_json, ext_force);
+                    ext_force = createVectorSetting(child_json, ext_force);
                 }
             }
-
-
         }
 
         static void loadDefaultCameraSetting(const Settings& settings_json, CameraSetting& camera_defaults)

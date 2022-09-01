@@ -75,7 +75,6 @@ namespace airlib
             ext_force_ = ext_force;
         }
 
-
     private:
         void initPhysicsBody(PhysicsBody* body_ptr)
         {
@@ -363,7 +362,7 @@ namespace airlib
                 //To find the drag force, we find the magnitude in the body frame and unit vector direction in world frame
                 avg_linear = current.twist.linear + current.accelerations.linear * (0.5f * dt_real);
                 avg_angular = current.twist.angular + current.accelerations.angular * (0.5f * dt_real);
-                const Wrench drag_wrench = getDragWrench(body, current.pose.orientation, avg_linear, avg_angular, wind);//, ext_force);
+                const Wrench drag_wrench = getDragWrench(body, current.pose.orientation, avg_linear, avg_angular, wind);
 
                 // ext_force is defined in world space
                 Wrench ext_force_wrench = Wrench::zero();
