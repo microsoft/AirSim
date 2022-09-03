@@ -114,7 +114,6 @@ void SimModeBase::setExtForce(const msr::airlib::Vector3r& ext_force) const
     throw std::domain_error("setExtForce not implemented by SimMode");
 }
 
-
 void SimModeBase::setupClockSpeed()
 {
     //default setup - this should be overridden in derived modes as needed
