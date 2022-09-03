@@ -279,6 +279,11 @@ bool WorldSimApi::testLineOfSightBetweenPoints(const msr::airlib::GeoPoint& poin
     return false;
 }
 
+void WorldSimApi::setExtForce(const msr::airlib::Vector3r& ext_force) const
+{
+    simmode_->setExtForce(ext_force);
+}
+
 std::vector<msr::airlib::GeoPoint> WorldSimApi::getWorldExtents() const
 {
     std::vector<msr::airlib::GeoPoint> result;

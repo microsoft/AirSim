@@ -86,6 +86,7 @@ namespace airlib
         virtual bool isRecording() const = 0;
 
         virtual void setWind(const Vector3r& wind) const = 0;
+        virtual void setExtForce(const Vector3r& ext_force) const = 0;
         virtual vector<string> listVehicles() const = 0;
 
         virtual std::string getSettingsString() const = 0;

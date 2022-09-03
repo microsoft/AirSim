@@ -67,6 +67,8 @@ std::unique_ptr<SimModeWorldBase::PhysicsEngineBase> SimModeWorldBase::createPhy
         else {
             physics_engine.reset(new msr::airlib::FastPhysicsEngine());
         }
+
+        physics_engine->setExtForce(getSettings().ext_force);
     }
     else if (physics_engine_name == "ExternalPhysicsEngine") {
         physics_engine.reset(new msr::airlib::ExternalPhysicsEngine());
@@ -96,6 +98,11 @@ void SimModeWorldBase::continueForTime(double seconds)
 void SimModeWorldBase::setWind(const msr::airlib::Vector3r& wind) const
 {
     physics_engine_->setWind(wind);
+}
+
+void SimModeWorldBase::setExtForce(const msr::airlib::Vector3r& ext_force) const
+{
+    physics_engine_->setExtForce(ext_force);
 }
 
 void SimModeWorldBase::updateDebugReport(msr::airlib::StateReporterWrapper& debug_reporter)

@@ -21,6 +21,7 @@ public:
     virtual std::string spawnObject(const std::string& object_name, const std::string& load_component, const Pose& pose, const Vector3r& scale, bool physics_enabled, bool is_blueprint) override { return ""; };
     virtual bool destroyObject(const std::string& object_name) override { return false; };
     virtual std::vector<std::string> listAssets() const override;
+    virtual void setExtForce(const Vector3r& ext_force) const override;
 
     virtual bool isPaused() const override;
     virtual void reset() override;

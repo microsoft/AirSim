@@ -419,6 +419,7 @@ namespace airlib
         std::string speed_unit_label = "m\\s";
         std::map<std::string, std::shared_ptr<SensorSetting>> sensor_defaults;
         Vector3r wind = Vector3r::Zero();
+        Vector3r ext_force = Vector3r::Zero();
         CameraSettingMap external_cameras;
 
         std::string settings_text_ = "";
@@ -1208,6 +1209,13 @@ namespace airlib
                     wind = createVectorSetting(child_json, wind);
                 }
             }
+            {
+                // External Force Settings
+                Settings child_json;
+                if (settings_json.getChild("ExternalForce", child_json)) {
+                    ext_force = createVectorSetting(child_json, ext_force);
+                }
+            }
         }
 
         static void loadDefaultCameraSetting(const Settings& settings_json, CameraSetting& camera_defaults)
@@ -1217,7 +1225,6 @@ namespace airlib
                 camera_defaults = createCameraSetting(child_json, camera_defaults);
             }
         }
-
         static void loadCameraDirectorSetting(const Settings& settings_json,
                                               CameraDirectorSetting& camera_director, const std::string& simmode_name)
         {
