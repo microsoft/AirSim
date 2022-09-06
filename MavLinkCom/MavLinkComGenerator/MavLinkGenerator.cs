@@ -58,7 +58,7 @@ namespace MavLinkComGenerator
         }
 
 
-        private void GenerateCommands()
+         void GenerateCommands()
         {
             var cmds = (from e in definitions.enums where e.name == "MAV_CMD" select e).FirstOrDefault();
             if (cmds == null)
