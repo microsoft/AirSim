@@ -229,7 +229,7 @@ namespace MavLinkComGenerator
             return sb.ToString();
         }
 
-        private string RemoveIllegalNameChars(string w)
+         string RemoveIllegalNameChars(string w)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0, n = w.Length; i < n; i++)
