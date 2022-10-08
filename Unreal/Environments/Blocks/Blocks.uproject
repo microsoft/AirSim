@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"EngineAssociation": "{00040250-08D9-25C6-0A8D-7A6671327F4F}",
-	"Category": "",
+	"Category": "Samples",
 	"Description": "",
 	"Modules": [
 		{
@@ -9,10 +9,12 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"AirSim",
-				"Engine"
+				"AirSim"
 			]
 		}
+	],
+	"TargetPlatforms": [
+		"LinuxNoEditor"
 	],
 	"Plugins": [
 		{

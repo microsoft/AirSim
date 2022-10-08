@@ -247,6 +247,18 @@ __pragma(warning(disable : 4239))
         }
 
         // TODO: parralised RL
+        void RpcLibClientBase::setLogFileLocation(const std::string &file_name) {
+            pimpl_->client.call("setLogFileLocation", file_name);
+        }
+
+        void RpcLibClientBase::resetWorld(const Pose& pose) {
+            pimpl_->client.call("resetWorld", RpcLibAdaptorsBase::Pose(pose));
+        }
+
+        void RpcLibClientBase::resetVehicle(const std::string& vehicle_name, const Pose& pose) {
+            pimpl_->client.call("resetVehicle", vehicle_name, RpcLibAdaptorsBase::Pose(pose));
+        }
+
         void RpcLibClientBase::simSetVehiclePoseBatch(const std::vector<Pose>& poses, const std::vector<std::string>& vehicle_names)
         {
             std::vector<RpcLibAdaptorsBase::Pose> poses_adaptors;
@@ -279,6 +291,11 @@ __pragma(warning(disable : 4239))
 
             return RpcLibAdaptorsBase::ImageResponse::to(response_adaptor);
         }
+        //resetVehicle
+        //bool RpcLibClientBase::resetVehicle(const std::string &vehicle_name) {
+        //    pimpl_->client.call("resetVehicle", vehicle_name);
+        //    return true;
+        //}
 
         vector<ImageCaptureBase::ImageResponse> RpcLibClientBase::simGetImages(vector<ImageCaptureBase::ImageRequest> request, const std::string& vehicle_name, bool external)
         {

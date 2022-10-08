@@ -145,10 +145,19 @@ namespace airlib
         });
 
         // TODO: Parralized RL
+        pimpl_->server.bind("setLogFileLocation", [&](const std::string& file_name) -> void {
+           getWorldSimApi()->setLogFileLocation(file_name);
+        });
+
         pimpl_->server.bind("simGetBatchImages", [&](const std::vector<RpcLibAdaptorsBase::ImageRequest>& request_adapter, const std::vector<std::string> vehicle_names) -> vector<RpcLibAdaptorsBase::ImageResponse> {
             const auto& response = getWorldSimApi()->getBatchImages(RpcLibAdaptorsBase::ImageRequest::to(request_adapter), vehicle_names);
             return RpcLibAdaptorsBase::ImageResponse::from(response);
         });
+        //resetVehicle
+        //pimpl_->server.bind("resetVehicle", [&](const std::string& vehicle_name) -> bool {
+        //    getWorldSimApi()->resetVehicle(vehicle_name);
+        //    return true;
+        //});
         // TODO: Parralized RL
 
         pimpl_->server.bind("simGetImages", [&](const std::vector<RpcLibAdaptorsBase::ImageRequest>& request_adapter, const std::string& vehicle_name, bool external) -> vector<RpcLibAdaptorsBase::ImageResponse> {
@@ -291,6 +300,14 @@ namespace airlib
         pimpl_->server.bind("simGetDetections", [&](const std::string& camera_name, ImageCaptureBase::ImageType type, const std::string& vehicle_name, bool external) -> vector<RpcLibAdaptorsBase::DetectionInfo> {
             const auto& response = getWorldSimApi()->getDetections(type, CameraDetails(camera_name, vehicle_name, external));
             return RpcLibAdaptorsBase::DetectionInfo::from(response);
+        });
+
+        pimpl_->server.bind("resetWorld", [&](const RpcLibAdaptorsBase::Pose& pose) -> void {
+            getWorldSimApi()->resetWorld(pose.to());
+        });
+
+        pimpl_->server.bind("resetVehicle", [&](const std::string& vehicle_name, const RpcLibAdaptorsBase::Pose& pose) -> void {
+            getWorldSimApi()->resetVehicle(vehicle_name, pose.to());
         });
 
         pimpl_->server.bind("reset", [&]() -> void {

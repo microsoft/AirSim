@@ -41,6 +41,10 @@ namespace airlib
 
         void confirmConnection();
         void reset();
+        void resetVehicle(const std::string& vehicle_name, const Pose& pose);
+        void resetWorld(const Pose& pose);
+
+        void setLogFileLocation(const std::string& file_name);
 
         ConnectionState getConnectionState();
         bool ping();
