@@ -1,4 +1,20 @@
-# Welcome to AirSim
+# Welcome to PRL4AirSim
+
+**Currently updating the documentation, hopefully will be done over the next couple of days!**
+
+This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning controllers.
+
+## How to build
+
+Build AirSim normally using the [documentation on AirSim](https://microsoft.github.io/AirSim/build_windows/).
+
+
+
+
+
+
+
+
 
 AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
 
