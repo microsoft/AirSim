@@ -40,15 +40,6 @@ class Sim(object):
         self.resetBatch()
 
 
-#        requests = [airsim.ImageRequest('depth_cam_{}'.format(i), airsim.ImageType.DepthPlanar, True, True) for i in range(len(self.droneObjects))]
-#        names = ['Drone{}'.format(i) for i in range(len(self.droneObjects))]
-#        beforeTime = time.perf_counter()
-#        responses_raw = Utils.getClient().client.call('simGetBatchImages', requests, names)
-#        afterTime = time.perf_counter()
-#        print("Gather images: ", afterTime - beforeTime)
-#        responses = [airsim.ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
-#        imageDepths = [airsim.list_to_2d_float_array(responses[i].image_data_float, responses[i].width, responses[i].height) for i in range(len(self.droneObjects))]
-
     def gatherAllObservations(self):
         useNewMethod = True
 
