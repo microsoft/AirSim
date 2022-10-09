@@ -15,9 +15,6 @@ This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to p
 
 Read our paper (https://arxiv.org/pdf/2209.11094.pdf) and cite us.
 
-<a href="https://arxiv.org/pdf/2209.11094.pdf">
-  <img src="PRL4AirSim/images/ArxivLogo.png" width="20%" />
-</a>
 ```
 @article{saunders2022parallel,
     title={Parallel Reinforcement Learning Simulation for Visual Quadrotor Navigation},
@@ -26,6 +23,10 @@ Read our paper (https://arxiv.org/pdf/2209.11094.pdf) and cite us.
     year={2022}
 }
 ```
+
+<a href="https://arxiv.org/pdf/2209.11094.pdf">
+  <img src="PRL4AirSim/images/ArxivLogo.png" width="20%" />
+</a>
 
 # What is PRL4AirSim?
 
