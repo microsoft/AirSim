@@ -40,7 +40,7 @@ Build AirSim normally
 - [Linux Build Link](https://microsoft.github.io/AirSim/build_linux)
 - [MacOS Build Link](https://microsoft.github.io/AirSim/build_macos)
 
-## Python packages used
+## Install Python Packages
 
 # PRL4AirSim UnrealEngine and Replay Buffer connection commands
 
@@ -55,7 +55,8 @@ We have modified the AirLib library to accept new commands that enable vectorise
 simClient = airsim.MultirotorClient(ue_ip_address : str, ue_port : int)
 simClient.confirmConnection()
 
-
+bufferClient = msgpackrpc.Client(msgpackrpc.Address(buffer_ip_address : str, buffer_port : int))
+print(bufferClient.call("confirmConnection"))
 ```
 
 ## PRL4AirSim Agent Simulator Batch commands
@@ -96,9 +97,14 @@ def startSimulation(self)
 ```
 
 ```python
-# There is a delay between when the replay buffer starts and when agents start interacting with the environment.
-# We use this to properly define when the experiment starts.
+# Used to track episodic training
 def finishEpisode(self)
+```
+
+```python
+# The trainer calls this to sample experiences from the buffer.  We store experiences as a dictionary of numpy arrays 
+# which need to be converted to python lists for the RPC server to encode and sent to the trainer client.  See 'Utils.convertStateDicToListDic()'
+def sampleFromStorage(self)
 ```
 
 # Non-interactive Unreal Engine Custom Environments
@@ -150,7 +156,13 @@ Agents will interact with the environment without interacting with each other.
 
 In the future we will break the functionality of both the DQNetwork and DQNTrainer to make it clearer what functions are used for each. 
 
+3. AirSim and UnrealEngine Coordinate Reference Frame
 
+The reference frame in AirSim is centered around the player start actor.  To spawn agents at certain locations, we capture the position within the unreal engine and then transpose it to the AirSim frame.  Use the function 'convert_pos_UE_to_AS' to convert between UE and AS in Utils.py
+
+```python
+def convert_pos_UE_to_AS(origin_UE : np.array, pos_UE : np.array):
+```
 
 
 ---
