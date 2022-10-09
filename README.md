@@ -64,6 +64,21 @@ The required modules are:
 
 msgpack changed its name from msgpack-python to msgpack, which leads to an outdated version installed.  When running the outdated version, the python instance is used rather than the quicker c++ version.  Hence, we need to correct this using `https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep`.  If Jupyter package is installed, tornado will also be outdated.  This will lead to the following python package versions:
 
+## Binary download
+
+We include a binary which we have used to test this framework.  Download this here: `https://drive.google.com/file/d/1PZxAJjld3xS5QLkC2-lSMHRRsR1VZmP8/view` and place it inside the `PRL4AirSim/UEBinary`.  This should lead to the following file structure:
+
+```
+-- PRL4AirSim
+---- UEBinary
+------ Engine
+------ MyProject2
+---- Manifest_NonUFSFiles_Linux.txt
+---- MyProject2.sh
+```
+
+This will be compatible with `start.sh`, now if you want to create your own custom environments, you can compile them and place it in here.  We recommend compiling the project as the UE editor has additional overheads.
+
 # AirSim Configuration
 
 One major disavantage of AirSim is the configuration file for the quadrotors within the simulator.  Every quadrotor requires a specific configuration which leads to thousands of repetitive lines within the configuration file located in `/Documents/AirSim/settings.json`.  In the future we hope to automate the `num_drones` setting in our config to initialise the number of quadrotors on the AirSim side.  However, for now we need this setting (`num_drones`) to match the number of vehicles in the `Documents/AirSim/settings.json` file.  Where each quadrotor id and camera id increments:
