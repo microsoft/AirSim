@@ -8,5 +8,9 @@
   "discount_factor" : 0.95,
   "replace_target_count_episode" : 150,
   "num_drones" : 50,
-  "from_artifact" : ""
+  "from_artifact" : "",
+  "projectName" : "MyProject2",
+  "envProcesses" : 1,
+  "storage_port" : 29000,
+  "headless" : false
 }

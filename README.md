@@ -6,12 +6,14 @@ This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to p
 
 
 <p float="left">
-  <img src="PRL4AirSim/images/ParallelRLDrones.gif" width="40%" />
+  <img src="/home/jack/PHD/ForkedAirSim/ModifiedAirSim/PRL4AirSim/images/ParallelRLDrones.gif" width="40%" />
   &emsp;&emsp;
   <a href="https://www.youtube.com/watch?v=kAWbEUUT8bw">
-    <img src="PRL4AirSim/images/ICRA_Video.png" width="43%" />
+    <img src="/home/jack/PHD/ForkedAirSim/ModifiedAirSim/PRL4AirSim/images/ICRA_Video.png" width="43%" />
   </a>
 </p>
+
+
 
 # What is PRL4AirSim?
 
@@ -32,12 +34,64 @@ PRL4AirSim provides a simulation framework, built on AirSim, which provides effi
 # Build PRL4AirSim
 
 ## Building AirSim
-Build AirSim normally
+Build AirSim normally.  **Ensure you clone this repository rather than AirSim, then follow their steps as we have modified the AirLib and AirSim plugins.**
 - [Windows Build Link](https://microsoft.github.io/AirSim/build_windows)
 - [Linux Build Link](https://microsoft.github.io/AirSim/build_linux)
 - [MacOS Build Link](https://microsoft.github.io/AirSim/build_macos)
 
 ## Install Python Packages
+
+Find the `requirements.txt` file which includes all python 
+
+Install msgpackRPC (Ensure you install the correct )
+
+## AirSim Configuration
+
+One major disavantage of AirSim is the configuration file for the quadrotors within the simulator.  Every quadrotor requires a specific configuration which leads to thousands of repetitive lines within the configuration file located in `/Documents/AirSim/settings.json`
+
+
+## PRL4AirSim Configuration
+
+We provide a json file which contains all parameters of the experiment.  
+
+```json
+{
+  "max_episodes" : 100000,
+  "state_space" : [2, 32, 32],
+  "action_space" : 2,
+  "buffer_Size": 15000,
+  "batch_size" : 32,
+  "learning_rate" : 0.001,
+  "discount_factor" : 0.95,
+  "replace_target_count_episode" : 150,
+  "num_drones" : 50,
+  "from_artifact" : "",
+  "projectName" : "MyProject2",
+  "envProcesses" : 1,
+  "storage_port" : 29000,
+  "headless" : false
+}
+```
+
+## Running PRL4AirSim
+
+A quick way to test our framework is to use the `start.py` python script, which will run a local version of the PRL4AirSim.  However, we recommend to run all subprocesses on networked computers.
+
+There are four components:
+
+| File      | Description |
+| ----------- | ----------- |
+| `PRL4AirSim/UEBinary/{ProjectName}.sh`      | AirSim Unreal Engine Binary       |
+| `PRL4AirSim/PyClient.py`   | PyClient AirSim Client hosting a local DQN network        |
+| `PRL4AirSim/Storage.py`   | Replay Buffer       |
+| `PRL4AirSim/Trainer.py`   | Global network parameter trainer      |
+
+Alternatively, we recommend running the airsim and local DQN network on multiple compute units as shown in the figure bellow, thus spreading the GPU and CPU load.  This can be done by running the PyClient and UEBinary remotely, ensuring the IP of the buffer is defined on these machines.  Check out `start.py` on how to do this.  
+
+<div style="width: 40%; height: 30%">
+
+![](PRL4AirSim/images/ParallelRLFramework.png)
+</div>
 
 # PRL4AirSim UnrealEngine and Replay Buffer connection commands
 
