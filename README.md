@@ -26,18 +26,23 @@ Read our paper (https://arxiv.org/pdf/2209.11094.pdf) and cite us.
 }
 ```
 
-
-
 # What is PRL4AirSim?
 
 PRL4AirSim provides a simulation framework, built on AirSim, which provides efficient parallel training.  We add the following functionality:
 
-1. Batch rendering, to remove multiple game and render thread synchronisation
-2. Episodic Training
-3. Non-interactive simulator environment
+1. Batch rendering, to remove multiple game and render thread synchronisation using `simGetBatchImages` to encompas all requests into a single request.
+2. Episodic Training, using `resetVehicle` rather than `reset` which causes the entire simulation to reset.
+3. Non-interactive simulator environment, removing ego-perspective rendering and agent-agent collision interaction.
 4. Ape-X implementation using RPC servers
 
 <img src="PRL4AirSim/images/PRL4AirSimBlockDiagram.png" width="70%" />
+
+## Batch Rendering
+
+Rather than many asynchronous RPC commands, we encompas all requests into a single request `simGetBatchImages`
+
+<img src="PRL4AirSim/images/BatchRenderGraph.png" width="70%" />
+
 
 
 # Build PRL4AirSim
@@ -50,26 +55,98 @@ Build AirSim normally.  **Ensure you clone this repository rather than AirSim, t
 
 ## Install Python Packages
 
-Find the `requirements.txt` file which includes all python 
+Find the `requirements.txt` file which includes modules used in our python environment and versions.
+
+The required modules are:
+- AirSim
+- PyTorch
+- Numpy
+- OpenCV
+- wandb (for logging)
+- json
+- msgpackrpc (https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep) see bellow
 
 ## Correct msgpackRPC installation
 
 msgpack changed its name from msgpack-python to msgpack, which leads to an outdated version installed.  When running the outdated version, the python instance is used rather than the quicker c++ version.  Hence, we need to correct this using `https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep`.  If Jupyter package is installed, tornado will also be outdated.  This will lead to the following python package versions:
 
-```
-msgpack-rpc-python==1.0.4
-msgpack==0.4
-tornado==4.5.3
-```
-
 # AirSim Configuration
 
-One major disavantage of AirSim is the configuration file for the quadrotors within the simulator.  Every quadrotor requires a specific configuration which leads to thousands of repetitive lines within the configuration file located in `/Documents/AirSim/settings.json`
+One major disavantage of AirSim is the configuration file for the quadrotors within the simulator.  Every quadrotor requires a specific configuration which leads to thousands of repetitive lines within the configuration file located in `/Documents/AirSim/settings.json`.  In the future we hope to automate the `num_drones` setting in our config to initialise the number of quadrotors on the AirSim side.  However, for now we need this setting (`num_drones`) to match the number of vehicles in the `Documents/AirSim/settings.json` file.  Where each quadrotor id and camera id increments:
 
+```json
+{
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+  "SimMode": "Multirotor",
+  "ViewMode": "NoDisplay",
+  "SettingsVersion": 1.2,
+  "ClockSpeed": 4.0,
+  "LocalHostIp": "127.0.0.1",
+  "ApiServerPort": 29001,
+  "SubWindows": [],
+  "Vehicles": {
+    "Drone0": {
+      "X": 0,
+      "Y": 0,
+      "Z": 0,
+      "VehicleType": "SimpleFlight",
+      "AutoCreate": true,
+      "DefaultVehicleState": "Armed",
+      "Cameras": {
+        "depth_cam_0": {
+          "CaptureSettings": [
+            {
+              "FOV_Degrees": 90,
+              "ImageType": 1,
+              "Width": 32,
+              "Height": 32
+            }
+          ],
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": 0.0,
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": -0.6
+        }
+      }
+    },
+    "Drone1": {
+      "X": 0,
+      "Y": 0,
+      "Z": 0,
+      "VehicleType": "SimpleFlight",
+      "AutoCreate": true,
+      "DefaultVehicleState": "Armed",
+      "Cameras": {
+        "depth_cam_1": {
+          "CaptureSettings": [
+            {
+              "FOV_Degrees": 90,
+              "ImageType": 1,
+              "Width": 32,
+              "Height": 32
+            }
+          ],
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": 0.0,
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": -0.6
+        }
+      }
+    }
+    ...
+  }
+}
+```
+
+Furthermore, we modify the `ApiServerPort` and `LocalHostIp` setting when running the parallel architecture.  We have a set of templates that can be swapped out to test any number of quadrotors up to 60 (although we have personally tested with 200) in `PRL4AirSim/TemplateConfigurationFiles`.
 
 ## PRL4AirSim Configuration
 
-We provide a json file which contains all parameters of the experiment.  
+We provide a `config.json` file which contains all parameters of the experiment.  
 
 ```json
 {
@@ -89,6 +166,8 @@ We provide a json file which contains all parameters of the experiment.
   "headless" : false
 }
 ```
+
+We used this framework to test visual navigation, as a result the state space and action space is specific for this task.  Changing this involves modifying `simulator.py`, `DQNTrainer.py`, and `DQNetwork.py`.
 
 # Running PRL4AirSim
 

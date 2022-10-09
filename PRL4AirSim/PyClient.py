@@ -1,13 +1,9 @@
-import os
-
 import Utils as Utils
 import DQNTrainer as DQNTrainer
 import datetime
-import pathlib
 import time
 import Simulation as Simulation
 import argparse
-from os.path import exists
 
 if __name__ == "__main__":
     """

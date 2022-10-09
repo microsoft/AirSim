@@ -1,0 +1,532 @@
+{
+    "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+    "SimMode": "Multirotor",
+    "ViewMode": "NoDisplay",
+    "SettingsVersion": 1.2,
+    "ClockSpeed": 8.0,
+    "LocalHostIp": "127.0.0.1",
+    "ApiServerPort": 29000,
+    "SubWindows": [],
+    "Vehicles": {
+        "Drone0": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_0": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone1": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_1": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone2": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_2": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone3": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_3": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone4": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_4": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone5": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_5": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone6": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_6": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone7": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_7": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone8": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_8": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone9": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_9": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone10": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_10": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone11": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_11": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone12": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_12": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone13": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_13": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone14": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_14": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone15": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_15": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone16": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_16": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone17": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_17": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone18": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_18": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        },
+        "Drone19": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0,
+            "VehicleType": "SimpleFlight",
+            "AutoCreate": true,
+            "DefaultVehicleState": "Armed",
+            "Cameras": {
+                "depth_cam_19": {
+                    "CaptureSettings": [
+                        {
+                            "FOV_Degrees": 90,
+                            "ImageType": 1,
+                            "Width": 32,
+                            "Height": 32
+                        }
+                    ],
+                    "Pitch": 0.0,
+                    "Roll": 0.0,
+                    "Yaw": 0.0,
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": -0.6
+                }
+            }
+        }
+    }
+}

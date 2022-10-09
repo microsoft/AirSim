@@ -9,8 +9,6 @@ from os.path import exists
 import os
 import pathlib
 
-from threading import Timer
-
 beforeTime = None
 afterTime = None
 
@@ -59,9 +57,6 @@ class Sim(object):
             responses_raw = Utils.getClient().client.call('simGetBatchImages', requests, names)
             afterTime = time.perf_counter()
 
-            with open(r'render_total_timing.csv', 'a', newline='') as csvfile:
-                csvfile.write(str(afterTime-beforeTime) + "\n")
-
             print("Gather images: ", afterTime - beforeTime)
             responses = [airsim.ImageResponse.from_msgpack(response_raw) for response_raw in responses_raw]
             imageDepths = [airsim.list_to_2d_float_array(responses[i].image_data_float, responses[i].width, responses[i].height) for i in range(len(responses))]
@@ -73,9 +68,6 @@ class Sim(object):
                                                            'Drone{}'.format(droneObject.droneId),
                                                            False) for droneObject in nonResetingDrones]
             afterTime = time.perf_counter()
-
-            with open(r'render_total_timing.csv', 'a', newline='') as csvfile:
-                csvfile.write(str(afterTime-beforeTime) + "\n")
 
             print("Gather images (old method): ", afterTime - beforeTime)
             responses = [airsim.ImageResponse.from_msgpack(response_raw[0]) for response_raw in responses_raw]
