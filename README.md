@@ -6,10 +6,10 @@ This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to p
 
 
 <p float="left">
-  <img src="/home/jack/PHD/ForkedAirSim/ModifiedAirSim/PRL4AirSim/images/ParallelRLDrones.gif" width="40%" />
+  <img src="PRL4AirSim/images/ParallelRLDrones.gif" width="40%" />
   &emsp;&emsp;
   <a href="https://www.youtube.com/watch?v=kAWbEUUT8bw">
-    <img src="/home/jack/PHD/ForkedAirSim/ModifiedAirSim/PRL4AirSim/images/ICRA_Video.png" width="43%" />
+    <img src="PRL4AirSim/images/ICRA_Video.png" width="43%" />
   </a>
 </p>
 
@@ -24,7 +24,7 @@ PRL4AirSim provides a simulation framework, built on AirSim, which provides effi
 3. Non-interactive simulator environment
 4. Ape-X implementation using RPC servers
 
-<div style="width: 70%; height: 70%">
+<div style="width: 40%; height: 70%">
 
 ![](PRL4AirSim/images/PRL4AirSimBlockDiagram.png)
 
@@ -166,12 +166,12 @@ We provide the environment presented within the paper to allow others to validat
 
 To make the quadrotor invisible in the scene, change the 'Hidden in Scene Capture' to True.  This will make it invisible to other drones but the spectator actor can still see it.  Go to details, then rendering, this will show the setting 'ACtor Hidden In Game'.
 
-<div style="width: 60%; height: 30%">
+<div style="width: 40%">
 
 ![](PRL4AirSim/images/NonInteractiveUE/MakeActorHidden.png)
 </div>
 
-<div style="width: 60%; height: 30%">
+<div style="width: 40%; height: 30%">
 
 ![](PRL4AirSim/images/NonInteractiveUE/MakeActorHiddenZoom.png)
 </div>
@@ -190,7 +190,7 @@ There are five components to change within the 'BP_FlyingPawn' blueprint: BodyMe
 
 Now to remove collisions between 'Pawns', we need to ignore the event 'ActorBeginOverlap' which we can do using a Blueprint Event Graph.  Add the following event graph to 'BP_FlyingPawn'.
 
-<div style="width: 60%; height: 30%">
+<div style="width: 40%; height: 30%">
 
 ![](PRL4AirSim/images/NonInteractiveUE/IgnoreCollisionBP.png)
 </div>
