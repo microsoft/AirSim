@@ -14,6 +14,7 @@ This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to p
 </p>
 
 Read our paper (https://arxiv.org/pdf/2209.11094.pdf) and cite us.
+
 <a href="https://arxiv.org/pdf/2209.11094.pdf">
   <img src="PRL4AirSim/images/ArxivLogo.png" width="20%" />
 </a>
