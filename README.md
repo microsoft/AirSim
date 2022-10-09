@@ -15,7 +15,7 @@ This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to p
 
 Read out paper and cite us.
 
-<img src="PRL4AirSim/images/ArxivLogo.png" width="43%" />
+<img src="PRL4AirSim/images/ArxivLogo.png" width="20%" />
 
 ```
 @article{saunders2022parallel,
@@ -37,7 +37,7 @@ PRL4AirSim provides a simulation framework, built on AirSim, which provides effi
 3. Non-interactive simulator environment
 4. Ape-X implementation using RPC servers
 
-<img src="PRL4AirSim/images/PRL4AirSimBlockDiagram.png" width="40%" />
+<img src="PRL4AirSim/images/PRL4AirSimBlockDiagram.png" width="70%" />
 
 
 # Build PRL4AirSim
@@ -105,7 +105,7 @@ There are four components:
 
 Alternatively, we recommend running the airsim and local DQN network on multiple compute units as shown in the figure bellow, thus spreading the GPU and CPU load.  This can be done by running the PyClient and UEBinary remotely, ensuring the IP of the buffer is defined on these machines.  Check out `start.py` on how to do this.  
 
-<img src="PRL4AirSim/images/ParallelRLFramework.png" width="40%" />
+<img src="PRL4AirSim/images/ParallelRLFramework.png" width="70%" />
 
 # PRL4AirSim UnrealEngine and Replay Buffer connection commands
 
@@ -180,7 +180,7 @@ We provide the environment presented within the paper to allow others to validat
 
 To make the quadrotor invisible in the scene, change the 'Hidden in Scene Capture' to True.  This will make it invisible to other drones but the spectator actor can still see it.  Go to details, then rendering, this will show the setting 'ACtor Hidden In Game'.
 
-<img src="PRL4AirSim/images/NonInteractiveUE/MakeActorHidden.png" width="40%" />
+<img src="PRL4AirSim/images/NonInteractiveUE/MakeActorHidden.png" width="70%" />
 
 <img src="PRL4AirSim/images/NonInteractiveUE/MakeActorHiddenZoom.png" width="40%" />
 
@@ -195,7 +195,7 @@ There are five components to change within the 'BP_FlyingPawn' blueprint: BodyMe
 
 Now to remove collisions between 'Pawns', we need to ignore the event 'ActorBeginOverlap' which we can do using a Blueprint Event Graph.  Add the following event graph to 'BP_FlyingPawn'.
 
-<img src="PRL4AirSim/images/NonInteractiveUE/IgnoreCollisionBP.png" width="40%" />
+<img src="PRL4AirSim/images/NonInteractiveUE/IgnoreCollisionBP.png" width="70%" />
 
 
 Agents will interact with the environment without interacting with each other.
