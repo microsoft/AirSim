@@ -2,19 +2,16 @@
 
 **Currently updating the documentation, hopefully will be done over the next couple of days!**
 
-This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning controllers.
-<div style="width: 60%; height: 60%">
+This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning controllers.  Check out our 3 minute video bellow which explains our approach.
 
-[![AirSim Drone Demo Video](PRL4AirSim/images/ParallelRLDrones.gif)](https://www.youtube.com/watch?v=kAWbEUUT8bw)
 
-</div>
-## Check out our ICRA submission video
-
-<div style="width: 60%; height: 60%">
-
-[![](PRL4AirSim/images/ICRA_Video.png)](https://www.youtube.com/watch?v=kAWbEUUT8bw)
-
-</div>
+<p float="left">
+  <img src="/home/jack/PHD/ForkedAirSim/ModifiedAirSim/PRL4AirSim/images/ParallelRLDrones.gif" width="40%" />
+  &emsp;&emsp;
+  <a href="https://www.youtube.com/watch?v=kAWbEUUT8bw">
+    <img src="/home/jack/PHD/ForkedAirSim/ModifiedAirSim/PRL4AirSim/images/ICRA_Video.png" width="43%" />
+  </a>
+</p>
 
 # What is PRL4AirSim?
 
