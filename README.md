@@ -6,10 +6,10 @@ This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to p
 
 
 <p float="left">
-  <img src="/home/jack/PHD/ForkedAirSim/ModifiedAirSim/PRL4AirSim/images/ParallelRLDrones.gif" width="40%" />
+  <img src="PRL4AirSim/images/ParallelRLDrones.gif" width="40%" />
   &emsp;&emsp;
   <a href="https://www.youtube.com/watch?v=kAWbEUUT8bw">
-    <img src="/home/jack/PHD/ForkedAirSim/ModifiedAirSim/PRL4AirSim/images/ICRA_Video.png" width="43%" />
+    <img src="PRL4AirSim/images/ICRA_Video.png" width="43%" />
   </a>
 </p>
 
