@@ -68,7 +68,7 @@ msgpack changed its name from msgpack-python to msgpack, which leads to an outda
 
 We include a binary which we have used to test this framework.  Download this here: `https://drive.google.com/file/d/1PZxAJjld3xS5QLkC2-lSMHRRsR1VZmP8/view` and place it inside the `PRL4AirSim/UEBinary`.  This should lead to the following file structure:
 
-<img src="PRL4AirSim/images/TrainTestArenas.png.png" width="70%" />
+<img src="PRL4AirSim/images/TrainTestArenas.png" width="70%" />
 
 ```
 -- PRL4AirSim
