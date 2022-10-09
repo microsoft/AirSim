@@ -13,6 +13,19 @@ This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to p
   </a>
 </p>
 
+Read out paper and cite us.
+
+<img src="PRL4AirSim/images/ArxivLogo.png" width="43%" />
+
+```
+@article{saunders2022parallel,
+    title={Parallel Reinforcement Learning Simulation for Visual Quadrotor Navigation},
+    author={Saunders, Jack and Saeedi, Sajad and Li, Wenbin},
+    journal={arXiv preprint arXiv:2209.11094},
+    year={2022}
+}
+```
+
 
 
 # What is PRL4AirSim?
@@ -24,11 +37,7 @@ PRL4AirSim provides a simulation framework, built on AirSim, which provides effi
 3. Non-interactive simulator environment
 4. Ape-X implementation using RPC servers
 
-<div style="width: 40%; height: 70%">
-
-![](PRL4AirSim/images/PRL4AirSimBlockDiagram.png)
-
-</div>
+<img src="PRL4AirSim/images/PRL4AirSimBlockDiagram.png" width="40%" />
 
 
 # Build PRL4AirSim
@@ -43,9 +52,17 @@ Build AirSim normally.  **Ensure you clone this repository rather than AirSim, t
 
 Find the `requirements.txt` file which includes all python 
 
-Install msgpackRPC (Ensure you install the correct )
+## Correct msgpackRPC installation
 
-## AirSim Configuration
+msgpack changed its name from msgpack-python to msgpack, which leads to an outdated version installed.  When running the outdated version, the python instance is used rather than the quicker c++ version.  Hence, we need to correct this using `https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep`.  If Jupyter package is installed, tornado will also be outdated.  This will lead to the following python package versions:
+
+```
+msgpack-rpc-python==1.0.4
+msgpack==0.4
+tornado==4.5.3
+```
+
+# AirSim Configuration
 
 One major disavantage of AirSim is the configuration file for the quadrotors within the simulator.  Every quadrotor requires a specific configuration which leads to thousands of repetitive lines within the configuration file located in `/Documents/AirSim/settings.json`
 
@@ -73,7 +90,7 @@ We provide a json file which contains all parameters of the experiment.
 }
 ```
 
-## Running PRL4AirSim
+# Running PRL4AirSim
 
 A quick way to test our framework is to use the `start.py` python script, which will run a local version of the PRL4AirSim.  However, we recommend to run all subprocesses on networked computers.
 
@@ -88,10 +105,7 @@ There are four components:
 
 Alternatively, we recommend running the airsim and local DQN network on multiple compute units as shown in the figure bellow, thus spreading the GPU and CPU load.  This can be done by running the PyClient and UEBinary remotely, ensuring the IP of the buffer is defined on these machines.  Check out `start.py` on how to do this.  
 
-<div style="width: 40%; height: 30%">
-
-![](PRL4AirSim/images/ParallelRLFramework.png)
-</div>
+<img src="PRL4AirSim/images/ParallelRLFramework.png" width="40%" />
 
 # PRL4AirSim UnrealEngine and Replay Buffer connection commands
 
@@ -166,15 +180,9 @@ We provide the environment presented within the paper to allow others to validat
 
 To make the quadrotor invisible in the scene, change the 'Hidden in Scene Capture' to True.  This will make it invisible to other drones but the spectator actor can still see it.  Go to details, then rendering, this will show the setting 'ACtor Hidden In Game'.
 
-<div style="width: 40%">
+<img src="PRL4AirSim/images/NonInteractiveUE/MakeActorHidden.png" width="40%" />
 
-![](PRL4AirSim/images/NonInteractiveUE/MakeActorHidden.png)
-</div>
-
-<div style="width: 40%; height: 30%">
-
-![](PRL4AirSim/images/NonInteractiveUE/MakeActorHiddenZoom.png)
-</div>
+<img src="PRL4AirSim/images/NonInteractiveUE/MakeActorHiddenZoom.png" width="40%" />
 
 ## Remove Collision boxes from all agents within the environment
 
@@ -182,18 +190,13 @@ We need to specifically remove agent-agent interaction while also enabling envir
 
 There are five components to change within the 'BP_FlyingPawn' blueprint: BodyMesh, Prop3, Prop2, Prop1, Prop0.  For all of these, go to collisions, then change the collision presents to custom.  Thange the Object Type to 'Pawn' and then in 'Object Responses' change the Pawn to Ignore as shown bellow.
 
-<div style="width: 30%; height: 30%">
-
-![](PRL4AirSim/images/NonInteractiveUE/CollisionPresets.png)
-</div>
+<img src="PRL4AirSim/images/NonInteractiveUE/CollisionPresets.png" width="40%" />
 
 
 Now to remove collisions between 'Pawns', we need to ignore the event 'ActorBeginOverlap' which we can do using a Blueprint Event Graph.  Add the following event graph to 'BP_FlyingPawn'.
 
-<div style="width: 40%; height: 30%">
+<img src="PRL4AirSim/images/NonInteractiveUE/IgnoreCollisionBP.png" width="40%" />
 
-![](PRL4AirSim/images/NonInteractiveUE/IgnoreCollisionBP.png)
-</div>
 
 Agents will interact with the environment without interacting with each other.
 
