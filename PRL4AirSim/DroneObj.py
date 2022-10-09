@@ -8,7 +8,6 @@ class DroneObject(object):
         self.droneName = 'Drone{}'.format(droneId)
         self.currentArena = None
         self.currentStep = 0
-        #self.droneSpawnOffset = np.array([0, 3 * droneId, 0])
         self.droneSpawnOffset = np.array([0, 0 * droneId, 0])
 
         self.previous_depth_image = None

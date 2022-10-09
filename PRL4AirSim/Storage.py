@@ -34,48 +34,16 @@ class Storage(object):
                                            epsilon=1.0,
                                            replace_target_count_episode=Utils.getConfig()['replace_target_count_episode'])
 
-
-       #wandb.log({
-       #    "metric/Epsilon_pushcounter" : self.agent.epsilon,
-       #    "metric/Experience_Replay_Size_pushcounter" : len(self.agent.memory),
-       #    "metric/HoursRun_pushcounter" : (time.perf_counter() / 3600) - self.start_time},
-       #    step=self.agent.memory.pushCounter)
-
-        # Value map
-        self.valueMemory = deque([], maxlen=10000)
-        self.valueMemoryCounter = 0
-
-        #self.frameRateTimer = time.perf_counter()
-        #self.framesCounter = 0.0
-        #self.frameRate = -1
         self.start_time = time.perf_counter()
-
-    def pushMemoryTuple(self, tuppleList):
-        # 0.0013 - 0.0015
-        for transition in tuppleList:
-            self.agent.memory.push(Utils.convertStateDicToNumpyDic(transition[0]), transition[1], Utils.convertStateDicToNumpyDic(transition[2]), transition[3], transition[4])
-            self.agent.learn()
 
     def pushMemory(self, state, action, next_state, reward, not_done):
         self.agent.memory.push(Utils.convertStateDicToNumpyDic(state), action, Utils.convertStateDicToNumpyDic(next_state), reward, not_done)
-        #self.framesCounter += 1
-
         if (len(self.agent.memory) % 100 == 0):
             wandb.log({"metric/Observations" : self.agent.memory.pushCounter},
                       step=self.total_episodes)
-            #wandb.log({
-            #    "metric/Epsilon_pushcounter" : self.agent.epsilon,
-            #    "metric/Experience_Replay_Size_pushcounter" : len(self.agent.memory),
-            #    "metric/HoursRun_pushcounter" : (time.perf_counter() / 3600) - self.start_time,
-            #    "metric/FrameRate_pushcounter": self.frameRate},
-            #    step=self.agent.memory.pushCounter)
+
             if not len(self.agent.memory) == self.agent.memory.maxSize:
                 print(len(self.agent.memory))
-
-        #if (time.perf_counter() - self.frameRateTimer) > 1.0:
-        #    self.frameRate = self.framesCounter
-        #    self.framesCounter = 0.0
-        #    self.frameRateTimer = time.perf_counter()
 
     def getMemoryPushCounter(self):
         return self.agent.memory.pushCounter
@@ -130,6 +98,7 @@ class Storage(object):
                    not_done
         else:
             return None, None, None, None, None
+
     def confirmConnection(self):
         return 'Storage Server Connected!'
 
@@ -154,10 +123,6 @@ if __name__ == "__main__":
     parser.add_argument("storage_port")
     args = parser.parse_args()
     arguments = vars(args)
-
-    run_tests = False
-    if run_tests:
-        testSampleFromStorage()
 
     storage_server = Storage()
     server = msgpackrpc.Server(storage_server)

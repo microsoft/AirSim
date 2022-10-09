@@ -6,7 +6,7 @@ import time
 
 homeDir = str(pathlib.Path.home())
 projectName = 'MyProject2'
-envProcesses = 2
+envProcesses = 1
 
 def changeUEIPJson(port):
     with open(str(pathlib.Path.home()) + "/Documents/AirSim/settings.json", "r") as jsonFile:
@@ -26,9 +26,9 @@ os.system('gnome-terminal -- python Trainer.py {}'.format(storage_port))
 for i in range(envProcesses):
     port = storage_port + i + 1
     changeUEIPJson(port)
-    os.system('gnome-terminal -- ./../UnrealEngineFiles/{projectName}.sh -RenderOffscreen -windowed -NoVSync'.format(projectName=projectName))
+    os.system('gnome-terminal -- ./PRL4AirSimUEBinary/{projectName}.sh -RenderOffscreen -windowed -NoVSync'.format(projectName=projectName))
 
-
+    ## Uncomment if you want to view the scene ##
     #WinX = 1000 * i
     #WinY = 1000
     #os.system('gnome-terminal -- ./../UnrealEngineFiles/{projectName}.sh -windowed -WinX={WinX} -WinY={WinY} -NoVSync'.format(

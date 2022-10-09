@@ -2,29 +2,170 @@
 
 **Currently updating the documentation, hopefully will be done over the next couple of days!**
 
+This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning controllers.
+<div style="width: 60%; height: 60%">
 
 [![AirSim Drone Demo Video](PRL4AirSim/images/ParallelRLDrones.gif)](https://www.youtube.com/watch?v=kAWbEUUT8bw)
-[![AirSim Drone Demo Video](PRL4AirSim/images/ICRA_Video.png)](https://www.youtube.com/watch?v=kAWbEUUT8bw)
 
-![s](PRL4AirSim/images/ICRA_Video.png | width=100)
+</div>
+## Check out our ICRA submission video
 
-[![ICRA Submission]()](https://www.youtube.com/watch?v=kAWbEUUT8bw)
+<div style="width: 60%; height: 60%">
+
+[![](PRL4AirSim/images/ICRA_Video.png)](https://www.youtube.com/watch?v=kAWbEUUT8bw)
+
+</div>
+
+# What is PRL4AirSim?
+
+PRL4AirSim provides a simulation framework, built on AirSim, which provides efficient parallel training.  We add the following functionality:
+
+1. Batch rendering, to remove multiple game and render thread synchronisation
+2. Episodic Training
+3. Non-interactive simulator environment
+4. Ape-X implementation using RPC servers
+
+<div style="width: 70%; height: 70%">
+
+![](PRL4AirSim/images/PRL4AirSimBlockDiagram.png)
+
+</div>
 
 
-This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning controllers.
+# Build PRL4AirSim
 
-## How to build
+## Building AirSim
+Build AirSim normally
+- [Windows Build Link](https://microsoft.github.io/AirSim/build_windows)
+- [Linux Build Link](https://microsoft.github.io/AirSim/build_linux)
+- [MacOS Build Link](https://microsoft.github.io/AirSim/build_macos)
 
-Build AirSim normally using the [documentation on AirSim](https://microsoft.github.io/AirSim/build_windows/).
+## Python packages used
 
-## Examples
+# PRL4AirSim UnrealEngine and Replay Buffer connection commands
+
+Ape-X enables us to run multiple DQN local instances in parallel (hence parallel RL).  This results in an increased data sample rate from the environmnet.  The bottleneck of AirSim is the high CPU utilisation from the quadrotor dynamics which are calculated every step for each vehicle.  Vectorising the environment can improve memory utilisation 
 
 
+We have modified the AirLib library to accept new commands that enable vectorised based environment interaction.  Hence, intialise the MultiRotor client normally
+
+**Note: in our code we use client.call(...) without differentiating between the UnrealEngine and Replay buffer.  However, for this documentation simClient means the UnrealEngine client and replayClient is the Replay bufer**
+
+```python
+simClient = airsim.MultirotorClient(ue_ip_address : str, ue_port : int)
+simClient.confirmConnection()
+
+
+```
+
+## PRL4AirSim Agent Simulator Batch commands
+
+```python
+simClient.call('simGetBatchImages', requests : [airsim.ImageRequest], vehicle_names : [str])
+```
+
+```python
+simClient.call_async('moveByVelocityZBatch', vx_vec : [float], vy_vec : [float], z_vec : [float], time : float, driveTrainType : airsim.DrivetrainType, yawMode : airsim.YawMode, vehicle_names : [str])
+```
+
+```python
+simClient.call('simSetVehiclePoseBatch', poses : [airsim.Pose], vehicle_names : [str])
+```
+
+```python
+simClient.call_async("resetVehicle", vehicle_name : str, pose : airsim.Pose, orientation : airsim.Quaternionr)
+```
+
+## PRL4AirSim Shared Replay Buffer
+
+Similarly to AirSim, we use a RPC server to host the replay buffer.  This buffer is a centralised storage used by the local agent instances to fill experiences to, and an external trainer client which samples experiences.
+
+```python
+def pushMemory(self, state, action, next_state, reward, not_done)
+```
+
+```python
+# For Epislon-Greedy action selection, epsilon can decrement with the size of the experience replay.
+def getMemoryPushCounter(self)
+```
+
+```python
+# There is a delay between when the replay buffer starts and when agents start interacting with the environment.
+# We use this to properly define when the experiment starts.
+def startSimulation(self)
+```
+
+```python
+# There is a delay between when the replay buffer starts and when agents start interacting with the environment.
+# We use this to properly define when the experiment starts.
+def finishEpisode(self)
+```
+
+# Non-interactive Unreal Engine Custom Environments
+
+We provide the environment presented within the paper to allow others to validate our approach.  However, to create a custom environment, we recomend you follow the following steps to prevent agent interaction.
+
+## Remove ego-perspective rendering of other quadrotors
+
+To make the quadrotor invisible in the scene, change the 'Hidden in Scene Capture' to True.  This will make it invisible to other drones but the spectator actor can still see it.  Go to details, then rendering, this will show the setting 'ACtor Hidden In Game'.
+
+<div style="width: 60%; height: 30%">
+
+![](PRL4AirSim/images/NonInteractiveUE/MakeActorHidden.png)
+</div>
+
+<div style="width: 60%; height: 30%">
+
+![](PRL4AirSim/images/NonInteractiveUE/MakeActorHiddenZoom.png)
+</div>
+
+## Remove Collision boxes from all agents within the environment
+
+We need to specifically remove agent-agent interaction while also enabling environment interaction.  Hence we need to define all components of the quadrotor blueprint 'BP_FlyingPawn' as 'Pawn' and ignore any overlaps that occour between this group.  To do this, we modify the collision response within the agent blueprint.
+
+There are five components to change within the 'BP_FlyingPawn' blueprint: BodyMesh, Prop3, Prop2, Prop1, Prop0.  For all of these, go to collisions, then change the collision presents to custom.  Thange the Object Type to 'Pawn' and then in 'Object Responses' change the Pawn to Ignore as shown bellow.
+
+<div style="width: 30%; height: 30%">
+
+![](PRL4AirSim/images/NonInteractiveUE/CollisionPresets.png)
+</div>
+
+
+Now to remove collisions between 'Pawns', we need to ignore the event 'ActorBeginOverlap' which we can do using a Blueprint Event Graph.  Add the following event graph to 'BP_FlyingPawn'.
+
+<div style="width: 60%; height: 30%">
+
+![](PRL4AirSim/images/NonInteractiveUE/IgnoreCollisionBP.png)
+</div>
+
+Agents will interact with the environment without interacting with each other.
+
+
+
+# Potential Issues and Confusions
+
+1. Correct installation of RPC library.
+
+2. DQNetwork and DQNTrainer used for both the PyClient and Trainer
+
+In the future we will break the functionality of both the DQNetwork and DQNTrainer to make it clearer what functions are used for each. 
 
 
 
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
