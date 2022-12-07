@@ -193,6 +193,7 @@ private:
     /// ROS timer callbacks
     void img_response_timer_cb(); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(); // update drone state from airsim_client_ every nth sec
+    void gimbal_state_timer_cb(); // update gimbal state from airsim_client_ every nth sec
     void lidar_timer_cb();
 
     /// ROS subscriber callbacks
@@ -346,6 +347,7 @@ private:
     /// ROS Timers.
     rclcpp::TimerBase::SharedPtr airsim_img_response_timer_;
     rclcpp::TimerBase::SharedPtr airsim_control_update_timer_;
+    rclcpp::TimerBase::SharedPtr airsim_gimbal_update_timer_;
     rclcpp::TimerBase::SharedPtr airsim_lidar_update_timer_;
 
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;

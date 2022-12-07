@@ -36,6 +36,7 @@ def generate_launch_description():
                 'is_vulkan': False,
                 'update_airsim_img_response_every_n_sec': 0.05,
                 'update_airsim_control_every_n_sec': 0.01,
+                'update_airsim_gimbal_every_n_sec': 0.10,
                 'update_lidar_every_n_sec': 0.01,
                 'publish_clock': LaunchConfiguration('publish_clock'),
                 'host_ip': LaunchConfiguration('host')
