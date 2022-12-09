@@ -1,5 +1,10 @@
 # Welcome to Colosseum, a successor of [AirSim](https://github.com/microsoft/AirSim)
 
+## Sponsors
+1. Codex Laboratories LLC [Website](https://www.codex-labs-llc.com)
+  
+## Introduction
+  
 Colosseum is a simulator for robotic, autonomous systems, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
   
 This is a fork of the AirSim repository, which Microsoft decided to shutdown in July of 2022. This fork serves as a waypoint to building a new and better simulation platform. The creater and maintainer of this fork is Codex Laboratories LLC (our website is [here](https://www.codex-labs-llc.com)). Colosseum is one of the underlying simulation systems that we use in our product, the [SWARM Simulation Platform](https://www.swarmsim.io). This platform exists to provide pre-built tools and low-code/no-code autonomy solutions. Please feel free to check this platform out and reach out if interested.
@@ -138,16 +143,7 @@ We also have an Colosseum group on [Facebook](https://www.facebook.com/groups/12
 
 ## What's New
 
-* [Cinematographic Camera](https://github.com/microsoft/AirSim/pull/3949)
-* [ROS2 wrapper](https://github.com/microsoft/AirSim/pull/3976)
-* [API to list all assets](https://github.com/microsoft/AirSim/pull/3940)
-* [movetoGPS API](https://github.com/microsoft/AirSim/pull/3746)
-* [Optical flow camera](https://github.com/microsoft/AirSim/pull/3938)
-* [simSetKinematics API](https://github.com/microsoft/AirSim/pull/4066)
-* [Dynamically set object textures from existing UE material or texture PNG](https://github.com/microsoft/AirSim/pull/3992)
-* [Ability to spawn/destroy lights and control light parameters](https://github.com/microsoft/AirSim/pull/3991)
-* [Support for multiple drones in Unity](https://github.com/microsoft/AirSim/pull/3128)
-* [Control manual camera speed through the keyboard](https://github.com/microsoft/AirSim/pulls?page=6&q=is%3Apr+is%3Aclosed+sort%3Aupdated-desc#:~:text=1-,Control%20manual%20camera%20speed%20through%20the%20keyboard,-%233221%20by%20saihv) 
+* [Experimental Support for Unreal Engine 5.0.3](https://github.com/CodexLabsLLC/Colosseum/tree/ue5)
 
 For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
