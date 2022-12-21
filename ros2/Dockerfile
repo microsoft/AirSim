@@ -17,12 +17,13 @@ RUN apt-get update &&\
     apt-get clean
 
 RUN git clone https://github.com/Microsoft/AirSim.git ${ROS_USER_HOME}/AirSim
-RUN rm -Rf ${ROS_USER_HOME}/AirSim/ros2/src
-COPY src ${ROS_USER_HOME}/AirSim/ros2/src
 
 WORKDIR ${ROS_USER_HOME}/AirSim
 
 RUN ./setup.sh && ./build.sh
+
+RUN rm -Rf ${ROS_USER_HOME}/AirSim/ros2/src
+COPY src ${ROS_USER_HOME}/AirSim/ros2/src
 
 RUN chown -R ${ROS_USER}:${ROS_USER} ${ROS_USER_HOME}
 USER ${ROS_USER}

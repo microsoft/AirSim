@@ -122,6 +122,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     gimbal_angle_euler_cmd_sub_ = nh_->create_subscription<airsim_interfaces::msg::GimbalAngleEulerCmd>("~/gimbal_angle_euler_cmd", 50, std::bind(&AirsimROSWrapper::gimbal_angle_euler_cmd_cb, this, _1));
     origin_geo_point_pub_ = nh_->create_publisher<airsim_interfaces::msg::GPSYaw>("~/origin_geo_point", 10);
 
+    gimbal_state_euler_pub_ = nh_->create_publisher<airsim_interfaces::msg::GimbalAngleEulerCmd>("~/gimbal/euler", 10);
+
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
     cam_info_pub_vec_.clear();
@@ -232,7 +234,14 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         const std::string camera_topic = topic_prefix + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
                         RCLCPP_INFO(nh_->get_logger(), "camera found topic: %s", camera_topic.c_str());
                         image_pub_vec_.push_back(image_transporter.advertise(camera_topic, 1));
-                        cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", 10));
+                        rclcpp::QoS qos_profile = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default))
+                            .history(rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST)
+                            .keep_last(0)
+                            .lifespan(rclcpp::Duration(0, 100000000)) // messages older than 1/10 second are stale
+                            .reliability(rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_RELIABLE)
+                            .durability(rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_VOLATILE)
+                            .avoid_ros_namespace_conventions(false);
+                        cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", qos_profile));
                         camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
                     }
                 }
@@ -974,10 +983,25 @@ void AirsimROSWrapper::drone_state_timer_cb()
 
 void AirsimROSWrapper::gimbal_state_timer_cb()
 {
-    msr::airlib::CameraInfo camera_info = airsim_client_->simGetCameraInfo("front_center_gimbaled", "Copter");
-    double roll, pitch, yaw;
-    tf2::Matrix3x3(get_tf2_quat(camera_info.pose.orientation)).getRPY(roll, pitch, yaw);
-    RCLCPP_INFO(nh_->get_logger(), "[gimbal orientation] roll: %.2f, pitch: %.2f, yaw: %.2f", math_common::rad2deg(roll), math_common::rad2deg(pitch), math_common::rad2deg(yaw));
+    msr::airlib::CameraInfo vehicle_camera_info = airsim_client_->simGetCameraInfo("front_center_fixed", "Copter");
+    double vehicle_roll, vehicle_pitch, vehicle_yaw;
+    tf2::Matrix3x3(get_tf2_quat(vehicle_camera_info.pose.orientation)).getRPY(vehicle_roll, vehicle_pitch, vehicle_yaw);
+
+    msr::airlib::CameraInfo gimbal_camera_info = airsim_client_->simGetCameraInfo("front_center_gimbaled", "Copter");
+    double gimbal_roll, gimbal_pitch, gimbal_yaw;
+    tf2::Matrix3x3(get_tf2_quat(gimbal_camera_info.pose.orientation)).getRPY(gimbal_roll, gimbal_pitch, gimbal_yaw);
+
+    // RCLCPP_INFO(nh_->get_logger(), "gimbal orientation: %.2f, %.2f, %.2f vehicle orientation: %.2f, %.2f, %.2f",
+    //     math_common::rad2deg(gimbal_roll), math_common::rad2deg(gimbal_pitch), math_common::rad2deg(gimbal_yaw),
+    //     math_common::rad2deg(vehicle_roll), math_common::rad2deg(vehicle_pitch), math_common::rad2deg(vehicle_yaw));
+
+    auto message = airsim_interfaces::msg::GimbalAngleEulerCmd();
+    message.header.stamp = nh_->get_clock()->now();
+    message.roll = math_common::rad2deg(gimbal_roll);
+    message.pitch = math_common::rad2deg(gimbal_pitch);
+    message.yaw = math_common::rad2deg(gimbal_yaw) - math_common::rad2deg(vehicle_yaw);
+
+    gimbal_state_euler_pub_->publish(message);
 }
 
 void AirsimROSWrapper::update_and_publish_static_transforms(VehicleROS* vehicle_ros)
@@ -1283,8 +1307,13 @@ void AirsimROSWrapper::img_response_timer_cb()
     try {
         int image_response_idx = 0;
         for (const auto& airsim_img_request_vehicle_name_pair : airsim_img_request_vehicle_name_pair_vec_) {
-            // RCLCPP_INFO(nh_->get_logger(), "get image: %s -> %s", airsim_img_request_vehicle_name_pair.first.at(0).camera_name.c_str(), airsim_img_request_vehicle_name_pair.second.c_str());
             const std::vector<ImageResponse>& img_response = airsim_client_images_.simGetImages(airsim_img_request_vehicle_name_pair.first, airsim_img_request_vehicle_name_pair.second);
+            rclcpp::Time now = nh_->get_clock()->now();
+            RCLCPP_INFO(nh_->get_logger(), "get image: %s -> %s (idx: %d, time seconds: %.2f, nanoseconds: %d)",
+                airsim_img_request_vehicle_name_pair.first.at(0).camera_name.c_str(),
+                airsim_img_request_vehicle_name_pair.second.c_str(),
+                image_response_idx,
+                now.seconds(), now.nanoseconds());
 
             // RCLCPP_INFO(nh_->get_logger(), "image size: %lu -> %lu", img_response.size(), airsim_img_request_vehicle_name_pair.first.size());
             if (img_response.size() == airsim_img_request_vehicle_name_pair.first.size()) {
@@ -1392,6 +1421,11 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 
         camera_info_msg_vec_[img_response_idx_internal].header.stamp = rclcpp::Time(curr_img_response.time_stamp);
         cam_info_pub_vec_[img_response_idx_internal]->publish(camera_info_msg_vec_[img_response_idx_internal]);
+
+        rclcpp::Time now = nh_->now();
+        RCLCPP_INFO(nh_->get_logger(), "publishing vehicle: %s, image idx: %d, curr_ros_time seconds: %.2f, nanoseconds: %d  now seconds: %.2f, nanoseconds: %d",
+            vehicle_name.c_str(), img_response_idx,
+            curr_ros_time.seconds(), curr_ros_time.nanoseconds(), now.seconds(), now.nanoseconds());
 
         // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
         if (curr_img_response.pixels_as_float) {
