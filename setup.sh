@@ -78,6 +78,10 @@ if [ "$(uname)" == "Darwin" ]; then # osx
         sudo dseditgroup -o edit -a "$(whoami)" -t user dialout
     fi
 
+    # MacOS 11 has new Python env management that breaks the Python 2-to-3
+    # build process. We need to make sure brew updates before attempting to
+    # install, since it will update packaages
+    brew update
     brew_install wget
     brew_install coreutils
 
