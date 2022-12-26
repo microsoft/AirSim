@@ -14,9 +14,12 @@ Below are the list of officially supported Operating Systems, with full Unreal E
 - Ubuntu 18.04
 - Ubuntu 20.04
   
+**NOTE** Ubuntu 22.04 is not currently supported due to Vulkan support. If this changes, we will notify you here. If you want to use Colosseum on 22.04, we highly recommend that you use Docker.
+
 ### MacOS (Non-M1 Macs only)
 - MacOS Monterey (12)
 - MacOS (11)
+  
 **NOTE** MacOS support is highly experimental and may be dropped in future releases. This is because Apple continually changes their build tools and doesn't like 3rd party developers in general. There are ongoing discussions to remove this support.
 
 ## Sponsors
