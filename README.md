@@ -1,4 +1,7 @@
 # Welcome to Colosseum, a successor of [AirSim](https://github.com/microsoft/AirSim)
+  
+## Build Status
+[![Ubuntu Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_ubuntu.yml)
 
 ## Sponsors
 1. Codex Laboratories LLC [Website](https://www.codex-labs-llc.com)
