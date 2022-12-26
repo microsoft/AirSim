@@ -2,6 +2,22 @@
   
 ## Build Status
 [![Ubuntu Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_ubuntu.yml)
+[![MacOS Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_macos.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_macos.yml)
+[![Windows Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_windows.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_windows.yml)
+  
+## Currently Supported Operating Systems
+Below are the list of officially supported Operating Systems, with full Unreal Engine support:
+### Windows
+- Windows 10 (Latest)
+
+### Linux
+- Ubuntu 18.04
+- Ubuntu 20.04
+  
+### MacOS (Non-M1 Macs only)
+- MacOS Monterey (12)
+- MacOS (11)
+**NOTE** MacOS support is highly experimental and may be dropped in future releases. This is because Apple continually changes their build tools and doesn't like 3rd party developers in general. There are ongoing discussions to remove this support.
 
 ## Sponsors
 1. Codex Laboratories LLC [Website](https://www.codex-labs-llc.com)
