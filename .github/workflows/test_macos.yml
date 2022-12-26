@@ -14,8 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Remove Python 2 to 3 symlink
-        run:  rm /usr/local/bin/2to3
+      - name: Remove Python 2 to 3 for Python 3.11 symlink
+        run:  rm '/usr/local/bin/2to3-3.11'
 
       - name: Setup
         run: ./setup.sh
