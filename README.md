@@ -34,6 +34,7 @@ This is a fork of the AirSim repository, which Microsoft decided to shutdown in 
 ## Join the Community
 We have decided to create a Slack to better allow for community engagement. Join here: [Colosseum Slack](https://join.slack.com/t/colosseum-sim/shared_invite/zt-1ljqpik8x-UtBvY2yraQb9p98udzjoQw)
   
+  
 ## Goals and Project Development
 This section will contain a list of the current features that the community and Codex Labs are working on to support and build.
 
