@@ -1366,10 +1366,6 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         cam_info_pub_vec_[img_response_idx_internal]->publish(camera_info_msg_vec_[img_response_idx_internal]);
 
         rclcpp::Time now = nh_->now();
-        // RCLCPP_INFO(nh_->get_logger(), "publishing vehicle: %s, image idx: %d, curr_ros_time seconds: %.2f, nanoseconds: %d  now seconds: %.2f, nanoseconds: %d",
-        //     vehicle_name.c_str(), img_response_idx,
-        //     curr_ros_time.seconds(), curr_ros_time.nanoseconds(), now.seconds(), now.nanoseconds());
-
         // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
         if (curr_img_response.pixels_as_float) {
             image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response,
