@@ -191,27 +191,18 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
 
         // iterate over camera map std::map<std::string, CameraSetting> .cameras;
-        RCLCPP_INFO(nh_->get_logger(), "looking for cameras");
         for (auto& curr_camera_elem : vehicle_setting->cameras) {
-            RCLCPP_INFO(nh_->get_logger(), "camera found");
             auto& camera_setting = curr_camera_elem.second;
             auto& curr_camera_name = curr_camera_elem.first;
-            RCLCPP_INFO(nh_->get_logger(), "camera found A");
 
             set_nans_to_zeros_in_pose(*vehicle_setting, camera_setting);
-            RCLCPP_INFO(nh_->get_logger(), "camera found B");
             append_static_camera_tf(vehicle_ros.get(), curr_camera_name, camera_setting);
-            RCLCPP_INFO(nh_->get_logger(), "camera found C");
-            // camera_setting.gimbal
             std::vector<ImageRequest> current_image_request_vec;
             current_image_request_vec.clear();
-            RCLCPP_INFO(nh_->get_logger(), "camera found D");
 
             // iterate over capture_setting std::map<int, CaptureSetting> capture_settings
             for (const auto& curr_capture_elem : camera_setting.capture_settings) {
                 auto& capture_setting = curr_capture_elem.second;
-                RCLCPP_INFO(nh_->get_logger(), "camera found FOV: %f", capture_setting.fov_degrees);
-                RCLCPP_INFO(nh_->get_logger(), "camera found image type: %d", capture_setting.image_type);
 
                 // todo why does AirSimSettings::loadCaptureSettings calls AirSimSettings::initializeCaptureSettings()
                 // which initializes default capture settings for _all_ NINE msr::airlib::ImageCaptureBase::ImageType
@@ -219,13 +210,11 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     ImageType curr_image_type = msr::airlib::Utils::toEnum<ImageType>(capture_setting.image_type);
                     // if scene / segmentation / surface normals / infrared, get uncompressed image with pixels_as_floats = false
                     if (curr_image_type == ImageType::Scene || curr_image_type == ImageType::Segmentation || curr_image_type == ImageType::SurfaceNormals || curr_image_type == ImageType::Infrared) {
-                        RCLCPP_INFO(nh_->get_logger(), "camera found image request A");
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, false, false));
                     }
                     // if {DepthPlanar, DepthPerspective,DepthVis, DisparityNormalized}, get float image
                     else {
                         if (capture_setting.image_type >= 0) {
-                            RCLCPP_INFO(nh_->get_logger(), "camera found image request A");
                             current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
                         }
                     }
@@ -358,7 +347,6 @@ template <typename T>
 const SensorPublisher<T> AirsimROSWrapper::create_sensor_publisher(const std::string& sensor_type_name, const std::string& sensor_name,
                                                                    SensorBase::SensorType sensor_type, const std::string& topic_name, int QoS)
 {
-    RCLCPP_INFO_STREAM(nh_->get_logger(), sensor_type_name);
     SensorPublisher<T> sensor_publisher;
     sensor_publisher.sensor_name = sensor_name;
     sensor_publisher.sensor_type = sensor_type;
@@ -595,34 +583,9 @@ void AirsimROSWrapper::gimbal_angle_quat_cmd_cb(const airsim_interfaces::msg::Gi
 // 3. call airsim client's setCameraPose which sets camera pose wrt world (or takeoff?) ned frame. todo
 void AirsimROSWrapper::gimbal_angle_euler_cmd_cb(const airsim_interfaces::msg::GimbalAngleEulerCmd::SharedPtr gimbal_angle_euler_cmd_msg)
 {
-    // std::lock_guard<std::mutex> guard(control_mutex_);
     try {
-        // msr::airlib::CameraInfo camera_info = airsim_client_->simGetCameraInfo("front_center_gimbaled", "Copter");
-        // double gimbal_roll, gimbal_pitch, gimbal_yaw;
-        // tf2::Matrix3x3(get_tf2_quat(camera_info.pose.orientation)).getRPY(gimbal_roll, gimbal_pitch, gimbal_yaw);
-        // RCLCPP_INFO(nh_->get_logger(), "[gimbal orientation] roll: %.2f, pitch: %.2f, yaw: %.2f", math_common::rad2deg(gimbal_roll), math_common::rad2deg(gimbal_pitch), math_common::rad2deg(gimbal_yaw));
-
-        // auto drone = static_cast<MultiRotorROS*>(vehicle_name_ptr_map_[gimbal_angle_euler_cmd_msg->vehicle_name].get());
-        // double vehicle_roll, vehicle_pitch, vehicle_yaw;
-        // tf2::Matrix3x3(get_tf2_quat(drone->curr_drone_state_.kinematics_estimated.pose.orientation)).getRPY(vehicle_roll, vehicle_pitch, vehicle_yaw);
-
         tf2::Quaternion quat_control_cmd;
-        // double new_roll = math_common::deg2rad(gimbal_angle_euler_cmd_msg->roll) - vehicle_roll;
-        // double new_pitch = math_common::deg2rad(gimbal_angle_euler_cmd_msg->pitch) - vehicle_pitch;
-        // double new_roll = vehicle_roll;
-        // double new_pitch = vehicle_pitch;
-        // quat_control_cmd.setRPY(new_roll, new_pitch, math_common::deg2rad(gimbal_angle_euler_cmd_msg->yaw));
         quat_control_cmd.setRPY(math_common::deg2rad(gimbal_angle_euler_cmd_msg->roll), math_common::deg2rad(gimbal_angle_euler_cmd_msg->pitch), math_common::deg2rad(gimbal_angle_euler_cmd_msg->yaw));
-
-        // RCLCPP_INFO(nh_->get_logger(), "[gimbal command] roll: %.2f, pitch: %.2f, yaw: %.2f", gimbal_angle_euler_cmd_msg->roll, gimbal_angle_euler_cmd_msg->pitch, gimbal_angle_euler_cmd_msg->yaw);
-        // RCLCPP_INFO(nh_->get_logger(), "[%s] gimbal command: %.2f, %.2f, %.2f, gimbal orientation: %.2f, %.2f, %.2f, vehicle orientation: %.2f, %.2f, %.2f, new: %.2f, %.2f, %.2f",
-        //     gimbal_angle_euler_cmd_msg->vehicle_name.c_str(),
-        //     gimbal_angle_euler_cmd_msg->roll, gimbal_angle_euler_cmd_msg->pitch, gimbal_angle_euler_cmd_msg->yaw,
-        //     math_common::rad2deg(gimbal_roll), math_common::rad2deg(gimbal_pitch), math_common::rad2deg(gimbal_yaw),
-        //     math_common::rad2deg(vehicle_roll), math_common::rad2deg(vehicle_pitch), math_common::rad2deg(vehicle_yaw),
-        //     math_common::rad2deg(new_roll), math_common::rad2deg(new_pitch), gimbal_angle_euler_cmd_msg->yaw
-        // );
-
         quat_control_cmd.normalize();
         gimbal_cmd_.target_quat = get_airlib_quat(quat_control_cmd);
         gimbal_cmd_.camera_name = gimbal_angle_euler_cmd_msg->camera_name;
@@ -991,10 +954,6 @@ void AirsimROSWrapper::gimbal_state_timer_cb()
     double gimbal_roll, gimbal_pitch, gimbal_yaw;
     tf2::Matrix3x3(get_tf2_quat(gimbal_camera_info.pose.orientation)).getRPY(gimbal_roll, gimbal_pitch, gimbal_yaw);
 
-    // RCLCPP_INFO(nh_->get_logger(), "gimbal orientation: %.2f, %.2f, %.2f vehicle orientation: %.2f, %.2f, %.2f",
-    //     math_common::rad2deg(gimbal_roll), math_common::rad2deg(gimbal_pitch), math_common::rad2deg(gimbal_yaw),
-    //     math_common::rad2deg(vehicle_roll), math_common::rad2deg(vehicle_pitch), math_common::rad2deg(vehicle_yaw));
-
     auto message = airsim_interfaces::msg::GimbalAngleEulerCmd();
     message.header.stamp = nh_->get_clock()->now();
     message.roll = math_common::rad2deg(gimbal_roll);
@@ -1172,16 +1131,7 @@ void AirsimROSWrapper::update_commands()
     if (has_gimbal_cmd_) {
         std::lock_guard<std::mutex> guard(control_mutex_);
         airsim_client_->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(2.0, 0, 0.0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
-        // msr::airlib::CameraInfo camera_info = airsim_client_->simGetCameraInfo("front_center_gimbaled", "Copter");
-        // double roll, pitch, yaw;
-        // tf2::Matrix3x3(get_tf2_quat(camera_info.pose.orientation)).getRPY(roll, pitch, yaw);
-        // RCLCPP_INFO(nh_->get_logger(), "[gimbal orientation] roll: %.2f, pitch: %.2f, yaw: %.2f", math_common::rad2deg(roll), math_common::rad2deg(pitch), math_common::rad2deg(yaw));
     }
-
-    // msr::airlib::CameraInfo camera_info = airsim_client_->simGetCameraInfo("front_center_gimbaled", "Copter");
-    // double roll, pitch, yaw;
-    // tf2::Matrix3x3(get_tf2_quat(camera_info.pose.orientation)).getRPY(roll, pitch, yaw);
-    // RCLCPP_INFO(nh_->get_logger(), "[gimbal orientation] roll: %.2f, pitch: %.2f, yaw: %.2f", math_common::rad2deg(roll), math_common::rad2deg(pitch), math_common::rad2deg(yaw));
 
     has_gimbal_cmd_ = false;
 }
@@ -1309,13 +1259,6 @@ void AirsimROSWrapper::img_response_timer_cb()
         for (const auto& airsim_img_request_vehicle_name_pair : airsim_img_request_vehicle_name_pair_vec_) {
             const std::vector<ImageResponse>& img_response = airsim_client_images_.simGetImages(airsim_img_request_vehicle_name_pair.first, airsim_img_request_vehicle_name_pair.second);
             rclcpp::Time now = nh_->get_clock()->now();
-            RCLCPP_INFO(nh_->get_logger(), "get image: %s -> %s (idx: %d, time seconds: %.2f, nanoseconds: %d)",
-                airsim_img_request_vehicle_name_pair.first.at(0).camera_name.c_str(),
-                airsim_img_request_vehicle_name_pair.second.c_str(),
-                image_response_idx,
-                now.seconds(), now.nanoseconds());
-
-            // RCLCPP_INFO(nh_->get_logger(), "image size: %lu -> %lu", img_response.size(), airsim_img_request_vehicle_name_pair.first.size());
             if (img_response.size() == airsim_img_request_vehicle_name_pair.first.size()) {
                 process_and_publish_img_response(img_response, image_response_idx, airsim_img_request_vehicle_name_pair.second);
                 image_response_idx += img_response.size();
@@ -1423,9 +1366,9 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         cam_info_pub_vec_[img_response_idx_internal]->publish(camera_info_msg_vec_[img_response_idx_internal]);
 
         rclcpp::Time now = nh_->now();
-        RCLCPP_INFO(nh_->get_logger(), "publishing vehicle: %s, image idx: %d, curr_ros_time seconds: %.2f, nanoseconds: %d  now seconds: %.2f, nanoseconds: %d",
-            vehicle_name.c_str(), img_response_idx,
-            curr_ros_time.seconds(), curr_ros_time.nanoseconds(), now.seconds(), now.nanoseconds());
+        // RCLCPP_INFO(nh_->get_logger(), "publishing vehicle: %s, image idx: %d, curr_ros_time seconds: %.2f, nanoseconds: %d  now seconds: %.2f, nanoseconds: %d",
+        //     vehicle_name.c_str(), img_response_idx,
+        //     curr_ros_time.seconds(), curr_ros_time.nanoseconds(), now.seconds(), now.nanoseconds());
 
         // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
         if (curr_img_response.pixels_as_float) {
