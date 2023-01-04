@@ -355,6 +355,9 @@ private:
     std::vector<image_transport::Publisher> image_pub_vec_;
     std::vector<rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr> cam_info_pub_vec_;
 
+    typedef std::pair<std::string, msr::airlib::Vector3r> cam_pose_name_pair;
+    std::vector<cam_pose_name_pair> cam_pose_vec_;
+
     std::vector<sensor_msgs::msg::CameraInfo> camera_info_msg_vec_;
 
     /// ROS other publishers

@@ -127,6 +127,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
     cam_info_pub_vec_.clear();
+    cam_pose_vec_.clear();
     camera_info_msg_vec_.clear();
     vehicle_name_ptr_map_.clear();
     size_t lidar_cnt = 0;
@@ -199,6 +200,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
             append_static_camera_tf(vehicle_ros.get(), curr_camera_name, camera_setting);
             std::vector<ImageRequest> current_image_request_vec;
             current_image_request_vec.clear();
+
+            cam_pose_vec_.push_back(std::make_pair(curr_camera_name, camera_setting.position));
 
             // iterate over capture_setting std::map<int, CaptureSetting> capture_settings
             for (const auto& curr_capture_elem : camera_setting.capture_settings) {
@@ -1127,10 +1130,15 @@ void AirsimROSWrapper::update_commands()
         }
     }
 
-    // Only camera rotation, no translation movement of camera
+    // Set gimbal/camera pose.
     if (has_gimbal_cmd_) {
         std::lock_guard<std::mutex> guard(control_mutex_);
-        airsim_client_->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(2.0, 0, 0.0, gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
+
+        for (auto &cam_pose : cam_pose_vec_) {
+            if (cam_pose.first == gimbal_cmd_.camera_name) {
+                airsim_client_->simSetCameraPose(gimbal_cmd_.camera_name, get_airlib_pose(cam_pose.second.x(), cam_pose.second.y(), cam_pose.second.z(), gimbal_cmd_.target_quat), gimbal_cmd_.vehicle_name);
+            }
+        }
     }
 
     has_gimbal_cmd_ = false;
