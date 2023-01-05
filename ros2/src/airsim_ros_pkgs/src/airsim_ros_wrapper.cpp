@@ -96,6 +96,7 @@ void AirsimROSWrapper::initialize_ros()
     double update_airsim_control_every_n_sec;
     double update_airsim_gimbal_every_n_sec;
     nh_->get_parameter("is_vulkan", is_vulkan_);
+    nh_->get_parameter("gimbal_vehicle_reference_camera_name", gimbal_vehicle_reference_camera_name_);
     nh_->get_parameter("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
     nh_->get_parameter("update_airsim_gimbal_every_n_sec", update_airsim_gimbal_every_n_sec);
     nh_->get_parameter("publish_clock", publish_clock_);
@@ -122,13 +123,12 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     gimbal_angle_euler_cmd_sub_ = nh_->create_subscription<airsim_interfaces::msg::GimbalAngleEulerCmd>("~/gimbal_angle_euler_cmd", 50, std::bind(&AirsimROSWrapper::gimbal_angle_euler_cmd_cb, this, _1));
     origin_geo_point_pub_ = nh_->create_publisher<airsim_interfaces::msg::GPSYaw>("~/origin_geo_point", 10);
 
-    gimbal_state_euler_pub_ = nh_->create_publisher<airsim_interfaces::msg::GimbalAngleEulerCmd>("~/gimbal/euler", 10);
-
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
     cam_info_pub_vec_.clear();
     camera_position_vec_.clear();
     camera_info_msg_vec_.clear();
+    gimbal_state_pub_vec_.clear();
     vehicle_name_ptr_map_.clear();
     size_t lidar_cnt = 0;
 
@@ -202,6 +202,14 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
             current_image_request_vec.clear();
 
             camera_position_vec_.push_back(std::make_pair(curr_camera_name, camera_setting.position));
+
+            // Create a gimbal state publisher if the camera name contains "gimbaled".
+            if (curr_camera_name.find("gimbaled") != std::string::npos) {
+                std::string gimbal_topic = topic_prefix + "/" + curr_camera_name + "/gimbal/state/vehicle_relative";
+                gimbal_state_pub_vec_.push_back(
+                    std::make_tuple(curr_vehicle_name, curr_camera_name,
+                        nh_->create_publisher<airsim_interfaces::msg::GimbalAngleEulerCmd>(gimbal_topic, 10)));
+            }
 
             // iterate over capture_setting std::map<int, CaptureSetting> capture_settings
             for (const auto& curr_capture_elem : camera_setting.capture_settings) {
@@ -949,21 +957,27 @@ void AirsimROSWrapper::drone_state_timer_cb()
 
 void AirsimROSWrapper::gimbal_state_timer_cb()
 {
-    msr::airlib::CameraInfo vehicle_camera_info = airsim_client_->simGetCameraInfo("front_center_fixed", "Copter");
-    double vehicle_roll, vehicle_pitch, vehicle_yaw;
-    tf2::Matrix3x3(get_tf2_quat(vehicle_camera_info.pose.orientation)).getRPY(vehicle_roll, vehicle_pitch, vehicle_yaw);
+    for (auto &gimbal_state_pub_tuple : gimbal_state_pub_vec_) {
+        std::string vehicle_name = std::get<0>(gimbal_state_pub_tuple);
+        std::string camera_name = std::get<1>(gimbal_state_pub_tuple);
+        GimbalStatePublisher publisher = std::get<2>(gimbal_state_pub_tuple);
 
-    msr::airlib::CameraInfo gimbal_camera_info = airsim_client_->simGetCameraInfo("front_center_gimbaled", "Copter");
-    double gimbal_roll, gimbal_pitch, gimbal_yaw;
-    tf2::Matrix3x3(get_tf2_quat(gimbal_camera_info.pose.orientation)).getRPY(gimbal_roll, gimbal_pitch, gimbal_yaw);
+        msr::airlib::CameraInfo vehicle_camera_info = airsim_client_->simGetCameraInfo(gimbal_vehicle_reference_camera_name_, vehicle_name);
+        double vehicle_roll, vehicle_pitch, vehicle_yaw;
+        tf2::Matrix3x3(get_tf2_quat(vehicle_camera_info.pose.orientation)).getRPY(vehicle_roll, vehicle_pitch, vehicle_yaw);
 
-    auto message = airsim_interfaces::msg::GimbalAngleEulerCmd();
-    message.header.stamp = nh_->get_clock()->now();
-    message.roll = math_common::rad2deg(gimbal_roll);
-    message.pitch = math_common::rad2deg(gimbal_pitch);
-    message.yaw = math_common::rad2deg(gimbal_yaw) - math_common::rad2deg(vehicle_yaw);
+        msr::airlib::CameraInfo gimbal_camera_info = airsim_client_->simGetCameraInfo(camera_name, vehicle_name);
+        double gimbal_roll, gimbal_pitch, gimbal_yaw;
+        tf2::Matrix3x3(get_tf2_quat(gimbal_camera_info.pose.orientation)).getRPY(gimbal_roll, gimbal_pitch, gimbal_yaw);
 
-    gimbal_state_euler_pub_->publish(message);
+        auto message = airsim_interfaces::msg::GimbalAngleEulerCmd();
+        message.header.stamp = nh_->get_clock()->now();
+        message.roll = math_common::rad2deg(gimbal_roll);
+        message.pitch = math_common::rad2deg(gimbal_pitch);
+        message.yaw = math_common::rad2deg(gimbal_yaw) - math_common::rad2deg(vehicle_yaw);
+
+        publisher->publish(message);
+    }
 }
 
 void AirsimROSWrapper::update_and_publish_static_transforms(VehicleROS* vehicle_ros)

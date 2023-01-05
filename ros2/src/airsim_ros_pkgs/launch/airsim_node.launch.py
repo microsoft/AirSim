@@ -34,6 +34,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'is_vulkan': False,
+                'gimbal_vehicle_reference_camera_name': 'front_center_fixed',
                 'update_airsim_img_response_every_n_sec': 0.1,
                 'update_airsim_control_every_n_sec': 0.01,
                 'update_airsim_gimbal_every_n_sec': 0.01,

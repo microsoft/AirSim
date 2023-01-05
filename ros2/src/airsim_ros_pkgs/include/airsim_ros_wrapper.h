@@ -368,7 +368,9 @@ private:
     rclcpp::Subscription<airsim_interfaces::msg::GimbalAngleQuatCmd>::SharedPtr gimbal_angle_quat_cmd_sub_;
     rclcpp::Subscription<airsim_interfaces::msg::GimbalAngleEulerCmd>::SharedPtr gimbal_angle_euler_cmd_sub_;
 
-    rclcpp::Publisher<airsim_interfaces::msg::GimbalAngleEulerCmd>::SharedPtr gimbal_state_euler_pub_;
+    using GimbalStatePublisher = rclcpp::Publisher<airsim_interfaces::msg::GimbalAngleEulerCmd>::SharedPtr;
+    std::vector<std::tuple<std::string, std::string, GimbalStatePublisher>> gimbal_state_pub_vec_;
+    std::string gimbal_vehicle_reference_camera_name_;
 
     static constexpr char CAM_YML_NAME[] = "camera_name";
     static constexpr char WIDTH_YML_NAME[] = "image_width";
