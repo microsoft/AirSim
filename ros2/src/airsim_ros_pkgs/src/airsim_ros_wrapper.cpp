@@ -234,14 +234,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         const std::string camera_topic = topic_prefix + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
                         RCLCPP_INFO(nh_->get_logger(), "camera found topic: %s", camera_topic.c_str());
                         image_pub_vec_.push_back(image_transporter.advertise(camera_topic, 1));
-                        rclcpp::QoS qos_profile = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default))
-                            .history(rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST)
-                            .keep_last(0)
-                            .lifespan(rclcpp::Duration(0, 100000000)) // messages older than 1/10 second are stale
-                            .reliability(rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_RELIABLE)
-                            .durability(rmw_qos_durability_policy_t::RMW_QOS_POLICY_DURABILITY_VOLATILE)
-                            .avoid_ros_namespace_conventions(false);
-                        cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", qos_profile));
+                        cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", 10));
                         camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
                     }
                 }
