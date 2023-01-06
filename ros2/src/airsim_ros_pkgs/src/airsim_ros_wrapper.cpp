@@ -203,7 +203,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
             camera_position_vec_.push_back(std::make_pair(curr_camera_name, camera_setting.position));
 
-            // Create a gimbal state publisher if the camera name contains "gimbaled".
+            // Create a vector of gimbal state publishers for all cameras whose name contains "gimbaled".
             if (curr_camera_name.find("gimbaled") != std::string::npos) {
                 std::string gimbal_topic = topic_prefix + "/" + curr_camera_name + "/gimbal/state/vehicle_relative";
                 gimbal_state_pub_vec_.push_back(
@@ -955,10 +955,12 @@ void AirsimROSWrapper::gimbal_state_timer_cb()
         std::string camera_name = std::get<1>(gimbal_state_pub_tuple);
         GimbalStatePublisher publisher = std::get<2>(gimbal_state_pub_tuple);
 
+        // Get the RPY orientation of a designated fixed camera (i.e. the vehicle orientation).
         msr::airlib::CameraInfo vehicle_camera_info = airsim_client_->simGetCameraInfo(gimbal_vehicle_reference_camera_name_, vehicle_name);
         double vehicle_roll, vehicle_pitch, vehicle_yaw;
         tf2::Matrix3x3(get_tf2_quat(vehicle_camera_info.pose.orientation)).getRPY(vehicle_roll, vehicle_pitch, vehicle_yaw);
 
+        // Get the RPY orientation of the gimbaled camera.    
         msr::airlib::CameraInfo gimbal_camera_info = airsim_client_->simGetCameraInfo(camera_name, vehicle_name);
         double gimbal_roll, gimbal_pitch, gimbal_yaw;
         tf2::Matrix3x3(get_tf2_quat(gimbal_camera_info.pose.orientation)).getRPY(gimbal_roll, gimbal_pitch, gimbal_yaw);
@@ -967,6 +969,7 @@ void AirsimROSWrapper::gimbal_state_timer_cb()
         message.header.stamp = nh_->get_clock()->now();
         message.roll = math_common::rad2deg(gimbal_roll);
         message.pitch = math_common::rad2deg(gimbal_pitch);
+        // Calculate "vehicle relative" yaw of the gimbaled camera.
         message.yaw = math_common::rad2deg(gimbal_yaw) - math_common::rad2deg(vehicle_yaw);
 
         publisher->publish(message);
