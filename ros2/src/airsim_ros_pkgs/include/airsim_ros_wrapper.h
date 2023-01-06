@@ -193,6 +193,7 @@ private:
     /// ROS timer callbacks
     void img_response_timer_cb(); // update images from airsim_client_ every nth sec
     void drone_state_timer_cb(); // update drone state from airsim_client_ every nth sec
+    void gimbal_state_timer_cb(); // update gimbal state from airsim_client_ every nth sec
     void lidar_timer_cb();
 
     /// ROS subscriber callbacks
@@ -346,12 +347,16 @@ private:
     /// ROS Timers.
     rclcpp::TimerBase::SharedPtr airsim_img_response_timer_;
     rclcpp::TimerBase::SharedPtr airsim_control_update_timer_;
+    rclcpp::TimerBase::SharedPtr airsim_gimbal_update_timer_;
     rclcpp::TimerBase::SharedPtr airsim_lidar_update_timer_;
 
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
     std::vector<image_transport::Publisher> image_pub_vec_;
     std::vector<rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr> cam_info_pub_vec_;
+
+    typedef std::pair<std::string, msr::airlib::Vector3r> camera_position_name_pair;
+    std::vector<camera_position_name_pair> camera_position_vec_;
 
     std::vector<sensor_msgs::msg::CameraInfo> camera_info_msg_vec_;
 
@@ -362,6 +367,10 @@ private:
 
     rclcpp::Subscription<airsim_interfaces::msg::GimbalAngleQuatCmd>::SharedPtr gimbal_angle_quat_cmd_sub_;
     rclcpp::Subscription<airsim_interfaces::msg::GimbalAngleEulerCmd>::SharedPtr gimbal_angle_euler_cmd_sub_;
+
+    using GimbalStatePublisher = rclcpp::Publisher<airsim_interfaces::msg::GimbalAngleEulerCmd>::SharedPtr;
+    std::vector<std::tuple<std::string, std::string, GimbalStatePublisher>> gimbal_state_pub_vec_;
+    std::string gimbal_vehicle_reference_camera_name_;
 
     static constexpr char CAM_YML_NAME[] = "camera_name";
     static constexpr char WIDTH_YML_NAME[] = "image_width";
