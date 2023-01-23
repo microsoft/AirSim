@@ -4,7 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Runtime/AssetRegistry/Public/AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "GameFramework/Actor.h"
 #include "Components/InputComponent.h"
 #include "EngineUtils.h"
