@@ -4,7 +4,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
-#include "WheeledVehicleMovementComponent4W.h"
+#include "ChaosWheeledVehicleMovementComponent.h"
 
 #include "CarWheelFront.h"
 #include "CarWheelRear.h"
@@ -85,32 +85,33 @@ ACarPawn::ACarPawn()
 
 void ACarPawn::setupVehicleMovementComponent()
 {
-    UWheeledVehicleMovementComponent4W* movement = CastChecked<UWheeledVehicleMovementComponent4W>(getVehicleMovementComponent());
+    UChaosWheeledVehicleMovementComponent* movement = CastChecked<UChaosWheeledVehicleMovementComponent>(getVehicleMovementComponent());
+    movement->WheelSetups.SetNum(4);
     check(movement->WheelSetups.Num() == 4);
 
     // Wheels/Tires
     // Setup the wheels
     movement->WheelSetups[0].WheelClass = UCarWheelFront::StaticClass();
-    movement->WheelSetups[0].BoneName = FName("PhysWheel_FL");
+    movement->WheelSetups[0].BoneName = FName("WheelFL");
     movement->WheelSetups[0].AdditionalOffset = FVector(0.f, -8.f, 0.f);
 
     movement->WheelSetups[1].WheelClass = UCarWheelFront::StaticClass();
-    movement->WheelSetups[1].BoneName = FName("PhysWheel_FR");
+    movement->WheelSetups[1].BoneName = FName("WheelFR");
     movement->WheelSetups[1].AdditionalOffset = FVector(0.f, 8.f, 0.f);
 
     movement->WheelSetups[2].WheelClass = UCarWheelRear::StaticClass();
-    movement->WheelSetups[2].BoneName = FName("PhysWheel_BL");
+    movement->WheelSetups[2].BoneName = FName("WheelBL");
     movement->WheelSetups[2].AdditionalOffset = FVector(0.f, -8.f, 0.f);
 
     movement->WheelSetups[3].WheelClass = UCarWheelRear::StaticClass();
-    movement->WheelSetups[3].BoneName = FName("PhysWheel_BR");
+    movement->WheelSetups[3].BoneName = FName("WheelBR");
     movement->WheelSetups[3].AdditionalOffset = FVector(0.f, 8.f, 0.f);
 
     // Adjust the tire loading
-    movement->MinNormalizedTireLoad = 0.0f;
-    movement->MinNormalizedTireLoadFiltered = 0.2308f;
-    movement->MaxNormalizedTireLoad = 2.0f;
-    movement->MaxNormalizedTireLoadFiltered = 2.0f;
+    //movement->MinNormalizedTireLoad = 0.0f;
+    //movement->MinNormalizedTireLoadFiltered = 0.2308f;
+    //movement->MaxNormalizedTireLoad = 2.0f;
+    //movement->MaxNormalizedTireLoadFiltered = 2.0f;
 
     // Engine
     // Torque setup
@@ -121,22 +122,22 @@ void ACarPawn::setupVehicleMovementComponent()
     movement->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(5730.0f, 400.0f);
 
     // Adjust the steering
-    movement->SteeringCurve.GetRichCurve()->Reset();
-    movement->SteeringCurve.GetRichCurve()->AddKey(0.0f, 1.0f);
-    movement->SteeringCurve.GetRichCurve()->AddKey(40.0f, 0.7f);
-    movement->SteeringCurve.GetRichCurve()->AddKey(120.0f, 0.6f);
+    movement->SteeringSetup.SteeringCurve.GetRichCurve()->Reset();
+    movement->SteeringSetup.SteeringCurve.GetRichCurve()->AddKey(0.0f, 1.0f);
+    movement->SteeringSetup.SteeringCurve.GetRichCurve()->AddKey(40.0f, 0.7f);
+    movement->SteeringSetup.SteeringCurve.GetRichCurve()->AddKey(120.0f, 0.6f);
 
     // Transmission
     // We want 4wd
-    movement->DifferentialSetup.DifferentialType = EVehicleDifferential4W::LimitedSlip_4W;
+    movement->DifferentialSetup.DifferentialType = EVehicleDifferential::AllWheelDrive;
 
     // Drive the front wheels a little more than the rear
     movement->DifferentialSetup.FrontRearSplit = 0.65;
 
     // Automatic gearbox
-    movement->TransmissionSetup.bUseGearAutoBox = true;
-    movement->TransmissionSetup.GearSwitchTime = 0.15f;
-    movement->TransmissionSetup.GearAutoBoxLatency = 1.0f;
+    movement->TransmissionSetup.bUseAutomaticGears = true;
+    movement->TransmissionSetup.GearChangeTime = 0.15f;
+    //movement->TransmissionSetup.GearAutoBoxLatency = 1.0f;
 
     // Disable reverse as brake, this is needed for SetBreakInput() to take effect
     movement->bReverseAsBrake = false;
@@ -147,10 +148,11 @@ void ACarPawn::setupVehicleMovementComponent()
     if (primitive) {
         primitive->BodyInstance.COMNudge = FVector(8.0f, 0.0f, 0.0f);
     }
-
+    movement->UpdatedPrimitive = primitive;
     // Set the inertia scale. This controls how the mass of the vehicle is distributed.
     movement->InertiaTensorScale = FVector(1.0f, 1.333f, 1.2f);
-    movement->bDeprecatedSpringOffsetMode = true;
+    //movement->bDeprecatedSpringOffsetMode = true;
+    movement->bAutoRegisterUpdatedComponent = true;
 }
 
 void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
@@ -159,7 +161,7 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
     pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 }
 
-UWheeledVehicleMovementComponent* ACarPawn::getVehicleMovementComponent() const
+UChaosVehicleMovementComponent* ACarPawn::getVehicleMovementComponent() const
 {
     return GetVehicleMovement();
 }
@@ -250,8 +252,9 @@ void ACarPawn::Tick(float Delta)
     updateInCarHUD();
 
     // Pass the engine RPM to the sound component
-    float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
-    engine_sound_audio_->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed() * RPMToAudioScale);
+    UChaosWheeledVehicleMovementComponent* movement = CastChecked<UChaosWheeledVehicleMovementComponent>(getVehicleMovementComponent());
+    float RPMToAudioScale = 2500.0f / movement->GetEngineMaxRotationSpeed();
+    engine_sound_audio_->SetFloatParameter(FName("RPM"), movement->GetEngineRotationSpeed() * RPMToAudioScale);
 
     pawn_events_.getPawnTickSignal().emit(Delta);
 }
@@ -283,9 +286,10 @@ void ACarPawn::updateHUDStrings()
         last_gear_ = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
     }
 
+    UChaosWheeledVehicleMovementComponent* movement = CastChecked<UChaosWheeledVehicleMovementComponent>(getVehicleMovementComponent());
     UAirBlueprintLib::LogMessage(TEXT("Speed: "), last_speed_.ToString(), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessage(TEXT("Gear: "), last_gear_.ToString(), LogDebugLevel::Informational);
-    UAirBlueprintLib::LogMessage(TEXT("RPM: "), FText::AsNumber(GetVehicleMovement()->GetEngineRotationSpeed()).ToString(), LogDebugLevel::Informational);
+    UAirBlueprintLib::LogMessage(TEXT("RPM: "), FText::AsNumber(movement->GetEngineRotationSpeed()).ToString(), LogDebugLevel::Informational);
 }
 
 void ACarPawn::updateInCarHUD()

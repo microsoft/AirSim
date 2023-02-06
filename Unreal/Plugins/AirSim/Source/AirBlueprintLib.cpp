@@ -23,9 +23,10 @@
 #include <exception>
 #include "common/common_utils/Utils.hpp"
 #include "Modules/ModuleManager.h"
-#include "ARFilter.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/ARFilter.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "DetectionComponent.h"
+#include "CineCameraComponent.h"
 
 /*
 //TODO: change naming conventions to same as other files?
@@ -239,8 +240,8 @@ void UAirBlueprintLib::GenerateAssetRegistryMap(const UObject* context, TMap<FSt
 {
     UAirBlueprintLib::RunCommandOnGameThread([context, &asset_map]() {
         FARFilter Filter;
-        Filter.ClassNames.Add(UStaticMesh::StaticClass()->GetFName());
-        Filter.ClassNames.Add(UBlueprint::StaticClass()->GetFName());
+        Filter.ClassPaths.Add(UStaticMesh::StaticClass()->GetClassPathName());
+        Filter.ClassPaths.Add(UBlueprint::StaticClass()->GetClassPathName());
         Filter.bRecursivePaths = true;
 
         auto world = context->GetWorld();
@@ -317,6 +318,7 @@ template UStaticMeshComponent* UAirBlueprintLib::GetActorComponent(AActor*, FStr
 template URotatingMovementComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 template UCameraComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 template UDetectionComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
+template UCineCameraComponent* UAirBlueprintLib::GetActorComponent(AActor*, FString);
 
 bool UAirBlueprintLib::IsInGameThread()
 {

@@ -1,5 +1,5 @@
 #include "RecordingFile.h"
-#include "HAL/PlatformFilemanager.h"
+#include "HAL/PlatformFileManager.h"
 #include "Misc/FileHelper.h"
 #include <sstream>
 #include "ImageUtils.h"
