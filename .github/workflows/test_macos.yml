@@ -8,11 +8,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, macos-11]
+        os: [macos-11, macos-12]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v3
+
+      - name: Remove Python 2 to 3 for Python 3.11 symlink
+        run: brew unlink python@3.11 && brew link --overwrite python@3.11 && brew unlink python@3.10 && brew link --overwrite python@3.10
 
       - name: Setup
         run: ./setup.sh

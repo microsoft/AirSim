@@ -1,4 +1,26 @@
 # Welcome to Colosseum, a successor of [AirSim](https://github.com/microsoft/AirSim)
+  
+## Build Status
+[![Ubuntu Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_ubuntu.yml)
+[![MacOS Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_macos.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_macos.yml)
+[![Windows Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_windows.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_windows.yml)
+  
+## Currently Supported Operating Systems
+Below are the list of officially supported Operating Systems, with full Unreal Engine support:
+### Windows
+- Windows 10 (Latest)
+
+### Linux
+- Ubuntu 18.04
+- Ubuntu 20.04
+  
+**NOTE** Ubuntu 22.04 is not currently supported due to Vulkan support. If this changes, we will notify you here. If you want to use Colosseum on 22.04, we highly recommend that you use Docker.
+
+### MacOS (Non-M1 Macs only)
+- MacOS Monterey (12)
+- MacOS (11)
+  
+**NOTE** MacOS support is highly experimental and may be dropped in future releases. This is because Apple continually changes their build tools and doesn't like 3rd party developers in general. There are ongoing discussions to remove this support.
 
 ## Sponsors
 1. Codex Laboratories LLC [Website](https://www.codex-labs-llc.com)
@@ -11,6 +33,7 @@ This is a fork of the AirSim repository, which Microsoft decided to shutdown in 
 
 ## Join the Community
 We have decided to create a Slack to better allow for community engagement. Join here: [Colosseum Slack](https://join.slack.com/t/colosseum-sim/shared_invite/zt-1nx1worza-XNsS_KkXuiKvbm~e2E8Big)
+  
   
 ## Goals and Project Development
 This section will contain a list of the current features that the community and Codex Labs are working on to support and build.
