@@ -234,6 +234,9 @@ simClient.call('simSetVehiclePoseBatch', poses : [airsim.Pose], vehicle_names : 
 simClient.call_async("resetVehicle", vehicle_name : str, pose : airsim.Pose, orientation : airsim.Quaternionr)
 ```
 
+**todo**
+- more move commands (moveByVelocityBatch(...)
+
 ## PRL4AirSim Shared Replay Buffer
 
 Similarly to AirSim, we use a RPC server to host the replay buffer.  This buffer is a centralised storage used by the local agent instances to fill experiences to, and an external trainer client which samples experiences.
