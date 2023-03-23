@@ -348,6 +348,11 @@ private:
     rclcpp::TimerBase::SharedPtr airsim_control_update_timer_;
     rclcpp::TimerBase::SharedPtr airsim_lidar_update_timer_;
 
+    /// Callback groups
+    std::vector<rclcpp::CallbackGroup::SharedPtr> airsim_img_callback_groups_;
+    rclcpp::CallbackGroup::SharedPtr airsim_control_callback_group_;
+    std::vector<rclcpp::CallbackGroup::SharedPtr> airsim_lidar_callback_groups_;
+
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
     std::vector<image_transport::Publisher> image_pub_vec_;
