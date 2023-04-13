@@ -58,11 +58,12 @@ The required modules are:
 - OpenCV
 - wandb (for logging)
 - json
-- msgpackrpc (https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep) see bellow
+- msgpackrpc (https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep) see bellow (use version 4.5.3)
 
 ## Correct msgpackRPC installation
 
-msgpack changed its name from msgpack-python to msgpack, which leads to an outdated version installed.  When running the outdated version, the python instance is used rather than the quicker c++ version.  Hence, we need to correct this using `https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep`.  If Jupyter package is installed, tornado will also be outdated.  This will lead to the following python package versions:
+msgpack changed its name from msgpack-python to msgpack, which leads to an outdated version installed.  When running the outdated version, the python instance is used rather than the quicker c++ version.  Hence, we need to correct this using `https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep`.  If Jupyter package is installed, tornado will also be outdated.  The torndao version needs to be <5.
+
 
 ## Binary download
 
