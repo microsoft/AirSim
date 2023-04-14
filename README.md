@@ -1,5 +1,5 @@
 # Known Bugs
-- Functions resetVehicle, resetWorld and setLogFileLocation did not copy over when making the repository public.  Will be fixing this in the next couple of days.
+- Functions resetVehicle, resetWorld and setLogFileLocation did not copy over when making the repository public.  Will be fixing this in the next couple of days.  These functions do not work and are commented out to allow successful build.
 
 # Welcome to PRL4AirSim
 
