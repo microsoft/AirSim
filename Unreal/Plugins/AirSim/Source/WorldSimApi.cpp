@@ -272,6 +272,43 @@ bool WorldSimApi::isPaused() const
     return simmode_->isPaused();
 }
 
+void WorldSimApi::resetWorld(const Pose& pose)
+{
+    UAirBlueprintLib::RunCommandOnGameThread([this]() {
+        for (auto& api : simmode_->getApiProvider()->getVehicleSimApis()) {
+            api->reset();
+        }
+    },
+                                             true);
+
+    UAirBlueprintLib::RunCommandOnGameThread([this, pose]() {
+    for (auto& api : simmode_->getApiProvider()->getVehicleSimApis()) {
+        api->setPose(pose, true);
+    }
+},
+                                         true);
+}
+
+
+void WorldSimApi::resetVehicle(const std::string& vehicle_name, const msr::airlib::Pose& pose)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Reset Function"));
+    UAirBlueprintLib::RunCommandOnGameThread([this, vehicle_name, pose]() {
+        //getApiProvider()->getVehicleSimApis()
+        auto* vehicle = simmode_->getApiProvider()->getVehicleSimApi(vehicle_name);
+        
+        //auto* vehicle = simmode_->getApiProvider()->getVehicleApi()->getVehicleSimApi(vehicle_name);
+        if (vehicle != nullptr) {
+            vehicle->reset();
+            vehicle->setPose(pose, true);
+            UE_LOG(LogTemp, Error, TEXT("Not null"));
+        } else {
+            UE_LOG(LogTemp, Error, TEXT("==== NULL ===="));
+        }
+    },true);
+}
+
+
 void WorldSimApi::reset()
 {
     UAirBlueprintLib::RunCommandOnGameThread([this]() {
@@ -279,6 +316,12 @@ void WorldSimApi::reset()
     },
                                              true);
 }
+
+//bool WorldSimApi::resetVehicle(const std::string& vehicle_name) const
+//{
+//    return true;
+//}
+
 
 void WorldSimApi::pause(bool is_paused)
 {
@@ -897,9 +940,14 @@ std::vector<float> WorldSimApi::getDistortionParams(const CameraDetails& camera_
     return param_values;
 }
 
-std::vector<msr::airlib::ImageCaptureBase::ImageResponse> WorldSimApi::getBatchImages(const std::vector<ImageCaptureBase::ImageRequest>& requests, const msr::airlib::vector<std::string>& vehicle_names) const
+void WorldSimApi::setLogFileLocation(const std::string& file_name)
 {
 
+}
+
+std::vector<msr::airlib::ImageCaptureBase::ImageResponse> WorldSimApi::getBatchImages(const std::vector<ImageCaptureBase::ImageRequest>& requests, const msr::airlib::vector<std::string>& vehicle_names) const
+{
+    
     std::vector<msr::airlib::ImageCaptureBase::ImageResponse> responses;
     std::vector<std::shared_ptr<RenderRequest::RenderParams>> render_params;
     std::vector<std::shared_ptr<RenderRequest::RenderResult>> render_results;

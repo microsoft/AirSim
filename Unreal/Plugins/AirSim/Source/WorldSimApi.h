@@ -30,6 +30,11 @@ public:
 
     virtual bool isPaused() const override;
     virtual void reset() override;
+    virtual void resetVehicle(const std::string& vehicle_name, const msr::airlib::Pose& pose) override;
+    virtual void resetWorld(const Pose& pose) override;
+    
+    virtual void setLogFileLocation(const std::string& file_name) override;
+    
     virtual void pause(bool is_paused) override;
     virtual void continueForTime(double seconds) override;
     virtual void continueForFrames(uint32_t frames) override;
@@ -93,6 +98,7 @@ public:
 
     // TODO: parralized RL
     virtual std::vector<ImageCaptureBase::ImageResponse> getBatchImages(const std::vector<ImageCaptureBase::ImageRequest>& requests, const msr::airlib::vector<std::string>& vehicle_names) const override;
+    //virtual bool resetVehicle(const std::string& vehicle_name) const override;
     // TODO: parralized RL
     
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& requests,

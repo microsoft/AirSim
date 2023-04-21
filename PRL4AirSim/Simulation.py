@@ -19,8 +19,10 @@ class Sim(object):
         self.origin_UE = np.array([0.0, 0.0, 910.0])
 
         self.areans_train_long = np.array([
-            [Utils.convert_pos_UE_to_AS(self.origin_UE, np.array([41156.0, 20459.0, 1000.0])), Utils.convert_pos_UE_to_AS(self.origin_UE, np.array([56206.0, 21019.0, 1000.0]))]
-            #[Utils.convert_pos_UE_to_AS(self.origin_UE, np.array([39850.0, 17110.0, 1000.0])), Utils.convert_pos_UE_to_AS(self.origin_UE, np.array([56160.0, 17110.0, 1000.0]))]
+            # Using larger environment
+            #[Utils.convert_pos_UE_to_AS(self.origin_UE, np.array([41156.0, 20459.0, 1000.0])), Utils.convert_pos_UE_to_AS(self.origin_UE, np.array([56206.0, 21019.0, 1000.0]))]
+            # Using smaller environment
+            [Utils.convert_pos_UE_to_AS(self.origin_UE, np.array([9030.0, -6760.0, 1000.0])), Utils.convert_pos_UE_to_AS(self.origin_UE, np.array([14060.0, -6760.0, 1000.0]))]
         ])
 
         self.areans = self.areans_train_long
