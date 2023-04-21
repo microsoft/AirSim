@@ -68,11 +68,11 @@ class DQNTrainer(object):
 
         batch = ReplayMemory.Transition(*zip(*transitions))
 
-        state = (torch.tensor(np.array([i['image'].reshape(*self.image_input_dims) for i in batch.state])).to(self.network.device).float(),
-                 torch.tensor(np.array([i['velocity'] for i in batch.state])).to(self.network.device).float())
+        state = (torch.tensor(np.array([i[b'image'].reshape(*self.image_input_dims) for i in batch.state])).to(self.network.device).float(),
+                 torch.tensor(np.array([i[b'velocity'] for i in batch.state])).to(self.network.device).float())
 
-        next_state = (torch.tensor(np.array([i['image'].reshape(*self.image_input_dims) for i in batch.next_state])).to(self.network.device).float(),
-                      torch.tensor(np.array([i['velocity'] for i in batch.next_state])).to(self.network.device).float())
+        next_state = (torch.tensor(np.array([i[b'image'].reshape(*self.image_input_dims) for i in batch.next_state])).to(self.network.device).float(),
+                      torch.tensor(np.array([i[b'velocity'] for i in batch.next_state])).to(self.network.device).float())
 
         actions = torch.tensor(batch.action).to(self.network.device)
         rewards = torch.tensor(batch.reward).to(self.network.device)

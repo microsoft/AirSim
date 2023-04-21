@@ -115,6 +115,7 @@ if __name__ == "__main__":
                     os.rename('{}/ModelSaves/dqn.pth'.format(pathlib.Path().resolve()), '{}/ModelSaves/dqn_read.pth'.format(pathlib.Path().resolve()))
                     torch.save(trainer.agent.network.state_dict(), '{}/ModelSaves/dqn_read.pth'.format(pathlib.Path().resolve()))
                     os.rename('{}/ModelSaves/dqn_read.pth'.format(pathlib.Path().resolve()), '{}/ModelSaves/dqn.pth'.format(pathlib.Path().resolve()))
-
+                else:
+                    torch.save(trainer.agent.network.state_dict(), '{}/ModelSaves/dqn.pth'.format(pathlib.Path().resolve()))
 
         previous_time = time.perf_counter()
