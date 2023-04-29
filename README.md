@@ -1,6 +1,6 @@
 # Welcome to PRL4AirSim
 
-This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning controllers.  Check out our 3 minute video bellow which explains our approach.  **Our contribution can be found in /PRL4AirSim/PRL4AirSim**.
+This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning-based quadrotor controllers.  Check out our 3 minute video bellow which explains our approach.  We have made modifications to AirLib and the Unreal plugin code, along with python files inside /PRL4AirSim/PRL4AirSim.
 
 
 <p float="left">
