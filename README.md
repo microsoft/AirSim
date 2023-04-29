@@ -1,8 +1,6 @@
 # Welcome to PRL4AirSim
 
-**Currently updating the documentation, hopefully will be done over the next couple of days!**
-
-This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning controllers.  Check out our 3 minute video bellow which explains our approach.
+This project builds on top of [AirSim](https://github.com/microsoft/AirSim) to provide efficient parallel training for Reinforcement Learning controllers.  Check out our 3 minute video bellow which explains our approach.  **Our contribution can be found in /PRL4AirSim/PRL4AirSim**.
 
 
 <p float="left">
