@@ -291,8 +291,8 @@ void PIDPositionController::update_control_cmd_timer_cb()
         }
     }
 
-    // only compute and send control commands for hovering / moving to pose, if we received a goal at least once in the past
-    if (got_goal_once_) {
+    // only compute and send control commands for hovering / moving to pose, if we currently have a goal
+    if (has_goal_) {
         compute_control_cmd();
         enforce_dynamic_constraints();
         publish_control_cmd();
