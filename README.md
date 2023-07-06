@@ -4,6 +4,8 @@
 [![Ubuntu Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_ubuntu.yml)
 [![MacOS Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_macos.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_macos.yml)
 [![Windows Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_windows.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_windows.yml)
+
+[![](https://dcbadge.vercel.app/api/server/AvyYjR8B)](https://discord.gg/AvyYjR8B)
   
 ## Looking for more performance?
 The company managing this repo created the SWARM Developer System to help build, simulate and deploy single and
@@ -44,7 +46,7 @@ Colosseum is a simulator for robotic, autonomous systems, built on [Unreal Engin
 This is a fork of the AirSim repository, which Microsoft decided to shutdown in July of 2022. This fork serves as a waypoint to building a new and better simulation platform. The creater and maintainer of this fork is Codex Laboratories LLC (our website is [here](https://www.codex-labs-llc.com)). Colosseum is one of the underlying simulation systems that we use in our product, the [SWARM Simulation Platform](https://www.swarmsim.io). This platform exists to provide pre-built tools and low-code/no-code autonomy solutions. Please feel free to check this platform out and reach out if interested.
 
 ## Join the Community
-We have decided to create a Slack to better allow for community engagement. Join here: [Colosseum Slack](https://join.slack.com/t/colosseum-sim/shared_invite/zt-1vqt3ydx2-D7uLLZb5Om1_wy7wUermXA)
+We have decided to create a Discord channel to better allow for community engagement. Join here: [Colosseum Robotics Discord](https://discord.gg/AvyYjR8B).
   
   
 ## Goals and Project Development
