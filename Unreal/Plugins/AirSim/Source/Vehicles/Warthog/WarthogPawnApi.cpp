@@ -37,7 +37,8 @@ msr::airlib::WarthogApiBase::WarthogState WarthogPawnApi::getWarthogState() cons
 void WarthogPawnApi::reset()
 {
     vehicle_api_->reset();
-
+    UE_LOG(LogTemp, Warning, TEXT("something something something"));
+    pawn_->SetActorLocation(FVector(-10, 0, 100),false, nullptr, ETeleportType::TeleportPhysics);
     last_controls_ = msr::airlib::WarthogApiBase::WarthogControls();
     auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_);
     UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
@@ -51,9 +52,10 @@ void WarthogPawnApi::reset()
         //movement_->SetActive(true, true);
         vehicle_api_->setWarthogControls(msr::airlib::WarthogApiBase::WarthogControls());
         updateMovement(msr::airlib::WarthogApiBase::WarthogControls());
-
+        
     },
                                              true);
+    
 
     UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
         for (auto* phys_comp : phys_comps)
