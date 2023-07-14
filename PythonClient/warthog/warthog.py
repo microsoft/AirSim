@@ -1,5 +1,6 @@
-import setup_path
+import setath
 import airsim
+import pandas as pd
 import cv2
 from pyquaternion import Quaternion
 import numpy as np
@@ -10,6 +11,7 @@ import matplotlib.pyplot as plt
 import pygame
 import math
 pygame.init()
+
 def zero_to_2pi( theta):
     if theta < 0:
         theta = 2 * math.pi + theta
