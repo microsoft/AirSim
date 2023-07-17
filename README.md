@@ -5,7 +5,7 @@
 [![MacOS Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_macos.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_macos.yml)
 [![Windows Build](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_windows.yml/badge.svg)](https://github.com/CodexLabsLLC/Colosseum/actions/workflows/test_windows.yml)
 
-[![](https://dcbadge.vercel.app/api/server/AvyYjR8B)](https://discord.gg/AvyYjR8B)
+[![](https://dcbadge.vercel.app/api/server/vt73EHAE)](https://discord.gg/vt73EHAE)
   
 ## Looking for more performance?
 The company managing this repo created the SWARM Developer System to help build, simulate and deploy single and
