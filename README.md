@@ -25,7 +25,7 @@ Below are the list of officially supported Operating Systems, with full Unreal E
 - Windows 10 (Latest)
 
 ### Linux
-- Ubuntu 18.04
+- ~~Ubuntu 18.04~~ (NO LONGER SUPPORTED. 18.04 is EOL so we will not be checking this anymore and GitHub doesn't support CI builds)
 - Ubuntu 20.04
   
 **NOTE** Ubuntu 22.04 is not currently supported due to Vulkan support. If this changes, we will notify you here. If you want to use Colosseum on 22.04, we highly recommend that you use Docker.
