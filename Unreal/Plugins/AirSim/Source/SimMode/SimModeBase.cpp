@@ -226,7 +226,7 @@ void ASimModeBase::initializeTimeOfDay()
         static const FName sun_prop_name(TEXT("Directional light actor"));
         auto* p = sky_sphere_class_->FindPropertyByName(sun_prop_name);
 
-#if ENGINE_MINOR_VERSION > 24
+#if ((ENGINE_MAJOR_VERSION > 4) || (ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION >= 27))
         FObjectProperty* sun_prop = CastFieldChecked<FObjectProperty>(p);
 #else
         FObjectProperty* sun_prop = Cast<FObjectProperty>(p);
