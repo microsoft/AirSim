@@ -61,6 +61,15 @@ ament_target_dependencies(pd_position_controller_simple
   airsim_interfaces
 )
 
+add_library(pd_position_controller_simple_topic src/pd_position_controller_simple_topic.cpp)
+target_link_libraries(pd_position_controller_simple_topic AirLib)
+ament_target_dependencies(pd_position_controller_simple_topic
+        rclcpp
+        nav_msgs
+        geometry_msgs
+        airsim_interfaces
+        )
+
 add_library(airsim_ros src/airsim_ros_wrapper.cpp)
 target_link_libraries(airsim_ros ${OpenCV_LIBS} yaml-cpp AirLib airsim_settings_parser)
 ament_target_dependencies(airsim_ros 
@@ -88,16 +97,23 @@ ament_target_dependencies(pd_position_controller_simple_node
   rclcpp
 )
 
+add_executable(pd_position_controller_simple_topic_node
+        src/pd_position_controller_simple_topic_node.cpp)
+target_link_libraries(pd_position_controller_simple_topic_node
+        pd_position_controller_simple_topic airsim_ros AirLib)
+ament_target_dependencies(pd_position_controller_simple_topic_node
+        rclcpp)
+
 # rosidl_target_interfaces(airsim_node
 # ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 # rosidl_target_interfaces(pd_position_controller_simple_node
 #   ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-install(TARGETS airsim_node pd_position_controller_simple_node
+install(TARGETS airsim_node pd_position_controller_simple_node pd_position_controller_simple_topic_node
   DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS airsim_ros pd_position_controller_simple
+install(TARGETS airsim_ros pd_position_controller_simple pd_position_controller_simple_topic
   ARCHIVE
   DESTINATION lib
   LIBRARY

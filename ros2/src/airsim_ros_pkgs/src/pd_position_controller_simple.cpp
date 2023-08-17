@@ -33,7 +33,7 @@ bool DynamicConstraints::load_from_rosparams(const std::shared_ptr<rclcpp::Node>
 }
 
 PIDPositionController::PIDPositionController(const std::shared_ptr<rclcpp::Node> nh)
-    : use_eth_lib_for_geodetic_conv_(true), nh_(nh), has_home_geo_(false), reached_goal_(false), has_goal_(false), has_odom_(false), got_goal_once_(false)
+        : use_eth_lib_for_geodetic_conv_(true), nh_(nh), has_home_geo_(false), reached_goal_(false), has_goal_(false), has_odom_(false), got_goal_once_(false)
 {
     params_.load_from_rosparams(nh_);
     constraints_.load_from_rosparams(nh_);
