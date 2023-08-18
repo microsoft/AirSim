@@ -9,7 +9,7 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             name='ned_to_enu_pub',
-            arguments=['0', '0', '0', '1.57', '0', '3.14', 'world_ned', 'world_enu']#, '100']
+            arguments=['0', '0', '0', '1.5707', '0', '3.141592', 'world_ned', 'world_enu']#, '100']
         )
     ])
     return ld

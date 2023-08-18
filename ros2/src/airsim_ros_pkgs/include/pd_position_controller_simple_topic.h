@@ -108,7 +108,7 @@ namespace topic_mode {
         bool has_local_odom_ = false;
         bool has_local_goal_ = false;
         XYZYaw current_pose_;
-        XYZYaw previous_error_;
+        XYZYaw previous_error_{0.0,0.0,0.0,0.0};
         XYZYaw current_error_;
         XYZYaw current_goal_pose_;
 

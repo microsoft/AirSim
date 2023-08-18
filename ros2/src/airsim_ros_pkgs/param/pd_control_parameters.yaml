@@ -1,16 +1,16 @@
 /**:
   ros__parameters:
-    kp_x: 1.2
-    kp_y: 1.2
+    kp_x: 0.5
+    kp_y: 0.5
     kp_z: 0.5
-    kp_yaw: 1.0
-    kd_x: 0.7
-    kd_y: 0.7
+    kp_yaw: 0.05
+    kd_x: 0.1
+    kd_y: 0.1
     kd_z: 0.1
-    kd_yaw: 0.2
+    kd_yaw: 0.01
+    command_smoothing_weight: 0.9
     max_vel_horz_abs: 5.0
     max_vel_vert_abs: 2.0
-    command_smoothing_weight: 0.2
     vehicle_name: Chaser
-    control_update_rate: 100
+    control_update_rate: 100.0
 

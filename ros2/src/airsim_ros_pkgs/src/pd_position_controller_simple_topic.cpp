@@ -21,9 +21,11 @@ topic_mode::PDPositionController::PDPositionController(const rclcpp::NodeOptions
     get_parameter<std::string>("vehicle_name", vehicle_name_);
     get_parameter<double>("control_update_rate", control_update_rate_);
     double control_period = 1.0/control_update_rate_;
+    RCLCPP_INFO_ONCE(get_logger(),"COMMAND Update Rate: %f \n",control_period);
     control_timer_ = this->create_wall_timer(std::chrono::duration<double>(control_period),
                                              std::bind(&PDPositionController::ControlTimerCallback, this));
 
+    vel_cmd_ = airsim_interfaces::msg::VelCmd();
     // Subscriber
     rclcpp::SubscriptionOptions options;
     {
@@ -44,20 +46,21 @@ topic_mode::PDPositionController::PDPositionController(const rclcpp::NodeOptions
 }
 
 void topic_mode::PDPositionController::ControlTimerCallback() {
-    if(has_local_goal_){
+    if(has_local_goal_ and has_local_odom_){
         ComputeControlCommand();
         EnforceDynamicConstraints();
         PublishCommand();
-    }else{
-        RCLCPP_INFO(get_logger(),"[PD Position Controller]: Local Goal Not Recieved");
     }
+//    else{
+////        RCLCPP_INFO(get_logger(),"[PD Position Controller]: Local Goal Not Recieved");
+//    }
 }
 
 void topic_mode::PDPositionController::ComputeControlCommand() {
     current_error_.x = current_goal_pose_.x - current_pose_.x;
     current_error_.y = current_goal_pose_.y - current_pose_.y;
     current_error_.z = current_goal_pose_.z - current_pose_.z;
-    current_error_.yaw = math_common::angular_dist(current_pose_.yaw, current_pose_.yaw);
+    current_error_.yaw = math_common::angular_dist(current_pose_.yaw, current_goal_pose_.yaw);
 
     double p_term_x = params_.kp_x * current_error_.x;
     double p_term_y = params_.kp_y * current_error_.y;
@@ -67,7 +70,7 @@ void topic_mode::PDPositionController::ComputeControlCommand() {
     double d_term_x = params_.kd_x * previous_error_.x;
     double d_term_y = params_.kd_y * previous_error_.y;
     double d_term_z = params_.kd_z * previous_error_.z;
-    double d_term_yaw = params_.kp_yaw * previous_error_.yaw;
+    double d_term_yaw = params_.kd_yaw * previous_error_.yaw;
 
     previous_error_ = current_error_;
 
@@ -75,6 +78,8 @@ void topic_mode::PDPositionController::ComputeControlCommand() {
     vel_cmd_.twist.linear.y = (1-params_.command_smoothing_weight_)*(p_term_y + d_term_y) + params_.command_smoothing_weight_*(vel_cmd_.twist.linear.y);
     vel_cmd_.twist.linear.z = (1-params_.command_smoothing_weight_)*(p_term_z + d_term_z) + params_.command_smoothing_weight_*(vel_cmd_.twist.linear.z);
     vel_cmd_.twist.angular.z = p_term_yaw + d_term_yaw;
+    vel_cmd_.twist.angular.x = 0.0;
+    vel_cmd_.twist.angular.y = 0.0;
 
 }
 
@@ -102,6 +107,7 @@ void topic_mode::PDPositionController::EnforceDynamicConstraints() {
 
 void topic_mode::PDPositionController::PublishCommand() {
     airsim_vel_cmd_world_frame_pub_->publish(vel_cmd_);
+//    RCLCPP_INFO(get_logger(),"vel_cmd x: %f, y: %f, z: %f \n",vel_cmd_.twist.linear.x,vel_cmd_.twist.linear.y, vel_cmd_.twist.linear.z);
 }
 
 void topic_mode::PDPositionController::AirsimOdomCallback(const nav_msgs::msg::Odometry::SharedPtr odom_msg) {

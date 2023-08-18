@@ -70,6 +70,13 @@ ament_target_dependencies(pd_position_controller_simple_topic
         airsim_interfaces
         )
 
+add_library(local_goal_publisher src/local_goal_publisher_node.cpp)
+#target_link_libraries(local_goal_publisher)
+ament_target_dependencies(local_goal_publisher
+        rclcpp
+        nav_msgs)
+
+
 add_library(airsim_ros src/airsim_ros_wrapper.cpp)
 target_link_libraries(airsim_ros ${OpenCV_LIBS} yaml-cpp AirLib airsim_settings_parser)
 ament_target_dependencies(airsim_ros 
@@ -83,7 +90,7 @@ ament_target_dependencies(airsim_ros
   airsim_interfaces
 )
 
-add_executable(airsim_node src/airsim_node.cpp)
+add_executable(airsim_node src/airsim_node.cpp )
 target_link_libraries(airsim_node airsim_ros AirLib)
 ament_target_dependencies(airsim_node 
   rclcpp
@@ -104,16 +111,24 @@ target_link_libraries(pd_position_controller_simple_topic_node
 ament_target_dependencies(pd_position_controller_simple_topic_node
         rclcpp)
 
+add_executable(local_goal_publisher_node
+        src/local_goal_publisher_node.cpp)
+target_link_libraries(local_goal_publisher_node
+        local_goal_publisher)
+ament_target_dependencies(local_goal_publisher_node
+        rclcpp)
+
+
 # rosidl_target_interfaces(airsim_node
 # ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 # rosidl_target_interfaces(pd_position_controller_simple_node
 #   ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-install(TARGETS airsim_node pd_position_controller_simple_node pd_position_controller_simple_topic_node
+install(TARGETS airsim_node pd_position_controller_simple_node pd_position_controller_simple_topic_node local_goal_publisher_node
   DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS airsim_ros pd_position_controller_simple pd_position_controller_simple_topic
+install(TARGETS airsim_ros pd_position_controller_simple pd_position_controller_simple_topic local_goal_publisher
   ARCHIVE
   DESTINATION lib
   LIBRARY
@@ -121,7 +136,7 @@ install(TARGETS airsim_ros pd_position_controller_simple pd_position_controller_
 
 install(FILES README.md DESTINATION share/${PROJECT_NAME})
 
-install(DIRECTORY launch rviz DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch rviz param DESTINATION share/${PROJECT_NAME})
 
 
 
