@@ -15,8 +15,8 @@ namespace topic_mode {
             nav_msgs::msg::Odometry message;
             message.header.frame_id = "Chaser";
             message.child_frame_id = "Chaser/odom_local_ned";
-            message.pose.pose.position.x = 0.1*0.02*i;
-            message.pose.pose.position.y = 0.01;
+            message.pose.pose.position.x = 1.5*0.02*i;
+            message.pose.pose.position.y = 1.0;
             message.pose.pose.position.z = -10.0;
             message.pose.pose.orientation.w = 1.0;
             message.pose.pose.orientation.x = 0.0;

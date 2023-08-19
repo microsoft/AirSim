@@ -78,9 +78,9 @@ void AirsimROSWrapper::initialize_airsim()
             airsim_client_->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
         }
 
-        origin_geo_point_ = get_origin_geo_point();
+//        origin_geo_point_ = get_origin_geo_point(); // (Yunwoo)
         // todo there's only one global origin geopoint for environment. but airsim API accept a parameter vehicle_name? inside carsimpawnapi.cpp, there's a geopoint being assigned in the constructor. by?
-        origin_geo_point_msg_ = get_gps_msg_from_airsim_geo_point(origin_geo_point_);
+//        origin_geo_point_msg_ = get_gps_msg_from_airsim_geo_point(origin_geo_point_); // (Yunwoo)
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
@@ -102,7 +102,7 @@ void AirsimROSWrapper::initialize_ros()
     nh_->get_parameter_or("odom_frame_id", odom_frame_id_, odom_frame_id_);
     isENU_ = (odom_frame_id_ == ENU_ODOM_FRAME_ID);
     nh_->get_parameter_or("coordinate_system_enu", isENU_, isENU_);
-    vel_cmd_duration_ = 0.05; // todo rosparam
+    vel_cmd_duration_ = 0.1; // todo rosparam TODO: Yunwoo
     // todo enforce dynamics constraints in this node as well?
     // nh_->get_parameter("max_vert_vel_", max_vert_vel_);
     // nh_->get_parameter("max_horz_vel", max_horz_vel_)
@@ -231,34 +231,34 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
             if (sensor_setting->enabled) {
 
                 switch (sensor_setting->sensor_type) {
-                case SensorBase::SensorType::Barometer: {
-                    SensorPublisher<airsim_interfaces::msg::Altimeter> sensor_publisher =
-                        create_sensor_publisher<airsim_interfaces::msg::Altimeter>("Barometer", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/altimeter/" + sensor_name, 10);
-                    vehicle_ros->barometer_pubs_.emplace_back(sensor_publisher);
+                case SensorBase::SensorType::Barometer: { //(Yunwoo)
+//                    SensorPublisher<airsim_interfaces::msg::Altimeter> sensor_publisher =
+//                        create_sensor_publisher<airsim_interfaces::msg::Altimeter>("Barometer", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/altimeter/" + sensor_name, 10);
+//                    vehicle_ros->barometer_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
-                case SensorBase::SensorType::Imu: {
-                    SensorPublisher<sensor_msgs::msg::Imu> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::Imu>("Imu", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/imu/" + sensor_name, 10);
-                    vehicle_ros->imu_pubs_.emplace_back(sensor_publisher);
+                case SensorBase::SensorType::Imu: { // (Yunwoo)
+//                    SensorPublisher<sensor_msgs::msg::Imu> sensor_publisher =
+//                        create_sensor_publisher<sensor_msgs::msg::Imu>("Imu", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/imu/" + sensor_name, 10);
+//                    vehicle_ros->imu_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
-                case SensorBase::SensorType::Gps: {
-                    SensorPublisher<sensor_msgs::msg::NavSatFix> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::NavSatFix>("Gps", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/gps/" + sensor_name, 10);
-                    vehicle_ros->gps_pubs_.emplace_back(sensor_publisher);
+                case SensorBase::SensorType::Gps: { //(Yunwoo)
+//                    SensorPublisher<sensor_msgs::msg::NavSatFix> sensor_publisher =
+//                        create_sensor_publisher<sensor_msgs::msg::NavSatFix>("Gps", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/gps/" + sensor_name, 10);
+//                    vehicle_ros->gps_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
-                case SensorBase::SensorType::Magnetometer: {
-                    SensorPublisher<sensor_msgs::msg::MagneticField> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::MagneticField>("Magnetometer", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/magnetometer/" + sensor_name, 10);
-                    vehicle_ros->magnetometer_pubs_.emplace_back(sensor_publisher);
+                case SensorBase::SensorType::Magnetometer: { // (Yunwoo)
+//                    SensorPublisher<sensor_msgs::msg::MagneticField> sensor_publisher =
+//                        create_sensor_publisher<sensor_msgs::msg::MagneticField>("Magnetometer", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/magnetometer/" + sensor_name, 10);
+//                    vehicle_ros->magnetometer_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
-                case SensorBase::SensorType::Distance: {
-                    SensorPublisher<sensor_msgs::msg::Range> sensor_publisher =
-                        create_sensor_publisher<sensor_msgs::msg::Range>("Distance", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/distance/" + sensor_name, 10);
-                    vehicle_ros->distance_pubs_.emplace_back(sensor_publisher);
+                case SensorBase::SensorType::Distance: { // (Yunwoo)
+//                    SensorPublisher<sensor_msgs::msg::Range> sensor_publisher =
+//                        create_sensor_publisher<sensor_msgs::msg::Range>("Distance", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/distance/" + sensor_name, 10);
+//                    vehicle_ros->distance_pubs_.emplace_back(sensor_publisher);
                     break;
                 }
                 case SensorBase::SensorType::Lidar: {
@@ -902,7 +902,7 @@ void AirsimROSWrapper::drone_state_timer_cb()
 {
     try {
         // todo this is global origin
-        origin_geo_point_pub_->publish(origin_geo_point_msg_);
+//        origin_geo_point_pub_->publish(origin_geo_point_msg_);
 
         // get the basic vehicle pose and environmental state
         const auto now = update_state();
@@ -968,8 +968,8 @@ rclcpp::Time AirsimROSWrapper::update_state()
                 got_sim_time = true;
             }
 
-            vehicle_ros->gps_sensor_msg_ = get_gps_sensor_msg_from_airsim_geo_point(drone->curr_drone_state_.gps_location);
-            vehicle_ros->gps_sensor_msg_.header.stamp = vehicle_time;
+//            vehicle_ros->gps_sensor_msg_ = get_gps_sensor_msg_from_airsim_geo_point(drone->curr_drone_state_.gps_location); // (Yunwoo)
+//            vehicle_ros->gps_sensor_msg_.header.stamp = vehicle_time; // (Yunwoo)
 
             vehicle_ros->curr_odom_ = get_odom_msg_from_multirotor_state(drone->curr_drone_state_);
         }
@@ -1028,27 +1028,27 @@ void AirsimROSWrapper::publish_vehicle_state()
         vehicle_ros->odom_local_pub_->publish(vehicle_ros->curr_odom_);
         publish_odom_tf(vehicle_ros->curr_odom_);
 
-        // ground truth GPS position from sim/HITL
-        vehicle_ros->global_gps_pub_->publish(vehicle_ros->gps_sensor_msg_);
+        // ground truth GPS position from sim/HITL (Yunwoo)
+//        vehicle_ros->global_gps_pub_->publish(vehicle_ros->gps_sensor_msg_);
 
-        for (auto& sensor_publisher : vehicle_ros->barometer_pubs_) {
-            auto baro_data = airsim_client_->getBarometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
-            airsim_interfaces::msg::Altimeter alt_msg = get_altimeter_msg_from_airsim(baro_data);
-            alt_msg.header.frame_id = vehicle_ros->vehicle_name_;
-            sensor_publisher.publisher->publish(alt_msg);
+        for (auto& sensor_publisher : vehicle_ros->barometer_pubs_) { // (Yunwoo)
+//            auto baro_data = airsim_client_->getBarometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
+//            airsim_interfaces::msg::Altimeter alt_msg = get_altimeter_msg_from_airsim(baro_data);
+//            alt_msg.header.frame_id = vehicle_ros->vehicle_name_;
+//            sensor_publisher.publisher->publish(alt_msg);
         }
 
-        for (auto& sensor_publisher : vehicle_ros->imu_pubs_) {
-            auto imu_data = airsim_client_->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
-            sensor_msgs::msg::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
-            imu_msg.header.frame_id = vehicle_ros->vehicle_name_;
-            sensor_publisher.publisher->publish(imu_msg);
+        for (auto& sensor_publisher : vehicle_ros->imu_pubs_) { // (Yunwoo)
+//            auto imu_data = airsim_client_->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
+//            sensor_msgs::msg::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
+//            imu_msg.header.frame_id = vehicle_ros->vehicle_name_;
+//            sensor_publisher.publisher->publish(imu_msg);
         }
-        for (auto& sensor_publisher : vehicle_ros->distance_pubs_) {
-            auto distance_data = airsim_client_->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
-            sensor_msgs::msg::Range dist_msg = get_range_from_airsim(distance_data);
-            dist_msg.header.frame_id = vehicle_ros->vehicle_name_;
-            sensor_publisher.publisher->publish(dist_msg);
+        for (auto& sensor_publisher : vehicle_ros->distance_pubs_) { // (Yunwoo)
+//            auto distance_data = airsim_client_->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
+//            sensor_msgs::msg::Range dist_msg = get_range_from_airsim(distance_data);
+//            dist_msg.header.frame_id = vehicle_ros->vehicle_name_;
+//            sensor_publisher.publisher->publish(dist_msg);
         }
         for (auto& sensor_publisher : vehicle_ros->gps_pubs_) {
             auto gps_data = airsim_client_->getGpsData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
@@ -1056,11 +1056,11 @@ void AirsimROSWrapper::publish_vehicle_state()
             gps_msg.header.frame_id = vehicle_ros->vehicle_name_;
             sensor_publisher.publisher->publish(gps_msg);
         }
-        for (auto& sensor_publisher : vehicle_ros->magnetometer_pubs_) {
-            auto mag_data = airsim_client_->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
-            sensor_msgs::msg::MagneticField mag_msg = get_mag_msg_from_airsim(mag_data);
-            mag_msg.header.frame_id = vehicle_ros->vehicle_name_;
-            sensor_publisher.publisher->publish(mag_msg);
+        for (auto& sensor_publisher : vehicle_ros->magnetometer_pubs_) { // (Yunwoo)
+//            auto mag_data = airsim_client_->getMagnetometerData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
+//            sensor_msgs::msg::MagneticField mag_msg = get_mag_msg_from_airsim(mag_data);
+//            mag_msg.header.frame_id = vehicle_ros->vehicle_name_;
+//            sensor_publisher.publisher->publish(mag_msg);
         }
 
         update_and_publish_static_transforms(vehicle_ros.get());

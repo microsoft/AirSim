@@ -3,12 +3,12 @@
     kp_x: 0.5
     kp_y: 0.5
     kp_z: 0.5
-    kp_yaw: 0.05
-    kd_x: 0.1
-    kd_y: 0.1
-    kd_z: 0.1
-    kd_yaw: 0.01
-    command_smoothing_weight: 0.9
+    kp_yaw: 0.5
+    kd_x: 0.15
+    kd_y: 0.15
+    kd_z: 0.15
+    kd_yaw: 0.1
+    command_smoothing_weight: 0.2
     max_vel_horz_abs: 5.0
     max_vel_vert_abs: 2.0
     vehicle_name: Chaser

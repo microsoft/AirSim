@@ -70,6 +70,15 @@ ament_target_dependencies(pd_position_controller_simple_topic
         airsim_interfaces
         )
 
+add_library(keyboard_operator src/keyboard_operator.cpp)
+#target_link_libraries(pd_position_controller_simple_topic AirLib)
+ament_target_dependencies(keyboard_operator
+        rclcpp
+        nav_msgs
+        geometry_msgs
+        airsim_interfaces
+)
+
 add_library(local_goal_publisher src/local_goal_publisher_node.cpp)
 #target_link_libraries(local_goal_publisher)
 ament_target_dependencies(local_goal_publisher
@@ -118,6 +127,13 @@ target_link_libraries(local_goal_publisher_node
 ament_target_dependencies(local_goal_publisher_node
         rclcpp)
 
+add_executable(keyboard_operator_node
+src/keyboard_operator_node.cpp)
+target_link_libraries(keyboard_operator_node
+        keyboard_operator)
+ament_target_dependencies(keyboard_operator_node
+        rclcpp)
+
 
 # rosidl_target_interfaces(airsim_node
 # ${PROJECT_NAME} "rosidl_typesupport_cpp")
@@ -125,10 +141,10 @@ ament_target_dependencies(local_goal_publisher_node
 # rosidl_target_interfaces(pd_position_controller_simple_node
 #   ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-install(TARGETS airsim_node pd_position_controller_simple_node pd_position_controller_simple_topic_node local_goal_publisher_node
+install(TARGETS airsim_node pd_position_controller_simple_node pd_position_controller_simple_topic_node local_goal_publisher_node keyboard_operator_node
   DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS airsim_ros pd_position_controller_simple pd_position_controller_simple_topic local_goal_publisher
+install(TARGETS airsim_ros pd_position_controller_simple pd_position_controller_simple_topic local_goal_publisher keyboard_operator
   ARCHIVE
   DESTINATION lib
   LIBRARY
