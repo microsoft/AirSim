@@ -22,6 +22,7 @@ find_package(rosidl_typesupport_cpp REQUIRED)
 find_package(rosidl_default_runtime REQUIRED)
 find_package(airsim_interfaces REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(Eigen3 3.3 REQUIRED)
 
 set(AIRSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
@@ -71,12 +72,13 @@ ament_target_dependencies(pd_position_controller_simple_topic
         )
 
 add_library(keyboard_operator src/keyboard_operator.cpp)
-#target_link_libraries(pd_position_controller_simple_topic AirLib)
+target_link_libraries(keyboard_operator Eigen3::Eigen)
 ament_target_dependencies(keyboard_operator
         rclcpp
         nav_msgs
         geometry_msgs
         airsim_interfaces
+        tf2_ros
 )
 
 add_library(local_goal_publisher src/local_goal_publisher_node.cpp)
