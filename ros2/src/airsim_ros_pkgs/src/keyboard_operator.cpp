@@ -3,21 +3,30 @@
 //
 #include "keyboard_operator.h"
 
-namespace keyboard_operator
-{
 int kfd = 0;
 struct termios cooked, raw;
-void quit(int sig)
+
+void keyboard_operator::quit(int sig)
 {
+    using namespace keyboard_operator;
     tcsetattr(kfd, TCSANOW, &cooked);
     rclcpp::shutdown();
     exit(0);
-}
 }
 
 keyboard_operator::KeyboardOperator::KeyboardOperator()
     : Node("keyboard_operator")
 {
+    pose_des_keyboard_.pose.position.x = 0.0;
+    pose_des_keyboard_.pose.position.y = 0.0;
+    pose_des_keyboard_.pose.position.z = 0.0;
+    pose_des_keyboard_.pose.orientation.w = 1.0;
+    pose_des_keyboard_.pose.orientation.x = 0.0;
+    pose_des_keyboard_.pose.orientation.y = 0.0;
+    pose_des_keyboard_.pose.orientation.z = 0.0;
+
+    local_goal_publisher_ = create_publisher<nav_msgs::msg::Odometry>("/los_keeper/local_goal_pose",rclcpp::QoS(1));
+
     //    KeyboardInputServer  = this->create_service<KeyboardInputService>("~/")
 }
 
@@ -67,34 +76,42 @@ void keyboard_operator::KeyboardOperator::KeyLoop()
         }
         case KEYBOARD_W: {
             move_pose(0) = increment_xyz_;
+            RCLCPP_INFO(get_logger(),"Go forward.");
             break;
         }
         case KEYBOARD_S: {
             move_pose(0) = -increment_xyz_;
+            RCLCPP_INFO(get_logger(),"Go backward.");
             break;
         }
         case KEYBOARD_A: {
             move_pose(1) = -increment_xyz_;
+            RCLCPP_INFO(get_logger(),"Go left.");
             break;
         }
         case KEYBOARD_D: {
             move_pose(1) = increment_xyz_;
+            RCLCPP_INFO(get_logger(),"Go right.");
             break;
         }
         case KEYBOARD_Z: {
             move_pose(2) = increment_xyz_;
+            RCLCPP_INFO(get_logger(),"Go downward.");
             break;
         }
         case KEYBOARD_C: {
             move_pose(2) = -increment_xyz_;
+            RCLCPP_INFO(get_logger(),"Go upward.");
             break;
         }
         case KEYBOARD_Q: {
             move_pose(3) = -increment_xyz_;
+            RCLCPP_INFO(get_logger(),"Turn clockwise.");
             break;
         }
         case KEYBOARD_E: {
             move_pose(3) = increment_xyz_;
+            RCLCPP_INFO(get_logger(),"Turn counter-clockwise.");
             break;
         }
         }
@@ -138,5 +155,17 @@ bool keyboard_operator::KeyboardOperator::move_mav(double dx, double dy, double 
     pose_des_keyboard_.pose.orientation.y = q_des.getY();
     pose_des_keyboard_.pose.orientation.z = q_des.getZ();
     pose_des_keyboard_.pose.orientation.w = q_des.getW();
+
+    nav_msgs::msg::Odometry local_goal_info;
+    local_goal_info.header.frame_id= "Chaser";
+    local_goal_info.child_frame_id="Chaser/odom_local_ned";
+    local_goal_info.pose.pose.position.x = pose_des_keyboard_.pose.position.x;
+    local_goal_info.pose.pose.position.y = pose_des_keyboard_.pose.position.y;
+    local_goal_info.pose.pose.position.z = pose_des_keyboard_.pose.position.z;
+    local_goal_info.pose.pose.orientation.x = pose_des_keyboard_.pose.orientation.x;
+    local_goal_info.pose.pose.orientation.y = pose_des_keyboard_.pose.orientation.y;
+    local_goal_info.pose.pose.orientation.z = pose_des_keyboard_.pose.orientation.z;
+    local_goal_info.pose.pose.orientation.w = pose_des_keyboard_.pose.orientation.w;
+    local_goal_publisher_->publish(local_goal_info);
     return true;
 }

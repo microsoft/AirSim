@@ -6,6 +6,7 @@
 #define AIRSIM_ROS_KEYBOARD_OPERATOR_H
 #include "rclcpp/rclcpp.hpp"
 #include "airsim_interfaces/srv/keyboard_input.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 #include <csignal>
 #include <termios.h>
 #include <cstdio>
@@ -30,24 +31,32 @@ using LocalGoalPose = geometry_msgs::msg::PoseStamped;
 #define KEYBOARD_Q 0x71
 #define KEYBOARD_E 0x65
 
-namespace keyboard_operator{
+
+namespace keyboard_operator
+{
 using KeyboardInputService = airsim_interfaces::srv::KeyboardInput;
 using KeyboardInputServer = rclcpp::Service<KeyboardInputService>::SharedPtr;
 
-class KeyboardOperator:  public rclcpp::Node{
+void quit(int sig);
+
+
+class KeyboardOperator : public rclcpp::Node
+{
 public:
     KeyboardOperator();
-private:
     void KeyLoop();
+private:
+    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr local_goal_publisher_;
+    rclcpp::TimerBase::SharedPtr keyboard_input_timer_;
+    LocalGoalPose pose_des_keyboard_;
+
     void Publish();
     double increment_xyz_ = 0.02;
-    double increment_yaw_ = 3.141592/12;
-    LocalGoalPose pose_des_keyboard_;
-    bool move_mav(double dx, double dy, double dz, double dyaw);
+    double increment_yaw_ = 3.141592 / 12;
 
+    bool move_mav(double dx, double dy, double dz, double dyaw);
 };
 
 }
-
 
 #endif //AIRSIM_ROS_KEYBOARD_OPERATOR_H

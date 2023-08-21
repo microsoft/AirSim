@@ -5,7 +5,8 @@
 
 int main(int argc, char **argv){
     rclcpp::init(argc,argv);
-    rclcpp::spin(std::make_shared<keyboard_operator::KeyboardOperator>());
-    rclcpp::shutdown();
+    keyboard_operator::KeyboardOperator keyboard_drone;
+    signal(SIGINT,keyboard_operator::quit);
+    keyboard_drone.KeyLoop();
     return 0;
 }
