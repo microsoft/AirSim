@@ -42,12 +42,13 @@ namespace airlib
             float linear_vel;
             float angular_vel;
             Kinematics::State kinematics_estimated;
+            uint64_t timestamp;
             WarthogState()
             {
             }
 
-            WarthogState(float linear_vel_input, float angular_vel_input, const Kinematics::State& kinematics_estimated_val)
-                : linear_vel(linear_vel_input), angular_vel(angular_vel_input), kinematics_estimated(kinematics_estimated_val)
+            WarthogState(float linear_vel_input, float angular_vel_input, const Kinematics::State& kinematics_estimated_val, uint64_t timestamp_val)
+                : linear_vel(linear_vel_input), angular_vel(angular_vel_input), kinematics_estimated(kinematics_estimated_val), timestamp(timestamp_val)
             {
             }
 

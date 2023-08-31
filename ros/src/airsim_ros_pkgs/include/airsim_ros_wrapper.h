@@ -14,6 +14,7 @@ STRICT_MODE_OFF //todo what does this do?
 #include "sensors/imu/ImuBase.hpp"
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
 #include "vehicles/car/api/CarRpcLibClient.hpp"
+#include "vehicles/warthog/api/WarthogRpcLibClient.hpp"
 #include "yaml-cpp/yaml.h"
 #include <airsim_ros_pkgs/GimbalAngleEulerCmd.h>
 #include <airsim_ros_pkgs/GimbalAngleQuatCmd.h>
@@ -26,7 +27,9 @@ STRICT_MODE_OFF //todo what does this do?
 #include <airsim_ros_pkgs/VelCmd.h>
 #include <airsim_ros_pkgs/VelCmdGroup.h>
 #include <airsim_ros_pkgs/CarControls.h>
+#include <airsim_ros_pkgs/WarthogControls.h>
 #include <airsim_ros_pkgs/CarState.h>
+#include <airsim_ros_pkgs/WarthogState.h>
 #include <airsim_ros_pkgs/Environment.h>
 #include <chrono>
 #include <cv_bridge/cv_bridge.h>
@@ -130,7 +133,8 @@ public:
     enum class AIRSIM_MODE : unsigned
     {
         DRONE,
-        CAR
+        CAR,
+        WARTHOG
     };
 
     AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string& host_ip);
@@ -195,6 +199,19 @@ private:
         msr::airlib::CarApiBase::CarControls car_cmd;
     };
 
+    class WarthogROS : public VehicleROS
+    {
+    public:
+        msr::airlib::WarthogApiBase::WarthogState curr_warthog_state;
+
+        ros::Subscriber warthog_cmd_sub;
+        ros::Publisher warthog_state_pub;
+        airsim_ros_pkgs::WarthogState warthog_state_msg;
+
+        bool has_warthog_cmd;
+        msr::airlib::WarthogApiBase::WarthogControls warthog_cmd;
+    };
+
     class MultiRotorROS : public VehicleROS
     {
     public:
@@ -236,6 +253,7 @@ private:
 
     // commands
     void car_cmd_cb(const airsim_ros_pkgs::CarControls::ConstPtr& msg, const std::string& vehicle_name);
+    void warthog_cmd_cb(const airsim_ros_pkgs::WarthogControls::ConstPtr& msg, const std::string& vehicle_name);
     void update_commands();
 
     // state, returns the simulation timestamp best guess based on drone state timestamp, airsim needs to return timestap for environment
@@ -280,7 +298,9 @@ private:
     msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
     nav_msgs::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
     nav_msgs::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
+    nav_msgs::Odometry get_odom_msg_from_warthog_state(const msr::airlib::WarthogApiBase::WarthogState& car_state) const;
     airsim_ros_pkgs::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
+    airsim_ros_pkgs::WarthogState get_roswarthogstate_msg_from_warthog_state(const msr::airlib::WarthogApiBase::WarthogState& warthog_state) const;
     msr::airlib::Pose get_airlib_pose(const float& x, const float& y, const float& z, const msr::airlib::Quaternionr& airlib_quat) const;
     airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
     sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
@@ -303,6 +323,7 @@ private:
     // Utility methods to convert airsim_client_
     msr::airlib::MultirotorRpcLibClient* get_multirotor_client();
     msr::airlib::CarRpcLibClient* get_car_client();
+    msr::airlib::WarthogRpcLibClient* get_warthog_client();
 
 private:
     ros::NodeHandle nh_;

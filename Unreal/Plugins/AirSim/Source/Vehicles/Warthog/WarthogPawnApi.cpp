@@ -25,7 +25,8 @@ msr::airlib::WarthogApiBase::WarthogState WarthogPawnApi::getWarthogState() cons
     //    pawn_->desired_angular_vel_,
     msr::airlib::WarthogApiBase::WarthogState state(pawn_->curr_v,
         pawn_->curr_w,
-        *pawn_kinematics_);
+        *pawn_kinematics_, 
+         msr::airlib::ClockFactory::get()->nowNanos());
    // if (1) 
     //    {
      //   pawn_->SetLinearVelocity(0.2);

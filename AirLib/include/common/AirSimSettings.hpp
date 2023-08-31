@@ -34,7 +34,7 @@ namespace airlib
         static constexpr char const* kVehicleTypeArduCopter = "arducopter";
         static constexpr char const* kVehicleTypePhysXCar = "physxcar";
         static constexpr char const* kVehicleTypeArduRover = "ardurover";
-        static constexpr char const* kVehicleTypeWarthog = "Warthog";
+        static constexpr char const* kVehicleTypeWarthog = "warthog";
         static constexpr char const* kVehicleTypeComputerVision = "computervision";
 
         static constexpr char const* kVehicleInertialFrame = "VehicleInertialFrame";

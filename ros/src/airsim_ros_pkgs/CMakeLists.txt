@@ -53,6 +53,8 @@ add_message_files(
   VelCmdGroup.msg
   CarControls.msg
   CarState.msg
+  WarthogState.msg
+  WarthogControls.msg
   Altimeter.msg
   Environment.msg
 )

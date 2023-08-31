@@ -58,10 +58,10 @@ namespace airlib_rpclib
             KinematicsState kinematics_estimated;
             float linear_vel;
             float angular_vel;
-            //uint64_t timestamp;
+            uint64_t timestamp;
 
             //MSGPACK_DEFINE_MAP(speed, gear, rpm, maxrpm, handbrake, kinematics_estimated, timestamp);
-            MSGPACK_DEFINE_MAP(linear_vel, angular_vel, kinematics_estimated);
+            MSGPACK_DEFINE_MAP(linear_vel, angular_vel, kinematics_estimated, timestamp);
 
             WarthogState()
             {
@@ -72,12 +72,13 @@ namespace airlib_rpclib
             {
                 linear_vel = s.linear_vel;
                 angular_vel = s.angular_vel;
-                kinematics_estimated = s.kinematics_estimated;
+                kinematics_estimated = s.kinematics_estimated; 
+                timestamp = s.timestamp;
             }
             msr::airlib::WarthogApiBase::WarthogState to() const
             {
                 return msr::airlib::WarthogApiBase::WarthogState(
-                    linear_vel, angular_vel, kinematics_estimated.to());
+                    linear_vel, angular_vel, kinematics_estimated.to(), timestamp);
             }
         };
     };
