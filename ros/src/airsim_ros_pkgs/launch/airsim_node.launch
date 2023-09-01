@@ -1,6 +1,6 @@
 <launch>
 	<arg name="output" default="log"/>
-	<arg name="publish_clock" default="false"/>
+	<arg name="publish_clock" default="true"/>
 	<arg name="is_vulkan" default="true"/>
 	<arg name="host" default="localhost" />
 

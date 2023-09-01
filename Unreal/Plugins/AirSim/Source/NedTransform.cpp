@@ -55,6 +55,7 @@ float NedTransform::toNed(float length) const
 NedTransform::Pose NedTransform::toLocalNed(const FTransform& pose) const
 {
     return Pose(toLocalNed(pose.GetLocation()), toNed(pose.GetRotation()));
+    //return Pose();
 }
 NedTransform::Pose NedTransform::toGlobalNed(const FTransform& pose) const
 {

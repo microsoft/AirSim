@@ -101,6 +101,7 @@ void AirsimROSWrapper::initialize_ros()
     nh_private_.getParam("is_vulkan", is_vulkan_);
     nh_private_.getParam("update_airsim_control_every_n_sec", update_airsim_control_every_n_sec);
     nh_private_.getParam("publish_clock", publish_clock_);
+    ROS_WARN("clock getting something %d", publish_clock_);
     nh_private_.param("world_frame_id", world_frame_id_, world_frame_id_);
     odom_frame_id_ = world_frame_id_ == AIRSIM_FRAME_ID ? AIRSIM_ODOM_FRAME_ID : ENU_ODOM_FRAME_ID;
     nh_private_.param("odom_frame_id", odom_frame_id_, odom_frame_id_);
@@ -112,7 +113,8 @@ void AirsimROSWrapper::initialize_ros()
     // nh_.getParam("max_horz_vel", max_horz_vel_)
 
     create_ros_pubs_from_settings_json();
-    airsim_control_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_control_every_n_sec), &AirsimROSWrapper::drone_state_timer_cb, this);
+    //airsim_control_update_timer_ = nh_private_.createWallTimer(ros::Duration(update_airsim_control_every_n_sec), &AirsimROSWrapper::drone_state_timer_cb, this);
+    airsim_control_update_timer_ = nh_private_.createWallTimer(ros::WallDuration(update_airsim_control_every_n_sec), &AirsimROSWrapper::drone_state_timer_cb, this);
 }
 
 // XmlRpc::XmlRpcValue can't be const in this case
@@ -335,7 +337,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     reset_srvr_ = nh_private_.advertiseService("reset", &AirsimROSWrapper::reset_srv_cb, this);
 
     if (publish_clock_) {
-        clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 1);
+        //clock_pub_ = nh_private_.advertise<rosgraph_msgs::Clock>("clock", 1);
+        clock_pub_ = nh_.advertise<rosgraph_msgs::Clock>("clock", 1);
     }
 
     // if >0 cameras, add one more thread for img_request_timer_cb
@@ -1017,9 +1020,11 @@ msr::airlib::WarthogRpcLibClient* AirsimROSWrapper::get_warthog_client()
     return static_cast<msr::airlib::WarthogRpcLibClient*>(airsim_client_.get());
 }
 
-void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
+void AirsimROSWrapper::drone_state_timer_cb(const ros::WallTimerEvent& event)
 {
+    ROS_WARN("drone callback called publishing clock");
     try {
+        ROS_WARN("inside callback try");
         // todo this is global origin
         origin_geo_point_pub_.publish(origin_geo_point_msg_);
 
@@ -1033,6 +1038,7 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
         }
         // publish the simulation clock
         if (publish_clock_) {
+            ROS_WARN("publishing clock");
             clock_pub_.publish(ros_clock_);
         }
 
