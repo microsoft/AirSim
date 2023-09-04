@@ -62,6 +62,15 @@ The required modules are:
 
 msgpack changed its name from msgpack-python to msgpack, which leads to an outdated version installed.  When running the outdated version, the python instance is used rather than the quicker c++ version.  Hence, we need to correct this using `https://github.com/tbelhalfaoui/msgpack-rpc-python/tree/fix-msgpack-dep`.  If Jupyter package is installed, tornado will also be outdated.  The torndao version needs to be <5.
 
+Alternatively, run this to install the cython binaries of msgpack:
+
+```
+pip install Cython
+git clone -b 0.5.6 https://github.com/msgpack/msgpack-python.git
+cd msgpack-python
+make
+```
+
 
 ## Binary download
 
