@@ -178,6 +178,8 @@ private:
         ros::Time stamp;
 
         std::string odom_frame_id;
+
+
         /// Status
         // bool is_armed_;
         // std::string mode_;
@@ -215,6 +217,8 @@ private:
         /// Status
         // bool in_air_; // todo change to "status" and keep track of this
     };
+
+    geometry_msgs::PoseStamped ned_pose_to_enu_pose(const geometry_msgs::PoseStamped & pose_ned) const; // (Yunwoo)
 
     /// ROS timer callbacks
     void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
@@ -330,6 +334,8 @@ private:
     msr::airlib::GeoPoint origin_geo_point_; // gps coord of unreal origin
     airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
 
+    std::vector<ros::Publisher> pose_object_enu_pub_set;
+
     AirSimSettingsParser airsim_settings_parser_;
     std::unordered_map<std::string, std::unique_ptr<VehicleROS>> vehicle_name_ptr_map_;
     static const std::unordered_map<int, std::string> image_type_int_to_string_map_;
@@ -347,13 +353,14 @@ private:
     ros::CallbackQueue lidar_timer_cb_queue_;
 
     std::mutex drone_control_mutex_;
-
+    std::vector<std::string> object_name_set;
     // gimbal control
     bool has_gimbal_cmd_;
     GimbalCmd gimbal_cmd_;
 
     /// ROS tf
     const std::string AIRSIM_FRAME_ID = "world_ned";
+    const std::string AIRSIM_FRAME_ID_ENU = "world_enu"; // (Yunwoo)
     std::string world_frame_id_ = AIRSIM_FRAME_ID;
     const std::string AIRSIM_ODOM_FRAME_ID = "odom_local_ned";
     const std::string ENU_ODOM_FRAME_ID = "odom_local_enu";

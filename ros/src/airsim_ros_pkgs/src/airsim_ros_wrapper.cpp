@@ -104,6 +104,15 @@ void AirsimROSWrapper::initialize_ros()
     // nh_.getParam("max_vert_vel_", max_vert_vel_);
     // nh_.getParam("max_horz_vel", max_horz_vel_)
 
+    std::vector<std::string> object_name_set_temp; // (Yunwoo)
+    nh_private_.getParam("object_name_set",object_name_set_temp);
+    std::cout << object_name_set_temp.size() << " objects of interest: " << std::endl ;
+    for (auto str : object_name_set_temp)
+        std::cout << str << ", ";
+    std::cout << std::endl;
+    object_name_set = object_name_set_temp;
+
+
     create_ros_pubs_from_settings_json();
     airsim_control_update_timer_ = nh_private_.createTimer(ros::Duration(update_airsim_control_every_n_sec), &AirsimROSWrapper::drone_state_timer_cb, this);
 }
@@ -115,6 +124,11 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
     gimbal_angle_quat_cmd_sub_ = nh_private_.subscribe("gimbal_angle_quat_cmd", 50, &AirsimROSWrapper::gimbal_angle_quat_cmd_cb, this);
     gimbal_angle_euler_cmd_sub_ = nh_private_.subscribe("gimbal_angle_euler_cmd", 50, &AirsimROSWrapper::gimbal_angle_euler_cmd_cb, this);
     origin_geo_point_pub_ = nh_private_.advertise<airsim_ros_pkgs::GPSYaw>("origin_geo_point", 10);
+
+    for (auto str: object_name_set){
+        std::string topic = str + "_pose";
+        pose_object_enu_pub_set.push_back(nh_private_.advertise<geometry_msgs::PoseStamped>(topic,1));
+    }
 
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
@@ -1074,6 +1088,41 @@ void AirsimROSWrapper::publish_vehicle_state()
         vehicle_ros->odom_local_pub.publish(vehicle_ros->curr_odom);
         publish_odom_tf(vehicle_ros->curr_odom);
 
+        // target pose publish (Yunwoo)
+        ros::Time curr_ros_time = ros::Time::now();
+        int objectCount = 0;
+        for (auto object_name : object_name_set ) {
+            // Extracting object pose
+            auto pose_true = airsim_client_->simGetObjectPose(object_name); // ned
+            geometry_msgs::PoseStamped object_pose_ned,object_pose_enu;
+            object_pose_ned.header.frame_id = AIRSIM_FRAME_ID_ENU; // ?
+            object_pose_ned.pose.position.x = pose_true.position.x();
+            object_pose_ned.pose.position.y = pose_true.position.y();
+            object_pose_ned.pose.position.z = pose_true.position.z();
+            object_pose_ned.pose.orientation.x = pose_true.orientation.x();
+            object_pose_ned.pose.orientation.y = pose_true.orientation.y();
+            object_pose_ned.pose.orientation.z = pose_true.orientation.z();
+            object_pose_ned.pose.orientation.w = pose_true.orientation.w();
+            if (not std::isnan(pose_true.position.x())) {
+                auto pose = ned_pose_to_enu_pose(object_pose_ned);
+                pose.header.stamp = ros::Time::now();
+                pose_object_enu_pub_set[objectCount].publish(pose);
+                geometry_msgs::TransformStamped object_tf;
+                object_tf.header.stamp = ros::Time::now();
+                object_tf.child_frame_id = object_name;
+                object_tf.header.frame_id = AIRSIM_FRAME_ID_ENU;
+                object_tf.transform.translation.x = pose.pose.position.x;
+                object_tf.transform.translation.y = pose.pose.position.y;
+                object_tf.transform.translation.z = pose.pose.position.z;
+                object_tf.transform.rotation.x = pose.pose.orientation.x;
+                object_tf.transform.rotation.y = pose.pose.orientation.y;
+                object_tf.transform.rotation.z = pose.pose.orientation.z;
+                object_tf.transform.rotation.w = pose.pose.orientation.w;
+                tf_broadcaster_.sendTransform(object_tf);
+            }
+            objectCount += 1 ;
+        }
+
         // ground truth GPS position from sim/HITL
         vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
 
@@ -1518,4 +1567,29 @@ void AirsimROSWrapper::read_params_from_yaml_and_fill_cam_info_msg(const std::st
     for (int i = 0; i < D_rows * D_cols; ++i) {
         cam_info.D[i] = D_data[i].as<float>();
     }
+}
+geometry_msgs::PoseStamped AirsimROSWrapper::ned_pose_to_enu_pose(const geometry_msgs::PoseStamped& pose_ned) const
+{
+    geometry_msgs::PoseStamped pose_stamped;
+    pose_stamped.header.frame_id = AIRSIM_FRAME_ID_ENU;
+    pose_stamped.header.stamp = ros::Time::now();
+    Eigen::Quaternionf quat;
+    Eigen::Vector3f transl;
+    transl(0) = pose_ned.pose.position.x;
+    transl(1) = pose_ned.pose.position.y;
+    transl(2) = pose_ned.pose.position.z;
+    quat.x() =  pose_ned.pose.orientation.x;
+    quat.y() =  pose_ned.pose.orientation.y;
+    quat.z() =  pose_ned.pose.orientation.z;
+    quat.w() =  pose_ned.pose.orientation.w;
+    quat.normalize();
+    pose_stamped.pose.position.x = transl(1);
+    pose_stamped.pose.position.y = transl(0);
+    pose_stamped.pose.position.z = -transl(2);
+    pose_stamped.pose.orientation.w = quat.w();
+    pose_stamped.pose.orientation.x = quat.y();
+    pose_stamped.pose.orientation.y = quat.x();
+    pose_stamped.pose.orientation.z = -quat.z();
+
+    return pose_stamped;
 }
