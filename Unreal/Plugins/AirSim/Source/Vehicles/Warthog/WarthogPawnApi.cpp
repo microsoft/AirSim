@@ -15,7 +15,8 @@ void WarthogPawnApi::updateMovement(const msr::airlib::WarthogApiBase::WarthogCo
     //   movement_->SetTargetGear(0, true); //in auto gear we must have gear >= 0
     //if (controls.is_manual_gear && movement_->GetTargetGear() != controls.manual_gear)
     //   movement_->SetTargetGear(controls.manual_gear, controls.gear_immediate);
-    pawn_->SetDesiredVelocities(controls.linear_vel, controls.angular_vel);
+    //pawn_->SetDesiredVelocities(controls.linear_vel, controls.angular_vel);
+    pawn_->SetDesiredVelocities(1.0, 0.5);
     //pawn_->SetAngularVelocity(controls.angular_vel);
 }
 
@@ -39,7 +40,7 @@ void WarthogPawnApi::reset()
 {
     vehicle_api_->reset();
     UE_LOG(LogTemp, Warning, TEXT("something something something"));
-    pawn_->SetActorLocation(FVector(-10, 0, 100),false, nullptr, ETeleportType::TeleportPhysics);
+  //  pawn_->SetActorLocation(FVector(-10, 0, 100),false, nullptr, ETeleportType::TeleportPhysics);
     last_controls_ = msr::airlib::WarthogApiBase::WarthogControls();
     auto phys_comps = UAirBlueprintLib::getPhysicsComponents(pawn_);
     UAirBlueprintLib::RunCommandOnGameThread([this, &phys_comps]() {
