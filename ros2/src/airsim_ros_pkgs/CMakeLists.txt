@@ -5,10 +5,10 @@ find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_sensor_msgs REQUIRED)
 find_package(rclpy REQUIRED)
-find_package(tf2 REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
@@ -59,6 +59,11 @@ ament_target_dependencies(pd_position_controller_simple
   nav_msgs
   geometry_msgs
   airsim_interfaces
+  mavros_msgs
+  std_srvs
+  tf2
+  tf2_geometry_msgs
+  tf2_ros
 )
 
 add_library(airsim_ros src/airsim_ros_wrapper.cpp)
@@ -67,8 +72,13 @@ ament_target_dependencies(airsim_ros
   rclcpp
   sensor_msgs
   geometry_msgs
+  mavros_msgs
   nav_msgs
   image_transport
+  std_srvs
+  tf2
+  tf2_geometry_msgs
+  tf2_sensor_msgs
   tf2_ros
   cv_bridge
   airsim_interfaces
