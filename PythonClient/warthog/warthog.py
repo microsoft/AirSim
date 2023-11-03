@@ -18,9 +18,10 @@ def zero_to_2pi( theta):
     elif theta > 2 * math.pi:
         theta = theta - 2 * math.pi
     return theta
-#joystick = pygame.joystick.Joystick(0)
+joystick = pygame.joystick.Joystick(0)
 # connect to the AirSim simulator
-client = airsim.WarthogClient(ip = "172.31.208.1")
+#client = airsim.WarthogClient(ip = "172.31.208.1")
+client = airsim.WarthogClient()
 client.confirmConnection()
 client.enableApiControl(True)
 print("API Control enabled: %s" % client.isApiControlEnabled())
@@ -39,23 +40,23 @@ not_done = True;
 i = 0
 while not_done:
     st_time = time.time()
-    '''for event in pygame.event.get():
+    for event in pygame.event.get():
         pass
     a0 = joystick.get_axis(1)
     a1 = joystick.get_axis(2)
     button = joystick.get_button(0)
     if button == 1:
         not_done=False
-        break'''
-    a0 = 0.5
-    a1= 0.5
+        break
+    #a0 = 0.5
+    #a1= 0.5
     war_controls.linear_vel = -a0*5.0
     war_controls.angular_vel = -a1*2.0
     client.setWarthogControls(war_controls)
     war_state = client.getWarthogState()
     lin.append(war_state.linear_vel)
     ang.append(war_state.angular_vel)
-    gps_data = client.getGpsData()
+    gps_data = client.getGpsData(vehicle_name="Drone1")
     responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
     response = responses[0]
     if not i%10:
