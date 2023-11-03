@@ -5,7 +5,7 @@ STRICT_MODE_OFF //todo what does this do?
 #endif // !RPCLIB_MSGPACK
 #include "rpc/rpc_error.h"
     STRICT_MODE_ON
-
+#include <geometry_msgs/Twist.h>
 #include "airsim_settings_parser.h"
 #include "common/AirSimSettings.hpp"
 #include "common/common_utils/FileSystem.hpp"
@@ -254,6 +254,7 @@ private:
     // commands
     void car_cmd_cb(const airsim_ros_pkgs::CarControls::ConstPtr& msg, const std::string& vehicle_name);
     void warthog_cmd_cb(const airsim_ros_pkgs::WarthogControls::ConstPtr& msg, const std::string& vehicle_name);
+    void warthog_cmd_cb_twist(const geometry_msgs::Twist::ConstPtr& msg, const std::string& vehicle_name);
     void update_commands();
 
     // state, returns the simulation timestamp best guess based on drone state timestamp, airsim needs to return timestap for environment

@@ -4,6 +4,7 @@
 // PLUGINLIB_EXPORT_CLASS(AirsimROSWrapper, nodelet::Nodelet)
 #include "common/AirSimSettings.hpp"
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
+#include <geometry_msgs/Twist.h>
 
 constexpr char AirsimROSWrapper::CAM_YML_NAME[];
 constexpr char AirsimROSWrapper::WIDTH_YML_NAME[];
@@ -203,10 +204,14 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
         else {
             auto warthog = static_cast<WarthogROS*>(vehicle_ros.get());
-            warthog->warthog_cmd_sub = nh_private_.subscribe<airsim_ros_pkgs::WarthogControls>(
+           // warthog->warthog_cmd_sub = nh_private_.subscribe<airsim_ros_pkgs::WarthogControls>(
+            //    curr_vehicle_name + "/warthog_cmd",
+             //   1,
+              //  boost::bind(&AirsimROSWrapper::warthog_cmd_cb, this, _1, vehicle_ros->vehicle_name));
+            warthog->warthog_cmd_sub = nh_private_.subscribe<geometry_msgs::Twist>(
                 curr_vehicle_name + "/warthog_cmd",
                 1,
-                boost::bind(&AirsimROSWrapper::warthog_cmd_cb, this, _1, vehicle_ros->vehicle_name));
+                boost::bind(&AirsimROSWrapper::warthog_cmd_cb_twist, this, _1, vehicle_ros->vehicle_name));
 
             warthog->warthog_state_pub = nh_private_.advertise<airsim_ros_pkgs::WarthogState>(curr_vehicle_name + "/warthog_state", 10);
         }
@@ -508,6 +513,15 @@ void AirsimROSWrapper::warthog_cmd_cb(const airsim_ros_pkgs::WarthogControls::Co
     auto warthog = static_cast<WarthogROS*>(vehicle_name_ptr_map_[vehicle_name].get());
     warthog->warthog_cmd.linear_vel = msg->linear_vel;
     warthog->warthog_cmd.angular_vel = msg->angular_vel;
+    warthog->has_warthog_cmd = true;
+}
+void AirsimROSWrapper::warthog_cmd_cb_twist(const geometry_msgs::Twist::ConstPtr& msg, const std::string& vehicle_name)
+{
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+
+    auto warthog = static_cast<WarthogROS*>(vehicle_name_ptr_map_[vehicle_name].get());
+    warthog->warthog_cmd.linear_vel = msg->linear.x;
+    warthog->warthog_cmd.angular_vel = msg->angular.z;
     warthog->has_warthog_cmd = true;
 }
 msr::airlib::Pose AirsimROSWrapper::get_airlib_pose(const float& x, const float& y, const float& z, const msr::airlib::Quaternionr& airlib_quat) const
