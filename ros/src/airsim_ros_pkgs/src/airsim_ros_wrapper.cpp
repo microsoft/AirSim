@@ -1354,7 +1354,7 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
     vehicle_tf_msg.child_frame_id = vehicle_ros->vehicle_name;
     vehicle_tf_msg.transform.translation.x = vehicle_setting.position.x();
     vehicle_tf_msg.transform.translation.y = vehicle_setting.position.y();
-    vehicle_tf_msg.transform.translation.z = vehicle_setting.position.z();
+    vehicle_tf_msg.transform.translation.z = -vehicle_setting.position.z();
     tf2::Quaternion quat;
     quat.setRPY(vehicle_setting.rotation.roll, vehicle_setting.rotation.pitch, vehicle_setting.rotation.yaw);
     vehicle_tf_msg.transform.rotation.x = quat.x();
@@ -1375,15 +1375,21 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
 void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const msr::airlib::LidarSimpleParams& lidar_setting)
 {
     geometry_msgs::TransformStamped lidar_tf_msg;
+    tf2::Quaternion quat;
+    quat.setRPY(3.14,0 ,0);
     lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name + "/" + odom_frame_id_;
     lidar_tf_msg.child_frame_id = vehicle_ros->vehicle_name + "/" + lidar_name;
     lidar_tf_msg.transform.translation.x = lidar_setting.relative_pose.position.x();
     lidar_tf_msg.transform.translation.y = lidar_setting.relative_pose.position.y();
-    lidar_tf_msg.transform.translation.z = lidar_setting.relative_pose.position.z();
-    lidar_tf_msg.transform.rotation.x = lidar_setting.relative_pose.orientation.x();
-    lidar_tf_msg.transform.rotation.y = lidar_setting.relative_pose.orientation.y();
-    lidar_tf_msg.transform.rotation.z = lidar_setting.relative_pose.orientation.z();
-    lidar_tf_msg.transform.rotation.w = lidar_setting.relative_pose.orientation.w();
+    lidar_tf_msg.transform.translation.z = -lidar_setting.relative_pose.position.z();
+    //lidar_tf_msg.transform.rotation.x = lidar_setting.relative_pose.orientation.x();
+    //lidar_tf_msg.transform.rotation.y = lidar_setting.relative_pose.orientation.y();
+    //lidar_tf_msg.transform.rotation.z = lidar_setting.relative_pose.orientation.z();
+    //lidar_tf_msg.transform.rotation.w = lidar_setting.relative_pose.orientation.w();
+    lidar_tf_msg.transform.rotation.x = quat.x();
+    lidar_tf_msg.transform.rotation.y = quat.y();
+    lidar_tf_msg.transform.rotation.z = quat.z();
+    lidar_tf_msg.transform.rotation.w = quat.w();
 
     if (isENU_) {
         std::swap(lidar_tf_msg.transform.translation.x, lidar_tf_msg.transform.translation.y);
