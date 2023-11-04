@@ -46,8 +46,9 @@ while not_done:
     a1 = joystick.get_axis(2)
     button = joystick.get_button(0)
     if button == 1:
-        not_done=False
-        break
+        client.reset()
+       # not_done=False
+       # break
     #a0 = 0.5
     #a1= 0.5
     war_controls.linear_vel = -a0*5.0
