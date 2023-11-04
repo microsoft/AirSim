@@ -750,8 +750,8 @@ nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_warthog_state(const msr::
     nav_msgs::Odometry odom_msg;
 
     odom_msg.pose.pose.position.x = warthog_state.getPosition().x();
-    odom_msg.pose.pose.position.y = warthog_state.getPosition().y();
-    odom_msg.pose.pose.position.z = warthog_state.getPosition().z();
+    odom_msg.pose.pose.position.y = -warthog_state.getPosition().y();
+    odom_msg.pose.pose.position.z = -warthog_state.getPosition().z();
     odom_msg.pose.pose.orientation.x = warthog_state.getOrientation().x();
     odom_msg.pose.pose.orientation.y = warthog_state.getOrientation().y();
     odom_msg.pose.pose.orientation.z = warthog_state.getOrientation().z();
@@ -1036,9 +1036,7 @@ msr::airlib::WarthogRpcLibClient* AirsimROSWrapper::get_warthog_client()
 
 void AirsimROSWrapper::drone_state_timer_cb(const ros::WallTimerEvent& event)
 {
-    ROS_WARN("drone callback called publishing clock");
     try {
-        ROS_WARN("inside callback try");
         // todo this is global origin
         origin_geo_point_pub_.publish(origin_geo_point_msg_);
 
@@ -1052,7 +1050,6 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::WallTimerEvent& event)
         }
         // publish the simulation clock
         if (publish_clock_) {
-            ROS_WARN("publishing clock");
             clock_pub_.publish(ros_clock_);
         }
 
@@ -1187,6 +1184,19 @@ void AirsimROSWrapper::publish_vehicle_state()
         }
 
         // odom and transforms
+        tf2::Quaternion q_orig, q_rot, q_new;
+
+// Get the original orientation of 'commanded_pose'
+        tf2::convert(vehicle_ros->curr_odom.pose.pose.orientation , q_orig);
+
+        double r=3.14159, p=0, y=0;  // Rotate the previous pose by 180* about X
+        q_rot.setRPY(r, p, y);
+
+        q_new = q_rot*q_orig*q_rot;  // Calculate the new orientation
+        q_new.normalize();
+
+// Stuff the new rotation back into the pose. This requires conversion into a msg type
+        tf2::convert(q_new, vehicle_ros->curr_odom.pose.pose.orientation); 
         vehicle_ros->odom_local_pub.publish(vehicle_ros->curr_odom);
         publish_odom_tf(vehicle_ros->curr_odom);
 
@@ -1338,7 +1348,8 @@ void AirsimROSWrapper::set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_s
 void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting)
 {
     geometry_msgs::TransformStamped vehicle_tf_msg;
-    vehicle_tf_msg.header.frame_id = world_frame_id_;
+    //vehicle_tf_msg.header.frame_id = world_frame_id_;
+    vehicle_tf_msg.header.frame_id = "world_enu";
     vehicle_tf_msg.header.stamp = ros::Time::now();
     vehicle_tf_msg.child_frame_id = vehicle_ros->vehicle_name;
     vehicle_tf_msg.transform.translation.x = vehicle_setting.position.x();
