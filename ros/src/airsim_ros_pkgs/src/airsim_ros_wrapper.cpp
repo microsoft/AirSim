@@ -758,11 +758,11 @@ nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_warthog_state(const msr::
     odom_msg.pose.pose.orientation.w = warthog_state.getOrientation().w();
 
     odom_msg.twist.twist.linear.x = warthog_state.kinematics_estimated.twist.linear.x();
-    odom_msg.twist.twist.linear.y = warthog_state.kinematics_estimated.twist.linear.y();
-    odom_msg.twist.twist.linear.z = warthog_state.kinematics_estimated.twist.linear.z();
+    odom_msg.twist.twist.linear.y = -warthog_state.kinematics_estimated.twist.linear.y();
+    odom_msg.twist.twist.linear.z = -warthog_state.kinematics_estimated.twist.linear.z();
     odom_msg.twist.twist.angular.x = warthog_state.kinematics_estimated.twist.angular.x();
     odom_msg.twist.twist.angular.y = warthog_state.kinematics_estimated.twist.angular.y();
-    odom_msg.twist.twist.angular.z = warthog_state.kinematics_estimated.twist.angular.z();
+    odom_msg.twist.twist.angular.z = -warthog_state.kinematics_estimated.twist.angular.z();
 
     if (isENU_) {
         std::swap(odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y);
