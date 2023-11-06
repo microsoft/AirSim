@@ -38,28 +38,39 @@ q = Quaternion(a[3], a[0], a[1], a[2])
 init_angle = np.sign(q.axis[2])*q.degrees'''
 not_done = True;
 i = 0
+man_control = True
 while not_done:
     st_time = time.time()
     for event in pygame.event.get():
         pass
     a0 = joystick.get_axis(1)
     a1 = joystick.get_axis(2)
+    a3 = joystick.get_button(10)
     button = joystick.get_button(0)
+    button2 = joystick.get_button(1)
+    button3 = joystick.get_button(2)
     if button == 1:
+        client.reset()
+        not_done=False
+        break
+    if button2 == 1:
         client.reset()
        # not_done=False
        # break
+    if button3 == 1:
+        man_control = not man_control
     #a0 = 0.5
     #a1= 0.5
     war_controls.linear_vel = -a0*5.0
     war_controls.angular_vel = -a1*2.0
-    client.setWarthogControls(war_controls)
+    if button3 ==1:
+        client.setWarthogControls(war_controls)
     war_state = client.getWarthogState()
     lin.append(war_state.linear_vel)
     ang.append(war_state.angular_vel)
     gps_data = client.getGpsData(vehicle_name="Drone1")
-    responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
-    response = responses[0]
+    #responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
+    #response = responses[0]
     if not i%10:
         a = war_state.kinematics_estimated.orientation.to_numpy_array()
         q = Quaternion(a[3], a[0], a[1], a[2])
@@ -68,19 +79,19 @@ while not_done:
         #print(f'full state {war_state.kinematics_estimated.orientation.to_numpy_array()}')
         #print(f'degrees = {np.sign(q.axis[2])*q.degrees}')
         yaw = zero_to_2pi(-np.sign(q.axis[2])*q.radians)*180/math.pi
-        print(f'degrees = {yaw}')
-        print(f'pose = {right_handed_system_pose}')
+        #print(f'degrees = {yaw}')
+        #print(f'pose = {right_handed_system_pose}')
         #print(f'angle = {np.sign(q.axis[2])*q.angle}')
-        #print(f'axis = {q.axis}')
+        print(f'axis = {a3}')
     i = i+1
 
 # get numpy array
-    img1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8) 
+    #img1d = np.frombuffer(response.image_data_uint8, dtype=np.uint8) 
 
 # reshape array to 4 channel image array H X W X 4
-    img_rgb = img1d.reshape(response.height, response.width, 3)
-    cv2.imshow("war", img_rgb)
-    cv2.waitKey(1)
+    #img_rgb = img1d.reshape(response.height, response.width, 3)
+    #cv2.imshow("war", img_rgb)
+    #cv2.waitKey(1)
     dlt.append(time.time() - st_time)
     
    # print(gps_data)
