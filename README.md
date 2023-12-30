@@ -71,6 +71,7 @@ cd msgpack-python
 make
 ```
 
+Todo: if the above doesn't fix the msgpack python issue, we need to comment out code inside rpc.
 
 ## Binary download
 
