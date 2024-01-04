@@ -43,9 +43,6 @@ RUN ./setup.sh && \
     apt-get clean
 RUN ./build.sh --gcc
 
-RUN ls -la /home/ros
-RUN ls -la /home/ros/AirSim
-RUN ls -la /home/ros/AirSim/Unreal/
 RUN chown -R ${ROS_USER}:${ROS_USER} ${ROS_USER_HOME}/AirSim
 USER ${ROS_USER}
 
