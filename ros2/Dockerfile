@@ -43,13 +43,14 @@ RUN ./setup.sh && \
     apt-get clean
 RUN ./build.sh --gcc
 
+RUN chown -R ${ROS_USER}:${ROS_USER} ${ROS_USER_HOME}/AirSim
 USER ${ROS_USER}
 
 WORKDIR ${ROS_USER_HOME}/AirSim/ros2
 
 SHELL ["/bin/bash", "-c"]
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    colcon build --symlink-install --event-handlers console_direct+ 
+    colcon build --symlink-install --event-handlers console_direct+
 
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ${ROS_USER_HOME}/.bashrc
 RUN echo "source ${ROS_USER_HOME}/AirSim/ros2/install/setup.bash" >> ${ROS_USER_HOME}/.bashrc
