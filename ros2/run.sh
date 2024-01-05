@@ -45,7 +45,12 @@ function ensure_build_airsim() {
     docker image inspect "${IMAGE_NAME}" > /dev/null
     if [[ "$?" -ne 0 ]] || [[ "${BUILD}" = "true" ]]; then
         set -e
-        docker build -f "${SCRIPT_DIR}/Dockerfile" -t "${IMAGE_NAME}" "${SCRIPT_DIR}"
+        docker pull ros:iron-ros-base
+        docker build \
+            --progress plain \
+            -f "${SCRIPT_DIR}/Dockerfile" \
+            -t "${IMAGE_NAME}" \
+            "${SCRIPT_DIR}/../"
     fi
     set -e
 }
