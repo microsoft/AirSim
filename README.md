@@ -12,7 +12,7 @@ Our goal is to develop AirSim as a platform for AI research, allowing experiment
 
 **Check out the quick 1.5 minute demo**
 
-Drones in AirSim
+Drones in AirSim:
 
 [![AirSim Drone Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
