@@ -8,11 +8,11 @@ In the spirit of forward momentum, we will be releasing a new simulation platfor
 
 AirSim is a simulator for drones, cars and more, built on [Unreal Engine](https://www.unrealengine.com/) (we now also have an experimental [Unity](https://unity3d.com/) release). It is open-source, cross platform, and supports software-in-the-loop simulation with popular flight controllers such as PX4 & ArduPilot and hardware-in-loop with PX4 for physically and visually realistic simulations. It is developed as an Unreal plugin that can simply be dropped into any Unreal environment. Similarly, we have an experimental release for a Unity plugin.
 
-Our goal is to develop AirSim as a platform for AI research to experiment with deep learning, computer vision and reinforcement learning algorithms for autonomous vehicles. For this purpose, AirSim also exposes APIs to retrieve data and control vehicles in a platform independent way.
+Our goal is to develop AirSim as a platform for AI research, allowing experimentation with deep learning, computer vision, and reinforcement learning algorithms for autonomous vehicles. To achieve this, AirSim exposes APIs to retrieve data and control vehicles in a platform-independent way.
 
 **Check out the quick 1.5 minute demo**
 
-Drones in AirSim
+Drones in AirSim:
 
 [![AirSim Drone Demo Video](docs/images/demo_video.png)](https://youtu.be/-WfTr1-OBGQ)
 
