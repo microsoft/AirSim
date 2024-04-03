@@ -174,7 +174,7 @@ Throttle, brake, steering and gear selections for control. Both automatic and ma
 #### Parameters:
 
 - PD controller parameters:
-  * `/pd_position_node/kd_x` [double],
+  * `/pd_position_node/kp_x` [double],
     `/pd_position_node/kp_y` [double],
     `/pd_position_node/kp_z` [double],
     `/pd_position_node/kp_yaw` [double]
