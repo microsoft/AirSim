@@ -1,7 +1,7 @@
 site_name: AirSim
 site_dir: build_docs
 repo_url: https://github.com/microsoft/airsim
-site_description: 'Open source simulator based on Unreal Engine for autonomous vehicles from Microsoft AI & Research'
+site_description: 'Open source simulator based on Unreal Engine for autonomous vehicles from Codex Labs'
 
 markdown_extensions:
     - toc:
