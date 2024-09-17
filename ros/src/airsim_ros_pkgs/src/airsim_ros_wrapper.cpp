@@ -4,6 +4,7 @@
 // PLUGINLIB_EXPORT_CLASS(AirsimROSWrapper, nodelet::Nodelet)
 #include "common/AirSimSettings.hpp"
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
+#include <geometry_msgs/Twist.h>
 
 constexpr char AirsimROSWrapper::CAM_YML_NAME[];
 constexpr char AirsimROSWrapper::WIDTH_YML_NAME[];
@@ -203,10 +204,14 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
         else {
             auto warthog = static_cast<WarthogROS*>(vehicle_ros.get());
-            warthog->warthog_cmd_sub = nh_private_.subscribe<airsim_ros_pkgs::WarthogControls>(
+           // warthog->warthog_cmd_sub = nh_private_.subscribe<airsim_ros_pkgs::WarthogControls>(
+            //    curr_vehicle_name + "/warthog_cmd",
+             //   1,
+              //  boost::bind(&AirsimROSWrapper::warthog_cmd_cb, this, _1, vehicle_ros->vehicle_name));
+            warthog->warthog_cmd_sub = nh_private_.subscribe<geometry_msgs::Twist>(
                 curr_vehicle_name + "/warthog_cmd",
                 1,
-                boost::bind(&AirsimROSWrapper::warthog_cmd_cb, this, _1, vehicle_ros->vehicle_name));
+                boost::bind(&AirsimROSWrapper::warthog_cmd_cb_twist, this, _1, vehicle_ros->vehicle_name));
 
             warthog->warthog_state_pub = nh_private_.advertise<airsim_ros_pkgs::WarthogState>(curr_vehicle_name + "/warthog_state", 10);
         }
@@ -510,6 +515,15 @@ void AirsimROSWrapper::warthog_cmd_cb(const airsim_ros_pkgs::WarthogControls::Co
     warthog->warthog_cmd.angular_vel = msg->angular_vel;
     warthog->has_warthog_cmd = true;
 }
+void AirsimROSWrapper::warthog_cmd_cb_twist(const geometry_msgs::Twist::ConstPtr& msg, const std::string& vehicle_name)
+{
+    std::lock_guard<std::mutex> guard(drone_control_mutex_);
+
+    auto warthog = static_cast<WarthogROS*>(vehicle_name_ptr_map_[vehicle_name].get());
+    warthog->warthog_cmd.linear_vel = msg->linear.x;
+    warthog->warthog_cmd.angular_vel = msg->angular.z;
+    warthog->has_warthog_cmd = true;
+}
 msr::airlib::Pose AirsimROSWrapper::get_airlib_pose(const float& x, const float& y, const float& z, const msr::airlib::Quaternionr& airlib_quat) const
 {
     return msr::airlib::Pose(msr::airlib::Vector3r(x, y, z), airlib_quat);
@@ -736,19 +750,19 @@ nav_msgs::Odometry AirsimROSWrapper::get_odom_msg_from_warthog_state(const msr::
     nav_msgs::Odometry odom_msg;
 
     odom_msg.pose.pose.position.x = warthog_state.getPosition().x();
-    odom_msg.pose.pose.position.y = warthog_state.getPosition().y();
-    odom_msg.pose.pose.position.z = warthog_state.getPosition().z();
+    odom_msg.pose.pose.position.y = -warthog_state.getPosition().y();
+    odom_msg.pose.pose.position.z = -warthog_state.getPosition().z();
     odom_msg.pose.pose.orientation.x = warthog_state.getOrientation().x();
     odom_msg.pose.pose.orientation.y = warthog_state.getOrientation().y();
     odom_msg.pose.pose.orientation.z = warthog_state.getOrientation().z();
     odom_msg.pose.pose.orientation.w = warthog_state.getOrientation().w();
 
     odom_msg.twist.twist.linear.x = warthog_state.kinematics_estimated.twist.linear.x();
-    odom_msg.twist.twist.linear.y = warthog_state.kinematics_estimated.twist.linear.y();
-    odom_msg.twist.twist.linear.z = warthog_state.kinematics_estimated.twist.linear.z();
+    odom_msg.twist.twist.linear.y = -warthog_state.kinematics_estimated.twist.linear.y();
+    odom_msg.twist.twist.linear.z = -warthog_state.kinematics_estimated.twist.linear.z();
     odom_msg.twist.twist.angular.x = warthog_state.kinematics_estimated.twist.angular.x();
     odom_msg.twist.twist.angular.y = warthog_state.kinematics_estimated.twist.angular.y();
-    odom_msg.twist.twist.angular.z = warthog_state.kinematics_estimated.twist.angular.z();
+    odom_msg.twist.twist.angular.z = -warthog_state.kinematics_estimated.twist.angular.z();
 
     if (isENU_) {
         std::swap(odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y);
@@ -1022,9 +1036,7 @@ msr::airlib::WarthogRpcLibClient* AirsimROSWrapper::get_warthog_client()
 
 void AirsimROSWrapper::drone_state_timer_cb(const ros::WallTimerEvent& event)
 {
-    ROS_WARN("drone callback called publishing clock");
     try {
-        ROS_WARN("inside callback try");
         // todo this is global origin
         origin_geo_point_pub_.publish(origin_geo_point_msg_);
 
@@ -1038,7 +1050,6 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::WallTimerEvent& event)
         }
         // publish the simulation clock
         if (publish_clock_) {
-            ROS_WARN("publishing clock");
             clock_pub_.publish(ros_clock_);
         }
 
@@ -1173,6 +1184,19 @@ void AirsimROSWrapper::publish_vehicle_state()
         }
 
         // odom and transforms
+        tf2::Quaternion q_orig, q_rot, q_new;
+
+// Get the original orientation of 'commanded_pose'
+        tf2::convert(vehicle_ros->curr_odom.pose.pose.orientation , q_orig);
+
+        double r=3.14159, p=0, y=0;  // Rotate the previous pose by 180* about X
+        q_rot.setRPY(r, p, y);
+
+        q_new = q_rot*q_orig*q_rot;  // Calculate the new orientation
+        q_new.normalize();
+
+// Stuff the new rotation back into the pose. This requires conversion into a msg type
+        tf2::convert(q_new, vehicle_ros->curr_odom.pose.pose.orientation); 
         vehicle_ros->odom_local_pub.publish(vehicle_ros->curr_odom);
         publish_odom_tf(vehicle_ros->curr_odom);
 
@@ -1324,12 +1348,13 @@ void AirsimROSWrapper::set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_s
 void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting)
 {
     geometry_msgs::TransformStamped vehicle_tf_msg;
-    vehicle_tf_msg.header.frame_id = world_frame_id_;
+    //vehicle_tf_msg.header.frame_id = world_frame_id_;
+    vehicle_tf_msg.header.frame_id = "world_enu";
     vehicle_tf_msg.header.stamp = ros::Time::now();
     vehicle_tf_msg.child_frame_id = vehicle_ros->vehicle_name;
     vehicle_tf_msg.transform.translation.x = vehicle_setting.position.x();
     vehicle_tf_msg.transform.translation.y = vehicle_setting.position.y();
-    vehicle_tf_msg.transform.translation.z = vehicle_setting.position.z();
+    vehicle_tf_msg.transform.translation.z = -vehicle_setting.position.z();
     tf2::Quaternion quat;
     quat.setRPY(vehicle_setting.rotation.roll, vehicle_setting.rotation.pitch, vehicle_setting.rotation.yaw);
     vehicle_tf_msg.transform.rotation.x = quat.x();
@@ -1350,15 +1375,21 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
 void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const msr::airlib::LidarSimpleParams& lidar_setting)
 {
     geometry_msgs::TransformStamped lidar_tf_msg;
+    tf2::Quaternion quat;
+    quat.setRPY(3.14,0 ,0);
     lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name + "/" + odom_frame_id_;
     lidar_tf_msg.child_frame_id = vehicle_ros->vehicle_name + "/" + lidar_name;
     lidar_tf_msg.transform.translation.x = lidar_setting.relative_pose.position.x();
     lidar_tf_msg.transform.translation.y = lidar_setting.relative_pose.position.y();
-    lidar_tf_msg.transform.translation.z = lidar_setting.relative_pose.position.z();
-    lidar_tf_msg.transform.rotation.x = lidar_setting.relative_pose.orientation.x();
-    lidar_tf_msg.transform.rotation.y = lidar_setting.relative_pose.orientation.y();
-    lidar_tf_msg.transform.rotation.z = lidar_setting.relative_pose.orientation.z();
-    lidar_tf_msg.transform.rotation.w = lidar_setting.relative_pose.orientation.w();
+    lidar_tf_msg.transform.translation.z = -lidar_setting.relative_pose.position.z();
+    //lidar_tf_msg.transform.rotation.x = lidar_setting.relative_pose.orientation.x();
+    //lidar_tf_msg.transform.rotation.y = lidar_setting.relative_pose.orientation.y();
+    //lidar_tf_msg.transform.rotation.z = lidar_setting.relative_pose.orientation.z();
+    //lidar_tf_msg.transform.rotation.w = lidar_setting.relative_pose.orientation.w();
+    lidar_tf_msg.transform.rotation.x = quat.x();
+    lidar_tf_msg.transform.rotation.y = quat.y();
+    lidar_tf_msg.transform.rotation.z = quat.z();
+    lidar_tf_msg.transform.rotation.w = quat.w();
 
     if (isENU_) {
         std::swap(lidar_tf_msg.transform.translation.x, lidar_tf_msg.transform.translation.y);

@@ -82,7 +82,6 @@ catkin_package(
   # LIBRARIES airsim_ros
   CATKIN_DEPENDS message_runtime roscpp std_msgs # nodelet 
 )
-
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
