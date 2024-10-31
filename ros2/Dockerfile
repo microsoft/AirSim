@@ -27,10 +27,22 @@ RUN apt-get update && \
         clang-14 \
         clang++-14 \
         libc++-14-dev \
-        libc++abi-14-dev && \
+        libc++abi-14-dev \
+        libexiv2-dev && \
     echo 'source /opt/ros/$ROS_DISTRO/setup.bash' >> ~/.bashrc &&\
     rm -rf /var/lib/apt/lists/* &&\
     apt-get clean
+
+RUN cd ${ROS_USER_HOME} && \
+    git clone --depth 1 --branch 10.1.1 https://github.com/fmtlib/fmt.git && \
+    cd fmt && \
+    mkdir build && \
+    cd build && \
+    cmake -DFMT_TEST=FALSE -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE .. && \
+    make && \
+    make install && \
+    cd ${ROS_USER_HOME} && \
+    rm -Rf fmt
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
@@ -50,7 +62,7 @@ WORKDIR ${ROS_USER_HOME}/AirSim/ros2
 
 SHELL ["/bin/bash", "-c"]
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    colcon build --symlink-install --event-handlers console_direct+
+    colcon build --symlink-install --event-handlers console_cohesion+
 
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ${ROS_USER_HOME}/.bashrc
 RUN echo "source ${ROS_USER_HOME}/AirSim/ros2/install/setup.bash" >> ${ROS_USER_HOME}/.bashrc

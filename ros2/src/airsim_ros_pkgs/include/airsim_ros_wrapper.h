@@ -41,6 +41,7 @@ STRICT_MODE_OFF //todo what does this do?
 #include <nav_msgs/msg/odometry.hpp>
 #include <opencv2/opencv.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
+#include <sensor_msgs/msg/compressed_image.hpp>
 #include <sensor_msgs/distortion_models.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/image_encodings.hpp>
@@ -62,6 +63,8 @@ STRICT_MODE_OFF //todo what does this do?
 #include <tf2/convert.h>
 #include <unordered_map>
 #include <memory>
+
+#include <image_metadata.hpp>
 
     struct SimpleMatrix
 {
@@ -237,6 +240,8 @@ private:
 
     std::shared_ptr<sensor_msgs::msg::Image> get_img_msg_from_response(const ImageResponse& img_response, const rclcpp::Time curr_ros_time, const std::string frame_id);
     std::shared_ptr<sensor_msgs::msg::Image> get_depth_img_msg_from_response(const ImageResponse& img_response, const rclcpp::Time curr_ros_time, const std::string frame_id);
+    std::shared_ptr<sensor_msgs::msg::CompressedImage> get_jpeg_msg_from_img_msg(
+        std::shared_ptr<sensor_msgs::msg::Image> image_message);
 
     void process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name);
 
@@ -353,6 +358,7 @@ private:
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
     std::vector<image_transport::Publisher> image_pub_vec_;
+    std::vector<rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr> jpeg_pub_vec_;
     std::vector<rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr> cam_info_pub_vec_;
 
     typedef std::pair<std::string, msr::airlib::Vector3r> camera_position_name_pair;
@@ -380,4 +386,6 @@ private:
     static constexpr char R_YML_NAME[] = "rectification_matrix";
     static constexpr char P_YML_NAME[] = "projection_matrix";
     static constexpr char DMODEL_YML_NAME[] = "distortion_model";
+
+    bool zv2_metadata_;
 };

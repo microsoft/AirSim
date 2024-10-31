@@ -22,6 +22,8 @@ find_package(rosidl_typesupport_cpp REQUIRED)
 find_package(rosidl_default_runtime REQUIRED)
 find_package(airsim_interfaces REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(exiv2 REQUIRED CONFIG NAMES exiv2)
+find_package(fmt REQUIRED)
 
 set(AIRSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
@@ -50,7 +52,7 @@ set(INCLUDE_DIRS include
 include_directories(${INCLUDE_DIRS})
 
 add_library(airsim_settings_parser src/airsim_settings_parser.cpp)
-target_link_libraries(airsim_settings_parser AirLib)
+target_link_libraries(airsim_settings_parser AirLib exiv2lib)
 
 add_library(pd_position_controller_simple src/pd_position_controller_simple.cpp)
 target_link_libraries(pd_position_controller_simple AirLib)
@@ -67,7 +69,7 @@ ament_target_dependencies(pd_position_controller_simple
 )
 
 add_library(airsim_ros src/airsim_ros_wrapper.cpp)
-target_link_libraries(airsim_ros ${OpenCV_LIBS} yaml-cpp AirLib airsim_settings_parser)
+target_link_libraries(airsim_ros ${OpenCV_LIBS} yaml-cpp AirLib airsim_settings_parser exiv2lib fmt::fmt)
 ament_target_dependencies(airsim_ros 
   rclcpp
   sensor_msgs
@@ -85,7 +87,7 @@ ament_target_dependencies(airsim_ros
 )
 
 add_executable(airsim_node src/airsim_node.cpp)
-target_link_libraries(airsim_node airsim_ros AirLib)
+target_link_libraries(airsim_node airsim_ros AirLib exiv2lib fmt::fmt)
 ament_target_dependencies(airsim_node 
   rclcpp
 )

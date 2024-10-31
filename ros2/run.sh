@@ -7,6 +7,7 @@ SCRIPT_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 BUILD="false"
 IMAGE_NAME="airsim-ros2"
 CONTAINER_NAME="airsim-ros2"
+ZV2_METADATA="false"
 
 
 function usage() {
@@ -23,11 +24,14 @@ function parse_args() {
 
     source_getopts_long
 
-    while getopts_long "b build" option "${@}"; do
+    while getopts_long "bz build zv2_metadata" option "${@}"; do
         echo "option: ${option}"
         case "${option}" in
             "b" | "build")  
                 BUILD="true"
+                ;;
+            "z" | "zv2_metadata")
+                ZV2_METADATA="true"
                 ;;
             ":")
                 echo "Error: -${OPTARG} requires an argument."
@@ -46,8 +50,7 @@ function ensure_build_airsim() {
     if [[ "$?" -ne 0 ]] || [[ "${BUILD}" = "true" ]]; then
         set -e
         docker pull ros:iron-ros-base
-        docker build \
-            --progress plain \
+        DOCKER_BUILDKIT=0 docker build \
             -f "${SCRIPT_DIR}/Dockerfile" \
             -t "${IMAGE_NAME}" \
             "${SCRIPT_DIR}/../"
@@ -69,10 +72,16 @@ function source_getopts_long() {
 function run_airsim() {
     ensure_build_airsim
 
-    docker run --rm -it \
-        --name ${CONTAINER_NAME} \
-        --network host \
-        "${IMAGE_NAME}"
+    DOCKER_RUN_COMMAND=(docker run --rm -it)
+    DOCKER_RUN_COMMAND+=(--name "${CONTAINER_NAME}")
+    DOCKER_RUN_COMMAND+=(--network host)
+    DOCKER_RUN_COMMAND+=("${IMAGE_NAME}")
+
+    if [ "${ZV2_METADATA}" == "true" ]; then
+        DOCKER_RUN_COMMAND+=("zv2_metadata")
+    fi
+
+    "${DOCKER_RUN_COMMAND[@]}"
 }
 
 

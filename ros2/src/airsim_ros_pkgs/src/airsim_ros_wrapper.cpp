@@ -110,6 +110,13 @@ void AirsimROSWrapper::initialize_ros()
     // nh_->get_parameter("max_vert_vel_", max_vert_vel_);
     // nh_->get_parameter("max_horz_vel", max_horz_vel_)
 
+    nh_->get_parameter("zv2_metadata", zv2_metadata_);
+    if (zv2_metadata_) {
+        RCLCPP_INFO(nh_->get_logger(), "ZV2 metadata is enabled");
+    } else {
+        RCLCPP_INFO(nh_->get_logger(), "ZV2 metadata is disabled");
+    }
+
     nh_->declare_parameter("vehicle_name", rclcpp::ParameterValue(""));
     create_ros_pubs_from_settings_json();
     airsim_control_update_timer_ = nh_->create_wall_timer(std::chrono::duration<double>(update_airsim_control_every_n_sec), std::bind(&AirsimROSWrapper::drone_state_timer_cb, this));
@@ -125,6 +132,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
+    jpeg_pub_vec_.clear();
     cam_info_pub_vec_.clear();
     camera_position_vec_.clear();
     camera_info_msg_vec_.clear();
@@ -232,8 +240,13 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
                     if (capture_setting.image_type >= 0) {
                         const std::string camera_topic = topic_prefix + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
+                        const std::string jpeg_topic = topic_prefix + "/" + curr_camera_name + "_jpeg/" + image_type_int_to_string_map_.at(capture_setting.image_type);
                         RCLCPP_INFO(nh_->get_logger(), "camera found topic: %s", camera_topic.c_str());
                         image_pub_vec_.push_back(image_transporter.advertise(camera_topic, 1));
+                        if (zv2_metadata_) {
+                            RCLCPP_INFO(nh_->get_logger(), "Adding ZV2 metadata jpeg publisher: %s", jpeg_topic.c_str());
+                            jpeg_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CompressedImage>(jpeg_topic, 1));
+                        }
                         cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", 10));
                         camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
                     }
@@ -1352,6 +1365,39 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
     return depth_img_msg;
 }
 
+std::shared_ptr<sensor_msgs::msg::CompressedImage> AirsimROSWrapper::get_jpeg_msg_from_img_msg(
+    std::shared_ptr<sensor_msgs::msg::Image> image_message)
+{
+    auto jpeg_message =
+        std::make_shared<sensor_msgs::msg::CompressedImage>();
+    jpeg_message->header.frame_id = image_message->header.frame_id;
+    jpeg_message->header.stamp = image_message->header.stamp;
+
+    jpeg_message->format = image_message->encoding;
+    jpeg_message->format += "; jpeg compressed ";
+    jpeg_message->format += image_message->encoding;
+
+    try {
+        cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(image_message, image_message->encoding);
+
+        std::vector<int> params{cv::IMWRITE_JPEG_QUALITY, 100};
+        if (cv::imencode(".jpg", cv_ptr->image, jpeg_message->data, params)) {
+            image_metadata::Image image(jpeg_message->data.data(), jpeg_message->data.size());
+            image_metadata::Metadata metadata{0.1, {1, 2, 3}, {1,2,3}, 0.1, {1,2,3}, 0, 0.1, 0.1, "mission", 14, 10, 20, 0.1, 10.1, 20, {1,2,3}, 40, {1,2,3}, 10, 20, 0.1, std::chrono::system_clock::now(), 0.1};
+            image.update(metadata);
+            image.output(jpeg_message->data);
+        } else {
+            RCLCPP_ERROR(nh_->get_logger(), "cv::imencode conversion to jpeg failed");
+        }
+    } catch (cv_bridge::Exception& exception) {
+        RCLCPP_ERROR(nh_->get_logger(), "cv_bridge exception: %s", exception.what());
+    } catch (cv::Exception& exception) {
+        RCLCPP_ERROR(nh_->get_logger(), "cv exception: %s", exception.what());
+    }
+
+    return jpeg_message;
+}
+
 // todo have a special stereo pair mode and get projection matrix by calculating offset wrt drone body frame?
 sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& camera_name,
                                                                  const CameraSetting& camera_setting,
@@ -1398,9 +1444,15 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         }
         // Scene / Segmentation / SurfaceNormals / Infrared
         else {
-            image_pub_vec_[img_response_idx_internal].publish(get_img_msg_from_response(curr_img_response,
-                                                                                        curr_ros_time,
-                                                                                        curr_img_response.camera_name + "_optical"));
+            std::shared_ptr<sensor_msgs::msg::Image> image_message = get_img_msg_from_response(
+                curr_img_response, curr_ros_time, curr_img_response.camera_name + "_optical");
+            image_pub_vec_[img_response_idx_internal].publish(image_message);
+
+            if (zv2_metadata_) {
+                std::shared_ptr<sensor_msgs::msg::CompressedImage> jpeg_message =
+                    get_jpeg_msg_from_img_msg(image_message);
+                jpeg_pub_vec_[img_response_idx_internal]->publish(*jpeg_message);
+            }
         }
         img_response_idx_internal++;
     }
