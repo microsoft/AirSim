@@ -1,11 +1,11 @@
 # Modern C++ Coding Guidelines
 
-We are using Modern C++11. Smart pointers, Lambdas, and C++11 multithreading primitives are your friend.
+We are using Modern C++11. Smart pointers, Lambdas, and C++11 multithreading primitives are your friends.
 
 ## Quick Note
 
 The great thing about "standards" is that there are many to chose from: [ISO](https://isocpp.org/wiki/faq/coding-standards), [Sutter &amp; Stroustrup](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md), [ROS](http://wiki.ros.org/CppStyleGuide), [LINUX](https://www.kernel.org/doc/Documentation/process/coding-style.rst), [Google's](https://google.github.io/styleguide/cppguide.html), [Microsoft's](https://msdn.microsoft.com/en-us/library/888a6zcz.aspx), [CERN's](http://atlas-computing.web.cern.ch/atlas-computing/projects/qa/draft_guidelines.html), [GCC's](https://gcc.gnu.org/wiki/CppConventions), [ARM's](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0475c/CJAJAJCJ.html), [LLVM's](http://llvm.org/docs/CodingStandards.html) and probably 
-thousands of others. Unfortunately most of these can't even agree on something as basic as how to name a class or a constant. This is probably due to the fact that these standards often carry lots of  legacy issues due to supporting existing code bases. The intention behind this document is to create guidance that remains as close to ISO, Sutter &amp; Stroustrup and ROS while resolving as many conflicts, disadvantages and inconsistencies as possible among them.
+thousands of others. Unfortunately, most of these can't even agree on something as basic as how to name a class or a constant. This is probably due to the fact that these standards often carry lots of  legacy issues due to supporting existing code bases. The intention behind this document is to create guidance that remains as close to ISO, Sutter &amp; Stroustrup and ROS while resolving as many conflicts, disadvantages and inconsistencies as possible among them.
 
 
 ## clang-format
@@ -21,7 +21,7 @@ are correctly formatted so it should stay clean.  Obviously this does not includ
 If you find a bug in clang-format you can disable clang formatting of a specific block of code by
 using the following comments pair:
 
-```c++
+```cpp
 // clang-format off
 ...
 // clang-format on
@@ -47,7 +47,7 @@ Avoid using any sort of Hungarian notation on names and "_ptr" on pointers.
 
 Use a namespace qualified #ifdef to protect against multiple inclusion:
 
-```
+```cpp
 #ifndef msr_airsim_MyHeader_hpp
 #define msr_airsim_MyHeader_hpp
 
@@ -65,7 +65,7 @@ Outside that the Namespace, Class and methods levels use separate line.
 This is called [K&amp;R style](https://en.wikipedia.org/wiki/Indent_style#K.26R_style) and its variants are widely used in C++ vs other styles which are more popular in other languages. 
 Notice that curlies are not required if you have single statement, but complex statements are easier to keep correct with the braces.
 
-```
+```cpp
 int main(int argc, char* argv[])
 {
      while (x == y) {
@@ -118,13 +118,13 @@ The C++ code base uses four spaces for indentation (not tabs).
 
 Files should be committed with Unix line breaks. When working on Windows, git can be configured to checkout files with Windows line breaks and automatically convert from Windows to Unix line breaks when committing by running the following command:
 
-```
+```sh
 git config --global core.autocrlf true
 ```
 
 When working on Linux, it is preferable to configure git to checkout files with Unix line breaks by running the following command:
 
-```
+```sh
 git config --global core.autocrlf input
 ```
 
