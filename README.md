@@ -1,3 +1,7 @@
+## Project AirSim announcement
+
+Microsoft and IAMAI collaborated to advance high-fidelity autonomy simulations through Project AirSim—the evolution of AirSim— released under the MIT license as part of a DARPA-supported initiative.  IAMAI is proud to have contributed to these efforts and has published its version of the Project AirSim repository at [github.com/iamaisim/ProjectAirSim](https://github.com/iamaisim/ProjectAirSim).
+
 ## AirSim announcement: This repository will be archived in the coming year 
 
 In 2017 Microsoft Research created AirSim as a simulation platform for AI research and experimentation. Over the span of five years, this research project has served its purpose—and gained a lot of ground—as a common way to share research code and test new ideas around aerial AI development and simulation. Additionally, time has yielded advancements in the way we apply technology to the real world, particularly through aerial mobility and autonomous systems. For example, drone delivery is no longer a sci-fi storyline—it’s a business reality, which means there are new needs to be met. We’ve learned a lot in the process, and we want to thank this community for your engagement along the way. 
