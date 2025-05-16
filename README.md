@@ -105,7 +105,7 @@ Press F10 to see various options available for weather effects. You can also con
 ### Paper
 
 More technical details are available in [AirSim paper (FSR 2017 Conference)](https://arxiv.org/abs/1705.05065). Please cite this as:
-```
+```bib
 @inproceedings{airsim2017fsr,
   author = {Shital Shah and Debadeepta Dey and Chris Lovett and Ashish Kapoor},
   title = {AirSim: High-Fidelity Visual and Physical Simulation for Autonomous Vehicles},
