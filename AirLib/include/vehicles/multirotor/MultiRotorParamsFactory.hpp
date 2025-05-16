@@ -9,6 +9,7 @@
 #include "vehicles/multirotor/firmwares/simple_flight/SimpleFlightQuadXParams.hpp"
 #include "vehicles/multirotor/firmwares/mavlink/ArduCopterSoloParams.hpp"
 #include "vehicles/multirotor/firmwares/arducopter/ArduCopterParams.hpp"
+#include "vehicles/multirotor/firmwares/betaflight/BetaflightParams.hpp"
 
 namespace msr
 {
@@ -32,6 +33,9 @@ namespace airlib
             }
             else if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeArduCopter) {
                 config.reset(new ArduCopterParams(*static_cast<const AirSimSettings::MavLinkVehicleSetting*>(vehicle_setting), sensor_factory));
+            }
+            else if (vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeBetaflight) {
+                config.reset(new BetaflightParams(*static_cast<const AirSimSettings::MavLinkVehicleSetting*>(vehicle_setting), sensor_factory));
             }
             else if (vehicle_setting->vehicle_type == "" || //default config
                      vehicle_setting->vehicle_type == AirSimSettings::kVehicleTypeSimpleFlight) {
