@@ -16,7 +16,6 @@ IF NOT EXIST "%AirSimPath%" (
 echo Using AirSimPath = %AirSimPath%
 
 robocopy /MIR "%AirSimPath%\Unreal\Plugins\AirSim" Plugins\AirSim /XD temp *. /njh /njs /ndl /np
-robocopy /MIR "%AirSimPath%\AirLib" Plugins\AirSim\Source\AirLib /XD temp *. /njh /njs /ndl /np
 robocopy  /njh /njs /ndl /np "%AirSimPath%\Unreal\Environments\Blocks" "." *.bat 
 robocopy  /njh /njs /ndl /np "%AirSimPath%\Unreal\Environments\Blocks" "." *.sh  
 rem robocopy /njh /njs /ndl /np "%AirSimPath%" "." *.gitignore

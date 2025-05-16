@@ -1,36 +1,17 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-
+cmake_minimum_required(VERSION 3.5.0)
 project(GazeboDrone)
 
-set(AIRSIM_ROOT ..)
-
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD 14)
 endif()
 
 find_package(gazebo REQUIRED)
 
-include_directories(
-    ${GAZEBO_INCLUDE_DIRS}
-    ${AIRSIM_ROOT}/AirLib/deps/eigen3
-    ${AIRSIM_ROOT}/AirLib/deps/rpclib/include
-    ${AIRSIM_ROOT}/AirLib/include
-)
-
-link_directories(
-    ${GAZEBO_LIBRARY_DIRS}
-    ../../build_release/output/lib
-)
-
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
 add_executable(${PROJECT_NAME} src/main.cpp)
+target_include_directories(${PROJECT_NAME} PRIVATE ${GAZEBO_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${GAZEBO_LIBRARIES})
 
-target_link_libraries(
-    ${PROJECT_NAME} 
-    ${GAZEBO_LIBRARIES}
-    pthread
-    AirLib
-    rpc
-)
-
+add_subdirectory(../cmake AirSim)
+target_link_libraries(${PROJECT_NAME} PRIVATE AirSim::AirLib)
