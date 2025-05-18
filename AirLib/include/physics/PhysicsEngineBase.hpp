@@ -28,6 +28,7 @@ namespace airlib
         }
 
         virtual void setWind(const Vector3r& wind) { unused(wind); };
+        virtual void setExtForce(const Vector3r& ext_force) { unused(ext_force); };
     };
 }
 } //namespace
