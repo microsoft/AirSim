@@ -18,11 +18,11 @@ fi
 
 cd linux-build
 if [ "$(uname)" == "Darwin" ]; then
-    export CC=/usr/local/opt/llvm@8/bin/clang
-    export CXX=/usr/local/opt/llvm@8/bin/clang++
+    export CC=/usr/local/opt/llvm@12/bin/clang
+    export CXX=/usr/local/opt/llvm@12/bin/clang++
 else
-    export CC="clang-8"
-    export CXX="clang++-8"
+    export CC="clang-12"
+    export CXX="clang++-12"
 fi
 
 # check for local cmake build created by setup.sh

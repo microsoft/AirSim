@@ -63,7 +63,7 @@ else ()
     )
 endif ()
 
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}  -lstdc++ -lpthread ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}  -lpthread ${Boost_LIBRARIES})
 
 
 
