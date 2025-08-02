@@ -1,6 +1,6 @@
-## Project AirSim announcement
+## AirSim 项目公告
 
-Microsoft and IAMAI collaborated to advance high-fidelity autonomy simulations through Project AirSim—the evolution of AirSim— released under the MIT license as part of a DARPA-supported initiative.  IAMAI is proud to have contributed to these efforts and has published its version of the Project AirSim repository at [github.com/iamaisim/ProjectAirSim](https://github.com/iamaisim/ProjectAirSim).
+微软与 IAMAI 携手合作，通过 AirSim 项目（AirSim 的升级版）推进高保真自主驾驶模拟技术。该项目基于 MIT 许可证发布，是 DARPA 支持计划的一部分。IAMAI 很荣幸能够为这些努力做出贡献，并已在 [github.com/iamaisim/ProjectAirSim](https://github.com/iamaisim/ProjectAirSim) 上发布了其版本的 AirSim 项目代码库。
 
 ## AirSim announcement: This repository will be archived in the coming year 
 
