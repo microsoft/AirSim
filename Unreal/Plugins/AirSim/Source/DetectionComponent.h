@@ -12,6 +12,14 @@ struct FDetectionInfo
 {
     GENERATED_BODY()
 
+    FDetectionInfo()
+        : Actor(nullptr)
+        , Box2D(FVector2D::ZeroVector, FVector2D::ZeroVector)
+        , Box3D(EForceInit::ForceInit)
+        , RelativeTransform(FTransform::Identity)
+    {
+    }
+
     UPROPERTY()
     AActor* Actor;
 

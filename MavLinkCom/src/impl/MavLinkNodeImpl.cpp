@@ -2,6 +2,14 @@
 // Licensed under the MIT License.
 
 #include "MavLinkNodeImpl.hpp"
+#if defined(_WIN32)
+#include <Windows.h>
+#define AIRSIM_SLEEP_MS(ms) ::Sleep((DWORD)(ms))
+#else
+#include <thread>
+#include <chrono>
+#define AIRSIM_SLEEP_MS(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
+#endif
 #include "Utils.hpp"
 #include "MavLinkMessages.hpp"
 #include "Semaphore.hpp"
@@ -50,7 +58,7 @@ void MavLinkNodeImpl::sendHeartbeat()
     CurrentThread::setThreadName("MavLinkThread");
     while (heartbeat_running_) {
         sendOneHeartbeat();
-        std::this_thread::sleep_for(std::chrono::milliseconds(heartbeatMilliseconds));
+        AIRSIM_SLEEP_MS(heartbeatMilliseconds);
     }
 }
 

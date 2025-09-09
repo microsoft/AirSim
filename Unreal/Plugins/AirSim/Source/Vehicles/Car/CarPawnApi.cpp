@@ -1,13 +1,15 @@
 #include "CarPawnApi.h"
 #include "AirBlueprintLib.h"
 
+#if ENGINE_MAJOR_VERSION < 5
 #include "PhysXVehicleManager.h"
+#endif
 
 CarPawnApi::CarPawnApi(ACarPawn* pawn, const msr::airlib::Kinematics::State* pawn_kinematics,
                        msr::airlib::CarApiBase* vehicle_api)
     : pawn_(pawn), pawn_kinematics_(pawn_kinematics), vehicle_api_(vehicle_api)
 {
-    movement_ = pawn->GetVehicleMovement();
+    movement_ = pawn->GetVehicleMovementComponent();
 }
 
 void CarPawnApi::updateMovement(const msr::airlib::CarApiBase::CarControls& controls)
@@ -23,16 +25,27 @@ void CarPawnApi::updateMovement(const msr::airlib::CarApiBase::CarControls& cont
     movement_->SetSteeringInput(controls.steering);
     movement_->SetBrakeInput(controls.brake);
     movement_->SetHandbrakeInput(controls.handbrake);
+    #if ENGINE_MAJOR_VERSION >= 5
+    movement_->SetUseAutomaticGears(!controls.is_manual_gear);
+    #else
     movement_->SetUseAutoGears(!controls.is_manual_gear);
+    #endif
 }
 
 msr::airlib::CarApiBase::CarState CarPawnApi::getCarState() const
 {
+    float rpm = 0.0f;
+    float rpm_max = 0.0f;
+#if ENGINE_MAJOR_VERSION < 5
+    rpm = movement_->GetEngineRotationSpeed();
+    rpm_max = movement_->GetEngineMaxRotationSpeed();
+#endif
+
     msr::airlib::CarApiBase::CarState state(
         movement_->GetForwardSpeed() / 100, //cm/s -> m/s
         movement_->GetCurrentGear(),
-        movement_->GetEngineRotationSpeed(),
-        movement_->GetEngineMaxRotationSpeed(),
+        rpm,
+        rpm_max,
         last_controls_.handbrake,
         *pawn_kinematics_,
         vehicle_api_->clock()->nowNanos());
@@ -57,6 +70,7 @@ void CarPawnApi::reset()
         vehicle_api_->setCarControls(msr::airlib::CarApiBase::CarControls());
         updateMovement(msr::airlib::CarApiBase::CarControls());
 
+#if ENGINE_MAJOR_VERSION < 5
         auto pv = movement_->PVehicle;
         if (pv) {
             pv->mWheelsDynData.setToRestState();
@@ -65,6 +79,7 @@ void CarPawnApi::reset()
         if (pvd) {
             pvd->mDriveDynData.setToRestState();
         }
+#endif
     },
                                              true);
 
