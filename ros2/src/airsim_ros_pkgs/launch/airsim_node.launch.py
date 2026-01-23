@@ -53,7 +53,7 @@ def generate_launch_description():
             name='airsim_node',
             output='screen',
             parameters=[{
-                'is_vulkan': False,
+                'is_vulkan': True,
                 # Image at 30Hz (0.0333s period)
                 'update_airsim_img_response_every_n_sec': 0.0333,
                 # Control loop rate

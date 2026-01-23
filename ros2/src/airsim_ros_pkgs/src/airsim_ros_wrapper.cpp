@@ -73,19 +73,78 @@ void AirsimROSWrapper::initialize_airsim()
         airsim_client_lidar_.confirmConnection();
         airsim_client_imu_.confirmConnection();
 
+        // Enable API control and arm vehicles with retry logic
+        // Vehicles may not be spawned immediately, so we retry a few times
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
-            airsim_client_->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
-            airsim_client_->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
+            const std::string& vehicle_name = vehicle_name_ptr_pair.first;
+            bool api_control_enabled = false;
+            bool vehicle_armed = false;
+            const int max_retries = 10;
+            const double retry_delay_sec = 1.0;
+
+            // Retry enabling API control
+            for (int retry = 0; retry < max_retries && !api_control_enabled; ++retry) {
+                try {
+                    airsim_client_->enableApiControl(true, vehicle_name);
+                    api_control_enabled = true;
+                    RCLCPP_INFO(nh_->get_logger(), "API control enabled for vehicle: %s", vehicle_name.c_str());
+                }
+                catch (rpc::rpc_error& e) {
+                    std::string msg = e.get_error().as<std::string>();
+                    if (retry < max_retries - 1) {
+                        RCLCPP_WARN(nh_->get_logger(), "Failed to enable API control for vehicle %s (attempt %d/%d): %s. Retrying...", vehicle_name.c_str(), retry + 1, max_retries, msg.c_str());
+                        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(retry_delay_sec * 1000)));
+                    }
+                    else {
+                        RCLCPP_ERROR(nh_->get_logger(), "Failed to enable API control for vehicle %s after %d attempts: %s", vehicle_name.c_str(), max_retries, msg.c_str());
+                    }
+                }
+            }
+
+            // Retry arming vehicle (only if API control was enabled)
+            if (api_control_enabled) {
+                for (int retry = 0; retry < max_retries && !vehicle_armed; ++retry) {
+                    try {
+                        airsim_client_->armDisarm(true, vehicle_name);
+                        vehicle_armed = true;
+                        RCLCPP_INFO(nh_->get_logger(), "Vehicle armed: %s", vehicle_name.c_str());
+                    }
+                    catch (rpc::rpc_error& e) {
+                        std::string msg = e.get_error().as<std::string>();
+                        if (retry < max_retries - 1) {
+                            RCLCPP_WARN(nh_->get_logger(), "Failed to arm vehicle %s (attempt %d/%d): %s. Retrying...", vehicle_name.c_str(), retry + 1, max_retries, msg.c_str());
+                            std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(retry_delay_sec * 1000)));
+                        }
+                        else {
+                            RCLCPP_WARN(nh_->get_logger(), "Failed to arm vehicle %s after %d attempts: %s. Continuing anyway...", vehicle_name.c_str(), max_retries, msg.c_str());
+                        }
+                    }
+                }
+            }
         }
 
-        origin_geo_point_ = get_origin_geo_point();
-        // todo there's only one global origin geopoint for environment. but airsim API accept a parameter vehicle_name? inside carsimpawnapi.cpp, there's a geopoint being assigned in the constructor. by?
-        origin_geo_point_msg_ = get_gps_msg_from_airsim_geo_point(origin_geo_point_);
+        // Get origin geo point (may fail if no vehicles are spawned yet)
+        try {
+            origin_geo_point_ = get_origin_geo_point();
+            origin_geo_point_msg_ = get_gps_msg_from_airsim_geo_point(origin_geo_point_);
+            RCLCPP_INFO(nh_->get_logger(), "Origin geo point retrieved successfully");
+        }
+        catch (rpc::rpc_error& e) {
+            RCLCPP_WARN(nh_->get_logger(), "Could not retrieve origin geo point (vehicles may not be spawned yet): %s", e.get_error().as<std::string>().c_str());
+            // Set default values
+            origin_geo_point_ = msr::airlib::GeoPoint();
+            origin_geo_point_msg_ = get_gps_msg_from_airsim_geo_point(origin_geo_point_);
+        }
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, something went wrong.\n%s", msg.c_str());
-        rclcpp::shutdown();
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API during initialization: %s", msg.c_str());
+        RCLCPP_WARN(nh_->get_logger(), "Some operations may have failed. The node will continue, but some features may not work until vehicles are spawned.");
+        // Don't shutdown - allow the node to continue and retry operations later
+    }
+    catch (const std::exception& e) {
+        RCLCPP_ERROR(nh_->get_logger(), "Standard exception during AirSim initialization: %s", e.what());
+        RCLCPP_WARN(nh_->get_logger(), "The node will continue, but some features may not work.");
     }
 }
 
@@ -123,6 +182,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
     airsim_img_request_vehicle_name_pair_vec_.clear();
     image_pub_vec_.clear();
+    depth_image_pub_vec_.clear();
+    is_depth_image_vec_.clear();
     cam_info_pub_vec_.clear();
     camera_info_msg_vec_.clear();
     vehicle_name_ptr_map_.clear();
@@ -219,7 +280,21 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     }
 
                     const std::string camera_topic = topic_prefix + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
-                    image_pub_vec_.push_back(image_transporter.advertise(camera_topic, 1));
+
+                    // For DepthPlanar with 16UC1 encoding, use raw publisher to avoid compression issues
+                    // For other images, use image_transport publisher
+                    bool is_depth_planar = (curr_image_type == ImageType::DepthPlanar);
+                    if (is_depth_planar) {
+                        // Use raw publisher for depth images (16UC1 encoding doesn't work with image_transport compression)
+                        depth_image_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::Image>(camera_topic, 1));
+                        image_pub_vec_.push_back(image_transport::Publisher()); // Placeholder, won't be used
+                    }
+                    else {
+                        // Use image_transport publisher for regular images
+                        image_pub_vec_.push_back(image_transporter.advertise(camera_topic, 1));
+                        depth_image_pub_vec_.push_back(nullptr); // Placeholder, won't be used
+                    }
+                    is_depth_image_vec_.push_back(is_depth_planar);
                     cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", 10));
                     camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
                 }
@@ -1512,10 +1587,46 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
     auto depth_img_msg = std::make_shared<sensor_msgs::msg::Image>();
     depth_img_msg->width = img_response.width;
     depth_img_msg->height = img_response.height;
-    depth_img_msg->data.resize(img_response.image_data_float.size() * sizeof(float));
-    memcpy(depth_img_msg->data.data(), img_response.image_data_float.data(), depth_img_msg->data.size());
-    depth_img_msg->encoding = "32FC1";
-    depth_img_msg->step = depth_img_msg->data.size() / img_response.height;
+
+    // For DepthPlanar, convert to 16UC1 encoding (uint16 in millimeters)
+    // This matches RealSense-style depth image format
+    if (img_response.image_type == ImageType::DepthPlanar) {
+        // Convert float depth (in meters) to uint16 (in millimeters)
+        // Scale factor: 1000.0 to convert meters to millimeters
+        // Clamp to uint16 range (0-65535 mm = 0-65.535 m)
+        const float depth_scale = 1000.0f; // meters to millimeters
+        const uint16_t max_depth_mm = 65535; // max value for uint16
+
+        size_t num_pixels = img_response.image_data_float.size();
+        depth_img_msg->data.resize(num_pixels * sizeof(uint16_t));
+        uint16_t* depth_data = reinterpret_cast<uint16_t*>(depth_img_msg->data.data());
+
+        for (size_t i = 0; i < num_pixels; ++i) {
+            float depth_m = img_response.image_data_float[i];
+            // Convert to millimeters and clamp to uint16 range
+            float depth_mm = depth_m * depth_scale;
+            if (depth_mm < 0.0f) {
+                depth_data[i] = 0;
+            }
+            else if (depth_mm > max_depth_mm) {
+                depth_data[i] = max_depth_mm;
+            }
+            else {
+                depth_data[i] = static_cast<uint16_t>(depth_mm);
+            }
+        }
+
+        depth_img_msg->encoding = "16UC1";
+        depth_img_msg->step = img_response.width * sizeof(uint16_t); // 2 bytes per pixel
+    }
+    else {
+        // For other depth types (DepthPerspective, DepthVis, DisparityNormalized), keep 32FC1
+        depth_img_msg->data.resize(img_response.image_data_float.size() * sizeof(float));
+        memcpy(depth_img_msg->data.data(), img_response.image_data_float.data(), depth_img_msg->data.size());
+        depth_img_msg->encoding = "32FC1";
+        depth_img_msg->step = depth_img_msg->data.size() / img_response.height;
+    }
+
     depth_img_msg->is_bigendian = 0;
     depth_img_msg->header.stamp = rclcpp::Time(img_response.time_stamp);
     depth_img_msg->header.frame_id = frame_id;
@@ -1561,9 +1672,19 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 
         // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
         if (curr_img_response.pixels_as_float) {
-            image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response,
-                                                                                              curr_ros_time,
-                                                                                              curr_img_response.camera_name + "_optical"));
+            auto depth_img_msg = get_depth_img_msg_from_response(curr_img_response,
+                                                                 curr_ros_time,
+                                                                 curr_img_response.camera_name + "_optical");
+
+            // Use raw publisher for DepthPlanar (16UC1), image_transport for other depth types
+            if (is_depth_image_vec_[img_response_idx_internal] && depth_image_pub_vec_[img_response_idx_internal]) {
+                // Publish using raw publisher (avoids image_transport compression issues with 16UC1)
+                depth_image_pub_vec_[img_response_idx_internal]->publish(*depth_img_msg);
+            }
+            else {
+                // Use image_transport publisher for other depth types (32FC1)
+                image_pub_vec_[img_response_idx_internal].publish(*depth_img_msg);
+            }
         }
         // Scene / Segmentation / SurfaceNormals / Infrared
         else {

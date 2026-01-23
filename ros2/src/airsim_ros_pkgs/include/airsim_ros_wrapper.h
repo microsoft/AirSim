@@ -359,6 +359,8 @@ private:
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
     std::vector<image_transport::Publisher> image_pub_vec_;
+    std::vector<rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr> depth_image_pub_vec_; // Raw publishers for depth images (16UC1)
+    std::vector<bool> is_depth_image_vec_; // Track which publishers are for depth images
     std::vector<rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr> cam_info_pub_vec_;
 
     std::vector<sensor_msgs::msg::CameraInfo> camera_info_msg_vec_;
