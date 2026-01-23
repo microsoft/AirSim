@@ -26,6 +26,26 @@ def generate_launch_description():
     host = DeclareLaunchArgument(
         "host",
         default_value='localhost')
+
+    world_frame_id = DeclareLaunchArgument(
+        "world_frame_id",
+        default_value='map',
+        description='World/map frame ID')
+
+    odom_frame_id = DeclareLaunchArgument(
+        "odom_frame_id",
+        default_value='odom',
+        description='Odometry frame ID')
+
+    base_link_frame_id = DeclareLaunchArgument(
+        "base_link_frame_id",
+        default_value='base_link',
+        description='Base link frame ID (drone center of gravity)')
+
+    camera_link_frame_id = DeclareLaunchArgument(
+        "camera_link_frame_id",
+        default_value='camera_link',
+        description='Camera link frame ID (camera mount point)')
   
     airsim_node = Node(
             package='airsim_ros_pkgs',
@@ -43,7 +63,12 @@ def generate_launch_description():
                 # IMU at 200Hz (0.005s period)
                 'update_imu_every_n_sec': 0.005,
                 'publish_clock': LaunchConfiguration('publish_clock'),
-                'host_ip': LaunchConfiguration('host')
+                'host_ip': LaunchConfiguration('host'),
+                # TF frame IDs - configurable for integration with navigation stack
+                'world_frame_id': LaunchConfiguration('world_frame_id'),
+                'odom_frame_id': LaunchConfiguration('odom_frame_id'),
+                'base_link_frame_id': LaunchConfiguration('base_link_frame_id'),
+                'camera_link_frame_id': LaunchConfiguration('camera_link_frame_id')
             }])
 
     static_transforms = IncludeLaunchDescription(
@@ -60,6 +85,10 @@ def generate_launch_description():
     ld.add_action(publish_clock)
     ld.add_action(is_vulkan)
     ld.add_action(host)
+    ld.add_action(world_frame_id)
+    ld.add_action(odom_frame_id)
+    ld.add_action(base_link_frame_id)
+    ld.add_action(camera_link_frame_id)
   
     ld.add_action(static_transforms)
     ld.add_action(airsim_node)

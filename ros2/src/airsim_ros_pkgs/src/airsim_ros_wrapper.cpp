@@ -100,6 +100,8 @@ void AirsimROSWrapper::initialize_ros()
     nh_->get_parameter_or("world_frame_id", world_frame_id_, world_frame_id_);
     odom_frame_id_ = world_frame_id_ == AIRSIM_FRAME_ID ? AIRSIM_ODOM_FRAME_ID : ENU_ODOM_FRAME_ID;
     nh_->get_parameter_or("odom_frame_id", odom_frame_id_, odom_frame_id_);
+    nh_->get_parameter_or("base_link_frame_id", base_link_frame_id_, base_link_frame_id_);
+    nh_->get_parameter_or("camera_link_frame_id", camera_link_frame_id_, camera_link_frame_id_);
     isENU_ = (odom_frame_id_ == ENU_ODOM_FRAME_ID);
     nh_->get_parameter_or("coordinate_system_enu", isENU_, isENU_);
     vel_cmd_duration_ = 0.05; // todo rosparam
@@ -150,6 +152,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         vehicle_ros->vehicle_name_ = curr_vehicle_name;
 
         append_static_vehicle_tf(vehicle_ros.get(), *vehicle_setting);
+        append_static_base_link_to_camera_link_tf(vehicle_ros.get());
 
         const std::string topic_prefix = "~/" + curr_vehicle_name;
         vehicle_ros->odom_local_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>(topic_prefix + "/" + odom_frame_id_, 10);
@@ -192,6 +195,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
             set_nans_to_zeros_in_pose(*vehicle_setting, camera_setting);
             append_static_camera_tf(vehicle_ros.get(), curr_camera_name, camera_setting);
+            // Add RealSense-style camera sub-frames (infra1, infra2, depth, color)
+            append_static_camera_subframes_tf(vehicle_ros.get(), curr_camera_name, camera_setting);
             // camera_setting.gimbal
             std::vector<ImageRequest> current_image_request_vec;
             current_image_request_vec.clear();
@@ -850,6 +855,38 @@ void AirsimROSWrapper::publish_odom_tf(const nav_msgs::msg::Odometry& odom_msg)
     tf_broadcaster_->sendTransform(odom_tf);
 }
 
+// Publish map -> odom transform (identity by default, can be modified for localization drift)
+void AirsimROSWrapper::publish_map_to_odom_tf(const rclcpp::Time& stamp, const std::string& vehicle_name)
+{
+    geometry_msgs::msg::TransformStamped map_to_odom_tf;
+    map_to_odom_tf.header.stamp = stamp;
+    map_to_odom_tf.header.frame_id = world_frame_id_;
+    map_to_odom_tf.child_frame_id = vehicle_name + "/" + odom_frame_id_;
+    // Identity transform by default (no drift between map and odom)
+    map_to_odom_tf.transform.translation.x = 0.0;
+    map_to_odom_tf.transform.translation.y = 0.0;
+    map_to_odom_tf.transform.translation.z = 0.0;
+    map_to_odom_tf.transform.rotation.x = 0.0;
+    map_to_odom_tf.transform.rotation.y = 0.0;
+    map_to_odom_tf.transform.rotation.z = 0.0;
+    map_to_odom_tf.transform.rotation.w = 1.0;
+    tf_broadcaster_->sendTransform(map_to_odom_tf);
+}
+
+// Publish odom -> base_link transform (drone pose)
+void AirsimROSWrapper::publish_odom_to_base_link_tf(const nav_msgs::msg::Odometry& odom_msg, const std::string& vehicle_name)
+{
+    geometry_msgs::msg::TransformStamped odom_to_base_link_tf;
+    odom_to_base_link_tf.header.stamp = odom_msg.header.stamp;
+    odom_to_base_link_tf.header.frame_id = vehicle_name + "/" + odom_frame_id_;
+    odom_to_base_link_tf.child_frame_id = vehicle_name + "/" + base_link_frame_id_;
+    odom_to_base_link_tf.transform.translation.x = odom_msg.pose.pose.position.x;
+    odom_to_base_link_tf.transform.translation.y = odom_msg.pose.pose.position.y;
+    odom_to_base_link_tf.transform.translation.z = odom_msg.pose.pose.position.z;
+    odom_to_base_link_tf.transform.rotation = odom_msg.pose.pose.orientation;
+    tf_broadcaster_->sendTransform(odom_to_base_link_tf);
+}
+
 airsim_interfaces::msg::GPSYaw AirsimROSWrapper::get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const
 {
     airsim_interfaces::msg::GPSYaw gps_msg;
@@ -1061,8 +1098,10 @@ void AirsimROSWrapper::publish_vehicle_state()
         }
 
         // odom and transforms
+        // New TF tree: map -> odom -> base_link -> camera_link -> camera_*_frames
         vehicle_ros->odom_local_pub_->publish(vehicle_ros->curr_odom_);
-        publish_odom_tf(vehicle_ros->curr_odom_);
+        publish_map_to_odom_tf(vehicle_ros->stamp_, vehicle_ros->vehicle_name_);
+        publish_odom_to_base_link_tf(vehicle_ros->curr_odom_, vehicle_ros->vehicle_name_);
 
         // ground truth GPS position from sim/HITL
         vehicle_ros->global_gps_pub_->publish(vehicle_ros->gps_sensor_msg_);
@@ -1219,7 +1258,8 @@ void AirsimROSWrapper::append_static_vehicle_tf(VehicleROS* vehicle_ros, const V
 void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const msr::airlib::LidarSimpleParams& lidar_setting)
 {
     geometry_msgs::msg::TransformStamped lidar_tf_msg;
-    lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
+    // Lidar is attached to base_link (drone body frame)
+    lidar_tf_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + base_link_frame_id_;
     lidar_tf_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + lidar_name;
     lidar_tf_msg.transform = get_transform_msg_from_airsim(lidar_setting.relative_pose.position, lidar_setting.relative_pose.orientation);
 
@@ -1233,7 +1273,8 @@ void AirsimROSWrapper::append_static_lidar_tf(VehicleROS* vehicle_ros, const std
 void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting)
 {
     geometry_msgs::msg::TransformStamped static_cam_tf_body_msg;
-    static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + odom_frame_id_;
+    // Static camera TF is now relative to base_link
+    static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name_ + "/" + base_link_frame_id_;
     static_cam_tf_body_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_body/static";
     static_cam_tf_body_msg.transform = get_transform_msg_from_airsim(camera_setting.position, camera_setting.rotation);
 
@@ -1243,11 +1284,124 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
 
     geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
     static_cam_tf_optical_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_optical/static";
-    static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
     static_cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(static_cam_tf_body_msg.transform);
 
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_body_msg);
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_optical_msg);
+}
+
+// Append static transform from base_link to camera_link
+// This represents the physical mounting position of the camera on the drone
+void AirsimROSWrapper::append_static_base_link_to_camera_link_tf(VehicleROS* vehicle_ros)
+{
+    geometry_msgs::msg::TransformStamped base_to_camera_link_tf;
+    base_to_camera_link_tf.header.frame_id = vehicle_ros->vehicle_name_ + "/" + base_link_frame_id_;
+    base_to_camera_link_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_link_frame_id_;
+    // Default identity transform - modify these values to match your camera mount position
+    // relative to the drone's center of gravity (base_link)
+    base_to_camera_link_tf.transform.translation.x = 0.0; // Forward offset from CoG
+    base_to_camera_link_tf.transform.translation.y = 0.0; // Left offset from CoG
+    base_to_camera_link_tf.transform.translation.z = 0.0; // Down offset from CoG (NED) or Up (ENU)
+    base_to_camera_link_tf.transform.rotation.x = 0.0;
+    base_to_camera_link_tf.transform.rotation.y = 0.0;
+    base_to_camera_link_tf.transform.rotation.z = 0.0;
+    base_to_camera_link_tf.transform.rotation.w = 1.0;
+
+    vehicle_ros->static_tf_msg_vec_.emplace_back(base_to_camera_link_tf);
+}
+
+// Append static transforms for camera sub-frames (infra1, infra2, depth, color, etc.)
+// These are relative to camera_link, mimicking RealSense camera frame structure
+void AirsimROSWrapper::append_static_camera_subframes_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting)
+{
+    const std::string camera_link_id = vehicle_ros->vehicle_name_ + "/" + camera_link_frame_id_;
+
+    // Get the camera's transform from settings
+    geometry_msgs::msg::Transform cam_transform = get_transform_msg_from_airsim(camera_setting.position, camera_setting.rotation);
+    if (isENU_) {
+        geometry_msgs::msg::TransformStamped temp_tf;
+        temp_tf.transform = cam_transform;
+        convert_tf_msg_to_enu(temp_tf);
+        cam_transform = temp_tf.transform;
+    }
+
+    // Camera body frame (camera_link -> camera_infra1_frame style)
+    // For RealSense-style naming: camera_infra1_frame, camera_infra2_frame, camera_depth_frame, camera_color_frame
+    geometry_msgs::msg::TransformStamped camera_depth_frame_tf;
+    camera_depth_frame_tf.header.frame_id = camera_link_id;
+    camera_depth_frame_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_depth_frame";
+    camera_depth_frame_tf.transform = cam_transform;
+    vehicle_ros->static_tf_msg_vec_.emplace_back(camera_depth_frame_tf);
+
+    // Depth optical frame (rotated for optical conventions: Z forward, X right, Y down)
+    geometry_msgs::msg::TransformStamped camera_depth_optical_tf;
+    camera_depth_optical_tf.header.frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_depth_frame";
+    camera_depth_optical_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_depth_optical_frame";
+    camera_depth_optical_tf.transform = get_camera_optical_tf_from_body_tf(cam_transform);
+    // Reset translation since optical frame is at same position, just rotated
+    camera_depth_optical_tf.transform.translation.x = 0.0;
+    camera_depth_optical_tf.transform.translation.y = 0.0;
+    camera_depth_optical_tf.transform.translation.z = 0.0;
+    // Apply optical rotation
+    if (isENU_) {
+        // ENU: rotate to get Z forward, X right, Y down
+        camera_depth_optical_tf.transform.rotation.x = -0.5;
+        camera_depth_optical_tf.transform.rotation.y = 0.5;
+        camera_depth_optical_tf.transform.rotation.z = -0.5;
+        camera_depth_optical_tf.transform.rotation.w = 0.5;
+    }
+    else {
+        // NED: rotate to get optical frame
+        camera_depth_optical_tf.transform.rotation.x = 0.5;
+        camera_depth_optical_tf.transform.rotation.y = 0.5;
+        camera_depth_optical_tf.transform.rotation.z = 0.5;
+        camera_depth_optical_tf.transform.rotation.w = 0.5;
+    }
+    vehicle_ros->static_tf_msg_vec_.emplace_back(camera_depth_optical_tf);
+
+    // Infra1 frame (typically same as depth for most setups, but with baseline offset for stereo)
+    geometry_msgs::msg::TransformStamped camera_infra1_frame_tf;
+    camera_infra1_frame_tf.header.frame_id = camera_link_id;
+    camera_infra1_frame_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_infra1_frame";
+    camera_infra1_frame_tf.transform = cam_transform;
+    vehicle_ros->static_tf_msg_vec_.emplace_back(camera_infra1_frame_tf);
+
+    // Infra1 optical frame
+    geometry_msgs::msg::TransformStamped camera_infra1_optical_tf;
+    camera_infra1_optical_tf.header.frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_infra1_frame";
+    camera_infra1_optical_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_infra1_optical_frame";
+    camera_infra1_optical_tf.transform = camera_depth_optical_tf.transform;
+    vehicle_ros->static_tf_msg_vec_.emplace_back(camera_infra1_optical_tf);
+
+    // Infra2 frame (offset by stereo baseline, typically ~50mm to the right)
+    geometry_msgs::msg::TransformStamped camera_infra2_frame_tf;
+    camera_infra2_frame_tf.header.frame_id = camera_link_id;
+    camera_infra2_frame_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_infra2_frame";
+    camera_infra2_frame_tf.transform = cam_transform;
+    // Add stereo baseline offset (adjust this value based on your simulated camera)
+    camera_infra2_frame_tf.transform.translation.y += 0.05; // 50mm baseline (positive Y is left in ROS)
+    vehicle_ros->static_tf_msg_vec_.emplace_back(camera_infra2_frame_tf);
+
+    // Infra2 optical frame
+    geometry_msgs::msg::TransformStamped camera_infra2_optical_tf;
+    camera_infra2_optical_tf.header.frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_infra2_frame";
+    camera_infra2_optical_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_infra2_optical_frame";
+    camera_infra2_optical_tf.transform = camera_depth_optical_tf.transform;
+    vehicle_ros->static_tf_msg_vec_.emplace_back(camera_infra2_optical_tf);
+
+    // Color frame (typically slightly offset from depth)
+    geometry_msgs::msg::TransformStamped camera_color_frame_tf;
+    camera_color_frame_tf.header.frame_id = camera_link_id;
+    camera_color_frame_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_color_frame";
+    camera_color_frame_tf.transform = cam_transform;
+    vehicle_ros->static_tf_msg_vec_.emplace_back(camera_color_frame_tf);
+
+    // Color optical frame
+    geometry_msgs::msg::TransformStamped camera_color_optical_tf;
+    camera_color_optical_tf.header.frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_color_frame";
+    camera_color_optical_tf.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_color_optical_frame";
+    camera_color_optical_tf.transform = camera_depth_optical_tf.transform;
+    vehicle_ros->static_tf_msg_vec_.emplace_back(camera_color_optical_tf);
 }
 
 void AirsimROSWrapper::img_response_timer_cb()
@@ -1424,12 +1578,14 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
 // publish camera transforms
 // camera poses are obtained from airsim's client API which are in (local) NED frame.
 // We first do a change of basis to camera optical frame (Z forward, X right, Y down)
+// Now publishes relative to base_link for proper TF tree: map -> odom -> base_link -> camera_link -> ...
 void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, const rclcpp::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id)
 {
     unused(ros_time);
     geometry_msgs::msg::TransformStamped cam_tf_body_msg;
     cam_tf_body_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
-    cam_tf_body_msg.header.frame_id = frame_id;
+    // Camera is relative to base_link (through camera_link)
+    cam_tf_body_msg.header.frame_id = frame_id + "/" + base_link_frame_id_;
     cam_tf_body_msg.child_frame_id = frame_id + "/" + child_frame_id + "_body";
     cam_tf_body_msg.transform = get_transform_msg_from_airsim(img_response.camera_position, img_response.camera_orientation);
 
@@ -1439,7 +1595,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
 
     geometry_msgs::msg::TransformStamped cam_tf_optical_msg;
     cam_tf_optical_msg.header.stamp = rclcpp::Time(img_response.time_stamp);
-    cam_tf_optical_msg.header.frame_id = frame_id;
+    cam_tf_optical_msg.header.frame_id = frame_id + "/" + base_link_frame_id_;
     cam_tf_optical_msg.child_frame_id = frame_id + "/" + child_frame_id + "_optical";
     cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(cam_tf_body_msg.transform);
 

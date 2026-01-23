@@ -230,6 +230,8 @@ private:
     /// ROS tf broadcasters
     void publish_camera_tf(const ImageResponse& img_response, const rclcpp::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
     void publish_odom_tf(const nav_msgs::msg::Odometry& odom_msg);
+    void publish_map_to_odom_tf(const rclcpp::Time& stamp, const std::string& vehicle_name);
+    void publish_odom_to_base_link_tf(const nav_msgs::msg::Odometry& odom_msg, const std::string& vehicle_name);
 
     /// camera helper methods
     sensor_msgs::msg::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
@@ -245,6 +247,8 @@ private:
     void append_static_camera_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting);
     void append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const msr::airlib::LidarSimpleParams& lidar_setting);
     void append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting);
+    void append_static_base_link_to_camera_link_tf(VehicleROS* vehicle_ros);
+    void append_static_camera_subframes_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting);
     void set_nans_to_zeros_in_pose(VehicleSetting& vehicle_setting) const;
     void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, CameraSetting& camera_setting) const;
     void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, LidarSetting& lidar_setting) const;
@@ -329,6 +333,8 @@ private:
     const std::string AIRSIM_ODOM_FRAME_ID = "odom"; // odom_local_ned
     const std::string ENU_ODOM_FRAME_ID = "odom_local_enu"; // not in used right now
     std::string odom_frame_id_ = AIRSIM_ODOM_FRAME_ID;
+    std::string base_link_frame_id_ = "base_link";
+    std::string camera_link_frame_id_ = "camera_link";
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
     std::shared_ptr<tf2_ros::StaticTransformBroadcaster> static_tf_pub_;
 
