@@ -34,9 +34,14 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'is_vulkan': False,
-                'update_airsim_img_response_every_n_sec': 0.05,
+                # Image at 30Hz (0.0333s period)
+                'update_airsim_img_response_every_n_sec': 0.0333,
+                # Control loop rate
                 'update_airsim_control_every_n_sec': 0.01,
+                # Lidar at 100Hz
                 'update_lidar_every_n_sec': 0.01,
+                # IMU at 200Hz (0.005s period)
+                'update_imu_every_n_sec': 0.005,
                 'publish_clock': LaunchConfiguration('publish_clock'),
                 'host_ip': LaunchConfiguration('host')
             }])

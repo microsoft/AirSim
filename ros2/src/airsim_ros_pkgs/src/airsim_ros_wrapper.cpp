@@ -24,17 +24,13 @@ const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_s
     { 7, "Infrared" }
 };
 
-AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip)
-    : is_used_lidar_timer_cb_queue_(false)
-    , is_used_img_timer_cb_queue_(false)
-    , airsim_settings_parser_(host_ip)
+AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::string& host_ip)
+    : airsim_settings_parser_(host_ip)
     , host_ip_(host_ip)
     , airsim_client_(nullptr)
-    , airsim_client_images_(host_ip)
     , airsim_client_lidar_(host_ip)
+    , airsim_client_imu_(host_ip)
     , nh_(nh)
-    , nh_img_(nh_img)
-    , nh_lidar_(nh_lidar)
     , isENU_(false)
     , publish_clock_(false)
 {
@@ -70,8 +66,12 @@ void AirsimROSWrapper::initialize_airsim()
             airsim_client_ = std::unique_ptr<msr::airlib::RpcLibClientBase>(new msr::airlib::CarRpcLibClient(host_ip_));
         }
         airsim_client_->confirmConnection();
-        airsim_client_images_.confirmConnection();
+        // Confirm connections for all parallel image clients
+        for (auto& img_client : airsim_client_images_vec_) {
+            img_client->confirmConnection();
+        }
         airsim_client_lidar_.confirmConnection();
+        airsim_client_imu_.confirmConnection();
 
         for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
             airsim_client_->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
@@ -305,21 +305,57 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         clock_pub_ = nh_->create_publisher<rosgraph_msgs::msg::Clock>("~/clock", 1);
     }
 
-    // if >0 cameras, add one more thread for img_request_timer_cb
+    // Image timer at 30Hz with dedicated callback group and parallel fetching
     if (!airsim_img_request_vehicle_name_pair_vec_.empty()) {
-        double update_airsim_img_response_every_n_sec;
-        nh_->get_parameter("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec);
+        constexpr double DEFAULT_IMG_PERIOD = 1.0 / 30.0; // 30Hz default
+        double update_airsim_img_response_every_n_sec = DEFAULT_IMG_PERIOD;
+        nh_->get_parameter_or("update_airsim_img_response_every_n_sec", update_airsim_img_response_every_n_sec, DEFAULT_IMG_PERIOD);
 
-        airsim_img_response_timer_ = nh_img_->create_wall_timer(std::chrono::duration<double>(update_airsim_img_response_every_n_sec), std::bind(&AirsimROSWrapper::img_response_timer_cb, this));
-        is_used_img_timer_cb_queue_ = true;
+        // Create one RPC client per camera for parallel image fetching
+        size_t num_cameras = airsim_img_request_vehicle_name_pair_vec_.size();
+        airsim_client_images_vec_.reserve(num_cameras);
+        for (size_t i = 0; i < num_cameras; ++i) {
+            airsim_client_images_vec_.push_back(
+                std::make_unique<msr::airlib::RpcLibClientBase>(host_ip_));
+        }
+        RCLCPP_INFO(nh_->get_logger(), "Created %zu parallel image RPC clients for %zu cameras", num_cameras, num_cameras);
+
+        img_callback_group_ = nh_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        airsim_img_response_timer_ = nh_->create_wall_timer(
+            std::chrono::duration<double>(update_airsim_img_response_every_n_sec),
+            std::bind(&AirsimROSWrapper::img_response_timer_cb, this),
+            img_callback_group_);
+        RCLCPP_INFO(nh_->get_logger(), "Image timer configured at %.1fHz (%.4fs period)", 1.0 / update_airsim_img_response_every_n_sec, update_airsim_img_response_every_n_sec);
     }
 
-    // lidars update on their own callback/thread at a given rate
+    // Lidar timer with dedicated callback group
     if (lidar_cnt > 0) {
-        double update_lidar_every_n_sec;
-        nh_->get_parameter("update_lidar_every_n_sec", update_lidar_every_n_sec);
-        airsim_lidar_update_timer_ = nh_lidar_->create_wall_timer(std::chrono::duration<double>(update_lidar_every_n_sec), std::bind(&AirsimROSWrapper::lidar_timer_cb, this));
-        is_used_lidar_timer_cb_queue_ = true;
+        double update_lidar_every_n_sec = 0.01; // 100Hz default
+        nh_->get_parameter_or("update_lidar_every_n_sec", update_lidar_every_n_sec, 0.01);
+
+        lidar_callback_group_ = nh_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        airsim_lidar_update_timer_ = nh_->create_wall_timer(
+            std::chrono::duration<double>(update_lidar_every_n_sec),
+            std::bind(&AirsimROSWrapper::lidar_timer_cb, this),
+            lidar_callback_group_);
+    }
+
+    // IMU timer at 200Hz with dedicated callback group and RPC client
+    size_t imu_cnt = 0;
+    for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
+        imu_cnt += vehicle_name_ptr_pair.second->imu_pubs_.size();
+    }
+    if (imu_cnt > 0) {
+        constexpr double DEFAULT_IMU_PERIOD = 1.0 / 200.0; // 200Hz default
+        double update_imu_every_n_sec = DEFAULT_IMU_PERIOD;
+        nh_->get_parameter_or("update_imu_every_n_sec", update_imu_every_n_sec, DEFAULT_IMU_PERIOD);
+
+        imu_callback_group_ = nh_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        airsim_imu_update_timer_ = nh_->create_wall_timer(
+            std::chrono::duration<double>(update_imu_every_n_sec),
+            std::bind(&AirsimROSWrapper::imu_timer_cb, this),
+            imu_callback_group_);
+        RCLCPP_INFO(nh_->get_logger(), "IMU timer configured at %.0fHz (%.4fs period)", 1.0 / update_imu_every_n_sec, update_imu_every_n_sec);
     }
 
     initialize_airsim();
@@ -1038,12 +1074,8 @@ void AirsimROSWrapper::publish_vehicle_state()
             sensor_publisher.publisher->publish(alt_msg);
         }
 
-        for (auto& sensor_publisher : vehicle_ros->imu_pubs_) {
-            auto imu_data = airsim_client_->getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
-            sensor_msgs::msg::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
-            imu_msg.header.frame_id = vehicle_ros->vehicle_name_;
-            sensor_publisher.publisher->publish(imu_msg);
-        }
+        // IMU is now published at 200Hz via dedicated imu_timer_cb() with separate RPC client
+
         for (auto& sensor_publisher : vehicle_ros->distance_pubs_) {
             auto distance_data = airsim_client_->getDistanceSensorData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
             sensor_msgs::msg::Range dist_msg = get_range_from_airsim(distance_data);
@@ -1221,20 +1253,42 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
 void AirsimROSWrapper::img_response_timer_cb()
 {
     try {
-        int image_response_idx = 0;
-        for (const auto& airsim_img_request_vehicle_name_pair : airsim_img_request_vehicle_name_pair_vec_) {
-            const std::vector<ImageResponse>& img_response = airsim_client_images_.simGetImages(airsim_img_request_vehicle_name_pair.first, airsim_img_request_vehicle_name_pair.second);
+        size_t num_cameras = airsim_img_request_vehicle_name_pair_vec_.size();
 
-            if (img_response.size() == airsim_img_request_vehicle_name_pair.first.size()) {
-                process_and_publish_img_response(img_response, image_response_idx, airsim_img_request_vehicle_name_pair.second);
+        if (num_cameras == 0) return;
+
+        // Launch parallel image fetch requests - each camera uses its own RPC client
+        std::vector<std::future<std::vector<ImageResponse>>> futures;
+        futures.reserve(num_cameras);
+
+        for (size_t i = 0; i < num_cameras; ++i) {
+            const auto& request_pair = airsim_img_request_vehicle_name_pair_vec_[i];
+            auto* client = airsim_client_images_vec_[i].get();
+
+            futures.push_back(std::async(std::launch::async,
+                                         [client, &request_pair]() {
+                                             return client->simGetImages(request_pair.first, request_pair.second);
+                                         }));
+        }
+
+        // Collect results and publish - maintains original order
+        int image_response_idx = 0;
+        for (size_t i = 0; i < num_cameras; ++i) {
+            const auto& request_pair = airsim_img_request_vehicle_name_pair_vec_[i];
+            std::vector<ImageResponse> img_response = futures[i].get();
+
+            if (img_response.size() == request_pair.first.size()) {
+                process_and_publish_img_response(img_response, image_response_idx, request_pair.second);
                 image_response_idx += img_response.size();
             }
         }
     }
-
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
         RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg.c_str());
+    }
+    catch (const std::exception& e) {
+        RCLCPP_ERROR(nh_->get_logger(), "Exception in image callback: %s", e.what());
     }
 }
 
@@ -1253,7 +1307,27 @@ void AirsimROSWrapper::lidar_timer_cb()
     }
     catch (rpc::rpc_error& e) {
         std::string msg = e.get_error().as<std::string>();
-        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get image response.\n%s", msg.c_str());
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get lidar response.\n%s", msg.c_str());
+    }
+}
+
+// High-frequency IMU callback at 200Hz with dedicated RPC client for parallel execution
+void AirsimROSWrapper::imu_timer_cb()
+{
+    try {
+        for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
+            auto& vehicle_ros = vehicle_name_ptr_pair.second;
+            for (auto& sensor_publisher : vehicle_ros->imu_pubs_) {
+                auto imu_data = airsim_client_imu_.getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
+                sensor_msgs::msg::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
+                imu_msg.header.frame_id = vehicle_ros->vehicle_name_;
+                sensor_publisher.publisher->publish(imu_msg);
+            }
+        }
+    }
+    catch (rpc::rpc_error& e) {
+        std::string msg = e.get_error().as<std::string>();
+        RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get IMU response.\n%s", msg.c_str());
     }
 }
 

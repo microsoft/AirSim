@@ -62,6 +62,8 @@ STRICT_MODE_OFF //todo what does this do?
 #include <tf2/convert.h>
 #include <unordered_map>
 #include <memory>
+#include <future>
+#include <thread>
 
     struct SimpleMatrix
 {
@@ -119,14 +121,11 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip);
-    ~AirsimROSWrapper(){};
+    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::string& host_ip);
+    ~AirsimROSWrapper() {};
 
     void initialize_airsim();
     void initialize_ros();
-
-    bool is_used_lidar_timer_cb_queue_;
-    bool is_used_img_timer_cb_queue_;
 
 private:
     // utility struct for a SINGLE robot
@@ -191,9 +190,10 @@ private:
     };
 
     /// ROS timer callbacks
-    void img_response_timer_cb(); // update images from airsim_client_ every nth sec
+    void img_response_timer_cb(); // update images at 30Hz
     void drone_state_timer_cb(); // update drone state from airsim_client_ every nth sec
     void lidar_timer_cb();
+    void imu_timer_cb(); // high-frequency IMU updates at 200Hz
 
     /// ROS subscriber callbacks
     void vel_cmd_world_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg, const std::string& vehicle_name);
@@ -310,16 +310,12 @@ private:
 
     std::string host_ip_;
     std::unique_ptr<msr::airlib::RpcLibClientBase> airsim_client_;
-    // seperate busy connections to airsim, update in their own thread
-    msr::airlib::RpcLibClientBase airsim_client_images_;
+    // separate busy connections to airsim for parallel execution
+    std::vector<std::unique_ptr<msr::airlib::RpcLibClientBase>> airsim_client_images_vec_; // one per camera for parallel fetch
     msr::airlib::RpcLibClientBase airsim_client_lidar_;
+    msr::airlib::RpcLibClientBase airsim_client_imu_;
 
     std::shared_ptr<rclcpp::Node> nh_;
-    std::shared_ptr<rclcpp::Node> nh_img_;
-    std::shared_ptr<rclcpp::Node> nh_lidar_;
-
-    // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
-    // todo for multiple drones with multiple sensors, this won't scale. make it a part of VehicleROS?
 
     std::mutex control_mutex_;
 
@@ -328,10 +324,10 @@ private:
     GimbalCmd gimbal_cmd_;
 
     /// ROS tf
-    const std::string AIRSIM_FRAME_ID = "world_ned";
+    const std::string AIRSIM_FRAME_ID = "map"; // world_ned
     std::string world_frame_id_ = AIRSIM_FRAME_ID;
-    const std::string AIRSIM_ODOM_FRAME_ID = "odom_local_ned";
-    const std::string ENU_ODOM_FRAME_ID = "odom_local_enu";
+    const std::string AIRSIM_ODOM_FRAME_ID = "odom"; // odom_local_ned
+    const std::string ENU_ODOM_FRAME_ID = "odom_local_enu"; // not in used right now
     std::string odom_frame_id_ = AIRSIM_ODOM_FRAME_ID;
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
     std::shared_ptr<tf2_ros::StaticTransformBroadcaster> static_tf_pub_;
@@ -347,6 +343,12 @@ private:
     rclcpp::TimerBase::SharedPtr airsim_img_response_timer_;
     rclcpp::TimerBase::SharedPtr airsim_control_update_timer_;
     rclcpp::TimerBase::SharedPtr airsim_lidar_update_timer_;
+    rclcpp::TimerBase::SharedPtr airsim_imu_update_timer_; // 200Hz IMU timer
+
+    /// Callback groups for parallel execution with MultiThreadedExecutor
+    rclcpp::CallbackGroup::SharedPtr img_callback_group_;
+    rclcpp::CallbackGroup::SharedPtr lidar_callback_group_;
+    rclcpp::CallbackGroup::SharedPtr imu_callback_group_;
 
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
