@@ -33,7 +33,6 @@ STRICT_MODE_OFF //todo what does this do?
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
-#include <image_transport/image_transport.hpp>
 #include <iostream>
 #include <math.h>
 #include <math_common.h>
@@ -64,6 +63,8 @@ STRICT_MODE_OFF //todo what does this do?
 #include <memory>
 #include <future>
 #include <thread>
+#include <deque>
+#include <mutex>
 
     struct SimpleMatrix
 {
@@ -142,7 +143,9 @@ private:
         airsim_interfaces::msg::Environment env_msg_;
 
         std::vector<SensorPublisher<airsim_interfaces::msg::Altimeter>> barometer_pubs_;
-        std::vector<SensorPublisher<sensor_msgs::msg::Imu>> imu_pubs_;
+        std::vector<SensorPublisher<sensor_msgs::msg::Imu>> imu_pubs_; // Legacy unified IMU (kept for backward compatibility)
+        std::vector<SensorPublisher<sensor_msgs::msg::Imu>> gyro_pubs_; // Separate gyro publishers
+        std::vector<SensorPublisher<sensor_msgs::msg::Imu>> accel_pubs_; // Separate accel publishers
         std::vector<SensorPublisher<sensor_msgs::msg::NavSatFix>> gps_pubs_;
         std::vector<SensorPublisher<sensor_msgs::msg::MagneticField>> magnetometer_pubs_;
         std::vector<SensorPublisher<sensor_msgs::msg::Range>> distance_pubs_;
@@ -194,6 +197,26 @@ private:
     void drone_state_timer_cb(); // update drone state from airsim_client_ every nth sec
     void lidar_timer_cb();
     void imu_timer_cb(); // high-frequency IMU updates at 200Hz
+    
+    // IMU synchronization methods
+    struct CimuData
+    {
+        CimuData() : m_data({0,0,0}), m_time_ns(-1) {};
+        CimuData(int type, const msr::airlib::Vector3r& data, int64_t time_ns):
+            m_type(type),
+            m_data(data),
+            m_time_ns(time_ns) {};
+        bool is_set() const {return m_time_ns > 0;};
+        
+        int m_type; // 0 = GYRO, 1 = ACCEL
+        msr::airlib::Vector3r m_data;
+        int64_t m_time_ns;
+    };
+    
+    sensor_msgs::msg::Imu CreateUnitedImuMessage(const CimuData& accel_data, const CimuData& gyro_data) const;
+    void FillImuData_Copy(const CimuData& imu_data, std::deque<sensor_msgs::msg::Imu>& imu_msgs);
+    void FillImuData_LinearInterpolation(const CimuData& imu_data, std::deque<sensor_msgs::msg::Imu>& imu_msgs);
+    void ImuMessage_AddDefaultValues(sensor_msgs::msg::Imu& imu_msg, const std::string& frame_id) const;
 
     /// ROS subscriber callbacks
     void vel_cmd_world_frame_cb(const airsim_interfaces::msg::VelCmd::SharedPtr msg, const std::string& vehicle_name);
@@ -235,6 +258,8 @@ private:
 
     /// camera helper methods
     sensor_msgs::msg::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
+    std::string get_realsense_stream_name(ImageType image_type, int camera_index) const;
+    std::string get_realsense_frame_id(ImageType image_type, int camera_index) const;
 
     std::shared_ptr<sensor_msgs::msg::Image> get_img_msg_from_response(const ImageResponse& img_response, const rclcpp::Time curr_ros_time, const std::string frame_id);
     std::shared_ptr<sensor_msgs::msg::Image> get_depth_img_msg_from_response(const ImageResponse& img_response, const rclcpp::Time curr_ros_time, const std::string frame_id);
@@ -344,6 +369,15 @@ private:
 
     /// ROS params
     double vel_cmd_duration_;
+    int unite_imu_method_; // 0=none, 1=copy, 2=linear_interpolation
+    
+    // Unified IMU publisher (when unite_imu_method > 0)
+    rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr unified_imu_pub_;
+    
+    // IMU synchronization data
+    std::mutex imu_sync_mutex_;
+    CimuData last_accel_data_;
+    std::deque<CimuData> imu_history_; // For linear interpolation
 
     /// ROS Timers.
     rclcpp::TimerBase::SharedPtr airsim_img_response_timer_;
@@ -358,9 +392,7 @@ private:
 
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
-    std::vector<image_transport::Publisher> image_pub_vec_;
-    std::vector<rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr> depth_image_pub_vec_; // Raw publishers for depth images (16UC1)
-    std::vector<bool> is_depth_image_vec_; // Track which publishers are for depth images
+    std::vector<rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr> image_pub_vec_; // Raw publishers (no compression)
     std::vector<rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr> cam_info_pub_vec_;
 
     std::vector<sensor_msgs::msg::CameraInfo> camera_info_msg_vec_;

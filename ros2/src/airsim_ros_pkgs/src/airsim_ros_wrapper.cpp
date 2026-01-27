@@ -14,15 +14,39 @@ constexpr char AirsimROSWrapper::P_YML_NAME[];
 constexpr char AirsimROSWrapper::DMODEL_YML_NAME[];
 
 const std::unordered_map<int, std::string> AirsimROSWrapper::image_type_int_to_string_map_ = {
-    { 0, "Scene" },
-    { 1, "DepthPlanar" },
+    { 0, "Scene" }, // rgb
+    { 1, "DepthPlanar" }, // depth
     { 2, "DepthPerspective" },
     { 3, "DepthVis" },
     { 4, "DisparityNormalized" },
     { 5, "Segmentation" },
     { 6, "SurfaceNormals" },
-    { 7, "Infrared" }
+    { 7, "Infrared" } // stereo infrared
 };
+
+// Helper function to map AirSim ImageType to RealSense stream name
+std::string AirsimROSWrapper::get_realsense_stream_name(ImageType image_type, int camera_index) const
+{
+    switch (image_type) {
+    case ImageType::Scene:
+        return "color";
+    case ImageType::DepthPlanar:
+        return "depth";
+    case ImageType::Infrared:
+        // First IR camera is infra1, second is infra2
+        return (camera_index == 0) ? "infra1" : "infra2";
+    default:
+        // For other types, use the original mapping
+        return image_type_int_to_string_map_.at(static_cast<int>(image_type));
+    }
+}
+
+// Helper function to get RealSense frame ID from ImageType
+std::string AirsimROSWrapper::get_realsense_frame_id(ImageType image_type, int camera_index) const
+{
+    std::string stream_name = get_realsense_stream_name(image_type, camera_index);
+    return "camera_" + stream_name + "_optical_frame";
+}
 
 AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::string& host_ip)
     : airsim_settings_parser_(host_ip)
@@ -33,6 +57,7 @@ AirsimROSWrapper::AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const
     , nh_(nh)
     , isENU_(false)
     , publish_clock_(false)
+    , unite_imu_method_(0)
 {
     ros_clock_.clock = rclcpp::Time(0);
 
@@ -163,6 +188,7 @@ void AirsimROSWrapper::initialize_ros()
     nh_->get_parameter_or("camera_link_frame_id", camera_link_frame_id_, camera_link_frame_id_);
     isENU_ = (odom_frame_id_ == ENU_ODOM_FRAME_ID);
     nh_->get_parameter_or("coordinate_system_enu", isENU_, isENU_);
+    nh_->get_parameter_or("unite_imu_method", unite_imu_method_, 0); // 0=none, 1=copy, 2=linear_interpolation
     vel_cmd_duration_ = 0.05; // todo rosparam
     // todo enforce dynamics constraints in this node as well?
     // nh_->get_parameter("max_vert_vel_", max_vert_vel_);
@@ -246,6 +272,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
         }
 
         // iterate over camera map std::map<std::string, CameraSetting> .cameras;
+        int infra_camera_index = 0; // Track IR camera index for infra1/infra2 naming
         for (auto& curr_camera_elem : vehicle_setting->cameras) {
             auto& camera_setting = curr_camera_elem.second;
             auto& curr_camera_name = curr_camera_elem.first;
@@ -275,12 +302,16 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
                     }
 
-                    const std::string camera_topic = topic_prefix + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
+                    // Use RealSense naming convention: /camera/{stream_type}/image_raw
+                    std::string stream_name = get_realsense_stream_name(curr_image_type,
+                                                                        (curr_image_type == ImageType::Infrared) ? infra_camera_index++ : 0);
+                    const std::string camera_topic = "~/camera/" + stream_name + "/image_" +
+                                                     ((curr_image_type == ImageType::DepthPlanar) ? "rect_" : "") + "raw";
 
                     // Use raw publisher for all images (no compression)
                     image_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::Image>(camera_topic, 1));
-                    cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", 10));
-                    camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
+                    cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>("~/camera/" + stream_name + "/camera_info", 10));
+                    camera_info_msg_vec_.push_back(generate_cam_info(stream_name, camera_setting, capture_setting));
                 }
             }
             // push back pair (vector of image captures, current vehicle name)
@@ -302,9 +333,19 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     break;
                 }
                 case SensorBase::SensorType::Imu: {
-                    SensorPublisher<sensor_msgs::msg::Imu> sensor_publisher =
+                    // Create separate gyro and accel publishers (RealSense-style)
+                    SensorPublisher<sensor_msgs::msg::Imu> gyro_publisher =
+                        create_sensor_publisher<sensor_msgs::msg::Imu>("Gyro", sensor_setting->sensor_name, sensor_setting->sensor_type, "camera/gyro/sample", 10);
+                    vehicle_ros->gyro_pubs_.emplace_back(gyro_publisher);
+
+                    SensorPublisher<sensor_msgs::msg::Imu> accel_publisher =
+                        create_sensor_publisher<sensor_msgs::msg::Imu>("Accel", sensor_setting->sensor_name, sensor_setting->sensor_type, "camera/accel/sample", 10);
+                    vehicle_ros->accel_pubs_.emplace_back(accel_publisher);
+
+                    // Also keep legacy unified IMU publisher for backward compatibility
+                    SensorPublisher<sensor_msgs::msg::Imu> imu_publisher =
                         create_sensor_publisher<sensor_msgs::msg::Imu>("Imu", sensor_setting->sensor_name, sensor_setting->sensor_type, curr_vehicle_name + "/imu/" + sensor_name, 10);
-                    vehicle_ros->imu_pubs_.emplace_back(sensor_publisher);
+                    vehicle_ros->imu_pubs_.emplace_back(imu_publisher);
                     break;
                 }
                 case SensorBase::SensorType::Gps: {
@@ -406,13 +447,23 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
     // IMU timer at 200Hz with dedicated callback group and RPC client
     size_t imu_cnt = 0;
+    size_t gyro_cnt = 0;
+    size_t accel_cnt = 0;
     for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
         imu_cnt += vehicle_name_ptr_pair.second->imu_pubs_.size();
+        gyro_cnt += vehicle_name_ptr_pair.second->gyro_pubs_.size();
+        accel_cnt += vehicle_name_ptr_pair.second->accel_pubs_.size();
     }
-    if (imu_cnt > 0) {
+    if (imu_cnt > 0 || gyro_cnt > 0 || accel_cnt > 0) {
         constexpr double DEFAULT_IMU_PERIOD = 1.0 / 200.0; // 200Hz default
         double update_imu_every_n_sec = DEFAULT_IMU_PERIOD;
         nh_->get_parameter_or("update_imu_every_n_sec", update_imu_every_n_sec, DEFAULT_IMU_PERIOD);
+
+        // Create unified IMU publisher if unite_imu_method > 0
+        if (unite_imu_method_ > 0 && (gyro_cnt > 0 || accel_cnt > 0)) {
+            unified_imu_pub_ = nh_->create_publisher<sensor_msgs::msg::Imu>("~/camera/imu", 10);
+            RCLCPP_INFO(nh_->get_logger(), "Unified IMU publisher created with method %d", unite_imu_method_);
+        }
 
         imu_callback_group_ = nh_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         airsim_imu_update_timer_ = nh_->create_wall_timer(
@@ -1594,11 +1645,80 @@ void AirsimROSWrapper::imu_timer_cb()
     try {
         for (auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
             auto& vehicle_ros = vehicle_name_ptr_pair.second;
-            for (auto& sensor_publisher : vehicle_ros->imu_pubs_) {
+
+            // Process each IMU sensor
+            for (size_t i = 0; i < vehicle_ros->imu_pubs_.size(); ++i) {
+                auto& sensor_publisher = vehicle_ros->imu_pubs_[i];
                 auto imu_data = airsim_client_imu_.getImuData(sensor_publisher.sensor_name, vehicle_ros->vehicle_name_);
+
+                // Get full IMU message for legacy publisher
                 sensor_msgs::msg::Imu imu_msg = get_imu_msg_from_airsim(imu_data);
                 imu_msg.header.frame_id = vehicle_ros->vehicle_name_;
                 sensor_publisher.publisher->publish(imu_msg);
+
+                // Publish separate gyro message (RealSense-style)
+                if (i < vehicle_ros->gyro_pubs_.size()) {
+                    sensor_msgs::msg::Imu gyro_msg;
+                    ImuMessage_AddDefaultValues(gyro_msg, "camera_gyro_optical_frame");
+                    gyro_msg.header.stamp = rclcpp::Time(imu_data.time_stamp);
+                    gyro_msg.angular_velocity.x = imu_data.angular_velocity.x();
+                    gyro_msg.angular_velocity.y = imu_data.angular_velocity.y();
+                    gyro_msg.angular_velocity.z = imu_data.angular_velocity.z();
+                    // Linear acceleration fields remain zero for gyro-only message
+                    vehicle_ros->gyro_pubs_[i].publisher->publish(gyro_msg);
+
+                    // Store gyro data for unified IMU
+                    if (unite_imu_method_ > 0) {
+                        std::lock_guard<std::mutex> lock(imu_sync_mutex_);
+                        CimuData gyro_data(0, imu_data.angular_velocity, imu_data.time_stamp);
+                        std::deque<sensor_msgs::msg::Imu> imu_msgs;
+                        if (unite_imu_method_ == 1) {
+                            FillImuData_Copy(gyro_data, imu_msgs);
+                        }
+                        else if (unite_imu_method_ == 2) {
+                            // For linear interpolation, we need to process accel data first
+                            // So we'll process it when accel arrives
+                        }
+                        while (!imu_msgs.empty()) {
+                            sensor_msgs::msg::Imu unified_msg = imu_msgs.front();
+                            imu_msgs.pop_front();
+                            if (unified_imu_pub_) {
+                                unified_imu_pub_->publish(unified_msg);
+                            }
+                        }
+                    }
+                }
+
+                // Publish separate accel message (RealSense-style)
+                if (i < vehicle_ros->accel_pubs_.size()) {
+                    sensor_msgs::msg::Imu accel_msg;
+                    ImuMessage_AddDefaultValues(accel_msg, "camera_accel_optical_frame");
+                    accel_msg.header.stamp = rclcpp::Time(imu_data.time_stamp);
+                    accel_msg.linear_acceleration.x = imu_data.linear_acceleration.x();
+                    accel_msg.linear_acceleration.y = imu_data.linear_acceleration.y();
+                    accel_msg.linear_acceleration.z = imu_data.linear_acceleration.z();
+                    // Angular velocity fields remain zero for accel-only message
+                    vehicle_ros->accel_pubs_[i].publisher->publish(accel_msg);
+
+                    // Store accel data for unified IMU
+                    if (unite_imu_method_ > 0) {
+                        std::lock_guard<std::mutex> lock(imu_sync_mutex_);
+                        CimuData accel_data(1, imu_data.linear_acceleration, imu_data.time_stamp);
+                        last_accel_data_ = accel_data;
+                        if (unite_imu_method_ == 2) {
+                            // For linear interpolation, process accel data to match with gyro timestamps
+                            std::deque<sensor_msgs::msg::Imu> imu_msgs;
+                            FillImuData_LinearInterpolation(accel_data, imu_msgs);
+                            while (!imu_msgs.empty()) {
+                                sensor_msgs::msg::Imu unified_msg = imu_msgs.front();
+                                imu_msgs.pop_front();
+                                if (unified_imu_pub_) {
+                                    unified_imu_pub_->publish(unified_msg);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -1606,6 +1726,104 @@ void AirsimROSWrapper::imu_timer_cb()
         std::string msg = e.get_error().as<std::string>();
         RCLCPP_ERROR(nh_->get_logger(), "Exception raised by the API, didn't get IMU response.\n%s", msg.c_str());
     }
+}
+
+// IMU synchronization methods
+sensor_msgs::msg::Imu AirsimROSWrapper::CreateUnitedImuMessage(const CimuData& accel_data, const CimuData& gyro_data) const
+{
+    sensor_msgs::msg::Imu imu_msg;
+    imu_msg.header.stamp = rclcpp::Time(gyro_data.m_time_ns);
+    imu_msg.header.frame_id = "camera_imu_optical_frame";
+
+    imu_msg.angular_velocity.x = gyro_data.m_data.x();
+    imu_msg.angular_velocity.y = gyro_data.m_data.y();
+    imu_msg.angular_velocity.z = gyro_data.m_data.z();
+
+    imu_msg.linear_acceleration.x = accel_data.m_data.x();
+    imu_msg.linear_acceleration.y = accel_data.m_data.y();
+    imu_msg.linear_acceleration.z = accel_data.m_data.z();
+
+    ImuMessage_AddDefaultValues(imu_msg, "camera_imu_optical_frame");
+    return imu_msg;
+}
+
+void AirsimROSWrapper::FillImuData_Copy(const CimuData& imu_data, std::deque<sensor_msgs::msg::Imu>& imu_msgs)
+{
+    // GYRO type = 0, ACCEL type = 1
+    if (imu_data.m_type == 1) { // ACCEL
+        last_accel_data_ = imu_data;
+        return;
+    }
+    if (!last_accel_data_.is_set()) {
+        return;
+    }
+
+    imu_msgs.push_back(CreateUnitedImuMessage(last_accel_data_, imu_data));
+}
+
+void AirsimROSWrapper::FillImuData_LinearInterpolation(const CimuData& imu_data, std::deque<sensor_msgs::msg::Imu>& imu_msgs)
+{
+    imu_history_.push_back(imu_data);
+    imu_msgs.clear();
+
+    // Need at least 3 samples for interpolation
+    if (imu_history_.size() < 3) {
+        return;
+    }
+
+    std::deque<CimuData> gyros_data;
+    CimuData accel0, accel1, crnt_imu;
+    CimuData last_imu;
+
+    while (!imu_history_.empty()) {
+        crnt_imu = imu_history_.front();
+        imu_history_.pop_front();
+
+        if (!accel0.is_set() && crnt_imu.m_type == 1) { // ACCEL
+            accel0 = crnt_imu;
+        }
+        else if (accel0.is_set() && crnt_imu.m_type == 1) { // ACCEL
+            accel1 = crnt_imu;
+            const double dt = accel1.m_time_ns - accel0.m_time_ns;
+            if (dt > 0) {
+                while (!gyros_data.empty()) {
+                    CimuData crnt_gyro = gyros_data.front();
+                    gyros_data.pop_front();
+                    const double alpha = (crnt_gyro.m_time_ns - accel0.m_time_ns) / dt;
+
+                    // Linear interpolation: lerp(a, b, t) = a * (1-t) + b * t
+                    msr::airlib::Vector3r interpolated_accel = accel0.m_data * (1.0 - alpha) + accel1.m_data * alpha;
+                    CimuData crnt_accel(1, interpolated_accel, crnt_gyro.m_time_ns);
+                    imu_msgs.push_back(CreateUnitedImuMessage(crnt_accel, crnt_gyro));
+                }
+            }
+            accel0 = accel1;
+        }
+        else if (accel0.is_set() && crnt_imu.m_time_ns >= accel0.m_time_ns && crnt_imu.m_type == 0) { // GYRO
+            gyros_data.push_back(crnt_imu);
+        }
+        last_imu = crnt_imu;
+    }
+    if (last_imu.is_set()) {
+        imu_history_.push_back(last_imu);
+    }
+}
+
+void AirsimROSWrapper::ImuMessage_AddDefaultValues(sensor_msgs::msg::Imu& imu_msg, const std::string& frame_id) const
+{
+    imu_msg.header.frame_id = frame_id;
+    imu_msg.orientation.x = 0.0;
+    imu_msg.orientation.y = 0.0;
+    imu_msg.orientation.z = 0.0;
+    imu_msg.orientation.w = 0.0;
+
+    // Default covariance values (can be made configurable)
+    const double linear_accel_cov = 0.01;
+    const double angular_velocity_cov = 0.01;
+
+    imu_msg.orientation_covariance = { -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    imu_msg.linear_acceleration_covariance = { linear_accel_cov, 0.0, 0.0, 0.0, linear_accel_cov, 0.0, 0.0, 0.0, linear_accel_cov };
+    imu_msg.angular_velocity_covariance = { angular_velocity_cov, 0.0, 0.0, 0.0, angular_velocity_cov, 0.0, 0.0, 0.0, angular_velocity_cov };
 }
 
 std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_img_msg_from_response(const ImageResponse& img_response,
@@ -1682,13 +1900,14 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
 }
 
 // todo have a special stereo pair mode and get projection matrix by calculating offset wrt drone body frame?
-sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& camera_name,
+sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& stream_name,
                                                                  const CameraSetting& camera_setting,
                                                                  const CaptureSetting& capture_setting) const
 {
     unused(camera_setting);
     sensor_msgs::msg::CameraInfo cam_info_msg;
-    cam_info_msg.header.frame_id = camera_name + "_optical";
+    // Use RealSense frame naming convention: camera_{stream}_optical_frame
+    cam_info_msg.header.frame_id = "camera_" + stream_name + "_optical_frame";
     cam_info_msg.height = capture_setting.height;
     cam_info_msg.width = capture_setting.width;
     float f_x = (capture_setting.width / 2.0) / tan(math_common::deg2rad(capture_setting.fov_degrees / 2.0));
@@ -1696,6 +1915,12 @@ sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::stri
     // float f_y = (capture_setting.height / 2.0) / tan(math_common::deg2rad(fov_degrees / 2.0));
     cam_info_msg.k = { f_x, 0.0, capture_setting.width / 2.0, 0.0, f_x, capture_setting.height / 2.0, 0.0, 0.0, 1.0 };
     cam_info_msg.p = { f_x, 0.0, capture_setting.width / 2.0, 0.0, 0.0, f_x, capture_setting.height / 2.0, 0.0, 0.0, 0.0, 1.0, 0.0 };
+
+    // Set distortion model to plumb_bob with zero distortion coefficients (matching RealSense default)
+    cam_info_msg.distortion_model = "plumb_bob";
+    cam_info_msg.d = { 0.0, 0.0, 0.0, 0.0, 0.0 };
+    cam_info_msg.r = { 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 };
+
     return cam_info_msg;
 }
 
@@ -1718,11 +1943,14 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         camera_info_msg_vec_[img_response_idx_internal].header.stamp = rclcpp::Time(curr_img_response.time_stamp);
         cam_info_pub_vec_[img_response_idx_internal]->publish(camera_info_msg_vec_[img_response_idx_internal]);
 
+        // Get RealSense frame ID from camera_info (which was set with correct stream name)
+        std::string frame_id = camera_info_msg_vec_[img_response_idx_internal].header.frame_id;
+
         // DepthPlanar / DepthPerspective / DepthVis / DisparityNormalized
         if (curr_img_response.pixels_as_float) {
             auto depth_img_msg = get_depth_img_msg_from_response(curr_img_response,
                                                                  curr_ros_time,
-                                                                 curr_img_response.camera_name + "_optical");
+                                                                 frame_id);
             // Use raw publisher (no compression)
             image_pub_vec_[img_response_idx_internal]->publish(*depth_img_msg);
         }
@@ -1730,7 +1958,7 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         else {
             auto img_msg = get_img_msg_from_response(curr_img_response,
                                                      curr_ros_time,
-                                                     curr_img_response.camera_name + "_optical");
+                                                     frame_id);
             // Use raw publisher (no compression)
             image_pub_vec_[img_response_idx_internal]->publish(*img_msg);
         }

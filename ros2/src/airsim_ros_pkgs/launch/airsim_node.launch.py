@@ -47,6 +47,11 @@ def generate_launch_description():
         default_value='camera_link',
         description='Camera link frame ID (camera mount point)')
   
+    unite_imu_method = DeclareLaunchArgument(
+        "unite_imu_method",
+        default_value='0',
+        description='IMU unification method: 0=none, 1=copy, 2=linear_interpolation')
+  
     airsim_node = Node(
             package='airsim_ros_pkgs',
             executable='airsim_node',
@@ -68,7 +73,8 @@ def generate_launch_description():
                 'world_frame_id': LaunchConfiguration('world_frame_id'),
                 'odom_frame_id': LaunchConfiguration('odom_frame_id'),
                 'base_link_frame_id': LaunchConfiguration('base_link_frame_id'),
-                'camera_link_frame_id': LaunchConfiguration('camera_link_frame_id')
+                'camera_link_frame_id': LaunchConfiguration('camera_link_frame_id'),
+                'unite_imu_method': LaunchConfiguration('unite_imu_method')
             }])
 
     static_transforms = IncludeLaunchDescription(
@@ -89,6 +95,7 @@ def generate_launch_description():
     ld.add_action(odom_frame_id)
     ld.add_action(base_link_frame_id)
     ld.add_action(camera_link_frame_id)
+    ld.add_action(unite_imu_method)
   
     ld.add_action(static_transforms)
     ld.add_action(airsim_node)
