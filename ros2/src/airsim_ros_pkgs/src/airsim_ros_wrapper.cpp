@@ -302,9 +302,19 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                         current_image_request_vec.push_back(ImageRequest(curr_camera_name, curr_image_type, true));
                     }
 
-                    // Use RealSense naming convention: /camera/{stream_type}/image_raw
-                    std::string stream_name = get_realsense_stream_name(curr_image_type,
-                                                                        (curr_image_type == ImageType::Infrared) ? infra_camera_index++ : 0);
+                    // Determine stream name: if camera name is infra1 or infra2, use it directly
+                    // Otherwise, use ImageType-based mapping
+                    std::string stream_name;
+                    if (curr_camera_name == "infra1" || curr_camera_name == "infra2") {
+                        // Keep infra1/infra2 naming regardless of ImageType
+                        stream_name = curr_camera_name;
+                    }
+                    else {
+                        // Use RealSense naming convention based on ImageType
+                        stream_name = get_realsense_stream_name(curr_image_type,
+                                                                (curr_image_type == ImageType::Infrared) ? infra_camera_index++ : 0);
+                    }
+
                     const std::string camera_topic = "~/camera/" + stream_name + "/image_" +
                                                      ((curr_image_type == ImageType::DepthPlanar) ? "rect_" : "") + "raw";
 
