@@ -59,9 +59,18 @@ class MetasurfaceController:
             "transparency": 1.0,
             "reflectivity": 0.0,
             "emissivity": 0.1,         # New: for radiative cooling
-            "radiative_cooling": False # New: state 1/0
+            "radiative_cooling": False, # New: state 1/0
+            "early_warning": False     # New: Cytokine pulse
         }
         self.consensus_latency_ms = 0.0
+
+    def early_warning_pulse(self):
+        """
+        Cytokine Pulse: Triggered by the immune system to warn of local instability.
+        """
+        self.current_property["early_warning"] = True
+        # In physical hardware, this would be +5mV pulse
+        print(f"  [Metasurface] Cytokine Pulse (+5mV) active at {self.voxel.coords}. (Amber Glow)")
 
     def _detect_risk(self, target_property: Dict[str, float]) -> float:
         """

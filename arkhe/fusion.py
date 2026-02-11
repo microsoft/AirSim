@@ -13,12 +13,23 @@ class FusionEngine:
     def fuse_lidar(self, points: np.ndarray):
         """
         Processes LIDAR point cloud and updates the C (Construction) component.
-        points: Nx3 array of (x, y, z)
+        Implements 'Prótese Cognitiva' if sensor health is low.
         """
         for i in range(len(points)):
             x, y, z = points[i]
-            # Each LIDAR point reinforces the physicality (C)
-            self.hsi.add_point(x, y, z, genome_update={'c': 0.1})
+            coords = self.hsi.cartesian_to_hex(x, y, z)
+            voxel = self.hsi.get_voxel(coords)
+
+            if voxel.sensor_health > 0.5:
+                # Normal operation: Each LIDAR point reinforces physicality (C)
+                voxel.genome.c += 0.1
+            else:
+                # Prótese Cognitiva: Borrow structure from neighbors
+                neighbors = self.hsi.get_neighbors(coords)
+                nb_c = [self.hsi.voxels[nb].genome.c for nb in neighbors if nb in self.hsi.voxels]
+                if nb_c:
+                    voxel.genome.c = np.mean(nb_c)
+                    voxel.phi_data = 0.9 # Artificially high to represent 'faith' in consensus
 
     def fuse_thermal(self, thermal_image: np.ndarray, depth_map: np.ndarray, camera_pose, camera_fov_deg: float):
         """
@@ -47,7 +58,15 @@ class FusionEngine:
                 z_w = camera_pose.position.z_val + z_c
 
                 intensity = thermal_image[i, j] / 255.0
-                self.hsi.add_point(x_w, y_w, z_w, genome_update={'e': intensity})
+                coords = self.hsi.cartesian_to_hex(x_w, y_w, z_w)
+                voxel = self.hsi.get_voxel(coords)
+                if voxel.sensor_health > 0.5:
+                    voxel.genome.e += intensity
+                else:
+                    # Compensation
+                    neighbors = self.hsi.get_neighbors(coords)
+                    nb_e = [self.hsi.voxels[nb].genome.e for nb in neighbors if nb in self.hsi.voxels]
+                    if nb_e: voxel.genome.e = np.mean(nb_e)
 
     def fuse_depth(self, depth_map: np.ndarray, camera_pose, camera_fov_deg: float):
         """
@@ -71,7 +90,15 @@ class FusionEngine:
                 z_w = camera_pose.position.z_val + d
 
                 # Each depth point reinforces Information (I)
-                self.hsi.add_point(x_w, y_w, z_w, genome_update={'i': 0.1})
+                coords = self.hsi.cartesian_to_hex(x_w, y_w, z_w)
+                voxel = self.hsi.get_voxel(coords)
+                if voxel.sensor_health > 0.5:
+                    voxel.genome.i += 0.1
+                else:
+                    # Compensation
+                    neighbors = self.hsi.get_neighbors(coords)
+                    nb_i = [self.hsi.voxels[nb].genome.i for nb in neighbors if nb in self.hsi.voxels]
+                    if nb_i: voxel.genome.i = np.mean(nb_i)
 
     def fuse_multimodal(self, lidar_points: np.ndarray, thermal_image: np.ndarray, depth_map: np.ndarray, camera_pose, camera_fov: float):
         """

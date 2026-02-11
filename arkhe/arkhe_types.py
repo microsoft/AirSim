@@ -34,6 +34,7 @@ class HexVoxel:
     phi_data: float = 0.0
     phi_field: float = 0.0
     conflict_level: float = 0.0 # New: for interference detection
+    tau: float = 0.0 # New: Entanglement Tension
 
     @property
     def phi(self) -> float:
@@ -47,12 +48,17 @@ class HexVoxel:
 
     # Reaction-diffusion state (A, B) for Gray-Scott model
     rd_state: Tuple[float, float] = (1.0, 0.0)
+    memory_bias: float = 0.0 # M(x) term for conditioned reflex
+    stability_index: float = 1.0 # New: S(t) = 1 - |dF/dt|
+    is_quarantined: bool = False # New: Byzantine isolation
+    sensor_health: float = 1.0 # New: 1.0 = OK, 0.0 = Failed
+    rehabilitation_index: float = 0.0 # New: Trust recovery [0, 1]
 
     # Hebbian weights for 6 neighbors
     weights: np.ndarray = field(default_factory=lambda: np.ones(6, dtype=np.float32))
 
     def __post_init__(self):
         if len(self.state) != 7:
-            self.state = np.zeros(7, dtype=np.float32)
+            self.state = np.zeros(7, dtype=np.complex64)
         if len(self.weights) != 6:
             self.weights = np.ones(6, dtype=np.float32)
