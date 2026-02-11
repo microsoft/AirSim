@@ -9,3 +9,4 @@ from .grover import GroverUrbano
 from .cognition import ConstraintLearner
 from .physics import SpatialHashGrid
 from .bio_genesis import BioGenesisEngine
+from .human_vision import HumanPerspectiveEngine

@@ -1,0 +1,7 @@
+{
+    "DefaultOutputFolder": "C:\\Arkhe_Recovery",
+    "SonarrUrl": "http://localhost:8989",
+    "SonarrApiKey": "YOUR_SONARR_API_KEY",
+    "RadarrUrl": "http://localhost:7878",
+    "RadarrApiKey": "YOUR_RADARR_API_KEY"
+}
