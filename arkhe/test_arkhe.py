@@ -4,6 +4,8 @@ from arkhe.arkhe_types import CIEF, HexVoxel
 from arkhe.hsi import HSI
 from arkhe.fusion import FusionEngine
 from arkhe.simulation import MorphogeneticSimulation
+from arkhe.consensus import QuantumPaxos
+from arkhe.telemetry import ArkheTelemetry
 
 class TestArkhe(unittest.TestCase):
     def test_cief_init(self):
@@ -56,6 +58,62 @@ class TestArkhe(unittest.TestCase):
         self.assertAlmostEqual(voxel.phi_data, 1.0, places=5)
         # Total phi should be average of data and field (0 initially)
         self.assertAlmostEqual(voxel.phi, 0.5, places=5)
+
+    def test_quantumpaxos_sign(self):
+        paxos = QuantumPaxos(node_id="test_node")
+        report = {"data": "test"}
+        signature = paxos.sign_report(report)
+        self.assertIn("quantum_signature", report)
+        self.assertEqual(report["quantum_signature"], signature)
+
+    def test_telemetry_dispatch(self):
+        # Test basic dispatch without needing full redis/websockets
+        telemetry = ArkheTelemetry()
+        report = {"event": "test"}
+        # Should not crash even if redis is missing
+        telemetry.dispatch_channel_a(report)
+
+    def test_hebbian_trace(self):
+        hsi = HSI(size=1.0)
+        sim = MorphogeneticSimulation(hsi)
+        v1 = hsi.get_voxel((0,0,0,0))
+        v2 = hsi.get_voxel((1,-1,0,0))
+
+        sim.on_hex_boundary_crossed(v1, v2)
+
+        self.assertEqual(len(v1.hebbian_trace), 1)
+        self.assertEqual(v1.hebbian_trace[0][1], "entity_exited")
+        self.assertEqual(len(v2.hebbian_trace), 1)
+        self.assertEqual(v2.hebbian_trace[0][1], "entity_entered")
+
+    def test_immune_system(self):
+        hsi = HSI(size=1.0)
+        sim = MorphogeneticSimulation(hsi)
+        v = hsi.get_voxel((0,0,0,0))
+        # Create a massive divergence by changing genome (affects intention F)
+        v.genome.i = 1.0
+        v.genome.e = 1.0
+        # sim.step will calculate intention_derivative based on (i+e)/2
+
+        sim.step(dt=1.0)
+        # Should be isolated due to high dF (1.0)
+        self.assertTrue(v.is_isolated)
+
+    def test_rehabilitation(self):
+        hsi = HSI(size=1.0)
+        sim = MorphogeneticSimulation(hsi)
+        v = hsi.get_voxel((0,0,0,0))
+        v.is_isolated = True
+        v.genome.i = 0.0
+        v.genome.e = 0.0
+        v.intention_amplitude = 0.0 # Stable state
+
+        # Needs to reach REHAB_GOAL (0.74) with score += dt * 0.1
+        for _ in range(8):
+            sim.step(dt=1.0)
+
+        # Should be rehabilitated after ~8 steps
+        self.assertFalse(v.is_isolated)
 
 if __name__ == "__main__":
     unittest.main()
