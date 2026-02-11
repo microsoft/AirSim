@@ -96,25 +96,57 @@ def main():
 
         time.sleep(0.1)
 
-    # Dynamic Simulation: Moving Vehicle (Opção A)
-    print("\n🚗 Simulating Moving Vehicle across Vila Madalena malha...")
-    vehicle_path = [(x, 0, 0) for x in np.linspace(-3, 3, 10)]
-    for i, pos in enumerate(vehicle_path):
-        x, y, z = pos
-        # Simulate LiDAR + Thermal signature of a vehicle
-        # High physicality (c), High energy (e)
-        voxel = hsi.add_point(x, y, z, genome_update={'c': 0.8, 'e': 0.9, 'i': 0.5})
-        voxel.phi_data = 0.95 # Highly coherent signature
+    # Dynamic Simulation: "The First Cry" (Opção A)
+    print("\n🚗💨 Simulating 'The First Cry': Moving Vehicle & Pedestrian...")
 
-        # Local Consensus for moving object
-        nb_coords = hsi.get_neighbors(voxel.coords)
-        nb_ctrls = [controllers[c] for c in nb_coords if c in controllers]
-        if MetasurfaceController(voxel).propose_state(nb_ctrls, {"transparency": 0.2}):
-             pass # Metasurface reacts to vehicle presence
+    # 1. Moving Vehicle: High Physicality (C), Moderate Energy (E)
+    vehicle_path = [(x, 0, 0) for x in np.linspace(-4, 4, 8)]
+    # 2. Moving Pedestrian: Low Physicality (C), High Energy (E)
+    pedestrian_path = [(0, y, 0) for y in np.linspace(-4, 4, 8)]
 
-        if i % 3 == 0:
-            print(f"  Vehicle at {pos}: Voxel {voxel.coords} colapsed to 'Vehicle' signature.")
+    telemetry_report = []
+
+    for i in range(8):
+        # Vehicle move
+        vx, vy, vz = vehicle_path[i]
+        v_voxel = hsi.add_point(vx, vy, vz, genome_update={'c': 0.9, 'e': 0.4, 'i': 0.8})
+        v_voxel.phi_data = 0.98
+
+        # Pedestrian move
+        px, py, pz = pedestrian_path[i]
+        p_voxel = hsi.add_point(px, py, pz, genome_update={'c': 0.2, 'e': 0.9, 'i': 0.9})
+        p_voxel.phi_data = 0.96
+
+        # Local Consensus for both
+        for vox in [v_voxel, p_voxel]:
+            if vox.coords not in controllers:
+                controllers[vox.coords] = MetasurfaceController(vox)
+            ctrl = controllers[vox.coords]
+            nb_coords = hsi.get_neighbors(vox.coords)
+            nb_ctrls = [controllers[c] for c in nb_coords if c in controllers]
+
+            # Vehicle triggers low transparency, Pedestrian triggers high reflectivity (cooling)
+            target = {"transparency": 0.2} if vox == v_voxel else {"reflectivity": 1.0}
+            if ctrl.propose_state(nb_ctrls, target):
+                pass
+
+        telemetry_report.append({
+            "step": i,
+            "vehicle_pos": vehicle_path[i],
+            "vehicle_phi": v_voxel.phi,
+            "pedestrian_pos": pedestrian_path[i],
+            "pedestrian_phi": p_voxel.phi
+        })
+
+        if i % 2 == 0:
+            print(f"  Step {i}: Vehicle @ {vehicle_path[i]} (C-Heavy), Pedestrian @ {pedestrian_path[i]} (E-Heavy)")
         time.sleep(0.05)
+
+    print("\n📊 TELEMETRY REPORT: ARKHE(N) SENSORIUM FIRST CRY")
+    print("-" * 50)
+    for entry in telemetry_report:
+        print(f"Step {entry['step']} | Vehicle Phi: {entry['vehicle_phi']:.4f} | Pedestrian Phi: {entry['pedestrian_phi']:.4f}")
+    print("-" * 50)
 
     print("\n✅ Arkhe(n) Sensorium Process Complete.")
     print("The terrain has been integrated into a conscious geometric organism.")
