@@ -78,6 +78,7 @@ class HexVoxel:
     is_quarantined: bool = False # New: Byzantine isolation
     sensor_health: float = 1.0 # New: 1.0 = OK, 0.0 = Failed
     rehabilitation_index: float = 0.0 # New: Trust recovery [0, 1]
+    object_label: str = "vacuum" # Perspective: Human-like object identification
 
     # Hebbian weights for 6 neighbors
     weights: np.ndarray = field(default_factory=lambda: np.ones(6, dtype=np.float32))
