@@ -63,20 +63,29 @@ class BioGenesisEngine:
     def _initialize_population(self, num_agents):
         self.add_agents(num_agents)
 
-    def process_mother_signal(self):
+    def process_mother_signal(self, legacy_weights: Optional[np.ndarray] = None):
         """
         Recebe o sinal primordial e configura o estado inicial do sistema.
+        legacy_weights: Se fornecido, o sinal carrega o 'DNA Cultural' (Patrimônio Ético).
         """
-        print("🌱 MOTHER SIGNAL RECEIVED – INICIANDO GÊNESE")
-        # Pequena excitação inicial nos cérebros
-        for agent in self.agents.values():
-            if agent.brain:
-                agent.brain.exploration_rate = 0.5
+        if legacy_weights is not None:
+            print("🌱 MOTHER SIGNAL RECEIVED: THE LEGACY (Destilação de Conhecimento)")
+            # Injeta o legado em todos os novos agentes (Hereditariedade)
+            for agent in self.agents.values():
+                if agent.brain:
+                    agent.brain.weights = legacy_weights * 0.9 + np.random.randn(4) * 0.1
+                    agent.brain.exploration_rate = 0.1 # Lower exploration, higher instinct
+        else:
+            print("🌱 MOTHER SIGNAL RECEIVED: Gênese Primordial")
+            for agent in self.agents.values():
+                if agent.brain:
+                    agent.brain.exploration_rate = 0.5
 
         self.telemetry.dispatch_channel_a({
             "timestamp": time.time(),
             "event": "biogenesis_awakening",
-            "agent_count": len(self.agents)
+            "agent_count": len(self.agents),
+            "is_legacy": legacy_weights is not None
         })
         print(f"✅ GÊNESE CONCLUÍDA – {len(self.agents)} AGENTES ATIVOS")
 
@@ -192,12 +201,24 @@ class BioGenesisEngine:
             if i % 5 == 0:
                 print(f"   Relaxation Step {i}: Coerência Global melhorando...")
 
-    def run_stress_test(self, steps=50):
-        print("\n🌪️ INICIANDO STRESS TEST DE DENSIDADE (Caos)...")
+    def run_stress_test(self, steps=50, load_multiplier=1.0, focused_agent_id=None):
+        print(f"\n🌪️ INICIANDO STRESS TEST DE DENSIDADE (Load={load_multiplier}x)...")
+        if load_multiplier > 1.0:
+            extra_agents = int(len(self.agents) * (load_multiplier - 1.0))
+            print(f"   Injetando sobrecarga de {extra_agents} agentes...")
+            self.add_agents(extra_agents)
+
         start_t = time.time()
         for i in range(steps):
             self.update(dt=0.1)
+
+            # Focused log for the 'Hero'
+            if focused_agent_id and focused_agent_id in self.agents:
+                agent = self.agents[focused_agent_id]
+                if i % 10 == 0:
+                    print(f"   [HERO_LOG] Agente_{focused_agent_id} | Pos={agent.position} | Bonds={len(agent.connections)}")
+
             if i % 10 == 0:
-                print(f"   Step {i}: Bonds={self.stats['bonds_formed']}")
+                print(f"   Step {i}: Total Bonds={self.stats['bonds_formed']} | Entropy={self.get_mean_entropy():.4f}")
         end_t = time.time()
         print(f"🏁 STRESS TEST CONCLUÍDO. Tempo: {end_t - start_t:.2f}s")

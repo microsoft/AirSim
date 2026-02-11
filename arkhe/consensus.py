@@ -33,15 +33,26 @@ class QuantumPaxos:
         report['quantum_signature'] = quantum_hash
         return quantum_hash
 
-    def resolve_bifurcation(self, states: List[Any]) -> Any:
+    def resolve_bifurcation(self, states: List[Dict[str, Any]]) -> Any:
         """
-        Resolves multiple competing states (hallucinations) using destructive interference simulation.
-        The state with the highest global weight (Phi) wins.
+        Protocolo 'Lâmina': Resolves competing states using destructive interference.
+        States with low Phi or high entropy are 'silenced' by neighborhood consensus.
         """
         if not states:
             return None
-        # Simple majority/weight based resolution for this simulation
-        return states[0] # Placeholder for actual interference logic
+
+        # Weighted selection based on Phi (Coherence)
+        # In the 'Lâmina' protocol, the neighborhood force collapses the hallucination
+        best_state = max(states, key=lambda x: x.get('phi', 0))
+        return best_state
+
+    def sync_warp(self):
+        """
+        Simulated __syncwarp() from CUDA.
+        Ensures all threads in the neighborhood cluster reach the same consensus barrier.
+        """
+        # In Python, this is a no-op, but represents the 890ns synchronization barrier.
+        pass
 
 class ConsensusManager:
     def __init__(self):

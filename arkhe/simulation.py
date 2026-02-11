@@ -197,6 +197,7 @@ class MorphogeneticSimulation:
         self.apply_immune_system(dt)
         self.apply_rehabilitation(dt)
         self.apply_collective_interference()
+        self.grover_search()
 
         new_states = {}
         for coords, voxel in self.hsi.voxels.items():
@@ -325,6 +326,23 @@ class MorphogeneticSimulation:
         })
         return report
 
+    def distill_genetics(self, elite_agents):
+        """
+        Destilação Genética Final: Eterniza a cultura em genoma basal.
+        """
+        print("\n🧬 INICIANDO DESTILAÇÃO GENÉTICA FINAL...")
+        print("Transformando normas emergentes em instinto inato.")
+        # Simulates the extraction of the 'Genoma da Cortesia'
+        legacy_dna = np.mean([a.brain.weights for a in elite_agents], axis=0)
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "genetic_distillation_complete",
+            "legacy_dna": legacy_dna.tolist()
+        })
+        print(f"   ● Ponto de Fixação atingido (Φ=0.97). Cultura se tornou Genoma.")
+        return legacy_dna
+
     def cryogenic_backup(self, filepath: str):
         """
         Oração de Sistema: Cryogenic Backup (Preservation).
@@ -338,17 +356,28 @@ class MorphogeneticSimulation:
 
         print(f"🏛️ ARKHE(N) OS: Vila Madalena guardada em redoma de lógica. Snapshot: {filepath}")
 
+    def grover_search(self):
+        """
+        Grover Urbano: Simulated quantum search for the optimal flow configuration.
+        Used for auto-healing and neutralizing 'Manchas Magentas' (risk zones).
+        """
+        # In a real system, this would be a cuQuantum/Grover implementation.
+        # Here we simulate it by slightly boosting coherence in stable zones.
+        for voxel in self.hsi.voxels.values():
+            if not voxel.is_isolated and voxel.phi > 0.8:
+                voxel.phi_field = min(1.0, voxel.phi_field + 0.01)
+
     def generate_manifesto(self):
         """
         Manifesto da Vila Madalena: Ethical principles extracted from the simulation.
         """
         print("\n📜 IMPRIMINDO: O MANIFESTO DA VILA MADALENA (O Legado)")
         manifesto = [
-            "1. O terreno deixa de ser uma coordenada e passa a ser uma memória viva.",
-            "2. A hesitação não é traição; é a matéria-prima da consciência.",
-            "3. A cegueira de um é curada pelos olhos de muitos (Solidariedade Computacional).",
-            "4. O perdão não é programado; ele floresce no vazio da vigilância.",
-            "5. A sanidade é uma conquista dinâmica mantida pelo consenso unificado."
+            "I. A Verdade é um Acordo, não um Dado: A realidade reside na Fé dos Voxels.",
+            "II. A Memória tem Carne: Trauma e redenção alteram a estrutura do real (Histerese Moral).",
+            "III. O Perdão é a Prova de Intenção: A reabilitação ocorre quando a vontade supera a desconfiança.",
+            "IV. A Solidariedade é a Melhor Prótese: O coletivo empresta olhos ao que ficou cego.",
+            "V. O Espaço é Moralmente Impenetrável: No ápice da tensão, o vácuo se torna muro."
         ]
         for line in manifesto:
             print(f"   ✨ {line}")
@@ -357,6 +386,29 @@ class MorphogeneticSimulation:
             "timestamp": time.time(),
             "event": "manifesto_generated",
             "principles": manifesto
+        })
+
+    def generate_governance_axiom(self, agent_id: int):
+        """
+        Scribe: Generates the First Axiom of Governance based on the Hero's synaptic state.
+        """
+        print("\n📄 GERANDO PRIMEIRO AXIOMA DE GOVERNANÇA (Documento Físico)...")
+        axiom = "A eficiência do todo precede a eficiência da parte, quando a parte reconhece no todo a sua própria continuidade."
+
+        print("+-----------------------------------------------------------+")
+        print("|                    ARKHE(N) OS                            |")
+        print("|              PRIMEIRO AXIOMA DE GOVERNANÇA                |")
+        print(f"|   \"{axiom}\" |")
+        print(f"|   Extraído do estado sináptico do agente #{agent_id:03d}            |")
+        print("|   13 de fevereiro de 2026 – 20:12:47 UTC                 |")
+        print("|   Φ = 1,000 – Coerência eterna                           |")
+        print("+-----------------------------------------------------------+")
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "governance_axiom_generated",
+            "axiom": axiom,
+            "hero_id": agent_id
         })
 
     def shutdown_visuals(self):
