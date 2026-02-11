@@ -4,6 +4,8 @@ from arkhe.arkhe_types import CIEF, HexVoxel
 from arkhe.hsi import HSI
 from arkhe.fusion import FusionEngine
 from arkhe.simulation import MorphogeneticSimulation
+from arkhe.consensus import QuantumPaxos
+from arkhe.telemetry import ArkheTelemetry
 
 class TestArkhe(unittest.TestCase):
     def test_cief_init(self):
@@ -56,6 +58,33 @@ class TestArkhe(unittest.TestCase):
         self.assertAlmostEqual(voxel.phi_data, 1.0, places=5)
         # Total phi should be average of data and field (0 initially)
         self.assertAlmostEqual(voxel.phi, 0.5, places=5)
+
+    def test_quantumpaxos_sign(self):
+        paxos = QuantumPaxos(node_id="test_node")
+        report = {"data": "test"}
+        signature = paxos.sign_report(report)
+        self.assertIn("quantum_signature", report)
+        self.assertEqual(report["quantum_signature"], signature)
+
+    def test_telemetry_dispatch(self):
+        # Test basic dispatch without needing full redis/websockets
+        telemetry = ArkheTelemetry()
+        report = {"event": "test"}
+        # Should not crash even if redis is missing
+        telemetry.dispatch_channel_a(report)
+
+    def test_hebbian_trace(self):
+        hsi = HSI(size=1.0)
+        sim = MorphogeneticSimulation(hsi)
+        v1 = hsi.get_voxel((0,0,0,0))
+        v2 = hsi.get_voxel((1,-1,0,0))
+
+        sim.on_hex_boundary_crossed(v1, v2)
+
+        self.assertEqual(len(v1.hebbian_trace), 1)
+        self.assertEqual(v1.hebbian_trace[0][1], "entity_exited")
+        self.assertEqual(len(v2.hebbian_trace), 1)
+        self.assertEqual(v2.hebbian_trace[0][1], "entity_entered")
 
 if __name__ == "__main__":
     unittest.main()

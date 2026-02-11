@@ -1,6 +1,10 @@
 import numpy as np
+import time
+from typing import Optional
 from .hsi import HSI
 from .arkhe_types import HexVoxel
+from .consensus import ConsensusManager
+from .telemetry import ArkheTelemetry
 
 class MorphogeneticSimulation:
     """
@@ -14,6 +18,37 @@ class MorphogeneticSimulation:
         self.dB = 0.5
         self.f = feed_rate
         self.k = kill_rate
+        self.consensus = ConsensusManager()
+        self.telemetry = ArkheTelemetry()
+
+    def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
+        """
+        Triggered when an entity moves from one hex to another.
+        """
+        node = self.consensus.get_node(str(voxel_src.coords))
+
+        report = {
+            "timestamp": time.time(),
+            "event": "hex_boundary_crossed",
+            "src": voxel_src.coords,
+            "dst": voxel_dst.coords,
+            "phi": voxel_src.phi
+        }
+
+        node.sign_report(report)
+
+        # Dispatch to dual channels
+        self.telemetry.on_hex_boundary_crossed(report, voxel_src.state.tolist())
+
+        # Record Hebbian trace
+        voxel_src.hebbian_trace.append((time.time(), "entity_exited"))
+        voxel_dst.hebbian_trace.append((time.time(), "entity_entered"))
+
+        # Apply Reflexo Condicionado (Hebbian Learning)
+        # Update weights based on the coherence (Phi) of the transition
+        learning_rate = 0.1
+        voxel_src.weights += learning_rate * voxel_src.phi
+        voxel_dst.weights += learning_rate * voxel_dst.phi
 
     def step(self, dt: float = 1.0):
         """
@@ -48,7 +83,10 @@ class MorphogeneticSimulation:
             # dB/dt = DB * lap(B) + AB^2 - (f+k)B
 
             # Influence from CIEF genome: Energy (E) increases B, Information (I) stabilizes A
-            f_mod = self.f * (1.0 + voxel.genome.i * 0.1)
+            # Reflexo Condicionado: Hebbian weights act as a memory bias (Gamma)
+            memory_bias = np.mean(voxel.weights) - 1.0 # Bias around the base weight of 1.0
+
+            f_mod = self.f * (1.0 + voxel.genome.i * 0.1 + memory_bias * 0.5)
             k_mod = self.k * (1.0 - voxel.genome.e * 0.1)
 
             new_A = A + (self.dA * lap_A - A * (B**2) + f_mod * (1.0 - A)) * dt

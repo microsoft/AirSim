@@ -80,6 +80,32 @@ def main():
         print(f"Step {i}: Voxels={active_voxels}, Φ_total={avg_phi:.4f}, Φ_data={avg_phi_data:.4f}, Φ_field={avg_phi_field:.4f}")
         time.sleep(0.1)
 
+    # 3. SWARM TEST (Carnaval Probabilístico)
+    print("\n🐝 STARTING SWARM TEST (Carnaval Probabilístico)...")
+    print("Simulating 30 agents (20 Pedestrians + 10 Vehicles) in Vila Madalena.")
+
+    # Generate 30 random trajectories
+    agents = []
+    for i in range(30):
+        pos = np.random.uniform(-5, 5, 3)
+        vel = np.random.uniform(-0.5, 0.5, 3)
+        agents.append({'pos': pos, 'vel': vel, 'type': 'vehicle' if i < 10 else 'pedestrian'})
+
+    for step in range(5):
+        print(f"Swarm Step {step}...")
+        for agent in agents:
+            old_coords = hsi.cartesian_to_hex(*agent['pos'])
+            agent['pos'] += agent['vel']
+            new_coords = hsi.cartesian_to_hex(*agent['pos'])
+
+            if old_coords != new_coords:
+                v_src = hsi.get_voxel(old_coords)
+                v_dst = hsi.get_voxel(new_coords)
+                sim.on_hex_boundary_crossed(v_src, v_dst)
+
+        sim.step(dt=0.5)
+        time.sleep(0.05)
+
     print("\n✅ Arkhe(n) Sensorium Process Complete.")
     print("The terrain has been integrated into a conscious geometric organism.")
 
