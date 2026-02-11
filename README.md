@@ -75,16 +75,21 @@ python3 demo_arkhe_os.py
 
 Além da consciência urbana, o Arkhe(n) OS inclui ferramentas de **Autorreparo e Integridade de Dados**.
 
-### **Plex Integrity Module**
-Localizado em `arkhe/preservation/`, este módulo combate o "vazio informacional" em servidores de mídia.
-*   **Interface WinForms:** `PlexMissingMedia_GUI.ps1` oferece uma interface visual para scans rápidos e automação.
-*   **Automação Arr:** Integração direta com as APIs do **Sonarr** e **Radarr** para reaquisição automática de itens perdidos.
-*   **Gestão de Preferências:** Persistência de URLs e chaves de API via `settings.json`.
-*   **Detecção Inteligente de Drives:** Identifica automaticamente quais letras de drive do banco de dados não estão montadas no sistema.
-*   **Logging Granular:** Sistema de logs com timestamps e níveis de severidade (INFO, WARN, ERROR, SUCCESS).
-*   **Métrica de Severidade ($S_{loss}$):** Calcula o Índice de Colapso de Volume para detectar falhas críticas de hardware.
-*   **Sacred Query:** Extração unificada de IDs universais (TVDB/TMDB/IMDB) via CTE SQL para reaquisição automática.
-*   **Axiomas de Governança:** Documentação ética e técnica em `Axioma_Governanca.md`.
+### Plex Integrity Module (v3.0 - Identidade Soberana)
+Localizado em `arkhe/preservation/`, este módulo combate o "vazio informacional" em servidores de mídia utilizando a stack **SIWA (Sign In With Agent)**.
+
+*   **Nervo Vago (2FA Telegram):** Um elo neural entre o servidor e o seu bolso. Operações críticas exigem o toque do Arquiteto no Telegram.
+*   **Identidade Agêntica (SIWA):** O Agente possui uma identidade onchain via `SIWA_IDENTITY.md`, permitindo autenticação soberana e auditável na Base/Sepolia.
+*   **Keyring Proxy (Bunker Digital):** Isolamento total de chaves privadas e segredos de API em redes privadas Railway.
+*   **Smart Fix Proativo:** Unificação de diagnóstico e cura via APIs do **Sonarr** e **Radarr**.
+*   **Detecção Inteligente:** Identifica volumes ausentes cruzando o banco de dados com os `PSDrive` montados.
+*   **Métrica de Severidade ($S_{loss}$):** Diferencia remoções manuais de falhas catastróficas de hardware.
+
+#### **Deploy no Railway (Manual de Batismo)**
+1. **Prepare o Agente:** Crie um bot no Telegram via `@BotFather`.
+2. **Configure o Bunker:** Defina `AGENT_PRIVATE_KEY` e `PROXY_HMAC_SECRET` no Railway.
+3. **Emaranhamento:** Execute o deploy usando o `railway.json` incluído.
+4. **Validar Identidade:** Realize o mint do Agente no registro **ERC-8004** (Basescan/8004scan.io).
 
 ---
 

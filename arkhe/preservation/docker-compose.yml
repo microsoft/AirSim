@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  keyring-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile-proxy
+    environment:
+      - AGENT_PRIVATE_KEY=${AGENT_PRIVATE_KEY}
+      - PROXY_HMAC_SECRET=${PROXY_HMAC_SECRET}
+      - TWOFA_GATEWAY_URL=http://2fa-gateway:4000
+    networks:
+      - arkhe-net
+  2fa-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile-2fa
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - PROXY_HMAC_SECRET=${PROXY_HMAC_SECRET}
+      - PUBLIC_URL=${PUBLIC_URL}
+    networks:
+      - arkhe-net
+networks:
+  arkhe-net:
+    driver: bridge

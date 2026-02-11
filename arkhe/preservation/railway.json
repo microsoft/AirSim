@@ -1,0 +1,22 @@
+// railway.json - Arkhe(n) OS Service Orchestration
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "services": {
+    "keyring-proxy": {
+      "source": {
+        "directory": "arkhe/preservation"
+      },
+      "build": {
+        "dockerfile": "Dockerfile-proxy"
+      }
+    },
+    "2fa-gateway": {
+      "source": {
+        "directory": "arkhe/preservation"
+      },
+      "build": {
+        "dockerfile": "Dockerfile-2fa"
+      }
+    }
+  }
+}
