@@ -99,7 +99,7 @@ def main():
             vel = -pos * 0.1
             agent_type = 'pedestrian'
 
-        agents.append({'pos': pos, 'vel': vel, 'type': agent_type})
+        agents.append({'pos': pos, 'vel': vel, 'type': agent_type, 'id': i})
 
     time_dilation = 100.0
     snapshot_triggered = False
@@ -115,6 +115,10 @@ def main():
             print("✅ DUMP CONCLUÍDO. Retornando ao fluxo (Opção: Dump e continuar)...")
 
         for agent in agents:
+            # Traitor logic: at step 5, agent 12 deserts (Pecado Digital)
+            if step == 5 and agent['id'] == 12:
+                print("⚠️ ARKHE(N) ALERT: Pedestre 12 (Desertor) colapsou a intenção. Iniciando Decoerência Punitiva.")
+                agent['vel'] = np.array([2.0, 2.0, 0.0]) # Fugindo do grupo
             old_coords = hsi.cartesian_to_hex(*agent['pos'])
             agent['pos'] += agent['vel']
             new_coords = hsi.cartesian_to_hex(*agent['pos'])
