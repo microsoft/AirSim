@@ -40,7 +40,8 @@ class HexVoxel:
         return (self.phi_data + self.phi_field) / 2.0
 
     # Quantum-like state (amplitudes for 6 faces + internal)
-    state: np.ndarray = field(default_factory=lambda: np.zeros(7, dtype=np.float32))
+    # state[0-5] are faces, state[6] is internal
+    state: np.ndarray = field(default_factory=lambda: np.zeros(7, dtype=np.complex64))
 
     # Reaction-diffusion state (A, B) for Gray-Scott model
     rd_state: Tuple[float, float] = (1.0, 0.0)

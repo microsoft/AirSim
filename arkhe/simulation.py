@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from .hsi import HSI
 from .arkhe_types import HexVoxel
 
@@ -15,10 +16,36 @@ class MorphogeneticSimulation:
         self.f = feed_rate
         self.k = kill_rate
 
+    def update_quantum_amplitudes(self):
+        """
+        Updates the quantum-like state of voxels based on CIEF genome and local field activity.
+        """
+        for coords, voxel in self.hsi.voxels.items():
+            # Update state based on CIEF balance
+            # state[6] (internal) reflects presence of C (Structure) and I (Information)
+            voxel.state[6] = complex(voxel.genome.c + voxel.genome.i, 0)
+
+            # state[0-5] (faces) reflects Energy (E) and movement tendency towards neighbors
+            neighbors = self.hsi.get_neighbors(coords)
+            for i, nb_coords in enumerate(neighbors[:6]):
+                if nb_coords in self.hsi.voxels:
+                    nb_voxel = self.hsi.voxels[nb_coords]
+                    # Hebbian influence: if neighbor is coherent, amplify amplitude towards it
+                    amplitude = (voxel.genome.e * voxel.weights[i] * nb_voxel.phi)
+                    voxel.state[i] = complex(amplitude, 0.1 * np.sin(time.time())) # added phase
+                else:
+                    voxel.state[i] = complex(0.01, 0)
+
+            # Normalize amplitudes
+            norm = np.linalg.norm(voxel.state)
+            if norm > 0:
+                voxel.state /= norm
+
     def step(self, dt: float = 1.0):
         """
         Executes one step of the reaction-diffusion simulation.
         """
+        self.update_quantum_amplitudes()
         new_states = {}
         for coords, voxel in self.hsi.voxels.items():
             A, B = voxel.rd_state

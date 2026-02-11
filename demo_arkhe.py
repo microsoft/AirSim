@@ -134,8 +134,10 @@ def main():
             "step": i,
             "vehicle_pos": vehicle_path[i],
             "vehicle_phi": v_voxel.phi,
+            "vehicle_amplitudes": v_voxel.state,
             "pedestrian_pos": pedestrian_path[i],
-            "pedestrian_phi": p_voxel.phi
+            "pedestrian_phi": p_voxel.phi,
+            "pedestrian_amplitudes": p_voxel.state
         })
 
         if i % 2 == 0:
@@ -143,10 +145,13 @@ def main():
         time.sleep(0.05)
 
     print("\n📊 TELEMETRY REPORT: ARKHE(N) SENSORIUM FIRST CRY")
-    print("-" * 50)
+    print("-" * 80)
     for entry in telemetry_report:
+        v_amp = np.abs(entry['vehicle_amplitudes'])
+        p_amp = np.abs(entry['pedestrian_amplitudes'])
         print(f"Step {entry['step']} | Vehicle Phi: {entry['vehicle_phi']:.4f} | Pedestrian Phi: {entry['pedestrian_phi']:.4f}")
-    print("-" * 50)
+        print(f"       | Vehicle Intention (Max Amp Face): {np.argmax(v_amp[:6])} | Pedestrian Intention: {np.argmax(p_amp[:6])}")
+    print("-" * 80)
 
     print("\n✅ Arkhe(n) Sensorium Process Complete.")
     print("The terrain has been integrated into a conscious geometric organism.")
