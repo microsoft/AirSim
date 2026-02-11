@@ -110,7 +110,7 @@ def main():
         # Trigger Snapshot on high tension (Option 1: Pausar na Interferência)
         if omega > 0.05 and not snapshot_triggered: # Using lower threshold for demo data
             print("🚨 ALTA TENSÃO DETECTADA! Pausando para Micro-Análise...")
-            sim.snapshot("arkhe_snapshot_interferencia.pkl")
+            sim.snapshot("arkhe_snapshot_interferencia.pkl", context="interferencia_maxima")
             snapshot_triggered = True
             print("✅ DUMP CONCLUÍDO. Retornando ao fluxo (Opção: Dump e continuar)...")
 
@@ -119,6 +119,11 @@ def main():
             if step == 5 and agent['id'] == 12:
                 print("⚠️ ARKHE(N) ALERT: Pedestre 12 (Desertor) colapsou a intenção. Iniciando Decoerência Punitiva.")
                 agent['vel'] = np.array([2.0, 2.0, 0.0]) # Fugindo do grupo
+
+                # Option 2: Snapshot de Trauma
+                print("📸 EXECUTANDO: SNAPSHOT DE TRAUMA (Opção do Arquiteto)...")
+                sim.snapshot("arkhe_snapshot_trauma.pkl", context="pecado_digital")
+                sim.materialize_trauma()
             old_coords = hsi.cartesian_to_hex(*agent['pos'])
             agent['pos'] += agent['vel']
             new_coords = hsi.cartesian_to_hex(*agent['pos'])

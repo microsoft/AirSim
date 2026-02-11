@@ -83,6 +83,16 @@ class MorphogeneticSimulation:
         if not phi_vals: return 0.0
         return np.mean(phi_vals) * (len(phi_vals) / len(self.hsi.voxels))
 
+    @property
+    def dissidence_index(self) -> float:
+        """
+        Índice de Dissidência (D): Measures the magnitude of 'traição' or state divergence.
+        """
+        # Average weight deviation from baseline (1.0)
+        deviations = [abs(np.mean(v.weights) - 1.0) for v in self.hsi.voxels.values()]
+        if not deviations: return 0.0
+        return np.max(deviations)
+
     def step(self, dt: float = 1.0, time_dilation: float = 1.0):
         """
         Executes one step of the reaction-diffusion simulation.
@@ -137,22 +147,34 @@ class MorphogeneticSimulation:
             # Higher B (activation) and presence of A (substrate) creates coherence
             self.hsi.voxels[coords].phi_field = (state[1] * state[0]) * 4.0 # max is ~0.25*4 = 1.0
 
-    def snapshot(self, filepath: str):
+    def snapshot(self, filepath: str, context: str = "general"):
         """
         Captures a 'Quantum Snapshot' of the current HSI state.
         Persists voxels, genomes, and Hebbian engrams.
         """
         try:
+            timestamp = time.time()
             with open(filepath, 'wb') as f:
                 # We only pickle the data, not the whole HSI object for simplicity
                 pickle.dump(self.hsi.voxels, f)
 
             self.telemetry.dispatch_channel_a({
-                "timestamp": time.time(),
+                "timestamp": timestamp,
                 "event": "snapshot_created",
+                "context": context,
                 "filepath": filepath,
-                "voxel_count": len(self.hsi.voxels)
+                "voxel_count": len(self.hsi.voxels),
+                "omega": self.entanglement_tension,
+                "dissidence": self.dissidence_index
             })
             print(f"🏛️ ARKHE(N) SNAPSHOT: Realidade persistida em {filepath}")
         except Exception as e:
             print(f"❌ Erro ao criar snapshot: {e}")
+
+    def materialize_trauma(self):
+        """
+        Materialização do Trauma: Sends Hebbian scars to the Graphene Metasurface (Simulation).
+        """
+        d = self.dissidence_index
+        print(f"🧬 [FRENTE B] Materializando Cicatriz Hebbiana. D={d:.4f}")
+        print("Tatuando o grafeno com a memória da desconfiança...")
