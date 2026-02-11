@@ -1,5 +1,6 @@
 import numpy as np
 import time
+import math
 from typing import List, Tuple
 from .hsi import HSI
 from .arkhe_types import HexVoxel

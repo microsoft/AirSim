@@ -20,6 +20,31 @@ class CIEF:
         return np.array([self.c, self.i, self.e, self.f], dtype=np.float32)
 
 @dataclass
+class ArkheGenome:
+    """Genoma do BioAgent: C-I-E-F."""
+    c: float = 0.5
+    i: float = 0.5
+    e: float = 0.5
+    f: float = 0.5
+
+    def to_vector(self) -> np.ndarray:
+        return np.array([self.c, self.i, self.e, self.f], dtype=np.float32)
+
+@dataclass
+class BioAgent:
+    """Agente biológico no Arkhe(n) OS."""
+    id: int
+    position: np.ndarray
+    velocity: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float32))
+    genome: ArkheGenome = field(default_factory=ArkheGenome)
+    energy: float = 100.0
+    brain: Optional[object] = None # ConstraintLearner
+    connections: List[int] = field(default_factory=list)
+
+    def is_alive(self) -> bool:
+        return self.energy > 0
+
+@dataclass
 class HexVoxel:
     """
     HexVoxel: A unit of the Hexagonal Spatial Index (HSI).
