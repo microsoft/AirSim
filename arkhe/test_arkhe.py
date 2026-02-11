@@ -115,5 +115,22 @@ class TestArkhe(unittest.TestCase):
         # Should be rehabilitated after ~8 steps
         self.assertFalse(v.is_isolated)
 
+    def test_biogenesis_engine(self):
+        from arkhe.biogenesis import BioGenesisEngine
+        engine = BioGenesisEngine(num_agents=10)
+        self.assertEqual(len(engine.agents), 10)
+        engine.update(dt=0.1)
+        self.assertGreaterEqual(engine.simulation_time, 0.1)
+
+    def test_cultural_dna(self):
+        from arkhe.biogenesis import BioGenesisEngine
+        engine = BioGenesisEngine(num_agents=10)
+        dna = engine.extract_cultural_dna(list(engine.agents.values()))
+        self.assertEqual(len(dna), 4)
+
+        engine2 = BioGenesisEngine(num_agents=0)
+        engine2.add_agents(5, base_weights=dna)
+        self.assertEqual(len(engine2.agents), 5)
+
 if __name__ == "__main__":
     unittest.main()

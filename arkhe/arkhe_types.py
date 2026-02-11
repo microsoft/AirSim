@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Any, Dict
 import numpy as np
 
 @dataclass
@@ -71,3 +71,28 @@ class HexVoxel:
             self.state = np.zeros(7, dtype=np.float32)
         if len(self.weights) != 6:
             self.weights = np.ones(6, dtype=np.float32)
+
+@dataclass
+class BioAgent:
+    """
+    BioAgent: Um organismo digital inteligente e adaptativo.
+    """
+    id: int
+    position: np.ndarray
+    velocity: np.ndarray
+    genome: CIEF
+
+    # Brain (ConstraintLearner) - initialized separately to avoid circular import
+    brain: Any = None
+
+    # Vínculos sociais (partner_id -> strength)
+    connections: Dict[int, float] = field(default_factory=dict)
+
+    energy: float = 1.0
+    is_active: bool = True
+
+    def is_alive(self) -> bool:
+        return self.energy > 0 and self.is_active
+
+    def set_brain(self, brain):
+        self.brain = brain
