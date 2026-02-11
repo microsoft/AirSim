@@ -80,19 +80,40 @@ def main():
         print(f"Step {i}: Voxels={active_voxels}, Φ_total={avg_phi:.4f}, Φ_data={avg_phi_data:.4f}, Φ_field={avg_phi_field:.4f}")
         time.sleep(0.1)
 
-    # 3. SWARM TEST (Carnaval Probabilístico)
+    # 3. SWARM TEST (Carnaval Probabilístico) - SLOW-MOTION QUÂNTICO
     print("\n🐝 STARTING SWARM TEST (Carnaval Probabilístico)...")
+    print("Mode: SLOW-MOTION QUÂNTICO (τ=100)")
     print("Simulating 30 agents (20 Pedestrians + 10 Vehicles) in Vila Madalena.")
 
-    # Generate 30 random trajectories
+    # Generate 30 trajectories
     agents = []
     for i in range(30):
+        # Initial positions
         pos = np.random.uniform(-5, 5, 3)
-        vel = np.random.uniform(-0.5, 0.5, 3)
-        agents.append({'pos': pos, 'vel': vel, 'type': 'vehicle' if i < 10 else 'pedestrian'})
+        # Vehicles move fast, pedestrians move slow and converge
+        if i < 10:
+            vel = np.array([0.8, 0.0, 0.0])
+            agent_type = 'vehicle'
+        else:
+            # Force convergence of pedestrians to (0,0,0) to trigger collective barrier
+            vel = -pos * 0.1
+            agent_type = 'pedestrian'
 
-    for step in range(5):
-        print(f"Swarm Step {step}...")
+        agents.append({'pos': pos, 'vel': vel, 'type': agent_type})
+
+    time_dilation = 100.0
+    snapshot_triggered = False
+    for step in range(10):
+        omega = sim.entanglement_tension
+        print(f"Swarm Step {step} | Ω (Tensão de Emaranhamento): {omega:.6f}")
+
+        # Trigger Snapshot on high tension (Option 1: Pausar na Interferência)
+        if omega > 0.05 and not snapshot_triggered: # Using lower threshold for demo data
+            print("🚨 ALTA TENSÃO DETECTADA! Pausando para Micro-Análise...")
+            sim.snapshot("arkhe_snapshot_interferencia.pkl")
+            snapshot_triggered = True
+            print("✅ DUMP CONCLUÍDO. Retornando ao fluxo (Opção: Dump e continuar)...")
+
         for agent in agents:
             old_coords = hsi.cartesian_to_hex(*agent['pos'])
             agent['pos'] += agent['vel']
@@ -103,8 +124,8 @@ def main():
                 v_dst = hsi.get_voxel(new_coords)
                 sim.on_hex_boundary_crossed(v_src, v_dst)
 
-        sim.step(dt=0.5)
-        time.sleep(0.05)
+        sim.step(dt=0.5, time_dilation=time_dilation)
+        time.sleep(0.1) # Slow-motion observation delay
 
     print("\n✅ Arkhe(n) Sensorium Process Complete.")
     print("The terrain has been integrated into a conscious geometric organism.")

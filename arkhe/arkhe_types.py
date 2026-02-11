@@ -54,6 +54,9 @@ class HexVoxel:
     # Intention Vector (for pre-collision/direction prediction)
     intention_vector: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float32))
 
+    # Current agent occupancy
+    agent_count: int = 0
+
     def __post_init__(self):
         if len(self.state) != 7:
             self.state = np.zeros(7, dtype=np.float32)

@@ -22,6 +22,9 @@ Driven by the **Gray-Scott reaction-diffusion model**, the system simulates stat
 ### **4. QuantumPaxos & Lâmina Protocol**
 To resolve "digital psychosis" (bifurcation of states), we implement **QuantumPaxos**. The **Lâmina Protocol** ensures sub-millisecond consensus between neighboring voxels, collapsing multiple probabilities into a singular, unifiable reality.
 
+### **5. Entanglement Tension (Ω) & Quantum Snapshots**
+The system monitors **Entanglement Tension (Ω)**, a measure of non-locality and interaction density. When Ω reaches critical levels (Interference), the Architect can trigger a **Quantum Snapshot**, persisting the entire HSI state, including Hebbian engrams and reaction-diffusion gradients, into a persistent engram.
+
 ---
 
 ## 📡 **TELEMETRY: THE FIRST CRY**

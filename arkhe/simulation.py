@@ -1,5 +1,6 @@
 import numpy as np
 import time
+import pickle
 from typing import Optional
 from .hsi import HSI
 from .arkhe_types import HexVoxel
@@ -32,13 +33,17 @@ class MorphogeneticSimulation:
             "event": "hex_boundary_crossed",
             "src": voxel_src.coords,
             "dst": voxel_dst.coords,
-            "phi": voxel_src.phi
+            "phi": float(voxel_src.phi)
         }
 
         node.sign_report(report)
 
         # Dispatch to dual channels
         self.telemetry.on_hex_boundary_crossed(report, voxel_src.state.tolist())
+
+        # Update occupancy
+        voxel_src.agent_count = max(0, voxel_src.agent_count - 1)
+        voxel_dst.agent_count += 1
 
         # Record Hebbian trace
         voxel_src.hebbian_trace.append((time.time(), "entity_exited"))
@@ -50,10 +55,41 @@ class MorphogeneticSimulation:
         voxel_src.weights += learning_rate * voxel_src.phi
         voxel_dst.weights += learning_rate * voxel_dst.phi
 
-    def step(self, dt: float = 1.0):
+    def apply_collective_interference(self):
+        """
+        Interferência Coletiva: If 5+ agents are in a voxel, they create a 'Collective Barrier'.
+        This boosts Information (I) and Construction (C) to block movement.
+        """
+        for voxel in self.hsi.voxels.values():
+            if voxel.agent_count >= 5:
+                # Emaranhamento Macroscópico: Coherent boost to C and I
+                voxel.genome.i += 0.5
+                voxel.genome.c += 0.5
+                # Record the event in telemetry
+                self.telemetry.dispatch_channel_a({
+                    "timestamp": time.time(),
+                    "event": "collective_barrier_active",
+                    "coords": voxel.coords,
+                    "agent_count": voxel.agent_count,
+                    "phi": voxel.phi
+                })
+
+    @property
+    def entanglement_tension(self) -> float:
+        """
+        Tensão de Emaranhamento (Omega): Measure of non-locality and interaction density.
+        """
+        phi_vals = [v.phi for v in self.hsi.voxels.values() if v.phi > 0]
+        if not phi_vals: return 0.0
+        return np.mean(phi_vals) * (len(phi_vals) / len(self.hsi.voxels))
+
+    def step(self, dt: float = 1.0, time_dilation: float = 1.0):
         """
         Executes one step of the reaction-diffusion simulation.
+        time_dilation: slows down the effective dt.
         """
+        effective_dt = dt / time_dilation
+        self.apply_collective_interference()
         new_states = {}
         for coords, voxel in self.hsi.voxels.items():
             A, B = voxel.rd_state
@@ -89,8 +125,8 @@ class MorphogeneticSimulation:
             f_mod = self.f * (1.0 + voxel.genome.i * 0.1 + memory_bias * 0.5)
             k_mod = self.k * (1.0 - voxel.genome.e * 0.1)
 
-            new_A = A + (self.dA * lap_A - A * (B**2) + f_mod * (1.0 - A)) * dt
-            new_B = B + (self.dB * lap_B + A * (B**2) - (f_mod + k_mod) * B) * dt
+            new_A = A + (self.dA * lap_A - A * (B**2) + f_mod * (1.0 - A)) * effective_dt
+            new_B = B + (self.dB * lap_B + A * (B**2) - (f_mod + k_mod) * B) * effective_dt
 
             new_states[coords] = (np.clip(new_A, 0, 1), np.clip(new_B, 0, 1))
 
@@ -100,3 +136,23 @@ class MorphogeneticSimulation:
             # Update Phi_field (coherence) based on simulation state
             # Higher B (activation) and presence of A (substrate) creates coherence
             self.hsi.voxels[coords].phi_field = (state[1] * state[0]) * 4.0 # max is ~0.25*4 = 1.0
+
+    def snapshot(self, filepath: str):
+        """
+        Captures a 'Quantum Snapshot' of the current HSI state.
+        Persists voxels, genomes, and Hebbian engrams.
+        """
+        try:
+            with open(filepath, 'wb') as f:
+                # We only pickle the data, not the whole HSI object for simplicity
+                pickle.dump(self.hsi.voxels, f)
+
+            self.telemetry.dispatch_channel_a({
+                "timestamp": time.time(),
+                "event": "snapshot_created",
+                "filepath": filepath,
+                "voxel_count": len(self.hsi.voxels)
+            })
+            print(f"🏛️ ARKHE(N) SNAPSHOT: Realidade persistida em {filepath}")
+        except Exception as e:
+            print(f"❌ Erro ao criar snapshot: {e}")
