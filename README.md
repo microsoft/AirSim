@@ -77,10 +77,14 @@ Além da consciência urbana, o Arkhe(n) OS inclui ferramentas de **Autorreparo 
 
 ### **Plex Integrity Module**
 Localizado em `arkhe/preservation/`, este módulo combate o "vazio informacional" em servidores de mídia.
-*   **Localização Dinâmica:** Localiza o banco de dados Plex via Registro do Windows (PowerShell).
+*   **Interface WinForms:** `PlexMissingMedia_GUI.ps1` oferece uma interface visual para scans rápidos e automação.
+*   **Automação Arr:** Integração direta com as APIs do **Sonarr** e **Radarr** para reaquisição automática de itens perdidos.
+*   **Gestão de Preferências:** Persistência de URLs e chaves de API via `settings.json`.
+*   **Detecção Inteligente de Drives:** Identifica automaticamente quais letras de drive do banco de dados não estão montadas no sistema.
+*   **Logging Granular:** Sistema de logs com timestamps e níveis de severidade (INFO, WARN, ERROR, SUCCESS).
 *   **Métrica de Severidade ($S_{loss}$):** Calcula o Índice de Colapso de Volume para detectar falhas críticas de hardware.
-*   **Sacred Query:** Extração unificada de IDs universais (TVDB/TMDB) via CTE SQL para reaquisição automática.
-*   **Sonarr/Radarr Ready:** Geração de CSVs compatíveis com Custom Lists para automação total da restauração.
+*   **Sacred Query:** Extração unificada de IDs universais (TVDB/TMDB/IMDB) via CTE SQL para reaquisição automática.
+*   **Axiomas de Governança:** Documentação ética e técnica em `Axioma_Governanca.md`.
 
 ---
 

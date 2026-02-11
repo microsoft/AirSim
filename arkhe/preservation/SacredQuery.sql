@@ -1,8 +1,7 @@
--- ARKHE(N) OS: THE SACRED QUERY (V2)
--- Extração robusta de DNA Digital (TVDB/TMDB IDs) para reaquisição automática.
+-- ARKHE(N) OS: THE SACRED QUERY (V2.1)
+-- Extração robusta de DNA Digital (TVDB/TMDB/IMDB IDs) para reaquisição automática.
 
 -- 1. TV SHOWS (SONARR READY)
--- Utiliza CTE para limpeza de GUID e agregação de linhagem.
 WITH series_guids AS (
     SELECT
         id,
@@ -36,13 +35,15 @@ ORDER BY sg.title, ep.parent_index, ep."index";
 
 -- 2. MOVIES (RADARR READY)
 SELECT
-    title AS MovieTitle,
-    year AS Year,
+    md.title AS MovieTitle,
+    md.year AS Year,
     CASE
-        WHEN guid LIKE '%themoviedb://%'
-            THEN REPLACE(SUBSTR(guid, INSTR(guid, 'themoviedb://') + 13), '?lang=pt', '')
-        WHEN guid LIKE '%tmdb://%'
-            THEN REPLACE(SUBSTR(guid, INSTR(guid, 'tmdb://') + 7), '?lang=pt', '')
+        WHEN md.guid LIKE '%themoviedb://%'
+            THEN REPLACE(SUBSTR(md.guid, INSTR(md.guid, 'themoviedb://') + 13), '?lang=pt', '')
+        WHEN md.guid LIKE '%tmdb://%'
+            THEN REPLACE(SUBSTR(md.guid, INSTR(md.guid, 'tmdb://') + 7), '?lang=pt', '')
+        WHEN md.guid LIKE '%imdb://%'
+            THEN REPLACE(SUBSTR(md.guid, INSTR(md.guid, 'imdb://') + 7), '?lang=pt', '')
         ELSE NULL
     END AS TmdbId,
     mp.file_path AS FilePath
