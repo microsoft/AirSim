@@ -97,16 +97,20 @@ def main():
         time.sleep(0.1)
 
     # Dynamic Simulation: "The First Cry" (Opção A)
-    print("\n🚗💨 Simulating 'The First Cry': Moving Vehicle & Pedestrian...")
+    print("\n🚗💨 Simulating 'The First Cry': Moving Vehicle & Pedestrian (Aspicuelta x Harmonia)...")
 
-    # 1. Moving Vehicle: High Physicality (C), Moderate Energy (E)
+    # 1. Moving Vehicle: West to East
     vehicle_path = [(x, 0, 0) for x in np.linspace(-4, 4, 8)]
-    # 2. Moving Pedestrian: Low Physicality (C), High Energy (E)
+    # 2. Moving Pedestrian: South to North - Meeting at (0,0)
     pedestrian_path = [(0, y, 0) for y in np.linspace(-4, 4, 8)]
 
     telemetry_report = []
 
     for i in range(8):
+        # Update simulation state
+        sim.step(dt=1.0)
+        fusion.update_voxel_coherence()
+
         # Vehicle move
         vx, vy, vz = vehicle_path[i]
         v_voxel = hsi.add_point(vx, vy, vz, genome_update={'c': 0.9, 'e': 0.4, 'i': 0.8})
@@ -145,13 +149,24 @@ def main():
         time.sleep(0.05)
 
     print("\n📊 TELEMETRY REPORT: ARKHE(N) SENSORIUM FIRST CRY")
-    print("-" * 80)
+    print("-" * 100)
     for entry in telemetry_report:
         v_amp = np.abs(entry['vehicle_amplitudes'])
         p_amp = np.abs(entry['pedestrian_amplitudes'])
-        print(f"Step {entry['step']} | Vehicle Phi: {entry['vehicle_phi']:.4f} | Pedestrian Phi: {entry['pedestrian_phi']:.4f}")
-        print(f"       | Vehicle Intention (Max Amp Face): {np.argmax(v_amp[:6])} | Pedestrian Intention: {np.argmax(p_amp[:6])}")
-    print("-" * 80)
+        v_coords = hsi.cartesian_to_hex(*entry['vehicle_pos'])
+        p_coords = hsi.cartesian_to_hex(*entry['pedestrian_pos'])
+
+        conflict_v = hsi.voxels[v_coords].conflict_level
+        conflict_p = hsi.voxels[p_coords].conflict_level
+
+        print(f"Step {entry['step']} | V @ {v_coords} Phi: {entry['vehicle_phi']:.4f} Conflict: {conflict_v:.2f}")
+        print(f"       | P @ {p_coords} Phi: {entry['pedestrian_phi']:.4f} Conflict: {conflict_p:.2f}")
+
+        # Check consensus latency for vehicle
+        v_ctrl = controllers.get(v_coords)
+        if v_ctrl:
+            print(f"       | Consensus Latency: {v_ctrl.consensus_latency_ms:.4f}ms | Radiative Cooling: {v_ctrl.current_property['radiative_cooling']}")
+    print("-" * 100)
 
     print("\n✅ Arkhe(n) Sensorium Process Complete.")
     print("The terrain has been integrated into a conscious geometric organism.")

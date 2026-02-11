@@ -41,6 +41,16 @@ class MorphogeneticSimulation:
             if norm > 0:
                 voxel.state /= norm
 
+            # Interference/Conflict detection:
+            # If opposite faces have high amplitudes, it indicates conflict/frustration
+            conflict = 0.0
+            for i in range(3): # Check pairs 0-3, 1-4, 2-5 (opposite sides of hexagon)
+                amp_i = np.abs(voxel.state[i])
+                amp_opp = np.abs(voxel.state[i+3])
+                # Interference is high if both are trying to push in opposite directions
+                conflict += amp_i * amp_opp
+            voxel.conflict_level = np.clip(conflict * 2.0, 0, 1)
+
     def step(self, dt: float = 1.0):
         """
         Executes one step of the reaction-diffusion simulation.

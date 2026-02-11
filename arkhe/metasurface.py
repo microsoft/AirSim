@@ -1,5 +1,7 @@
 import enum
 import random
+import time
+import numpy as np
 from typing import List, Dict, Tuple
 from .arkhe_types import HexVoxel
 
@@ -47,6 +49,7 @@ class QuantumPaxos:
 class MetasurfaceController:
     """
     Manages the programmable metasurface state of a voxel.
+    Implements high-speed consensus and radiative cooling logic.
     """
     def __init__(self, voxel: HexVoxel):
         self.voxel = voxel
@@ -54,36 +57,62 @@ class MetasurfaceController:
         self.current_property = {
             "rigidity": 0.5,
             "transparency": 1.0,
-            "reflectivity": 0.0
+            "reflectivity": 0.0,
+            "emissivity": 0.1,         # New: for radiative cooling
+            "radiative_cooling": False # New: state 1/0
         }
+        self.consensus_latency_ms = 0.0
+
+    def _detect_risk(self, target_property: Dict[str, float]) -> float:
+        """
+        Calculates risk based on voxel coherence and entropy.
+        """
+        # Risk increases if coherence is low or if we are forcing a state
+        risk = (1.0 - self.voxel.phi)
+        if target_property.get("transparency", 1.0) < 0.5:
+            risk += 0.2 # Physical change risk
+        return np.clip(risk, 0, 1)
 
     def propose_state(self, neighbors: List['MetasurfaceController'], target_property: Dict[str, float]):
         """
-        Coordinates a state change with neighbors using consensus.
+        Coordinates a state change with neighbors using high-speed consensus.
         """
-        # Threshold of coherence to initiate change
-        if self.voxel.phi < 0.7:
-            return False
+        start_time = time.time()
 
+        # Optimization: Fast-path if Φ is very high and target matches current tendency
+        if self.voxel.phi > 0.9 and not target_property.get("force_consensus", False):
+            # Optimistic update
+            self.current_property.update(target_property)
+            self.consensus_latency_ms = (time.time() - start_time) * 1000
+            return True
+
+        # Standard QuantumPaxos Path
         n = self.paxos.prepare()
         promises = 0
 
-        # Prepare phase
+        # Prepare phase (simulated parallel broadcast)
         for nb in neighbors:
             success, _, _ = nb.paxos.on_prepare(n)
             if success:
                 promises += 1
 
-        # Majority consensus (simplified for local neighborhood of 6-8)
-        if promises >= len(neighbors) // 2:
+        quorum = len(neighbors) // 2 + 1
+        if promises >= quorum:
             # Accept phase
             accepts = 0
             for nb in neighbors:
                 if nb.paxos.accept(n, target_property):
                     accepts += 1
 
-            if accepts >= len(neighbors) // 2:
+            if accepts >= quorum:
+                # Handle "Suor Radiativo" (Radiative Cooling) logic
+                if target_property.get("radiative_cooling"):
+                    self.current_property["emissivity"] = 0.95 # Peak for 8-13um window
+                    self.current_property["radiative_cooling"] = True
+
                 self.current_property.update(target_property)
+                self.consensus_latency_ms = (time.time() - start_time) * 1000
                 return True
 
+        self.consensus_latency_ms = (time.time() - start_time) * 1000
         return False

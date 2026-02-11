@@ -33,11 +33,13 @@ class HexVoxel:
     # Coherence local (Phi metric)
     phi_data: float = 0.0
     phi_field: float = 0.0
+    conflict_level: float = 0.0 # New: for interference detection
 
     @property
     def phi(self) -> float:
-        # Integrated coherence
-        return (self.phi_data + self.phi_field) / 2.0
+        # Integrated coherence adjusted by conflict
+        base_phi = (self.phi_data + self.phi_field) / 2.0
+        return base_phi * (1.0 - self.conflict_level)
 
     # Quantum-like state (amplitudes for 6 faces + internal)
     # state[0-5] are faces, state[6] is internal
