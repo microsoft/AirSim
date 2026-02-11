@@ -48,6 +48,15 @@ class HexVoxel:
     # Hebbian weights for 6 neighbors
     weights: np.ndarray = field(default_factory=lambda: np.ones(6, dtype=np.float32))
 
+    # Hebbian trace: history of events (Instant, event_type)
+    hebbian_trace: List[Tuple[float, str]] = field(default_factory=list)
+
+    # Intention Vector (for pre-collision/direction prediction)
+    intention_vector: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float32))
+
+    # Current agent occupancy
+    agent_count: int = 0
+
     def __post_init__(self):
         if len(self.state) != 7:
             self.state = np.zeros(7, dtype=np.float32)
