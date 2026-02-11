@@ -1,30 +1,33 @@
--- Query for TV Shows
--- Extracts Series Title, Guid (with TVDB ID), Season, Episode and File Path
-SELECT
-    series.title AS SeriesTitle,
-    series.guid AS SeriesGuid,
-    season."index" AS SeasonNumber,
-    md.title AS EpisodeTitle,
-    mp.file AS FilePath
-FROM metadata_items AS md
-JOIN metadata_items AS season ON md.parent_id = season.id
-JOIN metadata_items AS series ON season.parent_id = series.id
-JOIN media_items AS mi ON md.id = mi.metadata_item_id
-JOIN media_parts AS mp ON mi.id = mp.media_item_id
-WHERE md.metadata_type = 4
-  AND series.metadata_type = 2
-  AND season.metadata_type = 3
-  AND md.deleted_at IS NULL;
+-- ARKHE(N) OS v2.1: QUERY DA VERDADE (IDs UNIVERSAIS)
 
--- Query for Movies
--- Extracts Movie Title, Guid (with TMDB ID), Year and File Path
+-- TV SHOWS (SONARR)
+-- Extracts Series Title, TVDB ID, Season, and Episode Path
 SELECT
-    md.title AS MovieTitle,
-    md.guid AS MovieGuid,
-    md.year AS Year,
-    mp.file AS FilePath
-FROM metadata_items AS md
-JOIN media_items AS mi ON md.id = mi.metadata_item_id
-JOIN media_parts AS mp ON mi.id = mp.media_item_id
-WHERE md.metadata_type = 1
-  AND md.deleted_at IS NULL;
+    m.title AS SeriesTitle,
+    REPLACE(REPLACE(SUBSTR(m.guid, INSTR(m.guid, 'tvdb://') + 7), '?lang=en', ''), '?lang=pt', '') AS tvdbId,
+    parent.index AS SeasonNumber,
+    child.index AS EpisodeNumber,
+    parts.file AS FilePath
+FROM metadata_items m
+JOIN metadata_items parent ON parent.parent_id = m.id
+JOIN metadata_items child ON child.parent_id = parent.id
+JOIN media_items mi ON mi.metadata_item_id = child.id
+JOIN media_parts parts ON parts.media_item_id = mi.id
+WHERE m.metadata_type = 2 -- Série
+  AND child.metadata_type = 4 -- Episódio
+  AND m.deleted_at IS NULL
+ORDER BY SeriesTitle, SeasonNumber, EpisodeNumber;
+
+-- MOVIES (RADARR)
+-- Extracts Movie Title, TMDB ID, Year, and File Path
+SELECT
+    m.title AS MovieTitle,
+    m.year AS Year,
+    REPLACE(REPLACE(SUBSTR(m.guid, INSTR(m.guid, 'tmdb://') + 7), '?lang=en', ''), '?lang=pt', '') AS tmdbId,
+    parts.file AS FilePath
+FROM metadata_items m
+JOIN media_items mi ON mi.metadata_item_id = m.id
+JOIN media_parts parts ON parts.media_item_id = mi.id
+WHERE m.metadata_type = 1 -- Filme
+  AND m.deleted_at IS NULL
+ORDER BY MovieTitle;

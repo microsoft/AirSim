@@ -1,0 +1,10 @@
+{
+  "name": "arkhe-2fa-gateway",
+  "version": "3.0.0",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-telegram-bot-api": "^0.64.0",
+    "dotenv": "^16.3.1"
+  }
+}

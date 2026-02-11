@@ -1,99 +1,72 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Security
 
-# --- CONFIGURAÇÃO E DESCOBERTA ARKHE(N) ---
+# --- ARKHE(N) OS v3.0: IDENTIDADE SOBERANA ---
+
+# --- CONFIGURAÇÃO E AMBIENTE ---
+$Script:ConfigPath = Join-Path $PSScriptRoot "arkhe_config.json"
+$Script:LogPath = Join-Path $PSScriptRoot "arkhe_scan.log"
+$Script:IdentityPath = Join-Path $PSScriptRoot "SIWA_IDENTITY.md"
 $SqlitePath = "C:\tools\sqlite3.exe"
-$TempDb = Join-Path $env:TEMP "PlexSnapshot.db"
+$TempDb = Join-Path $env:TEMP "PlexVigilante_$(Get-Random).db"
 
-function Get-PlexDB {
-    $RegPath = "HKCU:\Software\Plex, Inc.\Plex Media Server"
-    if (Test-Path $RegPath) {
-        $Custom = (Get-ItemProperty $RegPath -Name "LocalAppDataPath" -ErrorAction SilentlyContinue).LocalAppDataPath
-        if ($Custom) { return Join-Path $Custom "Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db" }
+function Write-Log {
+    param([string]$Message, [ValidateSet("INFO", "ERROR", "WARN", "SUCCESS")]$Level = "INFO")
+    $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $Entry = "[$Timestamp] [$Level] $Message"
+    if ($LogBox) {
+        $Color = switch($Level) { "ERROR" {'Red'} "WARN" {'Yellow'} "SUCCESS" {'LimeGreen'} default {'Cyan'} }
+        $LogBox.Invoke([Action]{ $this.SelectionColor = [Drawing.Color]::$Color; $this.AppendText("$Entry`n"); $this.ScrollToCaret() })
     }
-    return "$env:LOCALAPPDATA\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db"
+    Add-Content -Path $Script:LogPath -Value $Entry
 }
 
-# --- INTERFACE WINFORMS (THEME: DARK ARKHE) ---
+# --- SIWA & KEYRING PROXY ---
+function Sign-WithSIWA {
+    param($Message, $Require2FA = $false, $Description = "")
+    $Settings = Get-Settings
+    $Timestamp = [DateTimeOffset]::Now.ToUnixTimeMilliseconds().ToString()
+    $Body = @{ message = $Message; require2FA = $Require2FA; description = $Description } | ConvertTo-Json
+
+    $HMAC_Msg = "POST:/sign-message:$Timestamp:$Body"
+    $HMAC = New-Object Security.Cryptography.HMACSHA256
+    $HMAC.Key = [Text.Encoding]::UTF8.GetBytes($Settings.ProxySecret)
+    $Signature = [Convert]::ToHexString($HMAC.ComputeHash([Text.Encoding]::UTF8.GetBytes($HMAC_Msg))).ToLower()
+
+    $Headers = @{ "X-Proxy-Signature" = $Signature; "X-Proxy-Timestamp" = $Timestamp }
+    try {
+        $Res = Invoke-RestMethod -Uri "$($Settings.ProxyURL)/sign-message" -Method Post -Body $Body -Headers $Headers -ContentType "application/json"
+        return $Res.signature
+    } catch {
+        Write-Log "Falha na assinatura SIWA: $_" "ERROR"
+        return $null
+    }
+}
+
+# --- GUI ---
 $Form = New-Object Windows.Forms.Form
-$Form.Text = "Arkhe(n) - Plex Missing Media v2.1"
-$Form.Size = "900,700"
-$Form.BackColor = "#121212"
+$Form.Text = "Arkhe(n) OS - Identidade Soberana v3.0"
+$Form.Size = "1000,850"
+$Form.BackColor = "#050505"
 $Form.ForeColor = "#00ff00"
-$Form.Font = New-Object Drawing.Font("Consolas", 10)
-
-$TabControl = New-Object Windows.Forms.TabControl
-$TabControl.Dock = "Fill"
-$Form.Controls.Add($TabControl)
-
-foreach ($Category in @("TV Shows", "Movies", "Anime")) {
-    $Tab = New-Object Windows.Forms.TabPage
-    $Tab.Text = $Category
-    $Tab.BackColor = "#1e1e1e"
-
-    $BtnScan = New-Object Windows.Forms.Button
-    $BtnScan.Text = "ATIVAR ESCANEAMENTO ($Category)"
-    $BtnScan.Location = "20,20"
-    $BtnScan.Size = "250,45"
-    $BtnScan.FlatStyle = "Flat"
-    $BtnScan.BackColor = "#004400"
-    $BtnScan.Add_Click({ Start-Scan -Type $Category })
-
-    $Tab.Controls.Add($BtnScan)
-    $TabControl.TabPages.Add($Tab)
-}
 
 $LogBox = New-Object Windows.Forms.RichTextBox
-$LogBox.Dock = "Right"
-$LogBox.Width = 350
-$LogBox.ReadOnly = $true
-$LogBox.BackColor = "#000000"
-$LogBox.ForeColor = "#00ff00"
+$LogBox.Dock = "Bottom"; $LogBox.Height = 300; $LogBox.BackColor = "#000000"; $LogBox.ForeColor = "#00ff00"
 $Form.Controls.Add($LogBox)
 
-function Write-Log($msg) { $LogBox.AppendText("[$((Get-Date).ToString('HH:mm:ss'))] $msg`n"); $LogBox.ScrollToCaret() }
+$BtnSmartFix = New-Object Windows.Forms.Button
+$BtnSmartFix.Text = "🧬 SMART FIX (SIWA PROTECTED)"
+$BtnSmartFix.Size = "300,80"; $BtnSmartFix.Location = "50,100"; $BtnSmartFix.FlatStyle = "Flat"
+$BtnSmartFix.Add_Click({ Start-SovereignFix })
+$Form.Controls.Add($BtnSmartFix)
 
-# --- LÓGICA DE ESCANEAMENTO COGNITIVO ---
-function Start-Scan([string]$Type) {
-    Write-Log "🧬 Ativando Linfócito de Integridade para $Type..."
-    $DB = Get-PlexDB
-    if (-not (Test-Path $DB)) {
-        Write-Log "❌ ERRO: Fonte da Verdade não localizada em $DB"
-        return
-    }
-
-    Write-Log "🛡️ Isolando banco de dados em Câmara de Snapshot..."
-    Copy-Item $DB $TempDb -Force
-
-    # Query Sagrada Integrada (Exemplo para TV)
-    $Query = "SELECT parent.title, md.parent_index, mp.file
-              FROM metadata_items md
-              JOIN metadata_items parent ON md.parent_id = parent.id
-              JOIN media_items mi ON md.id = mi.metadata_item_id
-              JOIN media_parts mp ON mi.id = mp.media_item_id
-              WHERE md.metadata_type = 4;"
-
-    try {
-        Write-Log "📡 Interrogando memória do Plex..."
-        # Nota: Necessita sqlite3.exe no PATH
-        $Raw = & $SqlitePath -csv $TempDb $Query | ConvertFrom-Csv -Header "Title","Season","Path"
-
-        $Missing = $Raw | Where-Object { -not (Test-Path $_.Path) }
-
-        Write-Log "📊 Resultado: $($Missing.Count) vácuos detectados na malha de arquivos."
-
-        if ($Missing.Count -gt 0) {
-            $S_loss = ($Missing.Count / $Raw.Count) * 100
-            Write-Log "⚠️ Severidade de Perda (S_loss): $($S_loss.ToString('F2'))%"
-            if ($S_loss -gt 50) { Write-Log "🚨 ALERTA: Colapso de Volume detectado!" }
-        }
-    }
-    catch {
-        Write-Log "❌ Falha na interrogagem. Verifique sqlite3.exe."
-    }
-
-    Remove-Item $TempDb -Force
-    Write-Log "🏛️ Scan concluído. Paz de Fase."
+function Start-SovereignFix {
+    Write-Log "Iniciando Protocolo de Identidade Soberana..."
+    # Lógica de Scan e Auto-Detecção...
+    # Se precisar restaurar:
+    $Sig = Sign-WithSIWA -Message "RestoreRequest:$(Get-Random)" -Require2FA $true -Description "Restauração de 15 episódios de 'Family Guy'"
+    if ($Sig) { Write-Log "Assinatura obtida: $Sig" "SUCCESS" }
 }
 
 $Form.ShowDialog()

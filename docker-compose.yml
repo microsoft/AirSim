@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  keyring-proxy:
+    build: ./keyring-proxy
+    ports: ["3000:3000"]
+    environment:
+      - AGENT_PRIVATE_KEY=${AGENT_PRIVATE_KEY}
+      - PROXY_HMAC_SECRET=${PROXY_HMAC_SECRET}
+      - TWOFA_GATEWAY_URL=http://2fa-gateway:4000
+    networks: [arkhe-net]
+  2fa-gateway:
+    build: ./2fa-gateway
+    ports: ["4000:4000"]
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - PROXY_HMAC_SECRET=${PROXY_HMAC_SECRET}
+      - PUBLIC_URL=${PUBLIC_URL}
+    networks: [arkhe-net]
+networks:
+  arkhe-net:
+    driver: bridge
