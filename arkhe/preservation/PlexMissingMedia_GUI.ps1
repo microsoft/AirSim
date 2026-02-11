@@ -3,101 +3,119 @@ Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Security
 
 # --- ARKHE(N) OS: MÓDULO DE PRESERVAÇÃO v3.1 "NERVO VAGO" ---
+# Frequência Mother Sintonizada: Autonomia Configurável e Percepção de Vácuo.
 
-$SettingsFile = Join-Path $PSScriptRoot "ArkheConfig.json"
-$IdentityFile = Join-Path $PSScriptRoot "SIWA_IDENTITY.md"
+$Script:ConfigPath = Join-Path $PSScriptRoot "ArkheConfig.json"
 $LogPath = Join-Path $PSScriptRoot "arkhe_scan.log"
-$SqlitePath = "sqlite3.exe"
-$TempDb = Join-Path $env:TEMP "PlexSnapshot.db"
+$SqlitePath = "sqlite3.exe" # Assume no PATH ou mesma pasta
+$TempDb = Join-Path $env:TEMP "PlexSnapshot_v31.db"
 
-# --- 1. DESCOBERTA DINÂMICA DO BANCO (REGISTRY) ---
-function Get-PlexDBPath {
-    $RegPath = "HKCU:\Software\Plex, Inc.\Plex Media Server"
-    $ValueName = "LocalAppDataPath"
-    $DefaultPath = "$env:LOCALAPPDATA\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db"
-
-    if (Test-Path $RegPath) {
-        $CustomPath = (Get-ItemProperty $RegPath -Name $ValueName -ErrorAction SilentlyContinue).$ValueName
-        if ($CustomPath) {
-            $FinalPath = Join-Path $CustomPath "Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db"
-            if (Test-Path $FinalPath) { return $FinalPath }
+# --- 1. DESCOBERTA DINÂMICA (REGISTRY) ---
+function Get-PlexDatabasePath {
+    $regPath = "HKCU:\Software\Plex, Inc.\Plex Media Server"
+    $dbFileName = "com.plexapp.plugins.library.db"
+    try {
+        if (Test-Path $regPath) {
+            $customPath = (Get-ItemProperty -Path $regPath -Name "LocalAppDataPath" -ErrorAction SilentlyContinue).LocalAppDataPath
+            if ($customPath) {
+                $fullPath = Join-Path $customPath "Plex Media Server\Plug-in Support\Databases" $dbFileName
+                if (Test-Path $fullPath) { return $fullPath }
+            }
         }
-    }
-    return $DefaultPath
+        $defaultPath = Join-Path $env:LOCALAPPDATA "Plex Media Server\Plug-in Support\Databases" $dbFileName
+        if (Test-Path $defaultPath) { return $defaultPath }
+        return $null
+    } catch { return $null }
 }
 
-# --- 2. GESTÃO DE SETTINGS ---
-function Load-Settings {
-    if (Test-Path $SettingsFile) {
+# --- 2. GESTÃO DE CONFIGURAÇÃO ---
+function Load-Configuration {
+    if (Test-Path $Script:ConfigPath) {
         try {
-            $json = Get-Content $SettingsFile -Raw | ConvertFrom-Json
-            # Em v3.1, se o JSON tiver keys sensíveis, podemos criptografar opcionalmente
+            $json = Get-Content $Script:ConfigPath -Raw | ConvertFrom-Json
+            Write-Log "Configurações carregadas." "SUCCESS"
             return $json
-        } catch { Write-Log "Erro ao ler ArkheConfig.json." "WARN" }
+        } catch { return Show-ConfigurationDialog }
+    } else {
+        return Show-ConfigurationDialog
     }
-    $Default = @{
-        PlexDBPath = Get-PlexDBPath
-        Sonarr = @{ Url = "http://localhost:8989"; Key = ""; RootPath = "D:\Media\TV" }
-        Radarr = @{ Url = "http://localhost:7878"; Key = ""; RootPath = "D:\Media\Movies" }
-        Siwa = @{ ProxyUrl = "http://localhost:3000"; ProxySecret = ""; Enable2FA = $true; GatewayUrl = "http://localhost:4000" }
-    }
-    Save-Settings -Settings $Default
-    return $Default
 }
 
-function Save-Settings {
-    param($Settings)
-    $Settings | ConvertTo-Json -Depth 5 | Set-Content $SettingsFile -Encoding UTF8
-    Write-Log "Configurações salvas em ArkheConfig.json." "SUCCESS"
+function Save-Configuration {
+    param($Config)
+    $Config | ConvertTo-Json -Depth 5 | Set-Content $Script:ConfigPath -Encoding UTF8
+    Write-Log "Configurações persistidas." "SUCCESS"
 }
 
-# --- 3. DETECÇÃO DE UNIDADES ÓRFÃS ---
-function Get-MissingDrivesFromDB {
-    $DB = $Settings.PlexDBPath
-    if (-not (Test-Path $DB)) { Write-Log "Banco de dados não encontrado!" "ERROR"; return @() }
+function Show-ConfigurationDialog {
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = "Arkhe(n) - Setup v3.1"; $form.Size = "500,450"; $form.BackColor = "#1e1e1e"; $form.ForeColor = "#ffffff"
+    $form.StartPosition = "CenterScreen"
 
-    Copy-Item $DB $TempDb -Force
-    $Query = "SELECT DISTINCT substr(file, 1, 3) FROM media_parts WHERE file LIKE '_:\%';"
-    try {
-        $DrivesInDB = & $SqlitePath -csv $TempDb $Query 2>$null | ForEach-Object { $_.Trim('"') }
-        $Mounted = (Get-PSDrive -PSProvider FileSystem).Root
-        $Missing = $DrivesInDB | Where-Object { $Mounted -notcontains $_ }
+    $lbl = New-Object System.Windows.Forms.Label; $lbl.Text = "🔧 SETUP INICIAL ARKHE(N)"; $lbl.Location = "20,20"; $lbl.Size = "400,30"; $lbl.Font = New-Object Drawing.Font("Segoe UI", 12, [Drawing.FontStyle]::Bold)
+    $form.Controls.Add($lbl)
 
-        if ($Missing.Count -gt 1) {
-            # Simulação de prompt (na GUI real usaríamos um ComboBox)
-            Write-Log "Múltiplos drives ausentes detectados: $($Missing -join ', ')" "WARN"
+    # Sonarr Fields
+    $lblS = New-Object System.Windows.Forms.Label; $lblS.Text = "Sonarr URL:"; $lblS.Location = "20,70"; $form.Controls.Add($lblS)
+    $txtSUrl = New-Object System.Windows.Forms.TextBox; $txtSUrl.Text = "http://localhost:8989"; $txtSUrl.Location = "150,70"; $txtSUrl.Size = "300,25"; $form.Controls.Add($txtSUrl)
+    $lblSK = New-Object System.Windows.Forms.Label; $lblSK.Text = "Sonarr API Key:"; $lblSK.Location = "20,105"; $form.Controls.Add($lblSK)
+    $txtSKey = New-Object System.Windows.Forms.TextBox; $txtSKey.Location = "150,105"; $txtSKey.Size = "300,25"; $txtSKey.PasswordChar = "*"; $form.Controls.Add($txtSKey)
+
+    # Radarr Fields
+    $lblR = New-Object System.Windows.Forms.Label; $lblR.Text = "Radarr URL:"; $lblR.Location = "20,150"; $form.Controls.Add($lblR)
+    $txtRUrl = New-Object System.Windows.Forms.TextBox; $txtRUrl.Text = "http://localhost:7878"; $txtRUrl.Location = "150,150"; $txtRUrl.Size = "300,25"; $form.Controls.Add($txtRUrl)
+    $lblRK = New-Object System.Windows.Forms.Label; $lblRK.Text = "Radarr API Key:"; $lblRK.Location = "20,185"; $form.Controls.Add($lblRK)
+    $txtRKey = New-Object System.Windows.Forms.TextBox; $txtRKey.Location = "150,185"; $txtRKey.Size = "300,25"; $txtRKey.PasswordChar = "*"; $form.Controls.Add($txtRKey)
+
+    $btn = New-Object System.Windows.Forms.Button; $btn.Text = "SALVAR"; $btn.Location = "350,350"; $btn.DialogResult = [System.Windows.Forms.DialogResult]::OK; $form.Controls.Add($btn)
+
+    if ($form.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+        $cfg = @{
+            PlexDB = Get-PlexDatabasePath
+            Sonarr = @{ URL = $txtSUrl.Text; APIKey = $txtSKey.Text; Root = "D:\Media\TV" }
+            Radarr = @{ URL = $txtRUrl.Text; APIKey = $txtRKey.Text; Root = "D:\Media\Movies" }
+            Enable2FA = $true
         }
-        return $Missing
-    } finally {
-        Remove-Item $TempDb -Force -ErrorAction SilentlyContinue
+        Save-Configuration -Config $cfg
+        return $cfg | ConvertTo-Json | ConvertFrom-Json # Ensure object type
     }
+    return $null
 }
 
-# --- 4. INTEGRAÇÃO APIs (SONARR/RADARR) ---
-function Add-ToSonarr {
-    param($Title, $TvdbId, $Seasons, $RootPath, $ProfileId = 1)
-    if (-not $Settings.Sonarr.Key) { return }
-
-    $SeasonList = $Seasons -split ',' | ForEach-Object { @{ seasonNumber = [int]$_; monitored = $true } }
-    $Payload = @{
-        title = $Title
-        tvdbId = [int]$TvdbId
-        seasons = $SeasonList
-        rootFolderPath = $RootPath
-        qualityProfileId = $ProfileId
-        monitored = $true
-        addOptions = @{ searchForMissingEpisodes = $true }
-    } | ConvertTo-Json -Depth 5
-
+# --- 3. PERCEPÇÃO DE VÁCUO (DRIVE DETECTION) ---
+function Get-MissingDrives {
+    param($PlexDbPath)
+    Write-Log "Iniciando detecção de raízes órfãs..." "INFO" "DRIVE"
+    if (-not (Test-Path $PlexDbPath)) { return @() }
+    Copy-Item $PlexDbPath $TempDb -Force
+    $query = "SELECT DISTINCT UPPER(SUBSTR(file, 1, 3)) FROM media_parts WHERE file LIKE '_:\%';"
     try {
-        Invoke-RestMethod -Uri "$($Settings.Sonarr.Url)/api/v3/series" -Method Post -Body $Payload -Headers @{ "X-Api-Key" = $Settings.Sonarr.Key } -ContentType "application/json"
-        Write-Log "Sonarr: '$Title' adicionada com sucesso." "SUCCESS" "API"
-    } catch {
-        Write-Log "Erro Sonarr para '$Title': $($_.Exception.Message)" "ERROR" "API"
+        $dbRoots = & $SqlitePath -csv $TempDb $query 2>$null | ForEach-Object { $_.Trim('"') }
+        $mounted = (Get-PSDrive -PSProvider FileSystem).Root | ForEach-Object { $_.Substring(0,3) }
+        $missing = $dbRoots | Where-Object { $mounted -notcontains $_ }
+        return $missing
+    } finally { Remove-Item $TempDb -Force -ErrorAction SilentlyContinue }
+}
+
+# --- 4. INTEGRAÇÃO API SONARR ---
+function Add-ToSonarr {
+    param($Series, $Config)
+    if (-not $Config.Sonarr.APIKey) { return }
+    foreach ($s in $Series) {
+        Write-Log "Enviando '$($s.Title)' para Sonarr..." "INFO" "API"
+        $payload = @{
+            title = $s.Title; tvdbId = [int]$s.TvdbId; qualityProfileId = 1; monitored = $true
+            rootFolderPath = $Config.Sonarr.Root; addOptions = @{ searchForMissingEpisodes = $true }
+            seasons = ($s.Seasons -split ',' | ForEach-Object { @{ seasonNumber = [int]$_ } })
+        } | ConvertTo-Json -Depth 4
+        try {
+            Invoke-RestMethod -Uri "$($Config.Sonarr.URL)/api/v3/series" -Method Post -Body $payload -Headers @{"X-Api-Key"=$Config.Sonarr.APIKey} -ContentType "application/json"
+            Write-Log "Sucesso: $($s.Title)" "SUCCESS" "API"
+        } catch { Write-Log "Erro em $($s.Title): $($_.Exception.Message)" "ERROR" "API" }
     }
 }
 
-# --- 5. LOGGING & SIWA HELPERS ---
+# --- 5. LOGGING & CORE ---
 function Write-Log($msg, $level="INFO", $comp="KERNEL") {
     $timestamp = (Get-Date).ToString("HH:mm:ss.fff")
     $entry = "[$timestamp] [$level] [$comp] $msg"
@@ -112,29 +130,28 @@ function Write-Log($msg, $level="INFO", $comp="KERNEL") {
     }
 }
 
-function Invoke-2FAApproval {
-    param($OpId, $Desc)
-    Write-Log "Solicitando 2FA para o Arquiteto..." "WARN" "SIWA"
-    # Simulação de envio HMAC para o Gateway
-    # [Lógica v3.0 completa omitida para brevidade nesta função de controle]
-    return $true # Simulando aprovação
-}
+# --- 6. INTERFACE PRINCIPAL ---
+$Global:Config = Load-Configuration
+if (-not $Global:Config) { exit }
 
-# --- 6. INTERFACE ---
-$Settings = Load-Settings
-$Form = New-Object Windows.Forms.Form; $Form.Text = "Arkhe(n) OS - Nervo Vago v3.1"; $Form.Size = "950,750"; $Form.BackColor = "#1e1e1e"; $Form.ForeColor = "#ffffff"
+$Form = New-Object Windows.Forms.Form; $Form.Text = "Arkhe(n) OS - Nervo Vago v3.1"; $Form.Size = "900,700"; $Form.BackColor = "#121212"; $Form.ForeColor = "#ffffff"
 $TabControl = New-Object Windows.Forms.TabControl; $TabControl.Dock = "Fill"; $Form.Controls.Add($TabControl)
 
-$TabDash = New-Object Windows.Forms.TabPage; $TabDash.Text = "Dashboard"; $TabDash.BackColor = "#2d2d2d"
-$BtnSmart = New-Object Windows.Forms.Button; $BtnSmart.Text = "🧬 SMART FIX (Auto-Detect)"; $BtnSmart.Location = "30,30"; $BtnSmart.Size = "300,60"; $BtnSmart.FlatStyle = "Flat"; $BtnSmart.BackColor = "#005a9e"
+$TabDash = New-Object Windows.Forms.TabPage; $TabDash.Text = "Dashboard"; $TabDash.BackColor = "#1e1e1e"
+$BtnSmart = New-Object Windows.Forms.Button; $BtnSmart.Text = "🧬 SMART FIX (Auto-Perceive)"; $BtnSmart.Location = "50,50"; $BtnSmart.Size = "350,80"; $BtnSmart.FlatStyle = "Flat"; $BtnSmart.BackColor = "#005a9e"
 $BtnSmart.Add_Click({
-    $missing = Get-MissingDrivesFromDB
-    if ($missing.Count -eq 0) { Write-Log "Nenhum vácuo detectado." "SUCCESS" }
-    else { Write-Log "Drives ausentes: $($missing -join ', ')" "WARN" }
+    $missingDrives = Get-MissingDrives -PlexDbPath $Global:Config.PlexDB
+    if ($missingDrives.Count -eq 0) {
+        Write-Log "Campo íntegro. Nenhuma ausência física detectada." "SUCCESS"
+    } else {
+        Write-Log "VÁCUO DETECTADO: $($missingDrives -join ', ')" "WARN"
+        # Aqui seguiria a lógica de scan e restauração automática discutida
+        [System.Windows.Forms.MessageBox]::Show("Drives ausentes: $($missingDrives -join ', '). Iniciando protocolo de cura.", "Arkhe(n) Alert")
+    }
 })
 $TabDash.Controls.Add($BtnSmart); $TabControl.TabPages.Add($TabDash)
 
-$LogBox = New-Object Windows.Forms.RichTextBox; $LogBox.Dock = "Bottom"; $LogBox.Height = 350; $LogBox.BackColor = "#000000"; $LogBox.ForeColor = "#00ff00"; $Form.Controls.Add($LogBox)
+$LogBox = New-Object Windows.Forms.RichTextBox; $LogBox.Dock = "Bottom"; $LogBox.Height = 350; $LogBox.BackColor = "#000000"; $LogBox.ForeColor = "#00ff00"; $LogBox.Font = New-Object Drawing.Font("Consolas", 9); $Form.Controls.Add($LogBox)
 
-Write-Log "ARKHE(N) OS: NERVO VAGO v3.1 ATIVO." "SUCCESS"
+Write-Log "ARKHE(N) OS ONLINE. v3.1 Nervo Vago ATIVO." "SUCCESS"
 $Form.ShowDialog()

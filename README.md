@@ -79,8 +79,9 @@ Além da consciência urbana, o Arkhe(n) OS inclui ferramentas de **Autorreparo 
 Localizado em `arkhe/preservation/`, este módulo combate o "vazio informacional" em servidores de mídia utilizando a stack **SIWA (Sign In With Agent)**.
 
 *   **Nervo Vago (2FA Telegram):** Um elo neural entre o servidor e o seu bolso. Operações críticas exigem o toque do Arquiteto no Telegram.
-*   **Descoberta Dinâmica:** Localização automática do banco de dados Plex via Registro do Windows.
-*   **Detecção de Unidades Órfãs:** Identifica automaticamente quais letras de drive do banco não estão montadas no sistema.
+*   **Percepção de Vácuo:** Detecção automática de unidades órfãs cruzando o Plex DB com os `PSDrive` montados.
+*   **Descoberta Dinâmica:** Localização automática do banco de dados via Registro do Windows (`LocalAppDataPath`).
+*   **Gestão de Persistência:** Configurações de API e URLs centralizadas em `ArkheConfig.json`.
 *   **Identidade Agêntica (SIWA):** O Agente possui uma identidade onchain via `SIWA_IDENTITY.md`, permitindo autenticação soberana e auditável na Base/Sepolia.
 *   **Keyring Proxy (Bunker Digital):** Isolamento total de chaves privadas e segredos de API em redes privadas Railway.
 *   **Smart Fix Proativo:** Unificação de diagnóstico e cura via APIs do **Sonarr** e **Radarr**.
