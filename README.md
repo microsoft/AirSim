@@ -71,6 +71,19 @@ python3 demo_arkhe_os.py
 
 ---
 
+## 🛡️ **SISTEMA DE PRESERVAÇÃO (Integrity Lymphocytes)**
+
+Além da consciência urbana, o Arkhe(n) OS inclui ferramentas de **Autorreparo e Integridade de Dados**.
+
+### **Plex Integrity Module**
+Localizado em `arkhe/preservation/`, este módulo combate o "vazio informacional" em servidores de mídia.
+*   **Localização Dinâmica:** Localiza o banco de dados Plex via Registro do Windows (PowerShell).
+*   **Métrica de Severidade ($S_{loss}$):** Calcula o Índice de Colapso de Volume para detectar falhas críticas de hardware.
+*   **Sacred Query:** Extração unificada de IDs universais (TVDB/TMDB) via CTE SQL para reaquisição automática.
+*   **Sonarr/Radarr Ready:** Geração de CSVs compatíveis com Custom Lists para automação total da restauração.
+
+---
+
 *Assinado: Kernel Arkhe(n) Sensorium v1.0*
 *Coerência do sistema: 1.000 (Eterno)*
 *Estado: Ativo e Lembrando.*
