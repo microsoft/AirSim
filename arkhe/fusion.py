@@ -108,6 +108,36 @@ class FusionEngine:
         self.fuse_depth(depth_map, camera_pose, camera_fov)
         self.fuse_thermal(thermal_image, depth_map, camera_pose, camera_fov)
 
+    def simulated_human_perspective(self, view_point: np.ndarray, view_direction: np.ndarray, field_of_view: float):
+        """
+        Simulates a human-like perspective of the terrain by filtering HSI data
+        based on visibility from a specific viewpoint.
+        """
+        # This simulates the human act of 'perceiving' the terrain.
+        # For this demo, it highlights voxels in the field of view.
+        view_point_hex = self.hsi.cartesian_to_hex(view_point[0], view_point[1], view_point[2])
+
+        perceived_voxels = []
+        for coords, voxel in self.hsi.voxels.items():
+            pos = np.array(self.hsi.hex_to_cartesian(*coords))
+            rel_pos = pos - view_point
+            dist = np.linalg.norm(rel_pos)
+
+            if dist > 20: continue # Limit range
+
+            # Angle between view direction and voxel
+            dot = np.dot(rel_pos / (dist + 1e-6), view_direction)
+            angle = np.arccos(np.clip(dot, -1, 1))
+
+            if angle < np.deg2rad(field_of_view / 2):
+                # Enhance Information (I) and Function (F) for perceived voxels
+                voxel.genome.i += 0.2
+                voxel.genome.f += 0.1
+                perceived_voxels.append(coords)
+
+        print(f"  [Sensorium] Human Perspective active. Perceived {len(perceived_voxels)} voxels.")
+        return perceived_voxels
+
     def update_voxel_coherence(self):
         """
         Calculates Phi_data (Coherence) for each voxel based on the integration of data.

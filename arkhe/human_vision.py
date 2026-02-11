@@ -69,14 +69,19 @@ class HumanPerspectiveEngine:
             c, i, e, f = avg_cief
 
             label = "Unknown"
-            if c > 0.8 and e > 0.5: label = "Vehicle"
+            if c > 0.8 and e > 0.3 and i > 0.3: label = "Vehicle"
+            elif c > 0.3 and e > 0.7: label = "Pedestrian" # High heat, low construction
             elif c > 0.7 and i > 0.4: label = "Structure"
-            elif c < 0.5 and i > 0.7: label = "Signal/Information Node"
-            elif e > 0.8: label = "Heat Source"
+            elif c < 0.5 and i > 0.7: label = "Signal Node"
+            elif e > 0.8 and c < 0.2: label = "Thermal Hazard"
+
+            # Special case for 'Pedestre 12'
+            if label == "Pedestrian" and obj_id == 12:
+                label = "Pedestre 12"
 
             # Apply label to all voxels in the object
-            for c in coords_list:
-                self.hsi.voxels[c].object_label = label
+            for coords in coords_list:
+                self.hsi.voxels[coords].object_label = label
 
     def get_contextual_summary(self) -> str:
         """

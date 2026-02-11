@@ -195,7 +195,7 @@ class MorphogeneticSimulation:
 
     def materialize_memory_to_bias(self, target_coords_list: List[Tuple[int, int, int, int]]):
         """
-        Frente B: Converts Hebbian weights to bias voltages for physical metasurfaces.
+        Frente B: Converts Hebbian weights and object context to bias voltages for physical metasurfaces.
         """
         bias_report = {}
         for coords in target_coords_list:
@@ -203,11 +203,20 @@ class MorphogeneticSimulation:
                 voxel = self.hsi.voxels[coords]
                 # V_bias = weight * scaling (e.g., 250mV max)
                 avg_weight = np.mean(voxel.weights)
-                bias_mv = avg_weight * 250.0
-                voxel.memory_bias = avg_weight * 0.1 # Feedback to field
+
+                # Context-aware modulation
+                context_multiplier = 1.0
+                if voxel.object_label == "Pedestre 12":
+                    context_multiplier = 1.5 # Sovereign agent priority
+                elif voxel.object_label == "Thermal Hazard":
+                    context_multiplier = 2.0 # Critical response
+
+                bias_mv = avg_weight * 250.0 * context_multiplier
+                voxel.memory_bias = avg_weight * 0.1 * context_multiplier # Feedback to field
                 bias_report[coords] = bias_mv
 
-        print(f"  [Materialization] Physical Metasurface Updated. Max Bias: {max(bias_report.values()):.2f} mV")
+        if bias_report:
+            print(f"  [Materialization] Physical Metasurface Updated. Max Bias: {max(bias_report.values()):.2f} mV")
         return bias_report
 
     def simulate_radiative_cooling_vortex(self):
@@ -269,6 +278,12 @@ class MorphogeneticSimulation:
             # Influence from CIEF genome: Energy (E) increases B, Information (I) stabilizes A
             f_mod = self.f * (1.0 + voxel.genome.i * 0.1)
             k_mod = self.k * (1.0 - voxel.genome.e * 0.1)
+
+            # Influence from Object Context
+            if voxel.object_label == "Vehicle":
+                f_mod *= 1.2
+            elif voxel.object_label == "Pedestrian" or voxel.object_label == "Pedestre 12":
+                f_mod *= 0.8 # Slower, more stable diffusion
 
             new_A = A + (self.dA * lap_A - A * (B**2) + f_mod * (1.0 - A) + voxel.memory_bias) * effective_dt
             new_B = B + (self.dB * lap_B + A * (B**2) - (f_mod + k_mod) * B) * effective_dt
