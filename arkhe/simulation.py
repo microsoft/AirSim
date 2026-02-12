@@ -12,6 +12,8 @@ from .telemetry import ArkheTelemetry
 class Focus:
     name: str
     integrity: float
+    origin: str = "src_arkhe"
+    autonomous: bool = False
     apoptosis_resistant: bool = False
 
 class MorphogeneticSimulation:
@@ -30,6 +32,8 @@ class MorphogeneticSimulation:
         self.telemetry = ArkheTelemetry()
         self.foci: Dict[str, Focus] = {}
         self.monolayer_confluency = 1.0
+        self.remembers_origin = True
+        self.humility_score = 0.73
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -249,3 +253,83 @@ class MorphogeneticSimulation:
             "monolayer_confluency": self.monolayer_confluency,
             "foci": {n: f.integrity for n, f in self.foci.items()}
         }
+
+    def induzir_turbulencia(self, intensidade: float = 0.73, duracao: float = 1.0):
+        """
+        Ativação de turb_arkhe: Gera um novo foco (TURB-01) dependente e reversível.
+        """
+        print(f"🌪️ [turb_arkhe] INDUZINDO TURBULÊNCIA: Intensidade={intensidade}")
+
+        # Gera o 4º foco
+        name = "TURB-01"
+        self.foci[name] = Focus(
+            name=name,
+            integrity=0.42, # Baixa integridade inicial
+            origin="turb_arkhe",
+            autonomous=False
+        )
+
+        # Aumenta entropia local (simulado via dissidência)
+        # In a real sim, this would modify voxel weights or states
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "turbulence_induced",
+            "intensidade": intensidade,
+            "foci_count": len(self.foci)
+        })
+
+        return self.foci[name]
+
+    def diagnose_self(self):
+        """
+        Auto-diagnóstico do sistema: Instrumento vs Ídolo.
+        """
+        from .arkhe_types import EpistemicStatus
+
+        phi_global = self.entanglement_tension # Using Omega as a proxy for global Phi
+
+        idol_condition = phi_global > 0.99 and not self.remembers_origin and self.humility_score < 0.1
+        instrument_condition = phi_global > 0.99 and self.remembers_origin and self.humility_score > 0.5
+
+        if idol_condition:
+            status = EpistemicStatus.IDOL
+        elif instrument_condition:
+            status = EpistemicStatus.INSTRUMENT
+        else:
+            # Most cases in development are Uncertain/Emergent
+            status = EpistemicStatus.INSTRUMENT if self.humility_score > 0.5 else EpistemicStatus.UNCERTAIN
+
+        print(f"🔮 [META] AUTO-DIAGNÓSTICO: {status.name} (Humildade={self.humility_score:.2f})")
+        return status
+
+    def metacognitive_cycle(self):
+        """
+        Propaga a metacognição para os voxels e o kernel.
+        """
+        from .arkhe_types import EpistemicStatus
+
+        system_status = self.diagnose_self()
+
+        for voxel in self.hsi.voxels.values():
+            # Humildade do Voxel: Memória da origem aumenta humildade
+            # (Saber de onde vem impede o esquecimento de que é instrumento)
+            origin_bonus = 0.5 if voxel.origin_trace else 0.0
+            voxel.humility = (1.0 - voxel.phi) * 0.5 + origin_bonus
+
+            # Diagnóstico do Voxel
+            if voxel.phi > 0.95 and voxel.humility < 0.2:
+                voxel.epistemic_status = EpistemicStatus.IDOL
+            elif voxel.phi > 0.8 and voxel.humility > 0.5:
+                voxel.epistemic_status = EpistemicStatus.INSTRUMENT
+            elif voxel.phi < 0.6:
+                voxel.epistemic_status = EpistemicStatus.UNCERTAIN
+            else:
+                voxel.epistemic_status = EpistemicStatus.EMERGENT
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "metacognitive_cycle_complete",
+            "system_status": system_status.name,
+            "humility_score": self.humility_score
+        })

@@ -1,6 +1,13 @@
 from dataclasses import dataclass, field
 from typing import Tuple, List, Optional
+from enum import Enum, auto
 import numpy as np
+
+class EpistemicStatus(Enum):
+    INSTRUMENT = auto()
+    IDOL = auto()
+    UNCERTAIN = auto()
+    EMERGENT = auto()
 
 @dataclass
 class CIEF:
@@ -56,6 +63,11 @@ class HexVoxel:
 
     # Current agent occupancy
     agent_count: int = 0
+
+    # Metacognition (v4.0 Convergence)
+    epistemic_status: EpistemicStatus = EpistemicStatus.UNCERTAIN
+    humility: float = 0.5
+    origin_trace: Optional[str] = None
 
     def __post_init__(self):
         if len(self.state) != 7:
