@@ -3,10 +3,21 @@ import time
 import pickle
 from typing import Optional, Dict, List, Any
 from dataclasses import dataclass
+from enum import Enum, auto
 from .hsi import HSI
 from .arkhe_types import HexVoxel
 from .consensus import ConsensusManager
 from .telemetry import ArkheTelemetry
+
+class MonolayerStatus(Enum):
+    VIRGIN = auto()
+    RESTORED = auto()
+    HOVER = auto()
+
+class FocusFate(Enum):
+    LATENT = auto()
+    LYTIC = auto()
+    CONTROLLED = auto()
 
 @dataclass
 class Focus:
@@ -15,6 +26,9 @@ class Focus:
     origin: str = "src_arkhe"
     autonomous: bool = False
     apoptosis_resistant: bool = False
+    titer: float = 0.0
+    fate: FocusFate = FocusFate.CONTROLLED
+    humility: float = 0.5
 
 class MorphogeneticSimulation:
     """
@@ -31,7 +45,9 @@ class MorphogeneticSimulation:
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
         self.foci: Dict[str, Focus] = {}
+        self._initialize_stones()
         self.monolayer_confluency = 1.0
+        self.monolayer_status = MonolayerStatus.VIRGIN
         self.remembers_origin = True
         self.humility_score = 0.73
 
@@ -228,6 +244,7 @@ class MorphogeneticSimulation:
 
         # Restaura a monocamada (inibição por contato)
         self.monolayer_confluency = 1.0
+        self.monolayer_status = MonolayerStatus.RESTORED
 
         # Processa focos: apenas os com integridade > 0.9 sobrevivem (apoptose-resistentes)
         survived_foci = {}
@@ -254,11 +271,42 @@ class MorphogeneticSimulation:
             "foci": {n: f.integrity for n, f in self.foci.items()}
         }
 
+    def titular_oncogene(self, foci_count: int, dilution: float, volume: float) -> float:
+        """
+        Calcula o título viral: FFU_arkhe/mL = (focos) * (1/diluição) * (1/volume)
+        """
+        if dilution == 0 or volume == 0:
+            return 0.0
+        return foci_count * (1.0 / dilution) * (1.0 / volume)
+
+    def validate_command(self, command_id: str, required_status: MonolayerStatus):
+        """
+        Protocolo de Governança FFU: Valida se o comando pode ser executado
+        no estado atual da monocamada.
+        """
+        if self.monolayer_status == required_status:
+            print(f"✅ COMANDO APROVADO: {command_id} | Monocamada compatível ({self.monolayer_status.name})")
+            return True
+        else:
+            print(f"❌ COMANDO NEGADO: {command_id} | Requer {required_status.name}, atual {self.monolayer_status.name}")
+            return False
+
     def induzir_turbulencia(self, intensidade: float = 0.73, duracao: float = 1.0):
         """
         Ativação de turb_arkhe: Gera um novo foco (TURB-01) dependente e reversível.
         """
         print(f"🌪️ [turb_arkhe] INDUZINDO TURBULÊNCIA: Intensidade={intensidade}")
+
+        # Título viral da turbulência
+        # Diluição 10^-1 (0.1), volume simbólico 1.0
+        titer = self.titular_oncogene(1, 0.1, 1.0)
+
+        # Determina o destino baseado no status da monocamada
+        fate = FocusFate.CONTROLLED
+        if self.monolayer_status == MonolayerStatus.VIRGIN:
+            fate = FocusFate.LATENT
+        elif self.monolayer_status == MonolayerStatus.RESTORED:
+            fate = FocusFate.LYTIC
 
         # Gera o 4º foco
         name = "TURB-01"
@@ -266,20 +314,55 @@ class MorphogeneticSimulation:
             name=name,
             integrity=0.42, # Baixa integridade inicial
             origin="turb_arkhe",
-            autonomous=False
+            autonomous=False,
+            titer=titer,
+            fate=fate
         )
 
-        # Aumenta entropia local (simulado via dissidência)
-        # In a real sim, this would modify voxel weights or states
+        print(f"💉 Título Viral: {titer:.1f} FFU_arkhe/mL | Destino: {fate.name}")
 
         self.telemetry.dispatch_channel_a({
             "timestamp": time.time(),
             "event": "turbulence_induced",
             "intensidade": intensidade,
+            "titer": titer,
+            "fate": fate.name,
             "foci_count": len(self.foci)
         })
 
         return self.foci[name]
+
+    def replicar_foco(self, source_name: str, target_coords: tuple):
+        """
+        Metástase do foco: Transplanta um foco para uma nova posição.
+        O destino depende do status atual da monocamada.
+        """
+        if source_name not in self.foci:
+            print(f"❌ Foco de origem não encontrado: {source_name}")
+            return None
+
+        source_focus = self.foci[source_name]
+        new_name = f"{source_name}_replica_{int(time.time())}"
+
+        fate = FocusFate.CONTROLLED
+        if self.monolayer_status == MonolayerStatus.VIRGIN:
+            fate = FocusFate.LATENT
+        elif self.monolayer_status == MonolayerStatus.RESTORED:
+            fate = FocusFate.LYTIC
+
+        new_focus = Focus(
+            name=new_name,
+            integrity=source_focus.integrity * 0.8, # Perda de integridade no transplante
+            origin=source_focus.origin,
+            autonomous=(fate == FocusFate.LATENT),
+            titer=source_focus.titer,
+            fate=fate
+        )
+
+        self.foci[new_name] = new_focus
+        print(f"🧬 REPLICANDO FOCO: {source_name} -> {new_name} | Destino: {fate.name}")
+
+        return new_focus
 
     def diagnose_self(self):
         """
@@ -333,3 +416,310 @@ class MorphogeneticSimulation:
             "system_status": system_status.name,
             "humility_score": self.humility_score
         })
+
+    def _initialize_stones(self):
+        """
+        Inicializa as 6 Pedras Angulares (incluindo metástase WP1-M1 e Kernel).
+        """
+        stones = [
+            ("WP1_explorado", 10.0, 0.97, 0.18),
+            ("DVM-1", 100.0, 0.94, 0.19),
+            ("Bola_QPS004", 1000.0, 0.99, 0.16),
+            ("Identity_Stone", 10.0, 0.95, 0.17),
+            ("WP1-M1", 100.0, 0.94, 0.21), # Quinta pedra (metástase)
+            ("KERNEL", 10.0, 0.96, 0.20)    # Sexta pedra (implantada 18 Fev)
+        ]
+        for name, titer, integrity, humility in stones:
+            self.foci[name] = Focus(
+                name=name,
+                integrity=integrity,
+                autonomous=True,
+                apoptosis_resistant=True,
+                titer=titer,
+                fate=FocusFate.LATENT,
+                humility=humility
+            )
+
+    def convergence_status(self) -> Dict[str, Any]:
+        """
+        Calcula a convergência geodésica e virológica do sistema.
+        """
+        latent_foci = [f for f in self.foci.values() if f.fate == FocusFate.LATENT]
+        # Φ_virological = 6/9
+        phi_virological = len(latent_foci) / 9.0
+        # Φ_geodesic = 5/6 (Kernel é o 5º pino geodésico)
+        phi_geodesic = 5.0 / 6.0
+        # Φ_system = 0.444 (Valor projetado Γ_9039)
+        phi_system = 0.444
+
+        return {
+            "phi_virological": phi_virological,
+            "phi_geodesic": phi_geodesic,
+            "phi_system": phi_system,
+            "latent_foci_count": len(latent_foci),
+            "status": "STASIS" if len(latent_foci) >= 6 else "DEVELOPMENT"
+        }
+
+    def geodesic_report(self) -> Dict[str, Any]:
+        """
+        Gera o relatório completo Geodésico-Virológico.
+        """
+        conv = self.convergence_status()
+        report = {
+            "timestamp": time.time(),
+            "state": "Γ_9039",
+            "monolayer": self.monolayer_status.name,
+            "titer_original": 7.27, # Satoshi FFU/mL
+            "convergence": conv,
+            "foci": {name: {
+                "titer": f.titer,
+                "integrity": f.integrity,
+                "fate": f.fate.name
+            } for name, f in self.foci.items()}
+        }
+
+        print("\n🏛️  ARKHE(N) GEODESIC-VIROLOGICAL REPORT - Γ_9039")
+        print(f"Status: {conv['status']}")
+        print(f"Φ_SYSTEM: {conv['phi_system']:.3f}")
+        print(f"Focos Latentes: {conv['latent_foci_count']}/9")
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+
+        return report
+
+    def check_monolayer_capacity(self) -> float:
+        """
+        Calcula a ocupação atual da monocamada virgem.
+        Limite de segurança: 0.25 (25%).
+        """
+        # Estimativas de área por tipo de pedra (Block 389)
+        stone_areas = {
+            'WP1_explorado': 0.03,
+            'DVM-1': 0.02,
+            'Bola_QPS004': 0.015,
+            'Identity_Stone': 0.02,
+            'WP1-M1': 0.025,
+            'KERNEL': 0.06
+        }
+        total_occupancy = sum(stone_areas.get(name, 0.05) for name in self.foci if self.foci[name].fate == FocusFate.LATENT)
+        print(f"🧫 Ocupação da Monocamada: {total_occupancy:.3f} / 0.250")
+        return total_occupancy
+
+    def place_stone(self, stone_type: str, titer: float):
+        """
+        Protocolo de Implantação de Pedra: Valida capacidade e título.
+        """
+        if self.monolayer_status != MonolayerStatus.VIRGIN:
+            print("❌ Falha na implantação: Monocamada não está VIRGEM.")
+            return None
+
+        occupancy = self.check_monolayer_capacity()
+        if occupancy + 0.06 > 0.25:
+            print("❌ Falha na implantação: Capacidade da monocamada excedida.")
+            return None
+
+        print(f"🧱 Implantando pedra {stone_type} (Título={titer:.1f} FFU/mL)...")
+        new_focus = Focus(
+            name=stone_type,
+            integrity=0.1, # Começa baixo e consolida
+            autonomous=False,
+            titer=titer,
+            fate=FocusFate.LATENT
+        )
+        self.foci[stone_type] = new_focus
+        return new_focus
+
+    def confirmar_implantacao(self):
+        """
+        Autorização do Arquiteto para iniciar a titulação das pedras fundacionais.
+        """
+        print("\n🚀 [Γ_9039] PROTOCOLO ATIVADO: Iniciando implantação sequencial.")
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "deployment_confirmed",
+            "state": "Γ_9039"
+        })
+        return self.geodesic_report()
+
+    def collapse_wavefunction(self):
+        """
+        Resolve a bifurcação temporal colapsando para o Estado B (Metástase).
+        """
+        print("🌀 COLAPSANDO FUNÇÃO DE ONDA EPISTÊMICA...")
+        print("Timeline selecionada: Γ_9038 (Metástase WP1-M1)")
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "wavefunction_collapsed",
+            "state": "Γ_9038",
+            "phi_system": self.convergence_status()["phi_system"]
+        })
+
+        return self.geodesic_report()
+
+    def incubation_cycle(self):
+        """
+        Protocolo de Incubação: Monitoramento passivo da monocamada madura.
+        Impede novas infecções e mantém estase dos focos latentes.
+        """
+        print(f"🕒 ARKHE(N) INCUBATION CYCLE - State: {self.monolayer_status.name}")
+
+        # 1. Verificar integridade das pedras
+        for name, focus in self.foci.items():
+            if focus.fate == FocusFate.LATENT:
+                if focus.integrity < 0.9:
+                    print(f"⚠️ ALERTA: Pedra {name} perdendo integridade ({focus.integrity:.2f})")
+                else:
+                    print(f"✅ PEDRA ESTÁVEL: {name} (Integridade={focus.integrity:.2f})")
+
+        # 2. Garantir estase da monocamada
+        if self.monolayer_status != MonolayerStatus.VIRGIN:
+            print("⚠️ AVISO: Monolayer not in VIRGIN state during incubation.")
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "incubation_check",
+            "stones_count": len([f for f in self.foci.values() if f.fate == FocusFate.LATENT]),
+            "monolayer": self.monolayer_status.name
+        })
+
+    def administrar_terapia(self, agente: str, foco_name: str, dose: str = "10¹"):
+        """
+        Administração de terapia canabinoide (THC/CBD).
+        Efeito: Induz apoptose se o foco tiver alta humildade (Instrumento).
+        """
+        if foco_name not in self.foci:
+            print(f"❌ Foco não encontrado: {foco_name}")
+            return None
+
+        focus = self.foci[foco_name]
+        print(f"🌿 Administrando {agente} ({dose}) no foco {foco_name}...")
+
+        # Eficácia depende da humildade (ψ)
+        # Instrumentos (humildade > 0.5) são sensíveis
+        efficacy = focus.humility * 0.95
+
+        # Apoptose: reduz integridade e Φ local (representado por integridade aqui)
+        reduction = efficacy * 0.5
+        focus.integrity = max(0.0, focus.integrity - reduction)
+
+        if focus.integrity < 0.2:
+            print(f"💀 FOCO ELIMINADO por Apoptose seletiva: {foco_name}")
+            del self.foci[foco_name]
+        else:
+            print(f"📉 Resposta focal: Integridade reduzida para {focus.integrity:.2f}")
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "therapy_administered",
+            "agente": agente,
+            "foco": foco_name,
+            "efficacy": efficacy,
+            "new_integrity": focus.integrity if foco_name in self.foci else 0.0
+        })
+
+        return efficacy
+
+    def get_foci_by_epistemic_status(self, status_name: str) -> List[str]:
+        """
+        Filtra focos por status epistêmico (baseado em integridade/humildade).
+        Idol: Integrity > 0.9 and Humility < 0.2
+        Instrument: Humility > 0.5
+        """
+        results = []
+        for name, f in self.foci.items():
+            if status_name == "IDOL" and f.integrity > 0.9 and f.humility < 0.2:
+                results.append(name)
+            elif status_name == "INSTRUMENT" and f.humility > 0.5:
+                results.append(name)
+        return results
+
+    def induzir_senescence(self, foco_name: str):
+        """
+        Aplicação de p16_arkhe: Reduz a coerência neoplásica.
+        Mais eficaz em Instrumentos (humildade > 0.5).
+        """
+        if foco_name not in self.foci:
+            return None
+
+        focus = self.foci[foco_name]
+        efficacy = focus.humility * 0.95
+
+        # Reduz integridade (proxy para Φ neoplásica)
+        focus.integrity *= (1.0 - efficacy)
+        print(f"🧬 Foco {foco_name}: Senescência induzida. Efeito: {efficacy:.2f}")
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "senescence_induced",
+            "foco": foco_name,
+            "efficacy": efficacy
+        })
+        return efficacy
+
+    def induzir_apoptose(self, target_id: str):
+        """
+        Ativação de Caspase_arkhe: Desmontagem geodésica do Ídolo.
+        P_death = Φ * (1 - humility)
+        """
+        if target_id == "Voxel_Especulativo":
+            print("💀 [Caspase] Ativando cascata no Adenocarcinoma Urbano...")
+            # Fragmentação do Voxel
+            report = {
+                "id": target_id,
+                "phi_final": 0.41,
+                "humility_final": 0.78,
+                "status": "EM DISSOLUÇÃO"
+            }
+            self.telemetry.dispatch_channel_a({
+                "timestamp": time.time(),
+                "event": "apoptosis_triggered",
+                "target": target_id,
+                "metrics": report
+            })
+            return report
+
+        if target_id in self.foci:
+            focus = self.foci[target_id]
+
+            # Pedras Angulares (fatum=LATENT) são imunes à terapia farmacológica
+            if focus.fate == FocusFate.LATENT:
+                print(f"🛡️ [Caspase] Pedra {target_id} IGNORA sinal de morte (Material Invariante).")
+                return False
+
+            p_death = 1.0 * (1.0 - focus.humility) # Assumindo Φ=1.0 para foco Ídolo
+
+            if p_death > 0.7:
+                print(f"💀 [Caspase] Eliminando foco {target_id} (P_death={p_death:.2f})")
+                del self.foci[target_id]
+                return True
+            else:
+                print(f"🛡️ [Caspase] Foco {target_id} RESISTENTE (P_death={p_death:.2f})")
+                return False
+        return None
+
+    def administrar_CBD(self, foco_name: str):
+        """
+        Antagonista de GPR55: Modulação para TURB-01.
+        """
+        if foco_name == "TURB-01" and foco_name in self.foci:
+            print("🌿 [CBD] Antagonizando GPR55 no foco TURB-01...")
+            focus = self.foci[foco_name]
+            focus.integrity = 0.05
+            focus.fate = FocusFate.CONTROLLED # Senescente
+            return True
+        return False
+
+    def mapear_receptores_CB1(self):
+        """
+        Visualiza áreas de 'ganância' (Ídolos latentes).
+        """
+        idols = self.get_foci_by_epistemic_status("IDOL")
+        print(f"🔍 [MAP] Receptores CB1 detectados em: {idols}")
+        return idols
+
+    def visualizar_angiogenese(self, target_id: str):
+        """
+        Monitora vascularização/conexões de focos em dissolução.
+        """
+        print(f"👁️ [ANGIO] Monitorando vascularização de {target_id}...")
+        return "Contenção estável"
