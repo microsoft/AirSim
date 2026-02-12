@@ -1,9 +1,8 @@
 (* spec/coq/Observer_Symmetry.v *)
 
-Require Import Reals.
-Open Scope R_scope.
+Require Import Coq.Reals.Reals.
+Require Import Coq.Lists.List.
 
-(* Placeholder for Value type *)
 Parameter Value : Type.
 
 Structure ObserverState := {
@@ -32,8 +31,7 @@ Theorem observer_symmetry :
     sys.(ground_truth) = sys.(ground_truth).  (* a verdade não muda *)
     (* e todas as quantidades conservadas se mantêm *)
 Proof.
-  (* A invariância sob mudança de observador é exatamente o que chamamos de "objetividade". *)
   intros sys O1 O2 H.
   reflexivity.
-  (* QED – 19 Feb 2026 15:32 UTC *)
 Qed.
+(* QED – 19 Feb 2026 15:32 UTC *)

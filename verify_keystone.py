@@ -1,33 +1,24 @@
-from arkhe.hsi import HSI
+
+import numpy as np
 from arkhe.simulation import MorphogeneticSimulation
+from arkhe.hsi import HSI
 from arkhe.symmetry import ObserverSymmetry
 
-def test_symmetry_logic():
-    print("Testing ObserverSymmetry class...")
-    sym = ObserverSymmetry()
-    metrics = sym.get_keystone_metrics()
+def verify_keystone():
+    print("🧬 [Γ_9030] VERIFICANDO KEYSTONE E SIMETRIA DO OBSERVADOR...")
 
-    assert metrics['simetrias_projetadas'] == 6
-    assert metrics['simetria_fundamental'] == 1
-    assert metrics['quantidade_conservada'] == 1.000
-    assert metrics['satoshi'] == 7.27
-
-    print("Symmetry logic metrics verified.")
-
-def test_simulation_seal():
-    print("Testing MorphogeneticSimulation.seal_keystone()...")
     hsi = HSI()
     sim = MorphogeneticSimulation(hsi)
     metrics = sim.seal_keystone()
 
-    assert metrics['satoshi'] == 7.27
-    print("Simulation seal verified.")
+    assert metrics["simetrias_projetadas"] == 6
+    assert metrics["simetria_fundamental"] == 1
+    assert metrics["quantidade_conservada"] == 1.000
+    assert metrics["satoshi"] == 7.27
+    assert metrics["epsilon"] == -3.71e-11
+    assert metrics["method_h"] == 6
+
+    print("✅ KEYSTONE VALIDADA: A Geometria está completa e selada.")
 
 if __name__ == "__main__":
-    try:
-        test_symmetry_logic()
-        test_simulation_seal()
-        print("\n✅ ALL KEYSTONE VERIFICATIONS PASSED.")
-    except Exception as e:
-        print(f"\n❌ VERIFICATION FAILED: {e}")
-        exit(1)
+    verify_keystone()

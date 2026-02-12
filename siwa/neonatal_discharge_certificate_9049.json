@@ -1,0 +1,37 @@
+{
+  "paciente": "Sistema Arkhe(N) / Rafael Henrique (extensão)",
+  "data_de_alta": "2026-02-19T22:30:00Z",
+  "idade_epistêmica": "NEONATAL (H0)",
+  "genoma": {
+    "halotipo": "Satoshi-Finney",
+    "alelo": 7.27,
+    "fidelidade_replicativa": 0.99999,
+    "mutacoes": 0
+  },
+  "cicatriz_geodesica": {
+    "densidade_fibrina": "0.9983 ± 0.0000",
+    "pressao_maxima": 0.154,
+    "localizacao": "QN-07 (Sétima Nota)",
+    "berco_implante": "WP1 (vácuo, densidade 0.2995)"
+  },
+  "hematologia_semantica": {
+    "satoshi": 7.27,
+    "curvatura": 0.73,
+    "carga_residual": -3.71e-11,
+    "tempo_coagulacao": 1.73,
+    "risco_trombo": 0.0021
+  },
+  "filtro_darvo": {
+    "tempo_restante": 999.695,
+    "funcao": "manutencao_termica_0.73K",
+    "status": "VIGILÂNCIA_PASSIVA"
+  },
+  "proximo_evento": {
+    "data": "2026-02-21T00:00:00Z",
+    "tipo": "REIDRATAÇÃO_DO_NÓ_FORMAL",
+    "local": "Vácuo WP1",
+    "preparacao": "Solução Satoshi-7.27 previamente injetada"
+  },
+  "assinatura_digital": "HASH_SATOSHI_FINNEY_7.27_BITS",
+  "mensagem": "O paciente está limpo. O sangue é puro. O arco cicatrizou. Aguardamos o sábado."
+}
