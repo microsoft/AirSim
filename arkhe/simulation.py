@@ -29,6 +29,8 @@ class Focus:
     titer: float = 0.0
     fate: FocusFate = FocusFate.CONTROLLED
     humility: float = 0.5
+    satellite_id: Optional[str] = None
+    omega_spec: float = 0.0
 
 class MorphogeneticSimulation:
     """
@@ -419,17 +421,18 @@ class MorphogeneticSimulation:
 
     def _initialize_stones(self):
         """
-        Inicializa as 6 Pedras Angulares (incluindo metástase WP1-M1 e Kernel).
+        Inicializa as 6 Pedras Angulares (Satélites Ativos).
         """
         stones = [
-            ("WP1_explorado", 10.0, 0.97, 0.18),
-            ("DVM-1", 100.0, 0.94, 0.19),
-            ("Bola_QPS004", 1000.0, 0.99, 0.16),
-            ("Identity_Stone", 10.0, 0.95, 0.17),
-            ("WP1-M1", 100.0, 0.94, 0.21), # Quinta pedra (metástase)
-            ("KERNEL", 10.0, 0.96, 0.20)    # Sexta pedra (implantada 18 Fev)
+            # name, titer, integrity, humility, sat_id, omega
+            ("WP1_explorado", 10.0, 0.97, 0.18, "ARKHE-SAT-01", 0.07),
+            ("DVM-1", 100.0, 0.94, 0.19, "ARKHE-SAT-02", 0.07),
+            ("Bola_QPS004", 1000.0, 0.99, 0.16, "ARKHE-SAT-03", 0.11),
+            ("Identity_Stone", 10.0, 0.95, 0.17, "ARKHE-SAT-04", 0.07),
+            ("WP1-M1", 100.0, 0.94, 0.21, "ARKHE-SAT-05", 0.08),
+            ("KERNEL", 10.0, 0.96, 0.20, "ARKHE-SAT-06", 0.12)
         ]
-        for name, titer, integrity, humility in stones:
+        for name, titer, integrity, humility, sat_id, omega in stones:
             self.foci[name] = Focus(
                 name=name,
                 integrity=integrity,
@@ -437,7 +440,9 @@ class MorphogeneticSimulation:
                 apoptosis_resistant=True,
                 titer=titer,
                 fate=FocusFate.LATENT,
-                humility=humility
+                humility=humility,
+                satellite_id=sat_id,
+                omega_spec=omega
             )
 
     def convergence_status(self) -> Dict[str, Any]:
@@ -723,3 +728,53 @@ class MorphogeneticSimulation:
         """
         print(f"👁️ [ANGIO] Monitorando vascularização de {target_id}...")
         return "Contenção estável"
+
+    def debris_impact_assessment(self, mass: float, velocity: float) -> Dict[str, Any]:
+        """
+        Escudo Whipple (Darvo): Avalia impacto de detrito semântico.
+        1 Hand = 1 kJ de energia epistêmica.
+        """
+        kinetic_energy = 0.5 * mass * (velocity**2)
+        # Competência conservada (Hansson) serve como blindagem
+        shield_capacity = 6000.0 # 6H = 6kJ
+
+        risk = "CONTIDO"
+        if kinetic_energy > shield_capacity:
+            risk = "CRÍTICO"
+
+        print(f"🛡️ [DARVO] Impacto detectado: {kinetic_energy:.2f} J | Risco: {risk}")
+        return {"energy": kinetic_energy, "risk": risk}
+
+    def catalogar_satelites(self) -> List[Dict[str, Any]]:
+        """
+        Publica o Catálogo Orbital Arkhe.
+        """
+        catalog = []
+        for f in self.foci.values():
+            if f.satellite_id:
+                catalog.append({
+                    "id": f.satellite_id,
+                    "designacao": f.name,
+                    "psi": f.humility,
+                    "omega": f.omega_spec,
+                    "titer": f.titer,
+                    "status": "ATORES-LATENTES" if f.integrity > 0.9 else "TESTE"
+                })
+
+        print("\n🛰️  CATÁLOGO ORBITAL ARKHE - Γ_9045")
+        print("ID           | Designação         | ψ (rad) | ω (Hz) | Status")
+        print("-------------|--------------------|---------|--------|--------")
+        for sat in catalog:
+            print(f"{sat['id']:<12} | {sat['designacao']:<18} | {sat['psi']:<7.2f} | {sat['omega']:<6.2f} | {sat['status']}")
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+
+        return catalog
+
+    def calculate_orbital_density(self, handovers: int = 9045) -> float:
+        """
+        Fração ativa = Satélites / Total de handovers.
+        """
+        active_sats = len([f for f in self.foci.values() if f.satellite_id])
+        fraction = active_sats / handovers
+        print(f"📡 Fração Ativa Epistêmica: {fraction:.5f} (Seletividade 3.8x NASA)")
+        return fraction
