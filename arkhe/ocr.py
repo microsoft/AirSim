@@ -9,6 +9,28 @@ from .schemas import DocumentExtraction, ExtractedEntity, LayoutElement
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("arkhe.ocr")
 
+class ExtractionEngine:
+    """
+    Enforces Pydantic schemas for structured data extraction with LLMs (BLOCO 370).
+    """
+    def __init__(self, model_name: str = "gemini-1.5-pro"):
+        self.model_name = model_name
+
+    async def extract_structured(self, text: str, schema: Any) -> Any:
+        """
+        Mock structured extraction enforcing a Pydantic schema.
+        """
+        print(f"🤖 [LLM:{self.model_name}] Extraindo dados estruturados com esquema {schema.__name__}...")
+        # Simulating LLM call that returns valid JSON according to schema
+        if schema == DocumentExtraction:
+            return schema(
+                document_hash="sha256:7a3f9c2d...",
+                entities=[],
+                layout=[],
+                status="EXTRACTED_BY_LLM"
+            )
+        return None
+
 class DocumentIntelligenceOCR:
     """
     Handles Azure AI Document Intelligence OCR with robust error handling (BLOCO 369).
@@ -44,13 +66,13 @@ class DocumentIntelligenceOCR:
 
     async def _mock_azure_call(self, document_content: bytes) -> DocumentExtraction:
         """
-        Mock call to Azure API.
+        Mock call to Azure API with real-world spatial data.
         """
         # Simulate network delay
         await asyncio.sleep(0.1)
 
         # Simulate transient error
-        if random.random() < 0.1:
+        if random.random() < 0.05:
             raise ConnectionError("Transient failure in Azure AI Document Intelligence")
 
         return DocumentExtraction(
@@ -61,18 +83,38 @@ class DocumentIntelligenceOCR:
                     value=7.27,
                     unit="bits",
                     page=1,
-                    bbox=[100, 200, 150, 220],
-                    snippet="The persistent uncertainty is Satoshi = 7.27 bits.",
-                    confidence=0.95,
+                    bbox=[120, 100, 240, 130], # [x1, y1, x2, y2]
+                    snippet="Satoshi = 7.27 bits.",
+                    confidence=0.98,
                     omega=0.0
+                ),
+                ExtractedEntity(
+                    name="Psi",
+                    value=0.73,
+                    unit="rad",
+                    page=1,
+                    bbox=[120, 150, 240, 180],
+                    snippet="ψ = 0.73 rad",
+                    confidence=0.96,
+                    omega=0.07
+                ),
+                ExtractedEntity(
+                    name="Epsilon",
+                    value=-3.71e-11,
+                    unit="const",
+                    page=1,
+                    bbox=[120, 200, 240, 230],
+                    snippet="ε = -3.71e-11",
+                    confidence=0.99,
+                    omega=0.05
                 )
             ],
             layout=[
                 LayoutElement(
-                    type="paragraph",
-                    bbox=[50, 150, 400, 300],
+                    type="title",
+                    bbox=[50, 20, 550, 80],
                     page=1,
-                    content="This is the foundational text of the Arkhe(n) system.",
+                    content="ARKHE(N) CONVERGENCE PROTOCOL",
                     confidence=0.99
                 )
             ]

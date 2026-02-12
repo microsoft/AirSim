@@ -29,17 +29,41 @@ class ParallelDocumentProcessor:
         results = await asyncio.gather(*tasks, return_exceptions=False)
         return results
 
+    def chunk_text(self, text: str, chunk_size: int = 2000, overlap: int = 200) -> List[str]:
+        """
+        Splits long text into overlapping chunks for processing (BLOCO 370).
+        """
+        chunks = []
+        start = 0
+        while start < len(text):
+            end = start + chunk_size
+            chunks.append(text[start:end])
+            start += (chunk_size - overlap)
+        return chunks
+
     async def aggregate_results(self, results: List[DocumentExtraction]) -> DocumentExtraction:
         """
         Aggregates multiple extraction results into a single document state.
         """
-        # Placeholder for complex aggregation logic
         if not results:
             return None
 
-        # Filtering out failed chunks
-        successful_results = [r for r in results if hasattr(r, 'entities')]
+        successful_results = [r for r in results if hasattr(r, 'entities') and r.entities]
         if not successful_results:
-            return None
+            return results[0] if results else None
 
-        return successful_results[0]
+        # Merging entities from all successful chunks
+        merged_entities = []
+        for r in successful_results:
+            merged_entities.extend(r.entities)
+
+        # Creating a unified result based on the first successful one
+        base = successful_results[0]
+        return DocumentExtraction(
+            document_hash=base.document_hash,
+            entities=merged_entities,
+            layout=base.layout,
+            psi=base.psi,
+            satoshi_cost=sum(r.satoshi_cost for r in successful_results),
+            status="AGGREGATED"
+        )

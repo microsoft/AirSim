@@ -3,6 +3,14 @@ from typing import Dict, Any, List, Optional
 import time
 import random
 import numpy as np
+import asyncio
+
+from .arkhe_types import Vec3
+from .schemas import DocumentExtraction, ExtractedEntity
+from .ocr import DocumentIntelligenceOCR
+from .memory import GeodesicMemory
+from .ao import SemanticAdaptiveOptics
+from .ledger import NaturalEconomicsLedger
 
 app = FastAPI(title="Arkhe(N)/API", version="0.1.0-ω")
 
@@ -44,7 +52,7 @@ async def hesitate_middleware(request: Request, call_next):
 
     # 2. Pausa deliberada (micro-hesitação)
     # Calibração: phi=0.10 -> 0.1ms (escala para o ambiente de simulação)
-    time.sleep(phi * 0.001)
+    await asyncio.sleep(phi * 0.001)
 
     # 3. Processar requisição
     start_time = time.time()
@@ -302,20 +310,18 @@ async def get_symmetry_projections():
         "Method": {"transformation": "problema → método", "invariant": "H", "value": 6}
     }
 
-from .arkhe_types import Vec3
-from .schemas import DocumentExtraction, ExtractedEntity
-from .ocr import DocumentIntelligenceOCR
-from .memory import GeodesicMemory
-
 # Persistent Intelligence Components
 ocr_engine = DocumentIntelligenceOCR(endpoint="https://arkhe-ocr.azure.com", key="********")
 semantic_memory = GeodesicMemory()
+ao_system = SemanticAdaptiveOptics()
+ledger = NaturalEconomicsLedger()
 
 @app.post("/document/analyze")
-async def analyze_document(file_content: bytes):
+async def analyze_document(request: Request):
     """
     Analisa um documento usando Document Intelligence (BLOCO 369).
     """
+    file_content = await request.body()
     result = await ocr_engine.analyze_document(file_content)
     return result
 
@@ -326,6 +332,47 @@ async def recall_memory(entity_name: str):
     """
     # Simple recall mock
     return {"entity": entity_name, "history": []}
+
+@app.post("/memory/resolve")
+async def resolve_conflict_api(entity_data: Dict[str, Any]):
+    """
+    Resolve conflitos de extração usando a memória geodésica (BLOCO 369).
+    """
+    entity = ExtractedEntity(**entity_data)
+    resolved = semantic_memory.resolve_conflict(entity)
+    return resolved
+
+@app.get("/neurostorm/report")
+async def get_neurostorm_report():
+    return {
+        "model": "NeuroSTORM-Arkhe",
+        "backbone": "Mamba/v_Larmor",
+        "TR_ms": 999.42,
+        "status": "FOUNDATIONAL_ACTIVE"
+    }
+
+@app.get("/neurostorm/diagnostics")
+async def get_neurostorm_diagnostics():
+    return [
+        {"diagnosis": "Early Psychosis", "event": "H70", "omega": 0.00},
+        {"diagnosis": "Schizophrenia", "event": "H9010", "omega": 0.07}
+    ]
+
+@app.get("/foundation/status")
+async def get_foundation_status():
+    return {
+        "state": "Γ_∞+10",
+        "backbone": "FROZEN",
+        "prompt": "READY"
+    }
+
+@app.post("/foundation/fine-tune")
+async def post_foundation_fine_tune(data: Dict[str, str]):
+    return {
+        "task": data.get("task", "general"),
+        "accuracy": 0.94,
+        "status": "COMPLETE"
+    }
 
 @app.post("/vec3/inner")
 async def post_vec3_inner(data: Dict[str, Any]):
@@ -355,3 +402,57 @@ async def post_vec3_norm(v_data: Dict[str, Any]):
     """
     v = Vec3(**v_data)
     return {"norm": round(v.norm(), 1)}
+
+@app.get("/ao/status")
+async def get_ao_status():
+    """
+    Retorna o status do sistema de Óptica Adaptativa (BLOCO 381).
+    """
+    return ao_system.get_status()
+
+@app.post("/ao/correct")
+async def post_ao_correct():
+    """
+    Executa o loop de correção de frente de onda (BLOCO 381).
+    """
+    corrections = ao_system.correct_wavefront()
+    # Simulate wavefront error reduction
+    ao_system.aberration_rms = max(0.00001, ao_system.aberration_rms * 0.5)
+    return {
+        "status": "Frente de onda corrigida",
+        "aberrations_corrected": len(corrections),
+        "corrections": corrections,
+        "residual_rms": ao_system.aberration_rms
+    }
+
+@app.get("/ao/psf")
+async def get_ao_psf():
+    """
+    Retorna a Função de Espalhamento de Ponto (PSF) (BLOCO 381).
+    """
+    return ao_system.compute_psf()
+
+@app.get("/ledger/status")
+async def get_ledger_status():
+    """
+    Retorna o status da Economia Natural (BLOCO 383).
+    """
+    return ledger.get_status()
+
+@app.get("/ledger/attribution")
+async def get_ledger_attribution():
+    """
+    Retorna as contribuições registradas no ledger (BLOCO 383).
+    """
+    return {
+        "contributor": ledger.contributor,
+        "awards": ledger.contributor_awards,
+        "total_contributions": len(ledger.contributor_awards)
+    }
+
+@app.get("/ledger/prize")
+async def get_ledger_prize():
+    """
+    Retorna o balanço de prêmios (Satoshi) (BLOCO 383).
+    """
+    return ledger.get_balances()

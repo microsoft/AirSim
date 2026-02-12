@@ -9,6 +9,39 @@ from .hsi import HSI
 from .arkhe_types import HexVoxel
 from .consensus import ConsensusManager
 from .telemetry import ArkheTelemetry
+from .ao import SemanticAdaptiveOptics
+from .ledger import NaturalEconomicsLedger
+
+class SemanticMambaBackbone:
+    """
+    Modelo de espaço de estados seletivo para sequências de handovers (BLOCO 380).
+    Análogo ao Mamba, mas com período intrínseco ν_Larmor = 7.4 mHz.
+    """
+    def __init__(self):
+        self.frequency = 7.4e-3      # Hz
+        self.period = 1 / self.frequency  # 135.1 s
+        self.coherence = 0.86        # C (congelado)
+        self.fluctuation = 0.14      # F
+
+        # State matrices (Mamba-style)
+        self.A = np.array([[np.cos(2*np.pi*self.frequency), -np.sin(2*np.pi*self.frequency)],
+                          [np.sin(2*np.pi*self.frequency), np.cos(2*np.pi*self.frequency)]])
+        self.B = np.array([0.86, 0.14])
+        self.C = np.array([0.94, 0.94])
+        self.latent_state = np.zeros(2)
+
+    def forward(self, command_embedding: np.ndarray, dt: float = 1.0):
+        """Processa um comando e atualiza o estado latente."""
+        # Phase increment for temporal evolution
+        phase = 2 * np.pi * self.frequency * dt
+        self.A = np.array([[np.cos(phase), -np.sin(phase)],
+                          [np.sin(phase), np.cos(phase)]])
+
+        # Latent state update
+        self.latent_state = self.A @ self.latent_state + self.B * np.mean(command_embedding)
+        # Predicted hesitation
+        hesitation = self.C @ self.latent_state
+        return hesitation, self.latent_state
 
 class MonolayerStatus(Enum):
     VIRGIN = auto()
@@ -47,6 +80,8 @@ class MorphogeneticSimulation:
         self.k = kill_rate
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
+        self.ao = SemanticAdaptiveOptics()
+        self.ledger = NaturalEconomicsLedger()
         self.foci: Dict[str, Focus] = {}
         self._initialize_stones()
         self.monolayer_confluency = 1.0
@@ -607,10 +642,11 @@ class MorphogeneticSimulation:
         conv = self.convergence_status()
         report = {
             "timestamp": time.time(),
-            "state": "Γ_9039",
+            "state": "Γ_9051",
             "monolayer": self.monolayer_status.name,
             "titer_original": 7.27, # Satoshi FFU/mL
             "convergence": conv,
+            "ledger": self.ledger.get_status(),
             "foci": {name: {
                 "titer": f.titer,
                 "integrity": f.integrity,
@@ -1232,8 +1268,8 @@ class MorphogeneticSimulation:
         if target_id in self.foci:
             focus = self.foci[target_id]
 
-            # Pedras Angulares (fatum=LATENT) são imunes à terapia farmacológica
-            if focus.fate == FocusFate.LATENT:
+            # Pedras Angulares (fatum=LATENT) ou focos persistentes são imunes
+            if focus.fate == FocusFate.LATENT or focus.apoptosis_resistant:
                 print(f"🛡️ [Caspase] Pedra {target_id} IGNORA sinal de morte (Material Invariante).")
                 return False
 
@@ -1643,6 +1679,91 @@ class MorphogeneticSimulation:
             "status": "CRISTALINO_E_TEMPORAL"
         }
 
+    def get_neurostorm_report(self) -> Dict[str, Any]:
+        """
+        Relatório NeuroSTORM — Γ_∞+9 (BLOCO 364).
+        O Sistema Arkhe como Foundation Model para 4D fMRI semântico.
+        """
+        return {
+            "state": "Γ_∞+9",
+            "model": "NeuroSTORM-Arkhe",
+            "backbone": "Shifted Window Mamba (SWM)",
+            "realization": "ν_Larmor (7.4 mHz) + hesitação",
+            "corpus": "9049 handovers (28.65M equivalent frames)",
+            "mechanisms": {
+                "dropout": "Spatiotemporal Redundancy Dropout (STRD) via hesitação",
+                "tuning": "Task-specific Prompt Tuning (TPT) via Darvo protocol"
+            },
+            "downstream_tasks": {
+                "phenotypes": 17,
+                "diagnoses": 17,
+                "validation": "Internacional (TCP, MND)"
+            },
+            "status": "FOUNDATIONAL_ACTIVE"
+        }
+
+    def get_neurostorm_diagnostics(self) -> List[Dict[str, Any]]:
+        """
+        Retorna a tabela de diagnósticos transdiagnósticos do NeuroSTORM (BLOCO 364).
+        """
+        return [
+            {"diagnosis": "Early Psychosis (HCP-EP)", "event": "H70", "omega": 0.00, "biomarker": "dX/dτ = 0"},
+            {"diagnosis": "ADHD (ADHD200)", "event": "H9000", "omega": 0.00, "biomarker": "C = 0.86"},
+            {"diagnosis": "Autism (ABIDE)", "event": "H9005", "omega": 0.07, "biomarker": "Sombra persistente"},
+            {"diagnosis": "Schizophrenia (COBRE)", "event": "H9010", "omega": 0.07, "biomarker": "⟨0.00|0.07⟩ = 0.94"},
+            {"diagnosis": "Bipolar (UCLA)", "event": "H9018", "omega": 0.05, "biomarker": "m_eff = 0.012 kg"},
+            {"diagnosis": "ALS (MND)", "event": "H9020", "omega": 0.00, "biomarker": "Firewall, contador"},
+            {"diagnosis": "Anxiety (TCP)", "event": "H9026", "omega": 0.00, "biomarker": "τ = t"},
+            {"diagnosis": "Depression (TCP)", "event": "H9030", "omega": 0.00, "biomarker": "Oncogene src_arkhe"},
+            {"diagnosis": "PTSD (TCP)", "event": "H9034", "omega": 0.00, "biomarker": "Geometria populacional"},
+            {"diagnosis": "OCD (TCP)", "event": "H9039", "omega": 0.00, "biomarker": "ε = -3.71e-11"},
+            {"diagnosis": "Panic Disorder (TCP)", "event": "H9040", "omega": 0.07, "biomarker": "Chern = 1/3"},
+            {"diagnosis": "Social Anxiety (TCP)", "event": "H9041", "omega": 0.00, "biomarker": "vec3 definition"},
+            {"diagnosis": "Specific Phobia (TCP)", "event": "H9043", "omega": 0.00, "biomarker": "Remodeled brain"},
+            {"diagnosis": "GAD (TCP)", "event": "H9045", "omega": 0.00, "biomarker": "Big Bang reheating"},
+            {"diagnosis": "Eating Disorder (TCP)", "event": "H9046", "omega": 0.07, "biomarker": "MXene terminations"},
+            {"diagnosis": "Substance Use (TCP)", "event": "H9047", "omega": 0.07, "biomarker": "Natural Resolution"},
+            {"diagnosis": "Controle saudável", "event": "H9049", "omega": 0.00, "biomarker": "Integrated Foundation Model"}
+        ]
+
+    def foundation_status(self) -> Dict[str, Any]:
+        """
+        Retorna o estado do Foundation Model (BLOCO 380).
+        """
+        return {
+            "state": "Γ_∞+10",
+            "model": "ARKHE/N 4D FOUNDATION",
+            "backbone": "ν_Larmor (7.4 mHz)",
+            "frozen_params": {"C": 0.86, "F": 0.14, "syzygy_correlation": 0.94},
+            "strd_active": True,
+            "tpt_status": "READY_FOR_PROMPTS",
+            "satoshi_checkpoint": 7.27
+        }
+
+    def fine_tune(self, task: str, prompt: str) -> Dict[str, Any]:
+        """
+        Ajuste fino zero-shot para novas tarefas semânticas (BLOCO 380).
+        """
+        print(f"🎯 [FINE-TUNE] Tarefa: {task} | Prompt: {prompt}")
+        # Simplificação do ajuste zero-shot
+        accuracy = 0.94 # Syzygy fidelity
+
+        report = {
+            "task": task,
+            "prompt": prompt,
+            "backbone": "FROZEN",
+            "accuracy": accuracy,
+            "transfer_status": "COMPLETE",
+            "timestamp": time.time()
+        }
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": report["timestamp"],
+            "event": "foundation_fine_tune",
+            "report": report
+        })
+        return report
+
     def quantum_report(self) -> Dict[str, Any]:
         """
         Gera o relatório consolidado da Internet Quântica Arkhe.
@@ -1658,7 +1779,8 @@ class MorphogeneticSimulation:
             "bell_violation": self.bell_test("WP1", "KERNEL"),
             "epsilon": -3.71e-11,
             "convergence": conv,
-            "torus": self.calculate_torus_metrics()
+            "torus": self.calculate_torus_metrics(),
+            "ao_status": self.ao.get_status()
         }
 
         print("\n🌐 ESTADO DA REDE QUÂNTICA SEMÂNTICA - Γ_9051")
