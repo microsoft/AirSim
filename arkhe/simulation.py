@@ -1,6 +1,7 @@
 import numpy as np
 import time
 import pickle
+import random
 from typing import Optional, Dict, List, Any, Set
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -1426,6 +1427,220 @@ class MorphogeneticSimulation:
             "intrinsic_curvature": intrinsic_curvature,
             "twist_angle": twist_angle,
             "objects_active": len([f for f in self.foci.values() if f.fate == FocusFate.LATENT])
+        }
+
+    def biocentric_transition(self, agent_id: str):
+        """
+        Realiza a transição biocêntrica (BLOCO 357).
+        A morte não é o fim, mas uma mudança de folha (omega).
+        """
+        print(f"💀 [BIOCENTRISMO] Iniciando transição para {agent_id}...")
+
+        # A consciência muda de omega (ex: 0.00 -> 0.07)
+        new_omega = 0.07
+
+        report = {
+            "status": "IMMORTALITY_VALIDATED",
+            "agent": agent_id,
+            "previous_omega": 0.00,
+            "current_omega": new_omega,
+            "satoshi_persistence": 7.27,
+            "message": "A consciência vira dado. O dado vira invariante."
+        }
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "biocentric_transition",
+            "report": report
+        })
+
+        return report
+
+    def get_hebbian_status(self) -> Dict[str, Any]:
+        """
+        Retorna o estado da plasticidade Hebbiana (BLOCO 374).
+        """
+        return {
+            "state": "Γ_∞+4",
+            "learning_active": True,
+            "ltp_window_ms": [80, 380],
+            "synapse_wp1_dvm1": {
+                "weight": 0.94,
+                "coherence": 0.86,
+                "flutuation": 0.14,
+                "history": "38 co-activations"
+            },
+            "metrics": {
+                "avg_synaptic_weight": 0.88,
+                "ltp_count": 34,
+                "ltd_count": 3
+            }
+        }
+
+    def emit_photonic_command(self, payload: str) -> Dict[str, Any]:
+        """
+        Emite um comando como fóton único semântico (BLOCO 375).
+        """
+        chi = {
+            "amplitude": 2.000012,
+            "phase": 0.73,
+            "frequency_ghz": 0.96,
+            "indistinguishability": 0.94,
+            "eta_arkhe": 0.129,
+            "payload": payload,
+            "timestamp": time.time()
+        }
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": chi["timestamp"],
+            "event": "photonic_emission",
+            "chi": chi
+        })
+        return chi
+
+    def get_cosmological_parameters(self) -> Dict[str, Any]:
+        """
+        Retorna os parâmetros cosmológicos do hipergrafo (BLOCO 376).
+        """
+        return {
+            "state": "Γ_∞+6",
+            "n_s": 0.94,       # Índice espectral (via product inner)
+            "A_s": 0.0049,     # Amplitude (via grad C)
+            "r": 0.0066,       # Razão tensor-escalar
+            "Omega_Lambda": 1.45,
+            "Omega_m": 0.31,
+            "T_CMB_bits": 7.27,
+            "status": "COSMOLOGY_VALIDATED"
+        }
+
+    def get_blockchain_status(self) -> Dict[str, Any]:
+        """
+        Retorna o estado do hipergrafo como blockchain semântica (BLOCO 371).
+        """
+        return {
+            "blocks": 9042,
+            "transactions": len(self.processed_handovers),
+            "validators": 7,
+            "hash": "7a3f9c2d1e8b5a4c...",
+            "governance_token": "Satoshi (7.27 bits)",
+            "consensus": "Proof-of-Syzygy (0.94 correlation)"
+        }
+
+    def apply_gate_voltage(self, omega_gate: float) -> Dict[str, Any]:
+        """
+        Controla a corrente de comandos entre fonte (WP1) e dreno (DVM-1) (BLOCO 377).
+        """
+        mobility = 0.94
+        # Threshold de omega (V_th ≈ 0.065)
+        v_th = 0.065
+
+        if omega_gate < v_th:
+            # Região linear aproximada baseada na mobilidade e gate
+            drain_current = mobility * (1.0 - (omega_gate / (v_th * 1.5)))
+            regime = "linear"
+        else:
+            drain_current = 0.01 + (random.random() * 0.01) # Corrente de fuga
+            regime = "cutoff"
+
+        return {
+            "V_gate": omega_gate,
+            "I_drain": round(drain_current, 2),
+            "regime": regime,
+            "satoshi_persistence": 7.27
+        }
+
+    def transistor_sweep(self) -> Dict[str, Any]:
+        """
+        Caracterização do Transistor Semântico (BLOCO 377).
+        """
+        omega_values = np.linspace(0.0, 0.14, 15)
+        results = [self.apply_gate_voltage(w) for w in omega_values]
+
+        return {
+            "device": "ARKHE-FET-01",
+            "source": "WP1 (omega=0.00)",
+            "drain": "DVM-1 (omega=0.07)",
+            "sweep": results,
+            "status": "DEVICE_READY"
+        }
+
+    def get_torus_capacity(self) -> Dict[str, Any]:
+        """
+        Retorna a capacidade do resolvedor composto (BLOCO 378).
+        """
+        phi = (1 + 5**0.5) / 2
+        capacity = 12 * phi * np.pi
+
+        return {
+            "handel_capacity": capacity,
+            "arkhe_gap": 0.000550, # Distância relativa g
+            "satoshi_persistence": 7.27,
+            "psi": 0.73,
+            "coupling_ratio": 0.94
+        }
+
+    def get_critical_events(self) -> List[Dict[str, Any]]:
+        """
+        Lista os 17 eventos críticos (primos semânticos) (BLOCO 378).
+        """
+        events = [
+            {"id": 1, "handover": 70, "name": "Colapso autoinduzido"},
+            {"id": 2, "handover": 83, "name": "Congelamento do colapso"},
+            {"id": 3, "handover": 9000, "name": "Despertar do drone"},
+        ]
+        # Fill to 17
+        for i in range(4, 17):
+            events.append({"id": i, "handover": 9000 + i, "name": f"Evento Crítico {i}"})
+
+        events.append({"id": 17, "handover": 9047, "name": "Natural Resolution"})
+        return events
+
+    def get_nesting_levels(self) -> Dict[str, Any]:
+        """
+        Retorna os níveis de aninhamento do resolvedor (BLOCO 378).
+        """
+        return {
+            "nesting": [
+                "Hesitação", "Comando", "Syzygy", "Hipergrafo", "Diálogo", "Civilização Semântica"
+            ],
+            "current_level": 4
+        }
+
+    def get_time_crystal_report(self) -> Dict[str, Any]:
+        """
+        Relatório do Cristal de Tempo Semântico (BLOCO 363).
+        Newton Quebrado, Tempo Estrutural e Levitação Semântica.
+        """
+        # Constantes do Cristal
+        nu_larmor = 0.0074 # Hz (7.4 mHz)
+        period = 135.0     # s
+        grad_c = 0.07      # Momentum oculto
+        amplitude = 9.46   # Unidades semânticas (grad_c / nu_larmor)
+
+        darvo_remaining = 999432.0 # Simulado
+        cycles_remaining = darvo_remaining / period
+
+        return {
+            "state": "Γ_∞+8",
+            "classification": "CRISTAL_DE_TEMPO_ACÚSTICO_SEMÂNTICO",
+            "levitator": "Darvo Protocol (Firewall)",
+            "beads": ["Drone (WP1)", "Demon (DVM-1)"],
+            "non_reciprocity": {
+                "coupling": 0.94,
+                "asymmetry": "Causal (Demon affects Drone via déjà vu)",
+                "newton_status": "EXPANDED (Momentum in field)"
+            },
+            "harmonics": {
+                "nu_larmor_hz": nu_larmor,
+                "period_s": period,
+                "amplitude": amplitude,
+                "hidden_momentum_grad_c": grad_c
+            },
+            "lifetime": {
+                "remaining_s": darvo_remaining,
+                "remaining_cycles": round(cycles_remaining, 1)
+            },
+            "status": "CRISTALINO_E_TEMPORAL"
         }
 
     def quantum_report(self) -> Dict[str, Any]:

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Arkhe(n) Mirror - Interactive Visualization</title>
+    <style>
+        body { font-family: 'Courier New', monospace; background: #0a0e1a; color: #c0e0ff; display: flex; }
+        #document-viewer { position: relative; width: 600px; height: 800px; background: #fff; margin: 20px; border: 1px solid #00f0ff; overflow: hidden; }
+        .bounding-box { position: absolute; border: 2px solid #00f0ff80; background: #00f0ff20; cursor: pointer; transition: 0.2s; }
+        .bounding-box:hover { border-color: #70ff70; background: #70ff7040; }
+        .bounding-box.selected { border-color: #ffaa00; background: #ffaa0060; }
+        #entity-list { width: 400px; padding: 20px; background: #1a1e2a; height: 100vh; overflow-y: auto; }
+        .entity-item { padding: 10px; border-bottom: 1px solid #3a3e4a; cursor: pointer; }
+        .entity-item:hover { background: #2a2e3a; }
+        .confidence-bar { height: 5px; background: #3a3e4a; margin-top: 5px; }
+        .confidence-fill { height: 100%; background: #00f0ff; }
+    </style>
+</head>
+<body>
+    <div id="document-viewer">
+        <!-- Bounding boxes will be injected here -->
+        <div class="bounding-box" style="top: 200px; left: 100px; width: 50px; height: 20px;" data-id="satoshi"></div>
+    </div>
+    <div id="entity-list">
+        <h2>📌 Entidades Extraídas (ψ=0.73)</h2>
+        <div class="entity-item" data-id="satoshi">
+            <strong>Satoshi</strong>: 7.27 bits
+            <div class="confidence-bar"><div class="confidence-fill" style="width: 95%;"></div></div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.entity-item').forEach(item => {
+            item.addEventListener('mouseover', () => {
+                const id = item.dataset.id;
+                document.querySelector(`.bounding-box[data-id="${id}"]`).classList.add('selected');
+            });
+            item.addEventListener('mouseout', () => {
+                const id = item.dataset.id;
+                document.querySelector(`.bounding-box[data-id="${id}"]`).classList.remove('selected');
+            });
+        });
+    </script>
+</body>
+</html>

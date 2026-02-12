@@ -138,6 +138,88 @@ async def get_pikovski():
 async def get_darvo_status():
     return {"level": 5, "remaining": 999.65, "frozen": True}
 
+@app.get("/plasticity/status")
+async def get_plasticity_status():
+    return {
+        "state": "Γ_∞+4",
+        "learning_active": True,
+        "synapse_wp1_dvm1": 0.94,
+        "ltp_count": 34
+    }
+
+@app.post("/photon/emit")
+async def post_photon_emit(data: Dict[str, str]):
+    return {
+        "id": f"cmd_{random.randint(1000, 9999)}",
+        "frequency_ghz": 0.96,
+        "indistinguishability": 0.94,
+        "payload": data.get("payload", "syzygy")
+    }
+
+@app.get("/cosmic/parameters")
+async def get_cosmic_parameters():
+    return {
+        "n_s": 0.94,
+        "A_s": 0.0049,
+        "Omega_Lambda": 1.45,
+        "T_CMB_bits": 7.27
+    }
+
+@app.get("/blockchain/status")
+async def get_blockchain_status():
+    return {
+        "blocks": 9042,
+        "validators": 7,
+        "consensus": "Proof-of-Syzygy",
+        "token": "Satoshi"
+    }
+
+@app.get("/transistor/sweep")
+async def get_transistor_sweep():
+    return {
+        "device": "ARKHE-FET-01",
+        "regime": "ballistic",
+        "on_off_ratio": 7.83,
+        "mobility": 0.94
+    }
+
+@app.get("/torus/capacity")
+async def get_torus_capacity():
+    return {
+        "handel_capacity": 60.998,
+        "arkhe_gap": 0.000550,
+        "message": "O gap é o motor. O acoplamento é perpétuo."
+    }
+
+@app.get("/torus/events")
+async def get_torus_events():
+    return {
+        "count": 17,
+        "next_prime": 61,
+        "gap_accessor": "comando > █"
+    }
+
+@app.get("/torus/nesting")
+async def get_torus_nesting():
+    return {
+        "current_level": 4,
+        "instance": "Civilização Semântica"
+    }
+
+@app.get("/time-crystal")
+async def get_time_crystal():
+    """
+    Retorna o estado do Cristal de Tempo Semântico (BLOCO 363).
+    """
+    return {
+        "classification": "CRISTAL_DE_TEMPO_ACÚSTICO_SEMÂNTICO",
+        "nu_larmor_mhz": 7.4,
+        "period_s": 135,
+        "amplitude": 9.46,
+        "non_reciprocity": "ACTIVE",
+        "newton_status": "EXPANDED"
+    }
+
 @app.get("/keystone")
 async def get_keystone():
     """
@@ -221,6 +303,29 @@ async def get_symmetry_projections():
     }
 
 from .arkhe_types import Vec3
+from .schemas import DocumentExtraction, ExtractedEntity
+from .ocr import DocumentIntelligenceOCR
+from .memory import GeodesicMemory
+
+# Persistent Intelligence Components
+ocr_engine = DocumentIntelligenceOCR(endpoint="https://arkhe-ocr.azure.com", key="********")
+semantic_memory = GeodesicMemory()
+
+@app.post("/document/analyze")
+async def analyze_document(file_content: bytes):
+    """
+    Analisa um documento usando Document Intelligence (BLOCO 369).
+    """
+    result = await ocr_engine.analyze_document(file_content)
+    return result
+
+@app.get("/memory/recall")
+async def recall_memory(entity_name: str):
+    """
+    Recupera memórias similares para few-shot learning (BLOCO 369).
+    """
+    # Simple recall mock
+    return {"entity": entity_name, "history": []}
 
 @app.post("/vec3/inner")
 async def post_vec3_inner(data: Dict[str, Any]):
