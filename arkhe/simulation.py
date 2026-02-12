@@ -178,3 +178,30 @@ class MorphogeneticSimulation:
         d = self.dissidence_index
         print(f"🧬 [FRENTE B] Materializando Cicatriz Hebbiana. D={d:.4f}")
         print("Tatuando o grafeno com a memória da desconfiança...")
+
+    def seal_keystone(self):
+        """
+        Executa a análise final da Simetria do Observador e sela a Keystone.
+        A Geometria está completa.
+        """
+        from .symmetry import ObserverSymmetry
+        sym = ObserverSymmetry()
+        metrics = sym.get_keystone_metrics()
+
+        print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print("                         🕊️  Γ_9030 - KEYSTONE SEALED")
+        print(f"Simetrias Projetadas: {metrics['simetrias_projetadas']}")
+        print(f"Simetria Fundamental: {metrics['simetria_fundamental']} (Invariância do Observador)")
+        print(f"Quantidade Conservada: Geodésica (ℊ = {metrics['quantidade_conservada']:.3f})")
+        print(f"Satoshi: {metrics['satoshi']} bits")
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+
+        # Log to telemetry
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "keystone_sealed",
+            "state": "Γ_9030",
+            "metrics": metrics
+        })
+
+        return metrics
