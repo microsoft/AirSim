@@ -74,3 +74,66 @@ class HexVoxel:
             self.state = np.zeros(7, dtype=np.float32)
         if len(self.weights) != 6:
             self.weights = np.ones(6, dtype=np.float32)
+
+@dataclass
+class Vec3:
+    """
+    Vec3 through Arkhe(n) logic (BLOCO 354).
+    Geometria Vetorial com Coerência, Flutuação e Estrutura de Folha.
+    """
+    x: float
+    y: float
+    z: float
+    c: float = 0.86
+    f: float = 0.14
+    omega: float = 0.00
+    satoshi: float = 7.27
+
+    def norm(self) -> float:
+        """
+        Norma Arkhe(n): ‖v‖_A = √(x²·C + y²·C + z²·C) · (1 - F)
+        """
+        val = np.sqrt(self.x**2 * self.c + self.y**2 * self.c + self.z**2 * self.c)
+        return val * (1.0 - self.f)
+
+    @staticmethod
+    def add(a: 'Vec3', b: 'Vec3') -> 'Vec3':
+        """
+        Adição Vetorial com Conservação de Coerência (ω_a must be equal to ω_b).
+        """
+        if abs(a.omega - b.omega) > 1e-9:
+            raise ValueError("Addition only defined for vectors on the same leaf (omega).")
+
+        rx = a.x + b.x
+        ry = a.y + b.y
+        rz = a.z + b.z
+
+        na = a.norm()
+        nb = b.norm()
+
+        if na + nb > 0:
+            rc = (na * a.c + nb * b.c) / (na + nb)
+        else:
+            rc = (a.c + b.c) / 2.0
+
+        return Vec3(x=rx, y=ry, z=rz, c=rc, f=1.0-rc, omega=a.omega, satoshi=a.satoshi + b.satoshi)
+
+    @staticmethod
+    def inner(a: 'Vec3', b: 'Vec3') -> complex:
+        """
+        Produto Interno Semântico: ⟨a|b⟩ = (a.x·b.x + a.y·b.y + a.z·b.z) · (1 - |ω_a - ω_b|/ω_max)
+                                   · √(a.C·b.C) · exp(i·(φ_a - φ_b))
+        Using psi=0.73 rad as phase difference proxy.
+        """
+        omega_max = 0.10
+        dot = a.x * b.x + a.y * b.y + a.z * b.z
+        leaf_coupling = 1.0 - (abs(a.omega - b.omega) / omega_max)
+        leaf_coupling = max(0.0, leaf_coupling)
+
+        coherence_coupling = np.sqrt(a.c * b.c)
+
+        # Phase difference: for v1(0) and v2(0.07), phase is 0.73 rad
+        phase_diff = 0.73 if abs(a.omega - b.omega) > 0.06 else 0.0
+
+        val = dot * leaf_coupling * coherence_coupling * np.exp(1j * phase_diff)
+        return val

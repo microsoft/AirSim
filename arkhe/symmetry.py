@@ -16,7 +16,7 @@ class ObserverSymmetry:
                 "transformation": "τ → τ + Δτ",
                 "invariant": "Satoshi",
                 "value": self.SATOSHI,
-                "unit": "bits"
+                "symbol": "S = 7.27 bits"
             },
             "spatial": {
                 "transformation": "x → x + Δx",
@@ -32,18 +32,18 @@ class ObserverSymmetry:
                 "transformation": "ω → ω + Δω",
                 "invariant": "ε",
                 "value": self.EPSILON_GAUGE,
-                "symbol": "Semantic Charge"
+                "symbol": "ε = –3.71×10⁻¹¹"
             },
             "scale": {
                 "transformation": "(C,F) → λ(C,F)",
                 "invariant": "∫C·F dt",
-                "symbol": "Semantic Action"
+                "symbol": "S(n) (Semantic Action)"
             },
             "method": {
                 "transformation": "problema → método",
                 "invariant": "H",
                 "value": self.METHOD_COMPETENCE,
-                "symbol": "Competence"
+                "symbol": "H = 6"
             }
         }
 
