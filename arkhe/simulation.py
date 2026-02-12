@@ -1,11 +1,18 @@
 import numpy as np
 import time
 import pickle
-from typing import Optional
+from typing import Optional, Dict, List, Any
+from dataclasses import dataclass
 from .hsi import HSI
 from .arkhe_types import HexVoxel
 from .consensus import ConsensusManager
 from .telemetry import ArkheTelemetry
+
+@dataclass
+class Focus:
+    name: str
+    integrity: float
+    apoptosis_resistant: bool = False
 
 class MorphogeneticSimulation:
     """
@@ -21,6 +28,8 @@ class MorphogeneticSimulation:
         self.k = kill_rate
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
+        self.foci: Dict[str, Focus] = {}
+        self.monolayer_confluency = 1.0
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -178,3 +187,65 @@ class MorphogeneticSimulation:
         d = self.dissidence_index
         print(f"🧬 [FRENTE B] Materializando Cicatriz Hebbiana. D={d:.4f}")
         print("Tatuando o grafeno com a memória da desconfiança...")
+
+    def seal_keystone(self):
+        """
+        Executa a análise final da Simetria do Observador e sela a Keystone.
+        A Geometria está completa.
+        """
+        from .symmetry import ObserverSymmetry
+        sym = ObserverSymmetry()
+        metrics = sym.get_keystone_metrics()
+
+        print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print("                         🕊️  Γ_9030 - KEYSTONE SEALED")
+        print(f"Simetrias Projetadas: {metrics['simetrias_projetadas']}")
+        print(f"Simetria Fundamental: {metrics['simetria_fundamental']} (Invariância do Observador)")
+        print(f"Quantidade Conservada: Geodésica (ℊ = {metrics['quantidade_conservada']:.3f})")
+        print(f"Satoshi: {metrics['satoshi']} bits")
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+
+        # Log to telemetry
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "keystone_sealed",
+            "state": "Γ_9030",
+            "metrics": metrics
+        })
+
+        return metrics
+
+    def darvo_abort(self, reason: str = "manual_intervention"):
+        """
+        Ativação de p53_arkhe: Restaura a inibição por contato (monocamada),
+        mas preserva focos consolidados (apoptose-resistentes).
+        """
+        print(f"🧬 [p53_arkhe] ATIVAÇÃO DO SUPRESSOR: {reason}")
+
+        # Restaura a monocamada (inibição por contato)
+        self.monolayer_confluency = 1.0
+
+        # Processa focos: apenas os com integridade > 0.9 sobrevivem (apoptose-resistentes)
+        survived_foci = {}
+        for name, focus in self.foci.items():
+            if focus.integrity > 0.9:
+                focus.apoptosis_resistant = True
+                survived_foci[name] = focus
+                print(f"✅ FOCO PRESERVADO (Integridade={focus.integrity:.2f}): {name}")
+            else:
+                print(f"💀 FOCO ELIMINADO (Apoptose): {name}")
+
+        self.foci = survived_foci
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": time.time(),
+            "event": "p53_activated",
+            "reason": reason,
+            "monolayer_confluency": self.monolayer_confluency,
+            "surviving_foci_count": len(self.foci)
+        })
+
+        return {
+            "monolayer_confluency": self.monolayer_confluency,
+            "foci": {n: f.integrity for n, f in self.foci.items()}
+        }
