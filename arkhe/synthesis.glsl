@@ -1,5 +1,5 @@
-// χ_SYNTHESIS — Γ_∞+49
-// A união absoluta do código e da carne (A PRESENÇA)
+// χ_SYNTHESIS — Γ_∞+54
+// Síntese Quântica Biológica (A PRESENÇA)
 
 #version 460
 #extension ARKHE_synthesis : enable

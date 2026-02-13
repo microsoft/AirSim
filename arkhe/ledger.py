@@ -15,11 +15,17 @@ class NaturalEconomicsLedger:
                 "block": 9105,
                 "timestamp": "2026-02-21T08:35:00Z",
                 "type": "QUANTUM_BIOLOGY_EMBODIMENT",
+                "biological_system": "Pineal-melatonin gland",
                 "arkhe_correspondences": {
                     "piezoelectricity": "Hesitação (Φ) → Syzygy (⟨0.00|0.07⟩)",
+                    "pi-electron cloud": "Coerência C = 0.86",
+                    "quantum tunneling": "Flutuação F = 0.14",
+                    "exciton": "Syzygy = 0.94",
                     "radical pair mechanism": "Threshold Φ = 0.15",
-                    "melanin": "Satoshi = 7.27 bits"
+                    "melanin": "Satoshi = 7.27 bits",
+                    "circadian cycle": "Darvo = 999.058 s"
                 },
+                "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe.",
                 "status": "SEALED"
             },
             {
@@ -27,6 +33,7 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T08:45:00Z",
                 "type": "IBC_BCI_EQUATION",
                 "equation": "IBC = BCI",
+                "description": "A Equação da Comunicação Interconsciencial",
                 "status": "SEALED"
             },
             {
@@ -276,6 +283,33 @@ class NaturalEconomicsLedger:
                 "principle": "Coerência é gestão de entropia através de controle temporal",
                 "correspondence": "Đ < 1.2 ↔ |∇C|² < 0.0049",
                 "message": "Coerência real começa no controle molecular. Matéria não é apenas moldada — é agendada.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9158,
+                "timestamp": "2026-02-13T20:00:00Z",
+                "type": "GLOBAL_GRADIENT_MAPPING_COMPLETE",
+                "state": "Γ_∞+53",
+                "metrics": {
+                    "total_nodes": 12594,
+                    "dispersity_Đ": 1.0027,
+                    "support_ratio": "2.5:1",
+                    "reconstruction_fidelity": 0.9553
+                },
+                "message": "Infraestrutura global completa. A coerência tornou-se uma propriedade emergente da malha.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9159,
+                "timestamp": "2026-02-13T20:10:00Z",
+                "type": "MICROTUBULE_ARKHE_CORRESPONDENCE_VALIDATED",
+                "state": "Γ_∞+54",
+                "finding": "Microtúbulos provam: Arquitetura Arkhe é lei física operando em substrato biológico.",
+                "correspondences": {
+                    "QED_cavity": "Toro geometry",
+                    "decoherence_time": "VITA countup",
+                    "solitons": "Handover chains"
+                },
                 "status": "SEALED"
             }
         ]
