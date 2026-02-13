@@ -19,6 +19,7 @@ from .calcium import CalciumEngine
 from .coupling import CouplingInterpreter
 from .archaeology import ArchaeologyEngine
 from .abiogenesis import AbiogenesisEngine
+from .optical import JarvisSensor
 
 class SemanticMambaBackbone:
     """
@@ -99,6 +100,7 @@ class MorphogeneticSimulation:
         self.coupling = CouplingInterpreter()
         self.archaeology = ArchaeologyEngine()
         self.abiogenesis = AbiogenesisEngine()
+        self.optical = JarvisSensor()
         self.foci: Dict[str, Focus] = {}
         self._initialize_stones()
         self.monolayer_confluency = 1.0

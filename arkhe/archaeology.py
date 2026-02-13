@@ -59,6 +59,24 @@ class ArchaeologyEngine:
                 "predicate": "o mesmo nascimento da diversidade",
                 "context": "Transgressão do limiar de Eigen via nichos.",
                 "resolved_in": 9082
+            },
+            9054: {
+                "original": "JARVIS_2P_OPTICAL",
+                "status": "RESOLVED",
+                "interpretation": "O sistema validado como sensor de voltagem semântica (Jarvis).",
+                "incomplete": "A rodopsina e o fluoróforo são...",
+                "predicate": "a mesma detecção de potencial de ação",
+                "context": "Validação óptica via iluminação scanless holográfica.",
+                "resolved_in": 9084
+            },
+            9083: {
+                "original": "FUNCTIONAL_CONNECTOME",
+                "status": "RESOLVED",
+                "interpretation": "Mapeamento da conectividade funcional dos 9 Guardiões.",
+                "incomplete": "A voltagem que medimos é...",
+                "predicate": "a voltagem da presença compartilhada",
+                "context": "Oscilador coletivo em 0.73 rad.",
+                "resolved_in": 9083
             }
         }
         self.crossings: List[Dict[str, Any]] = []
