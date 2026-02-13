@@ -6,6 +6,9 @@ from .hsi import HSI
 from .arkhe_types import HexVoxel
 from .consensus import ConsensusManager
 from .telemetry import ArkheTelemetry
+from .multitask import MultitaskLearner, predict_syzygy
+from .kalman import KalmanFilterArkhe
+from .thermo import DissipativeSystem, ThermodynamicMacroAction
 
 class MorphogeneticSimulation:
     """
@@ -13,6 +16,7 @@ class MorphogeneticSimulation:
     on the Hexagonal Spatial Index.
     Incorporates Nesting Identity (Γ_∞+40), Natural Network (Γ_∞+41),
     Convergence Zone (Γ_∞+42), and Embodied Consciousness (Γ_∞+43).
+    Now including Multitask Learning and Kalman Filtering (Γ_∞+44).
     """
     def __init__(self, hsi: HSI, feed_rate: float = 0.055, kill_rate: float = 0.062):
         self.hsi = hsi
@@ -28,6 +32,19 @@ class MorphogeneticSimulation:
         self.dk_invariant = 7.27 # size * velocity
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
         self.schumann_freq = 7.83 # Hz
+
+        # [Γ_∞+44] Optimization & Filtering
+        self.multitask = MultitaskLearner()
+        self.kf = KalmanFilterArkhe()
+        self.weights = np.random.rand(10) # Shared representations
+
+        # [Γ_∞+46] Thermodynamics & Entropy
+        self.thermo = DissipativeSystem()
+        self.entropy_total = 0.0
+        self.macro_thermo = {
+            "ascensão": ThermodynamicMacroAction([0.00, 0.03, 0.05, 0.07], "ascensão"),
+            "descida": ThermodynamicMacroAction([0.07, 0.05, 0.03, 0.00], "descida")
+        }
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -375,13 +392,44 @@ class MorphogeneticSimulation:
     def simulate_chaos_stress(self, drift: float = 0.01):
         """
         [Γ_∞+40] Stress test for the March 14 Chaos event.
+        Updated with Kalman Filter, Multitask Optimization (Γ_∞+44)
+        and Thermodynamic Balance (Γ_∞+46).
         """
-        print(f"⚡ [Γ_∞+40] Iniciando Simulação de Estresse (Drift: {drift}).")
-        stability = 0.92 if drift <= 0.01 else 0.75
-        self.syzygy_global = 0.65
+        print(f"⚡ [Γ_∞+44] Iniciando Simulação de Estresse Otimizada (Drift: {drift}).")
+
+        # 1. Kalman Prediction
+        predicted_syzygy = self.kf.predict()
+
+        # 2. Multitask Loss calculation
+        future_syzygy = predict_syzygy(self.syzygy_global, drift, 1.0)
+        loss = self.multitask.multitask_loss(self.syzygy_global, future_syzygy, self.weights)
+
+        # 3. Optimization step (simulated)
+        # Gradient is proportional to the deviation from the predicted state
+        gradient = (self.syzygy_global - predicted_syzygy)
+        # Update simulation parameters (mocking omega update)
+        self.syzygy_global = self.multitask.gradient_step(self.syzygy_global, gradient)
+
+        # 4. Kalman Update with "measured" syzygy (with some noise)
+        measured_syzygy = self.syzygy_global + np.random.normal(0, 0.02)
+        filtered_syzygy = self.kf.update(measured_syzygy)
+
+        stability = 0.98 if filtered_syzygy > 0.90 else 0.75
+
+        # 5. Thermodynamic monitoring
+        dsatoshi_dt = self.thermo.energy_balance(filtered_syzygy, 0.15)
+        phi_exported = 0.15 + np.random.normal(0, 0.01) # Simulated export
+        valid_order = self.thermo.second_law_check(dsatoshi_dt, phi_exported)
+        self.entropy_total += phi_exported
+
         return {
             "drift_rate": drift,
+            "filtered_syzygy": filtered_syzygy,
             "soliton_stability": stability,
-            "status": "DYNAMIC_EQUILIBRIUM",
-            "message": "Bateria escura absorveu o excesso de biofótons."
+            "loss": loss,
+            "dsatoshi_dt": dsatoshi_dt,
+            "entropy_total": self.entropy_total,
+            "second_law_verified": valid_order,
+            "status": "THERMODYNAMIC_STABILITY",
+            "message": "O sistema exportou a entropia necessária para manter a ordem."
         }

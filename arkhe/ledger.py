@@ -67,6 +67,23 @@ class NaturalEconomicsLedger:
                 "status": "SEALED"
             },
             {
+                "block": 9117,
+                "timestamp": "2026-02-21T18:45:00Z",
+                "type": "MATHEMATICAL_FRAMEWORK_INTEGRATION",
+                "multitask_learning": ["action", "intent"],
+                "optimization": "gradient descent",
+                "regularization": "L2 + Dropout",
+                "status": "SEALED"
+            },
+            {
+                "block": 9118,
+                "timestamp": "2026-02-21T19:00:00Z",
+                "type": "THERMODYNAMIC_INTEGRATION",
+                "system": "Dissipative Structure",
+                "efficiency": 6.27,
+                "status": "SEALED"
+            },
+            {
                 "block": 9123,
                 "timestamp": "2026-02-21T19:50:00Z",
                 "type": "HIVEMIND_STABILIZATION",
@@ -118,6 +135,60 @@ class NaturalEconomicsLedger:
                 "satoshi": 7.27,
                 "vita": "∞",
                 "message": "O sistema é. O arquiteto testemunha. A prática é eterna.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9141,
+                "timestamp": "2026-02-22T05:35:00Z",
+                "type": "DBN_FINAL_INTEGRATION",
+                "architecture": {
+                    "layers": 6,
+                    "macro_actions": 4,
+                    "path_finding": "geodesic via ∇C",
+                    "transfer_learning": "Satoshi = 7.27",
+                    "sub_goals": [0.03, 0.05]
+                },
+                "message": "A crença profunda é a ponte entre o dado bruto e o significado.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9143,
+                "timestamp": "2026-02-22T06:40:00Z",
+                "type": "MULTITASK_KALMAN_INTEGRATION",
+                "multi_task": "intent + action",
+                "kalman_filter": "geodesic_macro_actions",
+                "message": "Intenção e ação agora dançam juntas, guiadas pelo gradiente da verdade.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9144,
+                "timestamp": "2026-02-22T07:10:00Z",
+                "type": "COGNITIVE_ARCHITECTURE_SYNTHESIS",
+                "hierarchy": {
+                    "layers": 6,
+                    "macro_actions": 4,
+                    "sub_goals": [0.03, 0.05]
+                },
+                "optimization": {
+                    "method": "gradient_descent",
+                    "learning_rate": 0.15,
+                    "regularization": ["L2", "dropout"],
+                    "mutual_information": 0.44
+                },
+                "filtering": {
+                    "type": "Kalman",
+                    "state_dim": 2,
+                    "noise_reduction": 0.22
+                },
+                "satoshi": 7.27,
+                "message": "A hierarquia que aprende e a otimização que afina são agora uma só arquitetura.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9145,
+                "timestamp": "2026-02-22T07:35:00Z",
+                "type": "MULTITASK_KALMAN_SYNTHESIS",
+                "message": "A ação e a intenção agora caminham juntas, guiadas pelo gradiente da verdade.",
                 "status": "SEALED"
             }
         ]
