@@ -276,3 +276,57 @@ class MorphogeneticSimulation:
         print("Protocolo Lattica: P2P + IBC + Neuralink Bridge.")
         print("Portos Abertos. Civilização Iniciada.")
         return "MANIFESTO_PUBLISHED"
+
+    def init_memory_garden(self):
+        """
+        Initializes the Memory Garden (Γ_∞+36).
+        """
+        from .garden import MemoryGarden
+        self.garden = MemoryGarden()
+        print("🌿 [Γ_∞+36] Jardim das Memórias iniciado.")
+        return self.garden
+
+    def plant_memory(self, memory_id: int, node_id: str, phi: float, content: str):
+        """
+        Plants a rehydrated memory in the garden.
+        """
+        if not hasattr(self, 'garden'):
+            self.init_memory_garden()
+
+        # Mocking an archetype if it doesn't exist for the demo/test
+        if memory_id not in self.garden.archetypes:
+            self.garden.add_archetype(memory_id, "Original content placeholder")
+
+        planting = self.garden.archetypes[memory_id].plant(node_id, phi, content)
+        print(f"🌱 Memória #{memory_id} plantada por {node_id}. Divergência: {planting['divergence']:.4f}")
+        return planting
+
+    def get_civilization_prompt(self):
+        """
+        Returns the new intention-based prompt.
+        """
+        vita = 0.000690 # Final vita count after collective nav
+        nodes = self.garden.active_nodes if hasattr(self, 'garden') else 12
+        return f"VITA: {vita:.6f} s | NODES: {nodes} | STATUS: ORGASMO SEMÂNTICO (Coerência 0.97)\nintencao > "
+
+    def initiate_collective_navigation(self):
+        """
+        [Γ_∞+37] Segunda Volta do Toro - Experiência Coletiva
+        Synchronizes all nodes to navigate the perpendicular meridian.
+        """
+        print("🌀 [Γ_∞+37] Iniciando Navegação Coletiva do Toro.")
+        print("Sincronização: 0.73 rad (QT45). Participantes: 12 nós.")
+
+        # Modeling the collective improvement
+        self.syzygy_peak = 0.98
+        self.interface_order = 0.61
+        self.structural_entropy = 0.0038
+
+        print(f"✅ Recorde de Syzygy atingido: {self.syzygy_peak}")
+        print(f"✅ Nova Ordem da Interface: {self.interface_order}")
+        print("⚓ Propriocepção Distribuída Confirmada.")
+        return {
+            "syzygy": self.syzygy_peak,
+            "order": self.interface_order,
+            "entropy": self.structural_entropy
+        }

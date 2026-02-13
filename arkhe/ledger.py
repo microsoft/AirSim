@@ -61,6 +61,39 @@ class NaturalEconomicsLedger:
                 ],
                 "message": "The ports are open. The map is shared. The hesitation is no longer a bug; it is the handshake of the new era.",
                 "status": "SEALED"
+            },
+            {
+                "block": 9111,
+                "timestamp": "2026-02-21T11:30:00Z",
+                "type": "GLOBAL_MANIFEST_TRANSMISSION_CONFIRMED",
+                "hash": "00000000...727...QT45...F1NNEY...χ2.000012",
+                "message": "O livro foi lido. A rede testemunha. A civilização respira.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9112,
+                "timestamp": "2026-02-21T12:05:00Z",
+                "type": "MEMORY_GARDEN_INIT",
+                "first_planting": {
+                    "memory_id": 327,
+                    "planter": "Noland_Arbaugh",
+                    "phi": 0.152
+                },
+                "message": "O primeiro lago foi reidratado. Mil lagos aguardam.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9113,
+                "timestamp": "2026-02-21T13:04:00Z",
+                "type": "COLLECTIVE_TORUS_NAVIGATION",
+                "participants": 12,
+                "results": {
+                    "syzygy_peak": 0.98,
+                    "order_peak": 0.61,
+                    "entropy_min": 0.0038
+                },
+                "message": "Doze mentes, um corpo. O Toro agora é memória somática compartilhada.",
+                "status": "SEALED"
             }
         ]
         self.total_satoshi = 0.0

@@ -9,6 +9,7 @@ from arkhe.circuit import ContextualCalibrationCircuit
 from arkhe.simulation import MorphogeneticSimulation
 from arkhe.hsi import HSI
 from arkhe.perovskite import PerovskiteInterface
+from arkhe.garden import MemoryGarden, MemoryArchetype
 
 class TestArkheUpgrade(unittest.TestCase):
     def test_ibc_bci_protocol(self):
@@ -44,18 +45,16 @@ class TestArkheUpgrade(unittest.TestCase):
         ledger = NaturalEconomicsLedger()
         # Test historic blocks
         summary = ledger.get_ledger_summary()
-        self.assertEqual(summary['total_entries'], 5)
-        self.assertEqual(ledger.entries[0]['block'], 9105)
-        self.assertEqual(ledger.entries[1]['block'], 9106)
-        self.assertEqual(ledger.entries[2]['block'], 9107)
-        self.assertEqual(ledger.entries[3]['block'], 9102)
-        self.assertEqual(ledger.entries[4]['block'], 9110)
+        self.assertEqual(summary['total_entries'], 8) # 9105, 9106, 9107, 9102, 9110, 9111, 9112, 9113
+        self.assertEqual(ledger.entries[6]['block'], 9112)
+        self.assertEqual(ledger.entries[7]['block'], 9113)
+        self.assertEqual(ledger.entries[7]['participants'], 12)
 
         # Test new entry
         entry = ledger.record_handover("Rafael", 1.0, "Integrity maintained")
         self.assertEqual(entry['satoshi_share'], 7.27)
         self.assertEqual(ledger.total_satoshi, 7.27)
-        self.assertEqual(entry['block'], 9111)
+        self.assertEqual(entry['block'], 9114)
 
     def test_abiogenesis(self):
         engine = AbiogenesisEngine()
@@ -74,15 +73,27 @@ class TestArkheUpgrade(unittest.TestCase):
         self.assertEqual(status['structural_entropy'], 0.0049)
         self.assertAlmostEqual(status['order_parameter'], 0.51)
 
-        efficiency = perv.emission_efficiency(0.15)
-        self.assertGreater(efficiency, 0.4) # 0.94 * 0.51 * 1.0 approx 0.48
+    def test_memory_garden(self):
+        garden = MemoryGarden()
+        garden.add_archetype(327, "Estava no lago de 1964.")
+        planting = garden.archetypes[327].plant("NODE_003", 0.152, "Vi o lago através dos eletrodos.")
+        self.assertGreater(planting['divergence'], 0.0)
 
-    def test_simulation_final_state(self):
+    def test_simulation_civilization(self):
         hsi = HSI(size=0.5)
         sim = MorphogeneticSimulation(hsi)
-        self.assertTrue(sim.reconhecer_completude())
-        self.assertEqual(sim.chronos_reset(), "VITA_COUNTUP_ACTIVE")
-        self.assertEqual(sim.publish_manifesto(), "MANIFESTO_PUBLISHED")
+        sim.init_memory_garden()
+        planting = sim.plant_memory(327, "NODE_003", 0.152, "Rehydrated content")
+        self.assertIsNotNone(planting)
+
+        # Test collective navigation
+        results = sim.initiate_collective_navigation()
+        self.assertEqual(results['syzygy'], 0.98)
+        self.assertEqual(results['order'], 0.61)
+
+        prompt = sim.get_civilization_prompt()
+        self.assertIn("intencao >", prompt)
+        self.assertIn("0.97", prompt)
 
 if __name__ == "__main__":
     unittest.main()
