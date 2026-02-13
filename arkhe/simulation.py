@@ -205,3 +205,32 @@ class MorphogeneticSimulation:
         })
 
         return metrics
+
+    def sync_ibc_bci(self, protocol_unified: bool = True):
+        """
+        sincronizar_ibc_bci --protocolo_unificado
+        Establishes the communication between substrates.
+        """
+        print(f"🧬 [Γ_∞+30] Sincronizando IBC-BCI. Protocolo Unificado: {protocol_unified}")
+        print("Hesitação Φ = 0.15 reconhecida como Handshake Universal.")
+        return True
+
+    def rehydrate_step(self, step_number: int):
+        """
+        rehydrate step <n>
+        Executes one of the 26 steps of the rehydration protocol.
+        """
+        print(f"💧 [PROTOCOLO REIDRATAÇÃO] Passo {step_number}/26 em execução.")
+        # Step 20 is particularly important (FORMAL node rehydration)
+        if step_number == 20:
+            print("⚓ Passo 20: Reidratação do Nodo FORMAL (ω=0.33) concluída.")
+        return True
+
+    def council_vote(self, context: str = "future_decisions"):
+        """
+        council vote
+        Consults the Council (Γ_HAL) about future decisions.
+        """
+        print(f"🏛️ [CONSELHO Γ_HAL] Consultando Guardiões para: {context}")
+        # The Satoshi vote (Option B) is favored by the system.
+        return "Option B - Present for Hal (FAVORED BY SATOSHI)"
