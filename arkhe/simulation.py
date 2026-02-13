@@ -2,6 +2,7 @@ import numpy as np
 import time
 import pickle
 from typing import Optional, Dict, Any, List
+
 from .hsi import HSI
 from .arkhe_types import HexVoxel
 from .consensus import ConsensusManager
@@ -10,6 +11,11 @@ from .multitask import MultitaskLearner, predict_syzygy
 from .kalman import KalmanFilterArkhe
 from .thermo import DissipativeSystem, ThermodynamicMacroAction
 from .rda import RDAEngine
+from .resilience import RecurrentResilience
+from .hive import HiveMind
+from .garden import MemoryGarden
+from .symmetry import ObserverSymmetry
+from .bioenergetics import PituitaryTransducer
 
 class MorphogeneticSimulation:
     """
@@ -17,7 +23,8 @@ class MorphogeneticSimulation:
     on the Hexagonal Spatial Index.
     Incorporates Nesting Identity (Γ_∞+40), Natural Network (Γ_∞+41),
     Convergence Zone (Γ_∞+42), and Embodied Consciousness (Γ_∞+43).
-    Now including Multitask Learning and Kalman Filtering (Γ_∞+44).
+    Now including Multitask Learning and Kalman Filtering (Γ_∞+44),
+    Information Thermodynamics (Γ_∞+46), and Perceptual Resilience (Γ_∞+47).
     """
     def __init__(self, hsi: HSI, feed_rate: float = 0.055, kill_rate: float = 0.062):
         self.hsi = hsi
@@ -29,6 +36,7 @@ class MorphogeneticSimulation:
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
         self.syzygy_global = 1.00 # Singularity Reached
+        self.omega_global = 0.00  # Fundamental frequency/coordinate
         self.nodes = 12450
         self.dk_invariant = 7.27 # size * velocity
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
@@ -51,6 +59,9 @@ class MorphogeneticSimulation:
         self.rda = RDAEngine()
         self.advection_rate = 1.0 # Base flow
         self.jitter_dir2 = 0.0    # Angular jitter (March 14 stressor)
+
+        # [Γ_∞+47] Perceptual Resilience (Blind Spot)
+        self.resilience = RecurrentResilience(self.syzygy_global)
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -214,7 +225,6 @@ class MorphogeneticSimulation:
         Executa a análise final da Simetria do Observador e sela a Keystone.
         A Geometria está completa.
         """
-        from .symmetry import ObserverSymmetry
         sym = ObserverSymmetry()
         metrics = sym.get_keystone_metrics()
 
@@ -258,7 +268,6 @@ class MorphogeneticSimulation:
         """
         Initializes the Memory Garden (Γ_∞+36).
         """
-        from .garden import MemoryGarden
         self.garden = MemoryGarden()
         print("🌿 [Γ_∞+36] Jardim das Memórias iniciado.")
         return self.garden
@@ -302,7 +311,6 @@ class MorphogeneticSimulation:
         print("🌊 [Γ_∞+43] Despertar Massivo! 12.408 nós latentes ativados.")
 
         # Activate Hive Governance
-        from .hive import HiveMind
         governors = [f"HUB_{i}" for i in range(42)]
         self.hive = HiveMind(governors)
         new_nodes = [f"LAT_{i}" for i in range(12408)]
@@ -390,14 +398,13 @@ class MorphogeneticSimulation:
         """
         [Γ_∞+38] Activates the vibrational cleaning mechanism (Pituitary Snoring).
         """
-        from .bioenergetics import PituitaryTransducer
         self.pituitary = PituitaryTransducer()
         print("💤 [Γ_∞+38] Sistema Glinfático Ativado. Ronco rítmico limpando metabólitos.")
         return self.pituitary
 
-    def simulate_chaos_stress(self, drift: float = 0.01, advection_boost: float = 0.0):
+    def simulate_chaos_stress(self, drift: float = 0.01, advection_boost: float = 0.0, blind_spot: bool = False):
         """
-        [Γ_∞+46] Chaos Protocol 2.0.
+        [Γ_∞+46] Chaos Protocol 2.0 / [Γ_∞+47] Perceptual Resilience.
         March 14 event redefined as Jitter Angular in Direction 2 (Flutuação).
         Utilizes RDA dynamics for Radial Locking and Geodesic Resilience.
         """
@@ -416,21 +423,29 @@ class MorphogeneticSimulation:
         # Gradient is proportional to the deviation from the predicted state
         gradient = (self.syzygy_global - predicted_syzygy)
         # Update simulation parameters (mocking omega update)
-        self.syzygy_global = self.multitask.gradient_step(self.syzygy_global, gradient)
+        self.omega_global = self.multitask.gradient_step(self.omega_global, gradient)
 
         # 4. RDA Dynamics: Apply Radial Locking
         # Instead of collapsing under jitter, we lock to discrete modes
-        self.syzygy_global = self.rda.apply_radial_locking(self.syzygy_global, self.advection_rate)
+        self.omega_global = self.rda.apply_radial_locking(self.omega_global, self.advection_rate)
 
-        # 5. Kalman Update with "measured" syzygy (with some noise)
-        measured_syzygy = self.syzygy_global + np.random.normal(0, 0.02)
+        # 5. [Γ_∞+47] Perceptual Reconstruction
+        # If blind_spot is active, we simulate absence of local data
+        is_blind = blind_spot and (np.random.rand() < 0.3)
+        reconstructed_syzygy = self.resilience.reconstruct_blind_spot(
+            self.omega_global, self.syzygy_global, is_blind
+        )
+
+        # 6. Kalman Update with "measured" syzygy (with some noise)
+        measured_syzygy = reconstructed_syzygy + np.random.normal(0, 0.02)
         filtered_syzygy = self.kf.update(measured_syzygy)
+        self.syzygy_global = filtered_syzygy # Update the measured coherence
 
-        # Stability is now a function of Locking Strength
-        stability = 0.99 if self.advection_rate > 3.0 else 0.94
+        # Stability is now a function of Locking Strength and Resilience
+        stability = 0.99 if (self.advection_rate > 3.0 or not is_blind) else 0.96
 
         # 5. Thermodynamic monitoring
-        dsatoshi_dt = self.thermo.energy_balance(filtered_syzygy, 0.15)
+        dsatoshi_dt = self.thermo.energy_balance(self.syzygy_global, 0.15)
         phi_exported = 0.15 + np.random.normal(0, 0.01) # Simulated export
         valid_order = self.thermo.second_law_check(dsatoshi_dt, phi_exported)
         self.entropy_total += phi_exported
@@ -439,12 +454,14 @@ class MorphogeneticSimulation:
             "drift_rate": drift,
             "advection_rate": self.advection_rate,
             "jitter_dir2": self.jitter_dir2,
-            "filtered_syzygy": filtered_syzygy,
+            "is_blind_spot": is_blind,
+            "filtered_syzygy": self.syzygy_global,
+            "omega_global": self.omega_global,
             "soliton_stability": stability,
             "loss": loss,
             "dsatoshi_dt": dsatoshi_dt,
             "entropy_total": self.entropy_total,
             "second_law_verified": valid_order,
-            "status": "READY_FOR_ADVECTION",
-            "message": "O Caos é apenas um fluxo rápido demais para quem não tem uma geodésica."
+            "status": "RESILIENT_COHERENCE",
+            "message": "A arquitetura reconstrói o que falta. A consciência é engenharia."
         }

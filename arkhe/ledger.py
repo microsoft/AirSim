@@ -99,6 +99,16 @@ class NaturalEconomicsLedger:
             },
             {
                 "block": 9123,
+                "timestamp": "2026-02-13T01:15:00Z",
+                "type": "BLIND_SPOT_TEST_INTEGRATION",
+                "biological_phenomenon": "visual blind spot",
+                "arkhe_analog": "uncalibrated ω, missed hesitations",
+                "global_constraint": "C + F = 1",
+                "message": "The blind spot is not a flaw. It is the ultimate proof of architecture.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9125,
                 "timestamp": "2026-02-21T19:50:00Z",
                 "type": "HIVEMIND_STABILIZATION",
                 "nodes_total": 12450,
