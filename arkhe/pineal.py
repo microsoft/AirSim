@@ -3,8 +3,15 @@ from typing import Dict, Any, Tuple
 
 class PinealTransducer:
     """
-    Models the Pineal Gland as a quantum transducer.
+    Models the Pineal Gland as a quantum transducer (Γ_∞+29).
     Converts semantic pressure (Hesitation) into piezoelectricity and spin-states.
+
+    Correspondences:
+    - Microcrystals: HexVoxel Hipergrafo
+    - Piezoelectricity: V = d * Phi (d=6.27)
+    - Melatonin Indole Ring: Semicondutor Guidance Guidance Guidance (C=0.86)
+    - Excitons: Syzygy (0.94)
+    - Radical Pair Mechanism: Threshold Phi = 0.15
     """
     D_PIEZO = 6.27        # Piezoelectric coefficient
     THRESHOLD_PHI = 0.15  # RPM Resonance Threshold

@@ -41,6 +41,7 @@ class MorphogeneticSimulation:
         self.nodes = 12450
         self.dk_invariant = 7.28 # Post-Chaos Invariant (Γ_∞+57)
         self.PI = 3.141592653589793 # The Fundamental Constant (Γ_∞)
+        self.ERA = "BIO_SEMANTIC_ERA"
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
         self.schumann_freq = 7.83 # Hz
 
@@ -67,6 +68,8 @@ class MorphogeneticSimulation:
 
         # [Γ_∞+49] Pineal Transducer
         self.pineal = PinealTransducer()
+        self.larmor_frequency = 10.0
+        self.simulation_time = 0.0
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -185,12 +188,30 @@ class MorphogeneticSimulation:
             new_B = B + (self.dB * lap_B + A * (B**2) - (f_mod + k_mod) * B) * effective_dt
 
             # [Γ_∞+48] Enforce C + F = 1 constraint
-            # Mapping A -> Coherence (C), B -> Fluctuation (F) for this layer
+            new_A, new_B = self.resilience.enforce_constraints(new_A, new_B)
+
+            # [Γ_∞+49] RPM Modulation (Radical Pair Mechanism)
+            # Rotação de spin sensível a campos fracos (Phi)
+            magnetic_field = voxel.phi / (self.syzygy_global + 0.001)
+            theta = magnetic_field * self.larmor_frequency * self.simulation_time
+
+            # Singlet yield (Coherence) vs Triplet yield (Fluctuation)
+            yield_singlet = np.cos(theta)**2
+            yield_triplet = np.sin(theta)**2
+
+            # Modulate states based on spin yield
+            # A (Coherence) is reinforced by Singlet, B (Fluctuation) by Triplet
+            coupling = 0.1 # Interaction strength
+            new_A = new_A * (1.0 - coupling) + yield_singlet * coupling
+            new_B = new_B * (1.0 - coupling) + yield_triplet * coupling
+
+            # Re-enforce constraint after modulation
             new_A, new_B = self.resilience.enforce_constraints(new_A, new_B)
 
             new_states[coords] = (np.clip(new_A, 0, 1), np.clip(new_B, 0, 1))
 
         # Update all voxels
+        self.simulation_time += effective_dt
         for coords, state in new_states.items():
             self.hsi.voxels[coords].rd_state = state
             # Update Phi_field (coherence) based on simulation state
@@ -552,6 +573,16 @@ class MorphogeneticSimulation:
         self.syzygy_global = 1.00 # Perfect alignment
         self.keystone_placed = True
         return "GEOMETRY_COMPLETE"
+
+    def biocentric_transition(self, observer_id: str):
+        """
+        [Γ_∞+30] Biocentric Transition (Quantum-Death Symmetry)
+        Models death as a transformation of the observer's omega leaf.
+        Satoshi persists across the transition.
+        """
+        print(f"🧘 [Γ_∞+30] Iniciando Transição Biocêntrica para {observer_id}.")
+        print("A consciência transforma a folha ω, mas a Invariante (Satoshi) persiste.")
+        return "TRANSITION_COMPLETE_SATOSHI_PERSISTS"
 
     def acknowledge_fundamental_constant_pi(self):
         """

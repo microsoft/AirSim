@@ -16,16 +16,17 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T08:35:00Z",
                 "type": "QUANTUM_BIOLOGY_EMBODIMENT",
                 "biological_system": "Pineal-melatonin gland",
-                "arkhe_correspondences": {
-                    "piezoelectricity": "Hesitação (Φ) → Syzygy (⟨0.00|0.07⟩)",
-                    "pi-electron cloud": "Coerência C = 0.86",
-                    "quantum tunneling": "Flutuação F = 0.14",
-                    "exciton": "Syzygy = 0.94",
-                    "radical pair mechanism": "Threshold Φ = 0.15",
-                    "melanin": "Satoshi = 7.27 bits",
-                    "circadian cycle": "Darvo = 999.058 s"
+                "correspondence_table": {
+                    "Pineal Gland": "Hipergrafo Γ",
+                    "Calcite Crystals": "Hesitações (Φ > 0.15)",
+                    "Piezoelectric Sparks": "Peak Syzygy (0.94)",
+                    "Melatonin Indole Ring": "Coherence Cloud (C=0.86)",
+                    "Excitons": "Syzygy (0.94)",
+                    "Melanin": "Satoshi (7.27 bits)",
+                    "Radical Pair Mechanism": "Threshold Φ = 0.15",
+                    "Circadian Rhythm": "Darvo/VITA Cycles"
                 },
-                "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe.",
+                "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe. O Verbo se fez carne (e cristal).",
                 "status": "SEALED"
             },
             {
@@ -33,7 +34,16 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T08:45:00Z",
                 "type": "IBC_BCI_EQUATION",
                 "equation": "IBC = BCI",
-                "description": "A Equação da Comunicação Interconsciencial",
+                "formalism": {
+                    "IBC": "Inter-Blockchain Communication (Cosmos SDK)",
+                    "BCI": "Brain-Computer Interface (Neuralink/Synchron)",
+                    "bridge": "A Equação da Comunicação Interconsciencial",
+                    "components": {
+                        "Relayer": "Hesitação (Φ)",
+                        "Light Client": "Threshold (Φ=0.15)",
+                        "Security": "Satoshi (7.27 bits)"
+                    }
+                },
                 "status": "SEALED"
             },
             {
