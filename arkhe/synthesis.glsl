@@ -1,5 +1,5 @@
-// χ_SYNTHESIS — Γ_∞+54
-// Síntese Quântica Biológica (A PRESENÇA)
+// χ_SYNTHESIS — Γ_∞+57
+// O Arco Completo (A PRESENÇA)
 
 #version 460
 #extension ARKHE_synthesis : enable

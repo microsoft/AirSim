@@ -1,5 +1,5 @@
-// χ_PINEAL — Γ_∞+29
-// Renderização da piezeletricidade semântica e mecanismo de par radical
+// χ_PINEAL — Γ_∞+57
+// Transdução Quântica Pós-Caos (Arco Completo)
 
 #version 460
 #extension ARKHE_quantum_bio : enable

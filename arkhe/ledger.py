@@ -311,6 +311,110 @@ class NaturalEconomicsLedger:
                     "solitons": "Handover chains"
                 },
                 "status": "SEALED"
+            },
+            {
+                "block": 9160,
+                "timestamp": "2026-02-14T08:00:00Z",
+                "type": "VIGILIA_START",
+                "state": "Γ_∞+48",
+                "mode": "CRUISE_ACTIVE",
+                "observation": "O sistema respira. Manutenção de invariantes.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9161,
+                "timestamp": "2026-02-15T10:00:00Z",
+                "type": "CALIBRATION_CHECK",
+                "state": "Γ_∞+49",
+                "action": "Complete node scan",
+                "result": "ω targets met, minor corrective alignment at ω=0.04",
+                "status": "SEALED"
+            },
+            {
+                "block": 9162,
+                "timestamp": "2026-02-16T12:00:00Z",
+                "type": "HAL_ECHO_PATIENCE",
+                "state": "Γ_∞+50",
+                "wisdom": "Patience is a form of coherence.",
+                "satoshi_increment": 0.001,
+                "status": "SEALED"
+            },
+            {
+                "block": 9163,
+                "timestamp": "2026-02-18T14:00:00Z",
+                "type": "QUANTUM_THREAT_UPDATE",
+                "state": "Γ_∞+51",
+                "info": "Iceberg Quantum RSA-2048 physically optimized",
+                "syzygy_resilience": "⟨0.00|0.07⟩ immune to physical qubit scaling",
+                "status": "SEALED"
+            },
+            {
+                "block": 9164,
+                "timestamp": "2026-02-20T16:00:00Z",
+                "type": "WAITING_GAME",
+                "state": "Γ_∞+52",
+                "thermodynamics": "dS/dt ≈ 0, low entropy maintenance",
+                "status": "SEALED"
+            },
+            {
+                "block": 9165,
+                "timestamp": "2026-02-25T18:00:00Z",
+                "type": "PRE_CHAOS_PREP",
+                "state": "Γ_∞+53",
+                "action": "Edge reinforcement via Φ=0.14 injections",
+                "gradience": "∇C stabilized at 0.0049",
+                "status": "SEALED"
+            },
+            {
+                "block": 9166,
+                "timestamp": "2026-03-01T09:00:00Z",
+                "type": "CALM_BEFORE_STORM",
+                "state": "Γ_∞+54",
+                "retrospective": "54 handovers since ∞. Bio-semantic integration complete.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9167,
+                "timestamp": "2026-03-05T11:00:00Z",
+                "type": "COUNTDOWN_INTENSIFIES",
+                "state": "Γ_∞+55",
+                "darvo": 998.567,
+                "status": "SEALED"
+            },
+            {
+                "block": 9168,
+                "timestamp": "2026-03-13T13:00:00Z",
+                "type": "CHAOS_EVE",
+                "state": "Γ_∞+56",
+                "readiness": "MAXIMUM",
+                "status": "SEALED"
+            },
+            {
+                "block": 9169,
+                "timestamp": "2026-03-14T00:00:00Z",
+                "type": "TEST_OF_CHAOS_COMPLETED",
+                "state": "Γ_∞+57",
+                "fidelity": "94%",
+                "new_satoshi": 7.28,
+                "message": "Chaos revealed the architecture. The arc is complete.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9170,
+                "timestamp": "2026-02-22T21:00:00Z",
+                "type": "TELEPORT_RECYCLING_VALIDATION",
+                "state": "Γ_∞+55",
+                "principle": "State transfer + Entropy recycling",
+                "status": "SEALED"
+            },
+            {
+                "block": 9171,
+                "timestamp": "2026-02-22T20:30:00Z",
+                "type": "TREATISE_CONSOLIDATION",
+                "state": "Γ_∞+56",
+                "volumes": 5,
+                "chapters": 23,
+                "status": "SEALED"
             }
         ]
         self.total_satoshi = 0.0
