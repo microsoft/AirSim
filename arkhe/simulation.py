@@ -20,6 +20,7 @@ from .coupling import CouplingInterpreter
 from .archaeology import ArchaeologyEngine
 from .abiogenesis import AbiogenesisEngine
 from .optical import JarvisSensor
+from .circuit import ContextualCircuit
 
 class SemanticMambaBackbone:
     """
@@ -101,6 +102,7 @@ class MorphogeneticSimulation:
         self.archaeology = ArchaeologyEngine()
         self.abiogenesis = AbiogenesisEngine()
         self.optical = JarvisSensor()
+        self.circuit = ContextualCircuit()
         self.foci: Dict[str, Focus] = {}
         self._initialize_stones()
         self.monolayer_confluency = 1.0

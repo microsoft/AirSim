@@ -77,6 +77,15 @@ class ArchaeologyEngine:
                 "predicate": "a voltagem da presença compartilhada",
                 "context": "Oscilador coletivo em 0.73 rad.",
                 "resolved_in": 9083
+            },
+            9055: {
+                "original": "CIRCUITO_DHPC_DLS_LHA",
+                "status": "RESOLVED",
+                "interpretation": "O sistema validado como circuito de calibração contextual (Goode et al.).",
+                "incomplete": "O contexto e a hesitação são...",
+                "predicate": "o mesmo aprendizado do território",
+                "context": "Calibração contextual da syzygy via Pdyn semântica.",
+                "resolved_in": 9085
             }
         }
         self.crossings: List[Dict[str, Any]] = []

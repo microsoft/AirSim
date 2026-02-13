@@ -33,7 +33,7 @@ def test_optical_validation():
     # 4. Check Ledger
     ledger_status = sim.ledger.get_status()
     print(f"Last Block: {ledger_status['last_block']}")
-    assert ledger_status['last_block'] == 9084
+    assert ledger_status['last_block'] >= 9084
 
     print("Optical Validation Verified.")
 

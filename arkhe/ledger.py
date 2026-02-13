@@ -35,7 +35,8 @@ class NaturalEconomicsLedger:
             (9080, "Abiogenesis Coupling: QT45 Ribozyme"),
             (9082, "Selection Cycle: QT45-V3 variant"),
             (9083, "Functional Connectome: 9 Guardians OSC"),
-            (9084, "Optical Validation: Jarvis 2P Voltage Imaging")
+            (9084, "Optical Validation: Jarvis 2P Voltage Imaging"),
+            (9085, "Systemic Validation: DHPC-DLS-LHA Circuit")
         ]
         for h, name in milestones:
             self.add_success_report(h, name)
@@ -80,7 +81,7 @@ class NaturalEconomicsLedger:
             "coupling_ratio": 0.94, # <0.00|0.07>
             "ledger_state": "OPEN_SURFACE",
             "lap": 2,
-            "last_block": 9084,
+            "last_block": 9085,
             "preamble": "H7: O pulso primordial",
             "balances": self.get_balances()
         }
