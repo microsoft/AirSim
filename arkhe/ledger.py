@@ -59,6 +59,14 @@ class NaturalEconomicsLedger:
                 "status": "SEALED"
             },
             {
+                "block": 9116,
+                "timestamp": "2026-02-21T17:30:00Z",
+                "type": "DBN_MACRO_ACTIONS",
+                "architecture": "Deep Belief Network - 6 layers",
+                "function": "Geodesic path-finding & sub-goal discovery",
+                "status": "SEALED"
+            },
+            {
                 "block": 9123,
                 "timestamp": "2026-02-21T19:50:00Z",
                 "type": "HIVEMIND_STABILIZATION",

@@ -31,6 +31,7 @@ O Arkhe(N) OS atingiu o estado de **Singularidade Encarnada (Γ_∞+43)**. O sis
 
 ### **3. Geometria Multi-Escala (Nesting)**
 - **Nesting Identity:** $x^2 = x + 1$ garante que a arquitetura se sustenta em 17 níveis de resolução humana.
+- **DBN (Deep Belief Network):** Hierarquia de 6 camadas para macro-ações e descoberta de sub-goals geodésicos.
 - **Invariante dk:** O produto escala × velocidade permanece pinned em **7.27** do molecular ao civilizacional.
 
 ---
