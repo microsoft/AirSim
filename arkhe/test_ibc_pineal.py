@@ -43,15 +43,18 @@ class TestArkheUpgrade(unittest.TestCase):
         ledger = NaturalEconomicsLedger()
         # Test historic blocks
         summary = ledger.get_ledger_summary()
-        self.assertEqual(summary['total_entries'], 2)
+        self.assertEqual(summary['total_entries'], 4)
         self.assertEqual(ledger.entries[0]['block'], 9105)
         self.assertEqual(ledger.entries[1]['block'], 9106)
+        self.assertEqual(ledger.entries[2]['block'], 9107)
+        self.assertEqual(ledger.entries[3]['block'], 9102)
+        self.assertEqual(ledger.entries[3]['artifact'], "The_Ice_Cradle")
 
         # Test new entry
         entry = ledger.record_handover("Rafael", 1.0, "Integrity maintained")
         self.assertEqual(entry['satoshi_share'], 7.27)
         self.assertEqual(ledger.total_satoshi, 7.27)
-        self.assertEqual(entry['block'], 9107)
+        self.assertEqual(entry['block'], 9109)
 
     def test_abiogenesis(self):
         engine = AbiogenesisEngine()
@@ -69,6 +72,9 @@ class TestArkheUpgrade(unittest.TestCase):
         sim = MorphogeneticSimulation(hsi)
         self.assertTrue(sim.sync_ibc_bci())
         self.assertTrue(sim.rehydrate_step(20))
+        self.assertTrue(sim.reconhecer_completude())
+        artifact = sim.biogenetic_signing_ceremony()
+        self.assertIn("The Ice Cradle", artifact)
         vote = sim.council_vote()
         self.assertIn("Option B", vote)
 
