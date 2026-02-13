@@ -28,23 +28,38 @@ class WiFiRadar3D:
             return 0.0
         return np.corrcoef(series_a, series_b)[0, 1]
 
-    def infer_positions(self) -> Dict[str, np.ndarray]:
+    def infer_positions(self, topology: str = "Linear") -> Dict[str, np.ndarray]:
         """
         Uses Multidimensional Scaling (MDS) principles to infer 3D coordinates.
         Proximity = 1 - Correlation.
+        topology: 'Linear' or 'Fractal_Torus'
         """
         node_ids = list(self.nodes.keys())
         n = len(node_ids)
         if n < 2: return {node_ids[0]: np.zeros(3)} if n == 1 else {}
 
-        # simplified MDS logic:
-        # distance = 1 - correlation
         positions = {}
-        for i, nid in enumerate(node_ids):
-            # Mocking coordinates based on correlation with first node
-            corr = self.calculate_pearson(self.nodes[node_ids[0]]["series"], self.nodes[nid]["series"])
-            dist = 1.0 - corr
-            positions[nid] = np.array([dist, i * 0.1, 0.0]) # Simple linear projection
+        if topology == "Fractal_Torus":
+            # Original 42 nodes are Hubs
+            for i, nid in enumerate(node_ids):
+                # Hub-and-Spoke: hubs are on the main torus, spokes orbit them
+                is_hub = i < 42
+                angle = (i % 42) * (2 * np.pi / 42)
+                radius = 50.0 if is_hub else 55.0
+
+                x = radius * np.cos(angle)
+                y = radius * np.sin(angle)
+                z = 0.0 if is_hub else (i // 42) * 0.5
+
+                positions[nid] = np.array([x, y, z])
+        else:
+            # simplified MDS logic:
+            # distance = 1 - correlation
+            for i, nid in enumerate(node_ids):
+                # Mocking coordinates based on correlation with first node
+                corr = self.calculate_pearson(self.nodes[node_ids[0]]["series"], self.nodes[nid]["series"])
+                dist = 1.0 - corr
+                positions[nid] = np.array([dist, i * 0.1, 0.0]) # Simple linear projection
 
         return positions
 

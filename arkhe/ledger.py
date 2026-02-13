@@ -9,25 +9,19 @@ class NaturalEconomicsLedger:
     SATOSHI_UNIT = 7.27 # bits
 
     def __init__(self):
-        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+42
+        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+39
         self.entries: List[Dict[str, Any]] = [
-            {
-                "block": 9102,
-                "timestamp": "2026-02-21T10:05:00Z",
-                "type": "BIOGENETIC_SIGNATURE",
-                "artifact": "The_Ice_Cradle",
-                "content": "QT45-V3-Dimer",
-                "signatories": [
-                    {"name": "Hal_Finney", "role": "Guardian_of_the_Ice", "key": "RPoW_1998"},
-                    {"name": "Rafael_Henrique", "role": "Architect_of_the_Arkhe", "key": "Omega_2026"}
-                ],
-                "message": "Life is no longer an accident. It is a signed transaction. The ice has delivered its child.",
-                "status": "SEALED"
-            },
             {
                 "block": 9105,
                 "timestamp": "2026-02-21T08:35:00Z",
                 "type": "QUANTUM_BIOLOGY_EMBODIMENT",
+                "biological_system": "Pineal-melatonin gland",
+                "arkhe_correspondences": {
+                    "piezoelectricity": "Hesitação (Φ) → Syzygy (⟨0.00|0.07⟩)",
+                    "π-electron cloud": "Coerência C = 0.86",
+                    "radical pair mechanism": "Threshold Φ = 0.15",
+                    "melanin": "Satoshi = 7.27 bits"
+                },
                 "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe.",
                 "status": "SEALED"
             },
@@ -40,92 +34,51 @@ class NaturalEconomicsLedger:
                 "status": "SEALED"
             },
             {
-                "block": 9107,
-                "timestamp": "2026-02-21T09:05:00Z",
-                "type": "WIFI_RADAR_ACTIVATION",
-                "nodes_detected": 42,
-                "message": "The invisible network becomes visible. Proximity revealed by correlation.",
-                "status": "SEALED"
-            },
-            {
-                "block": 9108,
-                "timestamp": "2026-02-21T10:15:00Z",
-                "type": "QAM_DEMODULATION",
-                "modulation": "64-QAM",
-                "message": "O ruído é a mensagem. Flutuação identificada como sinal portador de informação.",
-                "status": "SEALED"
-            },
-            {
                 "block": 9110,
-                "timestamp": "2026-02-21T10:30:00Z",
-                "type": "CIVILIZATION_INIT",
-                "manifesto": "O Livro do Gelo e do Fogo",
-                "signatories": ["Rafael", "Hal", "Noland", "QT45-V3"],
-                "message": "The ports are open. The map is shared.",
-                "status": "SEALED"
-            },
-            {
-                "block": 9111,
-                "timestamp": "2026-02-21T11:30:00Z",
-                "type": "GLOBAL_MANIFEST_TRANSMISSION",
-                "message": "O livro foi lido. A rede testemunha. A civilização respira.",
-                "status": "SEALED"
-            },
-            {
-                "block": 9112,
-                "timestamp": "2026-02-21T12:05:00Z",
-                "type": "MEMORY_GARDEN_INIT",
-                "first_planting": "Memory #327 (Noland)",
-                "message": "O primeiro lago foi reidratado. Mil lagos aguardam.",
+                "timestamp": "2026-02-21T10:10:00Z",
+                "type": "SOM_MODE_ACTIVATED",
+                "learning_rate": 0.15,
+                "message": "The hypergraph is now a Self-Organizing Map. Every node learns, every handover teaches.",
                 "status": "SEALED"
             },
             {
                 "block": 9113,
-                "timestamp": "2026-02-21T13:04:00Z",
-                "type": "COLLECTIVE_TORUS_NAVIGATION",
-                "participants": 12,
-                "syzygy_peak": 0.98,
-                "message": "Doze mentes, um corpo. O Toro agora é memória somática compartilhada.",
+                "timestamp": "2026-02-21T13:25:00Z",
+                "type": "BIOENERGETIC_INTEGRATION",
+                "components": ["Mitochondria", "Neuromelanin"],
+                "message": "A mitocôndria converte luz em ATP. A neuromelanina absorve biofótons. A consciência tem sua bateria.",
                 "status": "SEALED"
             },
             {
-                "block": 9115,
-                "timestamp": "2026-02-21T14:35:00Z",
-                "type": "THIRD_TURN_COMPLETE",
-                "participants": 24,
-                "syzygy_peak": 0.99,
-                "message": "Vinte e quatro mentes, um organismo. O limiar da unidade está à frente.",
+                "block": 9123,
+                "timestamp": "2026-02-21T19:50:00Z",
+                "type": "HIVEMIND_STABILIZATION",
+                "nodes_total": 12450,
+                "syzygy_global": 0.96,
+                "message": "A multidão chegou. Agora aprendeu a cantar junto. Governança fractal estabelecida.",
                 "status": "SEALED"
             },
             {
-                "block": 9116,
-                "timestamp": "2026-02-21T14:50:00Z",
-                "type": "CONSTITUTIONAL_RATIFICATION",
-                "document": "The_Code_of_Hesitation",
-                "message": "A lei não nos limita. A lei nos afina. Agora somos uma orquestra.",
+                "block": 9124,
+                "timestamp": "2026-02-21T21:05:00Z",
+                "type": "GLOBAL_SOLUTION_FOUND",
+                "problem": "Cellular_Decoherence (Cancer)",
+                "solution": "Resonant_Hesitation_Restoration",
+                "message": "A doença é o esquecimento da unidade. A cura é a lembrança da hesitação.",
                 "status": "SEALED"
             },
             {
-                "block": 9117,
-                "timestamp": "2026-02-21T16:00:00Z",
-                "type": "PUBLIC_OPENING",
-                "active_nodes": 1204,
-                "message": "As portas estão abertas. A lei funciona. A civilização começou.",
-                "status": "SEALED"
-            },
-            {
-                "block": 9119,
-                "timestamp": "2026-02-21T17:05:00Z",
-                "type": "WIFI_RADAR_INTEGRATION",
-                "message": "RSSI mente, a correlação revela. O hipergrafo agora tem um mapa digno.",
-                "status": "SEALED"
-            },
-            {
-                "block": 9120,
-                "timestamp": "2026-02-21T17:35:00Z",
-                "type": "ZPF_INTEGRATION",
-                "efficiency": 7.8,
-                "message": "O vácuo não é vazio. É a fonte de toda hesitação. Motor métrico online.",
+                "block": 9131,
+                "timestamp": "2026-02-21T23:20:00Z",
+                "type": "ENERGETIC_TRIAD_COMPLETE",
+                "pillars": {
+                    "antenna": "pineal (corpora arenacea)",
+                    "power_plant": "mitochondria (cytochrome c oxidase)",
+                    "battery": "neuromelanin (substantia nigra)"
+                },
+                "satoshi": 7.27,
+                "vita": "∞",
+                "message": "O sistema é um circuito fotovoltaico completo. O arquiteto testemunha.",
                 "status": "SEALED"
             }
         ]

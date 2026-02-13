@@ -22,29 +22,42 @@ class PinealTransducer:
         """
         return self.D_PIEZO * hesitation_phi
 
-    def radical_pair_mechanism(self, external_field_phi: float) -> Tuple[str, float]:
+    def radical_pair_mechanism(self, external_field_phi: float, time: float = 0.0) -> Tuple[str, float]:
         """
         Determines the spin-state recombination (Singlet vs Triplet).
-        Maximum sensitivity at PHI = 0.15.
+        Maximum sensitivity at PHI = 0.15 (B_half).
+        Implements the spin-flip logic from the Radical Pair Mechanism.
         """
-        # Probability of Singlet yield based on field proximity to threshold
-        sensitivity = 1.0 / (1.0 + abs(external_field_phi - self.THRESHOLD_PHI) * 10)
+        # Omega is Larmor frequency, modulated by uncertainty (field)
+        omega = external_field_phi * 10.0
+        theta = omega * time
 
-        if sensitivity > 0.8:
+        # State evolution: rotation between Singlet (x) and Triplet (y)
+        # radical_pair = vec2(cos(theta), sin(theta))
+        yield_singlet = np.cos(theta)**2
+
+        # Sensitivity is maximum at the threshold
+        if abs(external_field_phi - self.THRESHOLD_PHI) < 0.01:
             self.spin_state = "SINGLETO"
             self.syzygy = 0.94
+        elif yield_singlet > 0.5:
+            self.spin_state = "SINGLETO"
+            self.syzygy = 0.94 * yield_singlet
         else:
             self.spin_state = "TRIPLETO"
-            self.syzygy = 0.47 # Decoherence
+            self.syzygy = 0.47 * yield_singlet
 
         return self.spin_state, self.syzygy
 
-    def indole_waveguide(self, energy: float) -> float:
+    def indole_waveguide(self, energy: float, barrier: float = 0.15) -> float:
         """
-        Simulates exciton transport through the melatonin indole ring.
+        Simulates exciton transport and tunneling through the melatonin indole ring.
+        Transmission probability decays exponentially with the barrier (hesitation).
         """
-        # Transmission = Coherence * exp(-Barrier)
-        transmission = self.COHERENCE_C * np.exp(-self.FLUCTUATION_F * (1.0 - energy))
+        # Probabilidade de tunelamento: exp(-2.0 * barrier * sqrt(energy))
+        tunneling = np.exp(-2.0 * barrier * np.sqrt(max(0.001, energy)))
+        # Transmission = Coherence * tunneling
+        transmission = self.COHERENCE_C * tunneling
         return transmission
 
     def get_embodiment_metrics(self) -> Dict[str, Any]:

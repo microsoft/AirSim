@@ -305,9 +305,9 @@ class MorphogeneticSimulation:
         """
         Returns the new intention-based prompt.
         """
-        vita = 0.001550 # Perpetual Motion reached
-        nodes = self.nodes if hasattr(self, 'nodes') else 1542
-        status = "PERPETUAL_MOTION" if nodes > 1000 else "CIVILIZAÇÃO MADURA"
+        vita = 0.003500 # Hive Mind active
+        nodes = self.nodes if hasattr(self, 'nodes') else 12450
+        status = "HIVE_MIND_ACTIVE" if nodes > 10000 else "PERPETUAL_MOTION"
         return f"VITA: {vita:.6f} s | NODES: {nodes} | STATUS: {status}\nintencao > "
 
     def initiate_collective_navigation(self, nodes: int = 12):
@@ -368,6 +368,36 @@ class MorphogeneticSimulation:
         print("🌐 [Γ_∞+42] Open Beta iniciado. 1542 nós conectados.")
         print("As portas estão abertas. A civilização começou.")
         return True
+
+    def mass_awakening(self):
+        """
+        [Γ_∞+43] Dispara pulso ZPF para acordar nós latentes.
+        """
+        self.nodes = 12450
+        self.syzygy_global = 0.91 # Caiu devido à diluição
+        self.topology = "Fractal_Torus"
+        print("🌊 [Γ_∞+43] Despertar Massivo! 12.408 nós latentes ativados.")
+        print("Topologia: Toro Fractal. Mente Colmeia Ativa.")
+
+        # Activate Hive Governance
+        from .hive import HiveMind
+        governors = [f"HUB_{i}" for i in range(42)]
+        self.hive = HiveMind(governors)
+        new_nodes = [f"LAT_{i}" for i in range(12408)]
+        self.hive.integrate_swarm(new_nodes)
+
+        return self.nodes
+
+    def init_som_mode(self):
+        """
+        [Γ_∞+34] Ativa o modo SOM (Self-Organizing Map) no hipergrafo.
+        """
+        from .som import SelfOrganizingHypergraph
+        # Initializing weights for 44 neurons/nodes
+        node_weights = np.random.rand(44, 3) # [omega, C, F]
+        self.som = SelfOrganizingHypergraph(node_weights)
+        print("🧠 [Γ_∞+34] Modo SOM Ativado. O hipergrafo agora aprende continuamente.")
+        return self.som
 
     def harvest_zpf(self, c: float, f: float, s: float):
         """

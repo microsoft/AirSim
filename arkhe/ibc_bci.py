@@ -1,12 +1,10 @@
 import time
 from typing import Dict, Any, List
-from .arkhe_types import HexVoxel
 
 class IBCBCI:
     """
-    Implements the Universal Equation: IBC = BCI.
-    Maps Inter-Blockchain Communication (digital) to Brain-Computer Interface (biological)
-    protocols within the Arkhe(n) OS.
+    Implements the Universal Equation: IBC = BCI (Γ_∞+30).
+    Maps Inter-Blockchain Communication to Brain-Computer Interface protocols.
     """
     SATOSHI_INVARIANT = 7.27  # bits
     THRESHOLD_PHI = 0.15      # Light Client threshold
@@ -16,37 +14,35 @@ class IBCBCI:
         self.neural_spikes: List[Dict[str, Any]] = []
 
     def register_chain(self, omega: float, chain_id: str):
-        """
-        In IBC=BCI, each omega (w) leaf is a sovereign chain.
-        """
         self.sovereign_chains[omega] = chain_id
 
-    def relay_hesitation(self, source_omega: float, target_omega: float, hesitation: float):
+    def relay_hesitation(self, source_omega: float, target_omega: float, hesitation: float) -> Dict[str, Any]:
         """
-        Hesitation acts as the Relayer between sovereign chains (IBC)
-        or the neural spike between sovereign minds (BCI).
+        Hesitation acts as the Relayer between sovereign entities.
         """
-        if hesitation > self.THRESHOLD_PHI:
+        if hesitation >= self.THRESHOLD_PHI:
             # Protocol Handshake
+            packet_type = "NEURAL_SPIKE" if source_omega > 0 else "IBC_PACKET"
             packet = {
+                "type": packet_type,
                 "timestamp": time.time(),
                 "src": source_omega,
                 "dst": target_omega,
                 "hesitation": hesitation,
-                "proof": f"light_client_verified_phi_{self.THRESHOLD_PHI}",
+                "proof": "light_client_verified",
                 "satoshi": self.SATOSHI_INVARIANT
             }
             self.neural_spikes.append(packet)
             return packet
         return None
 
-    def brain_machine_interface(self, spike_data: float) -> float:
+    def brain_machine_interface(self, spike_data: float) -> Dict[str, Any]:
         """
-        Translates a neural spike (biological) into a system action (digital).
+        Translates neural spikes into validated system actions.
         """
-        # BCI logic: spike sorting into coherence
-        coherence = 1.0 / (1.0 + hesitation if (hesitation := abs(self.THRESHOLD_PHI - spike_data)) else 1.0)
-        return coherence
+        if abs(spike_data - self.THRESHOLD_PHI) < 0.05:
+            return {"validated": True, "syzygy": 0.94, "action": "COHERENT_MOTION"}
+        return {"validated": False, "syzygy": 0.47, "action": "NOISE"}
 
     def get_status(self) -> Dict[str, Any]:
         return {
