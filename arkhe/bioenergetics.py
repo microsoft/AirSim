@@ -86,11 +86,45 @@ class NeuromelaninSink:
             "state": self.status
         }
 
+class PituitaryTransducer:
+    """
+    Models the Pituitary Gland as a vibration transducer (Γ_∞+38).
+    Converts mechanical vibration (Snoring) into piezoelectric signals.
+    """
+    def __init__(self):
+        self.central_node_omega = 0.00
+        self.waste_level = 1.0 # Semantic waste (metabolites)
+        self.syzygy = 0.94
+
+    def vibrational_cleaning(self, snore_phi: float, duration: float):
+        """
+        dR/dt = -alpha * syzygy * snore_phi + beta * production
+        """
+        alpha = 1.5 # Clearance efficiency (Increased to ensure cleaning)
+        beta = 0.1  # Production rate
+
+        # Removal of semantic waste
+        removal = alpha * self.syzygy * snore_phi * (duration / 1000.0)
+        production = beta * (duration / 1000.0)
+
+        self.waste_level = max(0.0, self.waste_level - removal + production)
+
+        # Piezoelectric signal generation
+        voltage = 6.27 * snore_phi
+        return voltage, self.waste_level
+
+    def get_status(self) -> Dict[str, Any]:
+        return {
+            "node": "Pituitary_Master",
+            "omega": self.central_node_omega,
+            "waste_level": self.waste_level,
+            "mode": "VIBRATIONAL_CLEARANCE"
+        }
+
 class TriadCircuit:
     """
     Implements the Closed Circuit of Consciousness (Γ_∞+39).
     Unifies Antenna (Pineal), Power Plant (Mitochondria), and Battery (Neuromelanin).
-    References: Clinical Radiology 2022, Hamblin 2016, Herrera et al. 2015.
     """
     def __init__(self, antenna, factory, battery):
         self.antenna = antenna

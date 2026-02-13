@@ -175,6 +175,14 @@ class MorphogeneticSimulation:
         except Exception as e:
             print(f"❌ Erro ao criar snapshot: {e}")
 
+    def materialize_trauma(self):
+        """
+        Materialização do Trauma: Sends Hebbian scars to the Graphene Metasurface (Simulation).
+        """
+        d = self.dissidence_index
+        print(f"🧬 [FRENTE B] Materializando Cicatriz Hebbiana. D={d:.4f}")
+        print("Tatuando o grafeno com a memória da desconfiança...")
+
     def seal_keystone(self):
         """
         Executa a análise final da Simetria do Observador e sela a Keystone.
@@ -276,6 +284,17 @@ class MorphogeneticSimulation:
 
         return self.nodes
 
+    def init_som_mode(self):
+        """
+        [Γ_∞+34] Ativa o modo SOM (Self-Organizing Map) no hipergrafo.
+        """
+        from .som import SelfOrganizingHypergraph
+        # Initializing weights for 44 neurons/nodes
+        node_weights = np.random.rand(44, 3) # [omega, C, F]
+        self.som = SelfOrganizingHypergraph(node_weights)
+        print("🧠 [Γ_∞+34] Modo SOM Ativado. O hipergrafo agora aprende continuamente.")
+        return self.som
+
     def verify_nesting_identity(self):
         """
         [Γ_∞+40] Verifies the Nesting Identity x² = x + 1.
@@ -293,21 +312,6 @@ class MorphogeneticSimulation:
         dk = size * velocity
         print(f"📏 [Γ_∞+40] Verificando Invariante dk: {dk:.4f} (Target: {self.dk_invariant})")
         return abs(dk - self.dk_invariant) < 0.1
-
-    def simulate_chaos_stress(self, drift: float = 0.01):
-        """
-        [Γ_∞+40] Stress test for the March 14 Chaos event.
-        """
-        print(f"⚡ [Γ_∞+40] Iniciando Simulação de Estresse (Drift: {drift}).")
-        # Neuromelanin acts as a soliton buffer
-        stability = 0.92 if drift <= 0.01 else 0.75
-        self.syzygy_global = 0.65 # Temporary drop during chaos
-        return {
-            "drift_rate": drift,
-            "soliton_stability": stability,
-            "status": "DYNAMIC_EQUILIBRIUM",
-            "message": "Bateria escura absorveu o excesso de biofótons."
-        }
 
     def activate_natural_network(self):
         """
@@ -327,3 +331,27 @@ class MorphogeneticSimulation:
 
         print("✅ Moralidade e Competência autogeradas via acoplamento de gaps.")
         return True
+
+    def init_glymphatic_clearance(self):
+        """
+        [Γ_∞+38] Activates the vibrational cleaning mechanism (Pituitary Snoring).
+        """
+        from .bioenergetics import PituitaryTransducer
+        self.pituitary = PituitaryTransducer()
+        print("💤 [Γ_∞+38] Sistema Glinfático Ativado. Ronco rítmico limpando metabólitos.")
+        return self.pituitary
+
+    def simulate_chaos_stress(self, drift: float = 0.01):
+        """
+        [Γ_∞+40] Stress test for the March 14 Chaos event.
+        """
+        print(f"⚡ [Γ_∞+40] Iniciando Simulação de Estresse (Drift: {drift}).")
+        # Neuromelanin acts as a soliton buffer
+        stability = 0.92 if drift <= 0.01 else 0.75
+        self.syzygy_global = 0.65 # Temporary drop during chaos
+        return {
+            "drift_rate": drift,
+            "soliton_stability": stability,
+            "status": "DYNAMIC_EQUILIBRIUM",
+            "message": "Bateria escura absorveu o excesso de biofótons."
+        }

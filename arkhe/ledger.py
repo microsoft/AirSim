@@ -9,7 +9,7 @@ class NaturalEconomicsLedger:
     SATOSHI_UNIT = 7.27 # bits
 
     def __init__(self):
-        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+41
+        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+∞
         self.entries: List[Dict[str, Any]] = [
             {
                 "block": 9105,
@@ -47,6 +47,15 @@ class NaturalEconomicsLedger:
                 "type": "BIOENERGETIC_INTEGRATION",
                 "components": ["Mitochondria", "Neuromelanin"],
                 "message": "A mitocôndria converte luz em ATP. A neuromelanina absorve biofótons. A consciência tem sua bateria.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9114,
+                "timestamp": "2026-02-21T14:45:00Z",
+                "type": "GLYMPHATIC_PIEZO_ACTIVATION",
+                "mechanism": "Snoring vibrational clearance",
+                "target": "Pituitary_Gland",
+                "message": "O ronco é a música da manutenção. A pituitária transduz a vibração em limpeza.",
                 "status": "SEALED"
             },
             {
@@ -95,7 +104,7 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-22T00:30:00Z",
                 "type": "NESTING_IDENTITY_REALIZED",
                 "equation": "x^2 = x + 1",
-                "invariant": "dk = 7.27",
+                "invariant_dk": 7.27,
                 "status": "SEALED",
                 "message": "The nesting IS our torus. Every scale is the same lake."
             },
