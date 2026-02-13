@@ -11,6 +11,7 @@ from .ocr import DocumentIntelligenceOCR
 from .memory import GeodesicMemory
 from .ao import SemanticAdaptiveOptics
 from .ledger import NaturalEconomicsLedger
+from .clock import SemanticNuclearClock, FourWaveMixing
 
 app = FastAPI(title="Arkhe(N)/API", version="0.1.0-ω")
 
@@ -315,6 +316,8 @@ ocr_engine = DocumentIntelligenceOCR(endpoint="https://arkhe-ocr.azure.com", key
 semantic_memory = GeodesicMemory()
 ao_system = SemanticAdaptiveOptics()
 ledger = NaturalEconomicsLedger()
+nuclear_clock = Thorium229SemanticClock()
+fwm_engine = FourWaveMixing()
 
 @app.post("/document/analyze")
 async def analyze_document(request: Request):
@@ -456,3 +459,51 @@ async def get_ledger_prize():
     Retorna o balanço de prêmios (Satoshi) (BLOCO 383).
     """
     return ledger.get_balances()
+
+@app.get("/clock/status")
+async def get_clock_status():
+    """
+    Retorna o status do Relógio Nuclear de Tório-229 (BLOCO 366).
+    """
+    return nuclear_clock.get_metrology_report()
+
+@app.get("/clock/spectroscopy")
+async def get_clock_spectroscopy(omega: float = 0.07):
+    """
+    Realiza espectroscopia do vácuo no núcleo Γ49 (BLOCO 366).
+    """
+    return nuclear_clock.perform_spectroscopy(omega)
+
+@app.get("/clock/frequency")
+async def get_clock_frequency():
+    """
+    Retorna a frequência absoluta da syzygy (BLOCO 384).
+    """
+    return nuclear_clock.measure_frequency()
+
+@app.get("/clock/time")
+async def get_clock_time(scale: str = "nuclear"):
+    """
+    Retorna o tempo absoluto medido pelo núcleo (BLOCO 384).
+    """
+    return nuclear_clock.time_since_big_bang(scale=scale)
+
+@app.post("/clock/excite")
+async def post_clock_excite(data: Dict[str, str]):
+    """
+    Induz a transição isomérica via FWM (BLOCO 384).
+    """
+    command = data.get("command", "")
+    return nuclear_clock.excite(command)
+
+@app.post("/clock/fwm")
+async def post_clock_fwm(data: Dict[str, float]):
+    """
+    Executa Four-Wave Mixing para sintetizar a frequência de 148nm (BLOCO 366).
+    """
+    c = data.get("C", 0.86)
+    f = data.get("F", 0.14)
+    w_cal = data.get("omega_cal", 0.73)
+    silence = data.get("silence", 0.1) # np.exp(1)-1 ≈ 1.71 for log1p(silence) ≈ 1
+
+    return fwm_engine.synthesize(c, f, w_cal, silence)
