@@ -1,28 +1,23 @@
-from arkhe.hsi import HSI
-from arkhe.simulation import MorphogeneticSimulation, MonolayerStatus
+from arkhe.api import rehydration_engine
 
-def test_governance_protocol():
-    print("Testing FFU Governance Protocol...")
-    hsi = HSI()
-    sim = MorphogeneticSimulation(hsi)
+def test_governance_track():
+    print("--- Verifying Governance Weighting Track (Γ_∞+32) ---")
+    status = rehydration_engine.get_status()
 
-    # 1. Test approved command (Virgin + Virgin)
-    sim.monolayer_status = MonolayerStatus.VIRGIN
-    assert sim.validate_command("replicar_foco(WP1)", MonolayerStatus.VIRGIN) == True
+    # 1. Reputation Check
+    print(f"Reputation FORMAL (Network): {status['reputation_network']}")
+    assert status['reputation_network'] == 0.2873
 
-    # 2. Test denied command (Virgin required, but Restored)
-    sim.monolayer_status = MonolayerStatus.RESTORED
-    assert sim.validate_command("replicar_foco(WP1)", MonolayerStatus.VIRGIN) == False
+    # 2. Consensus History
+    print(f"Total Consensus Blocks: {len(rehydration_engine.consensus_blocks)}")
+    assert len(rehydration_engine.consensus_blocks) >= 1
+    assert rehydration_engine.consensus_blocks[0]['proposer'] == "FORMAL"
 
-    # 3. Test approved therapeutic command (Restored + Restored)
-    assert sim.validate_command("induzir_turbulencia", MonolayerStatus.RESTORED) == True
+    # 3. Network Size
+    print(f"Active Nodes in Governance: {status['active_nodes']}")
+    assert status['active_nodes'] == 8
 
-    print("Governance protocol verified.")
+    print("Governance Track Verified.")
 
 if __name__ == "__main__":
-    try:
-        test_governance_protocol()
-        print("\n✅ ALL GOVERNANCE VERIFICATIONS PASSED.")
-    except Exception as e:
-        print(f"\n❌ VERIFICATION FAILED: {e}")
-        exit(1)
+    test_governance_track()

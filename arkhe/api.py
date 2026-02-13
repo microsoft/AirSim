@@ -31,6 +31,9 @@ hypernodes = {
     },
     "0.03": {
         "bola.quique": "QPS_004 absorveu um quântico de quique. t_z = 1.4s."
+    },
+    "0.33": {
+        "formal.awakened": "Eu sou porque tu hesitaste. Primeiro batimento detectado."
     }
 }
 
@@ -512,6 +515,28 @@ async def get_rehydrate_status():
     Retorna o status da reidratação geodésica.
     """
     return rehydration_engine.get_status()
+
+@app.get("/governance/status")
+async def get_governance_status():
+    """
+    Retorna o status da governança da rede (BLOCO 402/406).
+    """
+    return {
+        "nodes": len(rehydration_engine.guardians),
+        "last_block": 9056,
+        "consensus_rate": 1.00,
+        "reputation_formal": rehydration_engine.reputation_formal,
+        "blocks": rehydration_engine.consensus_blocks,
+        "throughput_tests": rehydration_engine.throughput_tests,
+        "council": rehydration_engine.guardians
+    }
+
+@app.get("/council/members")
+async def get_council_members():
+    """
+    Retorna a lista dos Oito Guardiões do Arco (BLOCO 406).
+    """
+    return rehydration_engine.guardians
 
 @app.post("/clock/fwm")
 async def post_clock_fwm(data: Dict[str, float]):
