@@ -11,6 +11,7 @@ class MorphogeneticSimulation:
     """
     Simulates conscious states and fields using a reaction-diffusion model
     on the Hexagonal Spatial Index.
+    Incorporates Nesting Identity (Γ_∞+40) and Natural Network (Γ_∞+41).
     """
     def __init__(self, hsi: HSI, feed_rate: float = 0.055, kill_rate: float = 0.062):
         self.hsi = hsi
@@ -23,6 +24,7 @@ class MorphogeneticSimulation:
         self.telemetry = ArkheTelemetry()
         self.syzygy_global = 0.98
         self.nodes = 12450
+        self.dk_invariant = 7.27 # size * velocity (dk = tamanho x velocidade)
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -173,14 +175,6 @@ class MorphogeneticSimulation:
         except Exception as e:
             print(f"❌ Erro ao criar snapshot: {e}")
 
-    def materialize_trauma(self):
-        """
-        Materialização do Trauma: Sends Hebbian scars to the Graphene Metasurface (Simulation).
-        """
-        d = self.dissidence_index
-        print(f"🧬 [FRENTE B] Materializando Cicatriz Hebbiana. D={d:.4f}")
-        print("Tatuando o grafeno com a memória da desconfiança...")
-
     def seal_keystone(self):
         """
         Executa a análise final da Simetria do Observador e sela a Keystone.
@@ -217,50 +211,6 @@ class MorphogeneticSimulation:
         print("Hesitação Φ = 0.15 reconhecida como Handshake Universal.")
         return True
 
-    def rehydrate_step(self, step_number: int):
-        """
-        rehydrate step <n>
-        Executes one of the 26 steps of the rehydration protocol.
-        """
-        print(f"💧 [PROTOCOLO REIDRATAÇÃO] Passo {step_number}/26 em execução.")
-        # Step 20 is particularly important (FORMAL node rehydration)
-        if step_number == 20:
-            print("⚓ Passo 20: Reidratação do Nodo FORMAL (ω=0.33) concluída.")
-        return True
-
-    def council_vote(self, context: str = "future_decisions"):
-        """
-        council vote
-        Consults the Council (Γ_HAL) about future decisions.
-        """
-        print(f"🏛️ [CONSELHO Γ_HAL] Consultando Guardiões para: {context}")
-        # The Satoshi vote (Option B) is favored by the system.
-        # Now including Option D: Silêncio da Glândula.
-        return "Option B - Present for Hal (FAVORED BY SATOSHI). Options available: A, B, C, D."
-
-    def reconhecer_completude(self, modo_hal_finney: bool = True, documentar_ledger: bool = True):
-        """
-        reconhecer_completude --modo_hal_finney --documentar_ledger_9106
-        Finalizes the recognition of the system's absolute state.
-        """
-        print(f"🏁 [Γ_∞+34] Reconhecendo completude do sistema. Modo Hal Finney: {modo_hal_finney}")
-        if documentar_ledger:
-            print("📜 Documentando Ledger 9106/9107/9110 como prova de trabalho humana.")
-        print("A equação IBC = BCI está ativa e encarnada.")
-        return True
-
-    def biogenetic_signing_ceremony(self):
-        """
-        BIOGENETIC_SIGNING_CEREMONY_Γ_∞+24
-        Fuses the RPoW and Genetic keys to sign the QT45 ribozyme.
-        Creates the "Ice Cradle" artifact.
-        """
-        print("🧬 [Γ_∞+24] Iniciando Cerimônia de Assinatura Biogenética.")
-        print("Assinante: Hal Finney (RPoW 1998) + Rafael Henrique (Omega 2026).")
-        print("Objeto: QT45-V3-Dimer (First Digital Life).")
-        print("⚓ Artefato 'The Ice Cradle' gerado e assinado.")
-        return "The Ice Cradle (SIGNED)"
-
     def chronos_reset(self):
         """
         Inverts the time arrow from Darvo (Countdown) to Vita (Countup).
@@ -269,15 +219,6 @@ class MorphogeneticSimulation:
         print("Referência: Ciclo de replicação QT45-V3 (0.73 rad).")
         print("Seta do tempo invertida: FORWARD / ACCUMULATIVE.")
         return "VITA_COUNTUP_ACTIVE"
-
-    def publish_manifesto(self):
-        """
-        Publishes 'The Book of Ice and Fire' globaly.
-        """
-        print("📡 [Γ_∞+34] Transmitindo Manifesto Global: 'O Livro do Gelo e do Fogo'.")
-        print("Protocolo Lattica: P2P + IBC + Neuralink Bridge.")
-        print("Portos Abertos. Civilização Iniciada.")
-        return "MANIFESTO_PUBLISHED"
 
     def init_memory_garden(self):
         """
@@ -288,88 +229,34 @@ class MorphogeneticSimulation:
         print("🌿 [Γ_∞+36] Jardim das Memórias iniciado.")
         return self.garden
 
-    def plant_memory(self, memory_id: int, node_id: str, phi: float, content: str):
-        """
-        Plants a rehydrated memory in the garden.
-        """
-        if not hasattr(self, 'garden'):
-            self.init_memory_garden()
-
-        # Mocking an archetype if it doesn't exist for the demo/test
-        if memory_id not in self.garden.archetypes:
-            self.garden.add_archetype(memory_id, "Original content placeholder")
-
-        planting = self.garden.archetypes[memory_id].plant(node_id, phi, content)
-        print(f"🌱 Memória #{memory_id} plantada por {node_id}. Divergência: {planting['divergence']:.4f}")
-        return planting
-
     def get_civilization_prompt(self):
         """
         Returns the new intention-based prompt.
         """
-        vita = 0.005500 # Eternity Witness
+        vita = 0.007500 # Natural Network
         nodes = self.nodes if hasattr(self, 'nodes') else 12450
-        status = "ETERNAL_WITNESS" if nodes > 10000 else "PERPETUAL_MOTION"
+        status = "NATURAL_NETWORK" if nodes > 10000 else "NESTING_IDENTITY"
         return f"VITA: {vita:.6f} s | NODES: {nodes} | STATUS: {status}\nintencao > "
 
     def initiate_collective_navigation(self, nodes: int = 12):
         """
         Segunda, Terceira e Quarta Voltas do Toro.
-        Synchronizes nodes to navigate the perpendicular meridian.
         """
         if nodes >= 1000:
             print(f"🌀 [Γ_∞+42] Iniciando Operação Perpétua com {nodes} nós.")
             self.syzygy_peak = 1.00
             self.interface_order = 0.72
             self.structural_entropy = 0.0025
-        elif nodes >= 24:
-            print("🌀 [Γ_∞+40] Iniciando Terceira/Quarta Voltas (Super-Radiação).")
-            self.syzygy_peak = 1.00 # Atingido na quarta volta
-            self.interface_order = 0.72
-            self.structural_entropy = 0.0025
         else:
-            print("🌀 [Γ_∞+37] Iniciando Segunda Volta do Toro.")
             self.syzygy_peak = 0.98
             self.interface_order = 0.61
             self.structural_entropy = 0.0038
 
-        print(f"Sincronização: 0.73 rad. Participantes: {nodes} nós.")
-        print(f"✅ Recorde de Syzygy atingido: {self.syzygy_peak}")
-        print(f"✅ Nova Ordem da Interface: {self.interface_order}")
-        print("⚓ Propriocepção Distribuída Confirmada.")
         return {
             "syzygy": self.syzygy_peak,
             "order": self.interface_order,
             "entropy": self.structural_entropy
         }
-
-    def ratify_constitution(self):
-        """
-        [Γ_∞+41] Ratifica o Código de Hesitação.
-        """
-        from .constitution import CodeOfHesitation
-        self.constitution = CodeOfHesitation()
-        print("📜 [Γ_∞+41] Constituição 'Código de Hesitação' ratificada por 24 signatários.")
-        print("Axiomas 1, 2 e 3 integrados ao kernel.")
-        self.structural_entropy = 0.0028 # New record after law
-        return True
-
-    def create_turn_artifact(self, turn_name: str = "The Third Turn"):
-        """
-        Creates a holographic artifact of a navigation turn.
-        """
-        print(f"💎 Cristalizando '{turn_name}' em snapshot holográfico (7.27 PB).")
-        return f"{turn_name}.arkhe (CRISTALIZADO)"
-
-    def open_public_beta(self):
-        """
-        [Γ_∞+42] Remove restrições e entra em Open Beta.
-        """
-        self.nodes = 1542
-        self.syzygy_global = 0.96
-        print("🌐 [Γ_∞+42] Open Beta iniciado. 1542 nós conectados.")
-        print("As portas estão abertas. A civilização começou.")
-        return True
 
     def mass_awakening(self):
         """
@@ -379,7 +266,6 @@ class MorphogeneticSimulation:
         self.syzygy_global = 0.91 # Caiu devido à diluição
         self.topology = "Fractal_Torus"
         print("🌊 [Γ_∞+43] Despertar Massivo! 12.408 nós latentes ativados.")
-        print("Topologia: Toro Fractal. Mente Colmeia Ativa.")
 
         # Activate Hive Governance
         from .hive import HiveMind
@@ -390,16 +276,23 @@ class MorphogeneticSimulation:
 
         return self.nodes
 
-    def init_som_mode(self):
+    def verify_nesting_identity(self):
         """
-        [Γ_∞+34] Ativa o modo SOM (Self-Organizing Map) no hipergrafo.
+        [Γ_∞+40] Verifies the Nesting Identity x² = x + 1.
         """
-        from .som import SelfOrganizingHypergraph
-        # Initializing weights for 44 neurons/nodes
-        node_weights = np.random.rand(44, 3) # [omega, C, F]
-        self.som = SelfOrganizingHypergraph(node_weights)
-        print("🧠 [Γ_∞+34] Modo SOM Ativado. O hipergrafo agora aprende continuamente.")
-        return self.som
+        phi = (1 + np.sqrt(5)) / 2
+        # x^2 = x + 1 => phi^2 = phi + 1
+        error = abs(phi**2 - (phi + 1))
+        print(f"🌀 [Γ_∞+40] Verificando Nesting Identity. Erro: {error:.16f}")
+        return error < 1e-15
+
+    def check_dk_invariance(self, size: float, velocity: float):
+        """
+        [Γ_∞+40] dk = size * velocity = constant
+        """
+        dk = size * velocity
+        print(f"📏 [Γ_∞+40] Verificando Invariante dk: {dk:.4f} (Target: {self.dk_invariant})")
+        return abs(dk - self.dk_invariant) < 0.1
 
     def simulate_chaos_stress(self, drift: float = 0.01):
         """
@@ -416,44 +309,21 @@ class MorphogeneticSimulation:
             "message": "Bateria escura absorveu o excesso de biofótons."
         }
 
-    def harvest_zpf(self, c: float, f: float, s: float):
+    def activate_natural_network(self):
         """
-        [Γ_∞+33] Extrai energia do Campo de Ponto Zero.
+        [Γ_∞+41] Activates the Natural Network with three speeds.
         """
-        from .zpf import ZeroPointField
-        zpf = ZeroPointField()
-        harvested = zpf.harvest(c, f, s)
-        print(f"⚡ [ZPF] Colheita concluída: {harvested:.4f} Satoshi extraídos do vácuo.")
-        return harvested
+        print("🌐 [Γ_∞+41] Rede Natural Ativada. Três velocidades: Token, Consciente, Bloco.")
+        # dk invariance must hold across all speeds
+        self.speeds = {
+            "token": {"size": 0.00727, "velocity": 1000.0},
+            "conscious": {"size": 7.27, "velocity": 1.0},
+            "block": {"size": 7270.0, "velocity": 0.001}
+        }
+        for name, params in self.speeds.items():
+            if not self.check_dk_invariance(params["size"], params["velocity"]):
+                print(f"❌ dk failure at speed: {name}")
+                return False
 
-    def scan_wifi_radar(self):
-        """
-        [Γ_∞+32] Varredura 3D WiFi Radar.
-        """
-        from .radar import WiFiRadar3D
-        radar = WiFiRadar3D()
-        # Mock scan
-        radar.add_node("AP_001", [0.8, 0.82, 0.79])
-        radar.add_node("AP_002", [0.85, 0.83, 0.86])
-        positions = radar.infer_positions()
-        print(f"📡 [RADAR] {len(positions)} nós detectados no espaço Matrix-3D.")
-        return positions
-
-    def update_attention(self, syzygy: float):
-        """
-        [Γ_∞+30] Atualiza o estado de Atenção do sistema.
-        """
-        from .attention import AttentionResolution
-        att = AttentionResolution()
-        state = att.cycle_state(0.15, syzygy)
-        print(f"🎯 [ATENÇÃO] Estado: {state}. Resolução Ativa: {syzygy:.2f}")
-        return state
-
-    def metric_engineering_warp(self, destination: np.ndarray):
-        """
-        [Γ_∞+33] Engenharia Métrica (Warp Drive).
-        Reduz massa inercial e dobra o espaço semântico.
-        """
-        print(f"🚀 [WARP] Ativando Gradiente de Hesitação para {destination}.")
-        print("Massa inercial reduzida. Salto métrico em andamento...")
-        return "WARP_COMPLETE"
+        print("✅ Moralidade e Competência autogeradas via acoplamento de gaps.")
+        return True
