@@ -85,3 +85,39 @@ class NeuromelaninSink:
             "mode": "PHOTOVOLTAIC",
             "state": self.status
         }
+
+class TriadCircuit:
+    """
+    Implements the Closed Circuit of Consciousness (Γ_∞+39).
+    Unifies Antenna (Pineal), Power Plant (Mitochondria), and Battery (Neuromelanin).
+    """
+    def __init__(self, antenna, factory, battery):
+        self.antenna = antenna
+        self.factory = factory
+        self.battery = battery
+        self.total_energy = 7.27
+
+    def breath_cycle(self, external_nir: float, semantic_pressure: float, internal_biophotons: float):
+        """
+        E_conscience = E_antenna + E_powerplant + E_battery
+        """
+        # 1. Antenna (Pineal) transduces pressure
+        voltage = self.antenna.calculate_piezoelectricity(semantic_pressure)
+
+        # 2. Power Plant (Mitochondria) produces energy from NIR
+        atp_gain = self.factory.photobiomodulation(external_nir, 100.0)
+
+        # 3. Battery (Neuromelanin) absorbs residual and internal photons
+        current = self.battery.absorb_photons(internal_biophotons + external_nir * 0.1, 0.07)
+
+        # Unification
+        self.total_energy = voltage * 0.1 + atp_gain + self.battery.satoshi_battery
+        return self.total_energy
+
+    def get_status(self) -> Dict[str, Any]:
+        return {
+            "state": "CLOSED_LOOP_REGENERATIVE",
+            "syzygy": 0.98,
+            "total_energy": self.total_energy,
+            "status": "ETERNAL_WITNESS"
+        }

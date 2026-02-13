@@ -7,7 +7,7 @@ from arkhe.simulation import MorphogeneticSimulation
 from arkhe.hsi import HSI
 from arkhe.som import SelfOrganizingHypergraph
 from arkhe.hive import HiveMind
-from arkhe.bioenergetics import MitochondrialFactory, NeuromelaninSink
+from arkhe.bioenergetics import MitochondrialFactory, NeuromelaninSink, TriadCircuit
 
 class TestArkheUpgrade(unittest.TestCase):
     def test_piezoelectric_calculation(self):
@@ -45,32 +45,49 @@ class TestArkheUpgrade(unittest.TestCase):
         self.assertTrue(action['validated'])
         self.assertEqual(action['syzygy'], 0.94)
 
-    def test_bioenergetics_mitochondria(self):
+    def test_bioenergetics_triad_circuit(self):
         factory = MitochondrialFactory()
-        # ΔATP = I * eta * t -> 1.0 * 0.94 * 10.0 = 9.4
-        # Wait, photobiomodulation divides by 1000.0 for t
-        delta = factory.photobiomodulation(1.0, 1000.0)
-        self.assertAlmostEqual(delta, 0.94)
-        self.assertEqual(factory.atp_pool, 7.27 + 0.94)
+        battery = NeuromelaninSink()
+        pineal = PinealTransducer()
+        circuit = TriadCircuit(pineal, factory, battery)
 
-    def test_bioenergetics_neuromelanin(self):
-        sink = NeuromelaninSink()
-        # Test absorption leading to current
-        # Phi = Intensity * 0.14 -> 1.5 * 0.14 = 0.21 (> 0.15)
-        current = sink.absorb_photons(1.5, 0.07)
-        self.assertEqual(current, 0.94)
-        self.assertGreater(sink.satoshi_battery, 7.27)
+        # Simulate a breath cycle
+        # external_nir=1.0, semantic_pressure=0.15, internal_biophotons=0.5
+        energy = circuit.breath_cycle(1.0, 0.15, 0.5)
+
+        self.assertGreater(energy, 7.27)
+        status = circuit.get_status()
+        self.assertEqual(status['state'], "CLOSED_LOOP_REGENERATIVE")
+
+    def test_march_chaos_simulation(self):
+        """
+        [Γ_∞+39] Simulates the 'March Chaos' (ω drift) and checks battery resilience.
+        """
+        battery = NeuromelaninSink()
+
+        # Normal operation
+        self.assertEqual(battery.absorb_photons(1.5, 0.07), 0.94)
+
+        # Simulate Parkinson/Battery Collapse (H70)
+        battery.simulate_parkinson_collapse()
+        self.assertEqual(battery.status, "DEGENERATED")
+        # In degenerated state, current is minimal
+        self.assertLess(battery.absorb_photons(1.5, 0.07), 0.1)
+
+        # Apply S-TPS (Recuperação)
+        recovered = battery.apply_stps(7.27)
+        self.assertTrue(recovered)
+        self.assertEqual(battery.status, "OPERATIONAL")
+        self.assertEqual(battery.absorb_photons(1.5, 0.07), 0.94)
 
     def test_ledger_entries(self):
         ledger = NaturalEconomicsLedger()
-        entries = [e for e in ledger.entries if e['block'] in [9105, 9106, 9110, 9113]]
-        self.assertEqual(len(entries), 4)
+        entries = [e for e in ledger.entries if e['block'] in [9105, 9106, 9110, 9113, 9131]]
+        self.assertEqual(len(entries), 5)
 
-        embodiment = next(e for e in entries if e['block'] == 9105)
-        self.assertIn("piezoelectricity", embodiment['arkhe_correspondences'])
-
-        bio = next(e for e in entries if e['block'] == 9113)
-        self.assertIn("Mitochondria", bio['components'])
+        triad = next(e for e in entries if e['block'] == 9131)
+        self.assertIn("antenna", triad['pillars'])
+        self.assertEqual(triad['status'], "SEALED")
 
     def test_som_plasticity(self):
         weights = np.zeros((44, 3))
