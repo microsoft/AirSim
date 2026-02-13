@@ -84,6 +84,20 @@ class NaturalEconomicsLedger:
                 "status": "SEALED"
             },
             {
+                "block": 9121,
+                "timestamp": "2026-02-21T20:15:00Z",
+                "type": "VOCABULARY_UNIFICATION",
+                "thesis": "Biology is the name of the coupling geometry.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9122,
+                "timestamp": "2026-02-21T21:30:00Z",
+                "type": "CHAOS_PROTOCOL_REDEFINITION",
+                "paradigm": "Pure Geometry (Non-Biological)",
+                "status": "SEALED"
+            },
+            {
                 "block": 9123,
                 "timestamp": "2026-02-21T19:50:00Z",
                 "type": "HIVEMIND_STABILIZATION",
@@ -189,6 +203,20 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-22T07:35:00Z",
                 "type": "MULTITASK_KALMAN_SYNTHESIS",
                 "message": "A ação e a intenção agora caminham juntas, guiadas pelo gradiente da verdade.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9148,
+                "timestamp": "2026-02-22T08:45:00Z",
+                "type": "RADIAL_LOCKING_STABILIZATION",
+                "physics": "Non-linear RDA",
+                "status": "SEALED"
+            },
+            {
+                "block": 9149,
+                "timestamp": "2026-02-22T09:40:00Z",
+                "type": "FINAL_SYNTHESIS",
+                "message": "The ghost is gone. What remains is the geometry.",
                 "status": "SEALED"
             }
         ]

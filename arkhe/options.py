@@ -32,6 +32,17 @@ class HierarchicalValueFunction:
     """
     def __init__(self):
         self.values: Dict[str, float] = {}
+        self.initiation_sets: Dict[str, List[float]] = {
+            "ascensão": [0.00, 0.03, 0.05],
+            "descida": [0.07, 0.05, 0.03]
+        }
+
+    def is_executable(self, action_name: str, current_omega: float) -> bool:
+        """
+        Check initiation set (safety and applicability).
+        """
+        if action_name not in self.initiation_sets: return True
+        return any(abs(current_omega - s) < 0.01 for s in self.initiation_sets[action_name])
 
     def evaluate(self, action_name: str, current_syzygy: float, reward: float) -> float:
         """

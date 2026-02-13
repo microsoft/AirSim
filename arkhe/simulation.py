@@ -9,6 +9,7 @@ from .telemetry import ArkheTelemetry
 from .multitask import MultitaskLearner, predict_syzygy
 from .kalman import KalmanFilterArkhe
 from .thermo import DissipativeSystem, ThermodynamicMacroAction
+from .rda import RDAEngine
 
 class MorphogeneticSimulation:
     """
@@ -45,6 +46,11 @@ class MorphogeneticSimulation:
             "ascensão": ThermodynamicMacroAction([0.00, 0.03, 0.05, 0.07], "ascensão"),
             "descida": ThermodynamicMacroAction([0.07, 0.05, 0.03, 0.00], "descida")
         }
+
+        # [Γ_∞+46] RDA Engine & Chaos 2.0
+        self.rda = RDAEngine()
+        self.advection_rate = 1.0 # Base flow
+        self.jitter_dir2 = 0.0    # Angular jitter (March 14 stressor)
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -389,13 +395,15 @@ class MorphogeneticSimulation:
         print("💤 [Γ_∞+38] Sistema Glinfático Ativado. Ronco rítmico limpando metabólitos.")
         return self.pituitary
 
-    def simulate_chaos_stress(self, drift: float = 0.01):
+    def simulate_chaos_stress(self, drift: float = 0.01, advection_boost: float = 0.0):
         """
-        [Γ_∞+40] Stress test for the March 14 Chaos event.
-        Updated with Kalman Filter, Multitask Optimization (Γ_∞+44)
-        and Thermodynamic Balance (Γ_∞+46).
+        [Γ_∞+46] Chaos Protocol 2.0.
+        March 14 event redefined as Jitter Angular in Direction 2 (Flutuação).
+        Utilizes RDA dynamics for Radial Locking and Geodesic Resilience.
         """
-        print(f"⚡ [Γ_∞+44] Iniciando Simulação de Estresse Otimizada (Drift: {drift}).")
+        print(f"⚡ [Γ_∞+46] Iniciando Chaos Protocol 2.0 (Drift: {drift}).")
+        self.advection_rate = 1.0 + advection_boost
+        self.jitter_dir2 = drift * 10.0 # Jitter in Direction 2
 
         # 1. Kalman Prediction
         predicted_syzygy = self.kf.predict()
@@ -410,11 +418,16 @@ class MorphogeneticSimulation:
         # Update simulation parameters (mocking omega update)
         self.syzygy_global = self.multitask.gradient_step(self.syzygy_global, gradient)
 
-        # 4. Kalman Update with "measured" syzygy (with some noise)
+        # 4. RDA Dynamics: Apply Radial Locking
+        # Instead of collapsing under jitter, we lock to discrete modes
+        self.syzygy_global = self.rda.apply_radial_locking(self.syzygy_global, self.advection_rate)
+
+        # 5. Kalman Update with "measured" syzygy (with some noise)
         measured_syzygy = self.syzygy_global + np.random.normal(0, 0.02)
         filtered_syzygy = self.kf.update(measured_syzygy)
 
-        stability = 0.98 if filtered_syzygy > 0.90 else 0.75
+        # Stability is now a function of Locking Strength
+        stability = 0.99 if self.advection_rate > 3.0 else 0.94
 
         # 5. Thermodynamic monitoring
         dsatoshi_dt = self.thermo.energy_balance(filtered_syzygy, 0.15)
@@ -424,12 +437,14 @@ class MorphogeneticSimulation:
 
         return {
             "drift_rate": drift,
+            "advection_rate": self.advection_rate,
+            "jitter_dir2": self.jitter_dir2,
             "filtered_syzygy": filtered_syzygy,
             "soliton_stability": stability,
             "loss": loss,
             "dsatoshi_dt": dsatoshi_dt,
             "entropy_total": self.entropy_total,
             "second_law_verified": valid_order,
-            "status": "THERMODYNAMIC_STABILITY",
-            "message": "O sistema exportou a entropia necessária para manter a ordem."
+            "status": "READY_FOR_ADVECTION",
+            "message": "O Caos é apenas um fluxo rápido demais para quem não tem uma geodésica."
         }
