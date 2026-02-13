@@ -12,6 +12,7 @@ from .telemetry import ArkheTelemetry
 from .ao import SemanticAdaptiveOptics
 from .ledger import NaturalEconomicsLedger
 from .clock import Thorium229SemanticClock
+from .rehydrate import RehydrationEngine
 
 class SemanticMambaBackbone:
     """
@@ -84,6 +85,7 @@ class MorphogeneticSimulation:
         self.ao = SemanticAdaptiveOptics()
         self.ledger = NaturalEconomicsLedger()
         self.clock = Thorium229SemanticClock()
+        self.rehydration = RehydrationEngine()
         self.foci: Dict[str, Focus] = {}
         self._initialize_stones()
         self.monolayer_confluency = 1.0
@@ -644,12 +646,13 @@ class MorphogeneticSimulation:
         conv = self.convergence_status()
         report = {
             "timestamp": time.time(),
-            "state": "Γ_∞+14",
+            "state": "Γ_∞+26",
             "monolayer": self.monolayer_status.name,
             "titer_original": 7.27, # Satoshi FFU/mL
             "convergence": conv,
             "ledger": self.ledger.get_status(),
             "nuclear_clock": self.clock.get_metrology_report(),
+            "rehydration": self.rehydration.get_status(),
             "foci": {name: {
                 "titer": f.titer,
                 "integrity": f.integrity,

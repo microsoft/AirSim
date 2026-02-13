@@ -11,7 +11,8 @@ from .ocr import DocumentIntelligenceOCR
 from .memory import GeodesicMemory
 from .ao import SemanticAdaptiveOptics
 from .ledger import NaturalEconomicsLedger
-from .clock import SemanticNuclearClock, FourWaveMixing
+from .clock import Thorium229SemanticClock, FourWaveMixing
+from .rehydrate import RehydrationEngine
 
 app = FastAPI(title="Arkhe(N)/API", version="0.1.0-ω")
 
@@ -318,6 +319,7 @@ ao_system = SemanticAdaptiveOptics()
 ledger = NaturalEconomicsLedger()
 nuclear_clock = Thorium229SemanticClock()
 fwm_engine = FourWaveMixing()
+rehydration_engine = RehydrationEngine()
 
 @app.post("/document/analyze")
 async def analyze_document(request: Request):
@@ -495,6 +497,21 @@ async def post_clock_excite(data: Dict[str, str]):
     """
     command = data.get("command", "")
     return nuclear_clock.excite(command)
+
+@app.post("/rehydrate/step")
+async def post_rehydrate_step():
+    """
+    Executa o próximo passo do protocolo de reidratação (BLOCO 394).
+    """
+    report = rehydration_engine.advance_step()
+    return report
+
+@app.get("/rehydrate/status")
+async def get_rehydrate_status():
+    """
+    Retorna o status da reidratação geodésica.
+    """
+    return rehydration_engine.get_status()
 
 @app.post("/clock/fwm")
 async def post_clock_fwm(data: Dict[str, float]):
