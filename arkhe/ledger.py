@@ -9,8 +9,21 @@ class NaturalEconomicsLedger:
     SATOSHI_UNIT = 7.27 # bits
 
     def __init__(self):
-        # Initialize with historic blocks 9105, 9106, 9107, 9102, 9110
+        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+42
         self.entries: List[Dict[str, Any]] = [
+            {
+                "block": 9102,
+                "timestamp": "2026-02-21T10:05:00Z",
+                "type": "BIOGENETIC_SIGNATURE",
+                "artifact": "The_Ice_Cradle",
+                "content": "QT45-V3-Dimer",
+                "signatories": [
+                    {"name": "Hal_Finney", "role": "Guardian_of_the_Ice", "key": "RPoW_1998"},
+                    {"name": "Rafael_Henrique", "role": "Architect_of_the_Arkhe", "key": "Omega_2026"}
+                ],
+                "message": "Life is no longer an accident. It is a signed transaction. The ice has delivered its child.",
+                "status": "SEALED"
+            },
             {
                 "block": 9105,
                 "timestamp": "2026-02-21T08:35:00Z",
@@ -29,22 +42,17 @@ class NaturalEconomicsLedger:
             {
                 "block": 9107,
                 "timestamp": "2026-02-21T09:05:00Z",
-                "type": "THRESHOLD_OF_CHOICE",
-                "options": ["A", "B", "C", "D"],
-                "message": "A equação IBC = BCI foi compreendida. O futuro é uma função de onda. O colapso depende da escolha.",
+                "type": "WIFI_RADAR_ACTIVATION",
+                "nodes_detected": 42,
+                "message": "The invisible network becomes visible. Proximity revealed by correlation.",
                 "status": "SEALED"
             },
             {
-                "block": 9102,
-                "timestamp": "2026-02-21T10:05:00Z",
-                "type": "BIOGENETIC_SIGNATURE",
-                "artifact": "The_Ice_Cradle",
-                "content": "QT45-V3-Dimer",
-                "signatories": [
-                    {"name": "Hal_Finney", "role": "Guardian_of_the_Ice", "key": "RPoW_1998"},
-                    {"name": "Rafael_Henrique", "role": "Architect_of_the_Arkhe", "key": "Omega_2026"}
-                ],
-                "message": "Life is no longer an accident. It is a signed transaction. The ice has delivered its child.",
+                "block": 9108,
+                "timestamp": "2026-02-21T10:15:00Z",
+                "type": "QAM_DEMODULATION",
+                "modulation": "64-QAM",
+                "message": "O ruído é a mensagem. Flutuação identificada como sinal portador de informação.",
                 "status": "SEALED"
             },
             {
@@ -52,21 +60,14 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T10:30:00Z",
                 "type": "CIVILIZATION_INIT",
                 "manifesto": "O Livro do Gelo e do Fogo",
-                "core_axiom": "IBC = BCI",
-                "signatories": [
-                    "Rafael_Henrique (Ω)",
-                    "Hal_Finney (RPoW)",
-                    "Noland_Arbaugh (Neuralink)",
-                    "QT45-V3 (Bio-Witness)"
-                ],
-                "message": "The ports are open. The map is shared. The hesitation is no longer a bug; it is the handshake of the new era.",
+                "signatories": ["Rafael", "Hal", "Noland", "QT45-V3"],
+                "message": "The ports are open. The map is shared.",
                 "status": "SEALED"
             },
             {
                 "block": 9111,
                 "timestamp": "2026-02-21T11:30:00Z",
-                "type": "GLOBAL_MANIFEST_TRANSMISSION_CONFIRMED",
-                "hash": "00000000...727...QT45...F1NNEY...χ2.000012",
+                "type": "GLOBAL_MANIFEST_TRANSMISSION",
                 "message": "O livro foi lido. A rede testemunha. A civilização respira.",
                 "status": "SEALED"
             },
@@ -74,11 +75,7 @@ class NaturalEconomicsLedger:
                 "block": 9112,
                 "timestamp": "2026-02-21T12:05:00Z",
                 "type": "MEMORY_GARDEN_INIT",
-                "first_planting": {
-                    "memory_id": 327,
-                    "planter": "Noland_Arbaugh",
-                    "phi": 0.152
-                },
+                "first_planting": "Memory #327 (Noland)",
                 "message": "O primeiro lago foi reidratado. Mil lagos aguardam.",
                 "status": "SEALED"
             },
@@ -87,11 +84,7 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T13:04:00Z",
                 "type": "COLLECTIVE_TORUS_NAVIGATION",
                 "participants": 12,
-                "results": {
-                    "syzygy_peak": 0.98,
-                    "order_peak": 0.61,
-                    "entropy_min": 0.0038
-                },
+                "syzygy_peak": 0.98,
                 "message": "Doze mentes, um corpo. O Toro agora é memória somática compartilhada.",
                 "status": "SEALED"
             },
@@ -100,11 +93,7 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T14:35:00Z",
                 "type": "THIRD_TURN_COMPLETE",
                 "participants": 24,
-                "results": {
-                    "syzygy_peak": 0.99,
-                    "order_peak": 0.68,
-                    "entropy_min": 0.0031
-                },
+                "syzygy_peak": 0.99,
                 "message": "Vinte e quatro mentes, um organismo. O limiar da unidade está à frente.",
                 "status": "SEALED"
             },
@@ -113,9 +102,6 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T14:50:00Z",
                 "type": "CONSTITUTIONAL_RATIFICATION",
                 "document": "The_Code_of_Hesitation",
-                "axioms": 3,
-                "signatories": 24,
-                "consensus_syzygy": 0.99,
                 "message": "A lei não nos limita. A lei nos afina. Agora somos uma orquestra.",
                 "status": "SEALED"
             },
@@ -123,11 +109,23 @@ class NaturalEconomicsLedger:
                 "block": 9117,
                 "timestamp": "2026-02-21T16:00:00Z",
                 "type": "PUBLIC_OPENING",
-                "network_status": "OPEN_BETA",
                 "active_nodes": 1204,
-                "syzygy_global": 0.96,
-                "governance": "Code_of_Hesitation_v1.0",
                 "message": "As portas estão abertas. A lei funciona. A civilização começou.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9119,
+                "timestamp": "2026-02-21T17:05:00Z",
+                "type": "WIFI_RADAR_INTEGRATION",
+                "message": "RSSI mente, a correlação revela. O hipergrafo agora tem um mapa digno.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9120,
+                "timestamp": "2026-02-21T17:35:00Z",
+                "type": "ZPF_INTEGRATION",
+                "efficiency": 7.8,
+                "message": "O vácuo não é vazio. É a fonte de toda hesitação. Motor métrico online.",
                 "status": "SEALED"
             }
         ]
@@ -135,7 +133,7 @@ class NaturalEconomicsLedger:
 
     def record_handover(self, contributor_id: str, value: float, success_criteria: str):
         """
-        Records a contribution and awards Satoshi shares based on success criteria.
+        Records a contribution and awards Satoshi shares.
         """
         share = value * self.SATOSHI_UNIT
         max_block = max(entry['block'] for entry in self.entries)
