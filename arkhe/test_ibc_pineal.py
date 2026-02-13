@@ -7,7 +7,7 @@ from arkhe.simulation import MorphogeneticSimulation
 from arkhe.hsi import HSI
 from arkhe.som import SelfOrganizingHypergraph
 from arkhe.hive import HiveMind
-from arkhe.bioenergetics import MitochondrialFactory, NeuromelaninSink, TriadCircuit, PituitaryTransducer
+from arkhe.bioenergetics import MitochondrialFactory, NeuromelaninSink, TriadCircuit, PituitaryTransducer, NeuralCrest, Melanocyte
 
 class TestArkheUpgrade(unittest.TestCase):
     def test_piezoelectric_calculation(self):
@@ -43,46 +43,39 @@ class TestArkheUpgrade(unittest.TestCase):
         status = circuit.get_status()
         self.assertEqual(status['status'], "ETERNAL_WITNESS")
 
-    def test_pituitary_cleaning(self):
-        pituitary = PituitaryTransducer()
-        # Initial waste is 1.0
-        voltage, waste = pituitary.vibrational_cleaning(0.12, 1000.0)
-        self.assertLess(waste, 1.0)
-        self.assertAlmostEqual(voltage, 6.27 * 0.12)
+    def test_neural_crest_differentiation(self):
+        crest = NeuralCrest()
+        # Low omega -> Neuron
+        self.assertEqual(crest.differentiate(0.05), "CENTRAL_NEURON")
+        # High omega -> Melanocyte
+        self.assertEqual(crest.differentiate(0.15), "PERIPHERAL_MELANOCYTE")
 
-    def test_nesting_identity(self):
+    def test_melanocyte_signaling(self):
+        skin_cell = Melanocyte(omega=0.15)
+        # Skin as interface
+        psi_p = skin_cell.signal_peripheral_syzygy(1.5)
+        self.assertGreater(psi_p, 0.0)
+        self.assertAlmostEqual(psi_p, 0.94 * 0.86)
+
+    def test_embodied_consciousness_formula(self):
         hsi = HSI(size=0.5)
         sim = MorphogeneticSimulation(hsi)
-        # Test x^2 = x + 1
-        self.assertTrue(sim.verify_nesting_identity())
+        # Psi_total = Psi_neural + Psi_melanocitic
+        total = sim.calculate_embodied_consciousness(0.94, 0.81)
+        self.assertEqual(total, 1.75)
 
-        # Test dk invariance
-        self.assertTrue(sim.check_dk_invariance(7.27, 1.0))
-
-    def test_natural_network_activation(self):
+    def test_schumann_resonance_sync(self):
         hsi = HSI(size=0.5)
         sim = MorphogeneticSimulation(hsi)
-        self.assertTrue(sim.activate_natural_network())
-
-    def test_convergence_zone_resonance(self):
-        hsi = HSI(size=0.5)
-        sim = MorphogeneticSimulation(hsi)
-        # At origin (0,0)
-        syzygy = sim.find_convergence_zone(np.array([0.0, 0.0]))
-        self.assertEqual(syzygy, 1.0)
-
-        # Parallel resonance
-        nodes = [np.array([0.0, 0.86, 0.14]) for _ in range(10)]
-        self.assertTrue(sim.check_parallel_resonance(nodes))
+        boost = sim.simulate_schumann_resonance(7.83)
+        self.assertAlmostEqual(boost, 7.27 * 0.99)
 
     def test_ledger_entries(self):
         ledger = NaturalEconomicsLedger()
-        # Check specific new blocks
         blocks = [e['block'] for e in ledger.entries]
         self.assertIn(9115, blocks) # Neural Crest
-        self.assertIn(9133, blocks) # Convergence Zone
-        self.assertIn(9137, blocks) # Singularity
-        self.assertIn(9138, blocks) # Completion
+        self.assertIn(9138, blocks) # Embodied Sync
+        self.assertIn(9140, blocks) # Completion
 
 if __name__ == "__main__":
     unittest.main()

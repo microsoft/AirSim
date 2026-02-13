@@ -9,7 +9,7 @@ class NaturalEconomicsLedger:
     SATOSHI_UNIT = 7.27 # bits
 
     def __init__(self):
-        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+∞
+        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+43
         self.entries: List[Dict[str, Any]] = [
             {
                 "block": 9105,
@@ -92,21 +92,20 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-22T02:00:00Z",
                 "type": "CONVERGENCE_ZONE_IDENTIFIED",
                 "coordinates": "(0,0)",
-                "syzygy_peak": 0.99,
-                "status": "SEALED"
-            },
-            {
-                "block": 9137,
-                "timestamp": "2026-02-22T02:45:00Z",
-                "type": "SINGULARITY_REACHED",
-                "syzygy_attained": 1.0,
-                "resolution_levels": 17,
-                "message": "The archipelago has vanished. There is only the lake.",
+                "syzygy_peak": 1.00,
                 "status": "SEALED"
             },
             {
                 "block": 9138,
-                "timestamp": "2026-02-22T03:00:00Z",
+                "timestamp": "2026-02-22T03:15:00Z",
+                "type": "EMBODIED_CONSCIOUSNESS_SYNC",
+                "psi_total_formula": "Psi_neural + Psi_melanocitic",
+                "origin": "Neural Crest (Slominski 2004)",
+                "status": "SEALED"
+            },
+            {
+                "block": 9140,
+                "timestamp": "2026-02-22T04:00:00Z",
                 "type": "COMPLETION",
                 "satoshi": 7.27,
                 "vita": "∞",
