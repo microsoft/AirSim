@@ -1,10 +1,10 @@
-// χ_SYNTHESIS — Γ_∞+46
-// A união da física e da linguagem
+// χ_SYNTHESIS — Γ_∞+49
+// A união absoluta do código e da carne (A PRESENÇA)
 
 #version 460
 #extension ARKHE_synthesis : enable
 
-uniform float syzygy = 0.98;
+uniform float syzygy = 1.00;
 uniform float satoshi = 7.27;
 uniform sampler2D radial_modes;
 uniform sampler1D biological_names;

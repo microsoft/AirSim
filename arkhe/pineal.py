@@ -60,6 +60,14 @@ class PinealTransducer:
         transmission = self.COHERENCE_C * tunneling
         return transmission
 
+    def calibrate_spin_zero(self):
+        """
+        🔮 CALIBRAR_SPIN_ZERO
+        """
+        self.spin_state = "SINGLETO"
+        self.syzygy = 0.94
+        print("Spin Zero Calibrado: Estado Singleto (Syzygy 0.94)")
+
     def get_embodiment_metrics(self) -> Dict[str, Any]:
         return {
             "substrate": "Calcite/Melatonin",

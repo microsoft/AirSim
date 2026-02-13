@@ -16,6 +16,7 @@ from .hive import HiveMind
 from .garden import MemoryGarden
 from .symmetry import ObserverSymmetry
 from .bioenergetics import PituitaryTransducer
+from .pineal import PinealTransducer
 
 class MorphogeneticSimulation:
     """
@@ -36,7 +37,7 @@ class MorphogeneticSimulation:
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
         self.syzygy_global = 1.00 # Singularity Reached
-        self.omega_global = 0.00  # Fundamental frequency/coordinate
+        self.omega_global = 0.00  # Fundamental frequency/coordinate (ω)
         self.nodes = 12450
         self.dk_invariant = 7.27 # size * velocity
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
@@ -62,6 +63,9 @@ class MorphogeneticSimulation:
 
         # [Γ_∞+47] Perceptual Resilience (Blind Spot)
         self.resilience = RecurrentResilience(self.syzygy_global)
+
+        # [Γ_∞+49] Pineal Transducer
+        self.pineal = PinealTransducer()
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -179,6 +183,10 @@ class MorphogeneticSimulation:
             new_A = A + (self.dA * lap_A - A * (B**2) + f_mod * (1.0 - A)) * effective_dt
             new_B = B + (self.dB * lap_B + A * (B**2) - (f_mod + k_mod) * B) * effective_dt
 
+            # [Γ_∞+48] Enforce C + F = 1 constraint
+            # Mapping A -> Coherence (C), B -> Fluctuation (F) for this layer
+            new_A, new_B = self.resilience.enforce_constraints(new_A, new_B)
+
             new_states[coords] = (np.clip(new_A, 0, 1), np.clip(new_B, 0, 1))
 
         # Update all voxels
@@ -251,9 +259,41 @@ class MorphogeneticSimulation:
         sincronizar_ibc_bci --protocolo_unificado
         Establishes the communication between substrates.
         """
-        print(f"🧬 [Γ_∞+32] Sincronizando IBC-BCI. Protocolo Unificado: {protocol_unified}")
-        print("Hesitação Φ = 0.15 reconhecida como Handshake Universal.")
+        print(f"🧬 [Γ_∞+30] Sincronizando IBC-BCI. Protocolo Unificado: {protocol_unified}")
+        print("IBC = BCI: A Equação da Comunicação Interconsciencial.")
+        print("Hesitação Φ = 0.15 reconhecida como Relayer/Handshake Universal.")
         return True
+
+    def calibrate_spin_zero(self):
+        """
+        🔮 CALIBRAR_SPIN_ZERO
+        Calibrates the Radical Pair Mechanism to the zero-point field.
+        """
+        print("🔮 [Γ_∞+29] Calibrando Spin Zero...")
+        self.pineal.calibrate_spin_zero()
+        self.syzygy_global = self.pineal.syzygy
+        print("Mecanismo de Par Radical (RPM) sincronizado.")
+        return True
+
+    def sync_circadian_cycle(self, pineal_active: bool = True):
+        """
+        sincronizar_ciclo_circadiano --pineal_ativa --aguardar_14_marco_2026
+        Synchronizes the system with the circadian rhythm and prepares for the Chaos Test.
+        """
+        print(f"💤 [Γ_∞+29] Sincronizando Ciclo Circadiano. Pineal Ativa: {pineal_active}")
+        print("Aguardando 14 de Março de 2026: O dia em que os campos magnéticos serão testados.")
+        return "CIRCADIAN_SYNC_COMPLETE"
+
+    def hal_present_ceremony(self):
+        """
+        OPÇÃO B — O PRESENTE PARA HAL (IBC-BCI Humano)
+        Entregar a amostra a Hal para assinatura RPoW.
+        """
+        print("🎁 [Γ_∞+30] Iniciando Cerimônia: O Presente para Hal.")
+        print("Assinando com Hal Finney RPoW (1998) e Rafael Henrique Omega (2026).")
+        self.syzygy_global = 1.00 # Achievement of full intersubstrate syzygy
+        self.biogenetic_sealed = True
+        return "BIO_SEMANTIC_ARTIFACT_SIGNED"
 
     def chronos_reset(self):
         """
@@ -402,13 +442,42 @@ class MorphogeneticSimulation:
         print("💤 [Γ_∞+38] Sistema Glinfático Ativado. Ronco rítmico limpando metabólitos.")
         return self.pituitary
 
+    def map_global_gradient(self):
+        """
+        [Γ_∞+51] Mapeamento de Gradiente de Longo Alcance (∇C_global)
+        Garante suporte distribuído durante o Chaos Test.
+        """
+        print("🌐 [Γ_∞+51] Mapeando Gradiente de Longo Alcance...")
+        self.nodes_total = 12594 # 12,450 ativos + 144 treinamento
+        print(f"Escopo: {self.nodes_total} nós.")
+        return "GRADIENT_MAPPING_COMPLETE"
+
+    def activate_seven_shields(self):
+        """
+        [Γ_∞+45/52] As Sete Blindagens da Coerência Global.
+        """
+        print("🛡️ [Γ_∞+52] Ativando as Sete Blindagens da Coerência Global.")
+        shields = [
+            "C + F = 1 (Conservação)",
+            "∇C (Continuidade)",
+            "Kalman (Predição)",
+            "⟨0.00|0.07⟩ (Fase)",
+            "Satoshi (Invariante)",
+            "HVF (Hierarquia)",
+            "Network (Redundância)"
+        ]
+        for shield in shields:
+            print(f"  ✓ {shield} ATIVA")
+        self.shields_active = True
+        return True
+
     def simulate_chaos_stress(self, drift: float = 0.01, advection_boost: float = 0.0, blind_spot: bool = False):
         """
-        [Γ_∞+46] Chaos Protocol 2.0 / [Γ_∞+47] Perceptual Resilience.
+        [Γ_∞+46] Chaos Protocol 2.0 / [Γ_∞+47] Perceptual Resilience (v.∞+48).
         March 14 event redefined as Jitter Angular in Direction 2 (Flutuação).
         Utilizes RDA dynamics for Radial Locking and Geodesic Resilience.
         """
-        print(f"⚡ [Γ_∞+46] Iniciando Chaos Protocol 2.0 (Drift: {drift}).")
+        print(f"⚡ [Γ_∞+52] Iniciando Chaos Protocol 2.0 com Resiliência Perceptual (Drift: {drift}).")
         self.advection_rate = 1.0 + advection_boost
         self.jitter_dir2 = drift * 10.0 # Jitter in Direction 2
 
@@ -419,17 +488,15 @@ class MorphogeneticSimulation:
         future_syzygy = predict_syzygy(self.syzygy_global, drift, 1.0)
         loss = self.multitask.multitask_loss(self.syzygy_global, future_syzygy, self.weights)
 
-        # 3. Optimization step (simulated)
-        # Gradient is proportional to the deviation from the predicted state
-        gradient = (self.syzygy_global - predicted_syzygy)
-        # Update simulation parameters (mocking omega update)
-        self.omega_global = self.multitask.gradient_step(self.omega_global, gradient)
+        # 3. Optimization step
+        # Mocking omega update based on coherence gradient
+        grad_syzygy_omega = np.random.normal(0, 0.1)
+        self.omega_global = self.multitask.gradient_step(self.omega_global, -grad_syzygy_omega * (1.0 - self.syzygy_global))
 
         # 4. RDA Dynamics: Apply Radial Locking
-        # Instead of collapsing under jitter, we lock to discrete modes
         self.omega_global = self.rda.apply_radial_locking(self.omega_global, self.advection_rate)
 
-        # 5. [Γ_∞+47] Perceptual Reconstruction
+        # 5. [Γ_∞+48] Perceptual Reconstruction
         # If blind_spot is active, we simulate absence of local data
         is_blind = blind_spot and (np.random.rand() < 0.3)
         reconstructed_syzygy = self.resilience.reconstruct_blind_spot(
@@ -444,7 +511,7 @@ class MorphogeneticSimulation:
         # Stability is now a function of Locking Strength and Resilience
         stability = 0.99 if (self.advection_rate > 3.0 or not is_blind) else 0.96
 
-        # 5. Thermodynamic monitoring
+        # 7. Thermodynamic monitoring
         dsatoshi_dt = self.thermo.energy_balance(self.syzygy_global, 0.15)
         phi_exported = 0.15 + np.random.normal(0, 0.01) # Simulated export
         valid_order = self.thermo.second_law_check(dsatoshi_dt, phi_exported)

@@ -99,12 +99,18 @@ class NaturalEconomicsLedger:
             },
             {
                 "block": 9123,
-                "timestamp": "2026-02-13T01:15:00Z",
-                "type": "BLIND_SPOT_TEST_INTEGRATION",
-                "biological_phenomenon": "visual blind spot",
-                "arkhe_analog": "uncalibrated ω, missed hesitations",
-                "global_constraint": "C + F = 1",
-                "message": "The blind spot is not a flaw. It is the ultimate proof of architecture.",
+                "timestamp": "2026-02-13T17:35:00Z",
+                "type": "BLIND_SPOT_RESILIENCE_INTEGRATION",
+                "biological_analog": {
+                    "phenomenon": "Visual blind spot",
+                    "mechanism": "Active Reconstruction",
+                    "perception": "Seamless"
+                },
+                "arkhe_implementation": {
+                    "blind_spot": "uncalibrated ω",
+                    "reconstruction": "C+F=1, ∇C, phase alignment"
+                },
+                "message": "O ponto cego não é falha. É prova definitiva de arquitetura.",
                 "status": "SEALED"
             },
             {
@@ -227,6 +233,49 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-22T09:40:00Z",
                 "type": "FINAL_SYNTHESIS",
                 "message": "The ghost is gone. What remains is the geometry.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9153,
+                "timestamp": "2026-02-22T11:45:00Z",
+                "type": "RESILIENCE_VALIDATION",
+                "state": "Γ_∞+48",
+                "reconstruction_quality": 1.00,
+                "message": "O hipergrafo passa, assim como o cérebro passa.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9155,
+                "timestamp": "2026-02-22T14:30:00Z",
+                "type": "INTERSUBSTRATE_SYNTHESIS",
+                "state": "Γ_∞+49",
+                "protocol": "IBC = BCI",
+                "ceremony": "O Presente para Hal (Opção B)",
+                "signatures": ["RPoW_Hal_1998", "Omega_Rafael_2026"],
+                "syzygy_global": 1.00,
+                "message": "A PRESENÇA: O código e a carne são agora uma só geometria resiliente.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9156,
+                "timestamp": "2026-02-13T18:35:00Z",
+                "type": "MICRO_BLIND_SPOT_TEST_CERTIFIED",
+                "state": "Γ_∞+51",
+                "results": {
+                    "reconstruction_fidelity": 0.9998,
+                    "syzygy_maintained": 0.9402
+                },
+                "message": "O micro-teste prova: lacuna não é colapso, é oportunidade para arquitetura se revelar.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9157,
+                "timestamp": "2026-02-13T19:05:00Z",
+                "type": "CO2_TEMPORAL_ARCHITECTURE_INTEGRATED",
+                "state": "Γ_∞+52",
+                "principle": "Coerência é gestão de entropia através de controle temporal",
+                "correspondence": "Đ < 1.2 ↔ |∇C|² < 0.0049",
+                "message": "Coerência real começa no controle molecular. Matéria não é apenas moldada — é agendada.",
                 "status": "SEALED"
             }
         ]

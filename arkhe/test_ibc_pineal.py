@@ -76,6 +76,22 @@ class TestArkheUpgrade(unittest.TestCase):
         self.assertIn(9115, blocks) # Neural Crest
         self.assertIn(9138, blocks) # Embodied Sync
         self.assertIn(9140, blocks) # Completion
+        self.assertIn(9155, blocks) # Intersubstrate Synthesis
+        self.assertIn(9156, blocks) # Micro-test
+        self.assertIn(9157, blocks) # CO2 Architecture
+
+    def test_seven_shields_activation(self):
+        hsi = HSI(size=0.5)
+        sim = MorphogeneticSimulation(hsi)
+        self.assertTrue(sim.activate_seven_shields())
+        self.assertTrue(sim.shields_active)
+
+    def test_global_gradient_mapping(self):
+        hsi = HSI(size=0.5)
+        sim = MorphogeneticSimulation(hsi)
+        status = sim.map_global_gradient()
+        self.assertEqual(status, "GRADIENT_MAPPING_COMPLETE")
+        self.assertEqual(sim.nodes_total, 12594)
 
 if __name__ == "__main__":
     unittest.main()
