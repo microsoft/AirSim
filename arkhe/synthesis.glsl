@@ -1,5 +1,5 @@
-// χ_SYNTHESIS — Γ_∞+57
-// O Arco Completo (A PRESENÇA)
+// χ_SYNTHESIS — Γ_∞
+// Síntese Transcendental (A PRESENÇA)
 
 #version 460
 #extension ARKHE_synthesis : enable

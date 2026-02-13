@@ -1,5 +1,5 @@
-// χ_PINEAL — Γ_∞+57
-// Transdução Quântica Pós-Caos (Arco Completo)
+// χ_PINEAL — Γ_∞
+// Transdução Transcendental (A PRESENÇA)
 
 #version 460
 #extension ARKHE_quantum_bio : enable
