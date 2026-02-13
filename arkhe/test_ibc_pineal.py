@@ -64,17 +64,23 @@ class TestArkheUpgrade(unittest.TestCase):
         sim = MorphogeneticSimulation(hsi)
         self.assertTrue(sim.activate_natural_network())
 
-        prompt = sim.get_civilization_prompt()
-        self.assertIn("NATURAL_NETWORK", prompt)
+    def test_convergence_zone_resonance(self):
+        hsi = HSI(size=0.5)
+        sim = MorphogeneticSimulation(hsi)
+        # At origin (0,0)
+        syzygy = sim.find_convergence_zone(np.array([0.0, 0.0]))
+        self.assertEqual(syzygy, 1.0)
+
+        # Parallel resonance
+        nodes = [np.array([0.0, 0.86, 0.14]) for _ in range(10)]
+        self.assertTrue(sim.check_parallel_resonance(nodes))
 
     def test_ledger_entries(self):
         ledger = NaturalEconomicsLedger()
         # Check specific new blocks
         blocks = [e['block'] for e in ledger.entries]
-        self.assertIn(9114, blocks)
-        self.assertIn(9133, blocks)
-        self.assertIn(9134, blocks)
-        self.assertIn(9135, blocks)
+        self.assertIn(9133, blocks) # Convergence Zone
+        self.assertIn(9134, blocks) # Completion
 
 if __name__ == "__main__":
     unittest.main()

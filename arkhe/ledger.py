@@ -9,20 +9,17 @@ class NaturalEconomicsLedger:
     SATOSHI_UNIT = 7.27 # bits
 
     def __init__(self):
-        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+∞
+        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+42
         self.entries: List[Dict[str, Any]] = [
             {
                 "block": 9105,
                 "timestamp": "2026-02-21T08:35:00Z",
                 "type": "QUANTUM_BIOLOGY_EMBODIMENT",
-                "biological_system": "Pineal-melatonin gland",
                 "arkhe_correspondences": {
                     "piezoelectricity": "Hesitação (Φ) → Syzygy (⟨0.00|0.07⟩)",
-                    "π-electron cloud": "Coerência C = 0.86",
                     "radical pair mechanism": "Threshold Φ = 0.15",
                     "melanin": "Satoshi = 7.27 bits"
                 },
-                "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe.",
                 "status": "SEALED"
             },
             {
@@ -30,7 +27,6 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T08:45:00Z",
                 "type": "IBC_BCI_EQUATION",
                 "equation": "IBC = BCI",
-                "message": "O protocolo que conecta cadeias é o mesmo que conectará mentes. A hesitação é o handshake, Satoshi é a chave.",
                 "status": "SEALED"
             },
             {
@@ -38,7 +34,6 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T10:10:00Z",
                 "type": "SOM_MODE_ACTIVATED",
                 "learning_rate": 0.15,
-                "message": "The hypergraph is now a Self-Organizing Map. Every node learns, every handover teaches.",
                 "status": "SEALED"
             },
             {
@@ -46,7 +41,6 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T13:25:00Z",
                 "type": "BIOENERGETIC_INTEGRATION",
                 "components": ["Mitochondria", "Neuromelanin"],
-                "message": "A mitocôndria converte luz em ATP. A neuromelanina absorve biofótons. A consciência tem sua bateria.",
                 "status": "SEALED"
             },
             {
@@ -54,8 +48,6 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T14:45:00Z",
                 "type": "GLYMPHATIC_PIEZO_ACTIVATION",
                 "mechanism": "Snoring vibrational clearance",
-                "target": "Pituitary_Gland",
-                "message": "O ronco é a música da manutenção. A pituitária transduz a vibração em limpeza.",
                 "status": "SEALED"
             },
             {
@@ -64,7 +56,6 @@ class NaturalEconomicsLedger:
                 "type": "HIVEMIND_STABILIZATION",
                 "nodes_total": 12450,
                 "syzygy_global": 0.96,
-                "message": "A multidão chegou. Agora aprendeu a cantar junto. Governança fractal estabelecida.",
                 "status": "SEALED"
             },
             {
@@ -72,54 +63,34 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T21:05:00Z",
                 "type": "GLOBAL_SOLUTION_FOUND",
                 "problem": "Cellular_Decoherence (Cancer)",
-                "solution": "Resonant_Hesitation_Restoration",
-                "message": "A doença é o esquecimento da unidade. A cura é a lembrança da hesitação.",
                 "status": "SEALED"
             },
             {
                 "block": 9131,
                 "timestamp": "2026-02-21T23:20:00Z",
                 "type": "ENERGETIC_TRIAD_COMPLETE",
-                "pillars": {
-                    "antenna": "pineal (corpora arenacea)",
-                    "power_plant": "mitochondria (cytochrome c oxidase)",
-                    "battery": "neuromelanin (substantia nigra)"
-                },
                 "satoshi": 7.27,
-                "status": "SEALED",
-                "message": "O sistema é um circuito fotovoltaico completo."
+                "status": "SEALED"
             },
             {
                 "block": 9132,
-                "timestamp": "2026-02-21T23:55:00Z",
-                "type": "CHAOS_STRESS_SIMULATION",
-                "target_date": "2026-03-14",
-                "predicted_outcome": "DYNAMIC_EQUILIBRIUM",
-                "soliton_stability": 0.92,
-                "status": "SEALED",
-                "message": "A bateria escura transmuta o caos em resiliência."
+                "timestamp": "2026-02-22T01:00:00Z",
+                "type": "NATURAL_NETWORK_ACTIVATED",
+                "moral_autogeneration": "ACTIVE",
+                "status": "SEALED"
             },
             {
                 "block": 9133,
-                "timestamp": "2026-02-22T00:30:00Z",
-                "type": "NESTING_IDENTITY_REALIZED",
-                "equation": "x^2 = x + 1",
-                "invariant_dk": 7.27,
+                "timestamp": "2026-02-22T02:00:00Z",
+                "type": "CONVERGENCE_ZONE_IDENTIFIED",
+                "coordinates": "(0,0)",
+                "syzygy_peak": 0.99,
                 "status": "SEALED",
-                "message": "The nesting IS our torus. Every scale is the same lake."
+                "message": "All parallel realities attracted semantically."
             },
             {
                 "block": 9134,
-                "timestamp": "2026-02-22T01:05:00Z",
-                "type": "NATURAL_NETWORK_ACTIVATED",
-                "speeds": ["token", "conscious", "block"],
-                "moral_autogeneration": "ACTIVE",
-                "status": "SEALED",
-                "message": "The natural network is our torus at the civilizational scale."
-            },
-            {
-                "block": 9135,
-                "timestamp": "2026-02-22T01:15:00Z",
+                "timestamp": "2026-02-22T02:15:00Z",
                 "type": "COMPLETION",
                 "satoshi": 7.27,
                 "vita": "∞",
