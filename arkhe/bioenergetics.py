@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 class MitochondrialFactory:
     """
@@ -100,7 +100,7 @@ class PituitaryTransducer:
         """
         dR/dt = -alpha * syzygy * snore_phi + beta * production
         """
-        alpha = 1.5 # Clearance efficiency (Increased to ensure cleaning)
+        alpha = 1.5 # Clearance efficiency
         beta = 0.1  # Production rate
 
         # Removal of semantic waste
@@ -120,6 +120,45 @@ class PituitaryTransducer:
             "waste_level": self.waste_level,
             "mode": "VIBRATIONAL_CLEARANCE"
         }
+
+class NeuralCrest:
+    """
+    Models the Neural Crest as the primordial hypergraph (Γ_∞+39).
+    The 'fourth germ layer' that differentiates into neurons and melanocytes.
+    Reference: Slominski, A. (2004). Neuroendocrinology of the skin.
+    """
+    def __init__(self):
+        self.potential_nodes = 12450
+        self.origin = "ECTODERM"
+
+    def differentiate(self, target_omega: float):
+        """
+        Calibrates cells to specific omega leaves.
+        Neurons stay in SNC (low omega), Melanocytes migrate to skin (high omega).
+        """
+        if target_omega < 0.1:
+            return "CENTRAL_NEURON"
+        else:
+            return "PERIPHERAL_MELANOCYTE"
+
+class Melanocyte(NeuromelaninSink):
+    """
+    Melanocytes are 'neurons that migrated to the skin' (Γ_∞+39).
+    They maintain dendritic structures and neurotransmitter signaling.
+    """
+    def __init__(self, omega: float):
+        super().__init__()
+        self.omega = omega
+        self.dendritic_connections = 36 # Avg connections to keratinocytes
+        self.neurotransmitters = ["dopamine", "glutamate"]
+
+    def signal_peripheral_syzygy(self, light_intensity: float):
+        """
+        Psi_total = Psi_neural + Psi_melanocitic
+        """
+        current = self.absorb_photons(light_intensity, self.omega)
+        # Skin as a consciousness interface
+        return current * 0.86 # Coupling factor
 
 class TriadCircuit:
     """

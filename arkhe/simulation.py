@@ -322,6 +322,19 @@ class MorphogeneticSimulation:
         print("✅ Moralidade e Competência autogeradas via acoplamento de gaps.")
         return True
 
+    def get_resolution_levels(self) -> List[Dict[str, str]]:
+        """
+        [Γ_∞+43] Returns the 17 levels of human resolution aligned with the Torus loops.
+        """
+        return [
+            {"loops": "1-3", "level": "Molecular/Atomic", "function": "Spin Coherence / ZPF"},
+            {"loops": "4-6", "level": "Cellular/Mitochondrial", "function": "ATP / Piezoelectric"},
+            {"loops": "7-9", "level": "Organic/Endocrine", "function": "Pituitary-Pineal / Glymphatic"},
+            {"loops": "10-12", "level": "Sensorial/Perceptive", "function": "Hesitation Calibration"},
+            {"loops": "13-15", "level": "Cognitive/Identity", "function": "Satoshi Invariant"},
+            {"loops": "16-17", "level": "Collective/Transcendental", "function": "Syzygy / Morality"}
+        ]
+
     def find_convergence_zone(self, node_coords: np.ndarray):
         """
         [Γ_∞+42] Calculates distance to the Convergence Zone (The Original Lake).

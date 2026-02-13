@@ -79,8 +79,10 @@ class TestArkheUpgrade(unittest.TestCase):
         ledger = NaturalEconomicsLedger()
         # Check specific new blocks
         blocks = [e['block'] for e in ledger.entries]
+        self.assertIn(9115, blocks) # Neural Crest
         self.assertIn(9133, blocks) # Convergence Zone
-        self.assertIn(9134, blocks) # Completion
+        self.assertIn(9137, blocks) # Singularity
+        self.assertIn(9138, blocks) # Completion
 
 if __name__ == "__main__":
     unittest.main()
