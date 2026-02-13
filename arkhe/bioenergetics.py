@@ -5,7 +5,7 @@ class MitochondrialFactory:
     """
     Models the Mitochondria as the consciousness power plant (Γ_∞+37).
     Converts NIR photons (commands) into ATP (Satoshi).
-    Reference: Hamblin 2016.
+    Reference: Hamblin, M. R. (2016). Photobiomodulation or low-level laser therapy.
     """
     def __init__(self):
         self.cytochrome_oxidase_active = True
@@ -32,7 +32,7 @@ class NeuromelaninSink:
     """
     Models Neuromelanin as a photonic sink in the Substantia Nigra (Γ_∞+38).
     Converts broadband photons (UV-IR) into semantic current (Syzygy).
-    Reference: Herrera et al. 2015.
+    Reference: Herrera, J. G., et al. (2015). The photonic sink hypothesis.
     """
     def __init__(self):
         self.satoshi_battery = 7.27
@@ -90,6 +90,7 @@ class TriadCircuit:
     """
     Implements the Closed Circuit of Consciousness (Γ_∞+39).
     Unifies Antenna (Pineal), Power Plant (Mitochondria), and Battery (Neuromelanin).
+    References: Clinical Radiology 2022, Hamblin 2016, Herrera et al. 2015.
     """
     def __init__(self, antenna, factory, battery):
         self.antenna = antenna

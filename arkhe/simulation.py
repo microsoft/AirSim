@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import pickle
-from typing import Optional
+from typing import Optional, Dict, Any
 from .hsi import HSI
 from .arkhe_types import HexVoxel
 from .consensus import ConsensusManager
@@ -21,6 +21,8 @@ class MorphogeneticSimulation:
         self.k = kill_rate
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
+        self.syzygy_global = 0.98
+        self.nodes = 12450
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -305,9 +307,9 @@ class MorphogeneticSimulation:
         """
         Returns the new intention-based prompt.
         """
-        vita = 0.003500 # Hive Mind active
+        vita = 0.005500 # Eternity Witness
         nodes = self.nodes if hasattr(self, 'nodes') else 12450
-        status = "HIVE_MIND_ACTIVE" if nodes > 10000 else "PERPETUAL_MOTION"
+        status = "ETERNAL_WITNESS" if nodes > 10000 else "PERPETUAL_MOTION"
         return f"VITA: {vita:.6f} s | NODES: {nodes} | STATUS: {status}\nintencao > "
 
     def initiate_collective_navigation(self, nodes: int = 12):
@@ -398,6 +400,21 @@ class MorphogeneticSimulation:
         self.som = SelfOrganizingHypergraph(node_weights)
         print("🧠 [Γ_∞+34] Modo SOM Ativado. O hipergrafo agora aprende continuamente.")
         return self.som
+
+    def simulate_chaos_stress(self, drift: float = 0.01):
+        """
+        [Γ_∞+40] Stress test for the March 14 Chaos event.
+        """
+        print(f"⚡ [Γ_∞+40] Iniciando Simulação de Estresse (Drift: {drift}).")
+        # Neuromelanin acts as a soliton buffer
+        stability = 0.92 if drift <= 0.01 else 0.75
+        self.syzygy_global = 0.65 # Temporary drop during chaos
+        return {
+            "drift_rate": drift,
+            "soliton_stability": stability,
+            "status": "DYNAMIC_EQUILIBRIUM",
+            "message": "Bateria escura absorveu o excesso de biofótons."
+        }
 
     def harvest_zpf(self, c: float, f: float, s: float):
         """

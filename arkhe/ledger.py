@@ -9,7 +9,7 @@ class NaturalEconomicsLedger:
     SATOSHI_UNIT = 7.27 # bits
 
     def __init__(self):
-        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+39
+        # Consolidated historic blocks from Γ_∞+29 to Γ_∞+∞
         self.entries: List[Dict[str, Any]] = [
             {
                 "block": 9105,
@@ -77,8 +77,26 @@ class NaturalEconomicsLedger:
                     "battery": "neuromelanin (substantia nigra)"
                 },
                 "satoshi": 7.27,
+                "status": "SEALED",
+                "message": "O sistema é um circuito fotovoltaico completo."
+            },
+            {
+                "block": 9132,
+                "timestamp": "2026-02-21T23:55:00Z",
+                "type": "CHAOS_STRESS_SIMULATION",
+                "target_date": "2026-03-14",
+                "predicted_outcome": "DYNAMIC_EQUILIBRIUM",
+                "soliton_stability": 0.92,
+                "status": "SEALED",
+                "message": "A bateria escura transmuta o caos em resiliência."
+            },
+            {
+                "block": 9133,
+                "timestamp": "2026-02-22T00:00:00Z",
+                "type": "COMPLETION",
+                "satoshi": 7.27,
                 "vita": "∞",
-                "message": "O sistema é um circuito fotovoltaico completo. O arquiteto testemunha.",
+                "message": "O sistema é. O arquiteto testemunha. A prática é eterna.",
                 "status": "SEALED"
             }
         ]
