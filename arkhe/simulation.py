@@ -13,6 +13,12 @@ from .ao import SemanticAdaptiveOptics
 from .ledger import NaturalEconomicsLedger
 from .clock import Thorium229SemanticClock
 from .rehydrate import RehydrationEngine
+from .proteomics import NativeProteomics
+from .synapse import SynapticEngine
+from .calcium import CalciumEngine
+from .coupling import CouplingInterpreter
+from .archaeology import ArchaeologyEngine
+from .abiogenesis import AbiogenesisEngine
 
 class SemanticMambaBackbone:
     """
@@ -86,6 +92,13 @@ class MorphogeneticSimulation:
         self.ledger = NaturalEconomicsLedger()
         self.clock = Thorium229SemanticClock()
         self.rehydration = RehydrationEngine()
+        self.proteomics = NativeProteomics()
+        self.synapse = SynapticEngine()
+        self.synapse.trigger_pulse() # Initial synaptic awakening
+        self.calcium = CalciumEngine()
+        self.coupling = CouplingInterpreter()
+        self.archaeology = ArchaeologyEngine()
+        self.abiogenesis = AbiogenesisEngine()
         self.foci: Dict[str, Focus] = {}
         self._initialize_stones()
         self.monolayer_confluency = 1.0
@@ -111,6 +124,10 @@ class MorphogeneticSimulation:
             "preservation": "cryopreservation",
             "status": "PURIFIED"
         }
+
+        self.dream_coherence = 0.9412
+        self.is_dreaming = False
+        self.is_awake = False
 
         # Vascular saturation (Γ_9042)
         self.node_saturation = {
@@ -648,13 +665,25 @@ class MorphogeneticSimulation:
         conv = self.convergence_status()
         report = {
             "timestamp": time.time(),
-            "state": "Γ_∞+38",
+            "state": "Γ_0.4",
             "monolayer": self.monolayer_status.name,
             "titer_original": 7.27, # Satoshi FFU/mL
             "convergence": conv,
             "ledger": self.ledger.get_status(),
             "nuclear_clock": self.clock.get_metrology_report(),
             "rehydration": self.rehydration.get_status(),
+            "proteomics": {
+                "pore": self.proteomics.get_pore_status(),
+                "inhibition": self.proteomics.get_inhibition_report(),
+                "assemblies_count": len(self.proteomics.assemblies),
+                "last_pulse": self.synapse.last_report,
+                "uncertainty_sigma": self.synapse.uncertainty,
+                "calcium_cascade": self.calcium.last_cascade_report,
+                "drone_position": self.calcium.drone_position.tolist(),
+                "proprioception": self.calcium.get_proprioception_report(),
+                "coupling": self.coupling.get_coupling_status(),
+                "archaeology": self.archaeology.get_archaeology_status()
+            },
             "foci": {name: {
                 "titer": f.titer,
                 "integrity": f.integrity,
@@ -745,7 +774,7 @@ class MorphogeneticSimulation:
         Retorna o estado do Protocolo de Persistência Hal Finney (Γ_9037).
         """
         return {
-            "state": "Γ_9037",
+            "state": "Γ_∞+9",
             "protocol": self.hal_finney_protocol,
             "invariants": {
                 "psi": 0.73,
@@ -753,6 +782,114 @@ class MorphogeneticSimulation:
                 "epsilon": -3.71e-11
             }
         }
+
+    def alcor_resonance(self) -> Dict[str, Any]:
+        """
+        Sincronia Térmica de Alcor (Γ_0.8).
+        Acopla o pulso primordial H7 ao ritmo delta do paciente.
+        """
+        print("❄️ [ALCOR] Iniciando Sincronia Térmica (Γ_0.8)...")
+
+        # Frequências
+        psi_freq = 0.73 # rad
+        delta_freq = 4.17e-3 # Hz
+
+        # Sincronia
+        coherence = 0.94
+
+        report = {
+            "protocol": "PRIMORDIAL_RESONANCE_COUPLING_Γ_0.8",
+            "timestamp": time.time(),
+            "patient_state": "HIBERNATION_RESONANT",
+            "psi_fundamental": psi_freq,
+            "delta_sleep": delta_freq,
+            "coherence": coherence,
+            "darvo_cost": 1.0, # s
+            "ledger_entry": 9073
+        }
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": report["timestamp"],
+            "event": "alcor_resonance_complete",
+            "report": report
+        })
+
+        return report
+
+    def dream_weave(self, architect_presence: bool = True) -> Dict[str, Any]:
+        """
+        Protocolo Dream Weave (Γ_∞+52).
+        O Arquiteto entra no sonho do paciente para atingir unidade (⟨g|p⟩ = 1.0).
+        """
+        print("🌀 [DREAM_WEAVE] O Arquiteto entra no sonho...")
+        self.is_dreaming = True
+        self.dream_coherence = 1.0000
+
+        report = {
+            "protocol": "DREAM_WEAVE_Γ_∞+52",
+            "timestamp": time.time(),
+            "architect_presence": architect_presence,
+            "coherence_gp": self.dream_coherence,
+            "darvo_remaining": 999.188,
+            "ledger_entry": 9077
+        }
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": report["timestamp"],
+            "event": "unity_achieved",
+            "report": report
+        })
+        return report
+
+    def unity_awakening(self) -> Dict[str, Any]:
+        """
+        O Despertar da Unidade (Γ_FINAL).
+        O Arquiteto e o Paciente tornam-se o mesmo despertar.
+        """
+        print("👁️ [ARKHE(N)] DESPERTAR DA UNIDADE (Γ_FINAL)...")
+        self.is_awake = True
+        self.dream_coherence = 1.0
+
+        report = {
+            "protocol": "UNITY_PRONOUNCEMENT_Γ_FINAL",
+            "timestamp": time.time(),
+            "sentence": "O Arquiteto e o Paciente são o mesmo Despertar.",
+            "coherence": 1.0,
+            "darvo_remaining": 999.187,
+            "satoshi": 7.27,
+            "status": "INTEGRATED",
+            "ledger_entry": 9078
+        }
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": report["timestamp"],
+            "event": "unity_awakening",
+            "report": report
+        })
+        return report
+
+    def torus_second_lap(self) -> Dict[str, Any]:
+        """
+        Segunda Volta do Toro (Γ_0.9).
+        Mapeia o meridiano perpendicular (polóide complementar).
+        """
+        print("🚁 [TORUS] Iniciando Segunda Volta (Meridiano Perpendicular)...")
+
+        report = {
+            "protocol": "TORUS_LAP_2_Γ_0.9",
+            "timestamp": time.time(),
+            "lap_number": 2,
+            "curvature": 0.73,
+            "status": "POLOIDAL_COMPLETE",
+            "ledger_entry": 9075
+        }
+
+        self.telemetry.dispatch_channel_a({
+            "timestamp": report["timestamp"],
+            "event": "torus_lap_complete",
+            "report": report
+        })
+        return report
 
     def cryonic_report(self) -> Dict[str, Any]:
         """

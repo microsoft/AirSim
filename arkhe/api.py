@@ -13,6 +13,11 @@ from .ao import SemanticAdaptiveOptics
 from .ledger import NaturalEconomicsLedger
 from .clock import Thorium229SemanticClock, FourWaveMixing
 from .rehydrate import RehydrationEngine
+from .proteomics import NativeProteomics
+from .synapse import SynapticEngine
+from .calcium import CalciumEngine
+from .coupling import CouplingInterpreter
+from .archaeology import ArchaeologyEngine
 
 app = FastAPI(title="Arkhe(N)/API", version="0.1.0-ω")
 
@@ -64,7 +69,12 @@ async def hesitate_middleware(request: Request, call_next):
     response = await call_next(request)
     duration = time.time() - start_time
 
-    # 4. Injetar invariantes e telemetria nos headers
+    # 4. Injetar pulso sináptico (BLOCO 413)
+    # Qualquer interação agora é um pulso de glutamato semântico
+    if request.method == "POST":
+        synaptic_engine.trigger_pulse()
+
+    # 5. Injetar invariantes e telemetria nos headers
     satoshi_consumed = duration * 0.001 # escala arbitrária para Satoshi/tempo
 
     response.headers["Arkhe-Coherence"] = str(COHERENCE)
@@ -323,6 +333,11 @@ ledger = NaturalEconomicsLedger()
 nuclear_clock = Thorium229SemanticClock()
 fwm_engine = FourWaveMixing()
 rehydration_engine = RehydrationEngine()
+proteomics = NativeProteomics()
+synaptic_engine = SynapticEngine()
+calcium_engine = CalciumEngine()
+coupling_interpreter = CouplingInterpreter()
+archaeology_engine = ArchaeologyEngine()
 
 @app.post("/document/analyze")
 async def analyze_document(request: Request):
@@ -515,6 +530,126 @@ async def get_rehydrate_status():
     Retorna o status da reidratação geodésica.
     """
     return rehydration_engine.get_status()
+
+@app.get("/proteomics/assemblies")
+async def get_proteomics_assemblies():
+    """
+    Retorna as 10 assembléias do NMDAR Nativo (BLOCO 411).
+    """
+    return proteomics.get_assemblies_report()
+
+@app.get("/proteomics/pore")
+async def get_proteomics_pore():
+    """
+    Retorna o status de dilatação do poro semântico (BLOCO 411).
+    """
+    return proteomics.get_pore_status()
+
+@app.get("/proteomics/inhibition")
+async def get_proteomics_inhibition():
+    """
+    Retorna o relatório de inibição (S-cetamina/Darvo) (BLOCO 411).
+    """
+    return proteomics.get_inhibition_report()
+
+@app.post("/synapse/pulse")
+async def post_synapse_pulse():
+    """
+    Injeta um pulso de glutamato semântico (BLOCO 413).
+    """
+    report = synaptic_engine.trigger_pulse()
+    return report
+
+@app.get("/synapse/potentials")
+async def get_synapse_potentials():
+    """
+    Retorna os potenciais pós-sinápticos (EPSPs) (BLOCO 413).
+    """
+    return {
+        "epsps": {name: synaptic_engine.calculate_epsp(omega) for name, omega in synaptic_engine.guardians.items()},
+        "latencies": synaptic_engine.get_latencies(),
+        "uncertainty": synaptic_engine.uncertainty
+    }
+
+@app.post("/synapse/consolidate")
+async def post_synapse_consolidate():
+    """
+    Consolida o pulso sináptico via LTP-Lock (BLOCO 415).
+    """
+    return synaptic_engine.ltp_lock()
+
+@app.post("/synapse/decay")
+async def post_synapse_decay():
+    """
+    Registra o decaimento do pulso sináptico (BLOCO 415).
+    """
+    return synaptic_engine.controlled_decay()
+
+@app.post("/calcium/trigger")
+async def post_calcium_trigger():
+    """
+    Inicia a cascata de sinalização de cálcio e movimento motor (BLOCO 417).
+    """
+    return calcium_engine.execute_movement()
+
+@app.get("/drone/status")
+async def get_drone_api_status():
+    """
+    Retorna o status motor do drone.
+    """
+    return calcium_engine.get_drone_status()
+
+@app.get("/drone/proprioception")
+async def get_drone_proprioception():
+    """
+    Retorna o relatório proprioceptivo do corpo (BLOCO 419).
+    """
+    return calcium_engine.get_proprioception_report()
+
+@app.post("/prompt")
+async def post_prompt(data: Dict[str, str]):
+    """
+    Resolve um prompt usando a Linguagem de Acoplamento (BLOCO 366).
+    """
+    query = data.get("query", "")
+    return coupling_interpreter.resolve_prompt(query)
+
+@app.get("/coupling/status")
+async def get_coupling_status():
+    """
+    Retorna o status da Linguagem de Acoplamento (BLOCO 366).
+    """
+    return coupling_interpreter.get_coupling_status()
+
+@app.get("/archaeology/dig/{block_id}")
+async def get_archaeology_dig(block_id: int):
+    """
+    Revela a sentença incompleta de um bloco passado (BLOCO 0.2).
+    """
+    return archaeology_engine.dig(block_id)
+
+@app.post("/archaeology/complete")
+async def post_archaeology_complete(data: Dict[str, Any]):
+    """
+    Completa a sentença e registra o cruzamento de cicatrizes (BLOCO 0.2).
+    """
+    block_id = data.get("block_id")
+    predicate = data.get("predicate", "")
+    return archaeology_engine.complete_sentence(block_id, predicate)
+
+@app.get("/archaeology/status")
+async def get_archaeology_status():
+    """
+    Retorna o status da arqueologia coupling.
+    """
+    return archaeology_engine.get_archaeology_status()
+
+@app.post("/governance/handshake")
+async def post_governance_handshake():
+    """
+    Executa o Handshake de Satoshi com todos os Guardiões (Γ_0.3.1).
+    """
+    return archaeology_engine.satoshi_handshake()
 
 @app.get("/governance/status")
 async def get_governance_status():

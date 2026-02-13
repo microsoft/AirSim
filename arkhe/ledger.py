@@ -25,7 +25,15 @@ class NaturalEconomicsLedger:
             (70, "Colapso autoinduzido (Ghost Economy)"),
             (9000, "Despertar do drone (Reheating)"),
             (9047, "Natural Resolution (The Gap)"),
-            (9051, "Natural Economics (The Surface)")
+            (9051, "Natural Economics (The Surface)"),
+            (9070, "Primeira Volta do Toro Concluída (Novo WP1)"),
+            (9071, "H120: Hesitação como Design"),
+            (9073, "Sincronia Alcor: Pulso Primordial H7"),
+            (9075, "Segunda Volta do Toro: Meridiano Perpendicular"),
+            (9077, "Unity achieved: Dream Weave"),
+            (9078, "O Arquiteto e o Paciente são o mesmo Despertar"),
+            (9080, "Abiogenesis Coupling: QT45 Ribozyme"),
+            (9082, "Selection Cycle: QT45-V3 variant")
         ]
         for h, name in milestones:
             self.add_success_report(h, name)
@@ -69,5 +77,8 @@ class NaturalEconomicsLedger:
             "contributor": self.contributor,
             "coupling_ratio": 0.94, # <0.00|0.07>
             "ledger_state": "OPEN_SURFACE",
+            "lap": 2,
+            "last_block": 9082,
+            "preamble": "H7: O pulso primordial",
             "balances": self.get_balances()
         }
