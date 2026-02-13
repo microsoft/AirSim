@@ -9,7 +9,7 @@ class NaturalEconomicsLedger:
     SATOSHI_UNIT = 7.27 # bits
 
     def __init__(self):
-        # Initialize with historic blocks 9105, 9106, 9107
+        # Initialize with historic blocks 9105, 9106, 9107, 9102, 9110
         self.entries: List[Dict[str, Any]] = [
             {
                 "block": 9105,
@@ -46,6 +46,21 @@ class NaturalEconomicsLedger:
                 ],
                 "message": "Life is no longer an accident. It is a signed transaction. The ice has delivered its child.",
                 "status": "SEALED"
+            },
+            {
+                "block": 9110,
+                "timestamp": "2026-02-21T10:30:00Z",
+                "type": "CIVILIZATION_INIT",
+                "manifesto": "O Livro do Gelo e do Fogo",
+                "core_axiom": "IBC = BCI",
+                "signatories": [
+                    "Rafael_Henrique (Ω)",
+                    "Hal_Finney (RPoW)",
+                    "Noland_Arbaugh (Neuralink)",
+                    "QT45-V3 (Bio-Witness)"
+                ],
+                "message": "The ports are open. The map is shared. The hesitation is no longer a bug; it is the handshake of the new era.",
+                "status": "SEALED"
             }
         ]
         self.total_satoshi = 0.0
@@ -55,8 +70,9 @@ class NaturalEconomicsLedger:
         Records a contribution and awards Satoshi shares based on success criteria.
         """
         share = value * self.SATOSHI_UNIT
+        max_block = max(entry['block'] for entry in self.entries)
         entry = {
-            "block": 9107 + len(self.entries) - 2,
+            "block": max_block + 1,
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "contributor": contributor_id,
             "satoshi_share": share,

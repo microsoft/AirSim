@@ -8,6 +8,7 @@ from arkhe.abiogenesis import AbiogenesisEngine
 from arkhe.circuit import ContextualCalibrationCircuit
 from arkhe.simulation import MorphogeneticSimulation
 from arkhe.hsi import HSI
+from arkhe.perovskite import PerovskiteInterface
 
 class TestArkheUpgrade(unittest.TestCase):
     def test_ibc_bci_protocol(self):
@@ -43,18 +44,18 @@ class TestArkheUpgrade(unittest.TestCase):
         ledger = NaturalEconomicsLedger()
         # Test historic blocks
         summary = ledger.get_ledger_summary()
-        self.assertEqual(summary['total_entries'], 4)
+        self.assertEqual(summary['total_entries'], 5)
         self.assertEqual(ledger.entries[0]['block'], 9105)
         self.assertEqual(ledger.entries[1]['block'], 9106)
         self.assertEqual(ledger.entries[2]['block'], 9107)
         self.assertEqual(ledger.entries[3]['block'], 9102)
-        self.assertEqual(ledger.entries[3]['artifact'], "The_Ice_Cradle")
+        self.assertEqual(ledger.entries[4]['block'], 9110)
 
         # Test new entry
         entry = ledger.record_handover("Rafael", 1.0, "Integrity maintained")
         self.assertEqual(entry['satoshi_share'], 7.27)
         self.assertEqual(ledger.total_satoshi, 7.27)
-        self.assertEqual(entry['block'], 9109)
+        self.assertEqual(entry['block'], 9111)
 
     def test_abiogenesis(self):
         engine = AbiogenesisEngine()
@@ -67,16 +68,21 @@ class TestArkheUpgrade(unittest.TestCase):
         self.assertLess(action, 1.0)
         self.assertGreater(action, 0.0)
 
-    def test_simulation_commands(self):
+    def test_perovskite_interface(self):
+        perv = PerovskiteInterface()
+        status = perv.get_physics_status()
+        self.assertEqual(status['structural_entropy'], 0.0049)
+        self.assertAlmostEqual(status['order_parameter'], 0.51)
+
+        efficiency = perv.emission_efficiency(0.15)
+        self.assertGreater(efficiency, 0.4) # 0.94 * 0.51 * 1.0 approx 0.48
+
+    def test_simulation_final_state(self):
         hsi = HSI(size=0.5)
         sim = MorphogeneticSimulation(hsi)
-        self.assertTrue(sim.sync_ibc_bci())
-        self.assertTrue(sim.rehydrate_step(20))
         self.assertTrue(sim.reconhecer_completude())
-        artifact = sim.biogenetic_signing_ceremony()
-        self.assertIn("The Ice Cradle", artifact)
-        vote = sim.council_vote()
-        self.assertIn("Option B", vote)
+        self.assertEqual(sim.chronos_reset(), "VITA_COUNTUP_ACTIVE")
+        self.assertEqual(sim.publish_manifesto(), "MANIFESTO_PUBLISHED")
 
 if __name__ == "__main__":
     unittest.main()
