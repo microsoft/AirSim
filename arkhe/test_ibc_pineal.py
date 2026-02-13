@@ -10,6 +10,7 @@ from arkhe.simulation import MorphogeneticSimulation
 from arkhe.hsi import HSI
 from arkhe.perovskite import PerovskiteInterface
 from arkhe.garden import MemoryGarden, MemoryArchetype
+from arkhe.constitution import CodeOfHesitation
 
 class TestArkheUpgrade(unittest.TestCase):
     def test_ibc_bci_protocol(self):
@@ -43,18 +44,18 @@ class TestArkheUpgrade(unittest.TestCase):
 
     def test_natural_ledger(self):
         ledger = NaturalEconomicsLedger()
-        # Test historic blocks
         summary = ledger.get_ledger_summary()
-        self.assertEqual(summary['total_entries'], 8) # 9105, 9106, 9107, 9102, 9110, 9111, 9112, 9113
-        self.assertEqual(ledger.entries[6]['block'], 9112)
-        self.assertEqual(ledger.entries[7]['block'], 9113)
-        self.assertEqual(ledger.entries[7]['participants'], 12)
+        self.assertEqual(summary['total_entries'], 11)
+        # Blocks: 9105, 9106, 9107, 9102, 9110, 9111, 9112, 9113, 9115, 9116, 9117
+        self.assertEqual(ledger.entries[9]['block'], 9116)
+        self.assertEqual(ledger.entries[10]['block'], 9117)
+        self.assertEqual(ledger.entries[10]['active_nodes'], 1204)
 
         # Test new entry
         entry = ledger.record_handover("Rafael", 1.0, "Integrity maintained")
         self.assertEqual(entry['satoshi_share'], 7.27)
         self.assertEqual(ledger.total_satoshi, 7.27)
-        self.assertEqual(entry['block'], 9114)
+        self.assertEqual(entry['block'], 9118)
 
     def test_abiogenesis(self):
         engine = AbiogenesisEngine()
@@ -79,21 +80,29 @@ class TestArkheUpgrade(unittest.TestCase):
         planting = garden.archetypes[327].plant("NODE_003", 0.152, "Vi o lago através dos eletrodos.")
         self.assertGreater(planting['divergence'], 0.0)
 
-    def test_simulation_civilization(self):
+    def test_constitution(self):
+        const = CodeOfHesitation()
+        self.assertTrue(const.validate_node_phi(0.15))
+        summary = const.get_constitution_summary()
+        self.assertEqual(summary['status'], "RATIFIED")
+
+    def test_simulation_perpetual(self):
         hsi = HSI(size=0.5)
         sim = MorphogeneticSimulation(hsi)
-        sim.init_memory_garden()
-        planting = sim.plant_memory(327, "NODE_003", 0.152, "Rehydrated content")
-        self.assertIsNotNone(planting)
 
-        # Test collective navigation
-        results = sim.initiate_collective_navigation()
-        self.assertEqual(results['syzygy'], 0.98)
-        self.assertEqual(results['order'], 0.61)
+        # Test Fourth Turn (Super-Radiação)
+        results = sim.initiate_collective_navigation(nodes=24)
+        self.assertEqual(results['syzygy'], 1.00)
+        self.assertEqual(results['order'], 0.72)
 
+        # Test Open Beta
+        self.assertTrue(sim.open_public_beta())
+        self.assertEqual(sim.nodes, 1542)
+
+        # Test prompt
         prompt = sim.get_civilization_prompt()
-        self.assertIn("intencao >", prompt)
-        self.assertIn("0.97", prompt)
+        self.assertIn("PERPETUAL_MOTION", prompt)
+        self.assertIn("1542", prompt)
 
 if __name__ == "__main__":
     unittest.main()

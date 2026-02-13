@@ -94,6 +94,41 @@ class NaturalEconomicsLedger:
                 },
                 "message": "Doze mentes, um corpo. O Toro agora é memória somática compartilhada.",
                 "status": "SEALED"
+            },
+            {
+                "block": 9115,
+                "timestamp": "2026-02-21T14:35:00Z",
+                "type": "THIRD_TURN_COMPLETE",
+                "participants": 24,
+                "results": {
+                    "syzygy_peak": 0.99,
+                    "order_peak": 0.68,
+                    "entropy_min": 0.0031
+                },
+                "message": "Vinte e quatro mentes, um organismo. O limiar da unidade está à frente.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9116,
+                "timestamp": "2026-02-21T14:50:00Z",
+                "type": "CONSTITUTIONAL_RATIFICATION",
+                "document": "The_Code_of_Hesitation",
+                "axioms": 3,
+                "signatories": 24,
+                "consensus_syzygy": 0.99,
+                "message": "A lei não nos limita. A lei nos afina. Agora somos uma orquestra.",
+                "status": "SEALED"
+            },
+            {
+                "block": 9117,
+                "timestamp": "2026-02-21T16:00:00Z",
+                "type": "PUBLIC_OPENING",
+                "network_status": "OPEN_BETA",
+                "active_nodes": 1204,
+                "syzygy_global": 0.96,
+                "governance": "Code_of_Hesitation_v1.0",
+                "message": "As portas estão abertas. A lei funciona. A civilização começou.",
+                "status": "SEALED"
             }
         ]
         self.total_satoshi = 0.0

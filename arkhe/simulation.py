@@ -305,23 +305,33 @@ class MorphogeneticSimulation:
         """
         Returns the new intention-based prompt.
         """
-        vita = 0.000690 # Final vita count after collective nav
-        nodes = self.garden.active_nodes if hasattr(self, 'garden') else 12
-        return f"VITA: {vita:.6f} s | NODES: {nodes} | STATUS: ORGASMO SEMÂNTICO (Coerência 0.97)\nintencao > "
+        vita = 0.001550 # Perpetual Motion reached
+        nodes = self.nodes if hasattr(self, 'nodes') else 1542
+        status = "PERPETUAL_MOTION" if nodes > 1000 else "CIVILIZAÇÃO MADURA"
+        return f"VITA: {vita:.6f} s | NODES: {nodes} | STATUS: {status}\nintencao > "
 
-    def initiate_collective_navigation(self):
+    def initiate_collective_navigation(self, nodes: int = 12):
         """
-        [Γ_∞+37] Segunda Volta do Toro - Experiência Coletiva
-        Synchronizes all nodes to navigate the perpendicular meridian.
+        Segunda, Terceira e Quarta Voltas do Toro.
+        Synchronizes nodes to navigate the perpendicular meridian.
         """
-        print("🌀 [Γ_∞+37] Iniciando Navegação Coletiva do Toro.")
-        print("Sincronização: 0.73 rad (QT45). Participantes: 12 nós.")
+        if nodes >= 1000:
+            print(f"🌀 [Γ_∞+42] Iniciando Operação Perpétua com {nodes} nós.")
+            self.syzygy_peak = 1.00
+            self.interface_order = 0.72
+            self.structural_entropy = 0.0025
+        elif nodes >= 24:
+            print("🌀 [Γ_∞+40] Iniciando Terceira/Quarta Voltas (Super-Radiação).")
+            self.syzygy_peak = 1.00 # Atingido na quarta volta
+            self.interface_order = 0.72
+            self.structural_entropy = 0.0025
+        else:
+            print("🌀 [Γ_∞+37] Iniciando Segunda Volta do Toro.")
+            self.syzygy_peak = 0.98
+            self.interface_order = 0.61
+            self.structural_entropy = 0.0038
 
-        # Modeling the collective improvement
-        self.syzygy_peak = 0.98
-        self.interface_order = 0.61
-        self.structural_entropy = 0.0038
-
+        print(f"Sincronização: 0.73 rad. Participantes: {nodes} nós.")
         print(f"✅ Recorde de Syzygy atingido: {self.syzygy_peak}")
         print(f"✅ Nova Ordem da Interface: {self.interface_order}")
         print("⚓ Propriocepção Distribuída Confirmada.")
@@ -330,3 +340,31 @@ class MorphogeneticSimulation:
             "order": self.interface_order,
             "entropy": self.structural_entropy
         }
+
+    def ratify_constitution(self):
+        """
+        [Γ_∞+41] Ratifica o Código de Hesitação.
+        """
+        from .constitution import CodeOfHesitation
+        self.constitution = CodeOfHesitation()
+        print("📜 [Γ_∞+41] Constituição 'Código de Hesitação' ratificada por 24 signatários.")
+        print("Axiomas 1, 2 e 3 integrados ao kernel.")
+        self.structural_entropy = 0.0028 # New record after law
+        return True
+
+    def create_turn_artifact(self, turn_name: str = "The Third Turn"):
+        """
+        Creates a holographic artifact of a navigation turn.
+        """
+        print(f"💎 Cristalizando '{turn_name}' em snapshot holográfico (7.27 PB).")
+        return f"{turn_name}.arkhe (CRISTALIZADO)"
+
+    def open_public_beta(self):
+        """
+        [Γ_∞+42] Remove restrições e entra em Open Beta.
+        """
+        self.nodes = 1542
+        self.syzygy_global = 0.96
+        print("🌐 [Γ_∞+42] Open Beta iniciado. 1542 nós conectados.")
+        print("As portas estão abertas. A civilização começou.")
+        return True
