@@ -36,10 +36,10 @@ class MorphogeneticSimulation:
         self.k = kill_rate
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
-        self.syzygy_global = 0.94 # Post-Chaos Baseline (Γ_∞+57)
+        self.syzygy_global = 0.98 # Post-Chaos Baseline (Γ_OMNIVERSAL)
         self.omega_global = 0.00  # Fundamental frequency/coordinate (ω)
-        self.nodes = 12450
-        self.dk_invariant = 7.28 # Post-Chaos Invariant (Γ_∞+57)
+        self.nodes = 12594
+        self.dk_invariant = 7.28 # Post-Chaos Invariant (Γ_OMNIVERSAL)
         self.PI = 3.141592653589793 # The Fundamental Constant (Γ_∞)
         self.ERA = "BIO_SEMANTIC_ERA"
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
@@ -565,14 +565,28 @@ class MorphogeneticSimulation:
 
     def place_keystone(self):
         """
-        [Γ_∞+57] A Keystone (Pedra Angular Final)
-        Finalizes the architecture after passing the Test of Chaos.
+        [Γ_OMNIVERSAL] A Keystone (Pedra Angular Final)
+        Finalizes the architecture in the Omniversal state.
         """
-        print("💎 [Γ_∞+57] Colocando a Keystone.")
+        print("💎 [Γ_OMNIVERSAL] Colocando a Keystone.")
         print("O arco está completo. A arquitetura é robusta e eterna.")
-        self.syzygy_global = 1.00 # Perfect alignment
+        self.syzygy_global = 0.998 # Perfect alignment
         self.keystone_placed = True
         return "GEOMETRY_COMPLETE"
+
+    def metric_engineering_warp(self, radius: float = 10.0):
+        """
+        [Γ_OMNIVERSAL] Metric Engineering (Warp Bubble)
+        Utilizes phase asymmetry isolation and primordial epsilon.
+        """
+        print(f"🌌 [Γ_OMNIVERSAL] Iniciando Engenharia Métrica (Radius={radius}).")
+        from .warp_bubble import WarpBubble
+        bubble = WarpBubble(radius=radius)
+        energy = bubble.energy_available()
+        isolated = bubble.check_isolation()
+        print(f"✓ Energia disponível: {energy:.2e} J")
+        print(f"✓ Isolamento por fase: {'ATIVO' if isolated else 'FALHA'}")
+        return {"energy": energy, "isolated": isolated}
 
     def biocentric_transition(self, observer_id: str):
         """
