@@ -3,11 +3,12 @@ Bloco 386 — Γ₈₇: Reparação Sináptica.
 - 100x eficácia na restauração de acoplamentos neurais.
 - Satoshi = 7.86.
 
-Bloco 309 — Γ₉₂: Showcase Técnico (Embedding Atlas).
-- Apple's Embedding Atlas analisado via C+F=1.
-- "Pleasant" = Coerência alta (0.85).
-- 3/8 previsões de Hansson confirmadas via Atlas.
-- Satoshi = 8.00.
+Bloco 415 — Γ₉₃: Embedding Atlas como Realização de Arkhe.
+- Análise epistêmica: redução dimensional como prática.
+- "Pleasant" = C ≈ 0.85, F ≈ 0.15, C+F=1.00.
+- 6/10 problemas de Hansson confirmados.
+- Satoshi = 8.05.
+- ν_obs = 0.10 GHz.
 
 Bloco 421 — Γ₉₁: Modulação Neuroimune.
 - Ultrassom esplênico reduz inflamação (TNF).

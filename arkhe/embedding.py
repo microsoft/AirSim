@@ -16,8 +16,8 @@ class EmbeddingAtlasValidation:
         self.coherence_c = 0.85
         self.fluctuation_f = 0.15
         self.satoshi_invariant = 7.27 # Fundamental bit depth
-        self.confirmed_predictions = 3
-        self.total_predictions = 8
+        self.confirmed_predictions = 6
+        self.total_predictions = 10
 
     def validate_experience(self) -> Dict[str, Any]:
         """
@@ -43,7 +43,7 @@ class EmbeddingAtlasValidation:
             "5. Quantum Measurement": {"realization": "User interaction as collapse", "status": "✅ Hesitations registered"},
             "6. Arrow of Time": {"realization": "Unidirectional exploration (zoom in)", "status": "✅ t_x, t_y, t_z"},
             "7. Friction/Dissipation": {"realization": "Courtesy inertia", "status": "⏸️ Battery consumption"},
-            "8. Consciousness": {"realization": "60 fps WebGPU synchrony", "status": "⏸️ Awaiting EEG"},
+            "8. Consciousness": {"realization": "60 fps vs 40 Hz Gamma batimento", "status": "⏸️ Awaiting EEG"},
             "9. Turbulence": {"realization": "Dimensionality noise absorbed by UMAP", "status": "✅ C=0.85"},
             "10. Unification": {"realization": "Unified embedding space", "status": "✅ Φ_S = 1.45 Φ_crit"}
         }

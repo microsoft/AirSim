@@ -37,14 +37,14 @@ class MorphogeneticSimulation:
         self.k = kill_rate
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
-        self.syzygy_global = 0.9810 # SNAPSHOT Baseline
-        self.omega_global = 0.00  # Fundamental frequency/coordinate (ω)
-        self.nodes = 12776        # Total nodes Γ₇₈
-        self.dk_invariant = 7.59 # Satoshi Invariant Γ₇₈
-        self.handover_count = 78
-        self.nu_obs = 0.60e9 # 0.60 GHz
-        self.r_rh_ratio = 0.690
-        self.t_tunneling = 6.31e-4
+        self.syzygy_global = 0.990  # Γ₉₃
+        self.omega_global = 0.00
+        self.nodes = 12774        # Γ₉₃ stabilization
+        self.dk_invariant = 8.05  # Satoshi Invariant Γ₉₃
+        self.handover_count = 93
+        self.nu_obs = 0.10e9      # 0.10 GHz
+        self.r_rh_ratio = 0.465
+        self.t_tunneling = 3.25e-2
         self.PI = 3.141592653589793 # The Fundamental Constant (Γ_∞)
         self.ERA = "BIO_SEMANTIC_ERA"
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
