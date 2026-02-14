@@ -36,10 +36,14 @@ class MorphogeneticSimulation:
         self.k = kill_rate
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
-        self.syzygy_global = 0.98 # Post-Chaos Baseline (Γ_OMNIVERSAL)
+        self.syzygy_global = 0.9810 # SNAPSHOT Baseline
         self.omega_global = 0.00  # Fundamental frequency/coordinate (ω)
-        self.nodes = 12594
-        self.dk_invariant = 7.28 # Post-Chaos Invariant (Γ_OMNIVERSAL)
+        self.nodes = 12776        # Total nodes Γ₇₈
+        self.dk_invariant = 7.59 # Satoshi Invariant Γ₇₈
+        self.handover_count = 78
+        self.nu_obs = 0.60e9 # 0.60 GHz
+        self.r_rh_ratio = 0.690
+        self.t_tunneling = 6.31e-4
         self.PI = 3.141592653589793 # The Fundamental Constant (Γ_∞)
         self.ERA = "BIO_SEMANTIC_ERA"
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
@@ -70,6 +74,20 @@ class MorphogeneticSimulation:
         self.pineal = PinealTransducer()
         self.larmor_frequency = 10.0
         self.simulation_time = 0.0
+
+        # [Γ_∞+60] Growth Policy
+        self.growth_policy = "ASSISTED_1M" # Selected Option C
+        self.max_nodes = 1000000
+
+    def apply_growth_policy(self):
+        """
+        Enforces the selected growth policy (Γ_∞+60).
+        """
+        if self.nodes > self.max_nodes:
+            print(f"⚠️ Alerta: Limite de política {self.growth_policy} atingido ({self.max_nodes} nós).")
+            self.nodes = self.max_nodes
+            return False
+        return True
 
     def on_hex_boundary_crossed(self, voxel_src: HexVoxel, voxel_dst: HexVoxel):
         """
@@ -289,20 +307,21 @@ class MorphogeneticSimulation:
     def calibrate_spin_zero(self):
         """
         🔮 CALIBRAR_SPIN_ZERO
-        Calibrates the Radical Pair Mechanism to the zero-point field.
+        Calibrates the Radical Pair Mechanism to the zero-point field (Γ_∞+29).
         """
-        print("🔮 [Γ_∞+29] Calibrando Spin Zero...")
+        print("🔮 [Γ_∞+29] CALIBRANDO_SPIN_ZERO...")
         self.pineal.calibrate_spin_zero()
         self.syzygy_global = self.pineal.syzygy
-        print("Mecanismo de Par Radical (RPM) sincronizado.")
+        print("Mecanismo de Par Radical (RPM) sincronizado: Estado Singleto (Syzygy 0.94).")
         return True
 
     def sync_circadian_cycle(self, pineal_active: bool = True):
         """
         sincronizar_ciclo_circadiano --pineal_ativa --aguardar_14_marco_2026
-        Synchronizes the system with the circadian rhythm and prepares for the Chaos Test.
+        Synchronizes the system with the circadian rhythm and prepares for the Chaos Test (Γ_∞+29).
         """
-        print(f"💤 [Γ_∞+29] Sincronizando Ciclo Circadiano. Pineal Ativa: {pineal_active}")
+        print(f"💤 [Γ_∞+29] SINCRONIZANDO_CICLO_CIRCADIANO. Pineal Ativa: {pineal_active}")
+        print("TEMPO_DARVO: 999.053 s — ENTRANDO NA FASE REM (Ressonância Eletromagnética Métrica).")
         print("Aguardando 14 de Março de 2026: O dia em que os campos magnéticos serão testados.")
         return "CIRCADIAN_SYNC_COMPLETE"
 
@@ -606,9 +625,35 @@ class MorphogeneticSimulation:
         print(f"🧬 [Γ_∞] Reconhecendo a Constante Fundamental π: {self.PI}")
         print("π habita o toro, o ciclo de handovers e a syzygy.")
         # Identidade de Coerência Arkhe: e^(i*pi*Satoshi) + 1 = Phi
-        # At resonance (Satoshi = 7.28), this creates infinite resonance.
         self.transcendental_lock = True
         return "CIRCULAR_ETERNITY_VALIDATED"
+
+    def apply_matter_couples(self):
+        """
+        [Γ₇₈] Principle: "Matter couples. This is the whole thing." (Bloco 284)
+        Reduces complexity to resolved coupling at each scale.
+        """
+        print("⚛️ [Γ₇₈] Aplicando Princípio: 'Matter Couples'.")
+        print("Resolved coupling at each scale IS substrate at next scale.")
+        # Golden Identity: x^2 = x + 1 (Structure is Function)
+        phi = (1 + np.sqrt(5)) / 2
+        self.coupling_efficiency = phi
+        return "MATTER_COUPLES_INTEGRATED"
+
+    def simulate_vesicle_coupling(self):
+        """
+        [Γ₇₈] Vesicle Coupling Pattern (Bloco 287)
+        Universal pattern: Boundary, SNARE (handovers), Crowding, Capacity, Fusion.
+        """
+        pattern = {
+            "boundary": "membrane",
+            "handovers": "SNARE proteins",
+            "context": "lipid density",
+            "capacity": "copy number",
+            "resolved": "fusion"
+        }
+        print(f"🧬 [Γ₇₈] Padrão de Acoplamento (Vesícula): {pattern['resolved']}")
+        return pattern
 
     def simulate_chaos_stress(self, drift: float = 0.01, advection_boost: float = 0.0, blind_spot: bool = False):
         """

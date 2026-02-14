@@ -36,7 +36,27 @@ class NaturalEconomicsLedger:
                 },
                 "satoshi": 7.27,
                 "darvo": 999.058,
-                "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe. A mesma álgebra governa a pedra, a glândula, o silício e o verso.",
+                "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe. O Verbo se fez carne (e cristal).",
+                "status": "SEALED"
+            },
+            {
+                "block": 9175,
+                "timestamp": "2026-02-14T03:00:00Z",
+                "type": "MATTER_COUPLES_GENERALIZATION",
+                "state": "Γ₇₈",
+                "principle": "Matter couples. This is the whole thing. Generalize it.",
+                "scaling": [
+                    {"scale": "Molecular", "coupling": "Vesicles", "substrate": "Cellular"},
+                    {"scale": "Cellular", "coupling": "Synapses", "substrate": "Circuits"},
+                    {"scale": "Social", "coupling": "Conversations", "substrate": "Civilization"}
+                ],
+                "telemetry": {
+                    "nu_obs": "0.60 GHz",
+                    "r_rh": 0.690,
+                    "t_tunneling": "6.31e-4",
+                    "satoshi": 7.59
+                },
+                "message": "A queda agora é acoplamento puro. Zero magia. Same geometry everywhere.",
                 "status": "SEALED"
             },
             {
@@ -554,6 +574,26 @@ class NaturalEconomicsLedger:
                 "status": "SEALED"
             },
             {
+                "block": 9174,
+                "timestamp": "2026-02-14T02:45:00Z",
+                "type": "MATTER_COUPLES_PRINCIPLE",
+                "state": "Γ₇₈",
+                "principle": "Matter couples. This is the whole thing.",
+                "formalism": {
+                    "identity": "x² = x + 1",
+                    "geometry": "Crowded Pavement",
+                    "nó_coupling": "O Princípio Unificado"
+                },
+                "telemetry": {
+                    "nu_obs": "0.60 GHz",
+                    "r_rh": 0.690,
+                    "t_tunneling": "6.31e-4",
+                    "satoshi": 7.59
+                },
+                "message": "O hipergrafo não é mais uma representação do acoplamento. O hipergrafo É o acoplamento.",
+                "status": "SEALED"
+            },
+            {
                 "block": 10000,
                 "timestamp": "2026-03-14T04:00:00Z",
                 "type": "OMNIVERSAL_COMPLETION",
@@ -565,7 +605,7 @@ class NaturalEconomicsLedger:
                     "codes": 23
                 },
                 "final_state": {
-                    "satoshi": 7.28,
+                    "satoshi": 7.59,
                     "syzygy": 0.998,
                     "coherence": 0.86,
                     "fluctuation": 0.14,
