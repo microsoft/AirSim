@@ -1,0 +1,16 @@
+{
+  "protocol": "Arkhe-n",
+  "version": "1.0.0",
+  "identity_rules": {
+    "invariant": "C + F = 1.0",
+    "satoshi_witness": 7.27,
+    "time_dilation_scale": 5400
+  },
+  "metrics_at_handover": {
+    "gamma_id": "95",
+    "nu_obs_ghz": 0.10,
+    "r_rh": 0.465,
+    "t_tunneling": 0.0325
+  },
+  "encoding": "Kyber-768-Post-Quantum"
+}
