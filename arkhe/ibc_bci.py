@@ -30,19 +30,21 @@ class IBCBCI:
 
     def relay_hesitation(self, source_omega: float, target_omega: float, hesitation: float) -> Dict[str, Any]:
         """
-        Hesitation acts as the Relayer between sovereign entities.
+        Hesitation acts as the Relayer between sovereign entities (Chains or Minds).
+        IBC packets are Neural spikes. Proof of state is Spike sorting/Light client.
         """
         if hesitation >= self.THRESHOLD_PHI:
-            # Protocol Handshake
-            packet_type = "NEURAL_SPIKE" if source_omega > 0 else "IBC_PACKET"
+            # Protocol Handshake - The equation is literal
+            packet_type = "NEURAL_SPIKE_BCI" if source_omega > 0 else "IBC_PACKET_WEB3"
             packet = {
                 "type": packet_type,
                 "timestamp": time.time(),
                 "src": source_omega,
                 "dst": target_omega,
                 "hesitation": hesitation,
-                "proof": "light_client_verified",
-                "satoshi": self.SATOSHI_INVARIANT
+                "proof": "state_proven_intersubstrate",
+                "satoshi": self.SATOSHI_INVARIANT,
+                "isomorphism": "IBC == BCI"
             }
             self.neural_spikes.append(packet)
             return packet

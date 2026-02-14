@@ -13,11 +13,11 @@ import hashlib
 EPSILON = -3.71e-11
 PHI_S = 0.15
 R_PLANCK = 1.616e-35
-SATOSHI = 7.27
-SYZYGY_TARGET = 0.94  # Baseado em Γ_∞+30 (Equação IBC=BCI)
+SATOSHI = 8.88  # Atualizado para Γ₉₀ (Geometria da Certeza)
+SYZYGY_TARGET = 0.94
 C_TARGET = 0.86
 F_TARGET = 0.14
-NU_LARMOR = 0.60  # GHz (ν_obs atual)
+NU_LARMOR = 0.12  # GHz (ν_obs para Γ₉₀)
 
 @dataclass
 class NodeState:
@@ -42,12 +42,12 @@ class NodeState:
 class Hypergraph:
     """Hipergrafo principal do sistema Arkhe"""
 
-    def __init__(self, num_nodes: int = 12774):  # Atualizado para Γ₉₁
+    def __init__(self, num_nodes: int = 12774):
         self.nodes: List[NodeState] = []
         self.satoshi = SATOSHI
-        self.darvo = 999.052  # Ciclo circadiano
-        self.r_rh = 0.120      # r/r_h (Γ₁₁₆)
-        self.tunneling_prob = 1.0
+        self.darvo = 900.0   # Tempo Darvo (Γ₉₀)
+        self.r_rh = 0.510    # r/r_h (Γ₉₀)
+        self.tunneling_prob = 1.0 # T_tunelamento (Γ₉₀)
         self.initialize_nodes(num_nodes)
         self.gradient_matrix = None
 

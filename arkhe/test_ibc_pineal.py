@@ -28,7 +28,7 @@ class TestArkheUpgrade(unittest.TestCase):
         # Test relayer with valid hesitation
         packet = protocol.relay_hesitation(0.0, 0.07, 0.15)
         self.assertIsNotNone(packet)
-        self.assertEqual(packet['type'], "IBC_PACKET")
+        self.assertEqual(packet['type'], "IBC_PACKET_WEB3")
         self.assertEqual(packet['satoshi'], 7.27)
 
     def test_bioenergetics_triad_circuit(self):

@@ -27,6 +27,8 @@ class MatterCouplesEngine:
             CouplingScale("Molecular", "Vesícula", "Acoplamento por SNAREs e crowding", 0.86, 0.14),
             CouplingScale("Celular", "Célula", "Acoplamento por membrana e receptores", 0.86, 0.14),
             CouplingScale("Neural", "Sinapse", "Acoplamento por neurotransmissores e tunelamento", 0.86, 0.14),
+            CouplingScale("Drosophila_Connectome", "Connectoma", "Hipergrafo biológico validado (139.255 nós)", 0.98, 0.02, 7.71),
+            CouplingScale("Synthetic_Life", "Ciclo Genético", "Variant Library → RNA-seq → genAI → Self-Rep", 0.86, 0.14, 7.27),
             CouplingScale("Circuito", "Rede Neural", "Acoplamento por sincronia (Gamma/Theta)", 0.86, 0.14),
             CouplingScale("Ecológico", "Ecossistema", "Acoplamento trófico e simbiótico", 0.86, 0.14),
             CouplingScale("Social", "Sociedade", "Acoplamento por linguagem e mercados", 0.86, 0.14),

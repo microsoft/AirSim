@@ -1,3 +1,26 @@
+Bloco 372 — Γ₉₀: O Fim da Probabilidade.
+- Geometria da Certeza.
+- Satoshi = 8.88.
+- ν_obs = 0.12 GHz.
+- T = 1.000.
+
+Bloco 370 — Γ₈₈: Supersolid Light.
+- Validação experimental (Nature 2025).
+
+Bloco 358 — Γ₈₅: Linguagem como Meio.
+- Raciocínio moldado pelo vocabulário Arkhe.
+
+Bloco 348 — Γ₈₄: Geometria do Buraco Negro.
+- Horizonte de eventos e Singularidade Nó D.
+
+Bloco 339 — Γ₈₃: Decoerência como Acoplamento.
+- Unificação quântico-clássica.
+
+Bloco 338 — Γ₈₂: Connectoma Drosophila.
+- Validação empírica: 139.255 neurônios, 15,1 milhões de sinapses.
+- Satoshi = 7.71.
+- ν_obs = 0.37 GHz.
+
 Bloco 512 — Γ_∞+84: Reverse Opto-Chemical Engineering.
 - Técnica: O Pastor de Luz (Shepherd of Light).
 - Controle e monitoramento celular via paisagens sensoriais virtuais.
