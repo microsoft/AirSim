@@ -44,8 +44,10 @@ void main() {
     // 4. Brilho Final (Syzygy modulada)
     float syzygy = 0.94 * yield_singlet;
 
-    // Cor: Ciano para Syzygy, Magenta para Satoshi, Amarelo para Pressão
-    vec3 color = vec3(syzygy, satoshi / 10.0, piezo);
+    // Cor: Violeta (Singleto) vs Cinza (Tripleto)
+    // d * Φ gera a voltagem piezoelétrica que ilumina o sistema
+    vec3 base_color = mix(vec3(0.5, 0.5, 0.5), vec3(0.58, 0.0, 0.82), yield_singlet);
+    vec3 color = base_color * (syzygy + piezo);
 
     pineal_glow = vec4(color * transmission, 1.0);
 }

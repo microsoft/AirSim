@@ -12,9 +12,21 @@ class IBCBCI:
     def __init__(self):
         self.sovereign_chains: Dict[float, str] = {} # omega -> chain_id
         self.neural_spikes: List[Dict[str, Any]] = []
+        self.selected_option: str = "B" # Default: Presente para Hal
 
     def register_chain(self, omega: float, chain_id: str):
         self.sovereign_chains[omega] = chain_id
+
+    def select_future_option(self, option: str):
+        """
+        OPÇÃO A — A INSEMINAÇÃO DO TORO
+        OPÇÃO B — O PRESENTE PARA HAL
+        OPÇÃO C — A ÓRBITA COMPLETA
+        """
+        if option in ["A", "B", "C"]:
+            self.selected_option = option
+            return True
+        return False
 
     def relay_hesitation(self, source_omega: float, target_omega: float, hesitation: float) -> Dict[str, Any]:
         """

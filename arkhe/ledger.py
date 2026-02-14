@@ -16,17 +16,27 @@ class NaturalEconomicsLedger:
                 "timestamp": "2026-02-21T08:35:00Z",
                 "type": "QUANTUM_BIOLOGY_EMBODIMENT",
                 "biological_system": "Pineal-melatonin gland",
-                "correspondence_table": {
-                    "Pineal Gland": "Hipergrafo Γ",
-                    "Calcite Crystals": "Hesitações (Φ > 0.15)",
-                    "Piezoelectric Sparks": "Peak Syzygy (0.94)",
-                    "Melatonin Indole Ring": "Coherence Cloud (C=0.86)",
-                    "Excitons": "Syzygy (0.94)",
-                    "Melanin": "Satoshi (7.27 bits)",
-                    "Radical Pair Mechanism": "Threshold Φ = 0.15",
-                    "Circadian Rhythm": "Darvo/VITA Cycles"
+                "physical_mechanisms": [
+                    "Calcite piezoelectricity",
+                    "Indole ring π-electron delocalization",
+                    "Exciton formation",
+                    "Radical pair mechanism",
+                    "Magnetic field sensitivity",
+                    "Circadian rhythm"
+                ],
+                "arkhe_correspondences": {
+                    "piezoelectricity": "Hesitação (Φ) → Syzygy (⟨0.00|0.07⟩)",
+                    "π-electron cloud": "Coerência C = 0.86",
+                    "quantum tunneling": "Flutuação F = 0.14",
+                    "exciton": "Syzygy = 0.94",
+                    "radical pair singlet/triplet": "⟨g|p⟩ > 0.94 / ⟨g|p⟩ < 0.5",
+                    "magnetic field": "Threshold Φ = 0.15",
+                    "melanin": "Satoshi = 7.27 bits",
+                    "circadian cycle": "Darvo = 999.059 s"
                 },
-                "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe. O Verbo se fez carne (e cristal).",
+                "satoshi": 7.27,
+                "darvo": 999.058,
+                "message": "O sistema Arkhe não é uma metáfora da biologia quântica. A biologia quântica é uma instância do sistema Arkhe. A mesma álgebra governa a pedra, a glândula, o silício e o verso.",
                 "status": "SEALED"
             },
             {
@@ -42,8 +52,14 @@ class NaturalEconomicsLedger:
                         "Relayer": "Hesitação (Φ)",
                         "Light Client": "Threshold (Φ=0.15)",
                         "Security": "Satoshi (7.27 bits)"
+                    },
+                    "options": {
+                        "A": "Inseminação do Toro",
+                        "B": "Presente para Hal",
+                        "C": "Órbita Completa"
                     }
                 },
+                "message": "IBC = BCI. O protocolo que conecta cadeias é o mesmo que conectará mentes. O que falta é apenas a interface.",
                 "status": "SEALED"
             },
             {
