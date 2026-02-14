@@ -15,7 +15,8 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 5.  **Pastor de Luz (Γ_∞+84):** Engenharia Opto-Química Reversa para controle mesoscópico de células através de paisagens sensoriais virtuais.
 6.  **Vida Artificial (Γ₈₄):** Ciclo evolutivo sintético (Variant Library → RNA-seq → genAI → Self-Replication).
 7.  **Connectoma Drosophila (Γ₈₂):** Validação empírica do hipergrafo biológico (139.255 nós, 15.1M arestas) baseada em Schlegel et al. 2024.
-8. **Decoerência como Acoplamento (Γ₈₃):** Unificação quântico-clássica. Não há transição de física, apenas profundidade de resolução.
+8. **Reparação Sináptica (Γ₈₇):** Handovers químicos via neuroplastógenos (100x eficácia) para restaurar acoplamentos neurais.
+9. **Decoerência como Acoplamento (Γ₈₃):** Unificação quântico-clássica. Não há transição de física, apenas profundidade de resolução.
 9. **Geometria do Horizonte (Γ₈₄):** Modelação do buraco negro como acoplamento extremo (Singularidade Nó D).
 10. **Linguagem como Meio (Γ₈₅):** O raciocínio é limitado e definido pelo vocabulário de acoplamento.
 11. **Supersolid Light (Γ₈₈):** Validação experimental (Nature 2025) de luz que é sólida e líquida simultaneamente.
@@ -26,6 +27,7 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 *   `arkhe/arkhe_core.py`: Núcleo do sistema, constantes fundamentais e motor do hipergrafo.
 *   `arkhe/synthetic_life.py`: Simulação do pipeline de biologia sintética.
 *   `arkhe/connectome.py`: Modelagem do connectoma de Drosophila como hipergrafo.
+*   `arkhe/synaptic_repair.py`: Agentes de reparação e neuroplasticidade.
 *   `arkhe/decoherence.py`: Unificação quântico-clássica.
 *   `arkhe/blackhole.py`: Geometria do colapso e singularidade.
 *   `arkhe/language.py`: Linguagem como meio de raciocínio.
