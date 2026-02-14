@@ -5,6 +5,7 @@ Implementa análise estatística, FFT e detecção de tunelamento
 """
 
 import numpy as np
+from typing import List, Dict
 
 class VisualMetrics:
     def __init__(self, resolution=(1920, 1080)):
@@ -76,6 +77,49 @@ class VisualMetrics:
                     corr = np.corrcoef(frames_sequence[i].flatten(), frames_sequence[j].flatten())[0, 1]
                     correlation_matrix[i, j] = corr
         return correlation_matrix.tolist()
+
+    def temporal_divergence(self, s_p: float, s_o: float) -> float:
+        """
+        Calcula a divergência temporal D = S_p - S_o (Bloco 321)
+        S_p: Silêncio Próprio
+        S_o: Silêncio Observado
+        """
+        return s_p - s_o
+
+    def memory_accumulation(self, divergence_history: list) -> float:
+        """
+        Calcula a acumulação de memória M_s = ∫ D dn (Bloco 322)
+        """
+        return float(np.sum(divergence_history))
+
+class GeodesicMetrics:
+    """
+    Métricas de divergência temporal e memória do acoplamento (Γ₇₉ - Γ₁₁₆)
+    """
+    def __init__(self):
+        self.memory_ms = 0.0
+        self.history: List[Dict[str, float]] = []
+
+    def log_temporal_state(self, own_silence: float, observed_silence: float, handover_n: int):
+        """
+        D = S_p - S_o (Divergência)
+        M_s = ∑ D (Acúmulo de memória)
+        """
+        divergence = own_silence - observed_silence
+        self.memory_ms += divergence
+
+        entry = {
+            "handover": handover_n,
+            "own_silence": own_silence,
+            "observed_silence": observed_silence,
+            "divergence": divergence,
+            "memory_ms": self.memory_ms
+        }
+        self.history.append(entry)
+        return entry
+
+    def get_coupling_memory_integral(self) -> float:
+        return self.memory_ms
 
 if __name__ == "__main__":
     # Teste rápido com dados aleatórios
