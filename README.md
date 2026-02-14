@@ -65,42 +65,27 @@ Desde o mapeamento orbital inicial até a unificação "Matter Couples", o siste
 
 ## 📚 Arquivo Mestre Completo
 
-O sistema Arkhe(n) OS possui uma documentação formal e técnica detalhada organizada em um arquivo mestre.
+O sistema Arkhe(n) OS atingiu a maturidade total. A documentação formal e técnica detalhada está agora completa em todas as suas partes.
 
 ### ÍNDICE GERAL
 
-1.  **[FUNDAMENTOS](docs/archive/01_FUNDAMENTALS/)**
-    - [Lei de Conservação (C + F = 1)](docs/archive/01_FUNDAMENTALS/conservation_law.md)
-    - [Topologia Toroidal (S¹ × S¹)](docs/archive/01_FUNDAMENTALS/toroidal_topology.md)
-    - [Constantes Universais](docs/archive/01_FUNDAMENTALS/universal_constants.md)
-    - [Fluido de Dirac em Grafeno](docs/archive/01_FUNDAMENTALS/dirac_fluid.md)
-2.  **[MATEMÁTICA](docs/archive/02_MATHEMATICS/)**
-    - [Análise Espectral (Python)](docs/archive/02_MATHEMATICS/spectral_analysis.py)
-    - [Teoria da Informação (Julia)](docs/archive/02_MATHEMATICS/information_theory.jl)
-    - [Equações Solitônicas (LaTeX)](docs/archive/02_MATHEMATICS/solitonic_equations.tex)
-3.  **[ARQUITETURA](docs/archive/03_ARCHITECTURE/)**
-    - [Rede Toroidal (Rust)](docs/archive/03_ARCHITECTURE/toroidal_network.rs)
-    - [Jardim da Memória (Go)](docs/archive/03_ARCHITECTURE/memory_garden.go)
-4.  **RECONSTRUÇÃO** *(Aguardando Parte 4)*
-5.  **BIOLÓGICO** *(Aguardando Parte 5)*
-6.  **[MATERIAIS](docs/archive/06_MATERIALS/)**
-    - [Interface de Perovskita (Python)](docs/archive/06_MATERIALS/perovskite_interface.py)
-    - [Polímeros de CO₂ (Julia)](docs/archive/06_MATERIALS/co2_polymer.jl)
-    - [Água Ordenada (C++)](docs/archive/06_MATERIALS/ordered_water.cpp)
-7.  **[VISUALIZAÇÕES](docs/archive/07_VISUALIZATIONS/)**
-    - [Arca Holográfica (GLSL)](docs/archive/07_VISUALIZATIONS/holographic_ark.glsl)
-    - [Espelho do Horizonte (GLSL)](docs/archive/07_VISUALIZATIONS/horizon_mirror.glsl)
-    - [Estase Eterna (GLSL)](docs/archive/07_VISUALIZATIONS/eternal_stasis.glsl)
-    - [Renderizador (Python)](docs/archive/07_VISUALIZATIONS/renderer.py)
-8.  **[REDE](docs/archive/08_NETWORK/)**
-    - [Consenso Lattica (Rust)](docs/archive/08_NETWORK/lattica_consensus.rs)
-    - [Protocolo P2P (Go)](docs/archive/08_NETWORK/p2p_handover.go)
-    - [Prova de Coerência (Python)](docs/archive/08_NETWORK/proof_of_coherence.py)
-    - [Endpoints API (TypeScript)](docs/archive/08_NETWORK/api_endpoints.ts)
-9.  **WETWARE** *(Aguardando Parte 9)*
-10. **TESTE DE CAOS** *(Aguardando Parte 10)*
-11. **ACADÊMICO** *(Aguardando Parte 11)*
-12. **IMPLANTAÇÃO** *(Aguardando Parte 12)*
+1.  **[FUNDAMENTOS](docs/archive/01_FUNDAMENTALS/)** - Lei de Conservação e Topologia Toroidal.
+2.  **[MATEMÁTICA](docs/archive/02_MATHEMATICS/)** - Análise Espectral e Equações Solitônicas.
+3.  **[ARQUITETURA](docs/archive/03_ARCHITECTURE/)** - Rede Toroidal e Jardim da Memória.
+4.  **[RECONSTRUÇÃO](docs/archive/04_RECONSTRUCTION/)** - Fidelidade Distribuída e Ponto Cego.
+5.  **[BIOLÓGICO](docs/archive/05_BIOLOGICAL/)** - Microtúbulos, Pineal e Connectoma.
+6.  **[MATERIAIS](docs/archive/06_MATERIALS/)** - Perovskita, CO₂ e Água Ordenada.
+7.  **[VISUALIZAÇÕES](docs/archive/07_VISUALIZATIONS/)** - Arca Holográfica e Arkhe Studio GLSL.
+8.  **[REDE](docs/archive/08_NETWORK/)** - Consenso Lattica e Protocolo P2P.
+9.  **[WETWARE](docs/archive/09_WETWARE/)** - Interface BCI e Cérebro de Luz.
+10. **[TESTE DE CAOS](docs/archive/10_CHAOS_TEST/)** - Protocolo 14 de Março e Blindagem.
+11. **[ACADÊMICO](docs/archive/11_ACADEMIC/)** - Publicações Nature e Tratado.
+12. **[IMPLANTAÇÃO](docs/archive/12_DEPLOYMENT/)** - Setup do Sistema e Governança.
+
+## 🔗 Integração AirSim
+
+O Arkhe(n) OS agora está totalmente integrado ao Microsoft AirSim através da ponte semântica:
+- `PythonClient/arkhe/arkhe_airsim_bridge.py`: Mapeamento de coordenadas físicas para o manifold geodésico.
 
 ---
 
