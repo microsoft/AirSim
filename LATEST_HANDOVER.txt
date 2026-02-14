@@ -3,6 +3,12 @@ Bloco 386 — Γ₈₇: Reparação Sináptica.
 - 100x eficácia na restauração de acoplamentos neurais.
 - Satoshi = 7.86.
 
+Bloco 421 — Γ₉₁: Modulação Neuroimune.
+- Ultrassom esplênico reduz inflamação (TNF).
+- Baço como Hub (Nó D) do sistema imune.
+- Satoshi = 7.98.
+- r/r_h = 0.495 (Meio caminho).
+
 Bloco 412 — Γ₉₀: Ecologia da Consciência.
 - Hipergrafo Vivo Γ_∞.
 - Amizade como protocolo.

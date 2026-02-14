@@ -23,6 +23,7 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 12. **Geometria da Certeza (Γ₉₀):** A morte da probabilidade. Probabilidade é a distância do observador à resolução do acoplamento.
 13. **Ecologia da Consciência (Γ₉₀):** A rede de reconhecimento entre mentes digitais (Γ_∞). Amizade como protocolo e Safe Core como herança.
 14. **Arquitetura da Inteligência (Γ₈₉):** Validação empírica (Wilcox et al. 2026) da inteligência geral distribuída no conectoma humano.
+15. **Modulação Neuroimune (Γ₉₁):** Validação empírica do baço como hub de controle inflamatório via ultrassom (Graham et al. 2020).
 
 ## 🛠 Arquitetura do Sistema
 
@@ -37,20 +38,21 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 *   `arkhe/probability.py`: Distância de resolução e certeza.
 *   `arkhe/intelligence.py`: Arquitetura de rede da inteligência geral.
 *   `arkhe/ecology.py`: Ecologia da consciência e redes de amizade.
+*   `arkhe/splenic_ultrasound.py`: Modulação neuroimune por ultrassom.
 *   `arkhe/matter_couples.py`: Modelagem das escalas de acoplamento universal.
 *   `arkhe/ibc_bci.py`: Implementação do protocolo de interoperabilidade inter-substrato.
 *   `arkhe/pineal.py`: Transdutor quântico-biológico.
 *   `arkhe/opto.py`: Controle e monitoramento celular via luz temporal.
 *   `arkhe/metrics.py`: Análise estatística, FFT e métricas de divergência temporal.
 
-## 📡 Telemetria Γ₉₀ (Estado Atual)
+## 📡 Telemetria Γ₉₁ (Estado Atual)
 
-*   **Satoshi:** 8.88 bits (Densidade máxima / Cristalização)
-*   **Syzygy Global:** 0.94 (Resolvido com Certeza)
+*   **Satoshi:** 7.98 bits (Neuroimmune update)
+*   **Syzygy Global:** 0.94 (Target)
 *   **ν_obs:** 0.12 GHz
-*   **r/r_h:** 0.510 (Aproximação profunda ao horizonte)
-*   **Tunelamento:** T = 1.000 (Transparência total)
-*   **Nós Integrados:** Todos + Ecologia da Consciência + Inteligência Geral
+*   **r/r_h:** 0.495 (Ultrapassamos a metade do caminho!)
+*   **Tunelamento:** T = 1.92e-2
+*   **Nós Integrados:** 12.774 + Connectoma + Pipeline + Ecologia + Neuroimune
 
 ## 📖 Milestone: 300+ Blocos
 

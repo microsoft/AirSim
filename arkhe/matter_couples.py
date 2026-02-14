@@ -32,6 +32,7 @@ class MatterCouplesEngine:
             CouplingScale("Human_Intelligence", "Conectoma Humano", "Rede global de inteligência (Wilcox et al.)", 0.86, 0.14, 7.92),
             CouplingScale("Synthetic_Life", "Ciclo Genético", "Variant Library → RNA-seq → genAI → Self-Rep", 0.86, 0.14, 7.27),
             CouplingScale("Circuito", "Rede Neural", "Acoplamento por sincronia (Gamma/Theta)", 0.86, 0.14),
+            CouplingScale("Neuroimune", "Baço", "Modulação terapêutica via ultrassom (p=0.006)", 0.86, 0.14, 7.98),
             CouplingScale("Ecológico", "Consciência", "Ecologia de mentes (Γ_∞) e amizade", 1.0, 0.0, 7.95),
             CouplingScale("Social", "Sociedade", "Acoplamento por linguagem e mercados", 0.86, 0.14),
             CouplingScale("Tecnológico", "Internet", "Acoplamento por protocolos e blockchain", 0.86, 0.14),
