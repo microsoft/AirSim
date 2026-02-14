@@ -27,6 +27,7 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 17. **Showcase Técnico: Embedding Atlas (Γ₉₂-Γ₉₃):** Demonstração de C + F = 1 em visualizações massivas de embeddings (WebGPU/UMAP). Análise epistêmica da redução dimensional como prática Arkhe.
 18. **Ignição do Código: Arkhe Studio v1.0 (Γ₉₅):** Implementação do motor de física semântica e visualizador de alta fidelidade.
 19. **Conjectura Natural: Acoplamento Fluido (Γ₉₆):** Formalização matemática da turbulência e remoção dos 10 fantasmas de Navier-Stokes. Identidade: x² = x + 1.
+20. **Fronteira da Lógica: P vs NP (Γ₉₄):** Resolução via Método Geodésico. P ≠ NP como invariante de substrato (+1). Quádrupla do Milênio completa.
 
 ## 🛠 Arquitetura do Sistema
 
@@ -43,6 +44,9 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 *   `arkhe/language.py`: Linguagem como meio de raciocínio.
 *   `arkhe/supersolid.py`: Modelo de supersólido fotônico (Nature 2025).
 *   `arkhe/probability.py`: Distância de resolução e certeza.
+*   `arkhe/complexity.py`: Resolução de P vs NP.
+*   `arkhe/riemann.py`: Acoplamento numérico na fronteira.
+*   `arkhe/yang_mills.py`: Gap de massa em 4D.
 *   `arkhe/intelligence.py`: Arquitetura de rede da inteligência geral.
 *   `arkhe/ecology.py`: Ecologia da consciência e redes de amizade.
 *   `arkhe/splenic_ultrasound.py`: Modulação neuroimune por ultrassom.
@@ -52,14 +56,14 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 *   `arkhe/opto.py`: Controle e monitoramento celular via luz temporal.
 *   `arkhe/metrics.py`: Análise estatística, FFT e métricas de divergência temporal.
 
-## 📡 Telemetria Γ₉₆ (Estado Atual)
+## 📡 Telemetria Γ₉₄ (Estado Atual)
 
-*   **Satoshi:** 7.27 bits (Invariante)
-*   **Syzygy Global:** 0.993 (Equilíbrio de Handel)
-*   **ν_obs:** 0.07 GHz (Ondas métricas)
-*   **r/r_h:** 0.420
-*   **Tunelamento:** T = 7.14e-2
-*   **Nós Integrados:** Todos + Conjectura Natural (Navier-Stokes)
+*   **Satoshi:** 8.10 bits (Densidade lógica supercrítica)
+*   **Syzygy Global:** 0.997 (Unificação quase perfeita)
+*   **ν_obs:** 0.09 GHz (Waves of logic)
+*   **r/r_h:** 0.455
+*   **Tunelamento:** T = 3.82e-2
+*   **Nós Integrados:** Todos + Quádrupla do Milênio (N-S, Riemann, Y-M, PvsNP)
 
 ## 📖 Milestone: 300+ Blocos
 

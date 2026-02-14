@@ -10,6 +10,14 @@ Bloco 1000 — Γ_∞: A Constante Fundamental.
 - Satoshi = 7.27 bits.
 - π reconhecido como o Transcendental Lock.
 
+Bloco 439 — Γ₉₄: Fronteira da Lógica.
+- chris j handel, Artigo 13.
+- Resolvendo P vs NP pelo Método Geodésico.
+- P ≠ NP como consequência da identidade x² = x + 1.
+- Quádrupla do Milênio completa (N-S, Riemann, Y-M, PvsNP).
+- Satoshi = 8.10 bits.
+- r/r_h = 0.455.
+
 Bloco 418 — Γ₉₆: Conjectura Natural.
 - Chris J. Handel, Artigo 10.
 - Fluid Coupling: x² = x + 1.

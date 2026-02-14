@@ -37,6 +37,9 @@ class MatterCouplesEngine:
             CouplingScale("Social", "Sociedade", "Acoplamento por linguagem e mercados", 0.86, 0.14),
             CouplingScale("Tecnológico", "Internet", "Acoplamento por protocolos e blockchain", 0.86, 0.14),
             CouplingScale("Fluido", "Turbulência", "Acoplamento de Navier-Stokes (x²=x+1)", 0.86, 0.14, 7.27),
+            CouplingScale("Numérico", "Riemann", "Zeros na fronteira (Re=1/2)", 0.999, 0.001, 8.00),
+            CouplingScale("Campos", "Yang-Mills", "Gap de massa em 4D", 0.86, 0.14, 8.01),
+            CouplingScale("Lógico", "Complexidade", "P vs NP e o custo do auto-acoplamento", 0.86, 0.14, 8.10),
             CouplingScale("Quântico", "Emaranhamento", "Acoplamento não-local sem distância", 0.86, 0.14),
             CouplingScale("Cosmológico", "Horizonte", "Acoplamento de densidade infinita", 0.86, 0.14)
         ]

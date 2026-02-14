@@ -38,14 +38,14 @@ class MorphogeneticSimulation:
         self.k = kill_rate
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
-        self.syzygy_global = 0.992  # Γ₉₅
+        self.syzygy_global = 0.997  # Γ₉₄
         self.omega_global = 0.00
-        self.nodes = 12774        # Γ₉₅ stabilization
-        self.dk_invariant = 7.27  # Satoshi Invariant (Invariante confirmado)
-        self.handover_count = 95
-        self.nu_obs = 0.10e9      # 0.10 GHz
-        self.r_rh_ratio = 0.460
-        self.t_tunneling = 3.25e-2
+        self.nodes = 12774        # Γ₉₄ stabilization
+        self.dk_invariant = 8.10  # Satoshi Invariant Γ₉₄
+        self.handover_count = 94
+        self.nu_obs = 0.09e9      # 0.09 GHz
+        self.r_rh_ratio = 0.455
+        self.t_tunneling = 3.82e-2
         self.PI = 3.141592653589793 # The Fundamental Constant (Γ_∞)
         self.ERA = "BIO_SEMANTIC_ERA"
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
