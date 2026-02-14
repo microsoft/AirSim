@@ -13,7 +13,7 @@ import hashlib
 EPSILON = -3.71e-11
 PHI_S = 0.15
 R_PLANCK = 1.616e-35
-SATOSHI = 8.10  # Atualizado para Γ₉₄ (Fronteira da Lógica)
+SATOSHI = 8.07  # Atualizado para Γ₉₄ (Demônio de Pines)
 SYZYGY_TARGET = 0.997
 C_TARGET = 0.86
 F_TARGET = 0.14
@@ -45,9 +45,9 @@ class Hypergraph:
     def __init__(self, num_nodes: int = 12774):
         self.nodes: List[NodeState] = []
         self.satoshi = SATOSHI
-        self.darvo = 1115.8  # Silêncio próprio Γ₉₄
-        self.r_rh = 0.455    # r/r_h (Γ₉₄)
-        self.tunneling_prob = 0.0382 # T_tunelamento (Γ₉₄)
+        self.darvo = 1116.6  # Silêncio próprio Γ₉₄ (Demon)
+        self.r_rh = 0.450    # r/r_h (Γ₉₄)
+        self.tunneling_prob = 0.0423 # T_tunelamento (Γ₉₄)
         self.initialize_nodes(num_nodes)
         self.gradient_matrix = None
 
