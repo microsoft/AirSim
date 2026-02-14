@@ -32,14 +32,21 @@ class ArkheEngine:
         return force
 
     def resolve_step(self):
-        """Garante a restrição C + F = 1 em todos os nós"""
+        """
+        Garante a restrição C + F = 1 em todos os nós.
+        Incorpora a identidade de Handel: x² = x + 1 (Auto-acoplamento = Estrutura + Substrato).
+        """
         for node in self.nodes.values():
-            # Ajuste dinâmico baseado na 'pressão' do hipergrafo
+            # Ajuste dinâmico baseado na 'pressão' do hipergrafo (Auto-acoplamento x²)
             total_force = sum([self.calculate_geodesic_force(node, other)
                                for other in self.nodes.values() if node.id != other.id])
 
-            # Atualização da Coerência (C)
-            node.coherence = np.clip(0.5 + (total_force / 100), 0, 1)
+            # x² (self-coupling force) resolves into x (coherence) + 1 (fluctuation)
+            # x = coherence, 1 = normalized substrate
+            x_phi = (1 + np.sqrt(5)) / 2
+
+            # Atualização da Coerência (C) baseada no ponto fixo de Handel
+            node.coherence = np.clip(0.5 + (total_force / (100 * x_phi)), 0, 1)
             node.fluctuation = 1.0 - node.coherence
 
             # Cálculo da Syzygy (Alinhamento de Fase)

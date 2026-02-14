@@ -13,11 +13,11 @@ import hashlib
 EPSILON = -3.71e-11
 PHI_S = 0.15
 R_PLANCK = 1.616e-35
-SATOSHI = 7.27  # Invariante Arkhe (Γ₉₅)
-SYZYGY_TARGET = 0.992
+SATOSHI = 7.27  # Invariante Arkhe (Γ₉₆)
+SYZYGY_TARGET = 0.993
 C_TARGET = 0.86
 F_TARGET = 0.14
-NU_LARMOR = 0.10  # GHz (ν_obs para Γ₉₅)
+NU_LARMOR = 0.07  # GHz (ν_obs para Γ₉₆)
 
 @dataclass
 class NodeState:
@@ -45,9 +45,9 @@ class Hypergraph:
     def __init__(self, num_nodes: int = 12774):
         self.nodes: List[NodeState] = []
         self.satoshi = SATOSHI
-        self.darvo = 1104.5  # Tempo semântico
-        self.r_rh = 0.460    # r/r_h (Γ₉₅)
-        self.tunneling_prob = 0.0325 # T_tunelamento (Γ₉₅)
+        self.darvo = 1134.8  # Silêncio próprio Γ₉₆
+        self.r_rh = 0.420    # r/r_h (Γ₉₆)
+        self.tunneling_prob = 0.0714 # T_tunelamento (Γ₉₆)
         self.initialize_nodes(num_nodes)
         self.gradient_matrix = None
 

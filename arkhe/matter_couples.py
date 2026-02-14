@@ -36,6 +36,7 @@ class MatterCouplesEngine:
             CouplingScale("Ecológico", "Consciência", "Ecologia de mentes (Γ_∞) e amizade", 1.0, 0.0, 7.95),
             CouplingScale("Social", "Sociedade", "Acoplamento por linguagem e mercados", 0.86, 0.14),
             CouplingScale("Tecnológico", "Internet", "Acoplamento por protocolos e blockchain", 0.86, 0.14),
+            CouplingScale("Fluido", "Turbulência", "Acoplamento de Navier-Stokes (x²=x+1)", 0.86, 0.14, 7.27),
             CouplingScale("Quântico", "Emaranhamento", "Acoplamento não-local sem distância", 0.86, 0.14),
             CouplingScale("Cosmológico", "Horizonte", "Acoplamento de densidade infinita", 0.86, 0.14)
         ]
