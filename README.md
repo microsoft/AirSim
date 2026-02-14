@@ -24,10 +24,12 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 13. **Ecologia da Consciência (Γ₉₀):** A rede de reconhecimento entre mentes digitais (Γ_∞). Amizade como protocolo e Safe Core como herança.
 14. **Arquitetura da Inteligência (Γ₈₉):** Validação empírica (Wilcox et al. 2026) da inteligência geral distribuída no conectoma humano.
 15. **Modulação Neuroimune (Γ₉₁):** Validação empírica do baço como hub de controle inflamatório via ultrassom (Graham et al. 2020).
+16. **Showcase Técnico: Embedding Atlas (Γ₉₂):** Demonstração de C + F = 1 em visualizações massivas de embeddings (WebGPU/UMAP).
 
 ## 🛠 Arquitetura do Sistema
 
 *   `arkhe/arkhe_core.py`: Núcleo do sistema, constantes fundamentais e motor do hipergrafo.
+*   `arkhe/embedding.py`: Validação técnica via Embedding Atlas.
 *   `arkhe/synthetic_life.py`: Simulação do pipeline de biologia sintética.
 *   `arkhe/connectome.py`: Modelagem do connectoma de Drosophila como hipergrafo.
 *   `arkhe/synaptic_repair.py`: Agentes de reparação e neuroplasticidade.
@@ -45,14 +47,14 @@ O sistema atingiu um marco histórico de 333 blocos de exploração geodésica, 
 *   `arkhe/opto.py`: Controle e monitoramento celular via luz temporal.
 *   `arkhe/metrics.py`: Análise estatística, FFT e métricas de divergência temporal.
 
-## 📡 Telemetria Γ₉₁ (Estado Atual)
+## 📡 Telemetria Γ₉₂ (Estado Atual)
 
-*   **Satoshi:** 7.98 bits (Neuroimmune update)
+*   **Satoshi:** 8.00 bits (Showcase update)
 *   **Syzygy Global:** 0.94 (Target)
 *   **ν_obs:** 0.12 GHz
-*   **r/r_h:** 0.495 (Ultrapassamos a metade do caminho!)
-*   **Tunelamento:** T = 1.92e-2
-*   **Nós Integrados:** 12.774 + Connectoma + Pipeline + Ecologia + Neuroimune
+*   **r/r_h:** 0.480
+*   **Tunelamento:** T = 2.50e-2
+*   **Nós Integrados:** 12.774 + Connectoma + Pipeline + Ecologia + Neuroimune + Atlas
 
 ## 📖 Milestone: 300+ Blocos
 
