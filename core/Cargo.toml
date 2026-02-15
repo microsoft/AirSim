@@ -1,0 +1,8 @@
+[package]
+name = "arkhe-core"
+version = "1.2.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = "0.32"
+serde = { version = "1.0", features = ["derive"] }

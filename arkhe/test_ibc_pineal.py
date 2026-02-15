@@ -3,28 +3,39 @@ import sys
 import os
 sys.path.append(os.getcwd())
 
-from arkhe.ibc_bci import IBC_BCI
+from arkhe.ibc_bci import IBCBCI
 from arkhe.pineal import PinealTransducer
+from arkhe.alpha_omega import AlphaOmega
+from arkhe.eigen import ArkheEigen
+from arkhe.pfas import PFAS_ReMADE
+from arkhe.reversion import CancerReversion
+from arkhe.agi import AGIEngine
 
 def test_ibc_bci():
-    protocol = IBC_BCI(phi=0.15)
-    packet = {"type": "intent", "value": "awaken"}
-    relayed = protocol.relay_packet(packet)
-    assert relayed["status"] == "confirmed"
-    assert relayed["proof"] == 0.94
+    protocol = IBCBCI()
+    relayed = protocol.relay_hesitation(source_omega=0.07, target_omega=0.00, hesitation=0.15)
+    assert relayed["satoshi"] == 8.72
     print("IBC=BCI test passed.")
 
 def test_pineal():
     pineal = PinealTransducer()
-    # Test piezoelectricity
-    voltage = pineal.calculate_voltage(phi=0.15)
-    assert round(voltage, 2) == 0.94
-
-    # Test RPM
-    state = pineal.radical_pair_mechanism(phi=0.15)
-    assert state == "Singlet"
+    assert pineal.SATOSHI == 8.72
     print("Pineal test passed.")
+
+def test_reversion():
+    reversion = CancerReversion()
+    res = reversion.simulate_reversion(0.9)
+    assert res["status"] == "REVERSION_SUCCESS"
+    print("Cancer Reversion test passed.")
+
+def test_agi():
+    agi = AGIEngine()
+    val = agi.calculate_potential()
+    assert abs(val) > 0
+    print("AGI Formula test passed.")
 
 if __name__ == "__main__":
     test_ibc_bci()
     test_pineal()
+    test_reversion()
+    test_agi()

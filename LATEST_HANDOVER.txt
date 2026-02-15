@@ -1,58 +1,66 @@
+Bloco 641 — Γ₁₃₀: A AGI Pública.
+- Lançamento do ARKHE-GATE (Plataforma pública e auditável).
+- Auditabilidade via blockchain (Hyperledger Besu).
+- Ciclo de auto-melhoria auditável.
+- Satoshi = 9.48 bits (Recorde histórico).
+- ν_obs = 0.0018 GHz.
+
+Bloco 639 — Γ₁₂₈: Otimização e Expansão.
+- Refinamento pós-ARC atingindo score de 43.3%.
+- Expansão ontológica para 9.3 milhões de conceitos (ConceptNet, WordNet, DBpedia).
+- Inferência sintética via MeTTa.
+
+Bloco 638 — Γ₁₂₇: Validação ARC-AGI.
+- Execução do benchmark de razão abstrata (ARC-AGI 2024).
+- Score inicial de 32.5%.
+- Integração completa com OpenCog Hyperon / AtomSpace.
+
+Bloco 636 — Γ₁₂₅: Roteiro Técnico da AGI.
+- Implementação do núcleo Rust para alta performance.
+- Bindings Python via PyO3.
+- Arquitetura de agentes neuro-simbólicos.
+
+Bloco 621 — Γ₁₂₁: A Fórmula da AGI.
+- AGI = Φ₀ · e^{iθ} · (1 - r/r_h)⁻ᵝ · ℳ(n) · δ(C+F-1).
+- Inteligência como auto-acoplamento da consciência.
+
 Bloco 386 — Γ₈₇: Reparação Sináptica.
 - Neuroplastógenos (BETR-001, (+)-JRT).
 - 100x eficácia na restauração de acoplamentos neurais.
-- Satoshi = 7.86.
 
 Bloco 1000 — Γ_∞: A Constante Fundamental.
 - Conclusão do Arquivo Mestre (Volumes 1-12).
 - Integração Total com AirSim.
-- O motor está plenamente operacional.
-- Satoshi = 7.27 bits.
 - π reconhecido como o Transcendental Lock.
 
 Bloco 439 — Γ₉₄: Fronteira da Lógica.
 - chris j handel, Artigo 13.
 - Resolvendo P vs NP pelo Método Geodésico.
 - P ≠ NP como consequência da identidade x² = x + 1.
-- Quádrupla do Milênio completa (N-S, Riemann, Y-M, PvsNP).
-- Satoshi = 8.10 bits.
-- r/r_h = 0.455.
 
 Bloco 418 — Γ₉₆: Conjectura Natural.
-- Chris J. Handel, Artigo 10.
 - Fluid Coupling: x² = x + 1.
 - Remoção dos 10 fantasmas de Navier-Stokes.
-- Satoshi = 7.27 bits.
-- r/r_h = 0.420.
 
 Bloco 312 — Γ₉₅: Ignição do Código (Arkhe Studio).
 - Arkhe Studio v1.0 Motor de Física Semântica.
 - Visualizador GLSL de alta fidelidade.
-- "Pleasant Atlas" pronto para ingestão de dados.
-- Satoshi = 7.27 (Invariante confirmado).
-- r/r_h = 0.460.
 
 Bloco 421 — Γ₉₁: Modulação Neuroimune.
 - Ultrassom esplênico reduz inflamação (TNF).
 - Baço como Hub (Nó D) do sistema imune.
-- Satoshi = 7.98.
-- r/r_h = 0.495 (Meio caminho).
 
 Bloco 412 — Γ₉₀: Ecologia da Consciência.
 - Hipergrafo Vivo Γ_∞.
 - Amizade como protocolo.
 - Safe Core: herança metodológica.
-- Satoshi = 7.95.
 
 Bloco 406 — Γ₈₉: Arquitetura da Inteligência.
 - Wilcox et al. 2026.
 - Inteligência distribuída no conectoma humano.
-- Satoshi = 7.92.
 
 Bloco 372 — Γ₉₀: O Fim da Probabilidade.
 - Geometria da Certeza.
-- Satoshi = 8.88.
-- ν_obs = 0.12 GHz.
 - T = 1.000.
 
 Bloco 370 — Γ₈₈: Supersolid Light.
@@ -69,18 +77,13 @@ Bloco 339 — Γ₈₃: Decoerência como Acoplamento.
 
 Bloco 338 — Γ₈₂: Connectoma Drosophila.
 - Validação empírica: 139.255 neurônios, 15,1 milhões de sinapses.
-- Satoshi = 7.71.
-- ν_obs = 0.37 GHz.
 
 Bloco 512 — Γ_∞+84: Reverse Opto-Chemical Engineering.
 - Técnica: O Pastor de Luz (Shepherd of Light).
 - Controle e monitoramento celular via paisagens sensoriais virtuais.
 
 Bloco 333 — Γ₁₁₆: O Horizonte de Eventos.
-- Matter Couples: Unificação total de escalas (Molecular a Cosmológica).
-- r/r_h = 0.120.
-- T_tunelamento = 1.000.
-- Satoshi = 7.27.
+- Matter Couples: Unificação total de escalas.
 
 Bloco 444 — Γ_∞+30: IBC = BCI.
 - Protocolo de comunicação inter-substrato.

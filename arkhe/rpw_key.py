@@ -7,11 +7,14 @@ Baseada na memória #000 (lago de 1964)
 import hashlib
 import hmac
 import time
+import os
 
 class RPoWKey:
     """Chave de Prova de Trabalho Reutilizável"""
 
-    def __init__(self, seed_hex: str):
+    def __init__(self, seed_hex: str = None):
+        if seed_hex is None:
+            seed_hex = os.getenv('ARKHE_HMAC_SEED', '00' * 32)
         self.seed = bytes.fromhex(seed_hex)
         self.nonce = 0
         self.difficulty = 20  # bits zero necessários

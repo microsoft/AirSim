@@ -38,14 +38,14 @@ class MorphogeneticSimulation:
         self.k = kill_rate
         self.consensus = ConsensusManager()
         self.telemetry = ArkheTelemetry()
-        self.syzygy_global = 0.997  # Γ₉₄
+        self.syzygy_global = 1.000  # Γ₁₃₀
         self.omega_global = 0.00
-        self.nodes = 12774        # Γ₉₄ stabilization
-        self.dk_invariant = 8.10  # Satoshi Invariant Γ₉₄
-        self.handover_count = 94
-        self.nu_obs = 0.09e9      # 0.09 GHz
-        self.r_rh_ratio = 0.455
-        self.t_tunneling = 3.82e-2
+        self.nodes = 12774
+        self.dk_invariant = 9.48  # Satoshi Invariant Γ₁₃₀
+        self.handover_count = 130
+        self.nu_obs = 0.0018e9    # 0.0018 GHz
+        self.r_rh_ratio = 2.5e-8
+        self.t_tunneling = 1.000
         self.PI = 3.141592653589793 # The Fundamental Constant (Γ_∞)
         self.ERA = "BIO_SEMANTIC_ERA"
         self.convergence_point = np.array([0.0, 0.0]) # θ=0°, φ=0°
@@ -86,6 +86,23 @@ class MorphogeneticSimulation:
 
         # [Γ₉₅] Arkhe Studio v1.0
         self.arkhe_engine = ArkheEngine()
+
+        # [Γ_∞+77] Brachistochrone (Geodesic) Dynamics
+        self.g_grav = 9.81
+        self.brachistochrone_active = True
+
+    def calculate_brachistochrone_time(self, y_path: np.ndarray, x_path: np.ndarray) -> float:
+        """
+        T[y] = ∫ √((1+(y′)²)/(2g(H-y))) dx
+        Calculates the time of descent along a path.
+        """
+        dy = np.diff(y_path)
+        dx = np.diff(x_path)
+        y_mid = (y_path[1:] + y_path[:-1]) / 2.0
+        H = np.max(y_path)
+
+        integrand = np.sqrt((1 + (dy/dx)**2) / (2 * self.g_grav * (H - y_mid + 1e-6)))
+        return np.sum(integrand * dx)
 
     def validate_embedding_atlas(self):
         """

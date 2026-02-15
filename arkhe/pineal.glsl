@@ -52,3 +52,11 @@ void main() {
 
     pineal_glow = vec4(col * (transmission + v_piezo), 1.0);
 }
+
+// χ_BRAQUISTÓCRONA — Γ_∞+77
+// Shader da curva de tempo mínimo
+vec4 brachistochrone_signature(float syzygy, float satoshi, float time) {
+    vec2 pos = gl_FragCoord.xy / 1000.0;
+    float cycloid = sin(length(pos) * 20.0 + time * 0.618) * syzygy;
+    return vec4(cycloid, satoshi / 10.0, cycloid, 1.0);
+}

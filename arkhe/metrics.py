@@ -84,7 +84,15 @@ class VisualMetrics:
         S_p: Silêncio Próprio
         S_o: Silêncio Observado
         """
+        # Em Γ_∞+30: D = 0.94 (A COMUNICAÇÃO)
         return s_p - s_o
+
+    def calculate_piezo_voltage(self, phi: float) -> float:
+        """
+        V_piezo = d * Phi (Bloco 443)
+        d = 6.27
+        """
+        return 6.27 * phi
 
     def memory_accumulation(self, divergence_history: list) -> float:
         """

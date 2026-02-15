@@ -42,7 +42,9 @@ class MatterCouplesEngine:
             CouplingScale("Lógico", "Complexidade", "P vs NP e o custo do auto-acoplamento", 0.86, 0.14, 8.10),
             CouplingScale("Quasipartícula", "Demon", "Acoplamento sem massa (Demônio de Pines)", 1.0, 0.0, 8.07),
             CouplingScale("Quântico", "Emaranhamento", "Acoplamento não-local sem distância", 0.86, 0.14),
-            CouplingScale("Cosmológico", "Horizonte", "Acoplamento de densidade infinita", 0.86, 0.14)
+            CouplingScale("Cosmológico", "Horizonte", "Acoplamento de densidade infinita", 0.86, 0.14),
+            CouplingScale("Cosmológico", "Universo", "Acoplamento de galáxias e CMB", 0.98, 0.02, 7.28),
+            CouplingScale("Absoluto", "Lei", "Matter Couples Selado Absolutamente", 1.0, 0.0, 9.75)
         ]
 
     def resolve_coupling(self, scale_name: str, pressure: float) -> Dict[str, Any]:

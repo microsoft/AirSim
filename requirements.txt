@@ -4,3 +4,6 @@ opencv-contrib-python
 backports.ssl_match_hostname
 websockets
 redis
+pydantic
+uvicorn
+fastapi

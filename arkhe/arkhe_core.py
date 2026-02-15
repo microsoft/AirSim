@@ -13,11 +13,11 @@ import hashlib
 EPSILON = -3.71e-11
 PHI_S = 0.15
 R_PLANCK = 1.616e-35
-SATOSHI = 8.07  # Atualizado para Γ₉₄ (Demônio de Pines)
-SYZYGY_TARGET = 0.997
+SATOSHI = 9.48  # Handover Γ₁₃₀ (Public Launch)
+SYZYGY_TARGET = 1.000
 C_TARGET = 0.86
 F_TARGET = 0.14
-NU_LARMOR = 0.09  # GHz (ν_obs para Γ₉₄)
+NU_LARMOR = 0.0018  # GHz (Γ₁₃₀)
 
 @dataclass
 class NodeState:
@@ -36,7 +36,6 @@ class NodeState:
 
     def syzygy_with(self, other: 'NodeState') -> float:
         """Calcula o produto interno com outro nó"""
-        # Simula ⟨ω_i|ω_j⟩ baseado nas coerências
         return (self.C * other.C + self.F * other.F) * SYZYGY_TARGET
 
 class Hypergraph:
@@ -45,9 +44,9 @@ class Hypergraph:
     def __init__(self, num_nodes: int = 12774):
         self.nodes: List[NodeState] = []
         self.satoshi = SATOSHI
-        self.darvo = 1116.6  # Silêncio próprio Γ₉₄ (Demon)
-        self.r_rh = 0.450    # r/r_h (Γ₉₄)
-        self.tunneling_prob = 0.0423 # T_tunelamento (Γ₉₄)
+        self.darvo = 1278.8  # Silêncio próprio Γ₁₃₀
+        self.r_rh = 2.5e-8    # r/r_h (Γ₁₃₀)
+        self.tunneling_prob = 1.000 # T_tunelamento (Γ₁₃₀)
         self.initialize_nodes(num_nodes)
         self.gradient_matrix = None
 
@@ -75,81 +74,19 @@ class Hypergraph:
             ))
 
     def compute_gradients(self) -> np.ndarray:
-        """Calcula matriz de gradientes de coerência ∇C_ij"""
         n = len(self.nodes)
         self.gradient_matrix = np.zeros((n, n))
-
         for i in range(n):
             for j in range(i+1, n):
                 delta_C = abs(self.nodes[j].C - self.nodes[i].C)
-                dist = np.sqrt(
-                    (self.nodes[j].x - self.nodes[i].x)**2 +
-                    (self.nodes[j].y - self.nodes[i].y)**2 +
-                    (self.nodes[j].z - self.nodes[i].z)**2
-                )
+                dist = np.sqrt((self.nodes[j].x - self.nodes[i].x)**2 + (self.nodes[j].y - self.nodes[i].y)**2 + (self.nodes[j].z - self.nodes[i].z)**2)
                 if dist > 0.01:
                     grad = delta_C / dist
                     self.gradient_matrix[i, j] = grad
                     self.gradient_matrix[j, i] = grad
         return self.gradient_matrix
 
-    def handover(self, source_idx: int, target_idx: int) -> float:
-        """Executa um handover entre dois nós"""
-        source = self.nodes[source_idx]
-        target = self.nodes[target_idx]
-
-        # Calcula syzygy antes
-        syzygy_before = source.syzygy_with(target)
-
-        # Atualiza estados baseado na hesitação
-        if source.phi > PHI_S:
-            # Hesitação ativa: transfere coerência
-            transfer = source.phi * 0.1
-            source.C -= transfer
-            source.F += transfer
-            target.C += transfer
-            target.F -= transfer
-
-            # Satoshi acumula
-            self.satoshi += syzygy_before * 0.001
-
-        # Re-normaliza C+F=1
-        source_sum = source.C + source.F
-        target_sum = target.C + target.F
-        source.C /= source_sum
-        source.F /= source_sum
-        target.C /= target_sum
-        target.F /= target_sum
-
-        syzygy_after = source.syzygy_with(target)
-        return syzygy_after
-
-    def teleport_state(self, source_idx: int, dest_idx: int) -> float:
-        """Teletransporta o estado quântico entre nós"""
-        source = self.nodes[source_idx]
-        dest = self.nodes[dest_idx]
-
-        # Estado original (simplificado como vetor [C, F])
-        original = np.array([source.C, source.F])
-
-        # Destrói estado original
-        source.C, source.F = 0.5, 0.5
-
-        # Reconstrução no destino com ruído
-        noise = np.random.normal(0, 0.0002, 2)
-        reconstructed = original + noise
-        norm = np.linalg.norm(reconstructed)
-        reconstructed /= norm
-
-        dest.C, dest.F = reconstructed
-
-        # Fidelidade (overlap)
-        fidelity = np.dot(original, reconstructed)
-        self.satoshi += fidelity * 0.01
-        return fidelity
-
     def calculate_network_dispersity(self) -> float:
-        """Calcula dispersidade da rede (análogo a Đ de polímeros)"""
         C_values = np.array([node.C for node in self.nodes])
         C_n = C_values.mean()
         C_w = (C_values**2).sum() / C_values.sum()
