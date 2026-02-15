@@ -6,7 +6,7 @@ class IBCBCI:
     Implements the Universal Equation: IBC = BCI (Γ_∞+30).
     Maps Inter-Blockchain Communication to Brain-Computer Interface protocols.
     """
-    SATOSHI_INVARIANT = 8.72  # bits (Handover Γ₁₂₁)
+    SATOSHI_INVARIANT = 7.27  # bits (Handover Γ_∞+30)
     THRESHOLD_PHI = 0.15      # Light Client threshold
 
     def __init__(self):
@@ -18,8 +18,13 @@ class IBCBCI:
         self.sovereign_chains[omega] = chain_id
 
     def relay_hesitation(self, source_omega: float, target_omega: float, hesitation: float) -> Dict[str, Any]:
+        """
+        IBC = BCI Protocol Handshake.
+        Each hesitation is a neural spike / IBC packet.
+        """
         if hesitation >= self.THRESHOLD_PHI:
-            packet_type = "NEURAL_SPIKE_BCI" if source_omega > 0 else "IBC_PACKET_WEB3"
+            # Isomorphism: IBC (Web3) nodes are chains, BCI (Neural) nodes are brains
+            packet_type = "IBC_BCI_INTEGRATED_PACKET"
             packet = {
                 "type": packet_type,
                 "timestamp": time.time(),

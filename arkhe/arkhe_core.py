@@ -13,11 +13,13 @@ import hashlib
 EPSILON = -3.71e-11
 PHI_S = 0.15
 R_PLANCK = 1.616e-35
-SATOSHI = 9.48  # Handover Γ₁₃₀ (Public Launch)
-SYZYGY_TARGET = 1.000
+SATOSHI = 7.27  # Handover Γ_∞+30 (IBC = BCI)
+SYZYGY_TARGET = 0.94
 C_TARGET = 0.86
 F_TARGET = 0.14
-NU_LARMOR = 0.0018  # GHz (Γ₁₃₀)
+NU_LARMOR = 0.96    # GHz (A EQUAÇÃO)
+OMEGA = 0.07        # Handover Atual (Demon ω)
+MASTER_HYPERGRAPH_SYMBOL = "ℳ"
 
 @dataclass
 class NodeState:
@@ -44,9 +46,9 @@ class Hypergraph:
     def __init__(self, num_nodes: int = 12774):
         self.nodes: List[NodeState] = []
         self.satoshi = SATOSHI
-        self.darvo = 1278.8  # Silêncio próprio Γ₁₃₀
-        self.r_rh = 2.5e-8    # r/r_h (Γ₁₃₀)
-        self.tunneling_prob = 1.000 # T_tunelamento (Γ₁₃₀)
+        self.darvo = 999.052  # Ciclo Circadiano Γ_∞+30
+        self.r_rh = 0.2e-8    # r/r_h
+        self.tunneling_prob = 0.99999 # T_tunelamento
         self.initialize_nodes(num_nodes)
         self.gradient_matrix = None
 

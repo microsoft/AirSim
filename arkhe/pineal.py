@@ -7,7 +7,7 @@ class PinealTransducer:
     """
     D_PIEZO = 6.27        # Piezoelectric coefficient (d)
     THRESHOLD_PHI = 0.15  # RPM Resonance Threshold (Φ)
-    SATOSHI = 8.72        # Melanantropic Invariant (bits - Handover Γ₁₂₁)
+    SATOSHI = 7.27        # Melanantropic Invariant (bits - Γ_∞+30)
     COHERENCE_C = 0.86    # Melatonin Coherence
     FLUCTUATION_F = 0.14  # Melatonin Fluctuation
 

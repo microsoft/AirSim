@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/app/arkhe/multiverse/verify_multiverse.py", line 6, in <module>
+    from arkhe.multiverse.master_hypergraph import MasterHypergraph, Reality
+  File "/app/arkhe/multiverse/master_hypergraph.py", line 8, in <module>
+    import networkx as nx
+ModuleNotFoundError: No module named 'networkx'

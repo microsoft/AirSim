@@ -1,0 +1,33 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /app
+collected 0 items / 2 errors
+
+==================================== ERRORS ====================================
+_____________________ ERROR collecting arkhe/test_arkhe.py _____________________
+ImportError while importing test module '/app/arkhe/test_arkhe.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+arkhe/test_arkhe.py:2: in <module>
+    import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'
+__________________ ERROR collecting arkhe/test_ibc_pineal.py ___________________
+ImportError while importing test module '/app/arkhe/test_ibc_pineal.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+arkhe/test_ibc_pineal.py:7: in <module>
+    from arkhe.pineal import PinealTransducer
+arkhe/pineal.py:1: in <module>
+    import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'
+=========================== short test summary info ============================
+ERROR arkhe/test_arkhe.py
+ERROR arkhe/test_ibc_pineal.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+============================== 2 errors in 0.18s ===============================
