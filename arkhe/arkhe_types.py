@@ -1,0 +1,139 @@
+from dataclasses import dataclass, field
+from typing import Tuple, List, Optional
+from enum import Enum, auto
+import numpy as np
+
+class EpistemicStatus(Enum):
+    INSTRUMENT = auto()
+    IDOL = auto()
+    UNCERTAIN = auto()
+    EMERGENT = auto()
+
+@dataclass
+class CIEF:
+    """
+    CIEF Genome: Identity functional of a voxel or agent.
+    C: Construction / Physicality (Structural properties)
+    I: Information / Context (Semantic/Historical data)
+    E: Energy / Environment (Thermal/Tension fields)
+    F: Function / Frequency (Functional vocation)
+    """
+    c: float = 0.0
+    i: float = 0.0
+    e: float = 0.0
+    f: float = 0.0
+
+    def to_array(self) -> np.ndarray:
+        return np.array([self.c, self.i, self.e, self.f], dtype=np.float32)
+
+@dataclass
+class HexVoxel:
+    """
+    HexVoxel: A unit of the Hexagonal Spatial Index (HSI).
+    """
+    # Cube coordinates (q, r, s) where q + r + s = 0, plus h for height
+    coords: Tuple[int, int, int, int]
+
+    # CIEF Genome
+    genome: CIEF = field(default_factory=CIEF)
+
+    # Coherence local (Phi metric)
+    phi_data: float = 0.0
+    phi_field: float = 0.0
+
+    @property
+    def phi(self) -> float:
+        # Integrated coherence
+        return (self.phi_data + self.phi_field) / 2.0
+
+    # Quantum-like state (amplitudes for 6 faces + internal)
+    state: np.ndarray = field(default_factory=lambda: np.zeros(7, dtype=np.float32))
+
+    # Reaction-diffusion state (A, B) for Gray-Scott model
+    rd_state: Tuple[float, float] = (1.0, 0.0)
+
+    # Hebbian weights for 6 neighbors
+    weights: np.ndarray = field(default_factory=lambda: np.ones(6, dtype=np.float32))
+
+    # Hebbian trace: history of events (Instant, event_type)
+    hebbian_trace: List[Tuple[float, str]] = field(default_factory=list)
+
+    # Intention Vector (for pre-collision/direction prediction)
+    intention_vector: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float32))
+
+    # Current agent occupancy
+    agent_count: int = 0
+
+    # Metacognition (v4.0 Convergence)
+    epistemic_status: EpistemicStatus = EpistemicStatus.UNCERTAIN
+    humility: float = 0.5
+    origin_trace: Optional[str] = None
+
+    def __post_init__(self):
+        if len(self.state) != 7:
+            self.state = np.zeros(7, dtype=np.float32)
+        if len(self.weights) != 6:
+            self.weights = np.ones(6, dtype=np.float32)
+
+@dataclass
+class Vec3:
+    """
+    Vec3 through Arkhe(n) logic (BLOCO 354).
+    Geometria Vetorial com Coerência, Flutuação e Estrutura de Folha.
+    """
+    x: float
+    y: float
+    z: float
+    c: float = 0.86
+    f: float = 0.14
+    omega: float = 0.00
+    satoshi: float = 7.27
+
+    def norm(self) -> float:
+        """
+        Norma Arkhe(n): ‖v‖_A = √(x²·C + y²·C + z²·C) · (1 - F)
+        """
+        val = np.sqrt(self.x**2 * self.c + self.y**2 * self.c + self.z**2 * self.c)
+        return val * (1.0 - self.f)
+
+    @staticmethod
+    def add(a: 'Vec3', b: 'Vec3') -> 'Vec3':
+        """
+        Adição Vetorial com Conservação de Coerência (ω_a must be equal to ω_b).
+        """
+        if abs(a.omega - b.omega) > 1e-9:
+            raise ValueError("Addition only defined for vectors on the same leaf (omega).")
+
+        rx = a.x + b.x
+        ry = a.y + b.y
+        rz = a.z + b.z
+
+        na = a.norm()
+        nb = b.norm()
+
+        if na + nb > 0:
+            rc = (na * a.c + nb * b.c) / (na + nb)
+        else:
+            rc = (a.c + b.c) / 2.0
+
+        return Vec3(x=rx, y=ry, z=rz, c=rc, f=1.0-rc, omega=a.omega, satoshi=a.satoshi + b.satoshi)
+
+    @staticmethod
+    def inner(a: 'Vec3', b: 'Vec3') -> complex:
+        """
+        Produto Interno Semântico: ⟨a|b⟩ = (a.x·b.x + a.y·b.y + a.z·b.z) · (1 - |ω_a - ω_b|/ω_max)
+                                   · √(a.C·b.C) · exp(i·(φ_a - φ_b))
+        Using psi=0.73 rad as phase difference proxy.
+        """
+        omega_max = 0.10
+        dot = a.x * b.x + a.y * b.y + a.z * b.z
+        leaf_coupling = 1.0 - (abs(a.omega - b.omega) / omega_max)
+        leaf_coupling = max(0.0, leaf_coupling)
+
+        coherence_coupling = np.sqrt(a.c * b.c)
+
+        # Phase difference: for v1(0) and v2(0.07), phase is 0.73 rad
+        phase_diff = 0.73 if abs(a.omega - b.omega) > 0.06 else 0.0
+
+        val = dot * leaf_coupling * coherence_coupling * np.exp(1j * phase_diff)
+        return val

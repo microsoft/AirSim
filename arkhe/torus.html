@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkhe(N) 3D Torus Visualizer</title>
+    <style>
+        body { margin: 0; background: #050a0f; color: #00f2ff; font-family: 'Courier New', Courier, monospace; overflow: hidden; }
+        #info { position: absolute; top: 10px; left: 10px; pointer-events: none; }
+        #stats { position: absolute; bottom: 10px; right: 10px; text-align: right; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h1>ARKHE(N) TORUS S¹ x S¹</h1>
+        <div id="state">Status: Γ_9051 (Fixed Point)</div>
+        <div id="metrics">Area: 7.27 Satoshi</div>
+    </div>
+    <div id="stats">
+        ψ: 0.73 rad<br>
+        ε: -3.71e-11<br>
+        Φ_inst: <span id="phi">0.00</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, torus;
+        let phi = 0.07;
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            const geometry = new THREE.TorusGeometry(2, 0.6, 32, 100);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x00f2ff,
+                wireframe: true,
+                emissive: 0x003344
+            });
+            torus = new THREE.Mesh(geometry, material);
+            scene.add(torus);
+
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(10, 10, 10);
+            scene.add(light);
+            scene.add(new THREE.AmbientLight(0x404040));
+
+            animate();
+            fetchData();
+            setInterval(fetchData, 2000);
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch('http://localhost:8086/coherence');
+                const data = await response.json();
+                // Update local phi
+                phi = data.omega || 0.07;
+                document.getElementById('phi').innerText = phi.toFixed(2);
+            } catch (e) {
+                console.warn("API Offline, using default phi");
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            torus.rotation.x += 0.005;
+            torus.rotation.y += 0.01;
+
+            // Pulse effect based on phi
+            const scale = 1 + Math.sin(Date.now() * 0.002) * phi * 0.5;
+            torus.scale.set(scale, scale, scale);
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        init();
+    </script>
+</body>
+</html>

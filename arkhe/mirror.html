@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Arkhe(n) Mirror - Verificação Espacial</title>
+    <style>
+        body { font-family: 'Courier New', monospace; background: #0a0e1a; color: #c0e0ff; display: flex; margin: 0; }
+        #document-viewer { position: relative; width: 600px; height: 800px; background: #fff; margin: 20px; border: 2px solid #00f0ff; overflow: hidden; box-shadow: 0 0 20px #00f0ff40; }
+        .bounding-box { position: absolute; border: 2px solid #00f0ff80; background: #00f0ff20; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
+        .bounding-box:hover { border-color: #70ff70; background: #70ff7040; z-index: 10; }
+        .bounding-box.selected { border-color: #ffaa00; background: #ffaa0060; z-index: 11; }
+        .layout-box { position: absolute; border: 1px dashed #cccccc; background: #eeeeee20; pointer-events: none; }
+        #entity-list { width: 400px; padding: 20px; background: #1a1e2a; height: 100vh; overflow-y: auto; border-left: 1px solid #3a3e4a; }
+        .entity-item { padding: 10px; border-bottom: 1px solid #3a3e4a; cursor: pointer; transition: background 0.3s; }
+        .entity-item:hover { background: #2a2e3a; }
+        .entity-item.active { border-left: 4px solid #ffaa00; background: #2a2e3a; }
+        .confidence-bar { height: 6px; background: #3a3e4a; margin-top: 5px; border-radius: 3px; overflow: hidden; }
+        .confidence-fill { height: 100%; background: #00f0ff; }
+        h2 { border-bottom: 2px solid #00f0ff; padding-bottom: 10px; color: #00f0ff; }
+    </style>
+</head>
+<body>
+    <div id="document-viewer">
+        <!-- Espaços de extração serão injetados aqui -->
+    </div>
+    <div id="entity-list">
+        <h2>🧬 Extração Geodésica</h2>
+        <div id="entities-container">Carregando invariantes...</div>
+    </div>
+
+    <script>
+        async function loadDocumentData() {
+            const viewer = document.getElementById('document-viewer');
+            const container = document.getElementById('entities-container');
+
+            try {
+                // Simulamos envio de documento para trigger do OCR mock
+                const response = await fetch('http://localhost:8086/document/analyze', {
+                    method: 'POST',
+                    body: new Uint8Array([1, 2, 3]) // Dummy bytes
+                });
+                const data = await response.json();
+
+                container.innerHTML = '';
+                viewer.innerHTML = '';
+
+                // Render Layout Elements
+                data.layout.forEach(el => {
+                    const box = document.createElement('div');
+                    box.className = 'layout-box';
+                    box.style.left = `${el.bbox[0]}px`;
+                    box.style.top = `${el.bbox[1]}px`;
+                    box.style.width = `${el.bbox[2] - el.bbox[0]}px`;
+                    box.style.height = `${el.bbox[3] - el.bbox[1]}px`;
+                    viewer.appendChild(box);
+                });
+
+                // Render Entities
+                data.entities.forEach((ent, i) => {
+                    const id = `ent-${i}`;
+
+                    // List Item
+                    const item = document.createElement('div');
+                    item.className = 'entity-item';
+                    item.id = `item-${id}`;
+                    item.innerHTML = `
+                        <strong>${ent.name}</strong>: ${ent.value} ${ent.unit || ''}
+                        <div style="font-size: 0.8em; color: #888; margin-top: 4px;">"${ent.snippet}"</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${ent.confidence * 100}%;"></div>
+                        </div>
+                    `;
+                    container.appendChild(item);
+
+                    // Bounding Box
+                    const bbox = document.createElement('div');
+                    bbox.className = 'bounding-box';
+                    bbox.id = `bbox-${id}`;
+                    bbox.style.left = `${ent.bbox[0]}px`;
+                    bbox.style.top = `${ent.bbox[1]}px`;
+                    bbox.style.width = `${ent.bbox[2] - ent.bbox[0]}px`;
+                    bbox.style.height = `${ent.bbox[3] - ent.bbox[1]}px`;
+                    bbox.title = `${ent.name} (Conf: ${ent.confidence})`;
+                    viewer.appendChild(bbox);
+
+                    // Interactions
+                    const activate = () => {
+                        bbox.classList.add('selected');
+                        item.classList.add('active');
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    };
+                    const deactivate = () => {
+                        bbox.classList.remove('selected');
+                        item.classList.remove('active');
+                    };
+
+                    item.onmouseover = activate;
+                    item.onmouseout = deactivate;
+                    bbox.onmouseover = activate;
+                    bbox.onmouseout = deactivate;
+                });
+
+            } catch (e) {
+                console.error("Erro na extração:", e);
+                container.innerHTML = `<div style="color: #ff5555">Erro ao conectar com o Kernel: ${e.message}</div>`;
+            }
+        }
+
+        window.onload = loadDocumentData;
+    </script>
+</body>
+</html>
