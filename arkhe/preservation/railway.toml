@@ -1,0 +1,24 @@
+# railway.toml - Orquestração do Sistema SIWA
+[build]
+builder = "dockerfile"
+
+[deploy]
+numReplicas = 1
+sleep = false
+
+# Definição dos Contextos de Serviço
+[services.keyring-proxy]
+path = "./keyring-proxy"
+healthcheck = "/health"
+# Whitelist interna: Apenas o OpenClaw e o 2FA Server acessam
+private_network = true
+
+[services.2fa-gateway]
+path = "./2fa-gateway"
+healthcheck = "/health"
+# Exposto para receber Webhooks do Telegram
+public_domain = true
+
+[services.2fa-server]
+path = "./2fa-server"
+private_network = true

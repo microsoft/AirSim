@@ -1,0 +1,18 @@
+# ARKHE(N) OS: RAILWAY DEPLOYMENT VARIABLES (v3.0)
+# Use these variables to deploy the SIWA Infrastructure (Keyring Proxy & 2FA Gateway)
+
+# --- GLOBAL ---
+PORT=4000
+PUBLIC_URL=https://your-app-name.railway.app
+
+# --- KEYRING PROXY ---
+AGENT_PRIVATE_KEY=your_private_key_here
+PROXY_HMAC_SECRET=your_hmac_secret_for_ps1_communication
+
+# --- 2FA GATEWAY ---
+TELEGRAM_BOT_TOKEN=your_bot_token_from_botfather
+TELEGRAM_CHAT_ID=your_personal_chat_id
+
+# --- SECURITY ---
+# Ensure these variables are stored in Railway's Secret Manager.
+# Do NOT commit the actual values to version control.
