@@ -1,25 +1,61 @@
-import setup_path
-import airsim
+import numpy as np
 
-import time
+from typing import List, Tuple
 
-# connect to the AirSim simulator
-client = airsim.MultirotorClient()
-client.confirmConnection()
-client.enableApiControl(True)
-client.armDisarm(True)
+from airsim.types import MultirotorClient
+from airsim.types import Pose, Vector3r
+from airsim.utils import to_eularian_angles, to_quaternion
 
-# MultirotorClient.wait_key('Press any key to takeoff')
-print("Taking off")
-client.takeoffAsync().join()
-print("Ready")
+class Gimbal:
+    def __init__(self, cams : List[str]):
+        """Gimbal
 
-for i in range(5):
-    client.moveToPositionAsync(float(-50.00), float( 50.26), float( -20.58), float( 3.5))
-    time.sleep(6)
-    camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(0.5, 0.5, 0.1))
-    client.simSetCameraPose("0", camera_pose)
-    client.moveToPositionAsync(float(50.00), float( -50.26), float( -10.58), float( 3.5))
-    time.sleep(6)
-    camera_pose = airsim.Pose(airsim.Vector3r(0, 0, 0), airsim.to_quaternion(-0.5, -0.5, -0.1))
-    client.simSetCameraPose("0", camera_pose)
+        Args:
+            cams (List[str]): camera names in settings.json
+        """        
+        self.__cams = cams
+        
+    @property
+    def cams(self):
+        return self.__cams
+    
+    def discrete_rotation(self, camera : Pose, pitch : float, roll : float, yaw : float) -> Tuple:
+        """A discretization for angle difference
+
+        Args:
+            camera (Pose): Current camera pose
+            pitch (float): pitch in randians
+            roll (float): roll in radians
+            yaw (float): yaw in radians
+
+        Returns:
+            Tuple: discrezed positions for each DoF
+        """        
+        pitch_, roll_, yaw_ = to_eularian_angles(camera.orientation)
+        
+        d_pitch = np.arange(pitch_, pitch)
+        d_roll = np.arange(roll_, roll)
+        d_yaw = np.arange(yaw_, yaw)
+        
+        return d_pitch, d_roll, d_yaw
+    
+    def rotation(self, client : MultirotorClient, vehicle_name : str, pitch : float, roll : float, yaw : float):
+        """Apply rotations for each camera
+
+        Args:
+            client (MultirotorClient): vehicle type connection
+            vehicle_name (str): vehicle name in settings.json
+            pitch (float): pitch in randians
+            roll (float): roll in radians
+            yaw (float): yaw in radians
+        """        
+        vehicle_pose = client.simGetVehiclePose(vehicle_name)
+        xv, yv, zv = vehicle_pose.position
+        
+        camera_pose = client.simGetCameraInfo(self.__cams[0], vehicle_name).pose
+        d_pitch, d_roll, d_yaw = self.discretize_rotation(camera_pose, pitch, roll, yaw)
+        
+        for p, r, y in zip(d_pitch, d_roll, d_yaw):
+            pose = Pose(Vector3r(xv, yv, -zv), to_quaternion(p, r, y))
+            for cam in self.__cams:
+                client.simSetCameraPose(cam, pose, vehicle_name)
