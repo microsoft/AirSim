@@ -154,6 +154,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         vehicle_ros->global_gps_pub = nh_private_.advertise<sensor_msgs::NavSatFix>(curr_vehicle_name + "/global_gps", 10);
 
+        vehicle_ros->collision_pub = nh_private_.advertise<std_msgs::Bool>(curr_vehicle_name + "/collision_state", 10);
+
         if (airsim_mode_ == AIRSIM_MODE::DRONE) {
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
 
@@ -441,10 +443,17 @@ bool AirsimROSWrapper::land_all_srv_cb(airsim_ros_pkgs::Land::Request& request, 
 bool AirsimROSWrapper::reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, airsim_ros_pkgs::Reset::Response& response)
 {
     std::lock_guard<std::mutex> guard(drone_control_mutex_);
-
-    airsim_client_->reset();
-
-    response.success = true;
+    if(airsim_client_!=nullptr){
+        airsim_client_->reset();
+        for (const auto& vehicle_name_ptr_pair : vehicle_name_ptr_map_) {
+            airsim_client_->enableApiControl(true, vehicle_name_ptr_pair.first); // todo expose as rosservice?
+            airsim_client_->armDisarm(true, vehicle_name_ptr_pair.first); // todo exposes as rosservice?
+        }
+        response.success = true;
+    }
+    else{
+        response.success = false;
+    }   
     return response.success; //todo
 }
 
@@ -1004,7 +1013,8 @@ ros::Time AirsimROSWrapper::update_state()
 
         // vehicle environment, we can get ambient temperature here and other truths
         auto env_data = airsim_client_->simGetGroundTruthEnvironment(vehicle_ros->vehicle_name);
-
+        vehicle_ros->collision_state_msg.data = airsim_client_->simGetCollisionInfo(vehicle_ros->vehicle_name).has_collided;
+        
         if (airsim_mode_ == AIRSIM_MODE::DRONE) {
             auto drone = static_cast<MultiRotorROS*>(vehicle_ros.get());
             drone->curr_drone_state = get_multirotor_client()->getMultirotorState(vehicle_ros->vehicle_name);
@@ -1076,6 +1086,9 @@ void AirsimROSWrapper::publish_vehicle_state()
 
         // ground truth GPS position from sim/HITL
         vehicle_ros->global_gps_pub.publish(vehicle_ros->gps_sensor_msg);
+
+        // collision state from simGetCollisionInfo API
+        vehicle_ros->collision_pub.publish(vehicle_ros->collision_state_msg);
 
         for (auto& sensor_publisher : vehicle_ros->sensor_pubs) {
             switch (sensor_publisher.sensor_type) {
