@@ -352,6 +352,18 @@ namespace airlib
             getWorldSimApi()->setCameraPose(pose.to(), CameraDetails(camera_name, vehicle_name, external));
         });
 
+        pimpl_->server.bind("simSetCameraPitch", [&](const std::string& camera_name, float pitch, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setCameraPitch(pitch, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetCameraRoll", [&](const std::string& camera_name, float roll, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setCameraRoll(roll, CameraDetails(camera_name, vehicle_name, external));
+        });
+
+        pimpl_->server.bind("simSetCameraYaw", [&](const std::string& camera_name, float yaw, const std::string& vehicle_name, bool external) -> void {
+            getWorldSimApi()->setCameraYaw(yaw, CameraDetails(camera_name, vehicle_name, external));
+        });
+
         pimpl_->server.bind("simSetCameraFov", [&](const std::string& camera_name, float fov_degrees, const std::string& vehicle_name, bool external) -> void {
             getWorldSimApi()->setCameraFoV(fov_degrees, CameraDetails(camera_name, vehicle_name, external));
         });

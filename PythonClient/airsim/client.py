@@ -778,6 +778,46 @@ class VehicleClient:
 #TODO : below str() conversion is only needed for legacy reason and should be removed in future
         self.client.call('simSetCameraPose', str(camera_name), pose, vehicle_name, external)
 
+    def simSetCameraPitch(self, camera_name, pitch, vehicle_name = '', external = False):
+        """
+        - Control the pitch angle of a selected camera
+
+        Args:
+            camera_name (str): Name of the camera to be controlled
+            pitch (float): Pitch value (in degrees) representing the desired orientation of the camera
+            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+            external (bool, optional): Whether the camera is an External Camera
+        """
+#TODO : below str() conversion is only needed for legacy reason and should be removed in future
+        self.client.call('simSetCameraPitch', str(camera_name), pitch, vehicle_name, external)
+
+    def simSetCameraRoll(self, camera_name, roll, vehicle_name = '', external = False):
+        """
+        - Control the roll angle of a selected camera
+
+        Args:
+            camera_name (str): Name of the camera to be controlled
+            roll (float): Roll value (in degrees) representing the desired roll angle of the camera
+            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+            external (bool, optional): Whether the camera is an External Camera
+        """
+#TODO : below str() conversion is only needed for legacy reason and should be removed in future
+        self.client.call('simSetCameraRoll', str(camera_name), roll, vehicle_name, external)
+
+    def simSetCameraYaw(self, camera_name, yaw, vehicle_name = '', external = False):
+        """
+        - Control the yaw angle of a selected camera
+
+        Args:
+            camera_name (str): Name of the camera to be controlled
+            yaw (float): Yaw value (in degrees) representing the desired yaw angle of the camera
+            vehicle_name (str, optional): Name of vehicle which the camera corresponds to
+            external (bool, optional): Whether the camera is an External Camera
+        """
+#TODO : below str() conversion is only needed for legacy reason and should be removed in future
+        self.client.call('simSetCameraYaw', str(camera_name), yaw, vehicle_name, external)
+
+
     def simSetCameraFov(self, camera_name, fov_degrees, vehicle_name = '', external = False):
         """
         - Control the field of view of a selected camera

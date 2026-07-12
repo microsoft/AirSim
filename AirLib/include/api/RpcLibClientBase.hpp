@@ -145,6 +145,9 @@ namespace airlib
         void simSetDistortionParam(const std::string& camera_name, const std::string& param_name, float value, const std::string& vehicle_name = "", bool external = false);
         std::vector<float> simGetDistortionParams(const std::string& camera_name, const std::string& vehicle_name = "", bool external = false);
         void simSetCameraPose(const std::string& camera_name, const Pose& pose, const std::string& vehicle_name = "", bool external = false);
+        void simSetCameraPitch(const std::string& camera_name, float pitch, const std::string& vehicle_name = "", bool external = false);
+        void simSetCameraRoll(const std::string& camera_name, float roll, const std::string& vehicle_name = "", bool external = false);
+        void simSetCameraYaw(const std::string& camera_name, float yaw, const std::string& vehicle_name = "", bool external = false);
         void simSetCameraFov(const std::string& camera_name, float fov_degrees, const std::string& vehicle_name = "", bool external = false);
 
         bool simCreateVoxelGrid(const Vector3r& position, const int& x_size, const int& y_size, const int& z_size, const float& res, const std::string& output_file);

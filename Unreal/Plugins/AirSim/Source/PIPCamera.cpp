@@ -316,6 +316,45 @@ void APIPCamera::setCameraPose(const msr::airlib::Pose& relative_pose)
     }
 }
 
+void APIPCamera::setCameraPitch(float pitch)
+{
+    FRotator rotator = this->GetActorRotation();
+    rotator.Pitch = pitch;
+
+    if (gimbal_stabilization_ > 0) {
+        gimbald_rotator_.Pitch = rotator.Pitch;
+    }
+    else {
+        this->SetActorRelativeRotation(rotator);
+    }
+}
+
+void APIPCamera::setCameraRoll(float roll)
+{
+    FRotator rotator = this->GetActorRotation();
+    rotator.Roll = roll;
+
+    if (gimbal_stabilization_ > 0) {
+        gimbald_rotator_.Roll = rotator.Roll;
+    }
+    else {
+        this->SetActorRelativeRotation(rotator);
+    }
+}
+
+void APIPCamera::setCameraYaw(float yaw)
+{
+    FRotator rotator = this->GetActorRotation();
+    rotator.Yaw = yaw;
+
+    if (gimbal_stabilization_ > 0) {
+        gimbald_rotator_.Yaw = rotator.Yaw;
+    }
+    else {
+        this->SetActorRelativeRotation(rotator);
+    }
+}
+
 void APIPCamera::setCameraFoV(float fov_degrees)
 {
     int image_count = static_cast<int>(Utils::toNumeric(ImageType::Count));
