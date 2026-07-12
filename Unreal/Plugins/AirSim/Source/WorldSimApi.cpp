@@ -226,7 +226,7 @@ bool WorldSimApi::createVoxelGrid(const Vector3r& position, const int& x_size, c
     output << "#binvox 1\n";
     output << "dim " << ncells_x << " " << ncells_z << " " << ncells_y << "\n";
     output << "translate " << -x_size * 0.5 << " " << -y_size * 0.5 << " " << -z_size * 0.5 << "\n";
-    output << "scale " << 1.0f / x_size << "\n";
+    output << "scale " << x_size << "\n";
     output << "data\n";
     bool run_value = voxel_grid_[0];
     unsigned int run_length = 0;
