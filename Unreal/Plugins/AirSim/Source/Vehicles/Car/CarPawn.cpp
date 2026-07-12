@@ -4,7 +4,11 @@
 #include "Components/TextRenderComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
+#if ENGINE_MAJOR_VERSION >= 5
+#include "ChaosWheeledVehicleMovementComponent.h"
+#else
 #include "WheeledVehicleMovementComponent4W.h"
+#endif
 
 #include "CarWheelFront.h"
 #include "CarWheelRear.h"
@@ -85,7 +89,11 @@ ACarPawn::ACarPawn()
 
 void ACarPawn::setupVehicleMovementComponent()
 {
+    #if ENGINE_MAJOR_VERSION >= 5
+    UChaosWheeledVehicleMovementComponent* movement = CastChecked<UChaosWheeledVehicleMovementComponent>(getVehicleMovementComponent());
+    #else
     UWheeledVehicleMovementComponent4W* movement = CastChecked<UWheeledVehicleMovementComponent4W>(getVehicleMovementComponent());
+    #endif
     check(movement->WheelSetups.Num() == 4);
 
     // Wheels/Tires
@@ -107,10 +115,12 @@ void ACarPawn::setupVehicleMovementComponent()
     movement->WheelSetups[3].AdditionalOffset = FVector(0.f, 8.f, 0.f);
 
     // Adjust the tire loading
+#if ENGINE_MAJOR_VERSION < 5
     movement->MinNormalizedTireLoad = 0.0f;
     movement->MinNormalizedTireLoadFiltered = 0.2308f;
     movement->MaxNormalizedTireLoad = 2.0f;
     movement->MaxNormalizedTireLoadFiltered = 2.0f;
+#endif
 
     // Engine
     // Torque setup
@@ -121,22 +131,39 @@ void ACarPawn::setupVehicleMovementComponent()
     movement->EngineSetup.TorqueCurve.GetRichCurve()->AddKey(5730.0f, 400.0f);
 
     // Adjust the steering
+#if ENGINE_MAJOR_VERSION >= 5
+    movement->SteeringSetup.SteeringCurve.GetRichCurve()->Reset();
+    movement->SteeringSetup.SteeringCurve.GetRichCurve()->AddKey(0.0f, 1.0f);
+    movement->SteeringSetup.SteeringCurve.GetRichCurve()->AddKey(40.0f, 0.7f);
+    movement->SteeringSetup.SteeringCurve.GetRichCurve()->AddKey(120.0f, 0.6f);
+#else
     movement->SteeringCurve.GetRichCurve()->Reset();
     movement->SteeringCurve.GetRichCurve()->AddKey(0.0f, 1.0f);
     movement->SteeringCurve.GetRichCurve()->AddKey(40.0f, 0.7f);
     movement->SteeringCurve.GetRichCurve()->AddKey(120.0f, 0.6f);
+#endif
 
-    // Transmission
+    // Transmission / Differential
     // We want 4wd
+#if ENGINE_MAJOR_VERSION >= 5
+    movement->DifferentialSetup.DifferentialType = EVehicleDifferential::AllWheelDrive;
+#else
     movement->DifferentialSetup.DifferentialType = EVehicleDifferential4W::LimitedSlip_4W;
+#endif
 
     // Drive the front wheels a little more than the rear
     movement->DifferentialSetup.FrontRearSplit = 0.65;
 
     // Automatic gearbox
+#if ENGINE_MAJOR_VERSION >= 5
+    movement->TransmissionSetup.bUseAutomaticGears = true;
+    movement->TransmissionSetup.GearChangeTime = 0.15f;
+    // Chaos transmission doesn't expose GearAutoBoxLatency
+#else
     movement->TransmissionSetup.bUseGearAutoBox = true;
     movement->TransmissionSetup.GearSwitchTime = 0.15f;
     movement->TransmissionSetup.GearAutoBoxLatency = 1.0f;
+#endif
 
     // Disable reverse as brake, this is needed for SetBreakInput() to take effect
     movement->bReverseAsBrake = false;
@@ -150,7 +177,9 @@ void ACarPawn::setupVehicleMovementComponent()
 
     // Set the inertia scale. This controls how the mass of the vehicle is distributed.
     movement->InertiaTensorScale = FVector(1.0f, 1.333f, 1.2f);
+#if ENGINE_MAJOR_VERSION < 5
     movement->bDeprecatedSpringOffsetMode = true;
+#endif
 }
 
 void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation,
@@ -159,10 +188,17 @@ void ACarPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other,
     pawn_events_.getCollisionSignal().emit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 }
 
+#if ENGINE_MAJOR_VERSION >= 5
+UChaosVehicleMovementComponent* ACarPawn::getVehicleMovementComponent() const
+{
+    return GetVehicleMovementComponent();
+}
+#else
 UWheeledVehicleMovementComponent* ACarPawn::getVehicleMovementComponent() const
 {
     return GetVehicleMovement();
 }
+#endif
 
 void ACarPawn::initializeForBeginPlay(bool engine_sound)
 {
@@ -250,8 +286,15 @@ void ACarPawn::Tick(float Delta)
     updateInCarHUD();
 
     // Pass the engine RPM to the sound component
+#if ENGINE_MAJOR_VERSION >= 5
+    if (auto* ChaosMove = Cast<UChaosWheeledVehicleMovementComponent>(GetVehicleMovementComponent())) {
+        float RPMToAudioScale = 2500.0f / ChaosMove->GetEngineMaxRotationSpeed();
+        engine_sound_audio_->SetFloatParameter(FName("RPM"), ChaosMove->GetEngineRotationSpeed() * RPMToAudioScale);
+    }
+#else
     float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
     engine_sound_audio_->SetFloatParameter(FName("RPM"), GetVehicleMovement()->GetEngineRotationSpeed() * RPMToAudioScale);
+#endif
 
     pawn_events_.getPawnTickSignal().emit(Delta);
 }
@@ -285,7 +328,13 @@ void ACarPawn::updateHUDStrings()
 
     UAirBlueprintLib::LogMessage(TEXT("Speed: "), last_speed_.ToString(), LogDebugLevel::Informational);
     UAirBlueprintLib::LogMessage(TEXT("Gear: "), last_gear_.ToString(), LogDebugLevel::Informational);
+    #if ENGINE_MAJOR_VERSION >= 5
+    if (auto* ChaosMove = Cast<UChaosWheeledVehicleMovementComponent>(GetVehicleMovementComponent())) {
+        UAirBlueprintLib::LogMessage(TEXT("RPM: "), FText::AsNumber(ChaosMove->GetEngineRotationSpeed()).ToString(), LogDebugLevel::Informational);
+    }
+    #else
     UAirBlueprintLib::LogMessage(TEXT("RPM: "), FText::AsNumber(GetVehicleMovement()->GetEngineRotationSpeed()).ToString(), LogDebugLevel::Informational);
+    #endif
 }
 
 void ACarPawn::updateInCarHUD()

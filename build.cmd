@@ -6,6 +6,7 @@ set ROOT_DIR=%~dp0
 REM // Check command line arguments
 set "noFullPolyCar="
 set "buildMode="
+set "skipMsbuild="
 
 REM //check VS version
 if "%VisualStudioVersion%" == "" (
@@ -23,6 +24,7 @@ if "%VisualStudioVersion%" lss "17.0" (
 
 if "%1"=="" goto noargs
 if "%1"=="--no-full-poly-car" set "noFullPolyCar=y"
+if "%1"=="--skip-msbuild" set "skipMsbuild=y"
 if "%1"=="--Debug" set "buildMode=Debug"
 if "%1"=="--Release" set "buildMode=Release"
 if "%1"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
@@ -31,6 +33,15 @@ if "%2"=="" goto noargs
 if "%2"=="--Debug" set "buildMode=Debug"
 if "%2"=="--Release" set "buildMode=Release"
 if "%2"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
+if "%2"=="--skip-msbuild" set "skipMsbuild=y"
+
+if NOT "%3"=="" (
+  if "%3"=="--skip-msbuild" set "skipMsbuild=y"
+  if "%3"=="--no-full-poly-car" set "noFullPolyCar=y"
+  if "%3"=="--Debug" set "buildMode=Debug"
+  if "%3"=="--Release" set "buildMode=Release"
+  if "%3"=="--RelWithDebInfo" set "buildMode=RelWithDebInfo"
+)
 
 :noargs
 
@@ -66,6 +77,14 @@ REM //---------- get rpclib ----------
 IF NOT EXIST external\rpclib mkdir external\rpclib
 
 set RPC_VERSION_FOLDER=rpclib-2.3.0
+
+REM If rpclib deps already pre-seeded, skip download/build/copy for the requested configuration
+IF "%buildMode%"=="Debug" (
+  IF EXIST AirLib\deps\rpclib\include\rpc\client.h IF EXIST AirLib\deps\rpclib\lib\x64\Debug\rpc.lib GOTO skip_rpclib_all
+) ELSE (
+  IF EXIST AirLib\deps\rpclib\include\rpc\client.h IF EXIST AirLib\deps\rpclib\lib\x64\Release\rpc.lib GOTO skip_rpclib_all
+)
+
 IF NOT EXIST external\rpclib\%RPC_VERSION_FOLDER% (
     REM //leave some blank lines because %powershell% shows download banner at top of console
     ECHO(
@@ -99,16 +118,30 @@ REM //---------- Build rpclib ------------
 ECHO Starting cmake to build rpclib...
 IF NOT EXIST external\rpclib\%RPC_VERSION_FOLDER%\build mkdir external\rpclib\%RPC_VERSION_FOLDER%\build
 cd external\rpclib\%RPC_VERSION_FOLDER%\build
-cmake -G"Visual Studio 17 2022" ..
+cmake -G"Visual Studio 17 2022" -A x64 -T v143 ..
+if ERRORLEVEL 1 goto :cmake_fallback_nmake
 
 if "%buildMode%" == "" (
-cmake --build . 
-cmake --build . --config Release
+  cmake --build . -- /p:TrackFileAccess=false
+  cmake --build . --config Release -- /p:TrackFileAccess=false
 ) else (
-cmake --build . --config %buildMode%
+  cmake --build . --config %buildMode% -- /p:TrackFileAccess=false
 )
-
 if ERRORLEVEL 1 goto :buildfailed
+goto :after_rpclib_build
+
+:cmake_fallback_nmake
+ECHO CMake VS generator failed. Falling back to NMake Makefiles...
+cd ..
+rmdir /S /Q build
+mkdir build
+cd build
+cmake -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=%buildMode% -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl ..
+if ERRORLEVEL 1 goto :buildfailed
+nmake
+if ERRORLEVEL 1 goto :buildfailed
+
+:after_rpclib_build
 chdir /d %ROOT_DIR% 
 
 REM //---------- copy rpclib binaries and include folder inside AirLib folder ----------
@@ -119,11 +152,27 @@ if NOT exist %RPCLIB_TARGET_INCLUDE% mkdir %RPCLIB_TARGET_INCLUDE%
 robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\include %RPCLIB_TARGET_INCLUDE%
 
 if "%buildMode%" == "" (
-robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\Debug %RPCLIB_TARGET_LIB%\Debug
-robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\Release %RPCLIB_TARGET_LIB%\Release
+  robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\Debug %RPCLIB_TARGET_LIB%\Debug
+  robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\Release %RPCLIB_TARGET_LIB%\Release
 ) else (
-robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\%buildMode% %RPCLIB_TARGET_LIB%\%buildMode%
+  if EXIST external\rpclib\%RPC_VERSION_FOLDER%\build\%buildMode% (
+    robocopy /MIR external\rpclib\%RPC_VERSION_FOLDER%\build\%buildMode% %RPCLIB_TARGET_LIB%\%buildMode%
+  ) else (
+    rem Single-config (NMake) output: copy rpc.lib into expected folder
+    if "%buildMode%"=="Debug" (
+      if EXIST external\rpclib\%RPC_VERSION_FOLDER%\build\rpc.lib copy /y external\rpclib\%RPC_VERSION_FOLDER%\build\rpc.lib %RPCLIB_TARGET_LIB%\Debug\rpc.lib
+    ) else (
+      if EXIST external\rpclib\%RPC_VERSION_FOLDER%\build\rpc.lib copy /y external\rpclib\%RPC_VERSION_FOLDER%\build\rpc.lib %RPCLIB_TARGET_LIB%\Release\rpc.lib
+    )
+  )
 )
+
+GOTO after_rpclib
+
+:skip_rpclib_all
+ECHO Using pre-seeded rpclib includes and libs. Skipping rpclib download/build/copy.
+
+:after_rpclib
 
 REM //---------- get High PolyCount SUV Car Model ------------
 IF NOT EXIST Unreal\Plugins\AirSim\Content\VehicleAdv mkdir Unreal\Plugins\AirSim\Content\VehicleAdv
@@ -181,15 +230,23 @@ IF NOT EXIST AirLib\deps\eigen3 goto :buildfailed
 
 
 REM //---------- now we have all dependencies to compile AirSim.sln which will also compile MavLinkCom ----------
-if "%buildMode%" == "" (
-msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Debug AirSim.sln
-if ERRORLEVEL 1 goto :buildfailed
-msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Release AirSim.sln 
-if ERRORLEVEL 1 goto :buildfailed
+IF DEFINED skipMsbuild GOTO after_msbuild
+if /I "%buildMode%"=="Debug" (
+  rem Build only core libraries for Debug to avoid runtime mismatch in sample apps
+  msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Debug /p:TrackFileAccess=false AirLib\AirLib.vcxproj
+  if ERRORLEVEL 1 goto :buildfailed
+  msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Debug /p:TrackFileAccess=false MavLinkCom\MavLinkCom.vcxproj
+  if ERRORLEVEL 1 goto :buildfailed
+) else if "%buildMode%" == "" (
+  msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Debug /p:TrackFileAccess=false AirSim.sln
+  if ERRORLEVEL 1 goto :buildfailed
+  msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=Release /p:TrackFileAccess=false AirSim.sln 
+  if ERRORLEVEL 1 goto :buildfailed
 ) else (
-msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=%buildMode% AirSim.sln
-if ERRORLEVEL 1 goto :buildfailed
+  msbuild -maxcpucount:12 /p:Platform=x64 /p:Configuration=%buildMode% /p:TrackFileAccess=false AirSim.sln
+  if ERRORLEVEL 1 goto :buildfailed
 )
+:after_msbuild
 
 REM //---------- copy binaries and include for MavLinkCom in deps ----------
 set MAVLINK_TARGET_LIB=AirLib\deps\MavLinkCom\lib

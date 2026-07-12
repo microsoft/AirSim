@@ -2,6 +2,14 @@
 // Licensed under the MIT License.
 
 #include "MavLinkMessages.hpp"
+#if defined(_WIN32)
+#include <Windows.h>
+#define AIRSIM_SLEEP_MS(ms) ::Sleep((DWORD)(ms))
+#else
+#include <thread>
+#include <chrono>
+#define AIRSIM_SLEEP_MS(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
+#endif
 #include "MavLinkConnectionImpl.hpp"
 #include "Utils.hpp"
 #include "ThreadUtils.hpp"
@@ -417,14 +425,14 @@ void MavLinkConnectionImpl::readPackets()
         int read = 0;
         if (safePort->isClosed()) {
             // hmmm, wait till it is opened?
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            AIRSIM_SLEEP_MS(10);
             continue;
         }
 
         int count = safePort->read(buffer, MAXBUFFER);
         if (count <= 0) {
             // error? well let's try again, but we should be careful not to spin too fast and kill the CPU
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            AIRSIM_SLEEP_MS(1);
             continue;
         }
         for (int i = 0; i < count; i++) {
