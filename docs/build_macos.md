@@ -1,6 +1,6 @@
 # Build AirSim on macOS
 
-Only macOS **Catalina (10.15)** has currently been tested. Theoretically, AirSim should work on higher macOS versions and Apple Silicon hardware, but this path is not offically supported.
+Only macOS **Catalina (10.15)** has currently been tested. Newer macOS releases and Apple Silicon may work for some setups, but this path is **not officially supported**.
 
 We've two options - you can either build inside docker containers or your host machine.
 
@@ -27,7 +27,7 @@ Please see instructions [here](docker_ubuntu.md)
 
 ```bash
 # go to the folder where you clone GitHub projects
-git clone https://github.com/Microsoft/AirSim.git
+git clone https://github.com/microsoft/AirSim.git
 cd AirSim
 ```
 
