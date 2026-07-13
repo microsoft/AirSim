@@ -24,7 +24,7 @@ For this you will need one of the supported device listed above. For manual flig
 1. Make sure your RC receiver is bound with its RC transmitter. Connect the RC transmitter to the flight controller's RC port. Refer to your RC manual and [PX4 docs](https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html) for more information.
 2. Download [QGroundControl](http://qgroundcontrol.com/), launch it and connect your flight controller to the USB port.
 3. Use QGroundControl to flash the latest PX4 Flight Stack.
-See also [initial firmware setup video](https://docs.px4.io/master/en/config/).
+See also [initial firmware setup video](https://docs.px4.io/main/en/config/).
 4. In QGroundControl, configure your Pixhawk for HIL simulation by selecting the HIL Quadrocopter X airframe.  After PX4 reboots, check that "HIL Quadrocopter X" is indeed selected.
 5. In QGroundControl, go to Radio tab and calibrate (make sure the remote control is on and the receiver is showing the indicator for the binding).
 6. Go to the Flight Mode tab and chose one of the remote control switches as "Mode Channel". Then set (for example) Stabilized and Attitude flight modes for two positions of the switch.
@@ -64,7 +64,7 @@ are also enabling `LockStep`, see [PX4 LockStep](px4_lockstep.md) for more infor
 `Barometer` setting keeps PX4 happy because the default AirSim barometer has a bit too much noise
 generation.  This setting clamps that down a bit which allows PX4 to achieve GPS lock more quickly.
 
-After above setup you should be able to use a remote control (RC) to fly with AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together down and in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.  See [PX4 Basic Flying Guide](https://docs.px4.io/master/en/flying/basic_flying.html).
+After above setup you should be able to use a remote control (RC) to fly with AirSim. You can usually arm the vehicle by lowering and bringing two sticks of RC together down and in-wards. You don't need QGroundControl after the initial setup. Typically the Stabilized (instead of Manual) mode gives better experience for beginners.  See [PX4 Basic Flying Guide](https://docs.px4.io/main/en/flying/basic_flying.html).
 
 You can also control the drone from [Python APIs](apis.md).
 

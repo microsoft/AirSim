@@ -27,7 +27,7 @@ AirSim supports PX4 flight controller however it requires different setup. There
 2. For Hardware-in-Loop mode, you connect transmitter to Pixhawk. Usually you can find online doc or YouTube video tutorial on how to do that.
 3. [Calibrate your RC in QGroundControl](https://docs.qgroundcontrol.com/en/SetupView/Radio.html).
 
-See [PX4 RC configuration](https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html) and Please see [this guide](https://docs.px4.io/master/en/getting_started/rc_transmitter_receiver.html#px4-compatible-receivers) for more information. 
+See [PX4 RC configuration](https://docs.px4.io/en/getting_started/rc_transmitter_receiver.html) and Please see [this guide](https://docs.px4.io/main/en/getting_started/rc_transmitter_receiver.html#px4-compatible-receivers) for more information. 
 
 ### Using XBox 360 USB Gamepad
 
