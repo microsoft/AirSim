@@ -26,9 +26,11 @@ instructions](px4_sitl_wsl2.md).
     cd PX4-Autopilot
     ```
     And find the latest stable release from [https://github.com/PX4/PX4-Autopilot/releases](https://github.com/PX4/PX4-Autopilot/releases)
-    and checkout the source code matching that release, for example:
+    and checkout the source code matching that release. Prefer a tag at or above **v1.12** — AirSim’s vehicle
+    configuration in the PX4 tree tracks that line (earlier tags such as v1.11.x often fail to connect).
+    Example:
     ```
-    git checkout v1.11.3
+    git checkout v1.12.3
     ```
 
 3. Use following command to build and start PX4 firmware in SITL mode:
