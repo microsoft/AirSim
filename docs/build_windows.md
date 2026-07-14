@@ -16,7 +16,7 @@ Click on the `Install` button on the top right, which should show the option to 
 * Install Visual Studio 2022.
 **Make sure** to select **Desktop Development with C++** and **Windows 10 SDK 10.0.19041** (should be selected by default) and select the latest .NET Framework SDK under the 'Individual Components' tab while installing VS 2022.
 * Start `Developer Command Prompt for VS 2022`.
-* Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`.
+* Clone the repo: `git clone https://github.com/microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`.
 
     **Note:** It's generally not a good idea to install AirSim in C drive. This can cause scripts to fail, and requires running VS in Admin mode. Instead clone in a different drive such as D or E.
 
