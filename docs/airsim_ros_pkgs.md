@@ -31,7 +31,7 @@ The below steps are meant for Linux. If you're running AirSim on Windows, you ca
 - Build AirSim
 
 ```shell
-git clone https://github.com/Microsoft/AirSim.git;
+git clone https://github.com/microsoft/AirSim.git;
 cd AirSim;
 ./setup.sh;
 ./build.sh;
