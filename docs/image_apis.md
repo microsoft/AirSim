@@ -124,13 +124,13 @@ int getStereoAndDepthImages()
 
 ### Python
 
-For a more complete ready to run sample code please see [sample code in AirSimClient project](https://github.com/Microsoft/AirSim/tree/main/PythonClient//multirotor/hello_drone.py) for multirotors or [HelloCar sample](https://github.com/Microsoft/AirSim/tree/main/PythonClient//car/hello_car.py). This code also demonstrates simple activities such as saving images in files or using `numpy` to manipulate images.
+For a more complete ready to run sample code please see [sample code in AirSimClient project](https://github.com/microsoft/AirSim/tree/main/PythonClient/multirotor/hello_drone.py) for multirotors or [HelloCar sample](https://github.com/microsoft/AirSim/tree/main/PythonClient/car/hello_car.py). This code also demonstrates simple activities such as saving images in files or using `numpy` to manipulate images.
 
 ### C++
 
-For a more complete ready to run sample code please see [sample code in HelloDrone project](https://github.com/Microsoft/AirSim/tree/main/HelloDrone//main.cpp) for multirotors or [HelloCar project](https://github.com/Microsoft/AirSim/tree/main/HelloCar//main.cpp). 
+For a more complete ready to run sample code please see [sample code in HelloDrone project](https://github.com/microsoft/AirSim/tree/main/HelloDrone/main.cpp) for multirotors or [HelloCar project](https://github.com/microsoft/AirSim/tree/main/HelloCar/main.cpp). 
 
-See also [other example code](https://github.com/Microsoft/AirSim/tree/main/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images along with ground truth depth and disparity and saving it to [pfm format](pfm.md).
+See also [other example code](https://github.com/microsoft/AirSim/tree/main/Examples/DataCollection/StereoImageGenerator.hpp) that generates specified number of stereo images along with ground truth depth and disparity and saving it to [pfm format](pfm.md).
 
 ## Available Cameras
 
@@ -159,7 +159,7 @@ To active this mode, edit [settings.json](settings.md) that you can find in your
 }
 ```
 
-[Here's the Python code example](https://github.com/Microsoft/AirSim/tree/main/PythonClient//computer_vision/cv_mode.py) to move camera around and capture images.
+[Here's the Python code example](https://github.com/microsoft/AirSim/tree/main/PythonClient/computer_vision/cv_mode.py) to move camera around and capture images.
 
 This mode was inspired from [UnrealCV project](http://unrealcv.org/).
 
@@ -167,7 +167,7 @@ This mode was inspired from [UnrealCV project](http://unrealcv.org/).
 To move around the environment using APIs you can use `simSetVehiclePose` API. This API takes position and orientation and sets that on the invisible vehicle where the front-center camera is located. All rest of the cameras move along keeping the relative position. If you don't want to change position (or orientation) then just set components of position (or orientation) to floating point nan values. The `simGetVehiclePose` allows to retrieve the current pose. You can also use `simGetGroundTruthKinematics` to get the quantities kinematics quantities for the movement. Many other non-vehicle specific APIs are also available such as segmentation APIs, collision APIs and camera APIs.
 
 ## Camera APIs
-The `simGetCameraInfo` returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see [example usage](https://github.com/Microsoft/AirSim/tree/main/PythonClient//computer_vision/cv_mode.py).
+The `simGetCameraInfo` returns the pose (in world frame, NED coordinates, SI units) and FOV (in degrees) for the specified camera. Please see [example usage](https://github.com/microsoft/AirSim/tree/main/PythonClient/computer_vision/cv_mode.py).
 
 The `simSetCameraPose` sets the pose for the specified camera while taking an input pose as a combination of relative position and a quaternion in NED frame. The handy `airsim.to_quaternion()` function allows to convert pitch, roll, yaw to quaternion. For example, to set camera-0 to 15-degree pitch while maintaining the same position, you can use:
 ```
@@ -183,7 +183,7 @@ All Camera APIs take in 3 common parameters apart from the API-specific ones, `c
 ### Gimbal
 You can set stabilization for pitch, roll or yaw for any camera [using settings](settings.md#gimbal).
 
-Please see [example usage](https://github.com/Microsoft/AirSim/tree/main/PythonClient//computer_vision/cv_mode.py).
+Please see [example usage](https://github.com/microsoft/AirSim/tree/main/PythonClient/computer_vision/cv_mode.py).
 
 ## Changing Resolution and Camera Parameters
 To change resolution, FOV etc, you can use [settings.json](settings.md). For example, below addition in settings.json sets parameters for scene capture and uses "Computer Vision" mode described above. If you omit any setting then below default values will be used. For more information see [settings doc](settings.md). If you are using stereo camera, currently the distance between left and right is fixed at 25 cm.
@@ -263,7 +263,7 @@ print(np.unique(img_rgb[:,:,1], return_counts=True)) #green
 print(np.unique(img_rgb[:,:,2], return_counts=True)) #blue  
 ```
 
-A complete ready-to-run example can be found in [segmentation.py](https://github.com/Microsoft/AirSim/tree/main/PythonClient//computer_vision/segmentation.py).
+A complete ready-to-run example can be found in [segmentation.py](https://github.com/microsoft/AirSim/tree/main/PythonClient/computer_vision/segmentation.py).
 
 #### Unsetting object ID
 An object's ID can be set to -1 to make it not show up on the segmentation image.
@@ -293,4 +293,4 @@ Currently this is just a map from object ID to grey scale 0-255. So any mesh wit
 These image types return information about motion perceived by the point of view of the camera. OpticalFlow returns a 2-channel image where the channels correspond to vx and vy respectively. OpticalFlowVis is similar to OpticalFlow but converts flow data to RGB for a more 'visual' output.
 
 ## Example Code
-A complete example of setting vehicle positions at random locations and orientations and then taking images can be found in [GenerateImageGenerator.hpp](https://github.com/Microsoft/AirSim/tree/main/Examples/DataCollection/StereoImageGenerator.hpp). This example generates specified number of stereo images and ground truth disparity image and saving it to [pfm format](pfm.md).
+A complete example of setting vehicle positions at random locations and orientations and then taking images can be found in [GenerateImageGenerator.hpp](https://github.com/microsoft/AirSim/tree/main/Examples/DataCollection/StereoImageGenerator.hpp). This example generates specified number of stereo images and ground truth disparity image and saving it to [pfm format](pfm.md).
