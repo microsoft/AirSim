@@ -1,10 +1,10 @@
 # Download Binaries
 
-You can simply download precompiled binaries and run to get started immediately. If you want to set up your own Unreal environment then please see [these instructions](https://github.com/Microsoft/AirSim/#how-to-get-it).
+You can simply download precompiled binaries and run to get started immediately. If you want to set up your own Unreal environment then please see [these instructions](https://github.com/microsoft/AirSim/#how-to-get-it).
 
 ### Unreal Engine
 
-**Windows, Linux**: Download the binaries for the environment of your choice from the [latest release](https://github.com/Microsoft/AirSim/releases).
+**Windows, Linux**: Download the binaries for the environment of your choice from the [latest release](https://github.com/microsoft/AirSim/releases).
 
 Some pre-compiled environment binaries may include multiple files (i.e. City.zip.001, City.zip.002). Make sure to download both files before starting the environment.
 Use [7zip](https://www.7-zip.org/download.html) to unzip these files. On Linux, pass the first zip file name as argument and it should detect all the other parts as well - `7zz x TrapCamera.zip.001`
