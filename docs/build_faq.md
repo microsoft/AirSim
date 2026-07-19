@@ -73,7 +73,7 @@
 
 ###### I get error: 'where' is not recognized as an internal or external command
 
->You have to add `C:\WINDOWS\SYSTEM32` to your PATH enviroment variable.
+>You have to add `C:\WINDOWS\SYSTEM32` to your PATH environment variable.
 
 <!-- ======================================================================= -->
 
