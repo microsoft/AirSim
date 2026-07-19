@@ -1,6 +1,6 @@
 
 # In settings.json first activate computer vision mode: 
-# https://github.com/Microsoft/AirSim/blob/main/docs/image_apis.md#computer-vision-mode
+# https://github.com/microsoft/AirSim/blob/main/docs/image_apis.md#computer-vision-mode
 
 import setup_path 
 import airsim
