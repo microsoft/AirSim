@@ -27,7 +27,7 @@ extra:
       - type: facebook
         link: https://www.facebook.com/groups/1225832467530667/
       - type: github-alt
-        link: https://github.com/Microsoft/AirSim
+        link: https://github.com/microsoft/AirSim
 
 extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
@@ -96,8 +96,8 @@ nav:
       - "AirSim with Pixhawk": 'https://youtu.be/1oY8Qu5maQQ'
       - "PX4 Setup with AirSim": 'https://youtu.be/HNWdYrtw3f0'
       - "Debugging Attitude Estimation": 'https://www.youtube.com/watch?v=d_FyjKDWQfc&feature=youtu.be'
-      - "Intercepting MavLink Messages": 'https://github.com/Microsoft/AirSim/wiki/Intercepting-MavLink-messages'
-      - "Rapid Descent on PX4 Drones": 'https://github.com/Microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones'
+      - "Intercepting MavLink Messages": 'https://github.com/microsoft/AirSim/wiki/Intercepting-MavLink-messages'
+      - "Rapid Descent on PX4 Drones": 'https://github.com/microsoft/AirSim/wiki/Rapid-Descent-on-PX4-drones'
       - "Building PX4": "px4_build.md"
       - "PX4/MavLink Logging": 'px4_logging.md'
       - "MavLink LogViewer": "log_viewer.md"
@@ -115,8 +115,8 @@ nav:
     - "Using Environments from Marketplace": 'https://www.youtube.com/watch?v=y09VbdQWvQY'
     - "Simple Collision Avoidance": 'https://github.com/simondlevy/AirSimTensorFlow'
     - "Autonomous Driving on Azure": 'https://aka.ms/AutonomousDrivingCookbook'
-    - "Building Hexacopter": 'https://github.com/Microsoft/AirSim/wiki/hexacopter'
-    - "Moving on Path Demo": 'https://github.com/Microsoft/AirSim/wiki/moveOnPath-demo'
+    - "Building Hexacopter": 'https://github.com/microsoft/AirSim/wiki/hexacopter'
+    - "Moving on Path Demo": 'https://github.com/microsoft/AirSim/wiki/moveOnPath-demo'
     - "Building Point Clouds": 'point_clouds.md'
     - "Surveying Using Drone": 'drone_survey.md'
     - "Orbit Trajectory": "orbit.md"
@@ -132,7 +132,7 @@ nav:
     - "Blocks Environment": 'unreal_blocks.md'
     - "Who is Using AirSim": 'who_is_using.md'
     - "Working with UE Plugin Contents": 'working_with_plugin_contents.md'
-    - "Formula Student Technion Self-drive": 'https://github.com/Microsoft/AirSim/wiki/technion'
+    - "Formula Student Technion Self-drive": 'https://github.com/microsoft/AirSim/wiki/technion'
   - "Support":
     - "FAQ": 'faq.md'
     - "Support": 'SUPPORT.md'
