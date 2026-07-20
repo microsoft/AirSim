@@ -53,7 +53,7 @@ for %%f in (*.uproject) do (
 goto :done
 
 :failed
-echo "Error occured while packaging"
+echo "Error occurred while packaging"
 echo "Usage: package.bat <path\to\output> <path to Engine\Build\BatchFiles> <UE Version>"
 exit /b 1
 

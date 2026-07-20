@@ -52,7 +52,7 @@ cd ..
 goto :done
 
 :failed
-@echo "Error occured"
+@echo "Error occurred"
 @echo Usage: gitcommitall <repo root> <commit message>
 cd "%ROOT_DIR%"
 exit /b 1

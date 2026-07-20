@@ -27,7 +27,7 @@ cmd /c GenerateProjectFiles.bat
 goto :done
 
 :failed
-echo Error occured while updating.
+echo Error occurred while updating.
 exit /b 1
 
 :done

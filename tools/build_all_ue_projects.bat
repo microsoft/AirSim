@@ -66,7 +66,7 @@ if ERRORLEVEL 1 goto :failed
 goto :done
 
 :failed
-echo "Error occured while building all UE projects"
+echo "Error occurred while building all UE projects"
 exit /b 1
 
 :done
