@@ -428,9 +428,9 @@ class ImuData(MsgpackMixin):
 
 class BarometerData(MsgpackMixin):
     time_stamp = np.uint64(0)
-    altitude = Quaternionr()
-    pressure = Vector3r()
-    qnh = Vector3r()
+    altitude = 0.0  # meters (matches BarometerBase::Output)
+    pressure = 0.0  # Pascal
+    qnh = 0.0
 
 class MagnetometerData(MsgpackMixin):
     time_stamp = np.uint64(0)
