@@ -2,6 +2,23 @@ from __future__ import print_function
 import msgpackrpc #install as admin: pip install msgpack-rpc-python
 import numpy as np #pip install numpy
 import math
+import numbers
+
+
+def _is_numeric_scalar(value):
+    """True for real numeric scalars usable in Vector3r/Quaternionr ops.
+
+    Accepts Python int/float and NumPy integer/floating scalars. Rejects bool
+    (bool subclasses int) and non-scalars. Avoids NumPy 2-removed scalar-type maps.
+    """
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, numbers.Real):
+        return True
+    if isinstance(value, (np.integer, np.floating)):
+        return True
+    return False
+
 
 class MsgpackMixin:
     def __repr__(self):
@@ -110,13 +127,13 @@ class Vector3r(MsgpackMixin):
         return Vector3r(self.x_val - other.x_val, self.y_val - other.y_val, self.z_val - other.z_val)
 
     def __truediv__(self, other):
-        if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+        if _is_numeric_scalar(other):
             return Vector3r( self.x_val / other, self.y_val / other, self.z_val / other)
         else:
             raise TypeError('unsupported operand type(s) for /: %s and %s' % ( str(type(self)), str(type(other))) )
 
     def __mul__(self, other):
-        if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+        if _is_numeric_scalar(other):
             return Vector3r(self.x_val*other, self.y_val*other, self.z_val*other)
         else:
             raise TypeError('unsupported operand type(s) for *: %s and %s' % ( str(type(self)), str(type(other))) )
@@ -174,6 +191,13 @@ class Quaternionr(MsgpackMixin):
         else:
             raise TypeError('unsupported operand type(s) for +: %s and %s' % ( str(type(self)), str(type(other))) )
 
+
+    def __sub__(self, other):
+        if type(self) == type(other):
+            return Quaternionr( self.x_val-other.x_val, self.y_val-other.y_val, self.z_val-other.z_val, self.w_val-other.w_val )
+        else:
+            raise TypeError('unsupported operand type(s) for -: %s and %s' % ( str(type(self)), str(type(other))) )
+
     def __mul__(self, other):
         if type(self) == type(other):
             t, x, y, z = self.w_val, self.x_val, self.y_val, self.z_val
@@ -188,7 +212,7 @@ class Quaternionr(MsgpackMixin):
     def __truediv__(self, other):
         if type(other) == type(self):
             return self * other.inverse()
-        elif type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+        elif _is_numeric_scalar(other):
             return Quaternionr( self.x_val / other, self.y_val / other, self.z_val / other, self.w_val / other)
         else:
             raise TypeError('unsupported operand type(s) for /: %s and %s' % ( str(type(self)), str(type(other))) )
