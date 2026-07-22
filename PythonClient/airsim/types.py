@@ -1,7 +1,19 @@
 from __future__ import print_function
-import msgpackrpc #install as admin: pip install msgpack-rpc-python
+try:
+    import msgpackrpc  # install as admin: pip install msgpack-rpc-python
+except ImportError:  # allow math type unit tests without full RPC stack
+    msgpackrpc = None
 import numpy as np #pip install numpy
 import math
+
+def _is_real_number(value):
+    """True for Python/NumPy real scalars (NumPy 2 removed np.sctypes)."""
+    if isinstance(value, (int, float)):
+        return True
+    if isinstance(value, (np.integer, np.floating)):
+        return True
+    return False
+
 
 class MsgpackMixin:
     def __repr__(self):
@@ -110,13 +122,13 @@ class Vector3r(MsgpackMixin):
         return Vector3r(self.x_val - other.x_val, self.y_val - other.y_val, self.z_val - other.z_val)
 
     def __truediv__(self, other):
-        if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+        if _is_real_number(other):
             return Vector3r( self.x_val / other, self.y_val / other, self.z_val / other)
         else:
             raise TypeError('unsupported operand type(s) for /: %s and %s' % ( str(type(self)), str(type(other))) )
 
     def __mul__(self, other):
-        if type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+        if _is_real_number(other):
             return Vector3r(self.x_val*other, self.y_val*other, self.z_val*other)
         else:
             raise TypeError('unsupported operand type(s) for *: %s and %s' % ( str(type(self)), str(type(other))) )
@@ -188,7 +200,7 @@ class Quaternionr(MsgpackMixin):
     def __truediv__(self, other):
         if type(other) == type(self):
             return self * other.inverse()
-        elif type(other) in [int, float] + np.sctypes['int'] + np.sctypes['uint'] + np.sctypes['float']:
+        elif _is_real_number(other):
             return Quaternionr( self.x_val / other, self.y_val / other, self.z_val / other, self.w_val / other)
         else:
             raise TypeError('unsupported operand type(s) for /: %s and %s' % ( str(type(self)), str(type(other))) )
