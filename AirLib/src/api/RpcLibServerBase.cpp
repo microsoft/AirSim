@@ -8,6 +8,7 @@
 //if using Unreal Build system then include precompiled header file first
 
 #include "api/RpcLibServerBase.hpp"
+#include "common/ClockFactory.hpp"
 
 #include "common/Common.hpp"
 STRICT_MODE_OFF
@@ -106,6 +107,11 @@ namespace airlib
 
         pimpl_->server.bind("simIsPaused", [&]() -> bool {
             return getWorldSimApi()->isPaused();
+        });
+
+        // True scale of sim clock vs wall clock (credit: davidtr99 #4612 naming aligned to sim* APIs)
+        pimpl_->server.bind("simGetClockRate", [&]() -> float {
+            return ClockFactory::get()->getTrueScaleWrtWallClock();
         });
 
         pimpl_->server.bind("simContinueForTime", [&](double seconds) -> void {

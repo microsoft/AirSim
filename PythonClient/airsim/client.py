@@ -102,6 +102,16 @@ class VehicleClient:
         """
         return self.client.call("simIsPaused")
 
+    def simGetClockRate(self):
+        """
+        Returns the true scale of the simulation clock relative to wall clock
+        (settings ClockSpeed). For example, ClockSpeed 0.5 yields about 0.5.
+
+        Returns:
+            float: sim clock rate vs wall clock
+        """
+        return self.client.call("simGetClockRate")
+
     def simContinueForTime(self, seconds):
         """
         Continue the simulation for the specified number of seconds
