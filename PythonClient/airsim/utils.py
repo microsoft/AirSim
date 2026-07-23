@@ -199,10 +199,27 @@ def write_pfm(file, image, scale=1):
 
     
 def write_png(filename, image):
-    """ image must be numpy array H X W X channels
-    """
-    import cv2      # pip install opencv-python
+    """Write image to PNG via OpenCV.
 
-    ret = cv2.imwrite(filename, image)
+    image must be a numpy array shaped H x W or H x W x channels.
+    Raises ValueError for invalid inputs and OSError if OpenCV fails to write.
+    """
+    import cv2  # pip install opencv-python
+
+    if filename is None or (isinstance(filename, str) and filename.strip() == ""):
+        raise ValueError("write_png requires a non-empty filename")
+    if image is None:
+        raise ValueError("write_png requires an image array")
+
+    arr = image if isinstance(image, np.ndarray) else np.asarray(image)
+    if not isinstance(arr, np.ndarray):
+        raise ValueError("write_png image must be convertible to a numpy.ndarray")
+    if arr.ndim not in (2, 3):
+        raise ValueError(
+            "write_png image must have shape H x W or H x W x C, got ndim=%s" % (arr.ndim,)
+        )
+
+    ret = cv2.imwrite(filename, arr)
     if not ret:
-        logging.error(f"Writing PNG file {filename} failed")
+        logging.error("Writing PNG file %s failed", filename)
+        raise OSError("OpenCV failed to write PNG file: %s" % (filename,))
