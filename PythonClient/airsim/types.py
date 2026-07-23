@@ -415,10 +415,13 @@ class CameraInfo(MsgpackMixin):
     proj_mat = ProjectionMatrix()
 
 class LidarData(MsgpackMixin):
-    point_cloud = 0.0
+    # C++ SoT: vector<real_T> point_cloud + vector<int> segmentation
+    # (see CommonStructs.hpp / RpcLibAdaptorsBase). Defaults must be lists so
+    # clients can len()/slice before any RPC payload is applied.
+    point_cloud = []
     time_stamp = np.uint64(0)
     pose = Pose()
-    segmentation = 0
+    segmentation = []
 
 class ImuData(MsgpackMixin):
     time_stamp = np.uint64(0)
