@@ -435,7 +435,8 @@ class BarometerData(MsgpackMixin):
 class MagnetometerData(MsgpackMixin):
     time_stamp = np.uint64(0)
     magnetic_field_body = Vector3r()
-    magnetic_field_covariance = 0.0
+    # C++ MagnetometerBase::Output uses vector<real_T> (3x3, 9 elements)
+    magnetic_field_covariance = []
 
 class GnssFixType(MsgpackMixin):
     GNSS_FIX_NO_FIX = 0
