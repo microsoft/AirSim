@@ -404,10 +404,12 @@ class MultirotorState(MsgpackMixin):
 
 class RotorStates(MsgpackMixin):
     timestamp = np.uint64(0)
-    rotors = []
+    # None avoids a shared mutable class default; RPC fills a list of rotor states.
+    rotors = None
 
 class ProjectionMatrix(MsgpackMixin):
-    matrix = []
+    # None avoids a shared mutable class default; RPC fills nested matrix lists.
+    matrix = None
 
 class CameraInfo(MsgpackMixin):
     pose = Pose()
