@@ -8,4 +8,4 @@ echo Waiting 10 seconds before starting app...
 sleep 10
 
 echo Starting Python app
-python3.6 /home/airsim_user/app/multirotor.py
+python3 /home/airsim_user/app/multirotor.py
