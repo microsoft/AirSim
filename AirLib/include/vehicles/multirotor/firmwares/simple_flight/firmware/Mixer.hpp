@@ -43,8 +43,8 @@ public:
         }
 
         for (int motor_index = 0; motor_index < kMotorCount; ++motor_index)
-            motor_outputs[motor_index] = std::max(params_->motor.min_motor_output,
-                                                  std::min(motor_outputs[motor_index], params_->motor.max_motor_output));
+            motor_outputs[motor_index] = (std::max)(params_->motor.min_motor_output,
+                                                  (std::min)(motor_outputs[motor_index], params_->motor.max_motor_output));
     }
 
 private:
