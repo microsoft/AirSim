@@ -153,8 +153,8 @@ public:
     static T limitAbsValue(T val, T min_value, T max_value)
     {
         T val_abs = std::abs(val);
-        T val_limited = std::max(val_abs, min_value);
-        val_limited = std::min(val_limited, max_value);
+        T val_limited = (std::max)(val_abs, min_value);
+        val_limited = (std::min)(val_limited, max_value);
         return sign(val) * val_limited;
     }
 
@@ -162,7 +162,7 @@ public:
     template <typename T>
     static T clip(T val, T min_value, T max_value)
     {
-        return std::max(min_value, std::min(val, max_value));
+        return (std::max)(min_value, (std::min)(val, max_value));
     }
 
     template <typename Range>
