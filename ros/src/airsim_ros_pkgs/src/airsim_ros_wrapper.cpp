@@ -222,9 +222,11 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
                     const std::string cam_image_topic = curr_vehicle_name + "/" + curr_camera_name + "/" +
                                                         image_type_int_to_string_map_.at(capture_setting.image_type);
+                    
+                    const std::string cam_info_topic = curr_vehicle_name + "/" + curr_camera_name + "/camera_info";
 
                     image_pub_vec_.push_back(image_transporter.advertise(cam_image_topic, 1));
-                    cam_info_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::CameraInfo>(cam_image_topic + "/camera_info", 10));
+                    cam_info_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::CameraInfo>(cam_info_topic, 10));
                     camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
                 }
             }
@@ -1395,6 +1397,8 @@ sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& c
     // float f_y = (capture_setting.height / 2.0) / tan(math_common::deg2rad(fov_degrees / 2.0));
     cam_info_msg.K = { f_x, 0.0, capture_setting.width / 2.0, 0.0, f_x, capture_setting.height / 2.0, 0.0, 0.0, 1.0 };
     cam_info_msg.P = { f_x, 0.0, capture_setting.width / 2.0, 0.0, 0.0, f_x, capture_setting.height / 2.0, 0.0, 0.0, 0.0, 1.0, 0.0 };
+    cam_info_msg.D = { 0.0, 0.0, 0.0, 0.0, 0.0 };
+    cam_info_msg.R = { 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 };
     return cam_info_msg;
 }
 
