@@ -238,8 +238,8 @@ namespace airlib
 
         void setRayCost(SampleRay& sample_ray, const Vector3r& goal_body, real_T goal_dist)
         {
-            real_T goal_on_ray = std::min(goal_body.dot(sample_ray.ray), 0.0f);
-            real_T d1 = std::min(sample_ray.obs_dist, goal_on_ray);
+            real_T goal_on_ray = (std::min)(goal_body.dot(sample_ray.ray), 0.0f);
+            real_T d1 = (std::min)(sample_ray.obs_dist, goal_on_ray);
 
             sample_ray.d1_v = sample_ray.ray * d1;
             sample_ray.d2_v = goal_body - sample_ray.d1_v;
