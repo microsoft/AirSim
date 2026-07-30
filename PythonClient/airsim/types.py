@@ -329,7 +329,7 @@ class ImageResponse(MsgpackMixin):
     camera_orientation = Quaternionr()
     time_stamp = np.uint64(0)
     message = ''
-    pixels_as_float = 0.0
+    pixels_as_float = False
     compress = True
     width = 0
     height = 0
