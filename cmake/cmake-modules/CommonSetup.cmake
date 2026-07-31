@@ -59,9 +59,10 @@ macro(CommonSetup)
             if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
                 set(CMAKE_CXX_FLAGS "-stdlib=libc++ -Wno-documentation -Wno-unknown-warning-option ${CMAKE_CXX_FLAGS}")
                 find_package(LLVM REQUIRED CONFIG)
-                set(CXX_EXP_LIB "-L${LLVM_LIBRARY_DIRS} -lc++fs -ferror-limit=10")
+                # c++17 filesystem is in the standard library; do not force c++fs/stdc++fs.
+                set(CXX_EXP_LIB "-L${LLVM_LIBRARY_DIRS} -ferror-limit=10")
             else()
-                set(CXX_EXP_LIB "-lstdc++fs -fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel")
+                set(CXX_EXP_LIB "-fmax-errors=10 -Wnoexcept -Wstrict-null-sentinel")
             endif ()
         endif ()
 

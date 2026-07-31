@@ -5,7 +5,7 @@
 #include "common/ImageCaptureBase.hpp"
 #include "common/common_utils/UniqueValueMap.hpp"
 
-class UnrealImageCapture : public msr::airlib::ImageCaptureBase
+class AIRSIM_API UnrealImageCapture : public msr::airlib::ImageCaptureBase
 {
 public:
     typedef msr::airlib::ImageCaptureBase::ImageType ImageType;
