@@ -232,7 +232,7 @@ private:
     void publish_odom_tf(const nav_msgs::msg::Odometry& odom_msg);
 
     /// camera helper methods
-    sensor_msgs::msg::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
+    sensor_msgs::msg::CameraInfo generate_cam_info(const std::string& frame_id, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
 
     std::shared_ptr<sensor_msgs::msg::Image> get_img_msg_from_response(const ImageResponse& img_response, const rclcpp::Time curr_ros_time, const std::string frame_id);
     std::shared_ptr<sensor_msgs::msg::Image> get_depth_img_msg_from_response(const ImageResponse& img_response, const rclcpp::Time curr_ros_time, const std::string frame_id);
