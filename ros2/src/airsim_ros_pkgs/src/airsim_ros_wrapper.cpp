@@ -216,7 +216,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
                     const std::string camera_topic = topic_prefix + "/" + curr_camera_name + "/" + image_type_int_to_string_map_.at(capture_setting.image_type);
                     image_pub_vec_.push_back(image_transporter.advertise(camera_topic, 1));
                     cam_info_pub_vec_.push_back(nh_->create_publisher<sensor_msgs::msg::CameraInfo>(camera_topic + "/camera_info", 10));
-                    camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
+                    camera_info_msg_vec_.push_back(generate_cam_info(curr_vehicle_name + "/" + curr_camera_name + "_optical", camera_setting, capture_setting));
                 }
             }
             // push back pair (vector of image captures, current vehicle name)
@@ -1210,8 +1210,8 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     }
 
     geometry_msgs::msg::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
+    // Keep vehicle namespace so multi-robot TF trees match body frames.
     static_cam_tf_optical_msg.child_frame_id = vehicle_ros->vehicle_name_ + "/" + camera_name + "_optical/static";
-    static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
     static_cam_tf_optical_msg.transform = get_camera_optical_tf_from_body_tf(static_cam_tf_body_msg.transform);
 
     vehicle_ros->static_tf_msg_vec_.emplace_back(static_cam_tf_body_msg);
@@ -1295,13 +1295,13 @@ std::shared_ptr<sensor_msgs::msg::Image> AirsimROSWrapper::get_depth_img_msg_fro
 }
 
 // todo have a special stereo pair mode and get projection matrix by calculating offset wrt drone body frame?
-sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& camera_name,
+sensor_msgs::msg::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& frame_id,
                                                                  const CameraSetting& camera_setting,
                                                                  const CaptureSetting& capture_setting) const
 {
     unused(camera_setting);
     sensor_msgs::msg::CameraInfo cam_info_msg;
-    cam_info_msg.header.frame_id = camera_name + "_optical";
+    cam_info_msg.header.frame_id = frame_id;
     cam_info_msg.height = capture_setting.height;
     cam_info_msg.width = capture_setting.width;
     float f_x = (capture_setting.width / 2.0) / tan(math_common::deg2rad(capture_setting.fov_degrees / 2.0));
@@ -1335,13 +1335,13 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         if (curr_img_response.pixels_as_float) {
             image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response,
                                                                                               curr_ros_time,
-                                                                                              curr_img_response.camera_name + "_optical"));
+                                                                                              vehicle_name + "/" + curr_img_response.camera_name + "_optical"));
         }
         // Scene / Segmentation / SurfaceNormals / Infrared
         else {
             image_pub_vec_[img_response_idx_internal].publish(get_img_msg_from_response(curr_img_response,
                                                                                         curr_ros_time,
-                                                                                        curr_img_response.camera_name + "_optical"));
+                                                                                        vehicle_name + "/" + curr_img_response.camera_name + "_optical"));
         }
         img_response_idx_internal++;
     }
