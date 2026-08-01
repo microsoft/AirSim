@@ -840,7 +840,7 @@ sensor_msgs::Range AirsimROSWrapper::get_range_from_airsim(const msr::airlib::Di
     dist_msg.header.stamp = airsim_timestamp_to_ros(dist_data.time_stamp);
     dist_msg.range = dist_data.distance;
     dist_msg.min_range = dist_data.min_distance;
-    dist_msg.max_range = dist_data.min_distance;
+    dist_msg.max_range = dist_data.max_distance;
 
     return dist_msg;
 }
