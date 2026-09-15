@@ -575,6 +575,7 @@ class PositionControllerGains():
 class MeshPositionVertexBuffersResponse(MsgpackMixin):
     position = Vector3r()
     orientation = Quaternionr()
-    vertices = 0.0
-    indices = 0.0
+    # Mesh buffers arrive as lists from RPC; 0.0 was a misleading scalar default.
+    vertices = None
+    indices = None
     name = ''
