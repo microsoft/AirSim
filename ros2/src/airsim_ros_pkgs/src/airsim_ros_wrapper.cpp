@@ -153,6 +153,8 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         const std::string topic_prefix = "~/" + curr_vehicle_name;
         vehicle_ros->odom_local_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>(topic_prefix + "/" + odom_frame_id_, 10);
+        if (isENU_)
+            vehicle_ros->odom_local_enu_pub_ = nh_->create_publisher<nav_msgs::msg::Odometry>(topic_prefix + "/" + ENU_ODOM_FRAME_ID, 10);
 
         vehicle_ros->env_pub_ = nh_->create_publisher<airsim_interfaces::msg::Environment>(topic_prefix + "/environment", 10);
 
@@ -603,6 +605,8 @@ nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_kinematic_state(cons
 {
     nav_msgs::msg::Odometry odom_msg;
 
+    odom_msg.header.frame_id = AIRSIM_FRAME_ID;
+
     odom_msg.pose.pose.position.x = kinematics_estimated.pose.position.x();
     odom_msg.pose.pose.position.y = kinematics_estimated.pose.position.y();
     odom_msg.pose.pose.position.z = kinematics_estimated.pose.position.z();
@@ -618,16 +622,40 @@ nav_msgs::msg::Odometry AirsimROSWrapper::get_odom_msg_from_kinematic_state(cons
     odom_msg.twist.twist.angular.y = kinematics_estimated.twist.angular.y();
     odom_msg.twist.twist.angular.z = kinematics_estimated.twist.angular.z();
 
-    if (isENU_) {
-        std::swap(odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y);
-        odom_msg.pose.pose.position.z = -odom_msg.pose.pose.position.z;
-        std::swap(odom_msg.pose.pose.orientation.x, odom_msg.pose.pose.orientation.y);
-        odom_msg.pose.pose.orientation.z = -odom_msg.pose.pose.orientation.z;
-        std::swap(odom_msg.twist.twist.linear.x, odom_msg.twist.twist.linear.y);
-        odom_msg.twist.twist.linear.z = -odom_msg.twist.twist.linear.z;
-        std::swap(odom_msg.twist.twist.angular.x, odom_msg.twist.twist.angular.y);
-        odom_msg.twist.twist.angular.z = -odom_msg.twist.twist.angular.z;
-    }
+    return odom_msg;
+}
+
+nav_msgs::msg::Odometry AirsimROSWrapper::convert_odom_to_enu(const nav_msgs::msg::Odometry original_odom_msg) const
+{
+    nav_msgs::msg::Odometry odom_msg;
+
+    odom_msg.header.stamp = original_odom_msg.header.stamp;
+    odom_msg.header.frame_id = "world_enu";
+
+    odom_msg.pose.pose.position.x = original_odom_msg.pose.pose.position.x;
+    odom_msg.pose.pose.position.y = original_odom_msg.pose.pose.position.y;
+    odom_msg.pose.pose.position.z = original_odom_msg.pose.pose.position.z;
+
+    odom_msg.pose.pose.orientation.x = original_odom_msg.pose.pose.orientation.x;
+    odom_msg.pose.pose.orientation.y = original_odom_msg.pose.pose.orientation.y;
+    odom_msg.pose.pose.orientation.z = original_odom_msg.pose.pose.orientation.z;
+    odom_msg.pose.pose.orientation.w = original_odom_msg.pose.pose.orientation.w;
+
+    odom_msg.twist.twist.linear.x = original_odom_msg.twist.twist.linear.x;
+    odom_msg.twist.twist.linear.y = original_odom_msg.twist.twist.linear.y;
+    odom_msg.twist.twist.linear.z = original_odom_msg.twist.twist.linear.z;
+    odom_msg.twist.twist.angular.x = original_odom_msg.twist.twist.angular.x;
+    odom_msg.twist.twist.angular.y = original_odom_msg.twist.twist.angular.y;
+    odom_msg.twist.twist.angular.z = original_odom_msg.twist.twist.angular.z;
+
+    std::swap(odom_msg.pose.pose.position.x, odom_msg.pose.pose.position.y);
+    odom_msg.pose.pose.position.z = -odom_msg.pose.pose.position.z;
+    std::swap(odom_msg.pose.pose.orientation.x, odom_msg.pose.pose.orientation.y);
+    odom_msg.pose.pose.orientation.z = -odom_msg.pose.pose.orientation.z;
+    std::swap(odom_msg.twist.twist.linear.x, odom_msg.twist.twist.linear.y);
+    odom_msg.twist.twist.linear.z = -odom_msg.twist.twist.linear.z;
+    std::swap(odom_msg.twist.twist.angular.x, odom_msg.twist.twist.angular.y);
+    odom_msg.twist.twist.angular.z = -odom_msg.twist.twist.angular.z;
 
     return odom_msg;
 }
@@ -1026,6 +1054,9 @@ void AirsimROSWrapper::publish_vehicle_state()
 
         // odom and transforms
         vehicle_ros->odom_local_pub_->publish(vehicle_ros->curr_odom_);
+        if (isENU_)
+            vehicle_ros->odom_local_enu_pub_->publish(convert_odom_to_enu(vehicle_ros->curr_odom_));
+
         publish_odom_tf(vehicle_ros->curr_odom_);
 
         // ground truth GPS position from sim/HITL
