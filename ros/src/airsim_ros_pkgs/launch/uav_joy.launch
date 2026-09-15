@@ -1,0 +1,6 @@
+<launch>
+  <node name="joy" pkg="joy" type="joy_node"/>
+  <node name="uav_joy" pkg="airsim_ros_pkgs" type="uav_joy.py" output="screen">
+    <!--rosparam file="$(find universal_teleop)/launch/xbox_one_controller_input_map.yml"/-->
+  </node>
+</launch>
