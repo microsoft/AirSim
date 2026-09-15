@@ -30,11 +30,11 @@ add_subdirectory("${AIRSIM_ROOT}/cmake/AirLib" AirLib)
 add_subdirectory("${AIRSIM_ROOT}/cmake/MavLinkCom" MavLinkCom)
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wnoexcept -Wstrict-null-sentinel")
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -Wnoexcept -Wstrict-null-sentinel -Wno-deprecated-copy")
 set(CXX_EXP_LIB "-nostdinc++ -I/usr/include/c++/8 -I/usr/include/x86_64-linux-gnu/c++/8 -nodefaultlibs 
 -l/usr/lib/x86_64-linux-gnu/libc++.so -l/usr/lib/x86_64-linux-gnu/libc++abi.so
 -lm -lc -lgcc_s -lgcc
--lstdc++fs -fmax-errors=10")
+-fmax-errors=10")
 set(RPC_LIB_INCLUDES " ${AIRSIM_ROOT}/external/rpclib/rpclib-2.3.0/include")
 set(RPC_LIB rpc)
 message(STATUS "found RPC_LIB_INCLUDES=${RPC_LIB_INCLUDES}")
@@ -46,6 +46,8 @@ set(INCLUDE_DIRS include
   ${AIRSIM_ROOT}/MavLinkCom/include
   ${AIRSIM_ROOT}/MavLinkCom/common_utils
   ${OpenCV_INCLUDE_DIRS}
+  ${std_srvs_INCLUDE_DIRS}
+  ${mavros_msgs_INCLUDE_DIRS}
   )
 include_directories(${INCLUDE_DIRS})
 
@@ -59,6 +61,8 @@ ament_target_dependencies(pd_position_controller_simple
   nav_msgs
   geometry_msgs
   airsim_interfaces
+  tf2
+  tf2_geometry_msgs
 )
 
 add_library(airsim_ros src/airsim_ros_wrapper.cpp)
@@ -72,12 +76,17 @@ ament_target_dependencies(airsim_ros
   tf2_ros
   cv_bridge
   airsim_interfaces
+  tf2_geometry_msgs
+  mavros_msgs
+  std_srvs
 )
 
 add_executable(airsim_node src/airsim_node.cpp)
 target_link_libraries(airsim_node airsim_ros AirLib)
 ament_target_dependencies(airsim_node 
   rclcpp
+  tf2
+  tf2_geometry_msgs
 )
 
 add_executable(pd_position_controller_simple_node
@@ -86,6 +95,8 @@ target_link_libraries(pd_position_controller_simple_node
   pd_position_controller_simple airsim_ros AirLib)
 ament_target_dependencies(pd_position_controller_simple_node 
   rclcpp
+  tf2
+  tf2_geometry_msgs
 )
 
 # rosidl_target_interfaces(airsim_node
