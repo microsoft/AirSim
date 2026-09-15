@@ -211,7 +211,7 @@ namespace airlib
     {
         //breaking distance at this velocity
         float velocity_mag = velocity.norm();
-        float dest_pos_dist = std::max(velocity_mag * vehicle_params_.vel_to_breaking_dist,
+        float dest_pos_dist = (std::max)(velocity_mag * vehicle_params_.vel_to_breaking_dist,
                                        vehicle_params_.min_breaking_dist);
 
         //calculate dest_pos cur_pos we will be if we had to break suddenly
