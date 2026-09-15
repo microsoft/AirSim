@@ -5,9 +5,9 @@ jobs:
     name: Formatting Check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
     - name: Run clang-format style check for C/C++ programs.
-      uses: jidicula/clang-format-action@v4.4.1
+      uses: jidicula/clang-format-action@aecc1901f080e23c1bab6ccb1b2daa8d50eda274 # v4.4.1
       with:
         clang-format-version: '11'
         check-path: '.'
