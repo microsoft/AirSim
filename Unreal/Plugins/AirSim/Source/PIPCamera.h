@@ -69,6 +69,9 @@ public:
 
     void setupCameraFromSettings(const CameraSetting& camera_setting, const NedTransform& ned_transform);
     void setCameraPose(const msr::airlib::Pose& relative_pose);
+    void setCameraPitch(float pitch);
+    void setCameraRoll(float roll);
+    void setCameraYaw(float yaw);
     void setCameraFoV(float fov_degrees);
     msr::airlib::CameraInfo getCameraInfo() const;
     std::vector<float> getDistortionParams() const;
