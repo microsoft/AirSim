@@ -453,6 +453,11 @@ __pragma(warning(disable : 4239))
             return pimpl_->client.call("simIsPaused").as<bool>();
         }
 
+        float RpcLibClientBase::simGetClockRate() const
+        {
+            return pimpl_->client.call("simGetClockRate").as<float>();
+        }
+
         void RpcLibClientBase::simPause(bool is_paused)
         {
             pimpl_->client.call("simPause", is_paused);
