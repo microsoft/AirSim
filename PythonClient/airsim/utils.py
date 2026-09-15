@@ -18,7 +18,29 @@ def string_to_float_array(bstr):
     return np.fromstring(bstr, np.float32)
     
 def list_to_2d_float_array(flst, width, height):
-    return np.reshape(np.asarray(flst, np.float32), (height, width))
+    """Reshape a flat float list into a height x width float32 array.
+
+    Raises ValueError with a clear message when dimensions are invalid so
+    empty or truncated depth buffers fail closed instead of cascading
+    opaque numpy reshape errors.
+    """
+    try:
+        w = int(width)
+        h = int(height)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("width and height must be integers") from exc
+    if w < 0 or h < 0:
+        raise ValueError("width and height must be non-negative, got width=%r height=%r" % (w, h))
+    arr = np.asarray(flst, np.float32).reshape(-1)
+    expected = w * h
+    if arr.size != expected:
+        raise ValueError(
+            "flat length %d does not match width*height (%d*%d=%d)"
+            % (arr.size, w, h, expected)
+        )
+    if expected == 0:
+        return np.zeros((h, w), dtype=np.float32)
+    return np.reshape(arr, (h, w))
     
 def get_pfm_array(response):
     return list_to_2d_float_array(response.image_data_float, response.width, response.height)
