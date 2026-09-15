@@ -267,7 +267,7 @@ class CollisionInfo(MsgpackMixin):
     impact_point = Vector3r()
     position = Vector3r()
     penetration_depth = 0.0
-    time_stamp = 0.0
+    time_stamp = np.uint64(0)
     object_name = ""
     object_id = -1
 
