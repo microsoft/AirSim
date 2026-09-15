@@ -918,7 +918,7 @@ namespace airlib
         //if auto mode requested for lookahead then calculate based on velocity
         float command_period_dist = velocity * getCommandPeriod();
         float lookahead = command_period_dist * (adaptive_lookahead > 0 ? min_factor : max_factor);
-        lookahead = std::max(lookahead, getDistanceAccuracy() * 1.5f); //50% more than distance accuracy
+        lookahead = (std::max)(lookahead, getDistanceAccuracy() * 1.5f); //50% more than distance accuracy (paren form: Windows min/max macros)
         return lookahead;
     }
 
