@@ -79,7 +79,7 @@ namespace airlib
             //ref: An introduction to inertial navigation, Oliver J. Woodman, Sec 3.2, pp 10-12
             //https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-696.pdf
 
-            real_T sqrt_dt = static_cast<real_T>(sqrt(std::max<TTimeDelta>(dt, params_.min_sample_time)));
+            real_T sqrt_dt = static_cast<real_T>(sqrt((std::max)(dt, params_.min_sample_time)));
 
             // Gyrosocpe
             //convert arw to stddev
