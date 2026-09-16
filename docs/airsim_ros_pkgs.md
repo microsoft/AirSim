@@ -102,7 +102,8 @@ IMU sensor data
   Meausrement of magnetic field vector/compass
 
 - `/airsim_node/VEHICLE_NAME/distance/SENSOR_NAME` [sensor_msgs::Range](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)
-  Meausrement of distance from an active ranger, such as infrared or IR
+  Measurement of distance from an active ranger, such as infrared or ultrasonic.
+  `min_range` / `max_range` mirror AirSim `min_distance` / `max_distance` (not a copy of min into max).
 
 - `/airsim_node/VEHICLE_NAME/lidar/SENSOR_NAME` [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html)
   LIDAR pointcloud
