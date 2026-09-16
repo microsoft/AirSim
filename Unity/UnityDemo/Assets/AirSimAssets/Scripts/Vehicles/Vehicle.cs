@@ -343,12 +343,26 @@ namespace AirSimUnity {
             captureResetEvent = new AutoResetEvent(false);
         }
 
-        //Register all the capture cameras in the scene for recording and data capture.
-        //Make sure every camera is a child of a gameobject with tag "CaptureCameras"
+        //Register capture cameras for this vehicle (recording / data capture).
+        //Each vehicle should own a child hierarchy tagged "CaptureCameras".
+        //Scene-wide FindGameObjectWithTag only returns the first match and breaks multi-drone simGetImages.
+        private GameObject FindChildWithTag(GameObject parent, string tag) {
+            if (parent == null) {
+                return null;
+            }
+            foreach (Transform transform in parent.transform) {
+                if (transform.CompareTag(tag)) {
+                    return transform.gameObject;
+                }
+            }
+            return null;
+        }
+
         private void SetUpCameras() {
-            GameObject camerasParent = GameObject.FindGameObjectWithTag("CaptureCameras");
+            GameObject thisVehicle = GameObject.Find(this.name);
+            GameObject camerasParent = FindChildWithTag(thisVehicle, "CaptureCameras");
             if (!camerasParent) {
-                Debug.LogWarning("No Cameras found in the scene to capture data");
+                Debug.LogWarning("No CaptureCameras found under vehicle '" + this.name + "'");
                 return;
             }
 
