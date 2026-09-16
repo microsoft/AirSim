@@ -21,12 +21,12 @@ Cars in AirSim
 
 ### Windows
 [![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_windows.yml)
-* [Download binaries](https://github.com/Microsoft/AirSim/releases)
+* [Download binaries](https://github.com/microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_windows)
 
 ### Linux
 [![Build Status](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/microsoft/AirSim/actions/workflows/test_ubuntu.yml)
-* [Download binaries](https://github.com/Microsoft/AirSim/releases)
+* [Download binaries](https://github.com/microsoft/AirSim/releases)
 * [Build it](https://microsoft.github.io/AirSim/build_linux)
 
 ### macOS
@@ -145,7 +145,7 @@ For complete list of changes, view our [Changelog](docs/CHANGELOG.md)
 
 ## FAQ
 
-If you run into problems, check the [FAQ](https://microsoft.github.io/AirSim/faq) and feel free to post issues in the  [AirSim](https://github.com/Microsoft/AirSim/issues) repository.
+If you run into problems, check the [FAQ](https://microsoft.github.io/AirSim/faq) and feel free to post issues in the  [AirSim](https://github.com/microsoft/AirSim/issues) repository.
 
 ## Code of Conduct
 
