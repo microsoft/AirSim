@@ -41,13 +41,41 @@ def to_str(obj):
     return str(to_dict(obj))
 
     
+def _as_bytes_like_for_file(bstr):
+    if bstr is None:
+        return None
+    if isinstance(bstr, memoryview):
+        return bstr.tobytes()
+    if isinstance(bstr, bytearray):
+        return bytes(bstr)
+    if isinstance(bstr, bytes):
+        return bstr
+    if isinstance(bstr, str):
+        if bstr == "" or bstr == "\0":
+            return None
+        return bstr.encode("latin-1", errors="ignore")
+    try:
+        return bytes(bstr)
+    except Exception:
+        return None
+
+
 def write_file(filename, bstr):
     """
     Write binary data to file.
-    Used for writing compressed PNG images
+    Used for writing compressed PNG images.
+
+    No-op when bstr is None or empty so empty simGetImage responses do not
+    create zero-byte placeholders or raise TypeError on None.
     """
+    data = _as_bytes_like_for_file(bstr)
+    if not data or data == b"\0":
+        return
+    parent = os.path.dirname(filename)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
     with open(filename, 'wb') as afile:
-        afile.write(bstr)
+        afile.write(data)
 
 # helper method for converting getOrientation to roll/pitch/yaw
 # https:#en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -126,76 +154,72 @@ def wait_key(message = ''):
     
 def read_pfm(file):
     """ Read a pfm file """
-    file = open(file, 'rb')
+    with open(file, 'rb') as file:
+        color = None
+        width = None
+        height = None
+        scale = None
+        endian = None
 
-    color = None
-    width = None
-    height = None
-    scale = None
-    endian = None
+        header = file.readline().rstrip()
+        header = str(bytes.decode(header, encoding='utf-8'))
+        if header == 'PF':
+            color = True
+        elif header == 'Pf':
+            color = False
+        else:
+            raise Exception('Not a PFM file.')
 
-    header = file.readline().rstrip()
-    header = str(bytes.decode(header, encoding='utf-8'))
-    if header == 'PF':
-        color = True
-    elif header == 'Pf':
-        color = False
-    else:
-        raise Exception('Not a PFM file.')
+        temp_str = str(bytes.decode(file.readline(), encoding='utf-8'))
+        dim_match = re.match(r'^(\d+)\s(\d+)\s$', temp_str)
+        if dim_match:
+            width, height = map(int, dim_match.groups())
+        else:
+            raise Exception('Malformed PFM header.')
 
-    temp_str = str(bytes.decode(file.readline(), encoding='utf-8'))
-    dim_match = re.match(r'^(\d+)\s(\d+)\s$', temp_str)
-    if dim_match:
-        width, height = map(int, dim_match.groups())
-    else:
-        raise Exception('Malformed PFM header.')
+        scale = float(file.readline().rstrip())
+        if scale < 0:  # little-endian
+            endian = '<'
+            scale = -scale
+        else:
+            endian = '>'  # big-endian
 
-    scale = float(file.readline().rstrip())
-    if scale < 0: # little-endian
-        endian = '<'
-        scale = -scale
-    else:
-        endian = '>' # big-endian
+        data = np.fromfile(file, endian + 'f')
+        shape = (height, width, 3) if color else (height, width)
 
-    data = np.fromfile(file, endian + 'f')
-    shape = (height, width, 3) if color else (height, width)
+        data = np.reshape(data, shape)
 
-    data = np.reshape(data, shape)
-    # DEY: I don't know why this was there.
-    file.close()
-    
-    return data, scale
+        return data, scale
 
     
 def write_pfm(file, image, scale=1):
     """ Write a pfm file """
-    file = open(file, 'wb')
-
     color = None
 
     if image.dtype.name != 'float32':
         raise Exception('Image dtype must be float32.')
 
-    if len(image.shape) == 3 and image.shape[2] == 3: # color image
+    if len(image.shape) == 3 and image.shape[2] == 3:  # color image
         color = True
-    elif len(image.shape) == 2 or len(image.shape) == 3 and image.shape[2] == 1: # grayscale
+    elif len(image.shape) == 2 or len(image.shape) == 3 and image.shape[2] == 1:  # grayscale
         color = False
     else:
         raise Exception('Image must have H x W x 3, H x W x 1 or H x W dimensions.')
 
-    file.write('PF\n'.encode('utf-8')  if color else 'Pf\n'.encode('utf-8'))
-    temp_str = '%d %d\n' % (image.shape[1], image.shape[0])
-    file.write(temp_str.encode('utf-8'))
+    with open(file, 'wb') as file:
+        file.write('PF\n'.encode('utf-8') if color else 'Pf\n'.encode('utf-8'))
+        temp_str = '%d %d\n' % (image.shape[1], image.shape[0])
+        file.write(temp_str.encode('utf-8'))
 
-    endian = image.dtype.byteorder
+        endian = image.dtype.byteorder
 
-    if endian == '<' or endian == '=' and sys.byteorder == 'little':
-        scale = -scale
+        if endian == '<' or endian == '=' and sys.byteorder == 'little':
+            scale = -scale
 
-    temp_str = '%f\n' % scale
-    file.write(temp_str.encode('utf-8'))
+        temp_str = '%f\n' % scale
+        file.write(temp_str.encode('utf-8'))
 
-    image.tofile(file)
+        image.tofile(file)
 
     
 def write_png(filename, image):
