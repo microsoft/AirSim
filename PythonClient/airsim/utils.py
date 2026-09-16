@@ -11,11 +11,43 @@ import logging
 from .types import *
 
 
+def _as_bytes_like(bstr):
+    """Coerce msgpack/legacy buffers to bytes-like for np.frombuffer."""
+    if bstr is None:
+        return b""
+    if isinstance(bstr, memoryview):
+        return bstr.tobytes()
+    if isinstance(bstr, bytearray):
+        return bytes(bstr)
+    if isinstance(bstr, bytes):
+        return bstr
+    if isinstance(bstr, str):
+        # Legacy msgpack path sometimes surfaces as str/binary string
+        return bstr.encode("latin-1", errors="ignore")
+    return bytes(bstr)
+
+
 def string_to_uint8_array(bstr):
-    return np.fromstring(bstr, np.uint8)
-    
+    """Decode packed bytes into a writable uint8 numpy array.
+
+    Uses np.frombuffer (np.fromstring binary form is deprecated/removed).
+    """
+    buf = _as_bytes_like(bstr)
+    if not buf:
+        return np.array([], dtype=np.uint8)
+    return np.frombuffer(buf, dtype=np.uint8).copy()
+
+
 def string_to_float_array(bstr):
-    return np.fromstring(bstr, np.float32)
+    """Decode packed bytes into a writable float32 numpy array."""
+    buf = _as_bytes_like(bstr)
+    if not buf:
+        return np.array([], dtype=np.float32)
+    # Require whole number of float32 elements; truncate remainder if present
+    n = (len(buf) // 4) * 4
+    if n == 0:
+        return np.array([], dtype=np.float32)
+    return np.frombuffer(buf[:n], dtype=np.float32).copy()
     
 def list_to_2d_float_array(flst, width, height):
     return np.reshape(np.asarray(flst, np.float32), (height, width))
