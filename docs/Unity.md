@@ -19,7 +19,7 @@ This project is still in early development, expect some rough edges. We are work
 **Make sure** to select **Desktop Development with C++** and **Windows 10 SDK 10.0.18362** (should be selected by default) while installing VS 2019. 
 
 * Start `x64 Native Tools Command Prompt for VS 2019`. 
-* Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
+* Clone the repo: `git clone https://github.com/microsoft/AirSim.git`, and go the AirSim directory by `cd AirSim`. 
 * Run `build.cmd` from the command line. 
 
 #### Build Unity Project
@@ -42,7 +42,7 @@ sudo apt-get install libboost-all-dev
 
 #### Build Airsim
 ```
-git clone https://github.com/Microsoft/AirSim.git;
+git clone https://github.com/microsoft/AirSim.git;
 cd AirSim;
 ./setup.sh;
 ./build.sh

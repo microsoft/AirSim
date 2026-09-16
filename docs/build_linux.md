@@ -33,7 +33,7 @@ make
 
 ```bash
 # go to the folder where you clone GitHub projects
-git clone https://github.com/Microsoft/AirSim.git
+git clone https://github.com/microsoft/AirSim.git
 cd AirSim
 ```
 
