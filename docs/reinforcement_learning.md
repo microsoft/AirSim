@@ -12,9 +12,9 @@ In order to use AirSim as a gym environment, we extend and reimplement the base 
 
 ## RL with Car
 
-[Source code](https://github.com/Microsoft/AirSim/tree/main/PythonClient/reinforcement_learning)
+[Source code](https://github.com/microsoft/AirSim/tree/main/PythonClient/reinforcement_learning)
 
-This example works with AirSimNeighborhood environment available in [releases](https://github.com/Microsoft/AirSim/releases).
+This example works with AirSimNeighborhood environment available in [releases](https://github.com/microsoft/AirSim/releases).
 
 First, we need to get the images from simulation and transform them appropriately. Below, we show how a depth image can be obtained from the ego camera and transformed to an 84X84 input to the network. (you can use other sensor modalities, and sensor inputs as well – of course you’ll have to modify the code accordingly).
 
@@ -127,9 +127,9 @@ Note that the simulation needs to be up and running before you execute `dqn_car.
 
 ## RL with Quadrotor
 
-[Source code](https://github.com/Microsoft/AirSim/tree/main/PythonClient/reinforcement_learning)
+[Source code](https://github.com/microsoft/AirSim/tree/main/PythonClient/reinforcement_learning)
 
-This example works with AirSimMountainLandscape environment available in [releases](https://github.com/Microsoft/AirSim/releases).
+This example works with AirSimMountainLandscape environment available in [releases](https://github.com/microsoft/AirSim/releases).
 
 We can similarly apply RL for various autonomous flight scenarios with quadrotors. Below is an example on how RL could be used to train quadrotors to follow high tension power lines (e.g. application for energy infrastructure inspection).
 There are seven discrete actions here that correspond to different directions in which the quadrotor can move in (six directions + one hovering action).
