@@ -63,12 +63,26 @@ if [ "$(uname)" == "Darwin" ]; then
     export CC="$(brew --prefix)/opt/llvm/bin/clang"
     export CXX="$(brew --prefix)/opt/llvm/bin/clang++"
 else
-    if $gcc; then
-        export CC="gcc-8"
-        export CXX="g++-8"
+    # Ubuntu version
+    VERSION=$(lsb_release -rs | cut -d. -f1)
+    # Ubuntu version < 22, use compiler 8
+    # Ubuntu version >= 22, use compiler 14
+    if [ $"$VERSION" -lt "22" ]; then
+        if $gcc; then
+            export CC="gcc-8"
+            export CXX="g++-8"
+        else
+            export CC="clang-8"
+            export CXX="clang++-8"
+        fi
     else
-        export CC="clang-8"
-        export CXX="clang++-8"
+        if $gcc; then
+            export CC="gcc-14"
+            export CXX="g++-14"
+        else
+            export CC="clang-14"
+            export CXX="clang++-14"
+        fi
     fi
 fi
 
