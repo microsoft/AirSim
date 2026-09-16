@@ -4,7 +4,7 @@ AirSim is open source project and contributors like you keeps it going. It is im
 
 ## DOs
 
-* [Search issues](https://github.com/Microsoft/AirSim/issues?utf8=%E2%9C%93&q=is%3Aissue) to see if someone already has asked it.
+* [Search issues](https://github.com/microsoft/AirSim/issues?utf8=%E2%9C%93&q=is%3Aissue) to see if someone already has asked it.
 * Chose title that is short and summarizes well. 
 * Copy and paste full error message.
 * Precisely describe steps you used that produced the error message or symptom.
