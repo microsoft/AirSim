@@ -1,7 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#if ENGINE_MAJOR_VERSION >= 5
+#include "ChaosVehicleMovementComponent.h"
+#else
 #include "WheeledVehicleMovementComponent4W.h"
+#endif
 
 #include "CarPawn.h"
 #include "CarPawnApi.h"

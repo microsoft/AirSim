@@ -1,6 +1,18 @@
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AirSimTargetPlatformVersion>$([System.String]::Copy('$(WindowsSDKVersion)').Replace('\',''))</AirSimTargetPlatformVersion>
+    <AirSimTargetPlatformVersion>$([System.String]::Copy('$(WindowsSDKVersion)').Replace('\\',''))</AirSimTargetPlatformVersion>
     <WindowsTargetPlatformVersion>$(AirSimTargetPlatformVersion)</WindowsTargetPlatformVersion>
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalOptions>/utf-8 /wd4819 /wd4828 %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>false</TreatWarningAsError>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalOptions>/utf-8 /wd4819 /wd4828 /wd4127 /WX- %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>false</TreatWarningAsError>
+    </ClCompile>
+  </ItemDefinitionGroup>
 </Project>

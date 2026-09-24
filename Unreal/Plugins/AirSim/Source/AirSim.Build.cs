@@ -40,19 +40,16 @@ public class AirSim : ModuleRules
 
     private void SetupCompileMode(CompileMode mode, ReadOnlyTargetRules Target)
     {
-        LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
-
         switch (mode)
         {
             case CompileMode.HeaderOnlyNoRpc:
                 PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
                 PublicDefinitions.Add("AIRLIB_NO_RPC=1");
-                AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
+                // No static libs in header-only mode
                 break;
 
             case CompileMode.HeaderOnlyWithRpc:
                 PublicDefinitions.Add("AIRLIB_HEADER_ONLY=1");
-                AddLibDependency("AirLib", Path.Combine(AirLibPath, "lib"), "AirLib", Target, false);
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
 
@@ -62,6 +59,7 @@ public class AirSim : ModuleRules
                 break;
 
             case CompileMode.CppCompileWithRpc:
+                LoadAirSimDependency(Target, "MavLinkCom", "MavLinkCom");
                 LoadAirSimDependency(Target, "rpclib", "rpc");
                 break;
 
@@ -78,8 +76,23 @@ public class AirSim : ModuleRules
 
         bEnableExceptions = true;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI", "AssetRegistry", "PhysicsCore", "PhysXVehicles", "PhysXVehicleLib", "PhysX", "APEX", "Landscape", "CinematicCamera" });
+        // UE5 uses Chaos instead of PhysX. Replace PhysX modules with Chaos equivalents.
+        PublicDependencyModuleNames.AddRange(new string[] {
+            "Core", "CoreUObject", "Engine", "InputCore", "ImageWrapper", "RenderCore", "RHI",
+            "AssetRegistry", "PhysicsCore", "Landscape", "CinematicCamera"
+        });
+
+        if (Target.Version.MajorVersion >= 5)
+        {
+            // Chaos vehicles for UE5
+            PublicDependencyModuleNames.AddRange(new string[] { "Chaos", "ChaosVehicles" });
+        }
+        else
+        {
+            PublicDependencyModuleNames.AddRange(new string[] { "PhysXVehicles", "PhysXVehicleLib", "PhysX", "APEX" });
+        }
         PrivateDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
+        PublicDependencyModuleNames.AddRange(new string[] { "FieldNotification" });
 
         //suppress VC++ proprietary warnings
         PublicDefinitions.Add("_SCL_SECURE_NO_WARNINGS=1");
@@ -90,19 +103,20 @@ public class AirSim : ModuleRules
         PublicIncludePaths.Add(Path.Combine(AirLibPath, "deps", "eigen3"));
         AddOSLibDependencies(Target);
 
-        SetupCompileMode(CompileMode.HeaderOnlyWithRpc, Target);
+        // Build C++ with RPC to link prebuilt deps
+        SetupCompileMode(CompileMode.CppCompileWithRpc, Target);
     }
 
     private void AddOSLibDependencies(ReadOnlyTargetRules Target)
     {
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
-            // for SHGetFolderPath.
-            PublicAdditionalLibraries.Add("Shell32.lib");
-
-            //for joystick support
-            PublicAdditionalLibraries.Add("dinput8.lib");
-            PublicAdditionalLibraries.Add("dxguid.lib");
+            // System libs
+            PublicSystemLibraries.Add("Shell32.lib");
+            PublicSystemLibraries.Add("dinput8.lib");
+            PublicSystemLibraries.Add("dxguid.lib");
+            // Ensure C++ stdlib import is available when linking prebuilt deps
+            PublicSystemLibraries.Add("msvcprt.lib");
         }
 
 		if (Target.Platform == UnrealTargetPlatform.Linux)

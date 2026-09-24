@@ -2,6 +2,14 @@
 // Licensed under the MIT License.
 
 #include "MavLinkFtpClientImpl.hpp"
+#if defined(_WIN32)
+#include <Windows.h>
+#define AIRSIM_SLEEP_MS(ms) ::Sleep((DWORD)(ms))
+#else
+#include <thread>
+#include <chrono>
+#define AIRSIM_SLEEP_MS(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
+#endif
 #include <mutex>
 #include "Utils.hpp"
 #include "FileSystem.hpp"

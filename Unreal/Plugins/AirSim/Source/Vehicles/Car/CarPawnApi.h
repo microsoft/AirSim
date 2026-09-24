@@ -1,7 +1,11 @@
 #pragma once
 
 #include "vehicles/car/api/CarApiBase.hpp"
+#if ENGINE_MAJOR_VERSION >= 5
+#include "ChaosVehicleMovementComponent.h"
+#else
 #include "WheeledVehicleMovementComponent4W.h"
+#endif
 #include "physics/Kinematics.hpp"
 #include "CarPawn.h"
 
@@ -23,7 +27,11 @@ public:
     virtual ~CarPawnApi();
 
 private:
+#if ENGINE_MAJOR_VERSION >= 5
+    UChaosVehicleMovementComponent* movement_;
+#else
     UWheeledVehicleMovementComponent* movement_;
+#endif
     msr::airlib::CarApiBase::CarControls last_controls_;
     ACarPawn* pawn_;
     const msr::airlib::Kinematics::State* pawn_kinematics_;
