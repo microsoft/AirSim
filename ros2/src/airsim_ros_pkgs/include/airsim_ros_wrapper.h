@@ -119,7 +119,7 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip);
+    AirsimROSWrapper(const std::shared_ptr<rclcpp::Node> nh, const std::shared_ptr<rclcpp::Node> nh_img, const std::shared_ptr<rclcpp::Node> nh_lidar, const std::string& host_ip, const std::shared_ptr<rclcpp::CallbackGroup> callbackGroup);
     ~AirsimROSWrapper(){};
 
     void initialize_airsim();
@@ -317,6 +317,7 @@ private:
     std::shared_ptr<rclcpp::Node> nh_;
     std::shared_ptr<rclcpp::Node> nh_img_;
     std::shared_ptr<rclcpp::Node> nh_lidar_;
+    std::shared_ptr<rclcpp::CallbackGroup> cb_;
 
     // todo not sure if async spinners shuold be inside this class, or should be instantiated in airsim_node.cpp, and cb queues should be public
     // todo for multiple drones with multiple sensors, this won't scale. make it a part of VehicleROS?
