@@ -1,0 +1,12 @@
+set(AIRSIM_VERSION @AIRSIM_VERSION@)
+
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(Eigen3 CONFIG REQUIRED)
+find_dependency(rpclib CONFIG REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/@SOLUTION_NAME@Targets.cmake")
+
+check_required_components("@SOLUTION_NAME@")
