@@ -1113,7 +1113,17 @@ class VehicleClient:
         """
         return self.client.call('getSettingsString')
 
-#----------------------------------- Multirotor APIs ---------------------------------------------
+    def simSetExtForce(self, ext_force):
+        """
+        Set arbitrary external forces, in World frame, NED direction. Can be used
+        for implementing simple payloads.
+
+        Args:
+            ext_force (Vector3r): Force, in World frame, NED direction, in N
+        """
+        self.client.call('simSetExtForce', ext_force)
+
+# -----------------------------------  Multirotor APIs ---------------------------------------------
 class MultirotorClient(VehicleClient, object):
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):
         super(MultirotorClient, self).__init__(ip, port, timeout_value)
