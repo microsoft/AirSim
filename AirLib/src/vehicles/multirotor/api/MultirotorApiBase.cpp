@@ -11,6 +11,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <windows.h>
+
 namespace msr
 {
 namespace airlib
@@ -346,7 +348,7 @@ namespace airlib
 
         //until we are at the end of the path (last seg is always zero size)
         while (!waiter.isTimeout() && (next_path_loc.seg_index < path_segs.size() - 1 || goal_dist > 0)) { //current position is approximately at the last end point
-
+            Sleep(30);
             float seg_velocity = path_segs.at(next_path_loc.seg_index).seg_velocity;
             float path_length_remaining = path_length - path_segs.at(cur_path_loc.seg_index).seg_path_length - cur_path_loc.offset;
             if (seg_velocity > getMultirotorApiParams().min_vel_for_breaking && path_length_remaining <= breaking_dist) {
@@ -918,7 +920,7 @@ namespace airlib
         //if auto mode requested for lookahead then calculate based on velocity
         float command_period_dist = velocity * getCommandPeriod();
         float lookahead = command_period_dist * (adaptive_lookahead > 0 ? min_factor : max_factor);
-        lookahead = std::max(lookahead, getDistanceAccuracy() * 1.5f); //50% more than distance accuracy
+        lookahead = (std::max)(lookahead, getDistanceAccuracy() * 1.5f); //50% more than distance accuracy
         return lookahead;
     }
 
