@@ -138,6 +138,7 @@ private:
 
         /// All things ROS
         rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_local_pub_;
+        rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_local_enu_pub_;
         rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr global_gps_pub_;
         rclcpp::Publisher<airsim_interfaces::msg::Environment>::SharedPtr env_pub_;
         airsim_interfaces::msg::Environment env_msg_;
@@ -255,6 +256,7 @@ private:
     msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::msg::Quaternion& geometry_msgs_quat) const;
     msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
     nav_msgs::msg::Odometry get_odom_msg_from_kinematic_state(const msr::airlib::Kinematics::State& kinematics_estimated) const;
+    nav_msgs::msg::Odometry convert_odom_to_enu(const nav_msgs::msg::Odometry original_odom_msg) const;
     nav_msgs::msg::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
     nav_msgs::msg::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
     airsim_interfaces::msg::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
