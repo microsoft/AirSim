@@ -225,7 +225,7 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
                     image_pub_vec_.push_back(image_transporter.advertise(cam_image_topic, 1));
                     cam_info_pub_vec_.push_back(nh_private_.advertise<sensor_msgs::CameraInfo>(cam_image_topic + "/camera_info", 10));
-                    camera_info_msg_vec_.push_back(generate_cam_info(curr_camera_name, camera_setting, capture_setting));
+                    camera_info_msg_vec_.push_back(generate_cam_info(curr_vehicle_name + "/" + curr_camera_name + "_optical", camera_setting, capture_setting));
                 }
             }
             // push back pair (vector of image captures, current vehicle name)
@@ -1263,7 +1263,7 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
 {
     geometry_msgs::TransformStamped static_cam_tf_body_msg;
     static_cam_tf_body_msg.header.frame_id = vehicle_ros->vehicle_name + "/" + odom_frame_id_;
-    static_cam_tf_body_msg.child_frame_id = camera_name + "_body/static";
+    static_cam_tf_body_msg.child_frame_id = vehicle_ros->vehicle_name + "/" + camera_name + "_body/static";
     static_cam_tf_body_msg.transform.translation.x = camera_setting.position.x();
     static_cam_tf_body_msg.transform.translation.y = camera_setting.position.y();
     static_cam_tf_body_msg.transform.translation.z = camera_setting.position.z();
@@ -1282,7 +1282,7 @@ void AirsimROSWrapper::append_static_camera_tf(VehicleROS* vehicle_ros, const st
     }
 
     geometry_msgs::TransformStamped static_cam_tf_optical_msg = static_cam_tf_body_msg;
-    static_cam_tf_optical_msg.child_frame_id = camera_name + "_optical/static";
+    static_cam_tf_optical_msg.child_frame_id = vehicle_ros->vehicle_name + "/" + camera_name + "_optical/static";
 
     tf2::Quaternion quat_cam_body;
     tf2::Quaternion quat_cam_optical;
@@ -1382,12 +1382,12 @@ sensor_msgs::ImagePtr AirsimROSWrapper::get_depth_img_msg_from_response(const Im
 }
 
 // todo have a special stereo pair mode and get projection matrix by calculating offset wrt drone body frame?
-sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& camera_name,
+sensor_msgs::CameraInfo AirsimROSWrapper::generate_cam_info(const std::string& frame_id,
                                                             const CameraSetting& camera_setting,
                                                             const CaptureSetting& capture_setting) const
 {
     sensor_msgs::CameraInfo cam_info_msg;
-    cam_info_msg.header.frame_id = camera_name + "_optical";
+    cam_info_msg.header.frame_id = frame_id;
     cam_info_msg.height = capture_setting.height;
     cam_info_msg.width = capture_setting.width;
     float f_x = (capture_setting.width / 2.0) / tan(math_common::deg2rad(capture_setting.fov_degrees / 2.0));
@@ -1421,13 +1421,13 @@ void AirsimROSWrapper::process_and_publish_img_response(const std::vector<ImageR
         if (curr_img_response.pixels_as_float) {
             image_pub_vec_[img_response_idx_internal].publish(get_depth_img_msg_from_response(curr_img_response,
                                                                                               curr_ros_time,
-                                                                                              curr_img_response.camera_name + "_optical"));
+                                                                                              vehicle_name + "/" + curr_img_response.camera_name + "_optical"));
         }
         // Scene / Segmentation / SurfaceNormals / Infrared
         else {
             image_pub_vec_[img_response_idx_internal].publish(get_img_msg_from_response(curr_img_response,
                                                                                         curr_ros_time,
-                                                                                        curr_img_response.camera_name + "_optical"));
+                                                                                        vehicle_name + "/" + curr_img_response.camera_name + "_optical"));
         }
         img_response_idx_internal++;
     }
@@ -1441,7 +1441,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     geometry_msgs::TransformStamped cam_tf_body_msg;
     cam_tf_body_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     cam_tf_body_msg.header.frame_id = frame_id;
-    cam_tf_body_msg.child_frame_id = child_frame_id + "_body";
+    cam_tf_body_msg.child_frame_id = frame_id + "/" + child_frame_id + "_body";
     cam_tf_body_msg.transform.translation.x = img_response.camera_position.x();
     cam_tf_body_msg.transform.translation.y = img_response.camera_position.y();
     cam_tf_body_msg.transform.translation.z = img_response.camera_position.z();
@@ -1460,7 +1460,7 @@ void AirsimROSWrapper::publish_camera_tf(const ImageResponse& img_response, cons
     geometry_msgs::TransformStamped cam_tf_optical_msg;
     cam_tf_optical_msg.header.stamp = airsim_timestamp_to_ros(img_response.time_stamp);
     cam_tf_optical_msg.header.frame_id = frame_id;
-    cam_tf_optical_msg.child_frame_id = child_frame_id + "_optical";
+    cam_tf_optical_msg.child_frame_id = frame_id + "/" + child_frame_id + "_optical";
     cam_tf_optical_msg.transform.translation.x = cam_tf_body_msg.transform.translation.x;
     cam_tf_optical_msg.transform.translation.y = cam_tf_body_msg.transform.translation.y;
     cam_tf_optical_msg.transform.translation.z = cam_tf_body_msg.transform.translation.z;
