@@ -733,14 +733,15 @@ sensor_msgs::PointCloud2 AirsimROSWrapper::get_lidar_msg_from_airsim(const msr::
     lidar_msg.header.stamp = ros::Time::now();
     lidar_msg.header.frame_id = vehicle_name + "/" + sensor_name;
 
-    if (lidar_data.point_cloud.size() > 3) {
+    if (lidar_data.point_cloud.size() > 4) {
         lidar_msg.height = 1;
-        lidar_msg.width = lidar_data.point_cloud.size() / 3;
+        lidar_msg.width = lidar_data.point_cloud.size() / 4;
 
-        lidar_msg.fields.resize(3);
+        lidar_msg.fields.resize(4);
         lidar_msg.fields[0].name = "x";
         lidar_msg.fields[1].name = "y";
         lidar_msg.fields[2].name = "z";
+        lidar_msg.fields[3].name = "ring";
 
         int offset = 0;
 
