@@ -49,6 +49,7 @@ namespace airlib
         int getMinRequiredClientVersion() const;
 
         bool simIsPaused() const;
+        float getSimClockRate() const;
         void simPause(bool is_paused);
         void simContinueForTime(double seconds);
         void simContinueForFrames(uint32_t frames);
